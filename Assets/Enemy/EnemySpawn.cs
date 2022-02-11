@@ -1,18 +1,65 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Lean.Pool;
 
 public class EnemySpawn : MonoBehaviour
 {
+    public GameObject[] mobList = null;
+    Collider2D col;
+
     void Start()
     {
-        
+        col = GetComponent<BoxCollider2D>();
     }
 
     void Update()
     {
-        //TODO 카메라 테두리에서 적 생성
+        //몬스터 리스트에서 랜덤 넘버
+        int mobNum = Random.Range(0, mobList.Length);
 
-        //TODO 카메라 테두리에 닿은 적 반대편으로 보내기
+        //콜라이더 테두리 스폰 위치
+        if (Input.GetKey(KeyCode.Space))
+        {
+            Transform mobParent = ObjectPool.Instance.transform.Find("MobPool");
+            var mob = LeanPool.Spawn(mobList[mobNum], SpawnPos(), Quaternion.identity, mobParent); //몬스터 생성
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기
+        if (other.CompareTag("Enemy") && other.gameObject.activeSelf)
+        {
+            Transform originParent = other.transform.parent; //원래 부모 기억
+
+            other.transform.parent = transform; //몹 스포너로 부모 지정
+            other.transform.localPosition = -other.transform.localPosition; // 내부 포지션 역전시키기
+
+            other.transform.parent = originParent; //원래 부모로 복귀
+        }
+    }
+
+    Vector2 SpawnPos(){
+        float spawnPosX = Random.Range(col.bounds.min.x, col.bounds.max.x);
+        float spawnPosY = Random.Range(col.bounds.min.y, col.bounds.max.y);
+        int spawnSide = Random.Range(0, 4);
+
+        // 스폰될 모서리 방향
+        switch (spawnSide)
+        {            
+            case 0: spawnPosY = col.bounds.max.y;
+            break;
+
+            case 1: spawnPosX = col.bounds.max.x;
+            break;
+
+            case 2: spawnPosY = col.bounds.min.y;
+            break;
+            
+            case 3: spawnPosX = col.bounds.min.x;
+            break;
+        }
+
+        return new Vector2(spawnPosX, spawnPosY);
     }
 }

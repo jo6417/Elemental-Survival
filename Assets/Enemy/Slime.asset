@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b36e8e6f3eacea141abb49c266bb98f6, type: 3}
+  m_Name: Slime
+  m_EditorClassIdentifier: 
+  EnemyID: E_001
+  EnemyName: Slime
+  icon: {fileID: 0}
+  EnemyPrefab: {fileID: 0}
+  atkPower: 1
+  dropRate: 0.5
+  hitDelay: 0.2
+  HpMax: 2
+  knockbackForce: 1
+  Earth_Type: 0
+  Fire_Type: 0
+  Life_Type: 0
+  Lightning_Type: 0
+  Water_Type: 0
+  Wind_Type: 0
