@@ -32,7 +32,8 @@ public class EnemyAI : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
     }
 
-    void Initial(){
+    void Initial()
+    {
         hitCount = 0; //데미지 쿨타임 초기화
         HpNow = enemy.HpMax; //체력 초기화
         sprite.color = Color.white; //스프라이트 색깔 초기화
@@ -56,11 +57,6 @@ public class EnemyAI : MonoBehaviour
             // 적 색깔 변화
             sprite.color = Color.gray;
 
-            // 반대로 이동
-            // Vector2 dir = transform.position - player.position;
-            Vector2 dir = Vector2.zero;
-            rigid.velocity = dir.normalized * enemy.knockbackForce;
-
             // 경직 시간 카운트
             hitCount -= Time.deltaTime;
         }
@@ -74,18 +70,18 @@ public class EnemyAI : MonoBehaviour
             // print("마법과 충돌");
 
             // 체력 감소
-            Magic magic = other.GetComponent<MagicProjectile>().magic;
+            MagicInfo magic = MagicDB.Instance.GetMagicByID(other.GetComponent<MagicProjectile>().magicID);
             Damaged(magic);
         }
     }
 
-    void Damaged(Magic magic)
+    void Damaged(MagicInfo magic)
     {
         //크리티컬 확률 추가
         bool isCritical = magic.criticalRate >= Random.value ? true : false;
         float criticalAtk = isCritical ? 1.5f : 1f;
         int damage = (int)(Random.Range(magic.damage * 0.8f, magic.damage * 1.2f) * criticalAtk);
-        Mathf.Clamp(damage, 1, damage);
+        damage = Mathf.Clamp(damage, 1, damage);
 
         // 체력 감소
         HpNow -= damage;
@@ -93,7 +89,11 @@ public class EnemyAI : MonoBehaviour
         // 경직 시간 추가
         hitCount = enemy.hitDelay;
 
-        //TODO 마법 넉백 수치만큼 뒤로 밀기
+        // 넉백 효과
+        if (magic.knockbackForce > 0 && gameObject.activeSelf)
+        {
+            StartCoroutine(Knockback(magic.knockbackForce));
+        }
 
         // 데미지 UI 띄우기
         Transform damageCanvas = ObjectPool.Instance.transform.Find("OverlayUI");
@@ -105,9 +105,10 @@ public class EnemyAI : MonoBehaviour
         if (isCritical)
         {
             dmgTxt.fontSize = 120;
-            dmgTxt.color = new Color(1, 100/255, 100/255);
+            dmgTxt.color = new Color(1, 100 / 255, 100 / 255);
         }
-        else{
+        else
+        {
             dmgTxt.fontSize = 100;
             dmgTxt.color = Color.white;
         }
@@ -122,6 +123,17 @@ public class EnemyAI : MonoBehaviour
             Dead();
     }
 
+    IEnumerator Knockback(float knockbackForce)
+    {
+        // 반대로 이동
+        Vector2 dir = transform.position - player.position;
+        // Vector2 dir = Vector2.zero;
+        // rigid.velocity = dir.normalized * knockbackForce;
+        rigid.AddForce(dir.normalized * knockbackForce * 0.1f);
+
+        yield return null;
+    }
+
     void Dead()
     {
         if (enemy.dropRate >= Random.Range(0, 1))
@@ -132,9 +144,9 @@ public class EnemyAI : MonoBehaviour
 
         // 몬스터 초기화
         Initial();
-        
+
         // 몬스터 비활성화
-        LeanPool.Despawn(transform);
+        LeanPool.Despawn(gameObject);
     }
 
     // 갖고있는 아이템 드랍

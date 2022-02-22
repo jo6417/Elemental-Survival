@@ -34,6 +34,8 @@ public class PlayerManager : MonoBehaviour
     public GameObject mobSpawner;
     private Animator animator;
     private SpriteRenderer sprite;
+    public GameObject levelupPopup;
+    public GameObject OverlayUI;
 
     [Header("Stat")] //기본 스탯
     public float hpMax = 20; // 최대 체력
@@ -54,7 +56,7 @@ public class PlayerManager : MonoBehaviour
     private bool isDamage = false;
 
     [Header("Buff")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
-    public int projectileNum = 0; // 투사체 개수
+    public int projectileNum = 1; // 투사체 개수
     public float power = 1; //마법 공격력
     public float armor = 1; //방어력
     public float rateFire = 1; //마법 공격속도
@@ -65,7 +67,8 @@ public class PlayerManager : MonoBehaviour
     public float expGain = 1; //경험치 획득량
     public float moneyGain = 1; //원소젬 획득량
 
-    [Header("Elemental")]
+    [Header("Item")]
+    public List<int> hasMagics = new List<int>(); //플레이어가 가진 마법
     public int Earth_Gem = 0;
     public int Fire_Gem = 0;
     public int Life_Gem = 0;
@@ -93,6 +96,8 @@ public class PlayerManager : MonoBehaviour
     {
         //카메라 따라오기
         Camera.main.transform.position = transform.position + new Vector3(0, 0, -10);
+        //오버레이 UI 캔버스 따라오기
+        OverlayUI.transform.position = transform.position;
         //몬스터 스포너 따라오기
         mobSpawner.transform.position = transform.position;
 
@@ -182,16 +187,42 @@ public class PlayerManager : MonoBehaviour
         if (hpNow <= 0)
         {
             // print("Game Over");
-            //TODO 시간 멈추기
-            //TODO 게임오버 씬 띄우기
+            // Dead();
         }
 
         UIManager.Instance.updateHp(); //체력 UI 업데이트        
     }
 
-    public void AddGem(Item item)
+    void Dead(){
+        // 시간 멈추기
+        Time.timeScale = 0;
+        
+        //TODO 게임오버 씬 띄우기
+        // gameOverUI.SetActive(true);
+    }
+
+    public void GetItem(ItemInfo item)
     {
-        //TODO 어떤 원소든지 경험치 증가
+        // 아이템이 젬 타입일때
+        if (item.itemType == "Gem")
+        {
+            //플레이어 소지 젬 갯수 올리기
+            AddGem(item);
+        }
+
+        // 아이템이 스크롤일때
+        if (item.itemType == "Scroll")
+        {            
+            // print("아이템 합성");
+
+            //TODO 아이템 합성 메뉴 띄우기
+            UIManager.Instance.ScrollMenu();
+        }
+    }
+
+    public void AddGem(ItemInfo item)
+    {
+        // 어떤 원소든지 경험치 증가
         ExpNow++;
 
         //경험치 다 찼을때
@@ -201,27 +232,27 @@ public class PlayerManager : MonoBehaviour
             Levelup();
         }
 
-        if (item.Earth_Type)
+        if (item.earth)
         {
             Earth_Gem++;
         }
-        else if (item.Fire_Type)
+        else if (item.fire)
         {
             Fire_Gem++;
         }
-        else if (item.Life_Type)
+        else if (item.life)
         {
             Life_Gem++;
         }
-        else if (item.Lightning_Type)
+        else if (item.lightning)
         {
             Lightning_Gem++;
         }
-        else if (item.Water_Type)
+        else if (item.water)
         {
             Water_Gem++;
         }
-        else if (item.Wind_Type)
+        else if (item.wind)
         {
             Wind_Gem++;
         }
@@ -244,11 +275,11 @@ public class PlayerManager : MonoBehaviour
         //경험치 최대치 갱신
         ExpMax = Level * Level + 5;
 
-        //TODO 시간 멈추기
-        // Time.timeScale = 0;
+        // 시간 멈추기
+        Time.timeScale = 0;
 
-        //TODO 팝업 선택메뉴 띄우기
-        
+        // 팝업 선택메뉴 띄우기
+        levelupPopup.SetActive(true);
     }
 
 }
