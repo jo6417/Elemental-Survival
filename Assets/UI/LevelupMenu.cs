@@ -13,18 +13,10 @@ public class LevelupMenu : MonoBehaviour
     public GameObject elementIcon; //마법 재료 원소 아이콘 프리팹
     public GameObject elementPlus; //마법 재료 사이 플러스 아이콘 프리팹
 
-    // public List<MagicInfo> magicDB = null; //마법 정보 DB
-    // public Sprite[] magicIcon = null; //마법 아이콘 리스트
-    // public GameObject[] magicPrefab = null; //마법 프리팹 리스트
-
     List<MagicInfo> notHasMagic = new List<MagicInfo>(); //플레이어가 보유하지 않은 마법 리스트
 
     void Awake()
     {
-        // magicDB = MagicDB.Instance.magicDB;
-        // magicIcon = MagicDB.Instance.magicIcon;
-        // magicPrefab = MagicDB.Instance.magicPrefab;
-
         // 보유하지 않은 마법만 DB에서 파싱
         notHasMagic.Clear();
         notHasMagic = MagicDB.Instance.magicDB.FindAll(x => x.hasMagic == false);
@@ -35,16 +27,53 @@ public class LevelupMenu : MonoBehaviour
     {
         // 레벨업 메뉴에 마법 정보 넣기
         if (MagicDB.Instance.loadDone)
-            SetMenu();
+            SetArtifact();
     }
 
     private void Update()
     {
-        if (MagicDB.Instance.loadDone && Input.GetKeyDown(KeyCode.Mouse0))
+
+    }
+
+    void SetArtifact()
+    {
+        //TODO 보유한 아티팩트라도 상관 없음, 중첩 효과
+
+        //아이템 타입이 아티팩트인 모든아이템 리스트
+        List<ItemInfo> artifactList = ItemDB.Instance.itemDB.FindAll(x => x.itemType == "Artifact");
+        // 랜덤 아티팩트ID 3가지 뽑기
+        int[] randomIDs = RandomArtifactIndex(artifactList);
+
+        // 고정된 3개 아티팩트 버튼에 정보 (아티팩트ID, 아이콘, 등급색깔, 이름, 설명)
+        for (int i = 0; i < randomIDs.Length; i++)
         {
-            // 레벨업 메뉴에 마법 정보 넣기
-            // SetMenu();
+            int itmeID = randomIDs[i];
+            ItemInfo item = ItemDB.Instance.GetItemByID(randomIDs[i]);
+            Transform magicBtnObj = magicBtnParent.transform.GetChild(i); //마법 버튼 UI
+
+            // 아티팩트 ID, 버튼타입 넣기
+            MagicBtn magicBtn = magicBtnObj.GetComponent<MagicBtn>();
+            magicBtn.btnType = MagicBtn.BtnType.itemBtn;
+            magicBtn.ID = itmeID;
+
+            // 아티팩트 아이콘 넣기
+            Image icon = magicBtnObj.Find("Background/Icon").GetComponent<Image>();
+            //! 마법 아이콘 스프라이트 그려지면 0에서 num으로 바꾸기
+            icon.sprite = ItemDB.Instance.itemIcon.Find(x => x.name == item.itemName.Replace(" ", "") + "_Icon");
+
+            // 아티팩트 등급 넣기
+            Image btnBackground = magicBtnObj.GetComponent<Image>();
+            btnBackground.color = MagicDB.Instance.gradeColor[item.grade - 1];
+
+            // 아티팩트 이름 넣기
+            Text name = magicBtnObj.Find("Background/Descript/Name").GetComponent<Text>();
+            name.text = item.itemName;
+
+            // 아티팩트 설명 넣기
+            Text descript = magicBtnObj.Find("Background/Descript/Descript").GetComponent<Text>();
+            descript.text = item.description;
         }
+        //TODO 플레이어가 보유하지 않은 아이템은 New Item 표시
     }
 
     void SetMenu()
@@ -68,12 +97,12 @@ public class LevelupMenu : MonoBehaviour
                 Transform magicBtn = magicBtnParent.transform.GetChild(i); //마법 버튼 UI
 
                 // 마법 ID 넣기
-                magicBtn.GetComponent<MagicBtn>().magicID = notHasMagic[num].id;
+                magicBtn.GetComponent<MagicBtn>().ID = notHasMagic[num].id;
 
                 // 마법 아이콘 넣기
                 Image icon = magicBtn.Find("Background/MagicIcon").GetComponent<Image>();
                 //! 마법 아이콘 스프라이트 그려지면 0에서 num으로 바꾸기
-                icon.sprite = MagicDB.Instance.magicIcon.Find(x => x.name == notHasMagic[0].magicName.Replace(" ","") + "_Icon");
+                icon.sprite = MagicDB.Instance.magicIcon.Find(x => x.name == notHasMagic[0].magicName.Replace(" ", "") + "_Icon");
 
                 // 마법 등급 넣기
                 Image btnBackground = magicBtn.GetComponent<Image>();
@@ -121,6 +150,46 @@ public class LevelupMenu : MonoBehaviour
                 descript.text = notHasMagic[num].description;
             }
         }
+    }
+
+    //랜덤 인덱스 3가지 뽑기
+    int[] RandomArtifactIndex(List<ItemInfo> dbList)
+    {
+        //모든 아이템 인덱스를 넣을 리스트
+        List<int> randomIndex = new List<int>();
+
+        //id 모두 넣기
+        for (int i = 0; i < dbList.Count; i++)
+        {
+            randomIndex.Add(dbList[i].id);
+        }
+
+        //랜덤 인덱스 3개를 넣을 배열
+        int[] randomNum = new int[3];
+
+        for (int i = 0; i < 3; i++)
+        {
+            // 획득 가능한 마법 없을때
+            if (randomIndex.Count == 0)
+            {
+                randomNum[i] = -1;
+            }
+            else
+            {
+                //인덱스 리스트에서 랜덤한 난수 생성
+                int j = Random.Range(0, randomIndex.Count);
+                int itemID = randomIndex[j];
+                // print(magicIndex.Count + " : " + index);
+
+                //랜덤 인덱스 숫자 넣기
+                randomNum[i] = itemID;
+                //이미 선택된 인덱스 제거
+                randomIndex.RemoveAt(j);
+            }
+        }
+
+        //인덱스 리스트 리턴
+        return randomNum;
     }
 
     //랜덤 인덱스 3가지 뽑기

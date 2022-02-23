@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
+using DG.Tweening;
 
 public class ItemManager : MonoBehaviour
 {
@@ -11,6 +12,14 @@ public class ItemManager : MonoBehaviour
     Collider2D col;
     Rigidbody2D rigid;
     bool isGet = false; //플레이어가 획득했는지
+
+    private void OnEnable() {
+        // 아이템 획득여부 초기화
+        isGet = false;
+        // 콜라이더 초기화
+        if(col)
+        col.enabled = true;
+    }
 
     private void Start()
     {
@@ -28,52 +37,53 @@ public class ItemManager : MonoBehaviour
         // 플레이어와 충돌 했을때
         if (other.CompareTag("Player"))
         {
-            print("플레이어 아이템 획득");
+            // print("플레이어 아이템 획득");
             col.enabled = false; //이중 충돌 방지
             // 플레이어에게 날아가기
-            StartCoroutine(AbsorbItem());
+            StartCoroutine(GotoPlayer());
         }
     }
 
-    IEnumerator AbsorbItem()
+    IEnumerator GotoPlayer()
     {
         // 아이템 위치부터 플레이어 쪽으로 방향 벡터
         Vector2 dir = player.transform.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
-        rigid.velocity = -dir.normalized * 10f;
+        rigid.DOMove((Vector2)player.transform.position - dir.normalized * 5f, 0.3f);
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.3f);
 
-        //속도 점점 빨라지게 추가 계수
-        float addSpeed = 0.5f;
+        float itemSpeed = 0.5f;
 
         // 플레이어 방향으로 날아가기, 아이템 사라질때까지
         while (!isGet)
         {
-            //플레이어 방향
-            dir = player.transform.position - transform.position;
-            addSpeed += Time.deltaTime;
-            addSpeed = Mathf.Clamp(addSpeed, 0, 1.2f);
+            itemSpeed -= Time.deltaTime;
+            itemSpeed = Mathf.Clamp(itemSpeed, 0.1f, 1f);
 
-            // 플레이어 이동 속도보다 빠르게 따라오기
-            rigid.velocity = dir.normalized * PlayerManager.Instance.moveSpeed * addSpeed;
-
-            yield return null;
+            rigid.DOMove(player.transform.position, itemSpeed);
 
             //거리가 0.5f 이하일때 획득
-            if (dir.magnitude <= 0.5f)
+            if (Vector2.Distance(player.transform.position, transform.position) <= 0.5f)
             {
-                isGet = true;
-
-                PlayerManager.Instance.GetItem(item);
-                //아이템 속도 초기화
-                rigid.velocity = Vector2.zero;
-
-                //아이템 비활성화
-                LeanPool.Despawn(transform);
+                GetItem();
                 break;
             }
+
+            yield return null;
         }
+    }
+
+    void GetItem()
+    {
+        isGet = true;
+
+        PlayerManager.Instance.GainItem(item);
+        //아이템 속도 초기화
+        rigid.velocity = Vector2.zero;
+
+        //아이템 비활성화
+        LeanPool.Despawn(transform);
     }
 }

@@ -9,6 +9,7 @@ public class ItemInfo
 {
     public bool hasItem = false; //플레이어가 갖고 있는 아이템인지
     public int id; //고유 아이디
+    public int grade; //아이템 등급
     public string itemName; //아이템 이름
     public string itemType; //아이템 타입 (Gem, Heart, Scroll, Artifact, etc)
     // 6원소 타입
@@ -20,9 +21,10 @@ public class ItemInfo
     public bool wind;    
     public string description; //아이템 설명
 
-    public ItemInfo(int id, string itemName, string itemType, bool earth, bool fire, bool life, bool lightning, bool water, bool wind, string description)
+    public ItemInfo(int id, int grade, string itemName, string itemType, bool earth, bool fire, bool life, bool lightning, bool water, bool wind, string description)
     {
         this.id = id;
+        this.grade = grade;
         this.itemName = itemName;
         this.itemType = itemType;
 
@@ -108,7 +110,7 @@ public class ItemDB : MonoBehaviour
                 var item = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<ItemInfo>에 넣기
-                itemDB.Add(new ItemInfo(item["id"], item["name"], item["itemType"], 
+                itemDB.Add(new ItemInfo(item["id"], item["grade"], item["name"], item["itemType"], 
                 item["earth"], item["fire"], item["life"], item["lightning"], item["water"], item["wind"], 
                 item["description"]));
             }

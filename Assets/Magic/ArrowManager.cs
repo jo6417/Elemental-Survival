@@ -69,12 +69,12 @@ public class ArrowManager : MonoBehaviour
         PlayerManager.Instance.transform.Find("BasicMagicRange").transform.localScale = new Vector2(range / 2, range / 2);
 
         // 관통 횟수 만큼 공격
-        int atkNum = PlayerManager.Instance.projectileNum;
+        int atkNum = PlayerManager.Instance.projectileNum + 1;
 
         for (int i = 0; i < atkNum; i++)
         {
-            // 마크한 적의 위치
-            Vector2 enemyPos = markEnemyPos(range);
+            // 마크한 적의 위치, 마지막은 플레이어 위치
+            Vector2 enemyPos = i == atkNum - 1 ? (Vector2)PlayerManager.Instance.transform.position : markEnemyPos(range);
 
             //마크 위치가 (0,0)이면 공격 취소
             if (enemyPos != Vector2.zero)

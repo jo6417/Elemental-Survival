@@ -69,6 +69,7 @@ public class PlayerManager : MonoBehaviour
 
     [Header("Item")]
     public List<int> hasMagics = new List<int>(); //플레이어가 가진 마법
+    public List<int> hasItems = new List<int>(); //플레이어가 가진 아이템
     public int Earth_Gem = 0;
     public int Fire_Gem = 0;
     public int Life_Gem = 0;
@@ -96,8 +97,7 @@ public class PlayerManager : MonoBehaviour
     {
         //카메라 따라오기
         Camera.main.transform.position = transform.position + new Vector3(0, 0, -10);
-        //오버레이 UI 캔버스 따라오기
-        OverlayUI.transform.position = transform.position;
+        
         //몬스터 스포너 따라오기
         mobSpawner.transform.position = transform.position;
 
@@ -201,8 +201,9 @@ public class PlayerManager : MonoBehaviour
         // gameOverUI.SetActive(true);
     }
 
-    public void GetItem(ItemInfo item)
+    public void GainItem(ItemInfo item)
     {
+        // print(item.itemType + " : " + item.itemName);
         // 아이템이 젬 타입일때
         if (item.itemType == "Gem")
         {

@@ -7,21 +7,33 @@ public class EnemySpawn : MonoBehaviour
 {
     public GameObject[] mobList = null;
     Collider2D col;
+    Transform mobParent;
+    public int mobNumMax; //최대 몬스터 수
+    public int mobNumNow; //현재 몬스터 수
 
     void Start()
     {
         col = GetComponent<BoxCollider2D>();
+        mobParent = ObjectPool.Instance.transform.Find("MobPool");
     }
 
     void Update()
     {
+        //TODO 플레이어 레벨에 따라 몬스터 등급 및 수량 바꾸기
         //몬스터 리스트에서 랜덤 넘버
         int mobNum = Random.Range(0, mobList.Length);
 
-        //콜라이더 테두리 스폰 위치
+        mobNumNow = mobParent.childCount;
+
+        // 몬스터 수 유지, 자동 스폰
+        if(mobNumNow < mobNumMax){
+            // mobNumNow++; //현재 몬스터 수 증가
+            var mob = LeanPool.Spawn(mobList[mobNum], SpawnPos(), Quaternion.identity, mobParent); //몬스터 생성
+        }
+        
+
         if (Input.GetKey(KeyCode.Space))
-        {
-            Transform mobParent = ObjectPool.Instance.transform.Find("MobPool");
+        {            
             var mob = LeanPool.Spawn(mobList[mobNum], SpawnPos(), Quaternion.identity, mobParent); //몬스터 생성
         }
     }
@@ -39,6 +51,7 @@ public class EnemySpawn : MonoBehaviour
         }
     }
 
+    //콜라이더 테두리 스폰 위치
     Vector2 SpawnPos(){
         float spawnPosX = Random.Range(col.bounds.min.x, col.bounds.max.x);
         float spawnPosY = Random.Range(col.bounds.min.y, col.bounds.max.y);
