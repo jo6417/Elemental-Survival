@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 11400000, guid: 05e4e9f72ba945e49b58d987b3e8bd95, type: 2}
+  enemyName: 
   speed: 1
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
     type: 3}
@@ -58,7 +58,6 @@ MonoBehaviour:
   - {fileID: 1238164818883177754, guid: 7f418cb9e55249f448f2bc0b72f64b7a, type: 3}
   - {fileID: 1238164818883177754, guid: 66d941081ed66fc44a4cc18722c94d7e, type: 3}
   - {fileID: 1238164818883177754, guid: 9c0a1ffea5c7e9d4598050d164f06d70, type: 3}
-  - {fileID: 3006681891783414290, guid: 4d81cdec10de5c24791d3020a5c07e71, type: 3}
   hitCount: 0
   HpNow: 1
 --- !u!212 &2641671860505543948

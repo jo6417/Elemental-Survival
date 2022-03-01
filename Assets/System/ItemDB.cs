@@ -7,26 +7,60 @@ using UnityEngine.Networking;
 
 public class ItemInfo
 {
-    public bool hasItem = false; //플레이어가 갖고 있는 아이템인지
+    public int hasNum = 1; //몇개 갖고 있는지
+
     public int id; //고유 아이디
     public int grade; //아이템 등급
     public string itemName; //아이템 이름
     public string itemType; //아이템 타입 (Gem, Heart, Scroll, Artifact, etc)
-    // 6원소 타입
-    public bool earth;
-    public bool fire;
-    public bool life;
-    public bool lightning;
-    public bool water;
-    public bool wind;    
     public string description; //아이템 설명
+    public string priceType; //지불 원소 종류
+    public int price; //아이템 가격
+    
+    [Header("Buff")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
+    public int projectileNum = 0; // 투사체 개수
+    public float hpMax = 1; //최대 체력
+    public float power = 1; //마법 공격력
+    public float armor = 1; //방어력
+    public float moveSpeed = 1; //이동 속도
+    public float rateFire = 1; //마법 공격속도
+    public float coolTime = 1; //마법 쿨타임
+    public float duration = 1; //마법 지속시간
+    public float range = 1; //마법 범위
+    public float luck = 1; //행운
+    public float expGain = 1; //경험치 획득량
+    public float moneyGain = 1; //원소젬 획득량
 
-    public ItemInfo(int id, int grade, string itemName, string itemType, bool earth, bool fire, bool life, bool lightning, bool water, bool wind, string description)
+    // 원소 공격력 추가
+    public float earth;
+    public float fire;
+    public float life;
+    public float lightning;
+    public float water;
+    public float wind;
+
+    public ItemInfo(int id, int grade, string itemName, string itemType, string description, string priceType, int price, int projectileNum, float hpMax, float power, float armor, float moveSpeed, float rateFire, float coolTime, float duration, float range, float luck, float expGain, float moneyGain, float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
         this.grade = grade;
         this.itemName = itemName;
         this.itemType = itemType;
+        this.description = description;
+        this.priceType = priceType;
+        this.price = price;
+
+        this.projectileNum = projectileNum;
+        this.hpMax = hpMax;
+        this.power = power;
+        this.armor = armor;
+        this.moveSpeed = moveSpeed;
+        this.rateFire = rateFire;
+        this.coolTime = coolTime;
+        this.duration = duration;
+        this.range = range;
+        this.luck = luck;
+        this.expGain = expGain;
+        this.moneyGain = moneyGain;
 
         this.earth = earth;
         this.fire = fire;
@@ -34,8 +68,6 @@ public class ItemInfo
         this.lightning = lightning;
         this.water = water;
         this.wind = wind;
-        
-        this.description = description;
     }
 }
 
@@ -110,16 +142,25 @@ public class ItemDB : MonoBehaviour
                 var item = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<ItemInfo>에 넣기
-                itemDB.Add(new ItemInfo(item["id"], item["grade"], item["name"], item["itemType"], 
-                item["earth"], item["fire"], item["life"], item["lightning"], item["water"], item["wind"], 
-                item["description"]));
+                itemDB.Add(new ItemInfo
+                (item["id"], item["grade"], item["name"], item["itemType"], item["description"], item["priceType"], item["price"], 
+                item["projectileNum"], item["hpMax"], item["power"], item["armor"], item["moveSpeed"], 
+                item["rateFire"], item["coolTime"], item["duration"], item["range"], item["luck"], item["expGain"], item["moneyGain"], 
+                item["earth"], item["fire"], item["life"], item["lightning"], item["water"], item["wind"]
+                ));
             }
 
             // foreach (var item in itemDB)
             // {
             //     print(
             //     " id : " + item.id + " / " +
-            //     " name : " + item.itemName + " / "
+            //     " name : " + item.itemName + " / " + 
+            //     " earth : " + item.earth + " / " + 
+            //     " fire : " + item.fire + " / " + 
+            //     " life : " + item.life + " / " + 
+            //     " lightning : " + item.lightning + " / " + 
+            //     " water : " + item.water + " / " + 
+            //     " wind : " + item.wind + " / "
             //     );
             // }
         }
@@ -140,6 +181,12 @@ public class ItemDB : MonoBehaviour
     {
         ItemInfo item = itemDB.Find(x => x.id == id);
         return item;
+    }
+
+    public string GetItemNameByID(int id)
+    {
+        ItemInfo item = itemDB.Find(x => x.id == id);
+        return item.itemName;
     }
 
     public string GetTypeByID(int id)

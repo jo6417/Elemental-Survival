@@ -16,12 +16,10 @@ public class MagicBtn : MonoBehaviour
 
         if (btnType == BtnType.itemBtn)
         {
-            // 플레이어 보유 아이템에 해당 magicID 추가하기
-            PlayerManager.Instance.hasItems.Add(ID);
-            // 아이템 DB에서 가진 아이템 true로 변경
-            ItemDB.Instance.GetItemByID(ID).hasItem = true;
+            ItemInfo item = ItemDB.Instance.GetItemByID(ID);
 
-            //TODO 플레이어 스탯 반영하기
+            // 아이템 획득
+            PlayerManager.Instance.GainItem(item);
         }
         else if (btnType == BtnType.magicBtn)
         {

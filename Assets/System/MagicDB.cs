@@ -86,8 +86,8 @@ public class MagicDB : MonoBehaviour
 
     void Awake()
     {
-        Color[] _gradeColor = {RGBAToHex("4FF84C"), RGBAToHex("3EC1FF"), RGBAToHex("CD45FF"),
-        RGBAToHex("FFFF00"), RGBAToHex("FFAA00"), RGBAToHex("FF3310")};
+        Color[] _gradeColor = {RGBAToHex("FFFFFF"), RGBAToHex("4FF84C"), RGBAToHex("3EC1FF"), RGBAToHex("CD45FF"),
+        RGBAToHex("FF3310"), RGBAToHex("FFFF00")};
         gradeColor = _gradeColor;
         Color[] _elementColor = {RGBAToHex("C88C5E"), RGBAToHex("FF5B5B"), RGBAToHex("5BFF64"),
         RGBAToHex("FFF45B"), RGBAToHex("739CFF"), RGBAToHex("5BFEFF")};

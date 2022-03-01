@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainBtn : MonoBehaviour
+public class MainMenuBtn : MonoBehaviour
 {
     public GameObject characterSelectUI;
     public GameObject shopUI;

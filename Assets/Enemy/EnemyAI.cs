@@ -7,8 +7,11 @@ using DG.Tweening;
 
 public class EnemyAI : MonoBehaviour
 {
+    public EnemyInfo enemy;
+    public string enemyName;
+
     [Header("Refer")]
-    public Enemy enemy;
+    // public Enemy enemy;
     Transform player;
     public float speed;
     public GameObject damageTxt; //데미지 UI
@@ -30,12 +33,18 @@ public class EnemyAI : MonoBehaviour
         player = PlayerManager.Instance.transform;
         rigid = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
+
+        //프리팹 이름으로 아이템 정보 찾아 넣기
+        enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+        enemyName = enemy.name;
+
+        Initial();
     }
 
     void Initial()
     {
         hitCount = 0; //데미지 쿨타임 초기화
-        HpNow = enemy.HpMax; //체력 초기화
+        HpNow = enemy.hpMax; //체력 초기화
         sprite.color = Color.white; //스프라이트 색깔 초기화
         rigid.velocity = Vector2.zero; //속도 초기화
     }
@@ -118,6 +127,7 @@ public class EnemyAI : MonoBehaviour
         damageUI.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InOutBack);
         LeanPool.Despawn(damageUI, 1f);
 
+        // print(HpNow + " / " + enemy.HpMax);
         // 체력 0 이하면 죽음
         if (HpNow <= 0)
             Dead();

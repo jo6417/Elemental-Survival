@@ -114,7 +114,7 @@ public class LevelupMenu : MonoBehaviour
 
                 // 마법 속성 넣기
                 Transform elementParent = magicBtn.Find("Background/MagicDescript/Element").transform; //마법 속성 넣을 부모 찾기
-                DestoryChildren(elementParent); //모든 자식 요소 제거
+                UIManager.Instance.DestoryChildren(elementParent); //모든 자식 요소 제거
 
                 // 해당 마법의 원소 배열
                 List<string> elements = new List<string>();
@@ -261,20 +261,5 @@ public class LevelupMenu : MonoBehaviour
                 ElementalSorting(elements, magicInfo.element_B);
             }
         }
-    }
-
-    //오브젝트의 모든 자식을 제거
-    void DestoryChildren(Transform obj)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>();
-        //모든 자식 오브젝트 제거
-        if (children != null)
-            for (int j = 1; j < children.Length; j++)
-            {
-                if (children[j] != transform)
-                {
-                    Destroy(children[j].gameObject);
-                }
-            }
     }
 }
