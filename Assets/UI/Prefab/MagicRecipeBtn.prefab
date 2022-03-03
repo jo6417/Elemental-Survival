@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7578140121346494229}
   - component: {fileID: 28952582769339247}
   - component: {fileID: 5038924259099915173}
-  - component: {fileID: 2850280167593131451}
   m_Layer: 5
   m_Name: Wind
   m_TagString: Untagged
@@ -76,19 +75,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2850280167593131451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 411078102305448362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9c6d4e65d514f4b99dce1363713933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinSpeed: -50
 --- !u!1 &412882697333735958
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,7 +243,7 @@ GameObject:
   - component: {fileID: 412882697372080523}
   - component: {fileID: 412882697372080522}
   m_Layer: 5
-  m_Name: MagicRecipe
+  m_Name: MagicRecipeBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -298,7 +284,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   popupMenu: {fileID: 0}
-  magicID: 0
+  btnType: 0
+  id: 0
 --- !u!222 &412882697372080532
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -424,6 +411,7 @@ RectTransform:
   m_Children:
   - {fileID: 412882697472428416}
   - {fileID: 6692913517789365150}
+  - {fileID: 3143260828249041454}
   m_Father: {fileID: 412882697372080521}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -460,7 +448,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 5f35ef60c2c7b6441977d18d0bcdce6a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1093,7 +1081,6 @@ GameObject:
   - component: {fileID: 2178784552432841211}
   - component: {fileID: 2576990803283793792}
   - component: {fileID: 1235041235706189123}
-  - component: {fileID: 6934172920972274648}
   m_Layer: 5
   m_Name: Fire
   m_TagString: Untagged
@@ -1158,19 +1145,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6934172920972274648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1455162774747865641}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9c6d4e65d514f4b99dce1363713933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinSpeed: -50
 --- !u!1 &2930451016076079495
 GameObject:
   m_ObjectHideFlags: 0
@@ -1182,7 +1156,6 @@ GameObject:
   - component: {fileID: 1362453407287826596}
   - component: {fileID: 3810023195166055805}
   - component: {fileID: 875949788255042281}
-  - component: {fileID: 5318207908517763419}
   m_Layer: 5
   m_Name: Water
   m_TagString: Untagged
@@ -1247,19 +1220,101 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5318207908517763419
+--- !u!1 &5071151805748794252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3143260828249041454}
+  - component: {fileID: 1496976631103739383}
+  - component: {fileID: 6803550125999013747}
+  - component: {fileID: 5872290393900295861}
+  m_Layer: 5
+  m_Name: New
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3143260828249041454
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071151805748794252}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 412882697454841186}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 20}
+  m_SizeDelta: {x: 0, y: 40}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &1496976631103739383
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071151805748794252}
+  m_CullTransparentMesh: 1
+--- !u!114 &6803550125999013747
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2930451016076079495}
+  m_GameObject: {fileID: 5071151805748794252}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9c6d4e65d514f4b99dce1363713933, type: 3}
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spinSpeed: -50
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.83080506, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 61f1f084218f9414b9d9eb9d61abefcc, type: 3}
+    m_FontSize: 30
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 2
+    m_MaxSize: 50
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: New
+--- !u!114 &5872290393900295861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5071151805748794252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &6789437541306590488
 GameObject:
   m_ObjectHideFlags: 0
@@ -1352,7 +1407,6 @@ GameObject:
   - component: {fileID: 5564158072335684021}
   - component: {fileID: 3720796881068240265}
   - component: {fileID: 5391507468154447596}
-  - component: {fileID: 4024075166754019356}
   m_Layer: 5
   m_Name: Lightning
   m_TagString: Untagged
@@ -1417,19 +1471,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4024075166754019356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6896832950140125803}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9c6d4e65d514f4b99dce1363713933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinSpeed: -50
 --- !u!1 &7201085914789803698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1516,7 +1557,6 @@ GameObject:
   - component: {fileID: 6479662382930146261}
   - component: {fileID: 8326118779240884029}
   - component: {fileID: 4079968070320120842}
-  - component: {fileID: 8595105782289516465}
   m_Layer: 5
   m_Name: Earth
   m_TagString: Untagged
@@ -1581,19 +1621,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8595105782289516465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7636882379279313022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9c6d4e65d514f4b99dce1363713933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinSpeed: -50
 --- !u!1 &8025373202638053200
 GameObject:
   m_ObjectHideFlags: 0
@@ -1681,7 +1708,6 @@ GameObject:
   - component: {fileID: 2314595090899202847}
   - component: {fileID: 8983156077071207581}
   - component: {fileID: 3441019792670628777}
-  - component: {fileID: 1125020131059267283}
   m_Layer: 5
   m_Name: Life
   m_TagString: Untagged
@@ -1746,16 +1772,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1125020131059267283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8541286935516935757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9c6d4e65d514f4b99dce1363713933, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinSpeed: -50

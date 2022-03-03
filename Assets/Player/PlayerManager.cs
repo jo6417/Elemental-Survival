@@ -95,7 +95,7 @@ public class PlayerManager : MonoBehaviour
     public float wind_buff = 1;
 
     [Header("<Pocket>")]
-    public List<int> hasMagics = new List<int>(); //플레이어가 가진 마법
+    public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
     public int Earth_Gem = 0;
     public int Fire_Gem = 0;
@@ -252,25 +252,40 @@ public class PlayerManager : MonoBehaviour
         {
             // print("아티팩트 획득");
 
-            //이미 보유한 아이템일때
-            if (hasItems.Exists(x => x.id == getItem.id))
-            {
-                //보유한 아이템의 개수만 늘려주기
-                hasItems.Find(x => x.id == getItem.id).hasNum++;
-            }
-            else
             //보유하지 않은 아이템일때
+            if (!hasItems.Exists(x => x.id == getItem.id))
             {
                 // 플레이어 보유 아이템에 해당 아이템 추가하기
                 hasItems.Add(getItem);
             }
 
-            //TODO 얻은 아이템 아이콘 UI에 추가하기
-            UIManager.Instance.updateItem();
+            //보유한 아이템의 개수만 늘려주기
+            hasItems.Find(x => x.id == getItem.id).hasNum++;
+            // getItem.hasNum++;
+
+            // 보유한 모든 아이템 아이콘 갱신
+            UIManager.Instance.updateItems();
 
             // 모든 아이템 버프 갱신
             buffUpdate();
         }
+    }
+
+    public void GetMagic(MagicInfo getMagic)
+    {
+        //보유하지 않은 마법일때
+        if (!hasMagics.Exists(x => x.id == getMagic.id))
+        {
+            // 플레이어 보유 마법에 해당 마법 추가하기
+            hasMagics.Add(getMagic);
+        }
+
+        //보유한 마법의 개수 늘려주기
+        hasMagics.Find(x => x.id == getMagic.id).magicLevel++;
+        // getMagic.magicLevel++;
+
+        // 보유한 모든 마법 아이콘 갱신
+        UIManager.Instance.updateMagics();
     }
 
     void buffUpdate()

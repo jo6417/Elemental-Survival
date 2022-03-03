@@ -11,8 +11,15 @@ public class CastMagic : MonoBehaviour
 
     void Update()
     {
+        //플레이어 보유중인 모든 마법 ID
+        List<int> hasMagicIDs = new List<int>();
+        foreach (var magic in PlayerManager.Instance.hasMagics)
+        {
+            hasMagicIDs.Add(magic.id);
+        }
+
         //미사용 중인 마법 있으면
-        List<int> notCastMagic = PlayerManager.Instance.hasMagics.Except(nowCastMagic).ToList();
+        List<int> notCastMagic = hasMagicIDs.Except(nowCastMagic).ToList();
         if (notCastMagic.Count != 0 && MagicDB.Instance.loadDone)
         {
             foreach (var magicID in notCastMagic)

@@ -53,7 +53,8 @@ public class UIManager : MonoBehaviour
     public Text WindGem_UI;
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
-    public Transform hasItemsUI; //플레이어 현재 소지 아이템 표시 UI
+    public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
+    public Transform hasMagicsUI; //플레이어 현재 소지한 모든 마법 UI
 
 
     private void Start()
@@ -123,11 +124,11 @@ public class UIManager : MonoBehaviour
         WindGem_UI.text = "x " + PlayerManager.Instance.Wind_Gem.ToString();
     }
 
-    public void updateItem()
+    public void updateItems()
     {
         //기존 아이콘 모두 없에기
         Image[] children = hasItemsUI.GetComponentsInChildren<Image>();
-        print(children.Length);
+        // print(children.Length);
 
         //모든 자식 오브젝트 비활성화
         if (children != null)
@@ -138,7 +139,7 @@ public class UIManager : MonoBehaviour
 
         foreach (var item in PlayerManager.Instance.hasItems)
         {
-            print(item.itemName + " x" + item.hasNum);
+            // print(item.itemName + " x" + item.hasNum);
 
             //아이템 아이콘 오브젝트 생성
             GameObject icon = LeanPool.Spawn(hasItemIcon, hasItemsUI.position, Quaternion.identity, hasItemsUI);
@@ -158,7 +159,35 @@ public class UIManager : MonoBehaviour
             {
                 amount.gameObject.SetActive(false);
             }
+        }
+    }
 
+    public void updateMagics()
+    {
+        //기존 아이콘 모두 없에기
+        Image[] children = hasMagicsUI.GetComponentsInChildren<Image>();
+        // print(children.Length);
+
+        //모든 자식 오브젝트 비활성화
+        if (children != null)
+            for (int j = 0; j < children.Length; j++)
+            {
+                LeanPool.Despawn(children[j].gameObject);
+            }
+
+        foreach (var magic in PlayerManager.Instance.hasMagics)
+        {
+            //아이템 아이콘 오브젝트 생성
+            GameObject icon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
+
+            //스프라이트 넣기
+            icon.GetComponent<Image>().sprite =
+            MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+
+            //아이템 개수 넣기, 2개 이상부터 표시
+            Text amount = icon.GetComponentInChildren<Text>(true);
+            amount.gameObject.SetActive(true);
+            amount.text = "Lev." + magic.magicLevel.ToString();
         }
     }
 
@@ -212,7 +241,7 @@ public class UIManager : MonoBehaviour
     }
 
     //오브젝트의 모든 자식을 제거
-    public void DestoryChildren(Transform obj)
+    public void DestroyChildren(Transform obj)
     {
         Transform[] children = obj.GetComponentsInChildren<Transform>();
         //모든 자식 오브젝트 제거

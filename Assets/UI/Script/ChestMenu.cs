@@ -16,8 +16,7 @@ public class ChestMenu : MonoBehaviour
     public Sprite chestBody_Open;
     public Button openBtn;
 
-    public GameObject vendMachineImg; //자판기 이미지
-    public GameObject slotMachineImg; //슬롯머신 이미지
+    public GameObject prize; //상품 이미지
 
     public int[] test;
 
@@ -33,8 +32,7 @@ public class ChestMenu : MonoBehaviour
         //버튼 상호작용 초기화
         openBtn.interactable = true;
         //상자 안에서 올라올 상품 이미지 초기화
-        vendMachineImg.SetActive(false);
-        slotMachineImg.SetActive(false);
+        prize.SetActive(false);
     }
 
     private void Start() {
@@ -70,31 +68,30 @@ public class ChestMenu : MonoBehaviour
     }
 
     IEnumerator RisePrize(){
-        GameObject prize = null;
         GameObject popupUI = null;
 
         //상품 랜덤 선택
         int index = RandomPick();
 
-        //! test
+        //! test 0으로 고정됨!
         index = 0;
         
         switch (index)
         {
             case 0:
-            prize = vendMachineImg;
             popupUI = UIManager.Instance.vendMachineUI;
             break;
 
             case 1:
-            prize = slotMachineImg;
             popupUI = UIManager.Instance.slotMachineUI;
             break;
         }
 
         //상품 오브젝트 활성화 및 애니메이션 재생
         prize.SetActive(true);
-        yield return new WaitForSeconds(1f); //상품 애니메이션 대기
+        
+        yield return new WaitForSecondsRealtime(0.5f); //상품 애니메이션 대기
+        
         prize.SetActive(false);
 
         //오브젝트 따라 팝업 띄우기
@@ -102,6 +99,8 @@ public class ChestMenu : MonoBehaviour
 
         //상자 팝업 닫기
         gameObject.SetActive(false);
+
+        yield return null;
     }
 
     int RandomPick(){        

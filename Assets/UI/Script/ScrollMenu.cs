@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Lean.Pool;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MagicCombineMenu : MonoBehaviour
+public class ScrollMenu : MonoBehaviour
 {
     public GameObject noMagicText; //합성 가능한 마법 없다는 텍스트
     public GameObject magicRecipeBtn; //마법 합성 버튼
@@ -22,25 +23,43 @@ public class MagicCombineMenu : MonoBehaviour
     {
         // 보유하지 않은 마법만 DB에서 파싱
         notHasMagic.Clear();
-        notHasMagic = MagicDB.Instance.magicDB.FindAll(x => x.hasMagic == false);
+        notHasMagic = MagicDB.Instance.magicDB.FindAll(x => x.magicLevel == 0);
 
         //오브젝트의 자식 모두 제거
-        DestroyChildren(recipeParent.transform);
+        UIManager.Instance.DestroyChildren(recipeParent.transform);
 
         // 플레이어 보유중인 마법 참조
-        List<int> playerMagics = PlayerManager.Instance.hasMagics;
+        List<MagicInfo> playerMagics = PlayerManager.Instance.hasMagics;
 
         // 마법DB에서 재료 둘다 갖고 있는 마법 찾기
         List<MagicInfo> combineMagics = MagicDB.Instance.magicDB.FindAll(x =>
         MagicDB.Instance.GetMagicByName(x.element_A) != null &&
         MagicDB.Instance.GetMagicByName(x.element_B) != null &&
-        playerMagics.Exists(y => y == MagicDB.Instance.GetMagicByName(x.element_A).id) &&
-        playerMagics.Exists(y => y == MagicDB.Instance.GetMagicByName(x.element_B).id)
+        playerMagics.Exists(y => y == MagicDB.Instance.GetMagicByName(x.element_A)) &&
+        playerMagics.Exists(y => y == MagicDB.Instance.GetMagicByName(x.element_B))
         );
+
+        // 높은 등급부터 내림차순 하기
+        string line = "";
+        foreach (var m in combineMagics)
+        {
+            line += ", " + m.grade.ToString();
+        }
+        print(line);
+
+        combineMagics.Sort((MagicInfo x, MagicInfo y) => y.grade.CompareTo(x.grade));
+
+        line = "";
+        foreach (var m in combineMagics)
+        {
+            line += ", " + m.grade.ToString();
+        }
+        print(line);
 
         // 합성 가능한 마법 없을때
         noMagicText.SetActive(false);
-        if(combineMagics.Count == 0){
+        if (combineMagics.Count == 0)
+        {
             noMagicText.SetActive(true);
             return;
         }
@@ -59,18 +78,18 @@ public class MagicCombineMenu : MonoBehaviour
             recipe.transform.parent = recipeParent.transform;
             recipe.transform.localScale = Vector3.one;
 
-            MagicBtn btn = recipe.GetComponent<MagicBtn>();
+            PopupBtn btn = recipe.GetComponent<PopupBtn>();
             //닫을 팝업 메뉴 넣기
             btn.popupMenu = gameObject;
             // 마법 id 넣기
-            btn.ID = magic.id;
-            btn.btnType = MagicBtn.BtnType.magicBtn;
+            btn.id = magic.id;
+            btn.btnType = PopupBtn.BtnType.scrollBtn;
 
             // 해당 마법의 원소 배열
             List<string> elements = new List<string>();
             elements.Clear();
-            ElementalSorting(elements, magic.element_A);
-            ElementalSorting(elements, magic.element_B);
+            MagicDB.Instance.ElementalSorting(elements, magic.element_A);
+            MagicDB.Instance.ElementalSorting(elements, magic.element_B);
             // 배열 가나다순으로 정렬
             elements.Sort();
 
@@ -78,6 +97,10 @@ public class MagicCombineMenu : MonoBehaviour
             Transform icon = recipe.transform.Find("MagicIcon");
             icon.GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
                 x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+
+            // 마법 등급 색깔 넣기
+            Image frame = recipe.transform.Find("MagicIcon/MagicFrame").GetComponent<Image>();
+            frame.color = MagicDB.Instance.gradeColor[magic.grade - 1];
 
             // 마법 해당되는 원소 넣기
             Transform[] elementIcons = recipe.transform.Find("MagicIcon/GemCircle").GetComponentsInChildren<Transform>();
@@ -92,6 +115,19 @@ public class MagicCombineMenu : MonoBehaviour
                 {
                     elementIcons[i].gameObject.SetActive(false);
                 }
+            }
+
+            // 신규 마법 여부 표시
+            Transform newTxt = recipe.transform.Find("MagicIcon/New");
+            if (magic.magicLevel > 0)
+            {
+                //New 아이템 아님
+                newTxt.gameObject.SetActive(false);
+            }
+            else
+            {
+                //New 아이템
+                newTxt.gameObject.SetActive(true);
             }
 
             // 마법 이름 넣기
@@ -113,53 +149,5 @@ public class MagicCombineMenu : MonoBehaviour
             elementB.GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
                 x => x.name == magicB.magicName.Replace(" ", "") + "_Icon");
         }
-    }
-
-    bool isBasicElement(string element)
-    {
-        //기본 원소 이름과 일치하는 요소가 있는지 확인
-        bool isExist = System.Array.Exists(MagicDB.Instance.elementNames, x => x == element);
-
-        return isExist;
-    }
-
-    void ElementalSorting(List<string> elements, string element)
-    {
-        //첫번째 원소가 기본 원소일때
-        if (isBasicElement(element))
-        {
-            //이 마법 원소에 해당 원소 없을때
-            if (!elements.Exists(x => x == element))
-                elements.Add(element);
-        }
-        //첫번째 원소가 기본 원소 아닐때
-        else
-        {
-            if (MagicDB.Instance.magicDB.Exists(x => x.magicName == element))
-            {
-                // 원소 이름을 마법 이름에 넣어 마법 찾기
-                MagicInfo magicInfo = MagicDB.Instance.magicDB.Find(x => x.magicName == element);
-                // 해당 마법의 원소 두가지 다시 정렬하기
-                ElementalSorting(elements, magicInfo.element_A);
-                ElementalSorting(elements, magicInfo.element_B);
-            }
-        }
-    }
-
-    //오브젝트의 모든 자식을 제거
-    void DestroyChildren(Transform obj)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>();
-
-        // print(children.Length);
-        //모든 자식 오브젝트 제거
-        if (children != null)
-            for (int j = 1; j < children.Length; j++)
-            {
-                if (children[j] != transform)
-                {
-                    Destroy(children[j].gameObject);
-                }
-            }
     }
 }

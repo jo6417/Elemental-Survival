@@ -7,13 +7,16 @@ using UnityEngine.Networking;
 
 public class MagicInfo
 {
-    public bool hasMagic = false; //플레이어가 갖고 있는 마법인지
+    public int magicLevel = 0; //현재 마법 레벨
+
     public int id; //고유 아이디
     public int grade; //마법 등급
     public string magicName; //마법 이름
     public string element_A; //해당 마법을 만들 재료 A
     public string element_B; //해당 마법을 만들 재료 B
     public string description; //마법 설명
+    public string priceType; //마법 구매시 지불수단
+    public int price; //마법 구매시 가격
 
     [Header("Spec")]
     public float damage = 1; //데미지
@@ -27,8 +30,7 @@ public class MagicInfo
     public int onlyOne = 0; //1이면 다중 발사 금지
     public float knockbackForce = 0; //넉백 파워
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description,
-    float damage, float speed, float range, float coolTime, float criticalRate, int pierceNum, int onlyOne, float knockbackForce)
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, float damage, float speed, float range, float coolTime, float criticalRate, int pierceNum, int onlyOne, float knockbackForce)
     {
         this.id = id;
         this.grade = grade;
@@ -36,6 +38,8 @@ public class MagicInfo
         this.element_A = element_A;
         this.element_B = element_B;
         this.description = description;
+        this.priceType = priceType;
+        this.price = price;
 
         this.damage = damage;
         this.speed = speed;
@@ -86,13 +90,17 @@ public class MagicDB : MonoBehaviour
 
     void Awake()
     {
+        // 등급 색깔
         Color[] _gradeColor = {RGBAToHex("FFFFFF"), RGBAToHex("4FF84C"), RGBAToHex("3EC1FF"), RGBAToHex("CD45FF"),
         RGBAToHex("FF3310"), RGBAToHex("FFFF00")};
         gradeColor = _gradeColor;
+
+        // 원소젬 색깔
         Color[] _elementColor = {RGBAToHex("C88C5E"), RGBAToHex("FF5B5B"), RGBAToHex("5BFF64"),
         RGBAToHex("FFF45B"), RGBAToHex("739CFF"), RGBAToHex("5BFEFF")};
         elementColor = _elementColor;
-        //원소 이름 모두 넣기
+
+        // 원소 이름
         string[] name = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
         elementNames = name;
 
@@ -133,10 +141,13 @@ public class MagicDB : MonoBehaviour
                 var magic = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<MagicInfo>에 넣기
-                magicDB.Add(new MagicInfo(magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"],
+                magicDB.Add(new MagicInfo(magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"], magic["priceType"], magic["price"], 
                 magic["damage"], magic["speed"], magic["range"], magic["coolTime"], magic["criticalRate"], magic["pierceNum"], 
                 magic["onlyOne"], magic["knockbackForce"]));
             }
+
+            //모든 마법 초기화
+            InitialMagic();
 
             // foreach (var item in magicDB)
             // {
@@ -154,6 +165,84 @@ public class MagicDB : MonoBehaviour
         print("MagicDB Loaded!");
 
         yield return null;
+    }
+    
+    public void InitialMagic(){
+        foreach (var magic in magicDB)
+        {
+            magic.magicLevel = 0;
+        }
+    }
+
+    public void ElementalSorting(List<string> elements, string element)
+    {
+        //첫번째 원소가 기본 원소일때
+        if (isBasicElement(element))
+        {
+            //이 마법 원소에 해당 원소 없을때
+            if (!elements.Exists(x => x == element))
+                elements.Add(element);
+        }
+        //첫번째 원소가 기본 원소 아닐때
+        else
+        {
+            if (MagicDB.Instance.magicDB.Exists(x => x.magicName == element))
+            {
+                // 원소 이름을 마법 이름에 넣어 마법 찾기
+                MagicInfo magicInfo = MagicDB.Instance.magicDB.Find(x => x.magicName == element);
+                // 해당 마법의 원소 두가지 다시 정렬하기
+                ElementalSorting(elements, magicInfo.element_A);
+                ElementalSorting(elements, magicInfo.element_B);
+            }
+        }
+    }
+
+    bool isBasicElement(string element)
+    {
+        //기본 원소 이름과 일치하는 요소가 있는지 확인
+        bool isExist = System.Array.Exists(MagicDB.Instance.elementNames, x => x == element);
+
+        return isExist;
+    }
+
+    //랜덤 마법 뽑기
+    public int[] RandomMagicIndex(List<MagicInfo> magicList, int amount)
+    {
+        //모든 마법 인덱스를 넣을 리스트
+        List<int> magicIndex = new List<int>();
+
+        //인덱스 모두 넣기
+        for (int i = 0; i < magicList.Count; i++)
+        {
+            magicIndex.Add(i);
+        }
+
+        //랜덤 인덱스 3개를 넣을 배열
+        int[] randomNum = new int[amount];
+
+        for (int i = 0; i < amount; i++)
+        {
+            // 획득 가능한 마법 없을때
+            if (magicIndex.Count == 0)
+            {
+                randomNum[i] = -1;
+            }
+            else
+            {
+                //인덱스 리스트에서 랜덤한 난수 생성
+                int j = Random.Range(0, magicIndex.Count);
+                int index = magicIndex[j];
+                // print(magicIndex.Count + " : " + index);
+
+                //랜덤 인덱스 숫자 넣기
+                randomNum[i] = index;
+                //이미 선택된 인덱스 제거
+                magicIndex.RemoveAt(j);
+            }
+        }
+
+        //인덱스 리스트 리턴
+        return randomNum;
     }
 
     public MagicInfo GetMagicByID(int id)

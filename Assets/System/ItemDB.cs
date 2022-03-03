@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 public class ItemInfo
 {
-    public int hasNum = 1; //몇개 갖고 있는지
+    public int hasNum = 0; //몇개 갖고 있는지
 
     public int id; //고유 아이디
     public int grade; //아이템 등급
@@ -165,6 +165,9 @@ public class ItemDB : MonoBehaviour
             // }
         }
 
+        //모든 아이템 초기화
+        InitialItems();
+
         //TODO 모든 아이템 프리팹에 아이템 정보 넣어주기
         // foreach (var item in itemPrefab)
         // {
@@ -175,6 +178,53 @@ public class ItemDB : MonoBehaviour
         print("ItemDB Loaded!");
 
         yield return null;
+    }
+
+    public void InitialItems(){
+        foreach (var item in itemDB)
+        {
+            item.hasNum = 0;
+        }
+    }
+
+    //랜덤 아티팩트 뽑기
+    public int[] RandomArtifactIndex(List<ItemInfo> dbList, int amount)
+    {
+        //모든 아이템 인덱스를 넣을 리스트
+        List<int> randomIndex = new List<int>();
+
+        //아이템 id 모두 넣기
+        for (int i = 0; i < dbList.Count; i++)
+        {
+            randomIndex.Add(dbList[i].id);
+        }
+
+        //랜덤 인덱스를 넣을 배열
+        int[] randomNum = new int[amount];
+
+        for (int i = 0; i < amount; i++)
+        {
+            // 획득 가능한 아이템 없을때
+            if (randomIndex.Count == 0)
+            {
+                randomNum[i] = -1;
+            }
+            else
+            {
+                //인덱스 리스트에서 랜덤한 난수 생성
+                int j = Random.Range(0, randomIndex.Count);
+                int itemID = randomIndex[j];
+                // print(magicIndex.Count + " : " + index);
+
+                //랜덤 인덱스 숫자 넣기
+                randomNum[i] = itemID;
+                //이미 선택된 인덱스 제거
+                randomIndex.RemoveAt(j);
+            }
+        }
+
+        //인덱스 리스트 리턴
+        return randomNum;
     }
 
     public ItemInfo GetItemByID(int id)
