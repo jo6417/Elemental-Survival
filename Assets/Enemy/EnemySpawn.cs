@@ -26,19 +26,21 @@ public class EnemySpawn : MonoBehaviour
         mobNumNow = mobParent.childCount;
 
         // 몬스터 수 유지, 자동 스폰
-        if(mobNumNow < mobNumMax){
+        if (mobNumNow < mobNumMax && EnemyDB.Instance.loadDone)
+        {
             // mobNumNow++; //현재 몬스터 수 증가
             var mob = LeanPool.Spawn(mobList[mobNum], SpawnPos(), Quaternion.identity, mobParent); //몬스터 생성
         }
-        
 
-        if (Input.GetKey(KeyCode.Space))
-        {            
+
+        if (Input.GetKey(KeyCode.Space) && EnemyDB.Instance.loadDone)
+        {
             var mob = LeanPool.Spawn(mobList[mobNum], SpawnPos(), Quaternion.identity, mobParent); //몬스터 생성
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other) {
+    private void OnTriggerExit2D(Collider2D other)
+    {
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기
         if (other.CompareTag("Enemy") && other.gameObject.activeSelf)
         {
@@ -52,25 +54,30 @@ public class EnemySpawn : MonoBehaviour
     }
 
     //콜라이더 테두리 스폰 위치
-    Vector2 SpawnPos(){
+    Vector2 SpawnPos()
+    {
         float spawnPosX = Random.Range(col.bounds.min.x, col.bounds.max.x);
         float spawnPosY = Random.Range(col.bounds.min.y, col.bounds.max.y);
         int spawnSide = Random.Range(0, 4);
 
         // 스폰될 모서리 방향
         switch (spawnSide)
-        {            
-            case 0: spawnPosY = col.bounds.max.y;
-            break;
+        {
+            case 0:
+                spawnPosY = col.bounds.max.y;
+                break;
 
-            case 1: spawnPosX = col.bounds.max.x;
-            break;
+            case 1:
+                spawnPosX = col.bounds.max.x;
+                break;
 
-            case 2: spawnPosY = col.bounds.min.y;
-            break;
-            
-            case 3: spawnPosX = col.bounds.min.x;
-            break;
+            case 2:
+                spawnPosY = col.bounds.min.y;
+                break;
+
+            case 3:
+                spawnPosX = col.bounds.min.x;
+                break;
         }
 
         return new Vector2(spawnPosX, spawnPosY);

@@ -9,7 +9,7 @@ public class PopupBtn : MonoBehaviour
     public BtnType btnType;
     public int id;
 
-    public void ChooseMagic()
+    public void ChooseBtn()
     {
         //아이템 버튼일때
         if (btnType == BtnType.itemBtn)
@@ -19,24 +19,12 @@ public class PopupBtn : MonoBehaviour
             // 아이템 획득
             PlayerManager.Instance.GainItem(item);
         }
-        //스크롤 합성 버튼일때
-        else if (btnType == BtnType.scrollBtn)
-        {
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(id); //마법 찾기
-
-            // 마법 획득
-            PlayerManager.Instance.GetMagic(magic);
-
-            //TODO 합성 재료 마법 2가지 없에기
-            PlayerManager.Instance.hasMagics.Remove(MagicDB.Instance.GetMagicByName(magic.element_A));
-            PlayerManager.Instance.hasMagics.Remove(MagicDB.Instance.GetMagicByName(magic.element_B));
-        }
         //마법 구매 버튼일때
         else if (btnType == BtnType.magicBtn)
         {
             MagicInfo magic = MagicDB.Instance.GetMagicByID(id); //마법 찾기
 
-            // 마법 획득
+            // 마법 획득 및 언락
             PlayerManager.Instance.GetMagic(magic);
         }
 

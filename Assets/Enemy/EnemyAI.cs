@@ -79,7 +79,7 @@ public class EnemyAI : MonoBehaviour
             // print("마법과 충돌");
 
             // 체력 감소
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(other.GetComponent<MagicProjectile>().magicID);
+            MagicInfo magic = other.GetComponent<MagicProjectile>().magic;
             Damaged(magic);
         }
     }

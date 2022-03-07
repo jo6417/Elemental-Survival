@@ -20,9 +20,8 @@ public class MagicInfo
 
     [Header("Spec")]
     public float damage = 1; //데미지
-    public float speed = 1; //투사체 속도
+    public float speed = 1; //투사체 속도 및 쿨타임
     public float range = 1; //범위
-    public float coolTime = 1; //쿨타임
     public float criticalRate = 0; //크리티컬 확률
     public int pierceNum = 0; //관통 횟수
 
@@ -30,7 +29,7 @@ public class MagicInfo
     public int onlyOne = 0; //1이면 다중 발사 금지
     public float knockbackForce = 0; //넉백 파워
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, float damage, float speed, float range, float coolTime, float criticalRate, int pierceNum, int onlyOne, float knockbackForce)
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, float damage, float speed, float range, float criticalRate, int pierceNum, int onlyOne, float knockbackForce)
     {
         this.id = id;
         this.grade = grade;
@@ -44,7 +43,6 @@ public class MagicInfo
         this.damage = damage;
         this.speed = speed;
         this.range = range;
-        this.coolTime = coolTime;
         this.criticalRate = criticalRate;
         this.pierceNum = pierceNum;
         this.onlyOne = onlyOne;
@@ -142,7 +140,7 @@ public class MagicDB : MonoBehaviour
 
                 //받아온 데이터를 List<MagicInfo>에 넣기
                 magicDB.Add(new MagicInfo(magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"], magic["priceType"], magic["price"], 
-                magic["damage"], magic["speed"], magic["range"], magic["coolTime"], magic["criticalRate"], magic["pierceNum"], 
+                magic["damage"], magic["speed"], magic["range"], magic["criticalRate"], magic["pierceNum"], 
                 magic["onlyOne"], magic["knockbackForce"]));
             }
 
@@ -163,6 +161,9 @@ public class MagicDB : MonoBehaviour
 
         loadDone = true;
         print("MagicDB Loaded!");
+
+        //! 테스트용 마법 추가
+        PlayerManager.Instance.hasMagics.Add(MagicDB.Instance.GetMagicByID(15));
 
         yield return null;
     }

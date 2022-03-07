@@ -438,4 +438,48 @@ public class PlayerManager : MonoBehaviour
         levelupPopup.SetActive(true);
     }
 
+    //해당 젬 갯수 반환하기
+    public int GemAmount(int gemIndex){
+        int gemAmount = -1;
+
+        switch (gemIndex)
+        {            
+            case 0: gemAmount = Earth_Gem;
+            break;
+            case 1: gemAmount = Fire_Gem;
+            break;
+            case 2: gemAmount = Life_Gem;
+            break;
+            case 3: gemAmount = Lightning_Gem;
+            break;
+            case 4: gemAmount = Water_Gem;
+            break;
+            case 5: gemAmount = Wind_Gem;
+            break;
+        }
+        return gemAmount;
+    }
+
+    //원소젬 지불하기
+    public void PayGem(int gemIndex, int payAmount){
+        switch (gemIndex)
+        {            
+            case 0: Earth_Gem -= payAmount;
+            break;
+            case 1: Fire_Gem -= payAmount;
+            break;
+            case 2: Life_Gem -= payAmount;
+            break;
+            case 3: Lightning_Gem -= payAmount;
+            break;
+            case 4: Water_Gem -= payAmount;
+            break;
+            case 5: Wind_Gem -= payAmount;
+            break;
+        }
+
+        //젬 UI 업데이트
+        UIManager.Instance.updateGem();
+    }
+
 }

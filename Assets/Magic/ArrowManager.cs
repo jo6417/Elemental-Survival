@@ -40,7 +40,7 @@ public class ArrowManager : MonoBehaviour
         col = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
         tail.SetActive(true); //꼬리 켜기
-        magic = MagicDB.Instance.GetMagicByID(GetComponent<MagicProjectile>().magicID);
+        magic = GetComponent<MagicProjectile>().magic;
 
         //처음 스폰 될때는 Start에서 공격 실행
         if (magic != null)
@@ -118,7 +118,7 @@ public class ArrowManager : MonoBehaviour
         Vector2 enemyPos = Vector2.zero;
 
         if (magic == null)
-            magic = MagicDB.Instance.GetMagicByID(GetComponent<MagicProjectile>().magicID);
+            magic = GetComponent<MagicProjectile>().magic;
 
         //캐릭터 주변의 적들
         Collider2D[] colls = null;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MagicProjectile : MonoBehaviour
 {
-    public int magicID = -1;
+    public MagicInfo magic;
     Rigidbody2D rigid;
     float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
@@ -13,7 +13,16 @@ public class MagicProjectile : MonoBehaviour
     private void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
-        pierceNum = MagicDB.Instance.GetMagicByID(magicID).pierceNum;
+
+        //관통 횟수 초기화 (onlyOne 이면 projectileNum 만큼 추가)
+        if(magic.onlyOne == 1)
+        {
+            pierceNum = magic.pierceNum + PlayerManager.Instance.projectileNum;
+        }
+        else
+        {
+            pierceNum = magic.pierceNum;
+        }        
     }
 
     private void Update()

@@ -48,24 +48,24 @@ public class CastMagic : MonoBehaviour
         int projectileNum = magic.onlyOne == 1 ? 1 : PlayerManager.Instance.projectileNum;
         for (int i = 0; i < projectileNum; i++)
         {
-
             GameObject magicObj = LeanPool.Spawn(
             findPrefab,
             transform.position,
             Quaternion.identity,
             magicPool);
 
-            magicObj.GetComponent<MagicProjectile>().magicID = magicID; //마법 정보 넣기
+            magicObj.GetComponent<MagicProjectile>().magic = magic; //마법 정보 넣기
             Rigidbody2D rigid = magicObj.GetComponent<Rigidbody2D>();
 
             Vector2 dir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            rigid.velocity = dir.normalized * magic.speed * 5; //마법 날리기
+            //마법 속도만큼 날리기 (벡터 기본값 5 * 스피드 스탯 * 10 / 100)
+            rigid.velocity = dir.normalized * 50 *(magic.speed * 0.1f);
 
             yield return new WaitForSeconds(0.1f);
         }
 
-        //마법 쿨타임 만큼 대기
-        yield return new WaitForSeconds(magic.coolTime);
+        //마법 쿨타임 만큼 대기 (기본값 1초 - 스피드 스탯 * 10 / 100)
+        yield return new WaitForSeconds(1 - magic.speed * 0.1f);
 
         StartCoroutine(ShotMagic(magicID));
     }

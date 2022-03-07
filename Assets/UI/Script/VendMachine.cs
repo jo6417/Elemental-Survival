@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Lean.Pool;
+using DG.Tweening;
 using System.Linq;
 
 public class VendMachine : MonoBehaviour
@@ -37,7 +38,7 @@ public class VendMachine : MonoBehaviour
 
         // 랜덤 아티팩트 or 마법 9개 불러오기, 중복 제거
         List<ProductType> productTypes = new List<ProductType>();
-        int itemNum = Random.Range(0,10);
+        int itemNum = Random.Range(0, 10);
         int magicNum = 9 - itemNum;
 
         // type == true 일때 아이템, 아니면 마법
@@ -70,7 +71,7 @@ public class VendMachine : MonoBehaviour
         //높은 등급부터 내림차순
         // if(items != null && items.Count > 2)
         // items.Sort((ItemInfo x, ItemInfo y) => y.grade.CompareTo(x.grade));
-        List<ItemInfo> sortedItems = 
+        List<ItemInfo> sortedItems =
         items.OrderByDescending(x => x.grade).ToList();
 
         //TODO 등급마다 확률 다르게
@@ -94,9 +95,12 @@ public class VendMachine : MonoBehaviour
             // 상품 인스턴스 생성
             GameObject product = Instantiate(productPrefab, transform.position, Quaternion.identity, productsParent);
 
-            PopupBtn btn = product.transform.Find("Button").GetComponent<PopupBtn>();
+            // 상품 버튼 속성
+            PopupBtn productBtn = product.transform.Find("Button").GetComponent<PopupBtn>();
             //버튼 누르면 종료될 팝업창 오브젝트
-            btn.popupMenu = gameObject;
+            productBtn.popupMenu = gameObject;
+
+            Button btn = product.transform.Find("Button").GetComponent<Button>();
 
             // 아이템,마법 각각 프레임 찾아놓기
             Image frame = product.transform.Find("Frame").GetComponent<Image>();
@@ -109,11 +113,13 @@ public class VendMachine : MonoBehaviour
             //등급 색깔
             Color gradeColor = Color.white;
             //상품 가격
-            string price = "";
+            int price = 0;
+            //상품 비용 젬 타입 인덱스
+            int gemTypeIndex = -1;
 
             //아이템일때 정보 넣기
             if (type == ProductType.Item)
-            {                
+            {
                 //생성된 랜덤 아이템 리스트에서 가져와서 쓰고 삭제
                 ItemInfo item = sortedItems[0];
                 sortedItems.RemoveAt(0);
@@ -132,23 +138,22 @@ public class VendMachine : MonoBehaviour
                 gemCircle.gameObject.SetActive(false);
 
                 // 지불 수단 넣기, 어떤 원소젬인지
-                int index = -1;
-                index = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType); //지불 원소젬 이름을 인덱스로 치환
+                gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType); //지불 원소젬 이름을 인덱스로 치환
                 // print(item.priceType + " : " + index);
 
-                if (index != -1)
+                if (gemTypeIndex != -1)
                 {
-                    Color color = MagicDB.Instance.elementColor[index];
+                    Color color = MagicDB.Instance.elementColor[gemTypeIndex];
                     Image gem = product.transform.Find("Button/Gem").GetComponent<Image>();
                     gem.color = color;
                 }
 
                 // 가격 넣기
-                price = item.price.ToString();
+                price = item.price;
 
                 // 해당 상품 타입 및 ID 넣기
-                btn.btnType = PopupBtn.BtnType.itemBtn;
-                btn.id = item.id;
+                productBtn.btnType = PopupBtn.BtnType.itemBtn;
+                productBtn.id = item.id;
             }
             // 마법일때 정보 넣기
             else if (type == ProductType.Magic)
@@ -194,23 +199,22 @@ public class VendMachine : MonoBehaviour
                 }
 
                 // 지불 수단 넣기, 어떤 원소젬인지
-                int index = -1;
-                index = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == magic.priceType); //지불 원소젬 이름을 인덱스로 치환
+                gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == magic.priceType); //지불 원소젬 이름을 인덱스로 치환
                 // print(magic.priceType + " : " + index);
 
-                if (index != -1)
+                if (gemTypeIndex != -1)
                 {
-                    Color color = MagicDB.Instance.elementColor[index];
+                    Color color = MagicDB.Instance.elementColor[gemTypeIndex];
                     Image gem = product.transform.Find("Button/Gem").GetComponent<Image>();
                     gem.color = color;
                 }
 
                 // 가격 넣기
-                price = magic.price.ToString();
+                price = magic.price;
 
                 // 해당 상품 타입 및 ID 넣기
-                btn.btnType = PopupBtn.BtnType.magicBtn;
-                btn.id = magic.id;
+                productBtn.btnType = PopupBtn.BtnType.magicBtn;
+                productBtn.id = magic.id;
             }
 
             // 신규 여부 표시
@@ -231,9 +235,78 @@ public class VendMachine : MonoBehaviour
 
             //TODO 고정된 가격에서 +- 범위내 랜덤 조정해서 넣기
             Text priceTxt = product.transform.Find("Button/Price").GetComponent<Text>();
-            priceTxt.text = price;
+
+            // 아이템 가격만큼 해당 타입의 젬을 들고 있으면 초록, 아니면 빨강
+            // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
+            if (PlayerManager.Instance.GemAmount(gemTypeIndex) >= price)
+            {
+                priceTxt.color = Color.green;
+
+                //버튼 클릭시 이벤트 함수
+                btn.onClick.AddListener(delegate
+                    {
+                        //선택한 버튼의 아이템,마법 전달하기
+                        productBtn.ChooseBtn();
+
+                        //가격 지불하기
+                        PlayerManager.Instance.PayGem(gemTypeIndex, price);
+                    });
+            }
+            else
+            {
+                priceTxt.color = Color.red;
+
+                Color frameColor = frame.color;
+
+                //버튼 클릭시 이벤트 함수
+                btn.onClick.AddListener(delegate
+                    {
+                        //프레임 깜빡이기
+                        FlickerObj(frame.gameObject, frameColor);
+
+                        //부족한 젬 타입 숫자 UI 깜빡이기
+                        FlickerObj(UIManager.Instance.gemUIs[gemTypeIndex], Color.white);
+                    });
+            }
+
+            priceTxt.text = price.ToString();
 
             //TODO 툴팁에 등급,이름,설명,버프 스탯 정보 넣기
+        }
+    }
+
+    void FlickerObj(GameObject obj, Color originColor)
+    {
+        // 재화 부족할때 인디케이터 표시
+        if (obj.TryGetComponent(out Image img))
+        {
+            // 이미지 색깔 깜빡이기
+            img.DOColor(Color.red, 0.5f)
+            .SetUpdate(true) //timescale 무시
+            .SetEase(Ease.Flash, 3, 0)
+            .OnStart(() =>
+            {
+                img.color = originColor; //색깔 초기화하고 시작
+            })
+            .OnComplete(() =>
+            {
+                img.color = originColor; //색깔 초기화하고 끝
+            });
+        }
+        else if (obj.TryGetComponent(out Text txt))
+        {
+            // 텍스트 색깔 깜빡이기
+            txt.DOColor(Color.red, 0.5f)
+            .SetUpdate(true) //timescale 무시
+            .SetEase(Ease.Flash, 3, 0)
+            .OnStart(() =>
+            {
+                txt.color = originColor; //색깔 초기화하고 시작
+            })
+            .OnComplete(() =>
+            {
+                txt.color = originColor; //색깔 초기화하고 끝
+            });
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Lean.Pool;
+using DG.Tweening;
 
 public class UIManager : MonoBehaviour
 {
@@ -45,12 +46,15 @@ public class UIManager : MonoBehaviour
     public Image playerHp;
     public SlicedFilledImage playerExp;
     public Text playerLev;
+
+    public List<GameObject> gemUIs = new List<GameObject>();
     public Text EarthGem_UI;
     public Text FireGem_UI;
     public Text LifeGem_UI;
     public Text LightningGem_UI;
     public Text WaterGem_UI;
     public Text WindGem_UI;
+    
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
@@ -60,6 +64,13 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1; //시간값 초기화
+
+        gemUIs.Add(EarthGem_UI.gameObject);
+        gemUIs.Add(FireGem_UI.gameObject);
+        gemUIs.Add(LifeGem_UI.gameObject);
+        gemUIs.Add(LightningGem_UI.gameObject);
+        gemUIs.Add(WaterGem_UI.gameObject);
+        gemUIs.Add(WindGem_UI.gameObject);
     }
 
     private void Update()

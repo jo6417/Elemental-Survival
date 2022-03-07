@@ -83,7 +83,7 @@ public class ScrollMenu : MonoBehaviour
             btn.popupMenu = gameObject;
             // 마법 id 넣기
             btn.id = magic.id;
-            btn.btnType = PopupBtn.BtnType.scrollBtn;
+            btn.btnType = PopupBtn.BtnType.magicBtn;
 
             // 해당 마법의 원소 배열
             List<string> elements = new List<string>();
