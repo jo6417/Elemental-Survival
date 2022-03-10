@@ -87,9 +87,9 @@ public class EnemyAI : MonoBehaviour
     void Damaged(MagicInfo magic)
     {
         //크리티컬 확률 추가
-        bool isCritical = magic.criticalRate >= Random.value ? true : false;
+        bool isCritical = magic.critical >= Random.value ? true : false;
         float criticalAtk = isCritical ? 1.5f : 1f;
-        int damage = (int)(Random.Range(magic.damage * 0.8f, magic.damage * 1.2f) * criticalAtk);
+        int damage = (int)(Random.Range(magic.power * 0.8f, magic.power * 1.2f) * criticalAtk);
         damage = Mathf.Clamp(damage, 1, damage);
 
         // 체력 감소
@@ -99,9 +99,9 @@ public class EnemyAI : MonoBehaviour
         hitCount = enemy.hitDelay;
 
         // 넉백 효과
-        if (magic.knockbackForce > 0 && gameObject.activeSelf)
+        if (magic.pierce > 0 && gameObject.activeSelf)
         {
-            StartCoroutine(Knockback(magic.knockbackForce));
+            StartCoroutine(Knockback(magic.pierce * 1));
         }
 
         // 데미지 UI 띄우기

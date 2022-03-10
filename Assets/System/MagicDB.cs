@@ -19,17 +19,19 @@ public class MagicInfo
     public int price; //마법 구매시 가격
 
     [Header("Spec")]
-    public float damage = 1; //데미지
-    public float speed = 1; //투사체 속도 및 쿨타임
-    public float range = 1; //범위
-    public float criticalRate = 0; //크리티컬 확률
-    public int pierceNum = 0; //관통 횟수
+    public int power = 1; //데미지
+    public int speed = 1; //투사체 속도 및 쿨타임
+    public int range = 1; //범위
+    public int critical = 0; //크리티컬 확률
+    public int pierce = 0; //관통 횟수 및 넉백 계수
+    public int projectile = 0; //넉백 파워
 
     [Header("Side Effect")]
     public int onlyOne = 0; //1이면 다중 발사 금지
-    public float knockbackForce = 0; //넉백 파워
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, float damage, float speed, float range, float criticalRate, int pierceNum, int onlyOne, float knockbackForce)
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, 
+    int power, int speed, int range, int critical, int pierce, int projectile, 
+    int onlyOne)
     {
         this.id = id;
         this.grade = grade;
@@ -40,13 +42,14 @@ public class MagicInfo
         this.priceType = priceType;
         this.price = price;
 
-        this.damage = damage;
+        this.power = power;
         this.speed = speed;
         this.range = range;
-        this.criticalRate = criticalRate;
-        this.pierceNum = pierceNum;
+        this.critical = critical;
+        this.pierce = pierce;
+        this.projectile = projectile;
+
         this.onlyOne = onlyOne;
-        this.knockbackForce = knockbackForce;
     }
 }
 
@@ -139,9 +142,10 @@ public class MagicDB : MonoBehaviour
                 var magic = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<MagicInfo>에 넣기
-                magicDB.Add(new MagicInfo(magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"], magic["priceType"], magic["price"], 
-                magic["damage"], magic["speed"], magic["range"], magic["criticalRate"], magic["pierceNum"], 
-                magic["onlyOne"], magic["knockbackForce"]));
+                magicDB.Add(new MagicInfo(
+                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"], magic["priceType"], magic["price"], 
+                magic["power"], magic["speed"], magic["range"], magic["critical"], magic["pierce"], magic["projectile"], 
+                magic["onlyOne"]));
             }
 
             //모든 마법 초기화
@@ -163,7 +167,9 @@ public class MagicDB : MonoBehaviour
         print("MagicDB Loaded!");
 
         //! 테스트용 마법 추가
-        PlayerManager.Instance.hasMagics.Add(MagicDB.Instance.GetMagicByID(15));
+        PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(15));
+        PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(3));
+        PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(4));
 
         yield return null;
     }
@@ -198,7 +204,7 @@ public class MagicDB : MonoBehaviour
         }
     }
 
-    bool isBasicElement(string element)
+    public bool isBasicElement(string element)
     {
         //기본 원소 이름과 일치하는 요소가 있는지 확인
         bool isExist = System.Array.Exists(MagicDB.Instance.elementNames, x => x == element);

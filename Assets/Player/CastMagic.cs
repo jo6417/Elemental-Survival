@@ -45,7 +45,8 @@ public class CastMagic : MonoBehaviour
         }
 
         // 마법id에 해당하는 프리팹 투사체 갯수만큼 생성, onlyOne 속성이 1이면 하나만 발사
-        int projectileNum = magic.onlyOne == 1 ? 1 : PlayerManager.Instance.projectileNum;
+        // int projectileNum = magic.onlyOne == 1 ? 1 : PlayerManager.Instance.projectileNum;
+        int projectileNum = magic.projectile + PlayerManager.Instance.projectileNum;
         for (int i = 0; i < projectileNum; i++)
         {
             GameObject magicObj = LeanPool.Spawn(

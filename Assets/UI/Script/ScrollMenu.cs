@@ -45,8 +45,9 @@ public class ScrollMenu : MonoBehaviour
         {
             line += ", " + m.grade.ToString();
         }
-        print(line);
+        // print(line);
 
+        // 높은 등급부터 내림차순 하기
         combineMagics.Sort((MagicInfo x, MagicInfo y) => y.grade.CompareTo(x.grade));
 
         line = "";
@@ -54,7 +55,7 @@ public class ScrollMenu : MonoBehaviour
         {
             line += ", " + m.grade.ToString();
         }
-        print(line);
+        // print(line);
 
         // 합성 가능한 마법 없을때
         noMagicText.SetActive(false);
@@ -78,12 +79,12 @@ public class ScrollMenu : MonoBehaviour
             recipe.transform.parent = recipeParent.transform;
             recipe.transform.localScale = Vector3.one;
 
-            PopupBtn btn = recipe.GetComponent<PopupBtn>();
+            InfoHolder btn = recipe.GetComponent<InfoHolder>();
             //닫을 팝업 메뉴 넣기
             btn.popupMenu = gameObject;
             // 마법 id 넣기
             btn.id = magic.id;
-            btn.btnType = PopupBtn.BtnType.magicBtn;
+            btn.holderType = InfoHolder.HolderType.magicHolder;
 
             // 해당 마법의 원소 배열
             List<string> elements = new List<string>();
@@ -148,6 +149,12 @@ public class ScrollMenu : MonoBehaviour
             // 재료B의 이미지 넣기
             elementB.GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
                 x => x.name == magicB.magicName.Replace(" ", "") + "_Icon");
+            
+            //재료 A,B 등급 색상 넣기
+            Image gradeA = recipe.transform.Find("MagicDescript/Element/Element_A/Frame").GetComponent<Image>();
+            gradeA.color = MagicDB.Instance.gradeColor[magicA.grade - 1];
+            Image gradeB = recipe.transform.Find("MagicDescript/Element/Element_B/Frame").GetComponent<Image>();
+            gradeB.color = MagicDB.Instance.gradeColor[magicB.grade - 1];
         }
     }
 }

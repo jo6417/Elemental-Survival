@@ -41,6 +41,7 @@ public class UIManager : MonoBehaviour
     public GameObject chestUI;
     public GameObject vendMachineUI;
     public GameObject slotMachineUI;
+    public GameObject magicUpgradeUI;
 
     [Header("PlayerUI")]
     public Image playerHp;
@@ -54,7 +55,7 @@ public class UIManager : MonoBehaviour
     public Text LightningGem_UI;
     public Text WaterGem_UI;
     public Text WindGem_UI;
-    
+
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
@@ -79,6 +80,11 @@ public class UIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Resume();
+
+            // 보유한 모든 마법 아이콘 갱신
+            UIManager.Instance.updateMagics();
+            // 보유한 모든 아이템 아이콘 갱신
+            UIManager.Instance.updateItems();
         }
     }
 
@@ -153,14 +159,19 @@ public class UIManager : MonoBehaviour
             // print(item.itemName + " x" + item.hasNum);
 
             //아이템 아이콘 오브젝트 생성
-            GameObject icon = LeanPool.Spawn(hasItemIcon, hasItemsUI.position, Quaternion.identity, hasItemsUI);
+            GameObject itemIcon = LeanPool.Spawn(hasItemIcon, hasItemsUI.position, Quaternion.identity, hasItemsUI);
+
+            // 오브젝트에 아이템 정보 저장
+            ToolTipTrigger toolTipTrigger = itemIcon.GetComponent<ToolTipTrigger>();
+            toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
+            toolTipTrigger.item = item;
 
             //스프라이트 넣기
-            icon.GetComponent<Image>().sprite =
+            itemIcon.GetComponent<Image>().sprite =
             ItemDB.Instance.itemIcon.Find(x => x.name == item.itemName.Replace(" ", "") + "_Icon");
 
             //아이템 개수 넣기, 2개 이상부터 표시
-            Text amount = icon.GetComponentInChildren<Text>(true);
+            Text amount = itemIcon.GetComponentInChildren<Text>(true);
             if (item.hasNum >= 2)
             {
                 amount.gameObject.SetActive(true);
@@ -188,15 +199,20 @@ public class UIManager : MonoBehaviour
 
         foreach (var magic in PlayerManager.Instance.hasMagics)
         {
-            //아이템 아이콘 오브젝트 생성
-            GameObject icon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
+            //마법 아이콘 오브젝트 생성
+            GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
+
+            // 오브젝트에 마법 정보 저장
+            ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
+            toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
+            toolTipTrigger.magic = magic;
 
             //스프라이트 넣기
-            icon.GetComponent<Image>().sprite =
+            magicIcon.GetComponent<Image>().sprite =
             MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
-            //아이템 개수 넣기, 2개 이상부터 표시
-            Text amount = icon.GetComponentInChildren<Text>(true);
+            //마법 개수 넣기, 2개 이상부터 표시
+            Text amount = magicIcon.GetComponentInChildren<Text>(true);
             amount.gameObject.SetActive(true);
             amount.text = "Lev." + magic.magicLevel.ToString();
         }

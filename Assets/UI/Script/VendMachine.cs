@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Lean.Pool;
 using DG.Tweening;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class VendMachine : MonoBehaviour
 {
@@ -96,7 +97,7 @@ public class VendMachine : MonoBehaviour
             GameObject product = Instantiate(productPrefab, transform.position, Quaternion.identity, productsParent);
 
             // 상품 버튼 속성
-            PopupBtn productBtn = product.transform.Find("Button").GetComponent<PopupBtn>();
+            InfoHolder productBtn = product.transform.Find("Button").GetComponent<InfoHolder>();
             //버튼 누르면 종료될 팝업창 오브젝트
             productBtn.popupMenu = gameObject;
 
@@ -117,11 +118,15 @@ public class VendMachine : MonoBehaviour
             //상품 비용 젬 타입 인덱스
             int gemTypeIndex = -1;
 
+            // 상품에 담길 아이템 or 마법
+            ItemInfo item = null;
+            MagicInfo magic = null;
+
             //아이템일때 정보 넣기
             if (type == ProductType.Item)
             {
                 //생성된 랜덤 아이템 리스트에서 가져와서 쓰고 삭제
-                ItemInfo item = sortedItems[0];
+                item = sortedItems[0];
                 sortedItems.RemoveAt(0);
 
                 //신규 여부
@@ -133,7 +138,9 @@ public class VendMachine : MonoBehaviour
 
                 //아이템 등급 프레임 및 색깔
                 frame.sprite = itemFrame;
-                frame.color = MagicDB.Instance.gradeColor[item.grade - 1];
+                gradeColor = MagicDB.Instance.gradeColor[item.grade - 1];
+                frame.color = gradeColor;
+
                 //마법 원소 UI 끄기
                 gemCircle.gameObject.SetActive(false);
 
@@ -152,14 +159,14 @@ public class VendMachine : MonoBehaviour
                 price = item.price;
 
                 // 해당 상품 타입 및 ID 넣기
-                productBtn.btnType = PopupBtn.BtnType.itemBtn;
+                productBtn.holderType = InfoHolder.HolderType.itemHolder;
                 productBtn.id = item.id;
             }
             // 마법일때 정보 넣기
             else if (type == ProductType.Magic)
             {
                 //생성된 랜덤 마법 리스트에서 가져와서 쓰고 삭제
-                MagicInfo magic = sortedMagics[0];
+                magic = sortedMagics[0];
                 sortedMagics.RemoveAt(0);
 
                 //신규 여부
@@ -171,7 +178,9 @@ public class VendMachine : MonoBehaviour
 
                 // 마법 등급 프레임 및 색깔
                 frame.sprite = magicFrame;
-                frame.color = MagicDB.Instance.gradeColor[magic.grade - 1];
+                gradeColor = MagicDB.Instance.gradeColor[magic.grade - 1];
+                frame.color = gradeColor;
+
                 //마법 원소 UI 켜기
                 gemCircle.gameObject.SetActive(true);
 
@@ -213,7 +222,7 @@ public class VendMachine : MonoBehaviour
                 price = magic.price;
 
                 // 해당 상품 타입 및 ID 넣기
-                productBtn.btnType = PopupBtn.BtnType.magicBtn;
+                productBtn.holderType = InfoHolder.HolderType.magicHolder;
                 productBtn.id = magic.id;
             }
 
@@ -236,24 +245,49 @@ public class VendMachine : MonoBehaviour
             //TODO 고정된 가격에서 +- 범위내 랜덤 조정해서 넣기
             Text priceTxt = product.transform.Find("Button/Price").GetComponent<Text>();
 
-            // 아이템 가격만큼 해당 타입의 젬을 들고 있으면 초록, 아니면 빨강
+            // 상품 버튼 눌렀을때 이벤트 넣기
             // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
             if (PlayerManager.Instance.GemAmount(gemTypeIndex) >= price)
             {
+                // 상품 구매할 돈 있으면 초록
                 priceTxt.color = Color.green;
 
                 //버튼 클릭시 이벤트 함수
                 btn.onClick.AddListener(delegate
                     {
-                        //선택한 버튼의 아이템,마법 전달하기
-                        productBtn.ChooseBtn();
+                        //아이템일때
+                        if (type == ProductType.Item)
+                        {
+                            // 선택한 버튼의 상품 획득하기
+                            productBtn.ChooseBtn();
 
-                        //가격 지불하기
-                        PlayerManager.Instance.PayGem(gemTypeIndex, price);
+                            //팝업 메뉴 닫기
+                            UIManager.Instance.PopupUI(productBtn.popupMenu);
+
+                            // 가격 지불하기
+                            PlayerManager.Instance.PayGem(gemTypeIndex, price);
+                        }
+                        else if (type == ProductType.Magic)
+                        {
+                            // 마법 업그레이드 팝업 띄우기
+                            GameObject magicUpgradePopup = UIManager.Instance.magicUpgradeUI;
+                            MagicUpgradeMenu magicUp = magicUpgradePopup.GetComponent<MagicUpgradeMenu>();
+                            magicUp.magic = magic; //마법 데이터
+                            magicUp.magicIcon.sprite = productSprite; //마법 아이콘
+                            magicUp.magicFrame.color = gradeColor; //프레임 색상
+                            magicUp.magicName.text = magic.magicName; //마법 이름
+
+                            // 마법 업글 팝업 띄우기
+                            UIManager.Instance.PopupUI(magicUpgradePopup);
+                        }
+
+                        //툴팁 끄기
+                        ProductToolTip.Instance.QuitTooltip();
                     });
             }
             else
             {
+                // 상품 구매할 돈 없으면 빨강
                 priceTxt.color = Color.red;
 
                 Color frameColor = frame.color;
@@ -271,7 +305,11 @@ public class VendMachine : MonoBehaviour
 
             priceTxt.text = price.ToString();
 
-            //TODO 툴팁에 등급,이름,설명,버프 스탯 정보 넣기
+            // 툴팁에 상품 정보 넣기
+            ToolTipTrigger tooltip = product.GetComponent<ToolTipTrigger>();
+            tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
+            tooltip.magic = magic;
+            tooltip.item = item;
         }
     }
 

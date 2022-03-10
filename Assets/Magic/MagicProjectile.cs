@@ -17,11 +17,11 @@ public class MagicProjectile : MonoBehaviour
         //관통 횟수 초기화 (onlyOne 이면 projectileNum 만큼 추가)
         if(magic.onlyOne == 1)
         {
-            pierceNum = magic.pierceNum + PlayerManager.Instance.projectileNum;
+            pierceNum = magic.pierce + PlayerManager.Instance.projectileNum;
         }
         else
         {
-            pierceNum = magic.pierceNum;
+            pierceNum = magic.pierce;
         }        
     }
 

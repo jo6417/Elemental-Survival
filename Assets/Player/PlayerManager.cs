@@ -110,6 +110,13 @@ public class PlayerManager : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         originColor = sprite.color;
 
+        Earth_Gem = 1000;
+        Fire_Gem = 1000;
+        Life_Gem = 1000;
+        Lightning_Gem = 1000;
+        Water_Gem = 1000;
+        Wind_Gem = 1000;
+        
         // 원소젬 UI 업데이트
         UIManager.Instance.updateGem();
 
@@ -280,7 +287,7 @@ public class PlayerManager : MonoBehaviour
             hasMagics.Add(getMagic);
         }
 
-        //보유한 마법의 개수 늘려주기
+        //보유한 마법의 레벨 올리기
         hasMagics.Find(x => x.id == getMagic.id).magicLevel++;
         // getMagic.magicLevel++;
 
