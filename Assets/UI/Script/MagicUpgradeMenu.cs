@@ -25,7 +25,6 @@ public class MagicUpgradeMenu : MonoBehaviour
 
     [Header("Stat")]
     public MagicInfo magic;
-    //TODO 마법에서 6가지 스탯 int값 받아오기 (1~6)
     List<int> stats = new List<int>();
     List<int> statsBackup = new List<int>();
     public enum StatIndex { Power, Speed, Range, Critical, Pierce, projectile }; //각 스탯의 인덱스 번호 enum
@@ -39,9 +38,6 @@ public class MagicUpgradeMenu : MonoBehaviour
 
     private void Awake()
     {
-        //! 테스트용 마법 넣기
-        magic = MagicDB.Instance.GetMagicByID(0);
-
         // 팝업창 기본 사이즈 저장
         originPopupScale = transform.localScale;
 
@@ -87,6 +83,7 @@ public class MagicUpgradeMenu : MonoBehaviour
         spinBtn.GetComponent<Button>().interactable = true;
     }
 
+    //수동 스탯 올리기
     public void StatUp(GameObject Btn)
     {
         string statName = Btn.name;
@@ -154,13 +151,18 @@ public class MagicUpgradeMenu : MonoBehaviour
             spinNum++;
         }
 
+        // 선택된 스탯 버튼 깜빡이기
+        for (int i = 0; i < 3; i++)
+        {
+            yield return new WaitForSecondsRealtime(0.2f);
+            statBtnImages[index].sprite = statBtnIdle;
+            yield return new WaitForSecondsRealtime(0.2f);
+            statBtnImages[index].sprite = statBtnSelected;
+        }
+        yield return new WaitForSecondsRealtime(0.5f);
+
         // 마법의 선택된 스탯 올리기
         ApplyMagicStats();
-
-        // 팝업 닫기
-        UIManager.Instance.scrollMenu.SetActive(false);
-        UIManager.Instance.vendMachineUI.SetActive(false);
-        UIManager.Instance.PopupUI(UIManager.Instance.magicUpgradeUI);
     }
 
     public void ResetStats()
@@ -195,6 +197,7 @@ public class MagicUpgradeMenu : MonoBehaviour
 
     void GetMagicStats()
     {
+        // 마법에서 6가지 스탯 int값 받아오기
         if (magic != null)
             stats.Clear();
         stats.Add(magic.power);
@@ -216,6 +219,7 @@ public class MagicUpgradeMenu : MonoBehaviour
 
     void ApplyMagicStats()
     {
+        //마법 스탯 반영하기
         if (magic != null)
             magic.power = stats[0];
         magic.speed = stats[1];
@@ -232,6 +236,19 @@ public class MagicUpgradeMenu : MonoBehaviour
         //     + " : " + m.pierce
         //     + " : " + m.projectile
         // );
+
+        // 마법 획득 및 언락
+        PlayerManager.Instance.GetMagic(magic);
+
+        //지불 원소젬 이름을 인덱스로 반환
+        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == magic.priceType);
+        // 가격 지불하기
+        PlayerManager.Instance.PayGem(gemTypeIndex, magic.price);
+
+        // 팝업 닫기
+        UIManager.Instance.scrollMenu.SetActive(false);
+        UIManager.Instance.vendMachineUI.SetActive(false);
+        UIManager.Instance.PopupUI(UIManager.Instance.magicUpgradeUI);
     }
 
     void UpdateMesh()

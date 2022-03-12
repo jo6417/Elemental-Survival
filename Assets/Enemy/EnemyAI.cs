@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Lean.Pool;
 using DG.Tweening;
+using TMPro;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -78,8 +79,18 @@ public class EnemyAI : MonoBehaviour
         {
             // print("마법과 충돌");
 
+            // 마법 정보 찾기
+            MagicInfo magic = null;
+            if(other.TryGetComponent(out MagicProjectile magicPro))
+            {
+                magic = magicPro.magic;
+            }
+            else if(other.TryGetComponent(out MagicFalling magicFall))
+            {
+                magic = magicFall.magic;
+            }
+
             // 체력 감소
-            MagicInfo magic = other.GetComponent<MagicProjectile>().magic;
             Damaged(magic);
         }
     }
@@ -107,7 +118,7 @@ public class EnemyAI : MonoBehaviour
         // 데미지 UI 띄우기
         Transform damageCanvas = ObjectPool.Instance.transform.Find("OverlayUI");
         var damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, damageCanvas);
-        Text dmgTxt = damageUI.GetComponent<Text>();
+        TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
         dmgTxt.text = damage.ToString();
 
         // 크리티컬 떴을때 추가 강조효과 UI

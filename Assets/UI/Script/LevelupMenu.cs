@@ -45,9 +45,10 @@ public class LevelupMenu : MonoBehaviour
             Transform magicBtnObj = btnParent.transform.GetChild(i); //마법 버튼 UI
 
             // 아티팩트 ID, 버튼타입 넣기
-            InfoHolder btn = magicBtnObj.GetComponent<InfoHolder>();
-            btn.holderType = InfoHolder.HolderType.itemHolder;
-            btn.id = itmeID;
+            InfoHolder infoHolder = magicBtnObj.GetComponent<InfoHolder>();
+            infoHolder.holderType = InfoHolder.HolderType.itemHolder;
+            infoHolder.id = itmeID;
+            infoHolder.popupMenu = gameObject;
 
             // 신규 아이템 여부 표시
             Transform newTxt = magicBtnObj.transform.Find("Background/Icon/New");

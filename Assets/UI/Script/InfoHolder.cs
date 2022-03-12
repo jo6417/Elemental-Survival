@@ -9,7 +9,7 @@ public class InfoHolder : MonoBehaviour
     public HolderType holderType;
     public int id;
 
-    public void ChooseBtn()
+    public void ChooseBtn(bool PopupQuit)
     {
         //아이템 버튼일때
         if (holderType == HolderType.itemHolder)
@@ -27,5 +27,8 @@ public class InfoHolder : MonoBehaviour
             // 마법 획득 및 언락
             PlayerManager.Instance.GetMagic(magic);
         }
+
+        if(PopupQuit)
+        UIManager.Instance.PopupUI(popupMenu);
     }
 }

@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAutoDespawn: 0
+  magicDuration: 3
 --- !u!114 &1322037193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,7 +66,6 @@ MonoBehaviour:
   atkRange: {fileID: 0}
   atkMark: {fileID: 8047919027450323982, guid: 195a016f9175601419f02329ce04825c, type: 3}
   tail: {fileID: 1472842765396626666}
-  atkDuration: 0.5
 --- !u!212 &1472842765302339234
 SpriteRenderer:
   m_ObjectHideFlags: 0

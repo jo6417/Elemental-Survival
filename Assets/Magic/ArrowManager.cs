@@ -74,7 +74,7 @@ public class ArrowManager : MonoBehaviour
         for (int i = 0; i < atkNum; i++)
         {
             // 마크한 적의 위치, 마지막은 플레이어 위치
-            Vector2 enemyPos = i == atkNum - 1 ? (Vector2)PlayerManager.Instance.transform.position : markEnemyPos(range);
+            Vector2 enemyPos = i == atkNum - 1 ? (Vector2)PlayerManager.Instance.transform.position : MarkEnemyPos(range);
 
             //마크 위치가 (0,0)이면 공격 취소
             if (enemyPos != Vector2.zero)
@@ -113,7 +113,7 @@ public class ArrowManager : MonoBehaviour
     }
 
     // 플레이어 주변 랜덤 적 위치에 마크하기
-    Vector2 markEnemyPos(float range)
+    public Vector2 MarkEnemyPos(float range)
     {
         Vector2 enemyPos = Vector2.zero;
 
@@ -132,42 +132,6 @@ public class ArrowManager : MonoBehaviour
 
         //적의 위치 리턴
         return enemyPos;
-
-        // int Num = magic.pierceNum; //마법 관통 횟수만큼 공격
-
-        // //범위 안의 적이 공격횟수보다 많으면 공격횟수만큼 반복, 아니면 범위 안의 적 갯수만큼 반복
-        // int atkNum = colls.Length > Num ? Num : colls.Length;
-
-        // // 공격 위치 배열 초기화
-        // atkPos = colls.Length == 0 ? null : new Vector3[atkNum];
-        // marks = colls.Length == 0 ? null : new GameObject[atkNum];
-
-        // // 중복된 적 마크 방지
-        // List<int> indexList = new List<int>();
-        // for (int i = 0; i < colls.Length; i++)
-        // {
-        //     //리스트에 모든 인덱스 넣기
-        //     indexList.Add(i);
-        // }
-
-        // for (int i = 0; i < atkNum; i++)
-        // {
-        //     //인덱스 리스트에서 랜덤한 난수 생성
-        //     int index = Random.Range(0, indexList.Count);
-
-        //     // 공격 위치
-        //     Vector3 pos = colls[indexList[index]].transform.position;
-
-        //     //이미 선택된 인덱스 제거
-        //     indexList.RemoveAt(index);
-
-        //     // 공격 위치에 마커 생성
-        //     GameObject mark = LeanPool.Spawn(atkMark, pos, Quaternion.identity);
-        //     marks[i] = mark;
-
-        //     // 공격 위치 배열에 추가
-        //     atkPos[i] = pos;
-        // }
     }
 
     //화살이 날아가는 방향

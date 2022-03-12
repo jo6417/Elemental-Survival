@@ -57,6 +57,11 @@ public class ProductToolTip : MonoBehaviour
 
     void Update()
     {
+        FollowMouse();
+    }
+
+    void FollowMouse()
+    {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         transform.position = mousePos;
@@ -65,6 +70,7 @@ public class ProductToolTip : MonoBehaviour
     //툴팁 켜기
     public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null)
     {
+        FollowMouse();
         gameObject.SetActive(true);
 
         //마법 or 아이템 정보 넣기

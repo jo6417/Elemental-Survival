@@ -37,15 +37,25 @@ public class HasStuffToolTip : MonoBehaviour
     public MagicInfo magic;
     public ItemInfo item;
     float halfCanvasWidth;
-    RectTransform rect;
+    private RectTransform rect;
     
-    private void Start() {
+    private void Awake() {
         halfCanvasWidth = GetComponentInParent<CanvasScaler>().referenceResolution.x * 0.5f;
         rect = GetComponent<RectTransform>();
     }
 
     void Update()
     {
+        // 마우스 커서 따라다니기
+        FollowMouse();
+    }
+
+    void FollowMouse()
+    {
+        // 패널이 화면밖으로 안나가게 피벗 수정
+        if(rect == null)
+        return;
+
         if(rect.anchoredPosition.x + rect.sizeDelta.x > halfCanvasWidth)
         {
             rect.pivot = new Vector2(1,0);
@@ -57,14 +67,13 @@ public class HasStuffToolTip : MonoBehaviour
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         transform.position = mousePos;
-
-        //TODO 패널이 화면밖으로 안나가게 방지
-
     }
 
     //툴팁 켜기
     public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null)
     {
+        //마우스 위치로 이동 후 활성화
+        FollowMouse();
         gameObject.SetActive(true);
 
         //마법 or 아이템 정보 넣기

@@ -468,20 +468,20 @@ public class PlayerManager : MonoBehaviour
     }
 
     //원소젬 지불하기
-    public void PayGem(int gemIndex, int payAmount){
+    public void PayGem(int gemIndex, int price){
         switch (gemIndex)
         {            
-            case 0: Earth_Gem -= payAmount;
+            case 0: Earth_Gem -= price;
             break;
-            case 1: Fire_Gem -= payAmount;
+            case 1: Fire_Gem -= price;
             break;
-            case 2: Life_Gem -= payAmount;
+            case 2: Life_Gem -= price;
             break;
-            case 3: Lightning_Gem -= payAmount;
+            case 3: Lightning_Gem -= price;
             break;
-            case 4: Water_Gem -= payAmount;
+            case 4: Water_Gem -= price;
             break;
-            case 5: Wind_Gem -= payAmount;
+            case 5: Wind_Gem -= price;
             break;
         }
 

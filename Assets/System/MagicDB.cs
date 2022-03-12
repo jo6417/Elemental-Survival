@@ -171,6 +171,9 @@ public class MagicDB : MonoBehaviour
         PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(3));
         PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(4));
 
+        //플레이어 마법 시작
+        CastMagic.Instance.StartMagicCoroutine();
+
         yield return null;
     }
     

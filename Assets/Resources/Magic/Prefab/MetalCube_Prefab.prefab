@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8370058618797703206}
-  - component: {fileID: 8147680400301995605}
+  - component: {fileID: 4103208101850571177}
   - component: {fileID: 8370058618797703207}
   - component: {fileID: 8370058618797703192}
   - component: {fileID: 8511969488732639964}
@@ -37,7 +37,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8147680400301995605
+--- !u!114 &4103208101850571177
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,10 +46,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 8370058618797703193}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
+  m_Script: {fileID: 11500000, guid: 236e5e372587ea54383ce7d2ff512d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicID: 15
+  upDistance: 2
+  col: {fileID: 8511969488732639964}
+  originColliderSize: {x: 0, y: 0}
+  originScale: {x: 0, y: 0}
+  fallEase: 26
+  magicSpeed: 1
+  magicDuration: 0.5
+  magicEffect: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
+    type: 3}
+  effectPos: {x: 0, y: 0, z: 0}
 --- !u!212 &8370058618797703207
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -88,7 +97,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 8092416761886967685, guid: ddf97f4ec5e18e94f87071609bc93ab6,
     type: 3}
@@ -145,7 +154,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.6, y: 1.8}
+  m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
 --- !u!50 &3042065820334735687
 Rigidbody2D:
@@ -4913,7 +4922,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: -1
   m_RenderMode: 0
   m_SortMode: 0

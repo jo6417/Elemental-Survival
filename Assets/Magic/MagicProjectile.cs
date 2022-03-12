@@ -7,27 +7,61 @@ public class MagicProjectile : MonoBehaviour
 {
     public MagicInfo magic;
     Rigidbody2D rigid;
+    Collider2D col;
     float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
+    public bool isAutoDespawn = true;
+    public float magicDuration = 3f;
 
-    private void Start()
+    private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
+    }
 
+    private void OnEnable()
+    {
+        //마법 자동 디스폰
+        if(isAutoDespawn)
+        StartCoroutine(AutoDespawn());
+    }
+
+    private void Update()
+    {
+        LookDirAngle();
+    }
+
+    IEnumerator AutoDespawn()
+    {
+        //magic이 null이 아닐때까지 대기
+        yield return new WaitUntil(() => magic != null);
+
+        //초기화
+        Initial();
+
+        // 속도 버프 계수
+        float durationBuff = magicDuration * (PlayerManager.Instance.duration - 1f);
+        // 마법 오브젝트 속도
+        float duration = magicDuration - durationBuff;
+
+        //마법 지속시간
+        yield return new WaitForSeconds(duration);
+
+        // 오브젝트 디스폰하기
+        LeanPool.Despawn(transform);
+    }
+
+    void Initial()
+    {
         //관통 횟수 초기화 (onlyOne 이면 projectileNum 만큼 추가)
-        if(magic.onlyOne == 1)
+        if (magic.onlyOne == 1)
         {
             pierceNum = magic.pierce + PlayerManager.Instance.projectileNum;
         }
         else
         {
             pierceNum = magic.pierce;
-        }        
-    }
-
-    private void Update()
-    {
-        LookDirAngle();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -62,6 +96,4 @@ public class MagicProjectile : MonoBehaviour
             lastPos = transform.position;
         }
     }
-
-
 }
