@@ -49,13 +49,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 236e5e372587ea54383ce7d2ff512d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upDistance: 2
+  magicName: 
   col: {fileID: 8511969488732639964}
-  originColliderSize: {x: 0, y: 0}
   originScale: {x: 0, y: 0}
   fallEase: 26
   magicSpeed: 1
+  upDistance: 2
   magicDuration: 0.5
+  isAutoDespawn: 1
+  isExpand: 1
   magicEffect: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
     type: 3}
   effectPos: {x: 0, y: 0, z: 0}

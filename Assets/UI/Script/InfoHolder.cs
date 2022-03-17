@@ -17,7 +17,7 @@ public class InfoHolder : MonoBehaviour
             ItemInfo item = ItemDB.Instance.GetItemByID(id);
 
             // 아이템 획득
-            PlayerManager.Instance.GainItem(item);
+            PlayerManager.Instance.GetItem(item);
         }
         //마법 구매 버튼일때
         else if (holderType == HolderType.magicHolder)

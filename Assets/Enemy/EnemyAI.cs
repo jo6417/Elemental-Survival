@@ -34,20 +34,31 @@ public class EnemyAI : MonoBehaviour
         player = PlayerManager.Instance.transform;
         rigid = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
-
-        //프리팹 이름으로 아이템 정보 찾아 넣기
-        enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
-        enemyName = enemy.name;
-
-        Initial();
     }
 
-    void Initial()
+    private void OnEnable() {
+        StartCoroutine(Initial());
+    }
+
+    IEnumerator Initial()
     {
+        //EnemyDB 로드 될때까지 대기
+        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+
+        //프리팹 이름으로 아이템 정보 찾아 넣기
+        if (enemy == null)
+        enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+
+        //enemy 못찾으면 코루틴 종료
+        if (enemy == null)
+            yield break;
+
         hitCount = 0; //데미지 쿨타임 초기화
         HpNow = enemy.hpMax; //체력 초기화
         sprite.color = Color.white; //스프라이트 색깔 초기화
         rigid.velocity = Vector2.zero; //속도 초기화
+
+        enemyName = enemy.name;
     }
 
     void Update()
@@ -81,11 +92,11 @@ public class EnemyAI : MonoBehaviour
 
             // 마법 정보 찾기
             MagicInfo magic = null;
-            if(other.TryGetComponent(out MagicProjectile magicPro))
+            if (other.TryGetComponent(out MagicProjectile magicPro))
             {
                 magic = magicPro.magic;
             }
-            else if(other.TryGetComponent(out MagicFalling magicFall))
+            else if (other.TryGetComponent(out MagicFalling magicFall))
             {
                 magic = magicFall.magic;
             }
@@ -97,6 +108,9 @@ public class EnemyAI : MonoBehaviour
 
     void Damaged(MagicInfo magic)
     {
+        if(enemy == null)
+        return;
+
         //크리티컬 확률 추가
         bool isCritical = magic.critical >= Random.value ? true : false;
         float criticalAtk = isCritical ? 1.5f : 1f;
@@ -157,6 +171,9 @@ public class EnemyAI : MonoBehaviour
 
     void Dead()
     {
+        if(enemy == null)
+        return;
+        
         if (enemy.dropRate >= Random.Range(0, 1))
         {
             //아이템 드랍

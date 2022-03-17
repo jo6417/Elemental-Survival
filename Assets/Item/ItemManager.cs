@@ -60,14 +60,14 @@ public class ItemManager : MonoBehaviour
         while (!isGet)
         {
             itemSpeed -= Time.deltaTime;
-            itemSpeed = Mathf.Clamp(itemSpeed, 0.1f, 1f);
+            itemSpeed = Mathf.Clamp(itemSpeed, 0.01f, 1f);
 
             rigid.DOMove(player.transform.position, itemSpeed);
 
             //거리가 0.5f 이하일때 획득
             if (Vector2.Distance(player.transform.position, transform.position) <= 0.5f)
             {
-                GetItem();
+                GainItem();
                 break;
             }
 
@@ -75,11 +75,11 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    void GetItem()
+    void GainItem()
     {
         isGet = true;
 
-        PlayerManager.Instance.GainItem(item);
+        PlayerManager.Instance.GetItem(item);
         //아이템 속도 초기화
         rigid.velocity = Vector2.zero;
 

@@ -26,11 +26,13 @@ public class MagicInfo
     public int pierce = 0; //관통 횟수 및 넉백 계수
     public int projectile = 0; //넉백 파워
 
+    public int coolTime = 0; //쿨타임
+
     [Header("Side Effect")]
     public int onlyOne = 0; //1이면 다중 발사 금지
 
     public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, 
-    int power, int speed, int range, int critical, int pierce, int projectile, 
+    int power, int speed, int range, int critical, int pierce, int projectile, int coolTime, 
     int onlyOne)
     {
         this.id = id;
@@ -48,6 +50,8 @@ public class MagicInfo
         this.critical = critical;
         this.pierce = pierce;
         this.projectile = projectile;
+
+        this.coolTime = coolTime;
 
         this.onlyOne = onlyOne;
     }
@@ -92,13 +96,13 @@ public class MagicDB : MonoBehaviour
     void Awake()
     {
         // 등급 색깔
-        Color[] _gradeColor = {RGBAToHex("FFFFFF"), RGBAToHex("4FF84C"), RGBAToHex("3EC1FF"), RGBAToHex("CD45FF"),
-        RGBAToHex("FF3310"), RGBAToHex("FFFF00")};
+        Color[] _gradeColor = {HexToRGBA("FFFFFF"), HexToRGBA("4FF84C"), HexToRGBA("3EC1FF"), HexToRGBA("CD45FF"),
+        HexToRGBA("FF3310"), HexToRGBA("FFFF00")};
         gradeColor = _gradeColor;
 
         // 원소젬 색깔
-        Color[] _elementColor = {RGBAToHex("C88C5E"), RGBAToHex("FF5B5B"), RGBAToHex("5BFF64"),
-        RGBAToHex("FFF45B"), RGBAToHex("739CFF"), RGBAToHex("5BFEFF")};
+        Color[] _elementColor = {HexToRGBA("C88C5E"), HexToRGBA("FF5B5B"), HexToRGBA("5BFF64"),
+        HexToRGBA("FFF45B"), HexToRGBA("739CFF"), HexToRGBA("5BFEFF")};
         elementColor = _elementColor;
 
         // 원소 이름
@@ -144,7 +148,7 @@ public class MagicDB : MonoBehaviour
                 //받아온 데이터를 List<MagicInfo>에 넣기
                 magicDB.Add(new MagicInfo(
                 magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"], magic["priceType"], magic["price"], 
-                magic["power"], magic["speed"], magic["range"], magic["critical"], magic["pierce"], magic["projectile"], 
+                magic["power"], magic["speed"], magic["range"], magic["critical"], magic["pierce"], magic["projectile"],  magic["coolTime"], 
                 magic["onlyOne"]));
             }
 
@@ -167,12 +171,12 @@ public class MagicDB : MonoBehaviour
         print("MagicDB Loaded!");
 
         //! 테스트용 마법 추가
-        PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(15));
-        PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(3));
-        PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(4));
+        // PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(15));
+        // PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(3));
+        // PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(4));
 
-        //플레이어 마법 시작
-        CastMagic.Instance.StartMagicCoroutine();
+        // //플레이어 마법 시작
+        // CastMagic.Instance.StartMagicCoroutine();
 
         yield return null;
     }
@@ -288,7 +292,7 @@ public class MagicDB : MonoBehaviour
         }
     }
 
-    Color RGBAToHex(string hex)
+    public Color HexToRGBA(string hex)
     {
         Color color;
         ColorUtility.TryParseHtmlString("#" + hex, out color);

@@ -303,7 +303,7 @@ public class VendMachine : MonoBehaviour
                         FlickerObj(frame.gameObject, frameColor);
 
                         //부족한 젬 타입 숫자 UI 깜빡이기
-                        FlickerObj(UIManager.Instance.gemUIs[gemTypeIndex], Color.white);
+                        FlickerObj(UIManager.Instance.gemUIs[gemTypeIndex].gameObject, Color.white);
                     });
             }
 

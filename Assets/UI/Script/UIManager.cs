@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Lean.Pool;
 using DG.Tweening;
+using TMPro;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class UIManager : MonoBehaviour
 {
@@ -42,19 +44,19 @@ public class UIManager : MonoBehaviour
     public GameObject vendMachineUI;
     public GameObject slotMachineUI;
     public GameObject magicUpgradeUI;
+    public TextMeshProUGUI TimerUI;
+    float time_start;
+    float time_current;
 
     [Header("PlayerUI")]
-    public Image playerHp;
+    public SlicedFilledImage playerHp;
+    public TextMeshProUGUI playerHpText;
     public SlicedFilledImage playerExp;
-    public Text playerLev;
+    public TextMeshProUGUI playerLev;
 
-    public List<GameObject> gemUIs = new List<GameObject>();
-    public Text EarthGem_UI;
-    public Text FireGem_UI;
-    public Text LifeGem_UI;
-    public Text LightningGem_UI;
-    public Text WaterGem_UI;
-    public Text WindGem_UI;
+    public List<TextMeshProUGUI> gemUIs = new List<TextMeshProUGUI>();
+    public List<Light2D> gemUILights = new List<Light2D>();
+    public GameObject gemUIParent;
 
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
@@ -66,12 +68,22 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1; //시간값 초기화
 
-        gemUIs.Add(EarthGem_UI.gameObject);
-        gemUIs.Add(FireGem_UI.gameObject);
-        gemUIs.Add(LifeGem_UI.gameObject);
-        gemUIs.Add(LightningGem_UI.gameObject);
-        gemUIs.Add(WaterGem_UI.gameObject);
-        gemUIs.Add(WindGem_UI.gameObject);
+        // GemUI 전부 찾기
+        TextMeshProUGUI[] gems = gemUIParent.GetComponentsInChildren<TextMeshProUGUI>();
+        foreach (var gemUI in gems)
+        {
+            gemUIs.Add(gemUI);
+        }
+
+        // GemUI Light2D 전부 찾기
+        Light2D[] lights = gemUIParent.GetComponentsInChildren<Light2D>();
+        foreach (var light in lights)
+        {
+            //리스트에 추가
+            gemUILights.Add(light);
+            //밝기 0으로 낮추기
+            light.intensity = 0;
+        }
     }
 
     private void Update()
@@ -82,10 +94,12 @@ public class UIManager : MonoBehaviour
             Resume();
 
             // 보유한 모든 마법 아이콘 갱신
-            UIManager.Instance.updateMagics();
+            UIManager.Instance.UpdateMagics();
             // 보유한 모든 아이템 아이콘 갱신
-            UIManager.Instance.updateItems();
+            UIManager.Instance.UpdateItems();
         }
+
+        UpdateTimer();
     }
 
     public void QuitMainMenu()
@@ -112,12 +126,38 @@ public class UIManager : MonoBehaviour
 
     public void InitialStat()
     {
-        updateExp();
-        updateHp();
-        updateStat();
+        UpdateExp();
+        UpdateHp();
+        UpdateStat();
+        ResetTimer();
     }
 
-    public void updateExp()
+    public void ResetTimer()
+    {
+        time_start = Time.time;
+        time_current = 0;
+        TimerUI.text = "00:00";
+    }
+
+    public void UpdateTimer()
+    {
+        time_current = (int)(Time.time - time_start);
+
+        //시간을 3600으로 나눈 몫
+        string hour = 0 < (int)(time_current / 3600f) ? string.Format("{0:00}", Mathf.FloorToInt(time_current / 3600f)) + ":" : "";
+        //시간을 60으로 나눈 몫을 60으로 나눈 나머지
+        string minute = 0 < (int)(time_current / 60f % 60f) ? string.Format("{0:00}", Mathf.FloorToInt(time_current / 60f % 60f)) + ":" : "00:";
+        //시간을 60으로 나눈 나머지
+        string second = string.Format("{0:00}", time_current % 60f);
+
+        //시간 출력
+        TimerUI.text = hour + minute + second;
+
+        //TODO 시간 UI 색깔 변경
+        //TODO 색깔에 따라 난이도 변경
+    }
+
+    public void UpdateExp()
     {
         // 경험치 바 갱신
         playerExp.fillAmount = PlayerManager.Instance.ExpNow / PlayerManager.Instance.ExpMax;
@@ -126,22 +166,39 @@ public class UIManager : MonoBehaviour
         playerLev.text = "Lev. " + PlayerManager.Instance.Level.ToString();
     }
 
-    public void updateHp()
+    public void UpdateHp()
     {
         playerHp.fillAmount = PlayerManager.Instance.hpNow / PlayerManager.Instance.hpMax;
+        playerHpText.text = PlayerManager.Instance.hpNow + " / " + PlayerManager.Instance.hpMax;
     }
 
-    public void updateGem()
+    public void UpdateGem(int gemTypeIndex)
     {
-        EarthGem_UI.text = "x " + PlayerManager.Instance.Earth_Gem.ToString();
-        FireGem_UI.text = "x " + PlayerManager.Instance.Fire_Gem.ToString();
-        LifeGem_UI.text = "x " + PlayerManager.Instance.Life_Gem.ToString();
-        LightningGem_UI.text = "x " + PlayerManager.Instance.Lightning_Gem.ToString();
-        WaterGem_UI.text = "x " + PlayerManager.Instance.Water_Gem.ToString();
-        WindGem_UI.text = "x " + PlayerManager.Instance.Wind_Gem.ToString();
+        // gemUIs[0].text = "x " + PlayerManager.Instance.Earth_Gem.ToString();
+        // gemUIs[1].text = "x " + PlayerManager.Instance.Fire_Gem.ToString();
+        // gemUIs[2].text = "x " + PlayerManager.Instance.Life_Gem.ToString();
+        // gemUIs[3].text = "x " + PlayerManager.Instance.Lightning_Gem.ToString();
+        // gemUIs[4].text = "x " + PlayerManager.Instance.Water_Gem.ToString();
+        // gemUIs[5].text = "x " + PlayerManager.Instance.Wind_Gem.ToString();
+
+        gemUIs[gemTypeIndex].text = "x " + PlayerManager.Instance.hasGems[gemTypeIndex].ToString();
     }
 
-    public void updateItems()
+    public void GemIndicator(int gemIndex)
+    {
+        Light2D gemLight = gemUILights[gemIndex];
+        
+        //밝기 0으로 초기화
+        gemLight.intensity = 0;
+
+        //밝기 1까지 부드럽게 올렸다 내리기
+        DOTween.To(() => gemLight.intensity, x => gemLight.intensity = x, 1, 0.2f)
+        .OnComplete(() => {
+            DOTween.To(() => gemLight.intensity, x => gemLight.intensity = x, 0, 0.2f);
+        });
+    }
+
+    public void UpdateItems()
     {
         //기존 아이콘 모두 없에기
         Image[] children = hasItemsUI.GetComponentsInChildren<Image>();
@@ -184,7 +241,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void updateMagics()
+    public void UpdateMagics()
     {
         //기존 아이콘 모두 없에기
         Image[] children = hasMagicsUI.GetComponentsInChildren<Image>();
@@ -218,7 +275,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void updateStat()
+    public void UpdateStat()
     {
         // 스탯 입력할 UI
         Text[] stats = statsUI.GetComponentsInChildren<Text>();

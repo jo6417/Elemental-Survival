@@ -8,6 +8,7 @@ public class MagicProjectile : MonoBehaviour
     public MagicInfo magic;
     Rigidbody2D rigid;
     Collider2D col;
+    public Vector2 originColScale;
     float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool isAutoDespawn = true;
@@ -17,6 +18,20 @@ public class MagicProjectile : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+
+        // 콜라이더 기본 사이즈 저장
+        if (TryGetComponent(out BoxCollider2D boxCol))
+        {
+            originColScale = boxCol.size;
+        }
+        else if (TryGetComponent(out CapsuleCollider2D capCol))
+        {
+            originColScale = capCol.size;
+        }
+        else if (TryGetComponent(out CircleCollider2D circleCol))
+        {
+            originColScale = Vector2.one * circleCol.radius;
+        }
     }
 
     private void OnEnable()
@@ -33,11 +48,8 @@ public class MagicProjectile : MonoBehaviour
 
     IEnumerator AutoDespawn()
     {
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magic != null);
-
         //초기화
-        Initial();
+        StartCoroutine(Initial());
 
         // 속도 버프 계수
         float durationBuff = magicDuration * (PlayerManager.Instance.duration - 1f);
@@ -51,8 +63,11 @@ public class MagicProjectile : MonoBehaviour
         LeanPool.Despawn(transform);
     }
 
-    void Initial()
+    IEnumerator Initial()
     {
+        //magic이 null이 아닐때까지 대기
+        yield return new WaitUntil(() => magic != null);
+
         //관통 횟수 초기화 (onlyOne 이면 projectileNum 만큼 추가)
         if (magic.onlyOne == 1)
         {

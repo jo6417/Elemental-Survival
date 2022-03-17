@@ -16,7 +16,7 @@ public class ChestMenu : MonoBehaviour
     public Sprite chestBody_Open;
     public Button openBtn;
 
-    public GameObject prize; //상품 이미지
+    // public GameObject prize; //상품 이미지
 
     public int[] test;
 
@@ -31,17 +31,18 @@ public class ChestMenu : MonoBehaviour
         chestBody.sprite = chestBody_Close;
         //버튼 상호작용 초기화
         openBtn.interactable = true;
+
         //상자 안에서 올라올 상품 이미지 초기화
-        prize.SetActive(false);
+        // prize.SetActive(false);
     }
 
     private void Start() {
 
         chestRate.Add(slotMachineRate);
         chestRate.Add(vendMachineRate);
-        test = new int[chestRate.Count];
-
+        
         // 확률 테스트
+        // test = new int[chestRate.Count];
         // for (int i = 0; i < 10000; i++)
         // {
         //     test[RandomPick()]++;
@@ -74,7 +75,7 @@ public class ChestMenu : MonoBehaviour
         int index = RandomPick();
 
         //! test 0으로 고정됨!
-        index = 0;
+        index = 1;
         
         switch (index)
         {
@@ -88,14 +89,16 @@ public class ChestMenu : MonoBehaviour
         }
 
         //상품 오브젝트 활성화 및 애니메이션 재생
-        prize.SetActive(true);
+        // prize.SetActive(true);
         
-        yield return new WaitForSecondsRealtime(0.5f); //상품 애니메이션 대기
+        // yield return new WaitForSecondsRealtime(0.5f); //상품 애니메이션 대기
         
-        prize.SetActive(false);
+        // prize.SetActive(false);
 
         //오브젝트 따라 팝업 띄우기
-        UIManager.Instance.PopupUI(popupUI);
+        UIManager.Instance.PopupUI(popupUI, true);
+
+        yield return new WaitForSecondsRealtime(1f); //상품 애니메이션 대기
 
         //상자 팝업 닫기
         gameObject.SetActive(false);

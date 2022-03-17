@@ -32,14 +32,8 @@ public class CastMagic : MonoBehaviour
 
     public Transform magicPool;
     List<int> nowCastMagic = new List<int>(); //현재 사용중인 마법
-    public List<IEnumerator> magicCoroutine = new List<IEnumerator>();
 
-    private void Update()
-    {
-        
-    }
-
-    public void StartMagicCoroutine()
+    public void StartCastMagic()
     {
         //플레이어 보유중인 모든 마법 ID
         List<int> hasMagicIDs = new List<int>();
@@ -83,30 +77,34 @@ public class CastMagic : MonoBehaviour
         }
     }
 
+    //소환 마법
     IEnumerator SummonMagic(GameObject magicPrefab, MagicInfo magic)
     {
-        //TODO 랜덤 적 찾기, 투사체 수 이하로
+        // 랜덤 적 찾기, 투사체 수 이하로
         List<Vector2> enemyPos = MarkEnemyPos(magic);
 
         // 찾은 적 리스트 개수만큼 반복
         for (int i = 0; i < enemyPos.Count; i++)
         {
-            //TODO 해당 적 위치에 마법 생성
+            // 해당 적 위치에 마법 생성
             GameObject magicObj = LeanPool.Spawn(magicPrefab, enemyPos[i], Quaternion.identity);
 
             MagicFalling magicFall = magicObj.GetComponent<MagicFalling>();
             //마법 정보 넣기
             magicFall.magic = magic;
-            //TODO 히트박스 크기 반영
-            SetHitBox(magicObj, magic);
+            // 히트박스 크기 반영
+            Vector2 originColSize = magicObj.GetComponent<MagicFalling>().originColScale;
+            SetHitBox(magicObj, originColSize, magic);
         }
 
-        //마법 쿨타임 만큼 대기 (기본값 1초 - 스피드 스탯 * 10 / 100)
-        yield return new WaitForSeconds(1 - magic.speed * 0.1f);
+        //마법 쿨타임 만큼 대기 (기본값 - 스피드 스탯 * 10 / 100)
+        print("magic.coolTime : "+magic.coolTime);
+        yield return new WaitForSeconds(magic.coolTime - magic.speed * 0.1f);
 
         StartCoroutine(SummonMagic(magicPrefab, magic));
     }
 
+    //투사체 마법
     IEnumerator ShotMagic(GameObject magicPrefab, MagicInfo magic)
     {
         // 마법id에 해당하는 프리팹 투사체 갯수만큼 생성, onlyOne 속성이 1이면 하나만 발사
@@ -121,8 +119,9 @@ public class CastMagic : MonoBehaviour
             Quaternion.identity,
             magicPool);
 
-            //TODO 마법 range 속성으로 히트박스 크기 늘리기
-            SetHitBox(magicObj, magic);
+            // 마법 range 속성으로 히트박스 크기 늘리기
+            Vector2 originColSize = magicObj.GetComponent<MagicProjectile>().originColScale;
+            SetHitBox(magicObj, originColSize, magic);
 
             //마법 정보 넣기
             magicObj.GetComponent<MagicProjectile>().magic = magic;
@@ -135,8 +134,8 @@ public class CastMagic : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        //마법 쿨타임 만큼 대기 (기본값 1초 - 스피드 스탯 * 10 / 100)
-        yield return new WaitForSeconds(1 - magic.speed * 0.1f);
+        //마법 쿨타임 만큼 대기 (기본값 - 스피드 스탯 * 10 / 100)
+        yield return new WaitForSeconds(magic.coolTime - magic.speed * 0.1f);
 
         StartCoroutine(ShotMagic(magicPrefab, magic));
     }
@@ -150,8 +149,11 @@ public class CastMagic : MonoBehaviour
         float range = 2f * magic.range * PlayerManager.Instance.range;
         colls = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("Enemy"));
 
+        // 투사체 개수 (마법 및 플레이어 투사체 버프 합산)
+        int magicProjectile = PlayerManager.Instance.projectileNum + magic.projectile;
+
         // 공격할 적 개수
-        int markNum = colls.Length < 1 + magic.projectile ? colls.Length : 1 + magic.projectile;
+        int markNum = colls.Length < magicProjectile ? colls.Length : magicProjectile;
 
         // 적 위치 리스트에 넣기
         for (int i = 0; i < markNum; i++)
@@ -171,17 +173,23 @@ public class CastMagic : MonoBehaviour
         return enemyPos;
     }
 
-    void SetHitBox(GameObject magicObj, MagicInfo magic)
+    // 콜라이더 사이즈 갱신
+    void SetHitBox(GameObject magicObj, Vector2 originSize, MagicInfo magic)
     {
         if (magicObj.TryGetComponent(out BoxCollider2D boxCol))
         {
             boxCol = magicObj.GetComponent<BoxCollider2D>();
-            boxCol.size = boxCol.size * magic.range;
+            boxCol.size = originSize * magic.range;
         }
         else if (magicObj.TryGetComponent(out CapsuleCollider2D capCol))
         {
             capCol = magicObj.GetComponent<CapsuleCollider2D>();
-            capCol.size = capCol.size * magic.range;
+            capCol.size = originSize * magic.range;
+        }
+        else if (magicObj.TryGetComponent(out CircleCollider2D circleCol))
+        {
+            circleCol = magicObj.GetComponent<CircleCollider2D>();
+            circleCol.radius = originSize.x * magic.range;
         }
     }
 }

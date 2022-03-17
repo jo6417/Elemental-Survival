@@ -30,6 +30,9 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
+    [Header("<Test>")]
+    public List<int> basicMagic = new List<int>();
+
     [Header("<Refer>")]
     public GameObject mobSpawner;
     private Animator animator;
@@ -97,6 +100,7 @@ public class PlayerManager : MonoBehaviour
     [Header("<Pocket>")]
     public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
+    public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public int Earth_Gem = 0;
     public int Fire_Gem = 0;
     public int Life_Gem = 0;
@@ -110,21 +114,44 @@ public class PlayerManager : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         originColor = sprite.color;
 
-        Earth_Gem = 1000;
-        Fire_Gem = 1000;
-        Life_Gem = 1000;
-        Lightning_Gem = 1000;
-        Water_Gem = 1000;
-        Wind_Gem = 1000;
+        hasGems.Add(Earth_Gem);
+        hasGems.Add(Fire_Gem);
+        hasGems.Add(Life_Gem);
+        hasGems.Add(Lightning_Gem);
+        hasGems.Add(Water_Gem);
+        hasGems.Add(Wind_Gem);
         
         // 원소젬 UI 업데이트
-        UIManager.Instance.updateGem();
+        for (int i = 0; i < hasGems.Count; i++)
+        {
+            UIManager.Instance.UpdateGem(i);
+        }
 
         //경험치 최대치 갱신
         ExpMax = Level * Level + 5;
 
         //능력치 초기화
         UIManager.Instance.InitialStat();
+
+        //기본 마법 추가
+        StartCoroutine(BasicMagicAdd());
+    }
+
+    IEnumerator BasicMagicAdd()
+    {
+        // MagicDB 로드 완료까지 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        //TODO 추후 캐릭터 구현 후 기본마법 바꾸고 시작하기
+        // 캐릭터 기본 마법 추가
+        foreach (var magicID in basicMagic)
+        {
+            // print(magicID + "번 마법 추가됨");
+            GetMagic(MagicDB.Instance.GetMagicByID(magicID));
+        }
+
+        //플레이어 마법 시작
+        CastMagic.Instance.StartCastMagic();
     }
 
     private void Update()
@@ -220,11 +247,12 @@ public class PlayerManager : MonoBehaviour
         //체력 0 이하가 되면 사망
         if (hpNow <= 0)
         {
+            hpNow = 0;
             // print("Game Over");
             // Dead();
         }
 
-        UIManager.Instance.updateHp(); //체력 UI 업데이트        
+        UIManager.Instance.UpdateHp(); //체력 UI 업데이트        
     }
 
     void Dead()
@@ -236,7 +264,7 @@ public class PlayerManager : MonoBehaviour
         // gameOverUI.SetActive(true);
     }
 
-    public void GainItem(ItemInfo getItem)
+    public void GetItem(ItemInfo getItem)
     {
         // print(item.itemType + " : " + item.itemName);
         // 아이템이 젬 타입일때
@@ -271,7 +299,7 @@ public class PlayerManager : MonoBehaviour
             // getItem.hasNum++;
 
             // 보유한 모든 아이템 아이콘 갱신
-            UIManager.Instance.updateItems();
+            UIManager.Instance.UpdateItems();
 
             // 모든 아이템 버프 갱신
             buffUpdate();
@@ -292,7 +320,7 @@ public class PlayerManager : MonoBehaviour
         // getMagic.magicLevel++;
 
         // 보유한 모든 마법 아이콘 갱신
-        UIManager.Instance.updateMagics();
+        UIManager.Instance.UpdateMagics();
     }
 
     void buffUpdate()
@@ -380,7 +408,7 @@ public class PlayerManager : MonoBehaviour
         wind_atk = wind_atk * wind_buff;
 
         // pause 메뉴 스탯UI에 스탯 반영하기
-        UIManager.Instance.updateStat();
+        UIManager.Instance.UpdateStat();
     }
 
     public void AddGem(ItemInfo item)
@@ -394,37 +422,47 @@ public class PlayerManager : MonoBehaviour
             //레벨업
             Levelup();
         }
+        // print(item.itemName.Split(' ')[0]);
 
-        if (item.earth != 0)
-        {
-            Earth_Gem++;
-        }
-        else if (item.fire != 0)
-        {
-            Fire_Gem++;
-        }
-        else if (item.life != 0)
-        {
-            Life_Gem++;
-        }
-        else if (item.lightning != 0)
-        {
-            Lightning_Gem++;
-        }
-        else if (item.water != 0)
-        {
-            Water_Gem++;
-        }
-        else if (item.wind != 0)
-        {
-            Wind_Gem++;
-        }
+        // 가격 타입으로 젬 타입 인덱스로 반환
+        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
+
+        //해당 젬 갯수 올리기
+        hasGems[gemTypeIndex]++;
+
+        //해당 젬 UI 인디케이터
+        UIManager.Instance.GemIndicator(gemTypeIndex);
+
+        // if (item.itemName == MagicDB.Instance.elementNames[0])
+        // {
+        //     Earth_Gem++;
+        // }
+        // else if (item.itemName == MagicDB.Instance.elementNames[1])
+        // {
+        //     Fire_Gem++;
+        // }
+        // else if (item.itemName == MagicDB.Instance.elementNames[2])
+        // {
+        //     Life_Gem++;
+        // }
+        // else if (item.itemName == MagicDB.Instance.elementNames[3])
+        // {
+        //     Lightning_Gem++;
+        // }
+        // else if (item.itemName == MagicDB.Instance.elementNames[4])
+        // {
+        //     Water_Gem++;
+        // }
+        // else if (item.itemName == MagicDB.Instance.elementNames[5])
+        // {
+        //     Wind_Gem++;
+        // }
 
         // UI 업데이트
-        UIManager.Instance.updateGem();
+        UIManager.Instance.UpdateGem(gemTypeIndex);
 
         //경험치 및 레벨 갱신
-        UIManager.Instance.updateExp();
+        UIManager.Instance.UpdateExp();
     }
 
     void Levelup()
@@ -486,7 +524,6 @@ public class PlayerManager : MonoBehaviour
         }
 
         //젬 UI 업데이트
-        UIManager.Instance.updateGem();
+        UIManager.Instance.UpdateGem(gemIndex);
     }
-
 }
