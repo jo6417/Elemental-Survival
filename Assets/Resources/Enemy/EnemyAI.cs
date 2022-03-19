@@ -160,11 +160,20 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator Knockback(float knockbackForce)
     {
-        // 반대로 이동
-        Vector2 dir = transform.position - player.position;
-        // Vector2 dir = Vector2.zero;
-        // rigid.velocity = dir.normalized * knockbackForce;
-        rigid.AddForce(dir.normalized * knockbackForce * 0.1f);
+        // 반대 방향 및 넉백파워
+        Vector2 knockbackDir = transform.position - player.position;
+        Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.knockbackForce - 1));
+        knockbackDir = knockbackDir.normalized + knockbackBuff;
+
+        //리지드바디 밀기
+        // rigid.velocity = Vector2.zero;
+        // rigid.AddForce(dir.normalized * knockbackForce * 0.1f);
+
+        //반대방향으로 이동
+        transform.DOMove((Vector2)transform.position + knockbackDir, 0.1f)
+        .SetEase(Ease.OutBack);
+
+        print(knockbackDir);
 
         yield return null;
     }

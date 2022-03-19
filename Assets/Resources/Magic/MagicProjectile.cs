@@ -8,6 +8,7 @@ public class MagicProjectile : MonoBehaviour
     public MagicInfo magic;
     Rigidbody2D rigid;
     Collider2D col;
+    SpriteRenderer sprite;
     public Vector2 originColScale;
     float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
@@ -18,6 +19,7 @@ public class MagicProjectile : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        sprite = GetComponent<SpriteRenderer>();
 
         // 콜라이더 기본 사이즈 저장
         if (TryGetComponent(out BoxCollider2D boxCol))
@@ -107,7 +109,15 @@ public class MagicProjectile : MonoBehaviour
             Vector3 returnDir = (transform.position - lastPos).normalized;
             float rotation = Mathf.Atan2(returnDir.y, returnDir.x) * Mathf.Rad2Deg;
 
-            rigid.rotation = rotation - 90;
+            // if(magic.id == 1)
+            // print(rigid.rotation + " : " + rotation);
+
+            if(rotation > 90 || rotation < -90)
+            sprite.flipY = true;
+            else
+            sprite.flipY = false;
+
+            rigid.rotation = rotation;
             lastPos = transform.position;
         }
     }

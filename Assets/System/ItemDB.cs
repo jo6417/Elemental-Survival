@@ -100,6 +100,8 @@ public class ItemDB : MonoBehaviour
     public List<ItemInfo> itemDB = null; //마법 정보 DB
     public List<Sprite> itemIcon = null; //마법 아이콘 리스트
     public List<GameObject> itemPrefab = null; //마법 프리팹 리스트
+    public int[] outGemNum = new int[6]; //카메라 밖으로 나간 원소젬 개수
+    public List<GameObject> outGem = new List<GameObject>(); //카메라 밖으로 나간 원소젬 리스트
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
 

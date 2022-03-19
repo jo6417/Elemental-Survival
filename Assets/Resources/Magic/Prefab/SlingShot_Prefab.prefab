@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originColScale: {x: 0, y: 0}
+  isAutoDespawn: 1
   magicDuration: 3
 --- !u!212 &6515710719660619820
 SpriteRenderer:
@@ -4906,6 +4908,6 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.05}
-  m_Size: {x: 0.4, y: 0.6}
-  m_Direction: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.7, y: 0.4}
+  m_Direction: 1

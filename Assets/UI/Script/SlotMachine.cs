@@ -15,7 +15,8 @@ public class SlotMachine : MonoBehaviour
     List<ParticleSystem> effects = new List<ParticleSystem>();
     public Button spinBtn; //슬롯머신 시작 버튼
 
-    int[] feverIndexes = new int[3]; //1~3번째 피버찬스 인덱스
+    // int[] feverIndexes = new int[2]; // 피버찬스 인덱스 2가지
+    int[] secondRandIndex = { 1, 3 }; // 1,3번 슬롯 중 하나 랜덤 선택 배열
     bool isFever = false;
 
     public float spinSpeed = 0.1f; //아이템이 한칸 이동하는 시간
@@ -43,17 +44,21 @@ public class SlotMachine : MonoBehaviour
 
         // 슬롯 오브젝트마다 리스트에 추가하기
         RectMask2D[] tempSlots = slotsParent.GetComponentsInChildren<RectMask2D>();
+        slots.Clear();
         foreach (var slot in tempSlots)
         {
             slots.Add(slot.gameObject);
         }
 
-        // 피버찬스 인덱스 3가지 넣기
-        for (int i = 0; i < feverIndexes.Length; i++)
-        {
-            feverIndexes[i] = Random.Range(0, 5);
-        }
-        print(string.Join(" ,", feverIndexes));
+        // 피버찬스 인덱스 2가지 넣기
+        // for (int i = 0; i < feverIndexes.Length; i++)
+        // {
+        //     feverIndexes[i] = Random.Range(0, 5);
+        // }
+        // print(string.Join(" ,", feverIndexes));
+
+        // 1,3번 슬롯 중 하나 랜덤 선택 배열
+        int randSlotIndex = Random.Range(0, 2);
 
         for (int j = 0; j < slots.Count; j++)
         {
@@ -69,6 +74,9 @@ public class SlotMachine : MonoBehaviour
             List<ItemInfo> itemList = ItemDB.Instance.itemDB.FindAll(x => x.itemType == "Artifact");
             // 중복 없는 랜덤 아이템 5개 뽑기
             int[] itemIDs = ItemDB.Instance.RandomArtifactIndex(itemList, items.Count);
+
+            // 해당 슬롯에서 피버 아이템 선정
+            int feverIndex = Random.Range(0, 5);
 
             // 아이템 슬롯마다 iteminfo, 아이콘 넣기
             for (int i = 0; i < items.Count; i++)
@@ -100,21 +108,21 @@ public class SlotMachine : MonoBehaviour
                 Image image = items[i].transform.Find("FeverChance").GetComponent<Image>();
                 Color tempColor = image.color;
 
-                //1,2,3번째 슬롯일때
-                if (j == 1 || j == 2 || j == 3)
+                // 피버 없는 나머지 슬롯
+                if (j != 2 && j != secondRandIndex[randSlotIndex])
                 {
-                    int feverIndex = feverIndexes[j - 1];
-                    //피버 찬스 인덱스면 알파값 255 아니면 0
-                    tempColor.a = i == feverIndex ? 1 : 0;
-                    image.color = tempColor;
-
-                    // print(i + " : " + image.color);
-                }
-                // 0,4번째 슬롯일때
-                else if (j == 0 || j == 4)
-                {
+                    // print(j + " 나머지");
                     //피버찬스 없음
                     tempColor.a = 0;
+                    image.color = tempColor;
+                }
+                // 2번째, (1 or 3)번째 슬롯일때
+                else
+                {
+                    // print(j + " 피버");
+
+                    //피버 찬스 인덱스면 알파값 255 아니면 0
+                    tempColor.a = i == feverIndex ? 1 : 0;
                     image.color = tempColor;
                 }
             }

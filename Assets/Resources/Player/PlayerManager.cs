@@ -51,6 +51,7 @@ public class PlayerManager : MonoBehaviour
     public int projectileNum = 1; // 투사체 개수
     public float power = 1; //마법 공격력
     public float armor = 1; //방어력
+    public float knockbackForce = 1; //넉백 파워
     public float rateFire = 1; //마법 공격속도
     public float coolTime = 1; //마법 쿨타임
     public float duration = 1; //마법 지속시간
@@ -268,11 +269,11 @@ public class PlayerManager : MonoBehaviour
     {
         // print(item.itemType + " : " + item.itemName);
         // 아이템이 젬 타입일때
-        if (getItem.itemType == "Gem")
-        {
-            //플레이어 소지 젬 갯수 올리기
-            AddGem(getItem);
-        }
+        // if (getItem.itemType == "Gem")
+        // {
+        //     //플레이어 소지 젬 갯수 올리기
+        //     AddGem(getItem, amount);
+        // }
 
         // 아이템이 스크롤일때
         if (getItem.itemType == "Scroll")
@@ -411,7 +412,7 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.UpdateStat();
     }
 
-    public void AddGem(ItemInfo item)
+    public void AddGem(ItemInfo item, int amount)
     {
         // 어떤 원소든지 경험치 증가
         ExpNow++;
@@ -428,35 +429,10 @@ public class PlayerManager : MonoBehaviour
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
 
         //해당 젬 갯수 올리기
-        hasGems[gemTypeIndex]++;
+        hasGems[gemTypeIndex] =+ amount;
 
         //해당 젬 UI 인디케이터
         UIManager.Instance.GemIndicator(gemTypeIndex);
-
-        // if (item.itemName == MagicDB.Instance.elementNames[0])
-        // {
-        //     Earth_Gem++;
-        // }
-        // else if (item.itemName == MagicDB.Instance.elementNames[1])
-        // {
-        //     Fire_Gem++;
-        // }
-        // else if (item.itemName == MagicDB.Instance.elementNames[2])
-        // {
-        //     Life_Gem++;
-        // }
-        // else if (item.itemName == MagicDB.Instance.elementNames[3])
-        // {
-        //     Lightning_Gem++;
-        // }
-        // else if (item.itemName == MagicDB.Instance.elementNames[4])
-        // {
-        //     Water_Gem++;
-        // }
-        // else if (item.itemName == MagicDB.Instance.elementNames[5])
-        // {
-        //     Wind_Gem++;
-        // }
 
         // UI 업데이트
         UIManager.Instance.UpdateGem(gemTypeIndex);

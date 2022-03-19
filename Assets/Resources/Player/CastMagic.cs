@@ -97,9 +97,12 @@ public class CastMagic : MonoBehaviour
             SetHitBox(magicObj, originColSize, magic);
         }
 
-        //마법 쿨타임 만큼 대기 (기본값 - 스피드 스탯 * 10 / 100)
-        print("magic.coolTime : "+magic.coolTime);
-        yield return new WaitForSeconds(magic.coolTime - magic.speed * 0.1f);
+        //마법 쿨타임 만큼 대기
+        float coolTime = magic.coolTime - magic.speed * 0.1f;
+        coolTime = coolTime - coolTime * (PlayerManager.Instance.coolTime - 1);
+        coolTime = Mathf.Clamp(coolTime, 0.1f, 10f);
+
+        yield return new WaitForSeconds(coolTime);
 
         StartCoroutine(SummonMagic(magicPrefab, magic));
     }
