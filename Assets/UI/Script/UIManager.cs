@@ -174,13 +174,6 @@ public class UIManager : MonoBehaviour
 
     public void UpdateGem(int gemTypeIndex)
     {
-        // gemUIs[0].text = "x " + PlayerManager.Instance.Earth_Gem.ToString();
-        // gemUIs[1].text = "x " + PlayerManager.Instance.Fire_Gem.ToString();
-        // gemUIs[2].text = "x " + PlayerManager.Instance.Life_Gem.ToString();
-        // gemUIs[3].text = "x " + PlayerManager.Instance.Lightning_Gem.ToString();
-        // gemUIs[4].text = "x " + PlayerManager.Instance.Water_Gem.ToString();
-        // gemUIs[5].text = "x " + PlayerManager.Instance.Wind_Gem.ToString();
-
         gemUIs[gemTypeIndex].text = "x " + PlayerManager.Instance.hasGems[gemTypeIndex].ToString();
     }
 
@@ -229,10 +222,10 @@ public class UIManager : MonoBehaviour
 
             //아이템 개수 넣기, 2개 이상부터 표시
             Text amount = itemIcon.GetComponentInChildren<Text>(true);
-            if (item.hasNum >= 2)
+            if (item.amount >= 2)
             {
                 amount.gameObject.SetActive(true);
-                amount.text = "x " + item.hasNum.ToString();
+                amount.text = "x " + item.amount.ToString();
             }
             else
             {
@@ -290,7 +283,7 @@ public class UIManager : MonoBehaviour
         stats[2].text = Mathf.Round(PlayerManager.Instance.armor * 100).ToString() + " %";
         stats[3].text = Mathf.Round(PlayerManager.Instance.moveSpeed * 100).ToString() + " %";
         stats[4].text = Mathf.Round(PlayerManager.Instance.projectileNum * 100).ToString() + " %";
-        stats[5].text = Mathf.Round(PlayerManager.Instance.rateFire * 100).ToString() + " %";
+        stats[5].text = Mathf.Round(PlayerManager.Instance.speed * 100).ToString() + " %";
         stats[6].text = Mathf.Round(PlayerManager.Instance.coolTime * 100).ToString() + " %";
         stats[7].text = Mathf.Round(PlayerManager.Instance.duration * 100).ToString() + " %";
         stats[8].text = Mathf.Round(PlayerManager.Instance.range * 100).ToString() + " %";

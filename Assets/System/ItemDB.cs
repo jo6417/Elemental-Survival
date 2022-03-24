@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 public class ItemInfo
 {
-    public int hasNum = 0; //몇개 갖고 있는지
+    public int amount = 0; //몇개 갖고 있는지
 
     public int id; //고유 아이디
     public int grade; //아이템 등급
@@ -97,6 +97,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
+    public GameObject heartSeed; //회복 씨앗
     public List<ItemInfo> itemDB = null; //마법 정보 DB
     public List<Sprite> itemIcon = null; //마법 아이콘 리스트
     public List<GameObject> itemPrefab = null; //마법 프리팹 리스트
@@ -185,7 +186,7 @@ public class ItemDB : MonoBehaviour
     public void InitialItems(){
         foreach (var item in itemDB)
         {
-            item.hasNum = 0;
+            item.amount = 0;
         }
     }
 

@@ -141,6 +141,7 @@ public class ItemManager : MonoBehaviour
         Vector2 dir = player.transform.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
+        if(rigid)
         rigid.DOMove((Vector2)player.transform.position - dir.normalized * 5f, 0.3f);
 
         yield return new WaitForSeconds(0.3f);
@@ -148,11 +149,12 @@ public class ItemManager : MonoBehaviour
         float itemSpeed = 0.5f;
 
         // 플레이어 방향으로 날아가기, 아이템 사라질때까지
-        while (!isGet)
+        while (!isGet || gameObject.activeSelf)
         {
             itemSpeed -= Time.deltaTime;
             itemSpeed = Mathf.Clamp(itemSpeed, 0.01f, 1f);
 
+            if(rigid)
             rigid.DOMove(player.transform.position, itemSpeed);
 
             //거리가 0.5f 이하일때 획득
@@ -162,7 +164,7 @@ public class ItemManager : MonoBehaviour
                 break;
             }
 
-            yield return null;
+            yield return new WaitForSeconds(0.01f);
         }
     }
 
@@ -175,9 +177,21 @@ public class ItemManager : MonoBehaviour
         {
             //플레이어 소지 젬 갯수 올리기
             PlayerManager.Instance.AddGem(item, amount);
+            // print(item.itemName + amount);
+        }
+        // 아이템이 힐 타입일때
+        else if (item.itemType == "Heal")
+        {
+            PlayerManager.Instance.GetHeal(amount);
+        }
+        else
+        {
+            //아이템 획득
+            PlayerManager.Instance.GetItem(item);
         }
         
         //아이템 속도 초기화
+        if(rigid)
         rigid.velocity = Vector2.zero;
 
         //아이템 비활성화

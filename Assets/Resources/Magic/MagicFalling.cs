@@ -9,15 +9,15 @@ public class MagicFalling : MonoBehaviour
     [Header("Refer")]
     public Animator anim;
     float originAnimSpeed;
-    public MagicInfo magic;
+    private MagicInfo magic;
     public string magicName;
     public Collider2D col;
     public Vector2 originColScale; //원래 콜라이더 크기
     public Vector2 originScale; //원래 오브젝트 크기
     public Ease fallEase;
-    public float fallSpeed = 1f; //마법 떨어지는데 걸리는 시간 (시전 딜레이)
+    // public float fallSpeed = 1f; //마법 떨어지는데 걸리는 시간 (시전 딜레이)
     public float fallDistance = 2f; //마법 오브젝트 떨어지는 거리(시전 시간)
-    public float coolTimeSet = 0.3f; //마법 쿨타임 임의 조정
+    // public float coolTimeSet = 0.3f; //마법 쿨타임 임의 조정
     public bool isDespawn = false; //디스폰 여부
     public bool isExpand = false; //커지면서 등장 여부
 
@@ -60,8 +60,9 @@ public class MagicFalling : MonoBehaviour
         //시작할때 콜라이더 끄기
         MagicTrigger(false);
 
-        //MagicDB 로드 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        //magic이 null이 아닐때까지 대기
+        yield return new WaitUntil(() => TryGetComponent(out MagicHolder holder));
+        magic = GetComponent<MagicHolder>().magic;
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
         if (magic == null)
@@ -88,15 +89,11 @@ public class MagicFalling : MonoBehaviour
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magic != null);
 
-        // 속도 버프 계수
-        float speedBuff = (magic.speed * 0.1f) + (PlayerManager.Instance.rateFire - 1f);
-        speedBuff = Mathf.Clamp(speedBuff, 0.1f, 0.99f);
-
-        // 마법 오브젝트 속도
-        float magicSpeed = fallSpeed - fallSpeed * speedBuff;
+        // 마법 오브젝트 속도, 숫자가 작을수록 빠름
+        float magicSpeed = MagicDB.Instance.MagicSpeed(magic, false);
 
         // 애니메이션 속도 계산
-        anim.speed = originAnimSpeed + originAnimSpeed * speedBuff;
+        anim.speed = originAnimSpeed * MagicDB.Instance.MagicSpeed(magic, true);
 
         // 팝업창 0,0에서 점점 커지면서 나타내기
         if (isExpand)
@@ -110,7 +107,7 @@ public class MagicFalling : MonoBehaviour
 
         //시작 위치로 올려보내기
         transform.position = startPos;
-        //목표 위치로 떨어뜨리기        
+        //목표 위치로 떨어뜨리기
         transform.DOMove(endPos, magicSpeed)
         .SetEase(fallEase)
         .OnComplete(() =>
@@ -118,10 +115,8 @@ public class MagicFalling : MonoBehaviour
             //콜라이더 발동시키기
             MagicTrigger(true);
 
-            // 속도 버프 계수
-            float durationBuff = magic.range * (PlayerManager.Instance.duration - 1f);
             // 마법 오브젝트 속도
-            float duration = magic.range - durationBuff;
+            float duration = MagicDB.Instance.MagicDuration(magic);
 
             // 오브젝트 자동 디스폰하기
             if (!isDespawn)
@@ -158,10 +153,8 @@ public class MagicFalling : MonoBehaviour
         if (isDespawn)
             return;
 
-        // 속도 버프 계수
-        float durationBuff = magic.range * (PlayerManager.Instance.duration - 1f);
         // 마법 오브젝트 속도
-        float duration = magic.range - durationBuff;
+        float duration = MagicDB.Instance.MagicDuration(magic);
 
         StartCoroutine(AutoDespawn(duration));
     }

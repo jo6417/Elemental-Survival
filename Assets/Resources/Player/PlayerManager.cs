@@ -30,9 +30,6 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
-    [Header("<Test>")]
-    public List<int> basicMagic = new List<int>();
-
     [Header("<Refer>")]
     public GameObject mobSpawner;
     private Animator animator;
@@ -48,11 +45,12 @@ public class PlayerManager : MonoBehaviour
     public float ExpNow = 0; // 현재 경험치
     public float moveSpeed = 5; //이동속도
 
-    public int projectileNum = 1; // 투사체 개수
+    public int projectileNum = 0; // 투사체 개수
+    public int pierce = 0; // 관통 횟수
     public float power = 1; //마법 공격력
     public float armor = 1; //방어력
     public float knockbackForce = 1; //넉백 파워
-    public float rateFire = 1; //마법 공격속도
+    public float speed = 1; //마법 공격속도
     public float coolTime = 1; //마법 쿨타임
     public float duration = 1; //마법 지속시간
     public float range = 1; //마법 범위
@@ -102,12 +100,6 @@ public class PlayerManager : MonoBehaviour
     public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
-    public int Earth_Gem = 0;
-    public int Fire_Gem = 0;
-    public int Life_Gem = 0;
-    public int Lightning_Gem = 0;
-    public int Water_Gem = 0;
-    public int Wind_Gem = 0;
 
     void Start()
     {
@@ -115,16 +107,10 @@ public class PlayerManager : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         originColor = sprite.color;
 
-        hasGems.Add(Earth_Gem);
-        hasGems.Add(Fire_Gem);
-        hasGems.Add(Life_Gem);
-        hasGems.Add(Lightning_Gem);
-        hasGems.Add(Water_Gem);
-        hasGems.Add(Wind_Gem);
-        
         // 원소젬 UI 업데이트
-        for (int i = 0; i < hasGems.Count; i++)
+        for (int i = 0; i < 6; i++)
         {
+            // hasGems.Add(0);
             UIManager.Instance.UpdateGem(i);
         }
 
@@ -133,26 +119,6 @@ public class PlayerManager : MonoBehaviour
 
         //능력치 초기화
         UIManager.Instance.InitialStat();
-
-        //기본 마법 추가
-        StartCoroutine(BasicMagicAdd());
-    }
-
-    IEnumerator BasicMagicAdd()
-    {
-        // MagicDB 로드 완료까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
-
-        //TODO 추후 캐릭터 구현 후 기본마법 바꾸고 시작하기
-        // 캐릭터 기본 마법 추가
-        foreach (var magicID in basicMagic)
-        {
-            // print(magicID + "번 마법 추가됨");
-            GetMagic(MagicDB.Instance.GetMagicByID(magicID));
-        }
-
-        //플레이어 마법 시작
-        CastMagic.Instance.StartCastMagic();
     }
 
     private void Update()
@@ -267,13 +233,7 @@ public class PlayerManager : MonoBehaviour
 
     public void GetItem(ItemInfo getItem)
     {
-        // print(item.itemType + " : " + item.itemName);
-        // 아이템이 젬 타입일때
-        // if (getItem.itemType == "Gem")
-        // {
-        //     //플레이어 소지 젬 갯수 올리기
-        //     AddGem(getItem, amount);
-        // }
+        // print(getItem.itemType + " : " + getItem.itemName);
 
         // 아이템이 스크롤일때
         if (getItem.itemType == "Scroll")
@@ -296,7 +256,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             //보유한 아이템의 개수만 늘려주기
-            hasItems.Find(x => x.id == getItem.id).hasNum++;
+            hasItems.Find(x => x.id == getItem.id).amount++;
             // getItem.hasNum++;
 
             // 보유한 모든 아이템 아이콘 갱신
@@ -305,6 +265,20 @@ public class PlayerManager : MonoBehaviour
             // 모든 아이템 버프 갱신
             buffUpdate();
         }
+    }
+
+    public void GetHeal(int amount)
+    {
+        //플레이어 체력 회복하기
+        hpNow += amount;
+        print(hpNow + ":" + amount);
+
+        //초과 회복 방지
+        if (hpNow > hpMax)
+            hpNow = hpMax;
+
+        //UI 업데이트
+        UIManager.Instance.UpdateHp();
     }
 
     public void GetMagic(MagicInfo getMagic)
@@ -318,7 +292,9 @@ public class PlayerManager : MonoBehaviour
 
         //보유한 마법의 레벨 올리기
         hasMagics.Find(x => x.id == getMagic.id).magicLevel++;
-        // getMagic.magicLevel++;
+
+        // 마법 캐스팅 다시 시작
+        CastMagic.Instance.ReCastMagics();
 
         // 보유한 모든 마법 아이콘 갱신
         UIManager.Instance.UpdateMagics();
@@ -331,7 +307,7 @@ public class PlayerManager : MonoBehaviour
         hpMax = hpMax / hpMax_buff;
         power = power / power_buff;
         armor = armor / armor_buff;
-        rateFire = rateFire / rateFire_buff;
+        speed = speed / rateFire_buff;
         coolTime = coolTime / coolTime_buff;
         duration = duration / duration_buff;
         range = range / range_buff;
@@ -369,23 +345,23 @@ public class PlayerManager : MonoBehaviour
         // 현재 소지한 아이템의 모든 버프 계수 합산하기
         foreach (var item in hasItems)
         {
-            projectileNum_buff += item.projectileNum * item.hasNum; // 투사체 개수 버프
-            hpMax_buff += item.hpMax * item.hasNum; //최대체력 버프
-            power_buff += item.power * item.hasNum; //마법 공격력 버프
-            armor_buff += item.armor * item.hasNum; //방어력 버프
-            rateFire_buff += item.rateFire * item.hasNum; //마법 공격속도 버프
-            coolTime_buff += item.coolTime * item.hasNum; //마법 쿨타임 버프
-            duration_buff += item.duration * item.hasNum; //마법 지속시간 버프
-            range_buff += item.range * item.hasNum; //마법 범위 버프
-            luck_buff += item.luck * item.hasNum; //행운 버프
-            expGain_buff += item.expGain * item.hasNum; //경험치 획득량 버프
-            moneyGain_buff += item.moneyGain * item.hasNum; //원소젬 획득량 버프
-            earth_buff += item.earth * item.hasNum;
-            fire_buff += item.fire * item.hasNum;
-            life_buff += item.life * item.hasNum;
-            lightning_buff += item.lightning * item.hasNum;
-            water_buff += item.water * item.hasNum;
-            wind_buff += item.wind * item.hasNum;
+            projectileNum_buff += item.projectileNum * item.amount; // 투사체 개수 버프
+            hpMax_buff += item.hpMax * item.amount; //최대체력 버프
+            power_buff += item.power * item.amount; //마법 공격력 버프
+            armor_buff += item.armor * item.amount; //방어력 버프
+            rateFire_buff += item.rateFire * item.amount; //마법 공격속도 버프
+            coolTime_buff += item.coolTime * item.amount; //마법 쿨타임 버프
+            duration_buff += item.duration * item.amount; //마법 지속시간 버프
+            range_buff += item.range * item.amount; //마법 범위 버프
+            luck_buff += item.luck * item.amount; //행운 버프
+            expGain_buff += item.expGain * item.amount; //경험치 획득량 버프
+            moneyGain_buff += item.moneyGain * item.amount; //원소젬 획득량 버프
+            earth_buff += item.earth * item.amount;
+            fire_buff += item.fire * item.amount;
+            life_buff += item.life * item.amount;
+            lightning_buff += item.lightning * item.amount;
+            water_buff += item.water * item.amount;
+            wind_buff += item.wind * item.amount;
         }
 
         //플레이어 능력치에 다시 합산
@@ -393,7 +369,7 @@ public class PlayerManager : MonoBehaviour
         hpMax = hpMax * hpMax_buff;
         power = power * power_buff;
         armor = armor * armor_buff;
-        rateFire = rateFire * rateFire_buff;
+        speed = speed * rateFire_buff;
         coolTime = coolTime * coolTime_buff;
         duration = duration * duration_buff;
         range = range * range_buff;
@@ -429,7 +405,8 @@ public class PlayerManager : MonoBehaviour
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
 
         //해당 젬 갯수 올리기
-        hasGems[gemTypeIndex] =+ amount;
+        hasGems[gemTypeIndex] = hasGems[gemTypeIndex] + amount;
+        // print(hasGems[gemTypeIndex] + " : " + amount);
 
         //해당 젬 UI 인디케이터
         UIManager.Instance.GemIndicator(gemTypeIndex);
@@ -459,45 +436,11 @@ public class PlayerManager : MonoBehaviour
         levelupPopup.SetActive(true);
     }
 
-    //해당 젬 갯수 반환하기
-    public int GemAmount(int gemIndex){
-        int gemAmount = -1;
-
-        switch (gemIndex)
-        {            
-            case 0: gemAmount = Earth_Gem;
-            break;
-            case 1: gemAmount = Fire_Gem;
-            break;
-            case 2: gemAmount = Life_Gem;
-            break;
-            case 3: gemAmount = Lightning_Gem;
-            break;
-            case 4: gemAmount = Water_Gem;
-            break;
-            case 5: gemAmount = Wind_Gem;
-            break;
-        }
-        return gemAmount;
-    }
-
     //원소젬 지불하기
-    public void PayGem(int gemIndex, int price){
-        switch (gemIndex)
-        {            
-            case 0: Earth_Gem -= price;
-            break;
-            case 1: Fire_Gem -= price;
-            break;
-            case 2: Life_Gem -= price;
-            break;
-            case 3: Lightning_Gem -= price;
-            break;
-            case 4: Water_Gem -= price;
-            break;
-            case 5: Wind_Gem -= price;
-            break;
-        }
+    public void PayGem(int gemIndex, int price)
+    {
+
+        hasGems[gemIndex] -= price;
 
         //젬 UI 업데이트
         UIManager.Instance.UpdateGem(gemIndex);

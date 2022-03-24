@@ -153,12 +153,12 @@ public class ProductToolTip : MonoBehaviour
             elementGrade_A.color = Color.white;
         }
 
-        // 마법 모든 스탯 가져오기
-        GetMagicStats();
+        // // 마법 모든 스탯 가져오기
+        // GetMagicStats();
 
-        // 마법 스펙 그래프에 반영하기
-        magicStatGraph.VerticesDistances = convertValue().ToArray();
-        magicStatGraph.OnRebuildRequested();
+        // // 마법 스펙 그래프에 반영하기
+        // magicStatGraph.VerticesDistances = convertValue().ToArray();
+        // magicStatGraph.OnRebuildRequested();
 
     }
 
@@ -187,15 +187,15 @@ public class ProductToolTip : MonoBehaviour
 
     void GetMagicStats()
     {
-        if (magic != null)
-            stats.Clear();
-        stats.Add(magic.power);
-        stats.Add(magic.speed);
-        stats.Add(magic.range);
-        stats.Add(magic.critical);
-        stats.Add(magic.pierce);
-        stats.Add(magic.projectile);
-        stats.Add(magic.power); //마지막값은 첫값과 같게
+        // if (magic != null)
+        //     stats.Clear();
+        // stats.Add(magic.power);
+        // stats.Add(magic.speed);
+        // stats.Add(magic.range);
+        // stats.Add(magic.critical);
+        // stats.Add(magic.pierce);
+        // stats.Add(magic.projectile);
+        // stats.Add(magic.power); //마지막값은 첫값과 같게
 
         // print(magic.power
         //     + " : " + magic.speed

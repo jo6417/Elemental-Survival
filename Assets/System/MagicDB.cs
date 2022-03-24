@@ -8,52 +8,74 @@ using UnityEngine.Networking;
 public class MagicInfo
 {
     public int magicLevel = 0; //현재 마법 레벨
+    public bool isSummoned = false; //현재 소환 됬는지 여부
 
+    [Header("Info")]
     public int id; //고유 아이디
     public int grade; //마법 등급
     public string magicName; //마법 이름
     public string element_A; //해당 마법을 만들 재료 A
     public string element_B; //해당 마법을 만들 재료 B
+    public string castType; //시전 타입
     public string description; //마법 설명
     public string priceType; //마법 구매시 지불수단
     public int price; //마법 구매시 가격
+    public bool onlyOne = false; //1이면 다중 발사 금지
 
     [Header("Spec")]
-    public int power = 1; //데미지
-    public int speed = 1; //투사체 속도 및 쿨타임
-    public int range = 1; //범위
-    public int critical = 0; //크리티컬 확률
+    public float power = 1; //데미지
+    public float speed = 1; //투사체 속도 및 쿨타임
+    public float range = 1; //범위
+    public float duration = 1; //지속시간
+    public float critical = 1f; //크리티컬 확률
+    public float criticalDamage = 1f; //크리티컬 데미지 증가율
     public int pierce = 0; //관통 횟수 및 넉백 계수
-    public int projectile = 0; //넉백 파워
-
+    public int projectile = 0; //투사체 수
     public int coolTime = 0; //쿨타임
 
-    [Header("Side Effect")]
-    public int onlyOne = 0; //1이면 다중 발사 금지
+    [Header("LevUp")]
+    public float powerPerLev;
+    public float speedPerLev;
+    public float rangePerLev;
+    public float durationPerLev;
+    public float criticalPerLev;
+    public float criticalDamagePerLev;
+    public float piercePerLev;
+    public float projectilePerLev;
+    public float coolTimePerLev;
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string description, string priceType, int price, 
-    int power, int speed, int range, int critical, int pierce, int projectile, int coolTime, 
-    int onlyOne)
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price, bool onlyOne, float power, float speed, float range, float duration, float critical, float criticalDamage, int pierce, int projectile, int coolTime, float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalDamagePerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
     {
         this.id = id;
         this.grade = grade;
         this.magicName = magicName;
         this.element_A = element_A;
         this.element_B = element_B;
+        this.castType = castType;
         this.description = description;
         this.priceType = priceType;
         this.price = price;
+        this.onlyOne = onlyOne;
 
         this.power = power;
         this.speed = speed;
         this.range = range;
+        this.duration = duration;
         this.critical = critical;
+        this.criticalDamage = criticalDamage;
         this.pierce = pierce;
         this.projectile = projectile;
-
         this.coolTime = coolTime;
 
-        this.onlyOne = onlyOne;
+        this.powerPerLev = powerPerLev;
+        this.speedPerLev = speedPerLev;
+        this.rangePerLev = rangePerLev;
+        this.durationPerLev = durationPerLev;
+        this.criticalPerLev = criticalPerLev;
+        this.criticalDamagePerLev = criticalDamagePerLev;
+        this.piercePerLev = piercePerLev;
+        this.projectilePerLev = projectilePerLev;
+        this.coolTimePerLev = coolTimePerLev;
     }
 }
 
@@ -147,9 +169,10 @@ public class MagicDB : MonoBehaviour
 
                 //받아온 데이터를 List<MagicInfo>에 넣기
                 magicDB.Add(new MagicInfo(
-                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["description"], magic["priceType"], magic["price"], 
-                magic["power"], magic["speed"], magic["range"], magic["critical"], magic["pierce"], magic["projectile"],  magic["coolTime"], 
-                magic["onlyOne"]));
+                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["price"], magic["onlyOne"], 
+                magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalDamage"], magic["pierce"], magic["projectile"], magic["coolTime"], 
+                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalDamagePerLev"], magic["piercePerLev"], magic["projectilePerLev"], magic["coolTimePerLev"]
+                ));
             }
 
             //모든 마법 초기화
@@ -250,6 +273,10 @@ public class MagicDB : MonoBehaviour
 
                 //랜덤 인덱스 숫자 넣기
                 randomNum[i] = index;
+                
+                //! 테스트용 인덱스
+                // randomNum[i] = 14;
+
                 //이미 선택된 인덱스 제거
                 magicIndex.RemoveAt(j);
             }
@@ -298,5 +325,125 @@ public class MagicDB : MonoBehaviour
         ColorUtility.TryParseHtmlString("#" + hex, out color);
 
         return color;
+    }
+
+    public float MagicPower(MagicInfo magic)
+    {
+        float power = 0;
+
+        //마법 파워 및 레벨당 증가량 계산
+        power = magic.power + magic.powerPerLev * (magic.magicLevel - 1);
+        //플레이어 자체 파워 증가량 계산
+        power = power + power * (PlayerManager.Instance.power - 1);
+
+        return power;
+    }
+
+    public float MagicSpeed(MagicInfo magic, bool bigNumFast)
+    {
+        float speed = 0;
+
+        //마법 속도 및 레벨당 증가량 계산
+        speed = bigNumFast ? magic.speed + magic.speedPerLev * (magic.magicLevel - 1) : magic.speed - magic.speedPerLev * (magic.magicLevel - 1);
+        //플레이어 자체 마법 속도 증가량 계산
+        speed = bigNumFast ? speed + speed * (PlayerManager.Instance.speed - 1) : speed - speed * (PlayerManager.Instance.speed - 1);
+        //값 제한하기
+        speed = Mathf.Clamp(speed, 0.01f, 100f);
+
+        return speed;
+    }
+
+    public float MagicRange(MagicInfo magic)
+    {
+        float range = 0;
+
+        //마법 범위 및 레벨당 증가량 계산
+        range = magic.range + magic.rangePerLev * (magic.magicLevel - 1);
+        //플레이어 자체 마법 범위 증가량 계산
+        range = range + range * (PlayerManager.Instance.range - 1);
+        //값 제한하기
+        range = Mathf.Clamp(range, 0.1f, 10f);
+
+        return range;
+    }
+
+    public float MagicDuration(MagicInfo magic)
+    {
+        float duration = 0;
+
+        //마법 지속시간 및 레벨당 증가량 계산
+        duration = magic.duration + magic.durationPerLev * (magic.magicLevel - 1);
+        //플레이어 자체 마법 지속시간 증가량 계산
+        duration = duration + duration * (PlayerManager.Instance.duration - 1);
+        //값 제한하기
+        duration = Mathf.Clamp(duration, 0.1f, 100f);
+
+        return duration;
+    }
+
+    public float MagicCritical(MagicInfo magic)
+    {
+        float critical = 0;
+
+        //마법 크리티컬 확률 및 레벨당 증가량 계산
+        critical = magic.critical + magic.criticalPerLev * (magic.magicLevel - 1);
+        //플레이어 자체 마법 크리티컬 확률 증가량 계산
+        critical = critical + critical * (PlayerManager.Instance.luck - 1);
+        //값 제한하기 0% ~ 100%
+        critical = Mathf.Clamp(critical, 0f, 100f);
+
+        return critical;
+    }
+
+    public float MagicCriticalDamage(MagicInfo magic)
+    {
+        float criticalDamage = 0;
+
+        //마법 크리티컬 데미지 및 레벨당 증가량 계산
+        criticalDamage = magic.criticalDamage + magic.criticalDamagePerLev * (magic.magicLevel - 1);
+        //플레이어 자체 마법 크리티컬 데미지 증가량 계산
+        criticalDamage = criticalDamage + criticalDamage * (PlayerManager.Instance.luck - 1);
+
+        return criticalDamage;
+    }
+
+    public int MagicPierce(MagicInfo magic)
+    {
+        int pierce = 0;
+
+        //마법 범위 및 레벨당 증가량 계산
+        pierce = 
+        magic.pierce + 
+        Mathf.FloorToInt(magic.piercePerLev * (magic.magicLevel - 1)) + 
+        PlayerManager.Instance.pierce;
+
+        return pierce;
+    }
+
+    public int MagicProjectile(MagicInfo magic)
+    {
+        int projectile = 0;
+
+        //마법 범위 및 레벨당 증가량 계산
+        projectile = 
+        magic.projectile + 
+        Mathf.FloorToInt(magic.projectilePerLev * (magic.magicLevel - 1)) + 
+        PlayerManager.Instance.projectileNum;
+
+        return projectile;
+    }
+
+    public float MagicCoolTime(MagicInfo magic)
+    {
+        float coolTime = 0;
+
+        //마법 쿨타임 및 레벨당 증가량 계산
+        coolTime = magic.coolTime - magic.coolTimePerLev * (magic.magicLevel - 1);
+        //플레이어 자체 쿨타임 증가량 계산
+        coolTime = coolTime - coolTime * (PlayerManager.Instance.coolTime - 1);
+        //값 제한하기
+        coolTime = Mathf.Clamp(coolTime, 0.01f, 10f);
+
+        return coolTime;
     }
 }

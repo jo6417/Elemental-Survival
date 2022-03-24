@@ -99,7 +99,7 @@ public class VendMachine : MonoBehaviour
             // 상품 버튼 속성
             InfoHolder productBtn = product.transform.Find("Button").GetComponent<InfoHolder>();
             //버튼 누르면 종료될 팝업창 오브젝트
-            productBtn.popupMenu = gameObject;
+            productBtn.popupMenu = UIManager.Instance.vendMachineUI;
 
             Button btn = product.transform.Find("Button").GetComponent<Button>();
 
@@ -130,7 +130,7 @@ public class VendMachine : MonoBehaviour
                 sortedItems.RemoveAt(0);
 
                 //신규 여부
-                isNew = item.hasNum > 0 ? false : true;
+                isNew = item.amount > 0 ? false : true;
 
                 //아이템 아이콘 찾기
                 productSprite = ItemDB.Instance.itemIcon.Find(
@@ -247,7 +247,7 @@ public class VendMachine : MonoBehaviour
 
             // 상품 버튼 눌렀을때 이벤트 넣기
             // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
-            if (PlayerManager.Instance.GemAmount(gemTypeIndex) >= price)
+            if (PlayerManager.Instance.hasGems[gemTypeIndex] >= price)
             {
                 // 상품 구매할 돈 있으면 초록
                 priceTxt.color = Color.green;
@@ -263,26 +263,29 @@ public class VendMachine : MonoBehaviour
                         }
                         else if (type == ProductType.Magic)
                         {
-                            // 새 마법일때
-                            if (isNew)
-                            {
-                                // 선택한 버튼의 상품 획득하기
-                                GetProduct(productBtn, gemTypeIndex, price);
-                            }
-                            // 기존 마법 업그레이드일때
-                            else
-                            {
-                                // 마법 업그레이드 팝업
-                                GameObject magicUpgradePopup = UIManager.Instance.magicUpgradeUI;
-                                MagicUpgradeMenu magicUp = magicUpgradePopup.GetComponent<MagicUpgradeMenu>();
-                                magicUp.magic = magic; //마법 데이터
-                                magicUp.magicIcon.sprite = productSprite; //마법 아이콘
-                                magicUp.magicFrame.color = gradeColor; //프레임 색상
-                                magicUp.magicName.text = magic.magicName; //마법 이름
+                            // 선택한 버튼의 상품 획득하기
+                            GetProduct(productBtn, gemTypeIndex, price);
 
-                                // 팝업 띄우기
-                                UIManager.Instance.PopupUI(magicUpgradePopup);
-                            }
+                            // 새 마법일때
+                            // if (isNew)
+                            // {
+                            //     // 선택한 버튼의 상품 획득하기
+                            //     GetProduct(productBtn, gemTypeIndex, price);
+                            // }
+                            // // 기존 마법 업그레이드일때
+                            // else
+                            // {
+                            //     // 마법 업그레이드 팝업
+                            //     GameObject magicUpgradePopup = UIManager.Instance.magicUpgradeUI;
+                            //     MagicUpgradeMenu magicUp = magicUpgradePopup.GetComponent<MagicUpgradeMenu>();
+                            //     magicUp.magic = magic; //마법 데이터
+                            //     magicUp.magicIcon.sprite = productSprite; //마법 아이콘
+                            //     magicUp.magicFrame.color = gradeColor; //프레임 색상
+                            //     magicUp.magicName.text = magic.magicName; //마법 이름
+
+                            //     // 팝업 띄우기
+                            //     UIManager.Instance.PopupUI(magicUpgradePopup);
+                            // }
                         }
 
                         //툴팁 끄기

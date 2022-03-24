@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7878870570555078308}
   - component: {fileID: 2641671860505543948}
   - component: {fileID: 2641671860505543951}
-  - component: {fileID: 7686206073831318280}
+  - component: {fileID: 7735113148383949073}
   - component: {fileID: 154217382589001360}
   m_Layer: 7
   m_Name: Slime_Prefab
@@ -131,8 +131,8 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!58 &7686206073831318280
-CircleCollider2D:
+--- !u!70 &7735113148383949073
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -144,9 +144,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.45}
-  serializedVersion: 2
-  m_Radius: 0.45
+  m_Offset: {x: 0, y: 0.44}
+  m_Size: {x: 1.2000002, y: 0.88}
+  m_Direction: 1
 --- !u!50 &154217382589001360
 Rigidbody2D:
   serializedVersion: 4

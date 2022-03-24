@@ -75,8 +75,8 @@ public class ScrollMenu : MonoBehaviour
             // print(magic.magicName);
 
             // 마법 합성 버튼 만들기
-            GameObject recipe = LeanPool.Spawn(magicRecipeBtn, transform.position, Quaternion.identity);
-            recipe.transform.parent = recipeParent.transform;
+            GameObject recipe = LeanPool.Spawn(magicRecipeBtn, transform.position, Quaternion.identity, recipeParent.transform);
+            // recipe.transform.SetParent();
             recipe.transform.localScale = Vector3.one;
 
             InfoHolder btn = recipe.GetComponent<InfoHolder>();

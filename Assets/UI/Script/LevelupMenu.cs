@@ -52,7 +52,7 @@ public class LevelupMenu : MonoBehaviour
 
             // 신규 아이템 여부 표시
             Transform newTxt = magicBtnObj.transform.Find("Background/Icon/New");
-            if (item.hasNum > 0)
+            if (item.amount > 0)
             {
                 //New 아이템 아님
                 newTxt.gameObject.SetActive(false);

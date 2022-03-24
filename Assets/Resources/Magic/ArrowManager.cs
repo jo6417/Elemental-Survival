@@ -40,7 +40,7 @@ public class ArrowManager : MonoBehaviour
         col = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
         tail.SetActive(true); //꼬리 켜기
-        magic = GetComponent<MagicProjectile>().magic;
+        magic = GetComponent<MagicHolder>().magic;
 
         //처음 스폰 될때는 Start에서 공격 실행
         if (magic != null)
@@ -64,17 +64,17 @@ public class ArrowManager : MonoBehaviour
     IEnumerator shotArrow()
     {
         // 플레이어 중심 범위 안의 적 배열에 담기
-        float range = magic.range * PlayerManager.Instance.range;
+        float range = MagicDB.Instance.MagicRange(magic);
         // 범위 사이즈 반영해서 보여주기
         PlayerManager.Instance.transform.Find("BasicMagicRange").transform.localScale = new Vector2(range / 2, range / 2);
 
         // 관통 횟수 만큼 공격
-        int atkNum = PlayerManager.Instance.projectileNum + 1;
+        int pierceNum = MagicDB.Instance.MagicPierce(magic);
 
-        for (int i = 0; i < atkNum; i++)
+        for (int i = 0; i < pierceNum; i++)
         {
             // 마크한 적의 위치, 마지막은 플레이어 위치
-            Vector2 enemyPos = i == atkNum - 1 ? (Vector2)PlayerManager.Instance.transform.position : MarkEnemyPos(range);
+            Vector2 enemyPos = i == pierceNum - 1 ? (Vector2)PlayerManager.Instance.transform.position : MarkEnemyPos(range);
 
             //마크 위치가 (0,0)이면 공격 취소
             if (enemyPos != Vector2.zero)
@@ -83,10 +83,10 @@ public class ArrowManager : MonoBehaviour
                 GameObject mark = LeanPool.Spawn(atkMark, enemyPos, Quaternion.identity);
 
                 //공격하는데 걸리는 시간 = 거리 / 속력
-                float atkDuration = Vector2.Distance(transform.position, enemyPos) / magic.speed;
+                float atkDuration = Vector2.Distance(transform.position, enemyPos) / MagicDB.Instance.MagicSpeed(magic, true);
 
                 // 마크 포지션 방향으로 domove
-                transform.DOMove(enemyPos, atkDuration / atkNum)
+                transform.DOMove(enemyPos, atkDuration / pierceNum)
                 .OnStart(() =>
                 {
                     state = State.Attack; //공격 상태로 전환
@@ -95,12 +95,12 @@ public class ArrowManager : MonoBehaviour
                 {
                     state = State.Ready; //준비 상태로 전환
 
-                // 도착하면 마크 오브젝트 삭제
-                LeanPool.Despawn(mark);
+                    // 도착하면 마크 오브젝트 삭제
+                    LeanPool.Despawn(mark);
                 });
 
                 //공격 시간동안 대기
-                yield return new WaitForSeconds(atkDuration / atkNum);
+                yield return new WaitForSeconds(atkDuration / pierceNum);
             }
         }
 
@@ -118,7 +118,7 @@ public class ArrowManager : MonoBehaviour
         Vector2 enemyPos = Vector2.zero;
 
         if (magic == null)
-            magic = GetComponent<MagicProjectile>().magic;
+            magic = GetComponent<MagicHolder>().magic;
 
         //캐릭터 주변의 적들
         Collider2D[] colls = null;

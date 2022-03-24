@@ -23,11 +23,6 @@ public class EnemyAI : MonoBehaviour
     [Header("Stat")]
     public float hitCount = 0;
     public float HpNow = 2;
-    // public float atkPower = 1;
-    // public float dropRate = 0.5f; //아이템 드롭 확률
-    // public float hitDelay = 1f;
-    // public float HpMax = 2;
-    // public float knockbackForce = 1;
 
     void Start()
     {
@@ -36,7 +31,8 @@ public class EnemyAI : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
     }
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
         StartCoroutine(Initial());
     }
 
@@ -47,7 +43,7 @@ public class EnemyAI : MonoBehaviour
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
         if (enemy == null)
-        enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+            enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
 
         //enemy 못찾으면 코루틴 종료
         if (enemy == null)
@@ -91,43 +87,46 @@ public class EnemyAI : MonoBehaviour
             // print("마법과 충돌");
 
             // 마법 정보 찾기
-            MagicInfo magic = null;
-            if (other.TryGetComponent(out MagicProjectile magicPro))
-            {
-                magic = magicPro.magic;
-            }
-            else if (other.TryGetComponent(out MagicFalling magicFall))
-            {
-                magic = magicFall.magic;
-            }
+            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+            MagicInfo magic = magicHolder.magic;
 
             // 체력 감소
-            Damaged(magic);
+            Damaged(magicHolder);
+
+            //넉백
+            if (magicHolder.knockbackForce > 0 && gameObject.activeSelf)
+            {
+                StartCoroutine(Knockback(magicHolder.knockbackForce));
+            }
         }
     }
 
-    void Damaged(MagicInfo magic)
+    void Damaged(MagicHolder magicHolder)
     {
-        if(enemy == null)
-        return;
+        if (enemy == null)
+            return;
 
-        //크리티컬 확률 추가
-        bool isCritical = magic.critical >= Random.value ? true : false;
-        float criticalAtk = isCritical ? 1.5f : 1f;
-        int damage = (int)(Random.Range(magic.power * 0.8f, magic.power * 1.2f) * criticalAtk);
-        damage = Mathf.Clamp(damage, 1, damage);
+        MagicInfo magic = magicHolder.magic;
+
+        //크리티컬 확률 계산
+        bool isCritical = MagicDB.Instance.MagicCritical(magic) >= Random.value ? true : false;
+        //크리티컬 데미지 계산
+        float criticalDamage = isCritical ? MagicDB.Instance.MagicCriticalDamage(magic) : 1f;
+
+        //데미지 계산
+        float damage = MagicDB.Instance.MagicPower(magic);
+        // 고정 데미지에 확률 계산 및 크리티컬 데미지 곱해서 int로 반올림
+        damage = Mathf.RoundToInt(Random.Range(damage * 0.8f, damage * 1.2f) * criticalDamage);
+
+        // 데미지가 0이 아닐때 최소 데미지 1 보장
+        if (damage != 0)
+            damage = Mathf.Clamp(damage, 1, damage);
 
         // 체력 감소
         HpNow -= damage;
 
         // 경직 시간 추가
         hitCount = enemy.hitDelay;
-
-        // 넉백 효과
-        if (magic.pierce > 0 && gameObject.activeSelf)
-        {
-            StartCoroutine(Knockback(magic.pierce * 1));
-        }
 
         // 데미지 UI 띄우기
         Transform damageCanvas = ObjectPool.Instance.transform.Find("OverlayUI");
@@ -136,7 +135,7 @@ public class EnemyAI : MonoBehaviour
         dmgTxt.text = damage.ToString();
 
         // 크리티컬 떴을때 추가 강조효과 UI
-        if (isCritical)
+        if (isCritical && damage != 0)
         {
             dmgTxt.fontSize = 120;
             dmgTxt.color = new Color(1, 100 / 255, 100 / 255);
@@ -165,32 +164,25 @@ public class EnemyAI : MonoBehaviour
         Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.knockbackForce - 1));
         knockbackDir = knockbackDir.normalized + knockbackBuff;
 
-        //리지드바디 밀기
-        // rigid.velocity = Vector2.zero;
-        // rigid.AddForce(dir.normalized * knockbackForce * 0.1f);
-
         //반대방향으로 이동
-        transform.DOMove((Vector2)transform.position + knockbackDir, 0.1f)
-        .SetEase(Ease.OutBack);
+        transform.DOMove((Vector2)transform.position + knockbackDir, enemy.hitDelay)
+        .SetEase(Ease.OutExpo);
 
-        print(knockbackDir);
+        // print(knockbackDir);
 
         yield return null;
     }
 
     void Dead()
     {
-        if(enemy == null)
-        return;
-        
-        if (enemy.dropRate >= Random.Range(0, 1))
+        if (enemy == null)
+            return;
+
+        if (enemy.dropRate >= Random.Range(0, 1) && hasItem.Length > 0)
         {
             //아이템 드랍
             DropItem();
         }
-
-        // 몬스터 초기화
-        Initial();
 
         // 몬스터 비활성화
         LeanPool.Despawn(gameObject);
@@ -201,5 +193,33 @@ public class EnemyAI : MonoBehaviour
     {
         Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
         LeanPool.Spawn(hasItem[Random.Range(0, hasItem.Length)], transform.position, Quaternion.identity, itemPool);
+
+        //체력 씨앗 드랍
+        DropHealSeed();
+    }
+
+    void DropHealSeed()
+    {
+        // 플레이어가 HealSeed 마법을 갖고 있을때
+        MagicInfo magic = PlayerManager.Instance.hasMagics.Find(x => x.magicName == "Heal Seed");
+        if (magic != null)
+        {            
+            // 크리티컬 확률 = 드랍 확률
+            // print(MagicDB.Instance.MagicCritical(magic));
+            bool isDrop = MagicDB.Instance.MagicCritical(magic) >= Random.value ? true : false;
+            //크리티컬 데미지만큼 회복
+            int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalDamage(magic));
+            healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
+
+            // HealSeed 마법 크리티컬 확률에 따라 드랍
+            if (isDrop)
+            {
+                Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
+                GameObject healSeed = LeanPool.Spawn(ItemDB.Instance.heartSeed, transform.position, Quaternion.identity, itemPool);
+
+                // 아이템에 체력 회복량 넣기
+                healSeed.GetComponent<ItemManager>().amount = healAmount;
+            }
+        }
     }
 }

@@ -13,8 +13,6 @@ public class MagicUpgradeMenu : MonoBehaviour
     // public CanvasRenderer canvasRenderer; //스탯 다각형 채우기
     // public UILineRenderer uiLineRenderer; //스탯 다각형 테두리
     public UIPolygon statPolygon;
-    public Material material;
-    public Texture2D texture2D;
     public GameObject statBtnParent;
     public Text magicName;
     public Image magicIcon;
@@ -198,44 +196,27 @@ public class MagicUpgradeMenu : MonoBehaviour
     void GetMagicStats()
     {
         // 마법에서 6가지 스탯 int값 받아오기
-        if (magic != null)
-            stats.Clear();
-        stats.Add(magic.power);
-        stats.Add(magic.speed);
-        stats.Add(magic.range);
-        stats.Add(magic.critical);
-        stats.Add(magic.pierce);
-        stats.Add(magic.projectile);
-        stats.Add(magic.power); //마지막값은 첫값과 같게
-
-        // print(magic.power
-        //     + " : " + magic.speed
-        //     + " : " + magic.range
-        //     + " : " + magic.critical
-        //     + " : " + magic.pierce
-        //     + " : " + magic.projectile
-        // );
+        // if (magic != null)
+        //     stats.Clear();
+        // stats.Add(magic.power);
+        // stats.Add(magic.speed);
+        // stats.Add(magic.range);
+        // stats.Add(magic.critical);
+        // stats.Add(magic.pierce);
+        // stats.Add(magic.projectile);
+        // stats.Add(magic.power); //마지막값은 첫값과 같게
     }
 
     void ApplyMagicStats()
     {
         //마법 스탯 반영하기
-        if (magic != null)
-            magic.power = stats[0];
-        magic.speed = stats[1];
-        magic.range = stats[2];
-        magic.critical = stats[3];
-        magic.pierce = stats[4];
-        magic.projectile = stats[5];
-
-        // MagicInfo m = MagicDB.Instance.GetMagicByID(magic.id);
-        // print(m.power
-        //     + " : " + m.speed
-        //     + " : " + m.range
-        //     + " : " + m.critical
-        //     + " : " + m.pierce
-        //     + " : " + m.projectile
-        // );
+        // if (magic != null)
+        //     magic.power = stats[0];
+        // magic.speed = stats[1];
+        // magic.range = stats[2];
+        // magic.critical = stats[3];
+        // magic.pierce = stats[4];
+        // magic.projectile = stats[5];
 
         // 마법 획득 및 언락
         PlayerManager.Instance.GetMagic(magic);
