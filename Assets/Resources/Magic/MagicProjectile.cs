@@ -12,32 +12,14 @@ public class MagicProjectile : MonoBehaviour
     Rigidbody2D rigid;
     Collider2D col;
     public SpriteRenderer sprite;
-    public Vector2 originColScale;
     float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
-    // public bool isAutoDespawn = true;
-    // public float magicDuration = 3f;
-    // public float magicSpeed = 1f;
 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
-
-        // 콜라이더 기본 사이즈 저장
-        if (TryGetComponent(out BoxCollider2D boxCol))
-        {
-            originColScale = boxCol.size;
-        }
-        else if (TryGetComponent(out CapsuleCollider2D capCol))
-        {
-            originColScale = capCol.size;
-        }
-        else if (TryGetComponent(out CircleCollider2D circleCol))
-        {
-            originColScale = Vector2.one * circleCol.radius;
-        }
 
         //초기화
         StartCoroutine(Initial());
@@ -104,7 +86,7 @@ public class MagicProjectile : MonoBehaviour
         //관통 횟수 초기화 
         pierceNum = MagicDB.Instance.MagicPierce(magic);
 
-        // 마법 오브젝트 속도
+        // 마법 지속시간
         float duration = MagicDB.Instance.MagicDuration(magic);
         //마법 자동 디스폰
         StartCoroutine(DespawnMagic(duration));

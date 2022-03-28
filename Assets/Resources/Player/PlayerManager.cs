@@ -34,8 +34,9 @@ public class PlayerManager : MonoBehaviour
     public GameObject mobSpawner;
     private Animator animator;
     private SpriteRenderer sprite;
-    public GameObject levelupPopup;
-    public GameObject OverlayUI;
+    // public GameObject levelupPopup;
+    public Rigidbody2D rigid;
+    public Vector3 lastDir; //마지막 바라봤던 방향
 
     [Header("<Stat>")] //기본 스탯
     public float hpMax = 20; // 최대 체력
@@ -103,6 +104,7 @@ public class PlayerManager : MonoBehaviour
 
     void Start()
     {
+        rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
         originColor = sprite.color;
@@ -172,7 +174,11 @@ public class PlayerManager : MonoBehaviour
         }
 
         dir.Normalize();
-        GetComponent<Rigidbody2D>().velocity = moveSpeed * dir;
+        rigid.velocity = moveSpeed * dir;
+
+        //마지막 방향 기억
+        if(dir != Vector2.zero)
+        lastDir = dir;
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -241,7 +247,7 @@ public class PlayerManager : MonoBehaviour
             // print("아이템 합성");
 
             // 아이템 합성 메뉴 띄우기
-            UIManager.Instance.PopupUI(UIManager.Instance.scrollMenu);
+            UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
         }
 
         if (getItem.itemType == "Artifact")
@@ -390,8 +396,8 @@ public class PlayerManager : MonoBehaviour
 
     public void AddGem(ItemInfo item, int amount)
     {
-        // 어떤 원소든지 경험치 증가
-        ExpNow++;
+        // 어떤 원소든지 젬 개수만큼 경험치 증가
+        ExpNow += amount;
 
         //경험치 다 찼을때
         if (ExpNow == ExpMax)
@@ -433,7 +439,8 @@ public class PlayerManager : MonoBehaviour
         Time.timeScale = 0;
 
         // 팝업 선택메뉴 띄우기
-        levelupPopup.SetActive(true);
+        UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+        // levelupPopup.SetActive(true);
     }
 
     //원소젬 지불하기

@@ -31,11 +31,11 @@ public class MagicHover : MonoBehaviour
             //마법 오브젝트 캐릭터 주위 공전
             SpinMagic();
             //쿨타임마다 마법 시전
-            CountMagic();
+            CoolTimeCount();
         }
     }
 
-    void CountMagic()
+    void CoolTimeCount()
     {
         if (cooltimeCounter <= 0)
         {

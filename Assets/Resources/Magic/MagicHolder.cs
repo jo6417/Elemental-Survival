@@ -5,6 +5,7 @@ using UnityEngine;
 public class MagicHolder : MonoBehaviour
 {
     public MagicInfo magic; //보유한 마법 데이터
+    public Vector2 targetPos; //목표 위치
 
     public float knockbackForce = 0; //넉백 파워
     public float slowTime = 0; //슬로우 지속시간

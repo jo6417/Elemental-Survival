@@ -77,7 +77,7 @@ public class CastMagic : MonoBehaviour
                         magic.isSummoned = true;
 
                         // 플레이어 위치에 마법 생성
-                        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity);
+                        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, PlayerManager.Instance.transform);
 
                         //마법 정보 넣기
                         magicObj.GetComponent<MagicHolder>().magic = magic;
@@ -96,7 +96,8 @@ public class CastMagic : MonoBehaviour
                     StartCoroutine(ShotMagic(magicPrefab, magic));
                 }
                 //소환하는 마법일때
-                else if (magicPrefab.TryGetComponent(out MagicFalling magicFall))
+                else if (magicPrefab.TryGetComponent(out MagicFalling magicFall) ||
+                magicPrefab.TryGetComponent(out MagicArea magicArea))
                 {
                     // print(magic.magicName + " : 소환 마법");
                     StartCoroutine(SummonMagic(magicPrefab, magic));
@@ -162,10 +163,22 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < enemyPos.Count; i++)
         {
             // 해당 적 위치에 마법 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, enemyPos[i], Quaternion.identity);
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, enemyPos[i], Quaternion.identity, magicPool);
+
+            // 발자국 생성마다 x축 뒤집기
+            if (magic.magicName == "Lava Toss")
+            {
+                if (magicObj.transform.rotation.x == 180)
+                    magicObj.transform.rotation = Quaternion.Euler(Vector3.zero);
+                else if (magicObj.transform.rotation.x == 0)
+                    magicObj.transform.rotation = Quaternion.Euler(new Vector3(180, 0, 0));
+            }
 
             //마법 정보 넣기
             magicObj.GetComponent<MagicHolder>().magic = magic;
+
+            //적 위치 넣기
+            magicObj.GetComponent<MagicHolder>().targetPos = enemyPos[i];
         }
 
         //마법 쿨타임 만큼 대기
@@ -188,25 +201,26 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < enemyPos.Count; i++)
         {
             // 랜덤 각도로 회전
-            float angle = 0;
-            if (magic.speed == 0)
-            {
-                angle = Random.Range(0, 360);
-            }
+            // float angle = 0;
+            // if (magic.speed == 0)
+            // {
+            //     angle = Random.Range(0, 360);
+            // }
 
             // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, angle)), magicPool);
+            // GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.Euler(new Vector3(0, 0, angle)), magicPool);
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, magicPool);
 
             //각도에 따라 스프라이트 뒤집기
             MagicProjectile magicPro = magicObj.GetComponent<MagicProjectile>();
-            if (angle > 90 && angle < 270) // 90 ~ 270
-            {
-                magicPro.sprite.flipY = true;
-            }
-            else
-            {
-                magicPro.sprite.flipY = false;
-            }
+            // if (angle > 90 && angle < 270) // 90 ~ 270
+            // {
+            //     magicPro.sprite.flipY = true;
+            // }
+            // else
+            // {
+            //     magicPro.sprite.flipY = false;
+            // }
 
             //마법 정보 넣기
             magicObj.GetComponent<MagicHolder>().magic = magic;
@@ -268,24 +282,4 @@ public class CastMagic : MonoBehaviour
         //적의 위치 리스트 리턴
         return enemyPos;
     }
-
-    // 콜라이더 사이즈 갱신
-    // void SetHitBox(GameObject magicObj, Vector2 originSize, MagicInfo magic)
-    // {
-    //     if (magicObj.TryGetComponent(out BoxCollider2D boxCol))
-    //     {
-    //         boxCol = magicObj.GetComponent<BoxCollider2D>();
-    //         boxCol.size = originSize * magic.range;
-    //     }
-    //     else if (magicObj.TryGetComponent(out CapsuleCollider2D capCol))
-    //     {
-    //         capCol = magicObj.GetComponent<CapsuleCollider2D>();
-    //         capCol.size = originSize * magic.range;
-    //     }
-    //     else if (magicObj.TryGetComponent(out CircleCollider2D circleCol))
-    //     {
-    //         circleCol = magicObj.GetComponent<CircleCollider2D>();
-    //         circleCol.radius = originSize.x * magic.range;
-    //     }
-    // }
 }
