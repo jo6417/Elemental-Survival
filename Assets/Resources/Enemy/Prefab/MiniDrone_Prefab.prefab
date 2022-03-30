@@ -51,7 +51,8 @@ MonoBehaviour:
   speed: 1
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
     type: 3}
-  hasItem: []
+  hasItem:
+  - {fileID: 3006681891783414290, guid: 4d81cdec10de5c24791d3020a5c07e71, type: 3}
   hitCount: 0
   HpNow: 1
 --- !u!212 &7752522856865055190

@@ -60,6 +60,10 @@ public class CastMagic : MonoBehaviour
             {
                 MagicInfo magic = MagicDB.Instance.GetMagicByID(magicID);
 
+                //0등급은 원소젬이므로 캐스팅 안함
+                if(magic.grade == 0)
+                continue;
+
                 // 마법 프리팹 없으면 넘기기
                 var magicPrefab = MagicDB.Instance.magicPrefab.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Prefab");
                 if (magicPrefab == null)

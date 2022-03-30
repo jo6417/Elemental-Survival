@@ -111,7 +111,7 @@ public class MagicDB : MonoBehaviour
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
 
-    public Color[] gradeColor = new Color[6]; //마법 등급 색깔
+    public Color[] gradeColor = new Color[7]; //마법 등급 색깔
     public Color[] elementColor = new Color[6]; //원소 색깔
     public string[] elementNames = new string[6]; //기본 원소 이름
 
@@ -119,7 +119,7 @@ public class MagicDB : MonoBehaviour
     {
         // 등급 색깔
         Color[] _gradeColor = {HexToRGBA("FFFFFF"), HexToRGBA("4FF84C"), HexToRGBA("3EC1FF"), HexToRGBA("CD45FF"),
-        HexToRGBA("FF3310"), HexToRGBA("FFFF00")};
+        HexToRGBA("FF3310"), HexToRGBA("FF8C00"), HexToRGBA("FFFF00")};
         gradeColor = _gradeColor;
 
         // 원소젬 색깔

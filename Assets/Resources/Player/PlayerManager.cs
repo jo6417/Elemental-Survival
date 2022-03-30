@@ -244,10 +244,21 @@ public class PlayerManager : MonoBehaviour
         // 아이템이 스크롤일때
         if (getItem.itemType == "Scroll")
         {
-            // print("아이템 합성");
-
             // 아이템 합성 메뉴 띄우기
-            UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+            // UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+
+            //보유하지 않은 아이템일때
+            if (!hasItems.Exists(x => x.id == getItem.id))
+            {
+                // 플레이어 보유 아이템에 해당 아이템 추가하기
+                hasItems.Add(getItem);
+            }
+
+            //보유한 아이템의 개수만 늘려주기
+            hasItems.Find(x => x.id == getItem.id).amount++;
+
+            //TODO 스크롤 획득 메시지 띄우기
+            print("마법 합성이 " + getItem.amount + "회 가능합니다.");
         }
 
         if (getItem.itemType == "Artifact")
@@ -296,14 +307,18 @@ public class PlayerManager : MonoBehaviour
             hasMagics.Add(getMagic);
         }
 
+        // 0등급 마법이면 원소젬이므로 스킵
+        if(getMagic.grade == 0)
+        return;
+
         //보유한 마법의 레벨 올리기
         hasMagics.Find(x => x.id == getMagic.id).magicLevel++;
 
-        // 마법 캐스팅 다시 시작
-        CastMagic.Instance.ReCastMagics();
-
         // 보유한 모든 마법 아이콘 갱신
         UIManager.Instance.UpdateMagics();
+
+        // 마법 캐스팅 다시 시작
+        CastMagic.Instance.ReCastMagics();
     }
 
     void buffUpdate()
@@ -409,6 +424,9 @@ public class PlayerManager : MonoBehaviour
 
         // 가격 타입으로 젬 타입 인덱스로 반환
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
+
+        // 젬 타입 인덱스로 해당 젬과 같은 마법 찾아서 획득
+        GetMagic(MagicDB.Instance.GetMagicByID(gemTypeIndex));
 
         //해당 젬 갯수 올리기
         hasGems[gemTypeIndex] = hasGems[gemTypeIndex] + amount;

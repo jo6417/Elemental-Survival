@@ -70,7 +70,7 @@ public class LevelupMenu : MonoBehaviour
 
             // 아티팩트 등급 넣기
             Image btnBackground = magicBtnObj.GetComponent<Image>();
-            btnBackground.color = MagicDB.Instance.gradeColor[item.grade - 1];
+            btnBackground.color = MagicDB.Instance.gradeColor[item.grade];
 
             // 아티팩트 이름 넣기
             Text name = magicBtnObj.Find("Background/Descript/Name").GetComponent<Text>();

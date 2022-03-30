@@ -137,7 +137,7 @@ public class ProductToolTip : MonoBehaviour
         // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
         try
         {
-            elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade - 1];
+            elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
         }
         catch (System.Exception)
         {
@@ -146,7 +146,7 @@ public class ProductToolTip : MonoBehaviour
 
         try
         {
-            elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade - 1];
+            elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
         }
         catch (System.Exception)
         {

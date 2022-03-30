@@ -59,6 +59,7 @@ public class UIManager : MonoBehaviour
     public GameObject gemUIParent;
 
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
+    public TextMeshProUGUI pauseScrollAmt; //일시정지 메뉴 스크롤 개수 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
     public Transform hasMagicsUI; //플레이어 현재 소지한 모든 마법 UI
@@ -94,9 +95,9 @@ public class UIManager : MonoBehaviour
             Resume();
 
             // 보유한 모든 마법 아이콘 갱신
-            UIManager.Instance.UpdateMagics();
+            UpdateMagics();
             // 보유한 모든 아이템 아이콘 갱신
-            UIManager.Instance.UpdateItems();
+            UpdateItems();
         }
 
         UpdateTimer();
@@ -180,13 +181,14 @@ public class UIManager : MonoBehaviour
     public void GemIndicator(int gemIndex)
     {
         Light2D gemLight = gemUILights[gemIndex];
-        
+
         //밝기 0으로 초기화
         gemLight.intensity = 0;
 
         //밝기 1까지 부드럽게 올렸다 내리기
         DOTween.To(() => gemLight.intensity, x => gemLight.intensity = x, 1, 0.2f)
-        .OnComplete(() => {
+        .OnComplete(() =>
+        {
             DOTween.To(() => gemLight.intensity, x => gemLight.intensity = x, 0, 0.2f);
         });
     }
@@ -207,6 +209,17 @@ public class UIManager : MonoBehaviour
         foreach (var item in PlayerManager.Instance.hasItems)
         {
             // print(item.itemName + " x" + item.hasNum);
+
+            //스크롤일때
+            if (item.itemType == "Scroll")
+            {
+                pauseScrollAmt.text = "x " + item.amount.ToString();
+                continue;
+            }
+
+            //아티팩트 아니면 넘기기
+            if (item.itemType != "Artifact")
+                continue;
 
             //아이템 아이콘 오브젝트 생성
             GameObject itemIcon = LeanPool.Spawn(hasItemIcon, hasItemsUI.position, Quaternion.identity, hasItemsUI);
@@ -249,6 +262,10 @@ public class UIManager : MonoBehaviour
 
         foreach (var magic in PlayerManager.Instance.hasMagics)
         {
+            //0등급은 원소젬이므로 표시 안함
+            if (magic.grade == 0)
+                continue;
+
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
 

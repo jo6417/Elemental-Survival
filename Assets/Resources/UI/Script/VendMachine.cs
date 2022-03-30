@@ -138,7 +138,7 @@ public class VendMachine : MonoBehaviour
 
                 //아이템 등급 프레임 및 색깔
                 frame.sprite = itemFrame;
-                gradeColor = MagicDB.Instance.gradeColor[item.grade - 1];
+                gradeColor = MagicDB.Instance.gradeColor[item.grade];
                 frame.color = gradeColor;
 
                 //마법 원소 UI 끄기
@@ -178,7 +178,7 @@ public class VendMachine : MonoBehaviour
 
                 // 마법 등급 프레임 및 색깔
                 frame.sprite = magicFrame;
-                gradeColor = MagicDB.Instance.gradeColor[magic.grade - 1];
+                gradeColor = MagicDB.Instance.gradeColor[magic.grade];
                 frame.color = gradeColor;
 
                 //마법 원소 UI 켜기
