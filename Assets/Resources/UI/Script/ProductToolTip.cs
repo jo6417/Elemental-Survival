@@ -114,10 +114,6 @@ public class ProductToolTip : MonoBehaviour
             return;
         }
 
-        //마법 재료 찾기
-        MagicInfo magicA = MagicDB.Instance.GetMagicByName(magic.element_A);
-        MagicInfo magicB = MagicDB.Instance.GetMagicByName(magic.element_B);
-
         //마법 이름, 설명 넣기
         productName.text = magic.magicName;
         productDescript.text = magic.description;
@@ -126,40 +122,22 @@ public class ProductToolTip : MonoBehaviour
         magicIcon.sprite = MagicDB.Instance.magicIcon.Find(
             x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
+        //마법 재료 찾기
+        MagicInfo magicA = MagicDB.Instance.GetMagicByName(magic.element_A);
+        MagicInfo magicB = MagicDB.Instance.GetMagicByName(magic.element_B);
+        
         // 재료 A,B 아이콘 넣기
-        // print(magic.element_A + " : " + magic.element_B);
-
         elementIcon_A.sprite = MagicDB.Instance.magicIcon.Find(
-        x => x.name == magic.element_A.Replace(" ", "") + "_Icon");
+        x => x.name == magicA.magicName.Replace(" ", "") + "_Icon");
         elementIcon_B.sprite = MagicDB.Instance.magicIcon.Find(
-        x => x.name == magic.element_B.Replace(" ", "") + "_Icon");
+        x => x.name == magicB.magicName.Replace(" ", "") + "_Icon");
+
+        // elementIcon_A.sprite = MagicDB.Instance.magicIcon[magicA.id];
+        // elementIcon_B.sprite = MagicDB.Instance.magicIcon[magicB.id];
 
         // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
-        try
-        {
-            elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
-        }
-        catch (System.Exception)
-        {
-            elementGrade_A.color = Color.white;
-        }
-
-        try
-        {
-            elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
-        }
-        catch (System.Exception)
-        {
-            elementGrade_A.color = Color.white;
-        }
-
-        // // 마법 모든 스탯 가져오기
-        // GetMagicStats();
-
-        // // 마법 스펙 그래프에 반영하기
-        // magicStatGraph.VerticesDistances = convertValue().ToArray();
-        // magicStatGraph.OnRebuildRequested();
-
+        elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
+        elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
     }
 
     void SetItemInfo()

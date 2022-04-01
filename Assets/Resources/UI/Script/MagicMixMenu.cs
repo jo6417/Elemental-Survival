@@ -10,42 +10,72 @@ using DG.Tweening;
 public class MagicMixMenu : MonoBehaviour
 {
     [Header("Refer")]
+    public List<int> savedRecipes = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
     public GameObject classPrefab; //클래스 전체 프리팹
     public GameObject magicIconPrefab; //마법 아이콘 프리팹
+    public GameObject recipePrefab; //마법 도감 레시피 프리팹
     public TextMeshProUGUI noMagicTxt; //합성 불가시 텍스트
     public TextMeshProUGUI scrollAmount; // 플레이어 보유 스크롤 개수
+    public Sprite questionMark; //물음표 스프라이트
 
+    [Header("Scrollbar")]
     public Scrollbar leftScrollbar; //왼쪽 스크롤바
     public Scrollbar rightScrollbar; //오른쪽 스크롤바
+    public Scrollbar recipeScrollbar; //레시피 스크롤바
 
+    [Header("List")]
     public Transform leftContainer; //왼쪽 마법 리스트
     public Transform rightContainer; //오른쪽 마법 리스트
+    public Transform recipeContainer; //마법 레시피 리스트
     List<MagicInfo> notHasMagic = new List<MagicInfo>(); //플레이어가 보유하지 않은 마법 리스트
 
     private MagicInfo leftMagic; //왼쪽에서 선택된 마법
     private MagicInfo rightMagic; //오른쪽에서 선택된 마법
     // private MagicInfo mixedMagic = null;
 
+    [Header("FloatingIcon")]
     public Transform leftIcon; //왼쪽에서 선택된 마법 오브젝트
     public Transform rightIcon; //오른쪽에서 선택된 마법 오브젝트
 
+    [Header("Panel")]
     public Transform leftInfoPanel; //왼쪽에서 선택된 마법 정보창
     public Transform rightInfoPanel; //오른쪽에서 선택된 마법 정보창
     public Transform mixInfoPanel; //합성된 마법 정보창
+    public Transform recipePanel; //레시피 패널
+    public Transform recipeInfoPanel; //레시피 항목 정보 패널
+
+    [Header("Button")]
+    public Transform scroll_Index; // 스크롤 개수 인덱스
 
     public Transform leftBackBtn; //왼쪽 back 버튼
     public Transform rightBackBtn; //오른쪽 back 버튼
     public Transform exitBtn; // 마법 합성 종료 버튼
-    public Transform scroll_Index; // 스크롤 개수 인덱스
+    public Transform recipeBtn; // 마법 조합법 버튼
+
+    private Vector2 leftBackBtnPos; // 왼쪽 back 버튼 초기 위치
+    private Vector2 rightBackBtnPos; // 오른쪽 back 버튼 초기 위치
+    private Vector2 exitBtnPos; // 합성 종료 버튼 초기 위치
+    private Vector2 recipeBtnPos; // 마법 조합법 버튼 초기 위치
+
+    private void Awake()
+    {
+        //각종 버튼 초기 위치 저장
+        leftBackBtnPos = leftBackBtn.position;
+        rightBackBtnPos = rightBackBtn.position;
+        exitBtnPos = exitBtn.position;
+        recipeBtnPos = recipeBtn.position;
+
+        gameObject.SetActive(false);
+    }
 
     private void OnEnable()
     {
         // 레벨업 메뉴에 마법 정보 넣기
         if (MagicDB.Instance.loadDone)
-            SetMenu();
+            StartCoroutine(SetMenu());
     }
 
-    void SetMenu()
+    IEnumerator SetMenu()
     {
         DOTween.Clear();
 
@@ -64,22 +94,30 @@ public class MagicMixMenu : MonoBehaviour
         notHasMagic.Clear();
         notHasMagic = MagicDB.Instance.magicDB.FindAll(x => x.magicLevel == 0);
 
-        // 플레이어 보유중인 마법 참조
-        List<MagicInfo> playerMagics = PlayerManager.Instance.hasMagics;
-
         //왼쪽 페이지 채우기
-        SetPage(playerMagics, true);
+        SetPage(true);
         //오른쪽 페이지 채우기
-        SetPage(playerMagics, false);
+        SetPage(false);
+        //마법 레시피 리스트 채우기
+        // SetRecipe();
+
+        //팝업 렌더링 완료 후 버튼 튀어나오기
+        yield return new WaitUntil(() => SetRecipe());
+
+        //마법 레시피 버튼 띄우기
+        ToggleRecipeBtn(true);
 
         //팝업 종료 버튼 띄우기
         ToggleExitBtn(true);
     }
 
-    void SetPage(List<MagicInfo> playerMagics, bool isLeft)
+    void SetPage(bool isLeft)
     {
         //합성 실패 텍스트 비활성화
         noMagicTxt.gameObject.SetActive(false);
+
+        //합성 마법 페이지 닫기
+        mixInfoPanel.gameObject.SetActive(false);
 
         //해당 페이지의 선택된 마법 아이콘
         Transform selectIcon = isLeft ? leftIcon : rightIcon;
@@ -90,9 +128,6 @@ public class MagicMixMenu : MonoBehaviour
         Transform selectInfoPanel = isLeft ? leftInfoPanel : rightInfoPanel;
         //좌,우 정보창 비활성화
         selectInfoPanel.gameObject.SetActive(false);
-
-        //해당 페이지의 뒤로가기 버튼
-        // Transform backBtn = isLeft ? leftBackBtn : rightBackBtn;
 
         //해당 페이지의 스크롤바
         Scrollbar scrollbar = isLeft ? leftScrollbar : rightScrollbar;
@@ -108,6 +143,9 @@ public class MagicMixMenu : MonoBehaviour
         leftMagic = null;
         rightMagic = null;
         // mixedMagic = null;
+
+        // 플레이어 보유중인 마법 참조
+        List<MagicInfo> playerMagics = PlayerManager.Instance.hasMagics;
 
         // 해당 등급 마법 있으면 class 숫자 수정하고 마법 아이콘 추가
         for (int i = 6; i >= 0; i--)
@@ -156,7 +194,76 @@ public class MagicMixMenu : MonoBehaviour
 
                     // 아이콘 눌렀을때 일어날 이벤트 넣기
                     Button btn = magicIcon.GetComponent<Button>();
-                    SetBtnEvent(btn, isLeft, magic);
+                    // SetIconClickEvent(btn, isLeft, magic);
+                    btn.onClick.AddListener(delegate
+                    {
+                        // print(selectMagic.position);
+
+                        // 마법 아이콘에 등급 넣기
+                        selectIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
+
+                        // 마법 아이콘 이미지 넣기
+                        selectIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
+                        x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+
+                        // 이름 테두리에 등급 색깔 넣기
+                        Transform title = selectInfoPanel.Find("TitleFrame");
+                        title.gameObject.SetActive(true);
+                        title.GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
+                        //이름 넣기
+                        title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.magicName;
+
+                        //아이콘 찾기
+                        Transform infoIcon = selectInfoPanel.Find("MagicIcon");
+
+                        //마법 설명 넣기
+                        Transform descript = selectInfoPanel.Find("Descript");
+                        descript.gameObject.SetActive(true);
+                        descript.GetComponent<TextMeshProUGUI>().text = "마법정보 : " + magic.description;
+
+                        // 페이지의 리스트 비활성화
+                        //TODO 리스트 오브젝트 투명해지며 사라지기
+                        container.gameObject.SetActive(false);
+                        // 아이콘 활성화
+                        selectIcon.gameObject.SetActive(true);
+
+                        //백 버튼 튀어나오기
+                        ToggleBackBtn(isLeft);
+
+                        // 아이콘 사이즈 줄이기
+                        selectIcon.localScale = Vector3.one;
+                        // 아이콘 사이즈 키우기
+                        selectIcon.DOScale(Vector3.one * 2f, 0.5f)
+                        .SetUpdate(true);
+
+                        // 해당 아이콘 자리로 selectIcon가 이동
+                        selectIcon.position = btn.transform.position;
+                        // 선택한 아이콘이 페이지 가운데로 domove
+                        selectIcon
+                        .DOMove(infoIcon.position, 0.5f)
+                        .SetUpdate(true)
+                        .SetEase(Ease.InBack)
+                        .OnComplete(() =>
+                        {
+                            // 정보창 활성화
+                            selectInfoPanel.gameObject.SetActive(true);
+
+                            //좌,우 각각 마법 정보 넣기
+                            if (isLeft)
+                                leftMagic = magic;
+                            else
+                                rightMagic = magic;
+
+                            // 양쪽 마법 둘다 선택되면
+                            print(leftMagic + " : " + rightMagic);
+                            if (leftMagic != null && rightMagic != null)
+                                //마법 합성 시작
+                                MixMagic();
+                        });
+
+                        //트윈 재시작
+                        selectIcon.DORestart();
+                    });
                 }
                 // UI 레이아웃 리빌드하기
                 LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)classMenu.transform);
@@ -167,88 +274,156 @@ public class MagicMixMenu : MonoBehaviour
         scrollbar.value = 1f;
     }
 
-    void SetBtnEvent(Button btn, bool isLeft, MagicInfo magic = null)
+    bool SetRecipe()
     {
-        //해당 페이지의 선택된 마법 아이콘
-        Transform selectIcon = isLeft ? leftIcon : rightIcon;
+        // 리스트의 자식 모두 제거
+        UIManager.Instance.DestroyChildren(recipeContainer);
 
-        //해당 페이지의 선택된 마법 정보창
-        Transform selectInfoPanel = isLeft ? leftInfoPanel : rightInfoPanel;
+        //모든 마법 리스트 불러오기
+        List<MagicInfo> allMagics = MagicDB.Instance.magicDB;
 
-        //마법 리스트
-        Transform container = isLeft ? leftContainer : rightContainer;
-
-        btn.onClick.AddListener(delegate
+        // 해당 등급 마법 있으면 class 숫자 수정하고 마법 아이콘 추가
+        for (int i = 6; i >= 1; i--)
         {
-            // print(selectMagic.position);
-
-            // 선택된 마법 가져오기
-            MagicInfo selectMagic = isLeft ? leftMagic : rightMagic;
-
-            // 마법 아이콘에 등급 넣기
-            selectIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
-
-            // 마법 아이콘 이미지 넣기
-            selectIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
-            x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
-
-            // 이름 테두리에 등급 색깔 넣기
-            Transform title = selectInfoPanel.Find("TitleFrame");
-            title.gameObject.SetActive(true);
-            title.GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
-            //이름 넣기
-            title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.magicName;
-
-            //아이콘 찾기
-            Transform infoIcon = selectInfoPanel.Find("MagicIcon");
-
-            //마법 설명 넣기
-            Transform descript = selectInfoPanel.Find("Descript");
-            descript.gameObject.SetActive(true);
-            descript.GetComponent<TextMeshProUGUI>().text = "마법정보 : " + magic.description;
-
-            // 페이지의 리스트 비활성화
-            //TODO 리스트 오브젝트 투명해지며 사라지기
-            container.gameObject.SetActive(false);
-            // 아이콘 활성화
-            selectIcon.gameObject.SetActive(true);
-
-            // 아이콘 사이즈 줄이기
-            selectIcon.localScale = Vector3.one;
-            // 아이콘 사이즈 키우기
-            selectIcon.DOScale(Vector3.one * 2f, 0.5f)
-            .SetUpdate(true);
-
-            // 해당 아이콘 자리로 selectIcon가 이동
-            selectIcon.position = btn.transform.position;
-            // 선택한 아이콘이 페이지 가운데로 domove
-            selectIcon
-            .DOMove(infoIcon.position, 0.5f)
-            .SetUpdate(true)
-            .SetEase(Ease.InBack)
-            .OnComplete(() =>
+            // 6 ~ 1 등급 마법 있으면 아이콘 생성
+            if (allMagics.Exists(x => x.grade == i))
             {
-                // 정보창 활성화
-                selectInfoPanel.gameObject.SetActive(true);
+                GameObject classMenu = LeanPool.Spawn(classPrefab, recipeContainer);
 
-                //뒤로 버튼 켜기 위치로 움직이기
-                ToggleBackBtn(isLeft);
+                //등급 타이틀
+                Transform classTitle = classMenu.transform.Find("ClassTitle");
+                TextMeshProUGUI classTxt = classTitle.GetComponentInChildren<TextMeshProUGUI>();
 
-                //좌,우 각각 마법 정보 넣기
-                if (isLeft)
-                    leftMagic = magic;
-                else
-                    rightMagic = magic;
+                //등급 색깔 넣기
+                classTitle.GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
+                //등급 텍스트 넣기
+                classTxt.text = "Class " + i;
 
-                // 양쪽 마법 둘다 선택되면
-                if (leftMagic != null && rightMagic != null)
-                    //마법 합성 시작
-                    MixMagic();
-            });
+                //해당 등급 레시피 넣을 부모 오브젝트 찾기
+                Transform magicList = classMenu.transform.Find("Magics");
 
-            //트윈 재시작
-            selectIcon.DORestart();
-        });
+                //레시피 넣을 그리드
+                GridLayoutGroup grid = magicList.GetComponent<GridLayoutGroup>();
+                //한줄 사이즈 수정
+                grid.cellSize = new Vector2(600, 170);
+                //레시피 한줄에 1개씩 넣기
+                grid.constraintCount = 1;
+
+                //해당 등급 마법 모두 찾기
+                List<MagicInfo> magics = new List<MagicInfo>();
+                magics = allMagics.FindAll(x => x.grade == i);
+
+                //해당 등급 모든 마법 아이콘 넣기
+                foreach (var magic in magics)
+                {
+                    //합성 성공 내역 있는 마법만 보여주기
+                    bool unlockMagic = savedRecipes.Exists(x => x == magic.id);
+
+                    //해당 등급 리스트에 마법 아이콘 스폰
+                    GameObject recipe = LeanPool.Spawn(recipePrefab, magicList);
+
+                    //마법 아이콘
+                    Transform magicIcon = recipe.transform.Find("MagicIcon");
+                    // 마법 등급 넣기
+                    magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
+                    
+                    //마법 아이콘 찾기
+                    Sprite iconSprite = MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+                    //! 미구현 아이콘은 물음표 넣기
+                    if(iconSprite == null)
+                    iconSprite = questionMark;
+
+                    // 마법 아이콘 이미지 넣기
+                    Image magicIcon_icon = magicIcon.Find("Icon").GetComponent<Image>();
+                    magicIcon_icon.sprite = iconSprite;
+
+                    // 획득한 마법일때
+                    if (unlockMagic)
+                        magicIcon_icon.color = Color.white;
+                    // 미획득한 마법일때
+                    else
+                        magicIcon_icon.color = Color.black;
+
+                    // 툴팁 컴포넌트에 마법 정보 넣기
+                    // ToolTipTrigger tooltip = magicIcon.GetComponent<ToolTipTrigger>();
+                    // tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
+                    // tooltip.magic = magic;
+
+                    //마법 재료 A 아이콘
+                    Transform element_A = recipe.transform.Find("Element_A");
+                    // 마법 등급 넣기
+                    element_A.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
+                    // 마법 아이콘 이미지 넣기, 미획득이면 물음표 스프라이트 넣기
+                    element_A.Find("Icon").GetComponent<Image>().sprite = unlockMagic
+                    ? MagicDB.Instance.magicIcon.Find(x => x.name == magic.element_A.Replace(" ", "") + "_Icon")
+                    : questionMark;
+
+                    // 툴팁 컴포넌트에 마법 정보 넣기
+                    ToolTipTrigger tooltip_A = element_A.GetComponent<ToolTipTrigger>();
+                    tooltip_A.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
+                    tooltip_A.magic = MagicDB.Instance.GetMagicByName(magic.element_A);
+
+                    //마법 재료 B 아이콘
+                    Transform element_B = recipe.transform.Find("Element_B");
+                    // 마법 등급 넣기
+                    element_B.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
+                    // 마법 아이콘 이미지 넣기
+                    element_B.Find("Icon").GetComponent<Image>().sprite = unlockMagic
+                    ? MagicDB.Instance.magicIcon.Find(x => x.name == magic.element_B.Replace(" ", "") + "_Icon")
+                    : questionMark;
+
+                    // 툴팁 컴포넌트에 마법 정보 넣기
+                    ToolTipTrigger tooltip_B = element_B.GetComponent<ToolTipTrigger>();
+                    tooltip_B.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
+                    tooltip_B.magic = MagicDB.Instance.GetMagicByName(magic.element_B);
+
+                    // 아이콘 눌렀을때 일어날 이벤트 넣기
+                    Button btn = recipe.GetComponent<Button>();
+                    // SetBtnEvent(btn, isLeft, magic);
+                    btn.onClick.AddListener(delegate
+                    {
+                        print("Recipe : " + magic.magicName);
+
+                        //마법 타이틀 찾기
+                        Transform title = recipeInfoPanel.Find("TitleFrame");
+                        //마법 등급 색깔 넣기
+                        title.GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
+                        //마법 이름 넣기
+                        title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.magicName;
+
+                        //마법 아이콘 찾기
+                        Transform magicIcon = recipeInfoPanel.Find("MagicIcon");
+
+                        // 마법 아이콘에 등급 넣기
+                        magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
+                        // 마법 아이콘 이미지 넣기
+                        Image iconImg = magicIcon.Find("Icon").GetComponent<Image>();
+                        iconImg.sprite = iconSprite;
+                        // 획득한 마법일때
+                        if (unlockMagic)
+                            iconImg.color = Color.white;
+                        // 미획득한 마법일때
+                        else
+                            iconImg.color = Color.black;
+
+                        //마법 설명 넣기
+                        recipeInfoPanel.Find("Descript").GetComponent<TextMeshProUGUI>().text = "마법정보 : " + magic.description;
+                    });
+                }
+                // UI 레이아웃 리빌드하기
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)classMenu.transform);
+            }
+        }
+
+        //해당 페이지의 스크롤바 초기화
+        recipeScrollbar.value = 1f;
+
+        //레시피 리스트 및 정보 패널 비활성화
+        recipePanel.gameObject.SetActive(false);
+        recipeInfoPanel.gameObject.SetActive(false);
+
+        //완료 여부 리턴
+        return true;
     }
 
     void MixMagic()
@@ -267,6 +442,7 @@ public class MagicMixMenu : MonoBehaviour
         if (mixedMagic == null)
             mixedMagic = MagicDB.Instance.magicDB.Find(y => y.element_A == rightMagic.magicName && y.element_B == leftMagic.magicName);
 
+        // 합성 실패
         if (amount == 0 || mixedMagic == null)
         {
             //좌,우 재료로 합성 가능한 마법 없을때
@@ -318,6 +494,10 @@ public class MagicMixMenu : MonoBehaviour
 
         print("합성 성공 : " + mixedMagic.magicName);
 
+        // 양쪽 마법 정보 비우기
+        leftMagic = null;
+        rightMagic = null;
+
         //보유 스크롤 개수 줄이기 및 업데이트
         PlayerManager.Instance.hasItems.Find(x => x.itemType == "Scroll").amount -= 1;
         amount = PlayerManager.Instance.hasItems.Find(x => x.itemType == "Scroll").amount;
@@ -328,8 +508,13 @@ public class MagicMixMenu : MonoBehaviour
         rightInfoPanel.gameObject.SetActive(false);
 
         //좌,우 뒤로 버튼 끄기
-        ToggleBackBtn(true);
-        ToggleBackBtn(false);
+        leftBackBtn.DOMove((Vector2)PlayerManager.Instance.transform.position + leftBackBtnPos, 0.5f)
+        .SetEase(Ease.InBack).SetUpdate(true);
+        rightBackBtn.DOMove((Vector2)PlayerManager.Instance.transform.position + rightBackBtnPos, 0.5f)
+        .SetEase(Ease.InBack).SetUpdate(true);
+
+        //레시피 버튼 끄기
+        ToggleRecipeBtn(false);
 
         //팝업 종료 버튼 끄기
         ToggleExitBtn(false);
@@ -379,16 +564,24 @@ public class MagicMixMenu : MonoBehaviour
             mixedIcon.DOScale(Vector3.one * 2f, 0.5f)
                 .SetEase(Ease.OutBack)
                 .SetUpdate(true);
-            //TODO 가운데에서 빛 스프라이트 커짐
 
             // 마법 획득하기
             PlayerManager.Instance.GetMagic(mixedMagic);
+
+            // 해당 마법 도감 언락하기, 언락 id 목록에 없으면 추가
+            if (savedRecipes.Exists(x => x != mixedMagic.id))
+            {
+                savedRecipes.Add(mixedMagic.id);
+            }
+
+            // 합성된 마법 정보 삭제
+            mixedMagic = null;
         })
         .SetUpdate(true);
         mixSeq.Restart(); //시퀀스 재시작
     }
 
-    public void BackPage(bool isLeft)
+    public void GoListPage(bool isLeft)
     {
         //해당 페이지의 선택된 마법 아이콘
         Transform selectIcon = isLeft ? leftIcon : rightIcon;
@@ -397,11 +590,7 @@ public class MagicMixMenu : MonoBehaviour
         //마법 리스트
         Transform parent = isLeft ? leftContainer : rightContainer;
 
-        //좌,우 각각 마법 정보 없에기
-        if (isLeft)
-            leftMagic = null;
-        else
-            rightMagic = null;
+
 
         // 마법 아이콘 비활성화
         selectIcon.gameObject.SetActive(false);
@@ -416,36 +605,130 @@ public class MagicMixMenu : MonoBehaviour
         parent.gameObject.SetActive(true);
     }
 
+    public void ClickRecipeBtn()
+    {
+        StartCoroutine(ToggleRecipePage());
+    }
+
+    IEnumerator ToggleRecipePage()
+    {
+        //레시피 리스트 토글
+        recipePanel.gameObject.SetActive(!recipePanel.gameObject.activeSelf);
+        //레시피 정보 패널 토글
+        recipeInfoPanel.gameObject.SetActive(recipePanel.gameObject.activeSelf);
+
+        // 첫번째 항목 버튼 클릭하기
+        recipeContainer.GetComponentInChildren<Button>().onClick.Invoke();
+
+        // 재료 리스트 패널 토글
+        leftContainer.gameObject.SetActive(!recipePanel.gameObject.activeSelf);
+        rightContainer.gameObject.SetActive(!recipePanel.gameObject.activeSelf);
+
+        //마법 정보 아이콘 비활성화
+        if (leftIcon.gameObject.activeSelf)
+        {
+            leftIcon.gameObject.SetActive(false);
+            ToggleBackBtn(true);
+        }
+
+        if (rightIcon.gameObject.activeSelf)
+        {
+            rightIcon.gameObject.SetActive(false);
+            ToggleBackBtn(false);
+        }
+
+        // 마법 정보 패널 비활성화
+        leftInfoPanel.gameObject.SetActive(false);
+        rightInfoPanel.gameObject.SetActive(false);
+
+        //레시피 버튼 올리기
+        ToggleRecipeBtn(false);
+
+        //올라가는 동안 대기
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        //레시피 버튼 다시 내리기
+        ToggleRecipeBtn(true);
+    }
+
     void ToggleBackBtn(bool isLeft, float duration = 0.5f)
     {
         //해당 페이지의 뒤로가기 버튼
         Transform backBtn = isLeft ? leftBackBtn : rightBackBtn;
-        //해당 페이지의 선택된 마법 정보창
-        Transform selectInfoPanel = isLeft ? leftInfoPanel : rightInfoPanel;
+        //해당 페이지의 뒤로가기 버튼 위치
+        Vector2 backBtnPos = isLeft ? leftBackBtnPos : rightBackBtnPos;
+        //해당 페이지의 선택된 마법 아이콘
+        Transform selectIcon = isLeft ? leftIcon : rightIcon;
 
-        //상호작용 토글
-        backBtn.GetComponent<Button>().interactable = selectInfoPanel.gameObject.activeSelf;
+        // 버튼 넣을때
+        if (!selectIcon.gameObject.activeSelf)
+        {
+            // 좌,우 각각 마법 정보 없에기
+            if (isLeft)
+                leftMagic = null;
+            else
+                rightMagic = null;
+        }
+
+        // 움직일때는 상호작용 비활성화
+        backBtn.GetComponent<Button>().interactable = false;
+
+        //아이콘 트윈 강제로 끝내기
+        selectIcon.DOComplete();
 
         //뒤로 버튼 트윈 강제로 끝내기
         backBtn.DOComplete();
 
-        //뒤로 버튼 초기 위치 저장
-        Vector2 startPos = backBtn.position;
-
-        //옆으로 옮겨서 마스크 뒤에 숨기기
+        //시작점
+        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + backBtnPos;
+        //목적지
         Vector2 endPos;
+
+        //왼쪽 백 버튼일때
         if (isLeft)
-            //왼쪽 백 버튼일때
-            endPos = selectInfoPanel.gameObject.activeSelf ? startPos - Vector2.right * 4f : startPos + Vector2.right * 4f;
+            endPos = selectIcon.gameObject.activeSelf ? startPos - Vector2.right * 4f : startPos;
+        //오른쪽 백 버튼일때
         else
-            //오른쪽 백 버튼일때
-            endPos = selectInfoPanel.gameObject.activeSelf ? startPos + Vector2.right * 4f : startPos - Vector2.right * 4f;
+            endPos = selectIcon.gameObject.activeSelf ? startPos + Vector2.right * 4f : startPos;
 
         //켤때, 끌때 다른 Ease
-        Ease ease = selectInfoPanel.gameObject.activeSelf ? Ease.OutBack : Ease.InBack;
+        Ease ease = selectIcon.gameObject.activeSelf ? Ease.OutBack : Ease.InBack;
 
         //원래 위치로 돌아오기
         backBtn.DOMove(endPos, duration)
+        .SetEase(ease)
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            //상호작용 토글
+            backBtn.GetComponent<Button>().interactable = selectIcon.gameObject.activeSelf;
+        });
+    }
+    void ToggleRecipeBtn(bool isActive, float duration = 0.5f)
+    {
+        //버튼 상호작용 비활성화
+        recipeBtn.GetComponent<Button>().interactable = isActive;
+
+        //버튼 트윈 강제로 끝내기
+        recipeBtn.DOComplete();
+
+        //레시피 켤때는 Back, 레시피 끌때는 Recipe로 전환
+        recipeBtn.GetComponentInChildren<TextMeshProUGUI>().text = recipePanel.gameObject.activeSelf ? "Back" : "Recipe";
+        //레시피 켤때는 빨간색, 레시피 끌때는 초록색으로 전환
+        recipeBtn.GetComponent<Image>().color = recipePanel.gameObject.activeSelf ?
+        MagicDB.Instance.HexToRGBA("F06464") : MagicDB.Instance.HexToRGBA("9BFF5A");
+
+        //시작점
+        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + recipeBtnPos;
+
+        //목적지
+        Vector2 endPos = isActive ? startPos + Vector2.down * 2f : startPos;
+
+        //켤때, 끌때 다른 Ease
+        Ease ease = isActive ? Ease.OutBack : Ease.InBack;
+
+        //원래 위치로 돌아오기
+        recipeBtn.DOMove(endPos, duration)
         .SetEase(ease)
         .SetUpdate(true);
     }
@@ -457,44 +740,51 @@ public class MagicMixMenu : MonoBehaviour
         //뒤로 버튼 트윈 강제로 끝내기
         exitBtn.DOComplete();
 
-        //뒤로 버튼 초기 위치 저장
-        Vector2 startPos = exitBtn.position;
+        //시작점
+        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + exitBtnPos;
 
-        //옆으로 옮겨서 마스크 뒤에 숨기기
-        Vector2 endPos;
-        //오른쪽 백 버튼일때
-        endPos = isActive ? startPos + Vector2.down * 2f : startPos - Vector2.down * 2f;
+        //목적지
+        Vector2 endPos = isActive ? startPos + Vector2.down * 2f : startPos;
 
         //켤때, 끌때 다른 Ease
         Ease ease = isActive ? Ease.OutBack : Ease.InBack;
 
-        //원래 위치로 돌아오기
+        //버튼 이동
         exitBtn.DOMove(endPos, duration)
-        .SetDelay(0.2f)
         .SetEase(ease)
         .SetUpdate(true);
     }
 
     public void ExitPopup()
     {
+        if (!mixInfoPanel.gameObject.activeSelf)
+        {
+            //레시피 버튼 즉시 끄기
+            ToggleRecipeBtn(false, 0);
+
+            //팝업 종료 버튼 즉시 끄기
+            ToggleExitBtn(false, 0);
+        }
+
         //합성 마법 페이지 닫기
         mixInfoPanel.gameObject.SetActive(false);
 
-        //팝업 종료 버튼 끄기
-        ToggleExitBtn(false, 0);
-
-        //좌,우 정보창 및 백버튼 끄기
-        if (leftInfoPanel.gameObject.activeSelf)
+        //마법 정보 아이콘 비활성화
+        if (leftIcon.gameObject.activeSelf)
         {
-            leftInfoPanel.gameObject.SetActive(false);
-            ToggleBackBtn(true, 0);
+            leftIcon.gameObject.SetActive(false);
+            ToggleBackBtn(true);
         }
 
-        if (rightInfoPanel.gameObject.activeSelf)
+        if (rightIcon.gameObject.activeSelf)
         {
-            rightInfoPanel.gameObject.SetActive(false);
-            ToggleBackBtn(false, 0);
+            rightIcon.gameObject.SetActive(false);
+            ToggleBackBtn(false);
         }
+
+        // 마법 정보 패널 비활성화
+        leftInfoPanel.gameObject.SetActive(false);
+        rightInfoPanel.gameObject.SetActive(false);
 
         //해당 팝업 끄기
         UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);

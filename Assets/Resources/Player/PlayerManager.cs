@@ -415,7 +415,7 @@ public class PlayerManager : MonoBehaviour
         ExpNow += amount;
 
         //경험치 다 찼을때
-        if (ExpNow == ExpMax)
+        if (ExpNow >= ExpMax)
         {
             //레벨업
             Levelup();
@@ -444,6 +444,9 @@ public class PlayerManager : MonoBehaviour
 
     void Levelup()
     {
+        // 시간 멈추기
+        Time.timeScale = 0;
+
         //레벨업
         Level++;
 
@@ -452,9 +455,8 @@ public class PlayerManager : MonoBehaviour
 
         //경험치 최대치 갱신
         ExpMax = Level * Level + 5;
-
-        // 시간 멈추기
-        Time.timeScale = 0;
+        //! 테스트용 맥스 경험치
+        ExpMax = 3;
 
         // 팝업 선택메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
