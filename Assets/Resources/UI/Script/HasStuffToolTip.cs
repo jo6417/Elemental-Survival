@@ -64,7 +64,7 @@ public class HasStuffToolTip : MonoBehaviour
             rect.pivot = new Vector2(0,0);
         }
 
-        Vector3 mousePos = Input.mousePosition;
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         transform.position = mousePos;
     }

@@ -23,7 +23,7 @@ public class VendMachine : MonoBehaviour
     [SerializeField]
     private GameObject productPrefab; //상품 프리팹
     [SerializeField]
-    private float rate = 0.5f; //아티팩트가 아닌 마법이 나올 확률
+    // private float rate = 0.5f; //아티팩트가 아닌 마법이 나올 확률
 
     private void OnEnable()
     {
@@ -77,7 +77,7 @@ public class VendMachine : MonoBehaviour
 
         //TODO 등급마다 확률 다르게
         // 중복제거된 랜덤 마법 id 뽑기
-        int[] magicIDs = MagicDB.Instance.RandomMagicIndex(MagicDB.Instance.magicDB, magicNum);
+        int[] magicIDs = MagicDB.Instance.RandomMagicIndex(MagicDB.Instance.magicInfo.Keys.Count, magicNum);
 
         magics.Clear();
         for (int i = 0; i < magicIDs.Length; i++)
@@ -173,8 +173,8 @@ public class VendMachine : MonoBehaviour
                 isNew = magic.magicLevel > 0 ? false : true;
 
                 // 마법 아이콘 찾기
-                productSprite = MagicDB.Instance.magicIcon.Find(
-                    x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+                productSprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
                 // 마법 등급 프레임 및 색깔
                 frame.sprite = magicFrame;

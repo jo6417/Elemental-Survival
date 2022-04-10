@@ -8,11 +8,14 @@ using UnityEngine.Networking;
 public class EnemyInfo
 {
     public int id;
-    public string name;
+    public int grade;
+    public string enemyName;
     public string description;
 
     [Header("Spec")]
     public float power;
+    public float speed;
+    public float range;
     public float dropRate;
     public float hitDelay;
     public float hpMax;
@@ -27,12 +30,17 @@ public class EnemyInfo
     public float water;
     public float wind;
 
-    public EnemyInfo(int id, string name, string description, float power, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
+    public EnemyInfo(){}
+
+    public EnemyInfo(int id, int grade, string enemyName, string description, float power, float speed, float range, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
-        this.name = name;
+        this.grade = grade;
+        this.enemyName = enemyName;
         this.description = description;
         this.power = power;
+        this.speed = speed;
+        this.range = range;
         this.dropRate = dropRate;
         this.hitDelay = hitDelay;
         this.hpMax = hpMax;
@@ -44,6 +52,28 @@ public class EnemyInfo
         this.lightning = lightning;
         this.water = water;
         this.wind = wind;
+    }
+
+    public EnemyInfo(EnemyInfo enemy)
+    {
+        this.id = enemy.id;
+        this.grade = enemy.grade;
+        this.enemyName = enemy.enemyName;
+        this.description = enemy.description;
+        this.power = enemy.power;
+        this.speed = enemy.speed;
+        this.range = enemy.range;
+        this.dropRate = enemy.dropRate;
+        this.hitDelay = enemy.hitDelay;
+        this.hpMax = enemy.hpMax;
+        this.knockbackForce = enemy.knockbackForce;
+
+        this.earth = enemy.earth;
+        this.fire = enemy.fire;
+        this.life = enemy.life;
+        this.lightning = enemy.lightning;
+        this.water = enemy.water;
+        this.wind = enemy.wind;
     }
 }
 
@@ -73,9 +103,9 @@ public class EnemyDB : MonoBehaviour
     }
     #endregion
 
-    public List<EnemyInfo> enemyDB = null; //마법 정보 DB
-    public List<Sprite> enemyIcon = null; //마법 아이콘 리스트
-    public List<GameObject> enemyPrefab = null; //마법 프리팹 리스트
+    public Dictionary<int, EnemyInfo> enemyInfo = new Dictionary<int, EnemyInfo>(); //마법 정보 DB
+    public Dictionary<string, Sprite> enemyIcon = new Dictionary<string, Sprite>(); //마법 아이콘 리스트
+    public Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
 
@@ -83,16 +113,25 @@ public class EnemyDB : MonoBehaviour
     {
         //게임 시작과 함께 아이템DB 정보 로드하기
         // 아이템 DB, 아이콘, 프리팹 불러오기
-        enemyDB = new List<EnemyInfo>();
         StartCoroutine(GetEnemyData());
     }
 
     //구글 스프레드 시트에서 Apps Script로 가공된 형태로 json 데이터 받아오기
     IEnumerator GetEnemyData()
     {
-        //마법 아이콘, 프리팹 가져오기
-        enemyIcon = Resources.LoadAll<Sprite>("Enemy/Icon").ToList();
-        enemyPrefab = Resources.LoadAll<GameObject>("Enemy/Prefab").ToList();
+        //적 아이콘 모두 가져오기
+        Sprite[] _enemyIcon = Resources.LoadAll<Sprite>("Enemy/Icon");
+        foreach (var icon in _enemyIcon)
+        {
+            enemyIcon[icon.name] = icon;
+        }
+
+        //적 프리팹 모두 가져오기
+        GameObject[] _enemyPrefab = Resources.LoadAll<GameObject>("Enemy/Prefab");
+        foreach (var prefab in _enemyPrefab)
+        {
+            enemyPrefab[prefab.name] = prefab;
+        }
 
         //Apps Script에서 가공된 json 데이터 문서 주소
         UnityWebRequest www = UnityWebRequest.Get("https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp");
@@ -118,34 +157,13 @@ public class EnemyDB : MonoBehaviour
                 var enemy = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기
-                enemyDB.Add(new EnemyInfo
-                (enemy["id"], enemy["name"], enemy["description"], 
-                enemy["power"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"], 
+                enemyInfo[enemy["id"]] = new EnemyInfo
+                (enemy["id"], enemy["grade"], enemy["name"], enemy["description"], 
+                enemy["power"], enemy["speed"], enemy["range"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"], 
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
-                ));
+                );
             }
-
-            // foreach (var enemy in enemyDB)
-            // {
-            //     print(
-            //     " id : " + enemy.id + " / " +
-            //     " name : " + enemy.name + " / " + 
-            //     " description : " + enemy.description + " / " + 
-
-            //     " power : " + enemy.power + " / " + 
-            //     " dropRate : " + enemy.dropRate + " / " + 
-            //     " hitDelay : " + enemy.hitDelay + " / " + 
-            //     " hpMax : " + enemy.hpMax + " / " + 
-            //     " knockbackForce : " + enemy.knockbackForce + " / " + 
-                
-            //     " earth : " + enemy.earth + " / " + 
-            //     " fire : " + enemy.fire + " / " + 
-            //     " life : " + enemy.life + " / " + 
-            //     " lightning : " + enemy.lightning + " / " + 
-            //     " water : " + enemy.water + " / " + 
-            //     " wind : " + enemy.wind + " / "
-            //     );
-            // }
+            
         }
 
         loadDone = true;
@@ -156,20 +174,80 @@ public class EnemyDB : MonoBehaviour
 
     public EnemyInfo GetEnemyByID(int id)
     {
-        EnemyInfo enemy = enemyDB.Find(x => x.id == id);
-        return enemy;
+        if(enemyInfo.TryGetValue(id, out EnemyInfo value))
+        return value;
+        else
+        return null;
     }
 
     public string GetEnemyNameByID(int id)
     {
-        EnemyInfo enemy = enemyDB.Find(x => x.id == id);
-        return enemy.name;
+        if(enemyInfo.TryGetValue(id, out EnemyInfo value))
+        return value.enemyName;
+        else
+        return null;
     }
 
     public EnemyInfo GetEnemyByName(string name)
     {
-        EnemyInfo enemy = enemyDB.Find(x => x.name.Replace(" ", "") == name.Replace(" ", ""));
-        // print(enemy.enemyName.Replace(" ", "") + " : " + name.Replace(" ", ""));
+        EnemyInfo enemy = null;
+
+        foreach (KeyValuePair<int, EnemyInfo> value in enemyInfo)
+        {
+            if (value.Value.enemyName.Replace(" ", "") == name)
+            {
+                enemy = value.Value;
+                break;
+            }
+        }
+
         return enemy;
+    }
+
+    public Sprite GetIcon(int id)
+    {
+        //아이콘의 이름
+        string enemyName = GetEnemyByID(id).enemyName.Replace(" ", "") + "_Icon";
+
+        if(enemyIcon.TryGetValue(enemyName, out Sprite icon))
+        return icon;
+        else
+        return null;
+    }
+
+    public GameObject GetPrefab(int id)
+    {
+        //프리팹의 이름
+        EnemyInfo enemy = GetEnemyByID(id);
+        string enemyName = enemy.enemyName.Replace(" ", "") + "_Prefab";
+
+        if(enemyPrefab.TryGetValue(enemyName, out GameObject prefab))
+        return prefab;
+        else
+        return null;
+    }
+
+    public int RandomEnemy()
+    {
+        //TODO 등급별로 랜덤 비율 지정
+        // 랜덤 몬스터 등급 뽑기 1~6
+        int randGrade = Random.Range(1, 7);
+
+        //랜덤 등급의 모든 몬스터 임시 리스트에 추가
+        List<int> tempList = new List<int>();
+        foreach (KeyValuePair<int, EnemyInfo> info in enemyInfo)
+        {
+            if (info.Value.grade == randGrade)
+            {
+                tempList.Add(info.Value.id);
+            }
+        }
+
+        //임시리스트에서 랜덤 인덱스로 뽑기
+        int id = -1;
+        if(tempList.Count != 0)
+        id = tempList[Random.Range(0, tempList.Count)];
+
+        return id;
     }
 }

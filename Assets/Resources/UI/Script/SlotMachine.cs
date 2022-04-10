@@ -17,7 +17,6 @@ public class SlotMachine : MonoBehaviour
 
     // int[] feverIndexes = new int[2]; // 피버찬스 인덱스 2가지
     int[] secondRandIndex = { 1, 3 }; // 1,3번 슬롯 중 하나 랜덤 선택 배열
-    bool isFever = false;
 
     public float spinSpeed = 0.1f; //아이템이 한칸 이동하는 시간
 

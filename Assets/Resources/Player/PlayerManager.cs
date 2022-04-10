@@ -39,6 +39,7 @@ public class PlayerManager : MonoBehaviour
     public Vector3 lastDir; //마지막 바라봤던 방향
 
     [Header("<Stat>")] //기본 스탯
+    public int playerPower; //플레이어 전투력
     public float hpMax = 20; // 최대 체력
     public float hpNow = 20; // 체력
     public float Level = 1; //레벨
@@ -121,6 +122,9 @@ public class PlayerManager : MonoBehaviour
 
         //능력치 초기화
         UIManager.Instance.InitialStat();
+
+        //기본 마법 추가
+        StartCoroutine(CastBasicMagics());
     }
 
     private void Update()
@@ -188,7 +192,7 @@ public class PlayerManager : MonoBehaviour
         {
             // print("적 충돌");
 
-            EnemyInfo enemy = other.gameObject.GetComponent<EnemyAI>().enemy;
+            EnemyInfo enemy = other.gameObject.GetComponent<EnemyManager>().enemy;
 
             //피격 딜레이 무적
             IEnumerator hitDelay = HitDelayCoroutine();
@@ -257,7 +261,7 @@ public class PlayerManager : MonoBehaviour
             //보유한 아이템의 개수만 늘려주기
             hasItems.Find(x => x.id == getItem.id).amount++;
 
-            //TODO 스크롤 획득 메시지 띄우기
+            //TODO 스크롤 획득 메시지 UI 띄우기
             print("마법 합성이 " + getItem.amount + "회 가능합니다.");
         }
 
@@ -319,6 +323,39 @@ public class PlayerManager : MonoBehaviour
 
         // 마법 캐스팅 다시 시작
         CastMagic.Instance.ReCastMagics();
+
+        //플레이어 총 전투력 업데이트
+        playerPower = GetPlayerPower();
+    }
+
+    IEnumerator CastBasicMagics()
+    {
+        // MagicDB 로드 완료까지 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        //TODO 캐릭터에 따라 basicMagic에 기본마법 넣고 시작
+        // 캐릭터 기본 마법 추가
+        foreach (var magicID in CastMagic.Instance.basicMagic)
+        {
+            //보유하지 않은 마법일때
+            if (!hasMagics.Exists(x => x.id == magicID))
+            {
+                // 플레이어 보유 마법에 해당 마법 추가하기
+                hasMagics.Add(MagicDB.Instance.GetMagicByID(magicID));
+            }
+
+            //보유한 마법의 레벨 올리기
+            hasMagics.Find(x => x.id == magicID).magicLevel++;
+        }
+
+        //플레이어 마법 시작
+        CastMagic.Instance.CastAllMagics();
+
+        // 보유한 모든 마법 아이콘 갱신
+        UIManager.Instance.UpdateMagics();
+
+        //플레이어 총 전투력 업데이트
+        playerPower = GetPlayerPower();
     }
 
     void buffUpdate()
@@ -335,6 +372,7 @@ public class PlayerManager : MonoBehaviour
         luck = luck / luck_buff;
         expGain = expGain / expGain_buff;
         moneyGain = moneyGain / moneyGain_buff;
+        moveSpeed = moveSpeed / moveSpeed_buff;
 
         earth_atk = earth_atk / earth_buff;
         fire_atk = fire_atk / fire_buff;
@@ -377,6 +415,8 @@ public class PlayerManager : MonoBehaviour
             luck_buff += item.luck * item.amount; //행운 버프
             expGain_buff += item.expGain * item.amount; //경험치 획득량 버프
             moneyGain_buff += item.moneyGain * item.amount; //원소젬 획득량 버프
+            moveSpeed += item.moveSpeed / item.amount; //이동속도 버프
+
             earth_buff += item.earth * item.amount;
             fire_buff += item.fire * item.amount;
             life_buff += item.life * item.amount;
@@ -397,6 +437,7 @@ public class PlayerManager : MonoBehaviour
         luck = luck * luck_buff;
         expGain = expGain * expGain_buff;
         moneyGain = moneyGain * moneyGain_buff;
+        moveSpeed = moveSpeed / moveSpeed_buff;
 
         earth_atk = earth_atk * earth_buff;
         fire_atk = fire_atk * fire_buff;
@@ -463,13 +504,28 @@ public class PlayerManager : MonoBehaviour
         // levelupPopup.SetActive(true);
     }
 
-    //원소젬 지불하기
     public void PayGem(int gemIndex, int price)
     {
-
+        //원소젬 지불하기
         hasGems[gemIndex] -= price;
 
         //젬 UI 업데이트
         UIManager.Instance.UpdateGem(gemIndex);
+    }
+
+    public int GetPlayerPower()
+    {
+        //플레이어의 총 전투력
+        int magicPower = 0;
+
+        foreach (var magic in hasMagics)
+        {
+            //총전투력에 해당 마법의 등급*레벨 더하기
+            magicPower += magic.grade * magic.magicLevel;
+
+            print(magicPower + " : " + magic.grade + " * " + magic.magicLevel);
+        }
+
+        return magicPower;
     }
 }

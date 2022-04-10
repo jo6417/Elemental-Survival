@@ -91,26 +91,26 @@ public class LevelupMenu : MonoBehaviour
         return isExist;
     }
 
-    void ElementalSorting(List<string> elements, string element)
-    {
-        //첫번째 원소가 기본 원소일때
-        if (isBasicElement(element))
-        {
-            //이 마법 원소에 해당 원소 없을때
-            if (!elements.Exists(x => x == element))
-                elements.Add(element);
-        }
-        //첫번째 원소가 기본 원소 아닐때
-        else
-        {
-            if (MagicDB.Instance.magicDB.Exists(x => x.magicName == element))
-            {
-                // 원소 이름을 마법 이름에 넣어 마법 찾기
-                MagicInfo magicInfo = MagicDB.Instance.magicDB.Find(x => x.magicName == element);
-                // 해당 마법의 원소 두가지 다시 정렬하기
-                ElementalSorting(elements, magicInfo.element_A);
-                ElementalSorting(elements, magicInfo.element_B);
-            }
-        }
-    }
+    // void ElementalSorting(List<string> elements, string element)
+    // {
+    //     //첫번째 원소가 기본 원소일때
+    //     if (isBasicElement(element))
+    //     {
+    //         //이 마법 원소에 해당 원소 없을때
+    //         if (!elements.Exists(x => x == element))
+    //             elements.Add(element);
+    //     }
+    //     //첫번째 원소가 기본 원소 아닐때
+    //     else
+    //     {
+    //         if (MagicDB.Instance.magicInfo.Exists(x => x.magicName == element))
+    //         {
+    //             // 원소 이름을 마법 이름에 넣어 마법 찾기
+    //             MagicInfo magicInfo = MagicDB.Instance.magicInfo.Find(x => x.magicName == element);
+    //             // 해당 마법의 원소 두가지 다시 정렬하기
+    //             ElementalSorting(elements, magicInfo.element_A);
+    //             ElementalSorting(elements, magicInfo.element_B);
+    //         }
+    //     }
+    // }
 }

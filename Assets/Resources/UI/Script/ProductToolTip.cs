@@ -37,14 +37,13 @@ public class ProductToolTip : MonoBehaviour
     // public bool isTooltipOn = true;
     public TextMeshProUGUI productName;
     public TextMeshProUGUI productDescript;
+    public Sprite questionMark;
 
     [Header("Magic")]
     public MagicInfo magic;
     List<int> stats = new List<int>();
     public UIPolygon magicStatGraph;
-    public Image magicIcon;
-
-    public GameObject magicElement;
+    public GameObject recipeObj;
     public Image elementIcon_A;
     public Image elementIcon_B;
     public Image elementGrade_A;
@@ -52,8 +51,6 @@ public class ProductToolTip : MonoBehaviour
 
     [Header("Item")]
     public ItemInfo item;
-    public Image itemIcon;
-    public Image itemFrame;
 
     void Update()
     {
@@ -79,19 +76,11 @@ public class ProductToolTip : MonoBehaviour
 
         if (magic != null)
         {
-            magicElement.SetActive(true);
-            magicIcon.gameObject.SetActive(true);
-            itemIcon.gameObject.SetActive(false);
-
             SetMagicInfo();
         }
 
         if (item != null)
         {
-            magicElement.SetActive(false);
-            magicIcon.gameObject.SetActive(false);
-            itemIcon.gameObject.SetActive(true);
-
             SetItemInfo();
         }
     }
@@ -118,22 +107,27 @@ public class ProductToolTip : MonoBehaviour
         productName.text = magic.magicName;
         productDescript.text = magic.description;
 
-        // 아이콘 넣기
-        magicIcon.sprite = MagicDB.Instance.magicIcon.Find(
-            x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+        //해당 마법 언락 여부
+        bool isUnlock = MagicDB.Instance.unlockMagics.Exists(x => x == magic.id);
 
         //마법 재료 찾기
         MagicInfo magicA = MagicDB.Instance.GetMagicByName(magic.element_A);
         MagicInfo magicB = MagicDB.Instance.GetMagicByName(magic.element_B);
-        
-        // 재료 A,B 아이콘 넣기
-        elementIcon_A.sprite = MagicDB.Instance.magicIcon.Find(
-        x => x.name == magicA.magicName.Replace(" ", "") + "_Icon");
-        elementIcon_B.sprite = MagicDB.Instance.magicIcon.Find(
-        x => x.name == magicB.magicName.Replace(" ", "") + "_Icon");
 
-        // elementIcon_A.sprite = MagicDB.Instance.magicIcon[magicA.id];
-        // elementIcon_B.sprite = MagicDB.Instance.magicIcon[magicB.id];
+        //재료 null 이면 재료 표시 안함
+        if (magicA == null || magicB == null)
+        {
+            recipeObj.SetActive(false);
+            return;
+        }
+        else
+        {
+            recipeObj.SetActive(true);
+        }
+
+        // 재료 A,B 아이콘 넣기, 미해금 마법이면 물음표 넣기
+        elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicA.id) : questionMark;
+        elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : questionMark;
 
         // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
         elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
@@ -142,10 +136,6 @@ public class ProductToolTip : MonoBehaviour
 
     void SetItemInfo()
     {
-        // 아이콘 넣기
-        itemIcon.sprite = ItemDB.Instance.itemIcon.Find(
-            x => x.name == item.itemName.Replace(" ", "") + "_Icon");
-
         // 아이템 이름, 설명 넣기
         productName.text = item.itemName;
         productDescript.text = item.description;

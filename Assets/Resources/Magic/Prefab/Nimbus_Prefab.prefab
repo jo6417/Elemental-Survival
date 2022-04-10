@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7103772506411635269}
   - component: {fileID: 7103772506411635385}
   - component: {fileID: 7103772506411635384}
-  - component: {fileID: 7103772506411635387}
+  - component: {fileID: 7046983277784329218}
   m_Layer: 8
   m_Name: Nimbus_Prefab
   m_TagString: Magic
@@ -48,7 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
   knockbackForce: 0
+  isStop: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
@@ -68,11 +71,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 7103772506411635268}
-  magicTrigger: {fileID: 0}
   anim: {fileID: 7103772506411635384}
-  magicCol: {fileID: 7103772506411635387}
-  spinSpeed: 50
-  spinRange: 2
+  magicCol: {fileID: 7046983277784329218}
+  followSpeed: 5
   cooltimeCounter: 0
 --- !u!212 &7103772506411635385
 SpriteRenderer:
@@ -112,7 +113,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 9069452203224602429, guid: 57870d8e521eef145801111270879442,
     type: 3}
@@ -145,7 +146,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!58 &7103772506411635387
+--- !u!58 &7046983277784329218
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185,13 +186,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7103772506791767050}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 7103772506411635386}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!212 &7103772506791767061
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -229,8 +230,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 918817935
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
     type: 3}

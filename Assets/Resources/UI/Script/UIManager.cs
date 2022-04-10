@@ -46,7 +46,7 @@ public class UIManager : MonoBehaviour
     public GameObject magicUpgradeUI;
     public TextMeshProUGUI TimerUI;
     float time_start;
-    float time_current;
+    public float time_current; // 현재 스테이지 플레이 타임
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -275,8 +275,8 @@ public class UIManager : MonoBehaviour
             toolTipTrigger.magic = magic;
 
             //스프라이트 넣기
-            magicIcon.GetComponent<Image>().sprite =
-            MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
             //마법 개수 넣기, 2개 이상부터 표시
             Text amount = magicIcon.GetComponentInChildren<Text>(true);

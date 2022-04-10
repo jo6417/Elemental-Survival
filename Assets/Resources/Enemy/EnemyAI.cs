@@ -1,34 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Lean.Pool;
 using DG.Tweening;
-using TMPro;
+using Lean.Pool;
 
 public class EnemyAI : MonoBehaviour
 {
     public EnemyInfo enemy;
-    public string enemyName;
+    public enum MoveType { Walk, Jump, Dash };
+    public MoveType moveType;
+    public Rigidbody2D rigid;
+    float speed;
+    EnemyManager enemyManager;
+    bool spawned = false; //스폰 완료 여부
 
     [Header("Refer")]
-    // public Enemy enemy;
-    Transform player;
-    public float speed;
-    public GameObject damageTxt; //데미지 UI
-    Rigidbody2D rigid;
     SpriteRenderer sprite;
-    public GameObject[] hasItem; //가진 아이템
+    Collider2D coll;
+    public GameObject spawnPortal; //몬스터 등장할 포탈
 
-    [Header("Stat")]
-    public float hitCount = 0;
-    public float HpNow = 2;
+    [Header("Jump")]
+    public GameObject landEffect;
+    public Animator anim;
+    public Transform shadow;
+    public float jumpCoolTime; //쿨타임이 0이 될때마다 점프
+    float jumpCoolCount; //쿨타임 카운트하기
+    Sequence jumpSeq;
 
-    void Start()
+    private void Awake()
     {
-        player = PlayerManager.Instance.transform;
-        rigid = GetComponent<Rigidbody2D>();
-        sprite = GetComponent<SpriteRenderer>();
+        enemyManager = GetComponent<EnemyManager>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
+        coll = GetComponent<Collider2D>();
+        anim = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -38,188 +42,215 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator Initial()
     {
+        sprite.color = Color.white; //스프라이트 색깔 초기화
+        rigid.velocity = Vector2.zero; //속도 초기화
+
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+        yield return new WaitUntil(() => enemyManager.enemy != null);
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
         if (enemy == null)
-            enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+            enemy = enemyManager.enemy;
 
         //enemy 못찾으면 코루틴 종료
         if (enemy == null)
             yield break;
 
-        hitCount = 0; //데미지 쿨타임 초기화
-        HpNow = enemy.hpMax; //체력 초기화
-        sprite.color = Color.white; //스프라이트 색깔 초기화
-        rigid.velocity = Vector2.zero; //속도 초기화
+        speed = enemy.speed;
 
-        enemyName = enemy.name;
+        //그림자 위치 초기화
+        if(shadow)
+        shadow.localPosition = Vector2.up * 0.4f;
     }
 
     void Update()
     {
+        if (enemy == null)
+            return;
+
+        if (moveType == MoveType.Walk)
+            Walk();
+
+        if (moveType == MoveType.Jump)
+            JumpMove();
+    }
+
+    void Walk()
+    {
         rigid.velocity = Vector2.zero; //이동 초기화
 
-        if (hitCount <= 0)
+        if (enemyManager.hitCount <= 0)
         {
+            //색깔 초기화
             sprite.color = Color.white;
 
-            Vector2 dir = player.position - transform.position;
+            //움직일 방향
+            Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
+
+            //해당 방향으로 가속
             rigid.velocity = dir.normalized * speed;
+
+            //움직일 방향에따라 회전
+            if (dir.x > 0)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
         }
         // 맞고나서 경직 시간일때
         else
         {
-            // 적 색깔 변화
+            rigid.velocity = Vector2.zero;
+
+            // 기동 불가일때 색깔
             sprite.color = Color.gray;
 
             // 경직 시간 카운트
-            hitCount -= Time.deltaTime;
+            enemyManager.hitCount -= Time.deltaTime;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void JumpMove()
     {
-        // 마법 투사체와 충돌 했을때
-        if (other.transform.CompareTag("Magic"))
+        // 맞고나서 경직 시간일때
+        if (enemyManager.hitCount > 0)
         {
-            // print("마법과 충돌");
+            // 적 색깔 변화
+            enemyManager.sprite.color = Color.gray;
 
-            // 마법 정보 찾기
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-            MagicInfo magic = magicHolder.magic;
+            // 경직 시간 카운트
+            enemyManager.hitCount -= Time.deltaTime;
+        }
+        // 플레이어쪽으로 점프
+        else
+        {
+            enemyManager.sprite.color = Color.white;
 
-            // 체력 감소
-            Damaged(magicHolder);
-
-            //넉백
-            if (magicHolder.knockbackForce > 0 && gameObject.activeSelf)
+            //점프 시간 됬을때
+            if (jumpCoolCount < 0)
             {
-                StartCoroutine(Knockback(magicHolder.knockbackForce));
+                //점프 실행
+                Jump();
+
+                //쿨타임 초기화
+                jumpCoolCount = jumpCoolTime;
+            }
+            else
+            {
+                rigid.velocity = Vector2.zero;
+
+                //시간 멈췄을때는 리턴
+                if (rigid.constraints == RigidbodyConstraints2D.FreezeAll)
+                    return;
+
+                //쿨타임 감소
+                jumpCoolCount -= Time.deltaTime;
+
+                //시퀀스 멈춰있으면 플레이하기
+                if (jumpSeq != null && jumpSeq.active && !jumpSeq.IsPlaying())
+                {
+                    anim.speed = 1f;
+                    jumpSeq.Play();
+                }
             }
         }
     }
 
-    void Damaged(MagicHolder magicHolder)
+    void Jump()
     {
-        if (enemy == null)
-            return;
+        //현재 위치
+        Vector2 startPos = transform.position;
 
-        MagicInfo magic = magicHolder.magic;
+        //움직일 방향
+        Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
 
-        //크리티컬 확률 계산
-        bool isCritical = MagicDB.Instance.MagicCritical(magic) >= Random.value ? true : false;
-        //크리티컬 데미지 계산
-        float criticalDamage = isCritical ? MagicDB.Instance.MagicCriticalDamage(magic) : 1f;
+        //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
+        float distance = dir.magnitude > enemy.range ? enemy.range : dir.magnitude;
 
-        //데미지 계산
-        float damage = MagicDB.Instance.MagicPower(magic);
-        // 고정 데미지에 확률 계산 및 크리티컬 데미지 곱해서 int로 반올림
-        damage = Mathf.RoundToInt(Random.Range(damage * 0.8f, damage * 1.2f) * criticalDamage);
+        //점프 착지 위치
+        Vector2 endPos = (Vector2)transform.position + dir.normalized * distance;
 
-        // 데미지가 0이 아닐때 최소 데미지 1 보장
-        if (damage != 0)
-            damage = Mathf.Clamp(damage, 1, damage);
+        //점프해서 올라갈 최고점 위치, 착지위치까지 거리 절반 + 위로 올라가기
+        float height = 4f; //올라갈 높이
+        Vector2 topPos = endPos + Vector2.up * height;
 
-        // 체력 감소
-        HpNow -= damage;
+        Ease jumpEase = Ease.OutCirc;
 
-        // 경직 시간 추가
-        hitCount = enemy.hitDelay;
+        //점프 속도
+        float speed = enemy.speed;
+        speed = Mathf.Clamp(speed, 0.5f, 10f);
 
-        // 데미지 UI 띄우기
-        Transform damageCanvas = ObjectPool.Instance.transform.Find("OverlayUI");
-        var damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, damageCanvas);
-        TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
-        dmgTxt.text = damage.ToString();
+        float upTime = speed; //올라갈때 시간
+        float downTime = speed * 0.1f; //내려갈때 시간
 
-        // 크리티컬 떴을때 추가 강조효과 UI
-        if (isCritical && damage != 0)
+        //움직일 방향에따라 좌우반전
+        if (dir.x > 0)
         {
-            dmgTxt.fontSize = 120;
-            dmgTxt.color = new Color(1, 100 / 255, 100 / 255);
+            transform.rotation = Quaternion.Euler(0, 0, 0);
         }
         else
         {
-            dmgTxt.fontSize = 100;
-            dmgTxt.color = Color.white;
+            transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
-        //데미지 UI 애니메이션
-        damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 1f, 1f);
-        damageUI.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InOutBack);
-        LeanPool.Despawn(damageUI, 1f);
-
-        // print(HpNow + " / " + enemy.HpMax);
-        // 체력 0 이하면 죽음
-        if (HpNow <= 0)
-            Dead();
-    }
-
-    IEnumerator Knockback(float knockbackForce)
-    {
-        // 반대 방향 및 넉백파워
-        Vector2 knockbackDir = transform.position - player.position;
-        Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.knockbackForce - 1));
-        knockbackDir = knockbackDir.normalized + knockbackBuff;
-
-        //반대방향으로 이동
-        transform.DOMove((Vector2)transform.position + knockbackDir, enemy.hitDelay)
-        .SetEase(Ease.OutExpo);
-
-        // print(knockbackDir);
-
-        yield return null;
-    }
-
-    void Dead()
-    {
-        if (enemy == null)
-            return;
-
-        if (enemy.dropRate >= Random.Range(0, 1) && hasItem.Length > 0)
+        //점프 애니메이션
+        jumpSeq = DOTween.Sequence();
+        jumpSeq
+        .OnUpdate(() =>
         {
-            //아이템 드랍
-            DropItem();
-        }
+            //몬스터 죽으면 시퀀스 중단
+            if (!gameObject.activeSelf)
+                jumpSeq.Kill();
 
-        // 몬스터 비활성화
-        LeanPool.Despawn(gameObject);
-    }
-
-    // 갖고있는 아이템 드랍
-    void DropItem()
-    {
-        Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
-        LeanPool.Spawn(hasItem[Random.Range(0, hasItem.Length)], transform.position, Quaternion.identity, itemPool);
-
-        //체력 씨앗 드랍
-        DropHealSeed();
-    }
-
-    void DropHealSeed()
-    {
-        // 플레이어가 HealSeed 마법을 갖고 있을때
-        MagicInfo magic = PlayerManager.Instance.hasMagics.Find(x => x.magicName == "Heal Seed");
-        if (magic != null)
-        {            
-            // 크리티컬 확률 = 드랍 확률
-            // print(MagicDB.Instance.MagicCritical(magic));
-            bool isDrop = MagicDB.Instance.MagicCritical(magic) >= Random.value ? true : false;
-            //크리티컬 데미지만큼 회복
-            int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalDamage(magic));
-            healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
-
-            // HealSeed 마법 크리티컬 확률에 따라 드랍
-            if (isDrop)
+            if (rigid.constraints == RigidbodyConstraints2D.FreezeAll)
             {
-                Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
-                GameObject healSeed = LeanPool.Spawn(ItemDB.Instance.heartSeed, transform.position, Quaternion.identity, itemPool);
-
-                // 아이템에 체력 회복량 넣기
-                healSeed.GetComponent<ItemManager>().amount = healAmount;
+                //애니메이션 멈추기
+                anim.speed = 0f;
+                //트윈 멈추기
+                jumpSeq.Pause();
             }
-        }
+        })
+        .OnStart(() =>
+        {
+            //콜라이더 끄기
+            coll.isTrigger = true;
+
+            //TODO 세로로 길어지는 애니메이션
+
+            // 이펙트 끄기
+            landEffect.SetActive(false);
+        })
+        .Append(
+            //움직일 거리 절반 만큼 가면서 점프
+            transform.DOMove(topPos, upTime)
+            .SetEase(jumpEase)
+        )
+        .Join(
+            //몬스터 올라간만큼 그림자 내리기
+            shadow.DOLocalMove(Vector2.up * 0.4f + Vector2.down * height, upTime)
+            .SetEase(jumpEase)
+        )
+        .Append(
+            //착지위치까지 가기
+            transform.DOMove(endPos, downTime)
+        // .SetEase(jumpEase)
+        )
+        .Join(
+            //그림자 올리기
+            shadow.DOLocalMove(Vector2.up * 0.4f, downTime)
+        // .SetEase(jumpEase)
+        )
+        .OnComplete(() =>
+        {
+            //콜라이더 켜기
+            coll.isTrigger = false;
+
+            //TODO 착지하며 보잉보잉하는 애니메이션
+            // 이펙트 켜기
+            landEffect.SetActive(true);
+        });
     }
 }

@@ -10,7 +10,6 @@ using DG.Tweening;
 public class MagicMixMenu : MonoBehaviour
 {
     [Header("Refer")]
-    public List<int> savedRecipes = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
     public GameObject classPrefab; //클래스 전체 프리팹
     public GameObject magicIconPrefab; //마법 아이콘 프리팹
     public GameObject recipePrefab; //마법 도감 레시피 프리팹
@@ -46,7 +45,6 @@ public class MagicMixMenu : MonoBehaviour
 
     [Header("Button")]
     public Transform scroll_Index; // 스크롤 개수 인덱스
-
     public Transform leftBackBtn; //왼쪽 back 버튼
     public Transform rightBackBtn; //오른쪽 back 버튼
     public Transform exitBtn; // 마법 합성 종료 버튼
@@ -54,18 +52,21 @@ public class MagicMixMenu : MonoBehaviour
 
     private Vector2 leftBackBtnPos; // 왼쪽 back 버튼 초기 위치
     private Vector2 rightBackBtnPos; // 오른쪽 back 버튼 초기 위치
-    private Vector2 exitBtnPos; // 합성 종료 버튼 초기 위치
+    private float exitBtnPosY; // 합성 종료 버튼 초기 위치
     private Vector2 recipeBtnPos; // 마법 조합법 버튼 초기 위치
 
     private void Awake()
     {
-        //각종 버튼 초기 위치 저장
-        leftBackBtnPos = leftBackBtn.position;
-        rightBackBtnPos = rightBackBtn.position;
-        exitBtnPos = exitBtn.position;
-        recipeBtnPos = recipeBtn.position;
+        Initial();
+    }
 
-        gameObject.SetActive(false);
+    void Initial()
+    {
+        //각종 버튼 초기 위치 저장
+        leftBackBtnPos = leftBackBtn.position - Camera.main.transform.position;
+        rightBackBtnPos = rightBackBtn.position - Camera.main.transform.position;
+        exitBtnPosY = exitBtn.position.y;
+        recipeBtnPos = recipeBtn.position - Camera.main.transform.position;
     }
 
     private void OnEnable()
@@ -77,8 +78,6 @@ public class MagicMixMenu : MonoBehaviour
 
     IEnumerator SetMenu()
     {
-        DOTween.Clear();
-
         //시간 멈추기
         Time.timeScale = 0;
 
@@ -92,14 +91,16 @@ public class MagicMixMenu : MonoBehaviour
 
         // 보유하지 않은 마법만 DB에서 파싱
         notHasMagic.Clear();
-        notHasMagic = MagicDB.Instance.magicDB.FindAll(x => x.magicLevel == 0);
+        notHasMagic = MagicDB.Instance.magicInfo.Values.ToList().FindAll(x => x.magicLevel == 0);
 
         //왼쪽 페이지 채우기
         SetPage(true);
         //오른쪽 페이지 채우기
         SetPage(false);
-        //마법 레시피 리스트 채우기
-        // SetRecipe();
+        
+        //양쪽 뒤로 버튼 넣기
+        ToggleBackBtn(true, 0);
+        ToggleBackBtn(false, 0);
 
         //팝업 렌더링 완료 후 버튼 튀어나오기
         yield return new WaitUntil(() => SetRecipe());
@@ -181,8 +182,8 @@ public class MagicMixMenu : MonoBehaviour
                     magicIcon.transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
 
                     // 마법 아이콘 이미지 넣기
-                    magicIcon.transform.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
-                    x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+                    magicIcon.transform.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                    // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
                     // 아이콘의 마법 정보 넣기
                     magicIcon.GetComponent<MagicHolder>().magic = magic;
@@ -203,8 +204,8 @@ public class MagicMixMenu : MonoBehaviour
                         selectIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
 
                         // 마법 아이콘 이미지 넣기
-                        selectIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
-                        x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+                        selectIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                        // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
                         // 이름 테두리에 등급 색깔 넣기
                         Transform title = selectInfoPanel.Find("TitleFrame");
@@ -280,7 +281,7 @@ public class MagicMixMenu : MonoBehaviour
         UIManager.Instance.DestroyChildren(recipeContainer);
 
         //모든 마법 리스트 불러오기
-        List<MagicInfo> allMagics = MagicDB.Instance.magicDB;
+        List<MagicInfo> allMagics = MagicDB.Instance.magicInfo.Values.ToList();
 
         // 해당 등급 마법 있으면 class 숫자 수정하고 마법 아이콘 추가
         for (int i = 6; i >= 1; i--)
@@ -316,8 +317,12 @@ public class MagicMixMenu : MonoBehaviour
                 //해당 등급 모든 마법 아이콘 넣기
                 foreach (var magic in magics)
                 {
+                    //재료 마법들 찾기
+                    MagicInfo elementA = MagicDB.Instance.GetMagicByName(magic.element_A);
+                    MagicInfo elementB = MagicDB.Instance.GetMagicByName(magic.element_A);
+
                     //합성 성공 내역 있는 마법만 보여주기
-                    bool unlockMagic = savedRecipes.Exists(x => x == magic.id);
+                    bool unlockMagic = MagicDB.Instance.unlockMagics.Exists(x => x == magic.id);
 
                     //해당 등급 리스트에 마법 아이콘 스폰
                     GameObject recipe = LeanPool.Spawn(recipePrefab, magicList);
@@ -326,12 +331,14 @@ public class MagicMixMenu : MonoBehaviour
                     Transform magicIcon = recipe.transform.Find("MagicIcon");
                     // 마법 등급 넣기
                     magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
-                    
+
                     //마법 아이콘 찾기
-                    Sprite iconSprite = MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+                    Sprite iconSprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                    // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+
                     //! 미구현 아이콘은 물음표 넣기
-                    if(iconSprite == null)
-                    iconSprite = questionMark;
+                    if (iconSprite == null)
+                        iconSprite = questionMark;
 
                     // 마법 아이콘 이미지 넣기
                     Image magicIcon_icon = magicIcon.Find("Icon").GetComponent<Image>();
@@ -352,10 +359,10 @@ public class MagicMixMenu : MonoBehaviour
                     //마법 재료 A 아이콘
                     Transform element_A = recipe.transform.Find("Element_A");
                     // 마법 등급 넣기
-                    element_A.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
+                    element_A.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[elementA.grade];
                     // 마법 아이콘 이미지 넣기, 미획득이면 물음표 스프라이트 넣기
                     element_A.Find("Icon").GetComponent<Image>().sprite = unlockMagic
-                    ? MagicDB.Instance.magicIcon.Find(x => x.name == magic.element_A.Replace(" ", "") + "_Icon")
+                    ? MagicDB.Instance.GetMagicIcon(magic.id)
                     : questionMark;
 
                     // 툴팁 컴포넌트에 마법 정보 넣기
@@ -366,10 +373,10 @@ public class MagicMixMenu : MonoBehaviour
                     //마법 재료 B 아이콘
                     Transform element_B = recipe.transform.Find("Element_B");
                     // 마법 등급 넣기
-                    element_B.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
+                    element_B.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[elementB.grade];
                     // 마법 아이콘 이미지 넣기
                     element_B.Find("Icon").GetComponent<Image>().sprite = unlockMagic
-                    ? MagicDB.Instance.magicIcon.Find(x => x.name == magic.element_B.Replace(" ", "") + "_Icon")
+                    ? MagicDB.Instance.GetMagicIcon(magic.id)
                     : questionMark;
 
                     // 툴팁 컴포넌트에 마법 정보 넣기
@@ -438,9 +445,10 @@ public class MagicMixMenu : MonoBehaviour
 
         //두 재료 모든 갖고 있는 마법 찾기
         MagicInfo mixedMagic = null;
-        mixedMagic = MagicDB.Instance.magicDB.Find(y => y.element_A == leftMagic.magicName && y.element_B == rightMagic.magicName);
+        mixedMagic = MagicDB.Instance.magicInfo.Values.ToList().Find(y => y.element_A == leftMagic.magicName && y.element_B == rightMagic.magicName);
+
         if (mixedMagic == null)
-            mixedMagic = MagicDB.Instance.magicDB.Find(y => y.element_A == rightMagic.magicName && y.element_B == leftMagic.magicName);
+            mixedMagic = MagicDB.Instance.magicInfo.Values.ToList().Find(y => y.element_A == rightMagic.magicName && y.element_B == leftMagic.magicName);
 
         // 합성 실패
         if (amount == 0 || mixedMagic == null)
@@ -508,10 +516,8 @@ public class MagicMixMenu : MonoBehaviour
         rightInfoPanel.gameObject.SetActive(false);
 
         //좌,우 뒤로 버튼 끄기
-        leftBackBtn.DOMove((Vector2)PlayerManager.Instance.transform.position + leftBackBtnPos, 0.5f)
-        .SetEase(Ease.InBack).SetUpdate(true);
-        rightBackBtn.DOMove((Vector2)PlayerManager.Instance.transform.position + rightBackBtnPos, 0.5f)
-        .SetEase(Ease.InBack).SetUpdate(true);
+        ToggleBackBtn(true);
+        ToggleBackBtn(false);
 
         //레시피 버튼 끄기
         ToggleRecipeBtn(false);
@@ -531,8 +537,8 @@ public class MagicMixMenu : MonoBehaviour
 
         //아이콘 및 등급색 넣기
         Transform mixedIcon = effectMask.Find("MagicIcon");
-        mixedIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.magicIcon.Find(
-                    x => x.name == mixedMagic.magicName.Replace(" ", "") + "_Icon");
+        mixedIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(mixedMagic.id);
+        // MagicDB.Instance.magicIcon.Find(x => x.name == mixedMagic.magicName.Replace(" ", "") + "_Icon");
         mixedIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[mixedMagic.grade];
         mixedIcon.localScale = Vector2.zero;
 
@@ -568,17 +574,21 @@ public class MagicMixMenu : MonoBehaviour
             // 마법 획득하기
             PlayerManager.Instance.GetMagic(mixedMagic);
 
-            // 해당 마법 도감 언락하기, 언락 id 목록에 없으면 추가
-            if (savedRecipes.Exists(x => x != mixedMagic.id))
+            // 마법 도감에 없으면 추가
+            if (!MagicDB.Instance.unlockMagics.Exists(x => x == mixedMagic.id))
             {
-                savedRecipes.Add(mixedMagic.id);
+                // 해당 마법을 도감에서 해금하기
+                MagicDB.Instance.unlockMagics.Add(mixedMagic.id);
+
+                // 변경된 도감 저장하기
+                StartCoroutine(SaveManager.Instance.Save());
             }
 
             // 합성된 마법 정보 삭제
             mixedMagic = null;
         })
         .SetUpdate(true);
-        mixSeq.Restart(); //시퀀스 재시작
+        // mixSeq.Restart(); //시퀀스 재시작
     }
 
     public void GoListPage(bool isLeft)
@@ -656,7 +666,7 @@ public class MagicMixMenu : MonoBehaviour
         //해당 페이지의 뒤로가기 버튼
         Transform backBtn = isLeft ? leftBackBtn : rightBackBtn;
         //해당 페이지의 뒤로가기 버튼 위치
-        Vector2 backBtnPos = isLeft ? leftBackBtnPos : rightBackBtnPos;
+        // Vector2 backBtnPos = isLeft ? leftBackBtnPos : rightBackBtnPos;
         //해당 페이지의 선택된 마법 아이콘
         Transform selectIcon = isLeft ? leftIcon : rightIcon;
 
@@ -679,23 +689,23 @@ public class MagicMixMenu : MonoBehaviour
         //뒤로 버튼 트윈 강제로 끝내기
         backBtn.DOComplete();
 
-        //시작점
-        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + backBtnPos;
-        //목적지
-        Vector2 endPos;
-
+        float endX = 0;
         //왼쪽 백 버튼일때
         if (isLeft)
-            endPos = selectIcon.gameObject.activeSelf ? startPos - Vector2.right * 4f : startPos;
+        {
+            endX = selectIcon.gameObject.activeSelf ? 40f : 240f;
+        }
         //오른쪽 백 버튼일때
         else
-            endPos = selectIcon.gameObject.activeSelf ? startPos + Vector2.right * 4f : startPos;
+        {
+            endX = selectIcon.gameObject.activeSelf ? -40f : -240f;
+        }
 
         //켤때, 끌때 다른 Ease
         Ease ease = selectIcon.gameObject.activeSelf ? Ease.OutBack : Ease.InBack;
 
         //원래 위치로 돌아오기
-        backBtn.DOMove(endPos, duration)
+        backBtn.GetComponent<RectTransform>().DOAnchorPosX(endX, duration)
         .SetEase(ease)
         .SetUpdate(true)
         .OnComplete(() =>
@@ -712,23 +722,26 @@ public class MagicMixMenu : MonoBehaviour
         //버튼 트윈 강제로 끝내기
         recipeBtn.DOComplete();
 
-        //레시피 켤때는 Back, 레시피 끌때는 Recipe로 전환
-        recipeBtn.GetComponentInChildren<TextMeshProUGUI>().text = recipePanel.gameObject.activeSelf ? "Back" : "Recipe";
-        //레시피 켤때는 빨간색, 레시피 끌때는 초록색으로 전환
-        recipeBtn.GetComponent<Image>().color = recipePanel.gameObject.activeSelf ?
-        MagicDB.Instance.HexToRGBA("F06464") : MagicDB.Instance.HexToRGBA("9BFF5A");
-
-        //시작점
-        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + recipeBtnPos;
-
-        //목적지
-        Vector2 endPos = isActive ? startPos + Vector2.down * 2f : startPos;
+        float startY = 140f;
+        float endY = isActive ? startY - 100f : startY;
 
         //켤때, 끌때 다른 Ease
         Ease ease = isActive ? Ease.OutBack : Ease.InBack;
 
-        //원래 위치로 돌아오기
-        recipeBtn.DOMove(endPos, duration)
+        //버튼 이동
+        recipeBtn.DOLocalMoveY(endY, duration)
+        .OnStart(() =>
+        {
+            //버튼 내려갈때만
+            if (isActive)
+            {
+                //레시피 켤때는 Back, 레시피 끌때는 Recipe로 전환
+                recipeBtn.GetComponentInChildren<TextMeshProUGUI>().text = recipePanel.gameObject.activeSelf ? "Back" : "Recipe";
+                //레시피 켤때는 빨간색, 레시피 끌때는 초록색으로 전환
+                recipeBtn.GetComponent<Image>().color = recipePanel.gameObject.activeSelf ?
+                MagicDB.Instance.HexToRGBA("F06464") : MagicDB.Instance.HexToRGBA("9BFF5A");
+            }
+        })
         .SetEase(ease)
         .SetUpdate(true);
     }
@@ -740,17 +753,14 @@ public class MagicMixMenu : MonoBehaviour
         //뒤로 버튼 트윈 강제로 끝내기
         exitBtn.DOComplete();
 
-        //시작점
-        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + exitBtnPos;
-
-        //목적지
-        Vector2 endPos = isActive ? startPos + Vector2.down * 2f : startPos;
+        float startY = 140f;
+        float endY = isActive ? startY - 100f : startY;
 
         //켤때, 끌때 다른 Ease
         Ease ease = isActive ? Ease.OutBack : Ease.InBack;
 
         //버튼 이동
-        exitBtn.DOMove(endPos, duration)
+        exitBtn.DOLocalMoveY(endY, duration)
         .SetEase(ease)
         .SetUpdate(true);
     }

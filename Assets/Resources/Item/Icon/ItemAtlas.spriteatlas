@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ItemAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 0
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 15e86fd8bfa5e3249a1e01c7fe9e8a2b, type: 3}
+    - {fileID: 2800000, guid: 7dce8a1d79d2ce74ebd25871d2d51296, type: 3}
+    - {fileID: 2800000, guid: b709b26af2999864cbd51c4a6d9f86f7, type: 3}
+    - {fileID: 2800000, guid: 9a82dfad901c07646a76021fb0e4b1a7, type: 3}
+    - {fileID: 2800000, guid: 5b551ebf45165b140afd27e58dc906a7, type: 3}
+    - {fileID: 2800000, guid: e8e8838caaefac449a5086e015d4e1b1, type: 3}
+    - {fileID: 2800000, guid: 456ea6119be099f449e99d9e6b5aada8, type: 3}
+    - {fileID: 2800000, guid: 2b592ffc665dadf47bef324f68d60283, type: 3}
+    - {fileID: 2800000, guid: 75ba6f8900d49c9428e65a8a2b649524, type: 3}
+    - {fileID: 2800000, guid: 005095ec08d80a249b6f7b7aafab8bc8, type: 3}
+    - {fileID: 2800000, guid: b0022dc553ac3e4489dbd46fa39b850f, type: 3}
+    - {fileID: 2800000, guid: a2820b02fea81834a9552f9d501bc6c2, type: 3}
+    - {fileID: 2800000, guid: 059c5430a55224444957393387748ab7, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 059c5430a55224444957393387748ab7, type: 3}
+  - {fileID: 21300000, guid: 456ea6119be099f449e99d9e6b5aada8, type: 3}
+  - {fileID: 21300000, guid: a2820b02fea81834a9552f9d501bc6c2, type: 3}
+  - {fileID: 21300000, guid: b0022dc553ac3e4489dbd46fa39b850f, type: 3}
+  - {fileID: 21300000, guid: 15e86fd8bfa5e3249a1e01c7fe9e8a2b, type: 3}
+  - {fileID: 21300000, guid: 75ba6f8900d49c9428e65a8a2b649524, type: 3}
+  - {fileID: 21300000, guid: b709b26af2999864cbd51c4a6d9f86f7, type: 3}
+  - {fileID: 21300000, guid: e8e8838caaefac449a5086e015d4e1b1, type: 3}
+  - {fileID: 21300000, guid: 005095ec08d80a249b6f7b7aafab8bc8, type: 3}
+  - {fileID: 21300000, guid: 2b592ffc665dadf47bef324f68d60283, type: 3}
+  - {fileID: 21300000, guid: 7dce8a1d79d2ce74ebd25871d2d51296, type: 3}
+  - {fileID: 21300000, guid: 9a82dfad901c07646a76021fb0e4b1a7, type: 3}
+  - {fileID: 21300000, guid: 5b551ebf45165b140afd27e58dc906a7, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - WindGem_Icon
+  - Heart_Heal
+  - WaterGem_Icon
+  - SurtrLantern_Icon
+  - _ManaGem
+  - LifeSeed_Icon
+  - BreezeNecklace_Icon
+  - FireGem_Icon
+  - LightningGem_Icon
+  - LifeGem_Icon
+  - BlessingWater_Icon
+  - EarthGem_Icon
+  - EmptyScroll_Icon
+  m_RenderDataMap: {}
+  m_Tag: ItemAtlas
+  m_IsVariant: 0

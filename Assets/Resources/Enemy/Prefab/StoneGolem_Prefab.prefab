@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7947103767001998687}
   - component: {fileID: 3244408177803543589}
+  - component: {fileID: 5097144648422318720}
   - component: {fileID: 8103560175905507847}
   - component: {fileID: 4206692473337556097}
   - component: {fileID: 7293772425758083186}
@@ -29,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5563108377816857757}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.633, y: -2.655, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -48,9 +49,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: 
-  speed: 1
+  portalSize: 1.2
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
     type: 3}
+  sprite: {fileID: 0}
   hasItem:
   - {fileID: 1238164818883177754, guid: ef4fa370cafa0db47a068f6aa8079d8d, type: 3}
   - {fileID: 1238164818883177754, guid: 8de7c48589275fe41a7dfc8e8ce418ba, type: 3}
@@ -60,6 +62,30 @@ MonoBehaviour:
   - {fileID: 1238164818883177754, guid: 9c0a1ffea5c7e9d4598050d164f06d70, type: 3}
   hitCount: 0
   HpNow: 1
+  hpMax: 0
+  power: 0
+  speed: 0
+  range: 0
+--- !u!114 &5097144648422318720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5563108377816857757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveType: 0
+  rigid: {fileID: 4498973164959321897}
+  spawnPortal: {fileID: 1190318300783163360, guid: 0884984e12e4e4746aa3b02b8c1d7fa9,
+    type: 3}
+  landEffect: {fileID: 0}
+  anim: {fileID: 0}
+  shadow: {fileID: 0}
+  jumpCoolTime: 0
 --- !u!212 &8103560175905507847
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -79,7 +105,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 40506420e55a4a34f8d4928dfd7d2778, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -98,7 +124,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1720907977
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 6171194522531915682, guid: 1fceaa62b5d10fd43bf9bccedeca8c86,
     type: 3}
@@ -148,7 +174,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.875, y: 2.375}
+    oldSize: {x: 4, y: 4}
     newSize: {x: 1.4375, y: 1.1875}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
