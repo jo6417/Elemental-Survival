@@ -7,6 +7,7 @@ using Lean.Pool;
 using DG.Tweening;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
@@ -36,17 +37,27 @@ public class UIManager : MonoBehaviour
 
     // public delegate void OnGemChanged();
     // public OnGemChanged onGemChangedCallback;
+    float time_start;
+    public float time_current; // 현재 스테이지 플레이 타임
 
-    [Header("SystemUI")]
+    [Header("ReferUI")]
     public GameObject pauseMenu;
     public GameObject magicMixUI;
     public GameObject chestUI;
     public GameObject vendMachineUI;
     public GameObject slotMachineUI;
     public GameObject magicUpgradeUI;
-    public TextMeshProUGUI TimerUI;
-    float time_start;
-    public float time_current; // 현재 스테이지 플레이 타임
+    public GameObject ultimateMagicUI;
+    public TextMeshProUGUI timerUI;
+    public Transform overlayCanvas;
+
+    [Header("UI Cursor")]
+    public GameObject UI_Cursor; //선택된 UI 따라다니는 UI커서
+    public GameObject lastSelected; //마지막 선택된 오브젝트
+    public Color lastOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
+    public float UI_CursorPadding; //UI 커서 여백
+    bool isFlicking = false; //현재 깜빡임 여부
+    // Sequence flickSeq; //깜빡임 시퀀스
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -63,11 +74,13 @@ public class UIManager : MonoBehaviour
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
     public Transform hasMagicsUI; //플레이어 현재 소지한 모든 마법 UI
-
+    public Transform ultimateMagicIcon; //궁극기 마법 슬롯 UI
+    public Image ultimateIndicator; //궁극기 슬롯 인디케이터 이미지
 
     private void Start()
     {
         Time.timeScale = 1; //시간값 초기화
+        // VarManager.Instance.AllTimeScale(1);
 
         // GemUI 전부 찾기
         TextMeshProUGUI[] gems = gemUIParent.GetComponentsInChildren<TextMeshProUGUI>();
@@ -97,10 +110,95 @@ public class UIManager : MonoBehaviour
             // 보유한 모든 마법 아이콘 갱신
             UpdateMagics();
             // 보유한 모든 아이템 아이콘 갱신
-            UpdateItems();
+            // UpdateItems();
         }
 
+        //게임시간 타이머 업데이트
         UpdateTimer();
+
+        //선택된 UI 따라다니기
+        FollowUICursor();
+    }
+
+    void FollowUICursor()
+    {
+        // lastSelected와 현재 선택버튼이 같으면 버튼 깜빡임 코루틴 시작
+        if (lastSelected == EventSystem.current.currentSelectedGameObject && EventSystem.current.currentSelectedGameObject != null)
+        {
+            //깜빡이는 코루틴 시작
+            if (!isFlicking)
+            {
+                StartCoroutine(FlickButtonColor());
+            }
+        }
+        else
+        {
+            // null이 아닌것을 선택했을때 lastSelected에 기억하기
+            if (EventSystem.current.currentSelectedGameObject != null && !isFlicking)
+                lastSelected = EventSystem.current.currentSelectedGameObject;
+        }
+
+        // 선택된 UI 있으면 해당 UI와 위치,사이즈 똑같이 맞추기
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            //위치 맞추기
+            UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
+
+            //크기 맞추기, 여백 추가
+            UI_Cursor.GetComponent<RectTransform>().sizeDelta =
+            EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>().sizeDelta
+            + Vector2.one * UI_CursorPadding;
+
+            UI_Cursor.SetActive(true);
+        }
+        else
+        {
+            // null 선택하면 끄기
+            UI_Cursor.SetActive(false);
+        }
+    }
+
+    IEnumerator FlickButtonColor()
+    {
+        //코루틴 시작
+        isFlicking = true;
+
+        Image image = lastSelected.GetComponentInChildren<Image>();
+        lastOriginColor = lastSelected.GetComponentInChildren<Image>().color; //원본 컬러
+        float rate = 0.5f;
+        Color flickColor = new Color(lastOriginColor.r * rate, lastOriginColor.g * rate, lastOriginColor.b * rate, 1f); //깜빡일 컬러
+
+        // print(lastOriginColor + ":" + flickColor);
+
+        while (EventSystem.current.currentSelectedGameObject != null && lastSelected == EventSystem.current.currentSelectedGameObject)
+        {
+            image.DOColor(flickColor, 0.5f)
+            .SetUpdate(true)
+            .OnUpdate(() =>
+            {
+                //도중에 선택 버튼 바뀌면 즉시 완료
+                if (lastSelected != EventSystem.current.currentSelectedGameObject)
+                    image.DOComplete();
+            });
+
+            //색 바뀔때까지 대기
+            yield return new WaitUntil(() => image.color == flickColor);
+
+            image.DOColor(lastOriginColor, 0.5f)
+            .SetUpdate(true)
+            .OnUpdate(() =>
+            {
+                //도중에 선택 버튼 바뀌면 즉시 완료
+                if (lastSelected != EventSystem.current.currentSelectedGameObject)
+                    image.DOComplete();
+            });
+
+            //색 바뀔때까지 대기
+            yield return new WaitUntil(() => image.color == lastOriginColor);
+        }
+
+        //코루틴 끝
+        isFlicking = false;
     }
 
     public void QuitMainMenu()
@@ -123,6 +221,10 @@ public class UIManager : MonoBehaviour
 
         // 시간 정지 토글
         Time.timeScale = pauseMenu.activeSelf ? 0 : 1;
+        // if(pauseMenu.activeSelf)
+        // VarManager.Instance.AllTimeScale(0);
+        // else
+        // VarManager.Instance.AllTimeScale(1);
     }
 
     public void InitialStat()
@@ -137,7 +239,7 @@ public class UIManager : MonoBehaviour
     {
         time_start = Time.time;
         time_current = 0;
-        TimerUI.text = "00:00";
+        timerUI.text = "00:00";
     }
 
     public void UpdateTimer()
@@ -152,7 +254,7 @@ public class UIManager : MonoBehaviour
         string second = string.Format("{0:00}", time_current % 60f);
 
         //시간 출력
-        TimerUI.text = hour + minute + second;
+        timerUI.text = hour + minute + second;
 
         //TODO 시간 UI 색깔 변경
         //TODO 색깔에 따라 난이도 변경
@@ -170,12 +272,12 @@ public class UIManager : MonoBehaviour
     public void UpdateHp()
     {
         playerHp.fillAmount = PlayerManager.Instance.hpNow / PlayerManager.Instance.hpMax;
-        playerHpText.text = PlayerManager.Instance.hpNow + " / " + PlayerManager.Instance.hpMax;
+        playerHpText.text = (int)PlayerManager.Instance.hpNow + " / " + (int)PlayerManager.Instance.hpMax;
     }
 
     public void UpdateGem(int gemTypeIndex)
     {
-        gemUIs[gemTypeIndex].text = "x " + PlayerManager.Instance.hasGems[gemTypeIndex].ToString();
+        gemUIs[gemTypeIndex].text = PlayerManager.Instance.hasGems[gemTypeIndex].ToString();
     }
 
     public void GemIndicator(int gemIndex)
@@ -266,6 +368,10 @@ public class UIManager : MonoBehaviour
             if (magic.grade == 0)
                 continue;
 
+            //궁극기는 표시 안함
+            if (magic.castType == "ultimate")
+                continue;
+
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
 
@@ -283,6 +389,38 @@ public class UIManager : MonoBehaviour
             amount.gameObject.SetActive(true);
             amount.text = "Lev." + magic.magicLevel.ToString();
         }
+    }
+
+    public void UpdateUltimateIcon()
+    {
+        //현재 보유중인 궁극기 마법 불러오기
+        MagicInfo ultimateMagic = PlayerManager.Instance.ultimateMagic;
+
+        Image frame = ultimateMagicIcon.Find("Frame").GetComponent<Image>();
+        Image icon = ultimateMagicIcon.Find("Icon").GetComponent<Image>();
+
+        //궁극기 마법 등급 및 아이콘 넣기
+        if (ultimateMagic != null)
+        {
+            frame.color = MagicDB.Instance.gradeColor[ultimateMagic.grade];
+            icon.sprite = MagicDB.Instance.GetMagicIcon(ultimateMagic.id);
+            icon.gameObject.SetActive(true);
+        }
+        else
+        {
+            frame.color = Color.white;
+            icon.gameObject.SetActive(false);
+        }
+    }
+
+    public void UltimateCooltime()
+    {
+        float coolTimeRate
+        = PlayerManager.Instance.ultimateMagic != null
+        ? PlayerManager.Instance.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(PlayerManager.Instance.ultimateMagic)
+        : 0;
+
+        ultimateMagicIcon.Find("CoolTime").GetComponent<Image>().fillAmount = coolTimeRate;
     }
 
     public void UpdateStat()
@@ -323,15 +461,26 @@ public class UIManager : MonoBehaviour
 
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
+        // if(popup.activeSelf)
+        // VarManager.Instance.AllTimeScale(0);
+        // else
+        // VarManager.Instance.AllTimeScale(1);
     }
 
-    public void PopupUI(GameObject popup, bool setToggle = true)
+    public void PopupUI(GameObject popup, bool forceSwitch = true)
     {
         // 팝업 UI 토글
-        popup.SetActive(setToggle);
+        popup.SetActive(forceSwitch);
 
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
+        // if(popup.activeSelf)
+        // VarManager.Instance.AllTimeScale(0);
+        // else
+        // VarManager.Instance.AllTimeScale(1);
+
+        //TODO 팝업 꺼질때 UI 커서 끄기
+        UI_Cursor.SetActive(false);
     }
 
     //오브젝트의 모든 자식을 제거

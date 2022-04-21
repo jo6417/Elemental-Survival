@@ -59,7 +59,8 @@ public class ProductToolTip : MonoBehaviour
 
     void FollowMouse()
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        // Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mousePos = Input.mousePosition;
         mousePos.z = 0;
         transform.position = mousePos;
     }

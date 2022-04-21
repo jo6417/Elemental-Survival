@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
 using DG.Tweening;
+using System.Linq;
+using TMPro;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -33,10 +36,12 @@ public class PlayerManager : MonoBehaviour
     [Header("<Refer>")]
     public GameObject mobSpawner;
     private Animator animator;
-    private SpriteRenderer sprite;
+    public SpriteRenderer sprite;
     // public GameObject levelupPopup;
     public Rigidbody2D rigid;
     public Vector3 lastDir; //마지막 바라봤던 방향
+    public GameObject txtPrefab; //체력 회복 텍스트 UI
+    public Light2D playerLight;
 
     [Header("<Stat>")] //기본 스탯
     public int playerPower; //플레이어 전투력
@@ -99,9 +104,11 @@ public class PlayerManager : MonoBehaviour
     public float wind_buff = 1;
 
     [Header("<Pocket>")]
-    public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
-    public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
+    public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
+    public MagicInfo ultimateMagic; //궁극기 마법
+    public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
+    public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
 
     void Start()
     {
@@ -133,7 +140,22 @@ public class PlayerManager : MonoBehaviour
         Camera.main.transform.position = transform.position + new Vector3(0, 0, -10);
 
         //몬스터 스포너 따라오기
+        if(mobSpawner.activeSelf)
         mobSpawner.transform.position = transform.position;
+
+        if(ultimateCoolCount > 0)
+        {
+            //궁극기 쿨타임 카운트 감소
+            ultimateCoolCount -= Time.deltaTime;
+            //쿨타임 UI 업데이트
+            UIManager.Instance.UltimateCooltime();
+        }
+
+        // 쿨타임 가능하고 스페이스바 눌렀을때
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(CastMagic.Instance.UseUltimateMagic());
+        }
 
         //이동
         Move();
@@ -178,11 +200,11 @@ public class PlayerManager : MonoBehaviour
         }
 
         dir.Normalize();
-        rigid.velocity = moveSpeed * dir;
+        rigid.velocity = moveSpeed * dir * VarManager.Instance.playerTimeScale;
 
         //마지막 방향 기억
-        if(dir != Vector2.zero)
-        lastDir = dir;
+        if (dir != Vector2.zero)
+            lastDir = dir;
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -236,6 +258,7 @@ public class PlayerManager : MonoBehaviour
     {
         // 시간 멈추기
         Time.timeScale = 0;
+        // VarManager.Instance.AllTimeScale(0);
 
         //TODO 게임오버 UI 띄우기
         // gameOverUI.SetActive(true);
@@ -292,7 +315,6 @@ public class PlayerManager : MonoBehaviour
     {
         //플레이어 체력 회복하기
         hpNow += amount;
-        print(hpNow + ":" + amount);
 
         //초과 회복 방지
         if (hpNow > hpMax)
@@ -300,6 +322,41 @@ public class PlayerManager : MonoBehaviour
 
         //UI 업데이트
         UIManager.Instance.UpdateHp();
+
+        Vector2 startPos = transform.position;
+        Vector2 endPos = (Vector2)transform.position + Vector2.up * 1f;
+
+        // 회복 텍스트 띄우기
+        GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, UIManager.Instance.overlayCanvas);
+        TextMeshProUGUI healTxt = healUI.GetComponent<TextMeshProUGUI>();
+        healTxt.color = Color.green;
+        healTxt.text = "+ " + amount.ToString();
+
+        //데미지 UI 애니메이션
+        Sequence txtSeq = DOTween.Sequence();
+        txtSeq
+        .PrependCallback(() =>
+        {
+            //제로 사이즈로 시작
+            healUI.transform.localScale = Vector3.zero;
+        })
+        .Append(
+            //위로 살짝 올리기
+            healUI.transform.DOMove(endPos, 1f)
+        )
+        .Join(
+            //원래 크기로 늘리기
+            healUI.transform.DOScale(Vector3.one, 0.5f)
+        )
+        .Append(
+            //줄어들어 사라지기
+            healUI.transform.DOScale(Vector3.zero, 0.5f)
+            .SetEase(Ease.InBack)
+        )
+        .OnComplete(() =>
+        {
+            LeanPool.Despawn(healUI);
+        });
     }
 
     public void GetMagic(MagicInfo getMagic)
@@ -312,8 +369,8 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 0등급 마법이면 원소젬이므로 스킵
-        if(getMagic.grade == 0)
-        return;
+        if (getMagic.grade == 0)
+            return;
 
         //보유한 마법의 레벨 올리기
         hasMagics.Find(x => x.id == getMagic.id).magicLevel++;
@@ -328,14 +385,42 @@ public class PlayerManager : MonoBehaviour
         playerPower = GetPlayerPower();
     }
 
+    public void GetUltimateMagic(MagicInfo magic)
+    {
+        //해당 마법을 장착
+        ultimateMagic = magic;
+        print("ultimate : " + ultimateMagic.magicName);
+
+        //해당 마법 쿨타임 카운트 초기화
+        ultimateCoolCount = MagicDB.Instance.MagicCoolTime(ultimateMagic);
+        UIManager.Instance.UltimateCooltime();
+
+        //TODO 궁극기 UI 업데이트
+        UIManager.Instance.UpdateUltimateIcon();
+    }
+
     IEnumerator CastBasicMagics()
     {
         // MagicDB 로드 완료까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //TODO 캐릭터에 따라 basicMagic에 기본마법 넣고 시작
+        List<int> magics = new List<int>();
+
+        if (CastMagic.Instance.testAllMagic)
+        {
+            foreach (var value in MagicDB.Instance.magicDB.Values)
+            {
+                magics.Add(value.id);
+            }
+        }
+        else
+        {
+            magics = CastMagic.Instance.basicMagic;
+        }
+
         // 캐릭터 기본 마법 추가
-        foreach (var magicID in CastMagic.Instance.basicMagic)
+        foreach (var magicID in magics)
         {
             //보유하지 않은 마법일때
             if (!hasMagics.Exists(x => x.id == magicID))
@@ -353,6 +438,10 @@ public class PlayerManager : MonoBehaviour
 
         // 보유한 모든 마법 아이콘 갱신
         UIManager.Instance.UpdateMagics();
+
+        // 보유한 궁극기 마법 아이콘 갱신
+        UIManager.Instance.UpdateUltimateIcon();
+        UIManager.Instance.UltimateCooltime();
 
         //플레이어 총 전투력 업데이트
         playerPower = GetPlayerPower();
@@ -487,6 +576,7 @@ public class PlayerManager : MonoBehaviour
     {
         // 시간 멈추기
         Time.timeScale = 0;
+        // VarManager.Instance.AllTimeScale(0);
 
         //레벨업
         Level++;
@@ -523,7 +613,7 @@ public class PlayerManager : MonoBehaviour
             //총전투력에 해당 마법의 등급*레벨 더하기
             magicPower += magic.grade * magic.magicLevel;
 
-            print(magicPower + " : " + magic.grade + " * " + magic.magicLevel);
+            // print(magicPower + " : " + magic.grade + " * " + magic.magicLevel);
         }
 
         return magicPower;

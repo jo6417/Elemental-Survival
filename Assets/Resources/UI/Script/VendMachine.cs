@@ -77,7 +77,7 @@ public class VendMachine : MonoBehaviour
 
         //TODO 등급마다 확률 다르게
         // 중복제거된 랜덤 마법 id 뽑기
-        int[] magicIDs = MagicDB.Instance.RandomMagicIndex(MagicDB.Instance.magicInfo.Keys.Count, magicNum);
+        int[] magicIDs = MagicDB.Instance.RandomMagicIndex(MagicDB.Instance.magicDB.Keys.Count, magicNum);
 
         magics.Clear();
         for (int i = 0; i < magicIDs.Length; i++)

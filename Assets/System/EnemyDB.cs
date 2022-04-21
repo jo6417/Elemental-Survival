@@ -227,11 +227,11 @@ public class EnemyDB : MonoBehaviour
         return null;
     }
 
-    public int RandomEnemy()
+    public int RandomEnemy(int maxGrade)
     {
-        //TODO 등급별로 랜덤 비율 지정
+        //TODO 등급별로 확률 지정할것
         // 랜덤 몬스터 등급 뽑기 1~6
-        int randGrade = Random.Range(1, 7);
+        int randGrade = Random.Range(1, maxGrade + 1);
 
         //랜덤 등급의 모든 몬스터 임시 리스트에 추가
         List<int> tempList = new List<int>();

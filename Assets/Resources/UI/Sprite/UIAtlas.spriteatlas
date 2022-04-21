@@ -125,7 +125,7 @@ SpriteAtlas:
   - StunUI-Sheet
   - BookIndex
   - Scroll_Opened
-  - HexItemFrameBack
+  - HexItemBack
   - _ManaGemUI
   - ButtonUI
   - HexItemFrame

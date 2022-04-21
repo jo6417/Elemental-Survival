@@ -148,13 +148,13 @@ public class ItemManager : MonoBehaviour
 
         float itemSpeed = 0.5f;
 
-        // 플레이어 방향으로 날아가기, 아이템 사라질때까지
+        // 플레이어 방향으로 날아가기, 아이템 사라질때까지 방향 갱신하며 반복
         while (!isGet || gameObject.activeSelf)
         {
             itemSpeed -= Time.deltaTime;
             itemSpeed = Mathf.Clamp(itemSpeed, 0.01f, 1f);
 
-            if(rigid)
+            if(gameObject.activeSelf && rigid)
             rigid.DOMove(player.transform.position, itemSpeed);
 
             //거리가 0.5f 이하일때 획득
@@ -191,7 +191,8 @@ public class ItemManager : MonoBehaviour
         }
         
         //아이템 속도 초기화
-        if(rigid)
+        if(gameObject.activeSelf && rigid)
+        rigid.DOKill();
         rigid.velocity = Vector2.zero;
 
         //아이템 비활성화

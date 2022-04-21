@@ -47,6 +47,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
+  knockbackForce: 0
+  isStop: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  bleedTime: 0
+  electricTime: 0
+  freezeTime: 0
 --- !u!114 &8422792374676327872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,13 +72,11 @@ MonoBehaviour:
   anim: {fileID: 0}
   magicName: 
   col: {fileID: 8422792374676327875}
-  originColScale: {x: 0, y: 0}
   originScale: {x: 0, y: 0}
   fallEase: 26
-  fallSpeed: 0.3
-  fallDistance: 0
-  coolTimeSet: 0.3
-  isDespawn: 0
+  addAngle: 0
+  startPos: {x: 0, y: 2}
+  moveDistance: 2
   isExpand: 0
   magicEffect: {fileID: 0}
   effectPos: {x: 0, y: 0, z: 0}
@@ -110,7 +118,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 4866485357111499113, guid: c4f007ccd80da8147aa55cede9124f50,
     type: 3}

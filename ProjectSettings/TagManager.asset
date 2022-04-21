@@ -18,9 +18,9 @@ TagManager:
   - Player
   - Enemy
   - Magic
+  - MagicEffect
   - Item
-  - 
-  - 
+  - FloatingEnemy
   - 
   - 
   - 

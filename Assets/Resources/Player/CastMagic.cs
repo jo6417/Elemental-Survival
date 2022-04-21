@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lean.Pool;
 using UnityEngine;
+using DG.Tweening;
 
 public class CastMagic : MonoBehaviour
 {
@@ -34,11 +35,7 @@ public class CastMagic : MonoBehaviour
     List<GameObject> passiveMagics = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
     List<int> nowCastMagicIDs = new List<int>(); //현재 사용중인 마법
     public List<int> basicMagic = new List<int>(); //기본 마법
-
-    private void Start()
-    {
-        
-    }
+    public bool testAllMagic; //! 모든 마법 테스트
 
     public void CastAllMagics()
     {
@@ -48,7 +45,7 @@ public class CastMagic : MonoBehaviour
         {
             //active 타입 마법만 사용
             // if (magic.castType == "active")
-                hasMagicIDs.Add(magic.id);
+            hasMagicIDs.Add(magic.id);
         }
 
         // hasMagicIDs 중에 nowCastMagic에 없는 마법 찾기
@@ -71,6 +68,10 @@ public class CastMagic : MonoBehaviour
                     // print("프리팹 없음");
                     continue;
                 }
+
+                // ultimate 마법일때
+                if (magic.castType == "ultimate")
+                continue;
 
                 // passive 마법일때
                 if (magic.castType == "passive")
@@ -120,9 +121,7 @@ public class CastMagic : MonoBehaviour
         }
     }
 
-    
-
-    //소환 마법
+    //마법 소환
     IEnumerator SummonMagic(GameObject magicPrefab, MagicInfo magic)
     {
         // 랜덤 적 찾기, 투사체 수 이하로
@@ -140,8 +139,8 @@ public class CastMagic : MonoBehaviour
             MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();
 
             //마법 정보 넣기
-            if(magicHolder.magic == null)
-            magicHolder.magic = magic;
+            if (magicHolder.magic == null)
+                magicHolder.magic = magic;
 
             //적 위치 넣기, 있어도 새로 갱신
             magicHolder.targetPos = enemyPos[i];
@@ -193,5 +192,73 @@ public class CastMagic : MonoBehaviour
 
         //적의 위치 리스트 리턴
         return enemyPos;
+    }
+
+    public IEnumerator UseUltimateMagic()
+    {
+        MagicInfo magic = PlayerManager.Instance.ultimateMagic;
+
+        //! Test
+        // magic = MagicDB.Instance.GetMagicByID(48);
+
+        //궁극기 없을때, 쿨타임중일때
+        if (magic == null || PlayerManager.Instance.ultimateCoolCount > 0)
+        {
+            print("궁극기 실패");
+
+            UIManager.Instance.ultimateIndicator.DOKill();
+
+            //궁극기 아이콘 인디케이터
+            Color baseColor = UIManager.Instance.ultimateIndicator.color;
+            Color onColor = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
+            Color offColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
+
+            //인디케이터 2번 밝히기
+            Sequence seq = DOTween.Sequence();
+            seq.Append(
+                UIManager.Instance.ultimateIndicator.DOColor(onColor, 0.2f)
+            )
+            .Append(
+                UIManager.Instance.ultimateIndicator.DOColor(offColor, 0.2f)
+            )
+            .SetLoops(2)
+            .OnComplete(() =>
+            {
+                UIManager.Instance.ultimateIndicator.color = offColor;
+            });
+            seq.Restart();
+
+            yield break;
+        }
+
+        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
+        float cooltime = MagicDB.Instance.MagicCoolTime(magic);
+
+        // 랜덤 적 찾기, 투사체 수 이하로
+        List<Vector2> enemyPos = MarkEnemyPos(magic);
+
+        //해당 마법 쿨타임 불러오기
+        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+
+        for (int i = 0; i < enemyPos.Count; i++)
+        {
+            // 마법 오브젝트 생성
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, magicPool);
+
+            //매직 홀더 찾기
+            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();
+
+            //마법 정보 넣기
+            if (magicHolder.magic == null)
+                magicHolder.magic = magic;
+
+            //적 위치 넣기, 있어도 새로 갱신
+            magicHolder.targetPos = enemyPos[i];
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        //해당 마법 쿨타임 카운트 시작
+        PlayerManager.Instance.ultimateCoolCount = cooltime;
     }
 }

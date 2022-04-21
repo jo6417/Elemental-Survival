@@ -48,8 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPos: {x: 10, y: 10}
+  magicName: 
+  targetPos: {x: 10, y: 10, z: 0}
   knockbackForce: 0
+  isStop: 0
   slowTime: 0
   burnTime: 2
   wetTime: 0
@@ -69,7 +71,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sprite: {fileID: 3690952856243734696}
-  rigid: {fileID: 1116434044434221771}
   originScale: {x: 0, y: 0}
   frontDistance: 2
   ease: 0
@@ -111,8 +112,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayerID: 945064743
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: -2956701104251912436, guid: c34c339337b25c449a0d0ccbd6858f73,
     type: 3}

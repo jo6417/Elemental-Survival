@@ -28,7 +28,7 @@ public class MagicInfo
     public float range = 1; //범위
     public float duration = 1; //지속시간
     public float critical = 1f; //크리티컬 확률
-    public float criticalDamage = 1f; //크리티컬 데미지 증가율
+    public float criticalPower = 1f; //크리티컬 데미지 증가율
     public int pierce = 0; //관통 횟수 및 넉백 계수
     public int projectile = 0; //투사체 수
     public int coolTime = 0; //쿨타임
@@ -39,12 +39,12 @@ public class MagicInfo
     public float rangePerLev;
     public float durationPerLev;
     public float criticalPerLev;
-    public float criticalDamagePerLev;
+    public float criticalPowerPerLev;
     public float piercePerLev;
     public float projectilePerLev;
     public float coolTimePerLev;
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price, float power, float speed, float range, float duration, float critical, float criticalDamage, int pierce, int projectile, int coolTime, float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalDamagePerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price, float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime, float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
     {
         this.id = id;
         this.grade = grade;
@@ -61,7 +61,7 @@ public class MagicInfo
         this.range = range;
         this.duration = duration;
         this.critical = critical;
-        this.criticalDamage = criticalDamage;
+        this.criticalPower = criticalPower;
         this.pierce = pierce;
         this.projectile = projectile;
         this.coolTime = coolTime;
@@ -71,7 +71,7 @@ public class MagicInfo
         this.rangePerLev = rangePerLev;
         this.durationPerLev = durationPerLev;
         this.criticalPerLev = criticalPerLev;
-        this.criticalDamagePerLev = criticalDamagePerLev;
+        this.criticalPowerPerLev = criticalPowerPerLev;
         this.piercePerLev = piercePerLev;
         this.projectilePerLev = projectilePerLev;
         this.coolTimePerLev = coolTimePerLev;
@@ -104,7 +104,7 @@ public class MagicDB : MonoBehaviour
     }
     #endregion
 
-    public Dictionary<int, MagicInfo> magicInfo = new Dictionary<int, MagicInfo>(); //마법 정보 DB
+    public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
     // public List<Sprite> magicIcon = null; //마법 아이콘 리스트
     public Dictionary<string, Sprite> magicIcon = new Dictionary<string, Sprite>();
     public Dictionary<string, GameObject> magicPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
@@ -183,10 +183,10 @@ public class MagicDB : MonoBehaviour
                 var magic = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 id를 키값으로 MagicInfo 딕셔너리에 넣기
-                magicInfo[magic["id"]] = (new MagicInfo(
-                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["price"], 
-                magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalDamage"], magic["pierce"], magic["projectile"], magic["coolTime"],
-                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalDamagePerLev"], magic["piercePerLev"], magic["projectilePerLev"], magic["coolTimePerLev"]
+                magicDB[magic["id"]] = (new MagicInfo(
+                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["price"],
+                magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["projectile"], magic["coolTime"],
+                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["projectilePerLev"], magic["coolTimePerLev"]
                 ));
             }
 
@@ -215,9 +215,9 @@ public class MagicDB : MonoBehaviour
     {
         MagicInfo magic = null;
 
-        foreach (KeyValuePair<int, MagicInfo> value in magicInfo)
+        foreach (KeyValuePair<int, MagicInfo> value in magicDB)
         {
-            if (value.Value.magicName == name)
+            if (value.Value.magicName.Replace(" ", "") == name.Replace(" ", ""))
             {
                 magic = value.Value;
                 break;
@@ -229,10 +229,10 @@ public class MagicDB : MonoBehaviour
 
     public MagicInfo GetMagicByID(int id)
     {
-        if(magicInfo.TryGetValue(id, out MagicInfo value))
-        return value;
+        if (magicDB.TryGetValue(id, out MagicInfo value))
+            return value;
         else
-        return null;
+            return null;
     }
 
     public Sprite GetMagicIcon(int id)
@@ -240,26 +240,26 @@ public class MagicDB : MonoBehaviour
         //아이콘의 이름
         string magicName = GetMagicByID(id).magicName.Replace(" ", "") + "_Icon";
 
-        if(magicIcon.TryGetValue(magicName, out Sprite icon))
-        return icon;
+        if (magicIcon.TryGetValue(magicName, out Sprite icon))
+            return icon;
         else
-        return null;
+            return null;
     }
 
     public GameObject GetMagicPrefab(int id)
     {
         //프리팹의 이름
         string magicName = GetMagicByID(id).magicName.Replace(" ", "") + "_Prefab";
-        
-        if(magicPrefab.TryGetValue(magicName, out GameObject prefab))
-        return prefab;
+
+        if (magicPrefab.TryGetValue(magicName, out GameObject prefab))
+            return prefab;
         else
-        return null;
+            return null;
     }
 
     public void InitialMagic()
     {
-        foreach (KeyValuePair<int, MagicInfo> magic in magicInfo)
+        foreach (KeyValuePair<int, MagicInfo> magic in magicDB)
         {
             magic.Value.magicLevel = 0;
         }
@@ -387,9 +387,15 @@ public class MagicDB : MonoBehaviour
         float speed = 0;
 
         //마법 속도 및 레벨당 증가량 계산
-        speed = bigNumFast ? magic.speed + magic.speedPerLev * (magic.magicLevel - 1) : magic.speed - magic.speedPerLev * (magic.magicLevel - 1);
-        //플레이어 자체 마법 속도 증가량 계산
-        speed = bigNumFast ? speed + speed * (PlayerManager.Instance.speed - 1) : speed - speed * (PlayerManager.Instance.speed - 1);
+        speed = bigNumFast
+        ? magic.speed + magic.speedPerLev * (magic.magicLevel - 1)
+        : magic.speed - magic.speedPerLev * (magic.magicLevel - 1);
+
+        //플레이어 speed 스탯 곱하기
+        speed = bigNumFast
+        ? speed + speed * (PlayerManager.Instance.speed - 1)
+        : speed - speed * (PlayerManager.Instance.speed - 1);
+
         //값 제한하기
         speed = Mathf.Clamp(speed, 0.01f, 100f);
 
@@ -440,8 +446,8 @@ public class MagicDB : MonoBehaviour
         float rand = Random.value;
 
         //크리티컬 확률보다 랜덤 숫자가 더 적으면 크리티컬 성공
-        if(rand <= critical)
-        isCritical = true;
+        if (rand <= critical)
+            isCritical = true;
 
         // if(magic.magicName == "Time Stop")
         // print(rand + " : " + critical);
@@ -450,16 +456,16 @@ public class MagicDB : MonoBehaviour
         return isCritical;
     }
 
-    public float MagicCriticalDamage(MagicInfo magic)
+    public float MagicCriticalPower(MagicInfo magic)
     {
-        float criticalDamage = 0;
+        float criticalPower = 0;
 
         //마법 크리티컬 데미지 및 레벨당 증가량 계산
-        criticalDamage = magic.criticalDamage + magic.criticalDamagePerLev * (magic.magicLevel - 1);
+        criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 크리티컬 데미지 증가량 계산
-        criticalDamage = criticalDamage + criticalDamage * (PlayerManager.Instance.luck - 1);
+        criticalPower = criticalPower + criticalPower * (PlayerManager.Instance.luck - 1);
 
-        return criticalDamage;
+        return criticalPower;
     }
 
     public int MagicPierce(MagicInfo magic)
@@ -484,6 +490,9 @@ public class MagicDB : MonoBehaviour
         magic.projectile +
         Mathf.FloorToInt(magic.projectilePerLev * (magic.magicLevel - 1)) +
         PlayerManager.Instance.projectileNum;
+
+        //최소값 1 제한
+        projectile = Mathf.Clamp(projectile, 1, projectile);
 
         return projectile;
     }

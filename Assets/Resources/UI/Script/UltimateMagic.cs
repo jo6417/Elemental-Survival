@@ -1,0 +1,125 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class UltimateMagic : MonoBehaviour
+{
+    #region Singleton
+    private static UltimateMagic instance;
+    public static UltimateMagic Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                var obj = FindObjectOfType<UltimateMagic>();
+                if (obj != null)
+                {
+                    instance = obj;
+                }
+                else
+                {
+                    var newObj = new GameObject().AddComponent<UltimateMagic>();
+                    instance = newObj;
+                }
+            }
+            return instance;
+        }
+    }
+    #endregion
+
+    public MagicInfo newMagic;
+
+    public RectTransform magicPanel; //얻은 궁극기 정보 팝업창
+    public GameObject acceptBtn; //확인 버튼
+    public GameObject chooseMagicPanel; //기존 마법 있을때 마법 선택창
+
+    private void OnEnable()
+    {
+        StartCoroutine(Initial());
+    }
+
+    private void Start()
+    {
+        // newMagic = MagicDB.Instance.GetMagicByID(49);
+    }
+
+    IEnumerator Initial()
+    {
+        //magic 정보 들어올때까지 대기
+        yield return new WaitUntil(() => newMagic != null);
+
+        MagicInfo oldMagic = PlayerManager.Instance.ultimateMagic;
+
+        // 마법 정보창에 모든 정보 넣기
+        Transform magicIcon = magicPanel.transform.Find("NewMagic");
+        //새 마법 등급 색 넣기
+        magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[newMagic.grade];
+        //새 마법 아이콘 넣기
+        magicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(newMagic.id);
+
+        //새 마법 이름,설명 넣기
+        magicPanel.transform.Find("MagicName").GetComponent<TextMeshProUGUI>().text = newMagic.magicName;
+        magicPanel.transform.Find("MagicDescript").GetComponent<TextMeshProUGUI>().text = newMagic.description;
+
+        //마법 스탯 리스트화 하기
+        List<string> statAmounts = new List<string>();
+        statAmounts.Add(newMagic.power.ToString());
+        statAmounts.Add(newMagic.speed.ToString());
+        statAmounts.Add(newMagic.range.ToString());
+        statAmounts.Add(newMagic.duration.ToString());
+        statAmounts.Add(newMagic.critical.ToString());
+        statAmounts.Add(newMagic.criticalPower.ToString());
+        statAmounts.Add(newMagic.pierce.ToString());
+        statAmounts.Add(newMagic.projectile.ToString());
+        statAmounts.Add(newMagic.coolTime.ToString());
+
+        //모든 마법 스탯 넣기
+        Transform stats = magicPanel.transform.Find("Stat");
+        for (int i = 0; i < stats.childCount; i++)
+        {
+            stats.GetChild(i).Find("Amount").GetComponent<TextMeshProUGUI>().text = statAmounts[i];
+        }
+
+        // 기존 마법 없을때 화면 가운데로
+        if (oldMagic == null)
+        {
+            magicPanel.anchoredPosition = Vector2.zero;
+            magicPanel.gameObject.SetActive(true);
+            acceptBtn.SetActive(true);
+            chooseMagicPanel.SetActive(false);
+        }
+        //TODO 기존 마법 있을때 위로 올리기, 마법 선택창 띄우기
+        else
+        {
+            magicPanel.anchoredPosition = Vector2.zero + Vector2.up * 200f;
+            magicPanel.gameObject.SetActive(true);
+            acceptBtn.SetActive(false);
+            chooseMagicPanel.SetActive(true);
+
+            //TODO 마법 선택창에 magicInfo 및 아이콘 바꾸기
+            //새 마법 아이콘 바꾸기
+            Transform newMagicIcon = chooseMagicPanel.transform.Find("NewMagic");
+            newMagicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[newMagic.grade];
+            newMagicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(newMagic.id);
+
+            //기존 마법 아이콘 바꾸기
+            Transform oldMagicIcon = chooseMagicPanel.transform.Find("OldMagic");
+            newMagicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[oldMagic.grade];
+            newMagicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(oldMagic.id);
+        }
+    }
+
+    public void AcceptBtn()
+    {
+        //TODO 팝업 닫기
+        UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicUI);
+        //마법 합성 팝업 닫기
+        UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI, false);
+
+        //TODO 해당 마법 장착
+        PlayerManager.Instance.GetUltimateMagic(newMagic);
+    }
+}

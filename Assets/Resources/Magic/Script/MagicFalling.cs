@@ -7,25 +7,24 @@ using Lean.Pool;
 public class MagicFalling : MonoBehaviour
 {
     [Header("Refer")]
+    SpriteRenderer sprite;
     private MagicInfo magic;
     MagicHolder magicHolder;
     public Animator anim;
-    float originAnimSpeed;
     public string magicName;
     public Collider2D col;
-    public Vector2 originScale; //원래 오브젝트 크기
+    Vector2 originScale; //원래 오브젝트 크기
     public Ease fallEase;
-    public bool isSting = false; //찌르기 마법일때
     public float addAngle; //스프라이트 방향 보정
-    public float moveDistance = 2f; //움직일 거리
-    public bool isDespawn = false; //디스폰 여부
+    public Vector2 startPos; //시작할 위치
     public bool isExpand = false; //커지면서 등장 여부
+    public bool isFade = false; //domove 끝나고 사라지기 여부
 
     [Header("Effect")]
+    public GameObject particle; //파티클 오브젝트
     public GameObject magicEffect;
     SpriteRenderer effectSprite;
     Animator effectAnim;
-    public Vector3 effectPos; //이펙트 생성 위치 보정
 
     private void Awake()
     {
@@ -34,6 +33,7 @@ public class MagicFalling : MonoBehaviour
 
         //애니메이터 찾기
         anim = GetComponent<Animator>();
+        sprite = GetComponent<SpriteRenderer>();
 
         //이펙트 관련 컴포넌트 찾기
         if (magicEffect)
@@ -53,6 +53,14 @@ public class MagicFalling : MonoBehaviour
 
     IEnumerator Initial()
     {
+        //스프라이트 초기화
+        sprite.color = Color.white;
+        sprite.enabled = false;
+
+        //파티클 있으면 끄기
+        if (particle)
+            particle.SetActive(false);
+
         //이펙트 끄기
         if (magicEffect)
         {
@@ -88,55 +96,52 @@ public class MagicFalling : MonoBehaviour
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magic != null);
 
-        // 적 위치로 이동
-        transform.position = magicHolder.targetPos;
-
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
         float magicSpeed = MagicDB.Instance.MagicSpeed(magic, false);
 
-        // 애니메이션 속도 계산
-        // anim.speed = originAnimSpeed * MagicDB.Instance.MagicSpeed(magic, true);
-
-        //이동할 각도 가져오기
-        Vector2 targetPos = GetComponentInChildren<MagicHolder>().targetPos;
-
-        //떨어질 방향으로 회전
-        if (isSting)
-        {
-            float rotation = Mathf.Atan2(targetPos.y, targetPos.x) * Mathf.Rad2Deg;
-            rotation += addAngle;
-            transform.DORotate(Vector3.forward * rotation, 0.5f)
-            .SetEase(Ease.OutBack);
-        }
-
-        // 팝업창 0,0에서 점점 커지면서 나타내기
+        // 마법 오브젝트 점점 커지면서 나타내기
         if (isExpand)
             transform.localScale = Vector2.zero;
         transform.DOScale(originScale, 0.5f)
         .SetEase(Ease.OutBack);
 
         //시작 위치
-        Vector2 startPos = isSting ? (Vector2)PlayerManager.Instance.transform.position : (Vector2)transform.position + new Vector2(0, moveDistance);
+        Vector2 moveStartPos = startPos + (Vector2)magicHolder.targetPos;
 
         //끝나는 위치
-        Vector2 endPos = isSting ? targetPos : (Vector2)transform.position;
+        Vector2 endPos = magicHolder.targetPos;
 
         //시작 위치로 올려보내기
-        transform.position = startPos;
+        transform.position = moveStartPos;
 
         //목표 위치로 떨어뜨리기
         transform.DOMove(endPos, magicSpeed)
+        .OnStart(() =>
+        {
+            //스프라이트 켜기
+            sprite.enabled = true;
+            
+            //파티클 있으면 켜기
+            if (particle)
+                particle.SetActive(true);
+        })
         .SetEase(fallEase)
         .OnComplete(() =>
         {
+            if (isFade)
+            {
+                // sprite.color = Color.clear;
+                sprite.DOColor(Color.clear, 0.5f);
+            }
+
             //콜라이더 발동시키기
             ColliderTrigger(true);
 
             // 마법 오브젝트 속도
-            float duration = MagicDB.Instance.MagicDuration(magic);
+            // float duration = MagicDB.Instance.MagicDuration(magic);
 
             // 오브젝트 자동 디스폰하기
-            StartCoroutine(AutoDespawn(duration));
+            StartCoroutine(AutoDespawn(0.5f));
         });
     }
 
@@ -155,6 +160,7 @@ public class MagicFalling : MonoBehaviour
             //이펙트 켜기
             if (magicEffect)
             {
+                magicEffect.SetActive(true);
                 effectSprite.enabled = true;
                 effectAnim.enabled = true;
             }

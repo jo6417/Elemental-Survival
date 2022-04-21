@@ -78,10 +78,9 @@ MonoBehaviour:
   col: {fileID: 8511969488732639964}
   originScale: {x: 0, y: 0}
   fallEase: 26
-  isSting: 0
   addAngle: 0
+  startPos: {x: 0, y: 2}
   moveDistance: 2
-  isDespawn: 0
   isExpand: 1
   magicEffect: {fileID: 5619414736512131746}
   effectPos: {x: 0, y: 0, z: 0}
@@ -173,7 +172,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 2}
+    oldSize: {x: 4, y: 4}
     newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

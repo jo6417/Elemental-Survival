@@ -38,32 +38,83 @@ SpriteAtlas:
       padding: 2
       blockOffset: 1
       allowAlphaSplitting: 0
-      enableRotation: 0
+      enableRotation: 1
       enableTightPacking: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 2800000, guid: 5a0c9a38efcb7a14cbfae9eeb2e37617, type: 3}
-    - {fileID: 2800000, guid: e64fc031565ffcd4cbd28f6e3f922da9, type: 3}
-    - {fileID: 2800000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
-    - {fileID: 2800000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
-    - {fileID: 2800000, guid: edea7c8be35a5bf499d752bf83038850, type: 3}
+    - {fileID: 102900000, guid: 85795d4a5c0462a4885d1ee9f482bc22, type: 3}
+    - {fileID: 102900000, guid: b0def545d7197d940a86cf41a3d4dc22, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: d344f0d04e7eebd47965c137a10168fb, type: 3}
   - {fileID: 21300000, guid: e64fc031565ffcd4cbd28f6e3f922da9, type: 3}
+  - {fileID: 5770734358756913666, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: -4604887560701781518, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 6171194522531915682, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: -4507333275243754745, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: -2281493191099319454, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 410387071126374719, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
   - {fileID: 21300000, guid: 5a0c9a38efcb7a14cbfae9eeb2e37617, type: 3}
+  - {fileID: -640876303977768716, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: 1724419166579631514, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: -6202357459649817224, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: 7009640136344442044, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: -389511581974201925, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: -5199842602021179740, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: -1393387521054166907, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
-  - {fileID: 21300000, guid: edea7c8be35a5bf499d752bf83038850, type: 3}
+  - {fileID: 21300000, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: 4556296039571860405, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -8476369765895928004, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 7270431731576066618, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -4773936229681920190, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 8076927630804008667, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 7102094908536297023, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -2267127461113334299, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -4924971180576566181, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -597171090907663275, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -6807713283490877021, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   m_PackedSpriteNamesToIndex:
+  - KingSlime_IconTest
   - StoneGolem_Icon
+  - Golem-Sheet_2
+  - Golem-Sheet_3
+  - Golem-Sheet_0
+  - Golem-Sheet_1
+  - Golem-Sheet_6
+  - Golem-Sheet_7
+  - Golem-Sheet_4
+  - Golem-Sheet_5
   - A-800_Icon
   - Slime_Icon
+  - BloodEffect_Light_2
+  - BloodEffect_Light_3
+  - BloodEffect_Light_0
+  - BloodEffect_Light_1
+  - BloodEffect_Light_6
+  - BloodEffect_Light_7
+  - BloodEffect_Light_4
+  - BloodEffect_Light_5
   - MiniDrone_Icon
-  - KingSlime_Icon
+  - BloodEffect
+  - A-800_Sheet_6
+  - A-800_Sheet_7
+  - A-800_Sheet_4
+  - A-800_Sheet_5
+  - A-800_Sheet_2
+  - A-800_Sheet_3
+  - A-800_Sheet_0
+  - A-800_Sheet_1
+  - A-800_Sheet_8
+  - A-800_Sheet_9
   m_RenderDataMap: {}
   m_Tag: EnemyAtlas
   m_IsVariant: 0
