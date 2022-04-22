@@ -57,7 +57,7 @@ public class UIManager : MonoBehaviour
     public Color lastOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
     public float UI_CursorPadding; //UI 커서 여백
     bool isFlicking = false; //현재 깜빡임 여부
-    // Sequence flickSeq; //깜빡임 시퀀스
+    Sequence cursorSeq; //깜빡임 시퀀스
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -98,6 +98,8 @@ public class UIManager : MonoBehaviour
             //밝기 0으로 낮추기
             light.intensity = 0;
         }
+
+
     }
 
     private void Update()
@@ -113,11 +115,25 @@ public class UIManager : MonoBehaviour
             // UpdateItems();
         }
 
+        //마우스 숨기기 토글
+        HideToggleMouseCursor();
+
         //게임시간 타이머 업데이트
         UpdateTimer();
 
         //선택된 UI 따라다니기
         FollowUICursor();
+    }
+
+    void HideToggleMouseCursor()
+    {
+        // 방향키 누르면 마우스 숨기기
+        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+            Cursor.lockState = CursorLockMode.Locked;
+
+        // 마우스 움직이면 마우스 숨기기 해제
+        if (Input.GetAxisRaw("Mouse X") != 0)
+            Cursor.lockState = CursorLockMode.None;
     }
 
     void FollowUICursor()
@@ -128,13 +144,28 @@ public class UIManager : MonoBehaviour
             //깜빡이는 코루틴 시작
             if (!isFlicking)
             {
-                StartCoroutine(FlickButtonColor());
+                //커서 애니메이션
+                CursorAnim();
             }
         }
         else
         {
+            if (isFlicking)
+            {
+                //깜빡임 시퀀스 종료
+                cursorSeq.Pause();
+                cursorSeq.Kill();
+
+                //코루틴 끝
+                isFlicking = false;
+
+                //기억하고 있는 버튼 있으면 색 복구하기
+                if (lastSelected != null)
+                    lastSelected.GetComponent<Image>().color = lastOriginColor;
+            }
+
             // null이 아닌것을 선택했을때 lastSelected에 기억하기
-            if (EventSystem.current.currentSelectedGameObject != null && !isFlicking)
+            if (EventSystem.current.currentSelectedGameObject != null)
                 lastSelected = EventSystem.current.currentSelectedGameObject;
         }
 
@@ -144,12 +175,9 @@ public class UIManager : MonoBehaviour
             //위치 맞추기
             UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
 
-            //크기 맞추기, 여백 추가
-            UI_Cursor.GetComponent<RectTransform>().sizeDelta =
-            EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>().sizeDelta
-            + Vector2.one * UI_CursorPadding;
+            // print(EventSystem.current.currentSelectedGameObject.name);
 
-            UI_Cursor.SetActive(true);
+            // UI_Cursor.SetActive(true);
         }
         else
         {
@@ -158,47 +186,48 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    IEnumerator FlickButtonColor()
+    void CursorAnim()
     {
         //코루틴 시작
         isFlicking = true;
 
         Image image = lastSelected.GetComponentInChildren<Image>();
-        lastOriginColor = lastSelected.GetComponentInChildren<Image>().color; //원본 컬러
-        float rate = 0.5f;
-        Color flickColor = new Color(lastOriginColor.r * rate, lastOriginColor.g * rate, lastOriginColor.b * rate, 1f); //깜빡일 컬러
+        RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
+        RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
 
-        // print(lastOriginColor + ":" + flickColor);
+        //원본 컬러
+        lastOriginColor = lastSelected.GetComponentInChildren<Image>().color;
+        //깜빡일 시간
+        float timeRate = 0.3f;
+        float colorRate = 1.4f;
+        //깜빡일 컬러
+        Color flickColor = new Color(lastOriginColor.r * colorRate, lastOriginColor.g * colorRate, lastOriginColor.b * colorRate, 1f);
+        //커서 사이즈
+        Vector2 size = lastRect.sizeDelta + Vector2.one * UI_CursorPadding;
 
-        while (EventSystem.current.currentSelectedGameObject != null && lastSelected == EventSystem.current.currentSelectedGameObject)
+        cursorSeq = DOTween.Sequence();
+        cursorSeq
+        .SetLoops(-1)
+        .PrependCallback(() =>
         {
-            image.DOColor(flickColor, 0.5f)
-            .SetUpdate(true)
-            .OnUpdate(() =>
-            {
-                //도중에 선택 버튼 바뀌면 즉시 완료
-                if (lastSelected != EventSystem.current.currentSelectedGameObject)
-                    image.DOComplete();
-            });
-
-            //색 바뀔때까지 대기
-            yield return new WaitUntil(() => image.color == flickColor);
-
-            image.DOColor(lastOriginColor, 0.5f)
-            .SetUpdate(true)
-            .OnUpdate(() =>
-            {
-                //도중에 선택 버튼 바뀌면 즉시 완료
-                if (lastSelected != EventSystem.current.currentSelectedGameObject)
-                    image.DOComplete();
-            });
-
-            //색 바뀔때까지 대기
-            yield return new WaitUntil(() => image.color == lastOriginColor);
-        }
-
-        //코루틴 끝
-        isFlicking = false;
+            // 선택된 버튼과 커서 크기 맞추기, 여백 추가
+            cursorRect.sizeDelta = lastRect.sizeDelta + Vector2.one * UI_CursorPadding;
+            
+            UI_Cursor.SetActive(true);
+        })
+        .Append(
+            image.DOColor(flickColor, timeRate)
+        )
+        .Join(
+            cursorRect.DOSizeDelta(size + Vector2.one * 20f, timeRate)
+        )
+        .Append(
+            image.DOColor(lastOriginColor, timeRate)
+        )
+        .Join(
+            cursorRect.DOSizeDelta(size, timeRate)
+        )
+        .SetUpdate(true);
     }
 
     public void QuitMainMenu()
@@ -221,10 +250,6 @@ public class UIManager : MonoBehaviour
 
         // 시간 정지 토글
         Time.timeScale = pauseMenu.activeSelf ? 0 : 1;
-        // if(pauseMenu.activeSelf)
-        // VarManager.Instance.AllTimeScale(0);
-        // else
-        // VarManager.Instance.AllTimeScale(1);
     }
 
     public void InitialStat()
@@ -461,10 +486,9 @@ public class UIManager : MonoBehaviour
 
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
-        // if(popup.activeSelf)
-        // VarManager.Instance.AllTimeScale(0);
-        // else
-        // VarManager.Instance.AllTimeScale(1);
+
+        // 팝업 꺼질때 UI 커서 끄기
+        UI_Cursor.SetActive(false);
     }
 
     public void PopupUI(GameObject popup, bool forceSwitch = true)
@@ -474,12 +498,8 @@ public class UIManager : MonoBehaviour
 
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
-        // if(popup.activeSelf)
-        // VarManager.Instance.AllTimeScale(0);
-        // else
-        // VarManager.Instance.AllTimeScale(1);
 
-        //TODO 팝업 꺼질때 UI 커서 끄기
+        // 팝업 꺼질때 UI 커서 끄기
         UI_Cursor.SetActive(false);
     }
 

@@ -60,7 +60,7 @@ public class UltimateList : MonoBehaviour
         //궁극기 마법이 1개이상 있을때
         if (ultimateList.Count > 0 && PlayerManager.Instance.ultimateMagic != null)
         {
-            //TODO 현재 착용중인 마법이 0번에 올때까지 정렬 반복
+            // 현재 착용중인 마법이 0번에 올때까지 정렬 반복
             while (ultimateList[0] != PlayerManager.Instance.ultimateMagic)
             {
                 MagicInfo targetMagic = ultimateList[0]; //첫번째 마법 얻기

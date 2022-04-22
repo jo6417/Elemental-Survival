@@ -152,7 +152,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 쿨타임 가능하고 스페이스바 눌렀을때
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
         {
             StartCoroutine(CastMagic.Instance.UseUltimateMagic());
         }

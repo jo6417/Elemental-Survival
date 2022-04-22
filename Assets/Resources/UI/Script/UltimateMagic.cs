@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class UltimateMagic : MonoBehaviour
 {
@@ -48,6 +50,15 @@ public class UltimateMagic : MonoBehaviour
 
     IEnumerator Initial()
     {
+        //모든 오브젝트 끄고 대기
+        magicPanel.gameObject.SetActive(false);
+        chooseMagicPanel.SetActive(false);
+        acceptBtn.SetActive(false);
+
+        //패널 둘다 사이즈 제로
+        magicPanel.transform.localScale = Vector2.zero;
+        chooseMagicPanel.transform.localScale = Vector2.zero;
+
         //magic 정보 들어올때까지 대기
         yield return new WaitUntil(() => newMagic != null);
 
@@ -88,16 +99,29 @@ public class UltimateMagic : MonoBehaviour
         {
             magicPanel.anchoredPosition = Vector2.zero;
             magicPanel.gameObject.SetActive(true);
-            acceptBtn.SetActive(true);
             chooseMagicPanel.SetActive(false);
+            //확인 버튼 활성화
+            acceptBtn.SetActive(true);
+            //확인 버튼 선택하기
+            acceptBtn.GetComponent<Button>().Select();
+
+            //패널 사이즈 키우기
+            magicPanel.transform.DOScale(Vector3.one, 0.5f)
+            .SetUpdate(true);
         }
         //TODO 기존 마법 있을때 위로 올리기, 마법 선택창 띄우기
         else
         {
             magicPanel.anchoredPosition = Vector2.zero + Vector2.up * 200f;
             magicPanel.gameObject.SetActive(true);
-            acceptBtn.SetActive(false);
             chooseMagicPanel.SetActive(true);
+            acceptBtn.SetActive(false);
+
+            //패널 사이즈 키우기
+            magicPanel.transform.DOScale(Vector3.one, 0.5f)
+            .SetUpdate(true);
+            chooseMagicPanel.transform.DOScale(Vector3.one, 0.5f)
+            .SetUpdate(true);
 
             //TODO 마법 선택창에 magicInfo 및 아이콘 바꾸기
             //새 마법 아이콘 바꾸기
@@ -114,12 +138,15 @@ public class UltimateMagic : MonoBehaviour
 
     public void AcceptBtn()
     {
-        //TODO 팝업 닫기
+        // 팝업 닫기
         UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicUI);
         //마법 합성 팝업 닫기
         UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI, false);
 
-        //TODO 해당 마법 장착
+        // 해당 마법 장착
         PlayerManager.Instance.GetUltimateMagic(newMagic);
+
+        //선택 정보 삭제
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
