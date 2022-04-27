@@ -22,6 +22,9 @@ public class MagicHover : MonoBehaviour
 
     private void Update()
     {
+        if(VarManager.Instance.playerTimeScale == 0)
+        return;
+
         if (magic != null)
         {
             //마법 오브젝트 캐릭터 주위 공전
@@ -46,7 +49,7 @@ public class MagicHover : MonoBehaviour
         else
         {
             //쿨타임 카운트다운
-            cooltimeCounter -= Time.deltaTime;
+            cooltimeCounter -= Time.deltaTime * VarManager.Instance.playerTimeScale;
         }
     }
 

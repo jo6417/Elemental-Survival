@@ -20,7 +20,7 @@ public class UltimateList : MonoBehaviour
             ultimateSlots.Add(slotsParent.transform.GetChild(i).gameObject);
             // 슬롯들의 초기 위치 넣기
             slotPos[i] = ultimateSlots[i].GetComponent<RectTransform>().anchoredPosition;
-            print(slotPos[i]);
+            // print(slotPos[i]);
         }
     }
 

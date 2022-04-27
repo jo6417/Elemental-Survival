@@ -222,6 +222,7 @@ GameObject:
   - component: {fileID: 1058530038800326083}
   - component: {fileID: 1058530038800326081}
   - component: {fileID: 1058530038800326080}
+  - component: {fileID: 7961829355790977221}
   m_Layer: 5
   m_Name: MixClass_Prefab
   m_TagString: Untagged
@@ -290,6 +291,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 1
+--- !u!114 &7961829355790977221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058530038800326082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25fcf04b6d85f634f9b270d6fe506d61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1058530039015168385
 GameObject:
   m_ObjectHideFlags: 0

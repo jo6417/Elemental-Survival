@@ -50,7 +50,7 @@ public class Ghosting : MonoBehaviour
         enemyObjs = GameObject.FindGameObjectsWithTag("Enemy").ToList();
 
         //모든 오브젝트 멈추기
-        AllTimeScaler(true);
+        ToggleGhosting(true);
 
         //원 화면 크기만큼 키우기
         fogCircle.DOScale(Vector2.one, 1f);
@@ -77,14 +77,11 @@ public class Ghosting : MonoBehaviour
             PlayerManager.Instance.sprite.material.color = Color.white;
             PlayerManager.Instance.playerLight.enabled = false;
 
-            //전역 시간 속도 초기화
-            VarManager.Instance.timeScale = 1f;
-
-            // 플레이어 이동속도 초기화
-            VarManager.Instance.playerTimeScale = 1f;
+            //플레이어 및 전역 시간 속도 초기화
+            VarManager.Instance.AllTimeScale(1f);
 
             //모든 오브젝트 속도 재개
-            AllTimeScaler(false);
+            ToggleGhosting(false);
 
             //적 스폰 재개
             EnemySpawn.Instance.spawnSwitch = true;
@@ -92,7 +89,7 @@ public class Ghosting : MonoBehaviour
         .Play();
     }
 
-    void AllTimeScaler(bool isStop)
+    void ToggleGhosting(bool isStop)
     {
         if(enemyObjs.Count == 0)
         return;

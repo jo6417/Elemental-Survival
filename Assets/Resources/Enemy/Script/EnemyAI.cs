@@ -6,6 +6,9 @@ using Lean.Pool;
 
 public class EnemyAI : MonoBehaviour
 {
+    public enum EnemyState { Idle, SystemStop, Dead, Hit, TimeStop, Walk, Jump }
+    public EnemyState enemyState;
+
     public EnemyInfo enemy;
     public enum MoveType { Walk, Jump, Dash };
     public MoveType moveType;
@@ -40,6 +43,9 @@ public class EnemyAI : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(Initial());
+
+        //시간 멈춤 확인
+        StartCoroutine(StopCheck());
     }
 
     IEnumerator Initial()
@@ -54,10 +60,6 @@ public class EnemyAI : MonoBehaviour
         if (enemy == null)
             enemy = enemyManager.enemy;
 
-        //enemy 못찾으면 코루틴 종료
-        if (enemy == null)
-            yield break;
-
         transform.DOKill();
         jumpSeq.Kill();
 
@@ -67,62 +69,81 @@ public class EnemyAI : MonoBehaviour
         // 위치 고정 해제
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        // 콜라이더 충돌 초기화
-        coll.isTrigger = false;
-
-        //죽음 유무 초기화
-        enemyManager.isDead = false;
-
-        //적 스피드 초기화
+        //스피드 초기화
         speed = enemy.speed;
 
         //그림자 위치 초기화
         if (shadow)
             shadow.localPosition = shadowPos;
+
+        // 콜라이더 충돌 초기화
+        coll.isTrigger = false;
     }
 
     void Update()
     {
         if (enemy == null)
-            return;
+        return;
 
         //죽음 애니메이션 중일때
         if (enemyManager.isDead)
         {
+            enemyState = EnemyState.Dead;
+
             rigid.velocity = Vector2.zero; //이동 초기화
             rigid.constraints = RigidbodyConstraints2D.FreezeAll;
             anim.speed = 0f;
+
             transform.DOPause();
             jumpSeq.Pause();
 
             return;
         }
 
-        //시간 정지거나 전역 타임스케일이 0 일때
-        if (enemyManager.stopCount > 0 || VarManager.Instance.timeScale == 0)
+        //전역 타임스케일이 0 일때
+        if (VarManager.Instance.timeScale == 0)
         {
-            //시간 멈춤 색깔
-            sprite.color = EnemySpawn.Instance.stopColor;
+            enemyState = EnemyState.SystemStop;
+
             rigid.velocity = Vector2.zero; //이동 초기화
             anim.speed = 0f;
             transform.DOPause();
+            return;
+        }
 
-            enemyManager.stopCount -= Time.deltaTime;
+        //시간 정지 디버프일때
+        if (enemyManager.stopCount > 0)
+        {
+            enemyState = EnemyState.TimeStop;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
+            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            anim.speed = 0f;
+
+            sprite.material = enemyManager.originMat;
+            sprite.color = EnemySpawn.Instance.stopColor; //시간 멈춤 색깔
+            transform.DOPause();
+
+            enemyManager.stopCount -= Time.deltaTime * VarManager.Instance.timeScale;
             return;
         }
 
         //맞고 경직일때
         if (enemyManager.hitCount > 0)
         {
+            enemyState = EnemyState.Hit;
+
             rigid.velocity = Vector2.zero; //이동 초기화
 
             // 머터리얼 및 색 변경
             sprite.material = EnemySpawn.Instance.hitMat;
             sprite.color = EnemySpawn.Instance.hitColor;
 
-            enemyManager.hitCount -= Time.deltaTime;
+            enemyManager.hitCount -= Time.deltaTime * VarManager.Instance.timeScale;
             return;
         }
+
+        enemyState = EnemyState.Idle;
 
         rigid.velocity = Vector2.zero; //이동 초기화
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation; // 위치 고정 해제
@@ -132,7 +153,9 @@ public class EnemyAI : MonoBehaviour
         transform.DOPlay();
 
         if (moveType == MoveType.Walk)
+        {
             Walk();
+        }
 
         if (moveType == MoveType.Jump)
         {
@@ -172,7 +195,7 @@ public class EnemyAI : MonoBehaviour
 
     void Walk()
     {
-        // rigid.velocity = Vector2.zero; //이동 초기화
+        enemyState = EnemyState.Walk;
 
         //움직일 방향
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
@@ -193,6 +216,8 @@ public class EnemyAI : MonoBehaviour
 
     void Jump()
     {
+        enemyState = EnemyState.Jump;
+
         isJumping = true;
 
         // rigid.velocity = Vector2.zero;
@@ -300,5 +325,29 @@ public class EnemyAI : MonoBehaviour
             isJumping = false;
         });
         jumpSeq.Restart();
+    }
+
+    IEnumerator StopCheck()
+    {
+        while (gameObject.activeSelf)
+        {
+            if (VarManager.Instance.playerTimeScale == 0)
+            {
+                //애니메이션 멈춤
+                if (anim != null)
+                    anim.speed = 0f;
+            }
+            else
+            {
+                //살아있을때, 정지 디버프 아닐때
+                if (!enemyManager.isDead && enemyManager.stopCount <= 0)
+                {
+                    //애니메이션 재시작
+                    if (anim != null)
+                        anim.speed = 1f;
+                }
+            }
+            yield return null;
+        }
     }
 }

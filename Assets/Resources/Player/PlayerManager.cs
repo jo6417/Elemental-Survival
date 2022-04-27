@@ -7,6 +7,38 @@ using System.Linq;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
 
+public class PlayerStat
+{
+    public int playerPower; //플레이어 전투력
+    public float hpMax = 20; // 최대 체력
+    public float hpNow = 20; // 체력
+    public float Level = 1; //레벨
+    public float ExpMax = 5; // 경험치 최대치
+    public float ExpNow = 0; // 현재 경험치
+    public float moveSpeed = 10; //이동속도
+
+    public int projectileNum = 0; // 투사체 개수
+    public int pierce = 0; // 관통 횟수
+    public float power = 1; //마법 공격력
+    public float armor = 1; //방어력
+    public float knockbackForce = 1; //넉백 파워
+    public float speed = 1; //마법 공격속도
+    public float coolTime = 1; //마법 쿨타임
+    public float duration = 1; //마법 지속시간
+    public float range = 1; //마법 범위
+    public float luck = 1; //행운
+    public float expGain = 1; //경험치 획득량
+    public float moneyGain = 1; //원소젬 획득량
+
+    //원소 공격력
+    public float earth_atk = 1;
+    public float fire_atk = 1;
+    public float life_atk = 1;
+    public float lightning_atk = 1;
+    public float water_atk = 1;
+    public float wind_atk = 1;
+}
+
 public class PlayerManager : MonoBehaviour
 {
     #region Singleton
@@ -43,35 +75,9 @@ public class PlayerManager : MonoBehaviour
     public GameObject txtPrefab; //체력 회복 텍스트 UI
     public Light2D playerLight;
 
-    [Header("<Stat>")] //기본 스탯
-    public int playerPower; //플레이어 전투력
-    public float hpMax = 20; // 최대 체력
-    public float hpNow = 20; // 체력
-    public float Level = 1; //레벨
-    public float ExpMax = 5; // 경험치 최대치
-    public float ExpNow = 0; // 현재 경험치
-    public float moveSpeed = 5; //이동속도
-
-    public int projectileNum = 0; // 투사체 개수
-    public int pierce = 0; // 관통 횟수
-    public float power = 1; //마법 공격력
-    public float armor = 1; //방어력
-    public float knockbackForce = 1; //넉백 파워
-    public float speed = 1; //마법 공격속도
-    public float coolTime = 1; //마법 쿨타임
-    public float duration = 1; //마법 지속시간
-    public float range = 1; //마법 범위
-    public float luck = 1; //행운
-    public float expGain = 1; //경험치 획득량
-    public float moneyGain = 1; //원소젬 획득량
-
-    //원소 공격력
-    public float earth_atk = 1;
-    public float fire_atk = 1;
-    public float life_atk = 1;
-    public float lightning_atk = 1;
-    public float water_atk = 1;
-    public float wind_atk = 1;
+    [Header("<Stat>")] //플레이어 스탯
+    public PlayerStat PlayerStat_Origin; //초기 스탯
+    public PlayerStat PlayerStat_Now; //현재 스탯
 
     [Header("<Damaged>")]
     public float HitDelay = 0.1f; //피격 무적시간
@@ -81,34 +87,20 @@ public class PlayerManager : MonoBehaviour
     private Color originColor;
     private bool isDamage = false;
 
-    [Header("<Buff>")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
-    public float hpMax_buff = 1; // 최대 체력 계수
-    public float power_buff = 1; //마법 공격력
-    public float armor_buff = 1; //방어력
-    public float moveSpeed_buff = 0; // 이동 속도
-    public int projectileNum_buff = 0; // 투사체 개수
-    public float rateFire_buff = 1; //마법 공격속도
-    public float coolTime_buff = 1; //마법 쿨타임
-    public float duration_buff = 1; //마법 지속시간
-    public float range_buff = 1; //마법 범위
-    public float luck_buff = 1; //행운
-    public float expGain_buff = 1; //경험치 획득량
-    public float moneyGain_buff = 1; //원소젬 획득량
-
-    //원소 공격력 버프
-    public float earth_buff = 1;
-    public float fire_buff = 1;
-    public float life_buff = 1;
-    public float lightning_buff = 1;
-    public float water_buff = 1;
-    public float wind_buff = 1;
-
     [Header("<Pocket>")]
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
     public MagicInfo ultimateMagic; //궁극기 마법
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
+
+    private void Awake() {
+        //플레이어 스탯 인스턴스 생성
+        PlayerStat_Now = new PlayerStat();
+
+        //플레이어 초기 스탯 저장
+        PlayerStat_Origin = PlayerStat_Now;
+    }
 
     void Start()
     {
@@ -125,7 +117,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         //경험치 최대치 갱신
-        ExpMax = Level * Level + 5;
+        PlayerStat_Now.ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
 
         //능력치 초기화
         UIManager.Instance.InitialStat();
@@ -136,14 +128,24 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
+        //애니메이션 스피드 적용
+        animator.speed = VarManager.Instance.playerTimeScale;
+        
+        //플레이어 속도 0이면 리턴
+        if (VarManager.Instance.playerTimeScale == 0)
+        {
+            rigid.velocity = Vector2.zero;
+            return;
+        }
+
         //카메라 따라오기
         Camera.main.transform.position = transform.position + new Vector3(0, 0, -10);
 
         //몬스터 스포너 따라오기
-        if(mobSpawner.activeSelf)
-        mobSpawner.transform.position = transform.position;
+        if (mobSpawner.activeSelf)
+            mobSpawner.transform.position = transform.position;
 
-        if(ultimateCoolCount > 0)
+        if (ultimateCoolCount > 0)
         {
             //궁극기 쿨타임 카운트 감소
             ultimateCoolCount -= Time.deltaTime;
@@ -152,7 +154,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 쿨타임 가능하고 스페이스바 눌렀을때
-        if(Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
+        if (Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
         {
             StartCoroutine(CastMagic.Instance.UseUltimateMagic());
         }
@@ -200,7 +202,9 @@ public class PlayerManager : MonoBehaviour
         }
 
         dir.Normalize();
-        rigid.velocity = moveSpeed * dir * VarManager.Instance.playerTimeScale;
+        rigid.velocity = PlayerStat_Now.moveSpeed * dir * VarManager.Instance.playerTimeScale;
+        
+        // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
         //마지막 방향 기억
         if (dir != Vector2.zero)
@@ -241,12 +245,12 @@ public class PlayerManager : MonoBehaviour
     void Damage(float damage)
     {
         // 체력 감소
-        hpNow -= damage;
+        PlayerStat_Now.hpNow -= damage;
 
         //체력 0 이하가 되면 사망
-        if (hpNow <= 0)
+        if (PlayerStat_Now.hpNow <= 0)
         {
-            hpNow = 0;
+            PlayerStat_Now.hpNow = 0;
             // print("Game Over");
             // Dead();
         }
@@ -257,8 +261,8 @@ public class PlayerManager : MonoBehaviour
     void Dead()
     {
         // 시간 멈추기
-        Time.timeScale = 0;
-        // VarManager.Instance.AllTimeScale(0);
+        // Time.timeScale = 0;
+        VarManager.Instance.AllTimeScale(0);
 
         //TODO 게임오버 UI 띄우기
         // gameOverUI.SetActive(true);
@@ -304,21 +308,21 @@ public class PlayerManager : MonoBehaviour
             // getItem.hasNum++;
 
             // 보유한 모든 아이템 아이콘 갱신
-            UIManager.Instance.UpdateItems();
+            // UIManager.Instance.UpdateItems();
 
             // 모든 아이템 버프 갱신
             buffUpdate();
         }
     }
 
-    public void GetHeal(int amount)
+    public IEnumerator GetHeal(int amount)
     {
         //플레이어 체력 회복하기
-        hpNow += amount;
+        PlayerStat_Now.hpNow += amount;
 
         //초과 회복 방지
-        if (hpNow > hpMax)
-            hpNow = hpMax;
+        if (PlayerStat_Now.hpNow > PlayerStat_Now.hpMax)
+            PlayerStat_Now.hpNow = PlayerStat_Now.hpMax;
 
         //UI 업데이트
         UIManager.Instance.UpdateHp();
@@ -332,7 +336,7 @@ public class PlayerManager : MonoBehaviour
         healTxt.color = Color.green;
         healTxt.text = "+ " + amount.ToString();
 
-        //데미지 UI 애니메이션
+        // 회복량 UI 애니메이션
         Sequence txtSeq = DOTween.Sequence();
         txtSeq
         .PrependCallback(() =>
@@ -357,6 +361,17 @@ public class PlayerManager : MonoBehaviour
         {
             LeanPool.Despawn(healUI);
         });
+
+        //시간 멈춘동안 시퀀스 멈추기
+        while (txtSeq.IsActive())
+        {
+            if (VarManager.Instance.timeScale == 0)
+                txtSeq.Pause();
+            else
+                txtSeq.Play();
+
+            yield return null;
+        }
     }
 
     public void GetMagic(MagicInfo getMagic)
@@ -382,7 +397,7 @@ public class PlayerManager : MonoBehaviour
         CastMagic.Instance.ReCastMagics();
 
         //플레이어 총 전투력 업데이트
-        playerPower = GetPlayerPower();
+        PlayerStat_Now.playerPower = GetPlayerPower();
     }
 
     public void GetUltimateMagic(MagicInfo magic)
@@ -444,108 +459,50 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.UltimateCooltime();
 
         //플레이어 총 전투력 업데이트
-        playerPower = GetPlayerPower();
+        PlayerStat_Now.playerPower = GetPlayerPower();
     }
 
     void buffUpdate()
     {
-        //플레이어 능력치 기본값으로 초기화
-        projectileNum = projectileNum - projectileNum_buff;
-        hpMax = hpMax / hpMax_buff;
-        power = power / power_buff;
-        armor = armor / armor_buff;
-        speed = speed / rateFire_buff;
-        coolTime = coolTime / coolTime_buff;
-        duration = duration / duration_buff;
-        range = range / range_buff;
-        luck = luck / luck_buff;
-        expGain = expGain / expGain_buff;
-        moneyGain = moneyGain / moneyGain_buff;
-        moveSpeed = moveSpeed / moveSpeed_buff;
+        //초기 스탯 복사
+        PlayerStat PlayerStat_Temp = new PlayerStat();
+        PlayerStat_Temp = PlayerStat_Origin;
 
-        earth_atk = earth_atk / earth_buff;
-        fire_atk = fire_atk / fire_buff;
-        life_atk = life_atk / life_buff;
-        lightning_atk = lightning_atk / lightning_buff;
-        water_atk = water_atk / water_buff;
-        wind_atk = wind_atk / wind_buff;
-
-        //버프 기본값으로 초기화
-        projectileNum_buff = 0;
-        hpMax_buff = 1;
-        power_buff = 1;
-        armor_buff = 1;
-        rateFire_buff = 1;
-        coolTime_buff = 1;
-        duration_buff = 1;
-        range_buff = 1;
-        luck_buff = 1;
-        expGain_buff = 1;
-        moneyGain_buff = 1;
-
-        earth_buff = 1;
-        fire_buff = 1;
-        life_buff = 1;
-        lightning_buff = 1;
-        water_buff = 1;
-        wind_buff = 1;
-
-        // 현재 소지한 아이템의 모든 버프 계수 합산하기
+        //임시 스탯에 현재 아이템의 모든 버프 넣기
         foreach (var item in hasItems)
         {
-            projectileNum_buff += item.projectileNum * item.amount; // 투사체 개수 버프
-            hpMax_buff += item.hpMax * item.amount; //최대체력 버프
-            power_buff += item.power * item.amount; //마법 공격력 버프
-            armor_buff += item.armor * item.amount; //방어력 버프
-            rateFire_buff += item.rateFire * item.amount; //마법 공격속도 버프
-            coolTime_buff += item.coolTime * item.amount; //마법 쿨타임 버프
-            duration_buff += item.duration * item.amount; //마법 지속시간 버프
-            range_buff += item.range * item.amount; //마법 범위 버프
-            luck_buff += item.luck * item.amount; //행운 버프
-            expGain_buff += item.expGain * item.amount; //경험치 획득량 버프
-            moneyGain_buff += item.moneyGain * item.amount; //원소젬 획득량 버프
-            moveSpeed += item.moveSpeed / item.amount; //이동속도 버프
+            PlayerStat_Temp.projectileNum += item.projectileNum * item.amount; // 투사체 개수 버프
+            PlayerStat_Temp.hpMax += item.hpMax * item.amount; //최대체력 버프
+            PlayerStat_Temp.power += item.power * item.amount; //마법 공격력 버프
+            PlayerStat_Temp.armor += item.armor * item.amount; //방어력 버프
+            PlayerStat_Temp.speed += item.rateFire * item.amount; //마법 공격속도 버프
+            PlayerStat_Temp.coolTime += item.coolTime * item.amount; //마법 쿨타임 버프
+            PlayerStat_Temp.duration += item.duration * item.amount; //마법 지속시간 버프
+            PlayerStat_Temp.range += item.range * item.amount; //마법 범위 버프
+            PlayerStat_Temp.luck += item.luck * item.amount; //행운 버프
+            PlayerStat_Temp.expGain += item.expGain * item.amount; //경험치 획득량 버프
+            PlayerStat_Temp.moneyGain += item.moneyGain * item.amount; //원소젬 획득량 버프
+            PlayerStat_Temp.moveSpeed += item.moveSpeed / item.amount; //이동속도 버프
 
-            earth_buff += item.earth * item.amount;
-            fire_buff += item.fire * item.amount;
-            life_buff += item.life * item.amount;
-            lightning_buff += item.lightning * item.amount;
-            water_buff += item.water * item.amount;
-            wind_buff += item.wind * item.amount;
+            PlayerStat_Temp.earth_atk += item.earth * item.amount;
+            PlayerStat_Temp.fire_atk += item.fire * item.amount;
+            PlayerStat_Temp.life_atk += item.life * item.amount;
+            PlayerStat_Temp.lightning_atk += item.lightning * item.amount;
+            PlayerStat_Temp.water_atk += item.water * item.amount;
+            PlayerStat_Temp.wind_atk += item.wind * item.amount;
         }
 
-        //플레이어 능력치에 다시 합산
-        projectileNum = projectileNum + projectileNum_buff;
-        hpMax = hpMax * hpMax_buff;
-        power = power * power_buff;
-        armor = armor * armor_buff;
-        speed = speed * rateFire_buff;
-        coolTime = coolTime * coolTime_buff;
-        duration = duration * duration_buff;
-        range = range * range_buff;
-        luck = luck * luck_buff;
-        expGain = expGain * expGain_buff;
-        moneyGain = moneyGain * moneyGain_buff;
-        moveSpeed = moveSpeed / moveSpeed_buff;
-
-        earth_atk = earth_atk * earth_buff;
-        fire_atk = fire_atk * fire_buff;
-        life_atk = life_atk * life_buff;
-        lightning_atk = lightning_atk * lightning_buff;
-        water_atk = water_atk * water_buff;
-        wind_atk = wind_atk * wind_buff;
-
-        // pause 메뉴 스탯UI에 스탯 반영하기
-        UIManager.Instance.UpdateStat();
+        //현재 스탯에 임시 스탯을 넣기
+        PlayerStat_Now = PlayerStat_Temp;
     }
 
     public void AddGem(ItemInfo item, int amount)
     {
         // 어떤 원소든지 젬 개수만큼 경험치 증가
-        ExpNow += amount;
+        PlayerStat_Now.ExpNow += amount;
 
         //경험치 다 찼을때
-        if (ExpNow >= ExpMax)
+        if (PlayerStat_Now.ExpNow >= PlayerStat_Now.ExpMax)
         {
             //레벨업
             Levelup();
@@ -575,19 +532,19 @@ public class PlayerManager : MonoBehaviour
     void Levelup()
     {
         // 시간 멈추기
-        Time.timeScale = 0;
-        // VarManager.Instance.AllTimeScale(0);
+        // Time.timeScale = 0;
+        VarManager.Instance.AllTimeScale(0);
 
         //레벨업
-        Level++;
+        PlayerStat_Now.Level++;
 
         //경험치 초기화
-        ExpNow = 0;
+        PlayerStat_Now.ExpNow = 0;
 
         //경험치 최대치 갱신
-        ExpMax = Level * Level + 5;
+        PlayerStat_Now.ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
         //! 테스트용 맥스 경험치
-        ExpMax = 3;
+        PlayerStat_Now.ExpMax = 3;
 
         // 팝업 선택메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);

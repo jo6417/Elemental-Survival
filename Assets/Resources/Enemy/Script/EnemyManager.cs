@@ -15,10 +15,12 @@ public class EnemyManager : MonoBehaviour
     Collider2D coll;
     public bool isElite; //엘리트 몬스터 여부
     public int eliteClass; //엘리트 클래스 종류
-    public bool isDead; //죽음 코루틴 진행중 여부    
-    public float particleCount = 0;
+    public bool isDead; //죽음 코루틴 진행중 여부
+    public float particleHitCount = 0;
     public float stopCount = 0;
     public float hitCount = 0;
+    Sequence txtSeq;
+    // public Animator anim;
 
     [Header("Refer")]
     public GameObject damageTxt; //데미지 UI
@@ -69,13 +71,8 @@ public class EnemyManager : MonoBehaviour
         if (enemy == null)
             yield break;
 
-        //죽음 여부 초기화
-        isDead = false;
-
-        //콜라이더 켜기
-        coll.enabled = true;
-
-        hitCount = 0; //데미지 쿨타임 초기화
+        hitCount = 0; //데미지 카운트 초기화
+        stopCount = 0; //시간 정지 카운트 초기화
         HpNow = enemy.hpMax; //체력 초기화
         sprite.color = Color.white; //스프라이트 색깔 초기화
 
@@ -89,6 +86,12 @@ public class EnemyManager : MonoBehaviour
 
         enemyName = enemy.enemyName;
 
+        //콜라이더 켜기
+        coll.enabled = true;
+        //죽음 여부 초기화
+        isDead = false;
+
+        //! 테스트 확인용
         hpMax = enemy.hpMax;
         power = enemy.power;
         speed = enemy.speed;
@@ -97,20 +100,20 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
-        if (particleCount > 0)
+        if (particleHitCount > 0)
         {
-            particleCount -= Time.deltaTime;
+            particleHitCount -= Time.deltaTime;
         }
     }
 
     private void OnParticleCollision(GameObject other)
     {
-        if (other.transform.CompareTag("Magic") && !isDead && particleCount <= 0)
+        if (other.transform.CompareTag("Magic") && !isDead && particleHitCount <= 0)
         {
             HitMagic(other);
 
             //파티클 피격 딜레이 시작
-            particleCount = 0.2f;
+            particleHitCount = 0.2f;
         }
     }
 
@@ -132,7 +135,7 @@ public class EnemyManager : MonoBehaviour
             return;
 
         // 마법 투사체와 충돌 했을때
-        if (other.transform.CompareTag("Magic") && !isDead)
+        if (other.transform.CompareTag("Magic"))
         {
             // 마법 정보 찾기
             MagicHolder magicHolder = other.GetComponent<MagicHolder>();
@@ -145,7 +148,7 @@ public class EnemyManager : MonoBehaviour
                 StartCoroutine(Damaged(magicHolder));
 
             //넉백
-            if (magicHolder.knockbackForce > 0 && !isDead)
+            if (magicHolder.knockbackForce > 0)
             {
                 StartCoroutine(Knockback(magicHolder.knockbackForce));
             }
@@ -154,10 +157,10 @@ public class EnemyManager : MonoBehaviour
             if (magicHolder.isStop)
             {
                 //몬스터 경직 카운터에 duration 만큼 추가
-                stopCount += MagicDB.Instance.MagicDuration(magic);
+                stopCount = MagicDB.Instance.MagicDuration(magic);
 
                 // 해당 위치에 고정
-                enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
     }
@@ -187,7 +190,7 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator Damaged(MagicHolder magicHolder)
     {
-        if (enemy == null)
+        if (enemy == null || isDead)
             yield break;
 
         MagicInfo magic = magicHolder.magic;
@@ -245,7 +248,7 @@ public class EnemyManager : MonoBehaviour
         }
 
         //데미지 UI 애니메이션
-        Sequence txtSeq = DOTween.Sequence();
+        txtSeq = DOTween.Sequence();
         txtSeq
         .PrependCallback(() =>
         {
@@ -263,7 +266,6 @@ public class EnemyManager : MonoBehaviour
         .Append(
             //줄어들어 사라지기
             damageUI.transform.DOScale(Vector3.zero, 0.5f)
-            .SetEase(Ease.InBack)
         )
         .OnComplete(() =>
         {
@@ -275,7 +277,7 @@ public class EnemyManager : MonoBehaviour
     {
         // 반대 방향 및 넉백파워
         Vector2 knockbackDir = transform.position - PlayerManager.Instance.transform.position;
-        Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.knockbackForce - 1));
+        Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.PlayerStat_Now.knockbackForce - 1));
         knockbackDir = knockbackDir.normalized + knockbackBuff;
 
         //반대방향으로 이동
@@ -312,6 +314,13 @@ public class EnemyManager : MonoBehaviour
 
         //색 변경 완료 될때까지 대기
         yield return new WaitUntil(() => sprite.color == EnemySpawn.Instance.DeadColor);
+        // while (sprite.color != EnemySpawn.Instance.DeadColor)
+        // {
+        //     sprite.DOPlay();
+            
+        //     yield return null;
+        // }
+
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
         yield return new WaitUntil(() => VarManager.Instance.timeScale > 0);
 

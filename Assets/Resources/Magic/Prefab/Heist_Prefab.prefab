@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5657517877285718388}
   m_Layer: 0
   m_Name: Heist_Prefab
-  m_TagString: Untagged
+  m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -49,6 +49,7 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   knockbackForce: 0
+  isStop: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0

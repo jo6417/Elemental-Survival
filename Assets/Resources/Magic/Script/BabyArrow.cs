@@ -23,6 +23,12 @@ public class BabyArrow : MonoBehaviour
     Vector3 slowFollowPlayer;
     Vector3 spinOffset;
     GameObject spinObj = null;
+    TrailRenderer tail; //화살 꼬리
+
+    private void Awake()
+    {
+        tail = GetComponentInChildren<TrailRenderer>();
+    }
 
     private void OnEnable()
     {
@@ -53,6 +59,21 @@ public class BabyArrow : MonoBehaviour
 
     void Update()
     {
+        if (VarManager.Instance.playerTimeScale == 0)
+        {
+            tail.time = Mathf.Infinity;
+            return;
+        }
+        else
+        {
+            if (tail.time == Mathf.Infinity)
+            {
+                //서서히 낮추기
+                tail.time = 1000f;
+                DOTween.To(() => tail.time, x => tail.time = x, 1f, 0.5f);
+            }
+        }
+
         // 공격 할때만 콜라이더 활성화
         if (state == State.Attack)
             col.enabled = true;
@@ -61,6 +82,7 @@ public class BabyArrow : MonoBehaviour
         {
             col.enabled = false;
 
+            //플레이어 주위 공전
             SpinPosition();
 
             //플레이어 주변 회전하며 따라가기
@@ -75,7 +97,7 @@ public class BabyArrow : MonoBehaviour
 
     //화살 발사
     IEnumerator shotArrow()
-    {        
+    {
         // 마크한 적의 위치 리스트
         List<Vector2> enemyPos = MarkEnemyPos(magic);
 
@@ -85,7 +107,7 @@ public class BabyArrow : MonoBehaviour
         state = State.Attack; //공격 상태로 전환
 
         // light 밝기 올리기
-            DOTween.To(() => headLight.intensity, x => headLight.intensity = x, 2f, 0.5f);
+        DOTween.To(() => headLight.intensity, x => headLight.intensity = x, 2f, 0.5f);
 
         Vector2 targetPos; //목표 위치
 
@@ -125,17 +147,36 @@ public class BabyArrow : MonoBehaviour
                 LeanPool.Despawn(mark);
             });
 
+            //시간 멈춘동안 시퀀스 멈추기
+            while (sequence.IsActive())
+            {
+                if (VarManager.Instance.timeScale == 0)
+                    sequence.Pause();
+                else
+                    sequence.Play();
+
+                yield return null;
+            }
+
             yield return new WaitUntil(() => !mark.activeSelf);
         }
 
         state = State.Ready; //준비 상태로 전환
 
         // light 밝기 낮추기
-            DOTween.To(() => headLight.intensity, x => headLight.intensity = x, 0f, 0.5f);
+        DOTween.To(() => headLight.intensity, x => headLight.intensity = x, 0f, 0.5f);
 
         //쿨타임 만큼 대기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
-        yield return new WaitForSeconds(coolTime);
+        // yield return new WaitForSeconds(coolTime);
+        float coolCount = coolTime;
+        while (coolCount > 0)
+        {
+            //카운트 차감, 플레이어 자체속도 반영
+            coolCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+
+            yield return null;
+        }
 
         //다시 반복
         StartCoroutine(shotArrow());

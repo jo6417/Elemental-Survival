@@ -196,7 +196,7 @@ public class HealingSpa : MonoBehaviour
             // print("heal : " + healPower);
 
             //체력 회복
-            PlayerManager.Instance.GetHeal(healPower);
+            StartCoroutine(PlayerManager.Instance.GetHeal(healPower));
 
             // 연못 크기 줄이기
             if (transform.localScale.x >= 0)

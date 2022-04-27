@@ -22,6 +22,9 @@ public class MagicArea : MonoBehaviour
     {
         //초기화
         StartCoroutine(Initial());
+
+        //시간 멈춤 체크
+        // StartCoroutine(StopCheck());
     }
 
     IEnumerator Initial()
@@ -56,7 +59,7 @@ public class MagicArea : MonoBehaviour
             //플레이어 앞에서 시작
             transform.position = playerPos + playerDir * frontDistance;
 
-            print(transform.position);
+            // print(transform.position);
 
             //최소 사이즈로 시작
             transform.localScale = Vector2.zero;
@@ -97,6 +100,8 @@ public class MagicArea : MonoBehaviour
     {
         //마법 지속시간
         yield return new WaitForSeconds(delay);
+
+        yield return new WaitUntil(() => VarManager.Instance.playerTimeScale > 0);
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)

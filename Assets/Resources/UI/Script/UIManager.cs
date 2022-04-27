@@ -8,6 +8,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -51,13 +52,17 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI timerUI;
     public Transform overlayCanvas;
 
+    //! 테스트, 선택된 UI 이름
+    public TextMeshProUGUI nowSelectUI;
+
     [Header("UI Cursor")]
     public GameObject UI_Cursor; //선택된 UI 따라다니는 UI커서
-    public GameObject lastSelected; //마지막 선택된 오브젝트
+    public Selectable lastSelected; //마지막 선택된 오브젝트
     public Color lastOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
     public float UI_CursorPadding; //UI 커서 여백
     bool isFlicking = false; //현재 깜빡임 여부
     Sequence cursorSeq; //깜빡임 시퀀스
+    Vector2 lastMousePos; //마지막 마우스 위치
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -79,27 +84,25 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 1; //시간값 초기화
-        // VarManager.Instance.AllTimeScale(1);
+        // Time.timeScale = 1; //시간값 초기화
+        VarManager.Instance.AllTimeScale(1);
 
         // GemUI 전부 찾기
         TextMeshProUGUI[] gems = gemUIParent.GetComponentsInChildren<TextMeshProUGUI>();
-        foreach (var gemUI in gems)
+        foreach (TextMeshProUGUI gemUI in gems)
         {
             gemUIs.Add(gemUI);
         }
 
         // GemUI Light2D 전부 찾기
         Light2D[] lights = gemUIParent.GetComponentsInChildren<Light2D>();
-        foreach (var light in lights)
+        foreach (Light2D light in lights)
         {
             //리스트에 추가
             gemUILights.Add(light);
             //밝기 0으로 낮추기
             light.intensity = 0;
         }
-
-
     }
 
     private void Update()
@@ -110,16 +113,19 @@ public class UIManager : MonoBehaviour
             Resume();
 
             // 보유한 모든 마법 아이콘 갱신
-            UpdateMagics();
+            // UpdateMagics();
             // 보유한 모든 아이템 아이콘 갱신
             // UpdateItems();
         }
 
+        //게임시간 타이머 업데이트
+        if(VarManager.Instance.playerTimeScale != 0)
+        UpdateTimer();
+        else
+        ResumeTimer();
+
         //마우스 숨기기 토글
         HideToggleMouseCursor();
-
-        //게임시간 타이머 업데이트
-        UpdateTimer();
 
         //선택된 UI 따라다니기
         FollowUICursor();
@@ -127,78 +133,98 @@ public class UIManager : MonoBehaviour
 
     void HideToggleMouseCursor()
     {
-        // 방향키 누르면 마우스 숨기기
+        // 방향키 누르면
         if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+        {
+            //마우스 숨기기
             Cursor.lockState = CursorLockMode.Locked;
 
-        // 마우스 움직이면 마우스 숨기기 해제
-        if (Input.GetAxisRaw("Mouse X") != 0)
-            Cursor.lockState = CursorLockMode.None;
+            //마지막 마우스 위치 기억
+            lastMousePos = Input.mousePosition;
+        }
+
+        // 마우스 움직이면
+        if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
+        {
+            // 마우스 고정인데 툴팁 떠있으면 끄기
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                HasStuffToolTip.Instance.QuitTooltip();
+                ProductToolTip.Instance.QuitTooltip();
+                //마우스 고정해제
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
     }
 
     void FollowUICursor()
     {
         // lastSelected와 현재 선택버튼이 같으면 버튼 깜빡임 코루틴 시작
-        if (lastSelected == EventSystem.current.currentSelectedGameObject && EventSystem.current.currentSelectedGameObject != null)
+        if (EventSystem.current.currentSelectedGameObject == null
+        || !EventSystem.current.currentSelectedGameObject.activeSelf
+        || !EventSystem.current.currentSelectedGameObject.activeInHierarchy
+        || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>())
         {
-            //깜빡이는 코루틴 시작
-            if (!isFlicking)
-            {
-                //커서 애니메이션
-                CursorAnim();
-            }
-        }
-        else
-        {
+            // UI커서 애니메이션 켜져있으면
             if (isFlicking)
             {
                 //깜빡임 시퀀스 종료
                 cursorSeq.Pause();
                 cursorSeq.Kill();
 
-                //코루틴 끝
+                //커서 애니메이션 끝
                 isFlicking = false;
 
                 //기억하고 있는 버튼 있으면 색 복구하기
-                if (lastSelected != null)
-                    lastSelected.GetComponent<Image>().color = lastOriginColor;
+                // if (lastSelected)
+                //     lastSelected.GetComponent<Image>().color = lastOriginColor;
             }
 
-            // null이 아닌것을 선택했을때 lastSelected에 기억하기
-            if (EventSystem.current.currentSelectedGameObject != null)
-                lastSelected = EventSystem.current.currentSelectedGameObject;
+            // UI 커서 끄기
+            UI_Cursor.SetActive(false);
+            // lastSelected 새로 갱신해서 기억하기
+            if (EventSystem.current.currentSelectedGameObject)
+                lastSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
         }
-
-        // 선택된 UI 있으면 해당 UI와 위치,사이즈 똑같이 맞추기
-        if (EventSystem.current.currentSelectedGameObject != null)
+        //선택된 버튼이 바뀌었을때
+        else
         {
+            //! 테스트 현재 선택된 UI 이름 표시
+            nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
+
             //위치 맞추기
             UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
 
-            // print(EventSystem.current.currentSelectedGameObject.name);
-
-            // UI_Cursor.SetActive(true);
+            if (!isFlicking)
+            {
+                //커서 애니메이션 시작
+                CursorAnim();
+            }
         }
-        else
+
+        //방향키 입력 들어왔을때
+        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
         {
-            // null 선택하면 끄기
-            UI_Cursor.SetActive(false);
+            // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
+            if (!UI_Cursor.activeSelf && lastSelected)
+                lastSelected.Select();
         }
     }
 
     void CursorAnim()
     {
-        //코루틴 시작
+        //커서 애니메이션 시작
         isFlicking = true;
 
-        Image image = lastSelected.GetComponentInChildren<Image>();
+        Image image = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>();
         RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
-        RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
+        RectTransform lastRect = EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>();
 
         //원본 컬러
-        lastOriginColor = lastSelected.GetComponentInChildren<Image>().color;
+        lastOriginColor = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>().color;
         //깜빡일 시간
         float timeRate = 0.3f;
+        //깜빡일 컬러 강조 비율
         float colorRate = 1.4f;
         //깜빡일 컬러
         Color flickColor = new Color(lastOriginColor.r * colorRate, lastOriginColor.g * colorRate, lastOriginColor.b * colorRate, 1f);
@@ -211,8 +237,8 @@ public class UIManager : MonoBehaviour
         .PrependCallback(() =>
         {
             // 선택된 버튼과 커서 크기 맞추기, 여백 추가
-            cursorRect.sizeDelta = lastRect.sizeDelta + Vector2.one * UI_CursorPadding;
-            
+            cursorRect.sizeDelta = size;
+
             UI_Cursor.SetActive(true);
         })
         .Append(
@@ -227,6 +253,9 @@ public class UIManager : MonoBehaviour
         .Join(
             cursorRect.DOSizeDelta(size, timeRate)
         )
+        .OnKill(() => {
+            image.color = lastOriginColor;
+        })
         .SetUpdate(true);
     }
 
@@ -249,7 +278,11 @@ public class UIManager : MonoBehaviour
         pauseMenu.SetActive(!pauseMenu.activeSelf);
 
         // 시간 정지 토글
-        Time.timeScale = pauseMenu.activeSelf ? 0 : 1;
+        // Time.timeScale = pauseMenu.activeSelf ? 0 : 1;
+        if(pauseMenu.activeSelf)
+        VarManager.Instance.TimeStopToggle(true);
+        else
+        VarManager.Instance.TimeStopToggle(false);
     }
 
     public void InitialStat()
@@ -265,6 +298,11 @@ public class UIManager : MonoBehaviour
         time_start = Time.time;
         time_current = 0;
         timerUI.text = "00:00";
+    }
+
+    public void ResumeTimer()
+    {
+        time_start = Time.time - time_current;
     }
 
     public void UpdateTimer()
@@ -288,16 +326,16 @@ public class UIManager : MonoBehaviour
     public void UpdateExp()
     {
         // 경험치 바 갱신
-        playerExp.fillAmount = PlayerManager.Instance.ExpNow / PlayerManager.Instance.ExpMax;
+        playerExp.fillAmount = PlayerManager.Instance.PlayerStat_Now.ExpNow / PlayerManager.Instance.PlayerStat_Now.ExpMax;
 
         // 레벨 갱신
-        playerLev.text = "Lev. " + PlayerManager.Instance.Level.ToString();
+        playerLev.text = "Lev. " + PlayerManager.Instance.PlayerStat_Now.Level.ToString();
     }
 
     public void UpdateHp()
     {
-        playerHp.fillAmount = PlayerManager.Instance.hpNow / PlayerManager.Instance.hpMax;
-        playerHpText.text = (int)PlayerManager.Instance.hpNow + " / " + (int)PlayerManager.Instance.hpMax;
+        playerHp.fillAmount = PlayerManager.Instance.PlayerStat_Now.hpNow / PlayerManager.Instance.PlayerStat_Now.hpMax;
+        playerHpText.text = (int)PlayerManager.Instance.PlayerStat_Now.hpNow + " / " + (int)PlayerManager.Instance.PlayerStat_Now.hpMax;
     }
 
     public void UpdateGem(int gemTypeIndex)
@@ -458,25 +496,25 @@ public class UIManager : MonoBehaviour
         // 스탯 입력값
         List<float> statAmount = new List<float>();
 
-        stats[0].text = PlayerManager.Instance.hpMax.ToString();
-        stats[1].text = Mathf.Round(PlayerManager.Instance.power * 100).ToString() + " %";
-        stats[2].text = Mathf.Round(PlayerManager.Instance.armor * 100).ToString() + " %";
-        stats[3].text = Mathf.Round(PlayerManager.Instance.moveSpeed * 100).ToString() + " %";
-        stats[4].text = Mathf.Round(PlayerManager.Instance.projectileNum * 100).ToString() + " %";
-        stats[5].text = Mathf.Round(PlayerManager.Instance.speed * 100).ToString() + " %";
-        stats[6].text = Mathf.Round(PlayerManager.Instance.coolTime * 100).ToString() + " %";
-        stats[7].text = Mathf.Round(PlayerManager.Instance.duration * 100).ToString() + " %";
-        stats[8].text = Mathf.Round(PlayerManager.Instance.range * 100).ToString() + " %";
-        stats[9].text = Mathf.Round(PlayerManager.Instance.luck * 100).ToString() + " %";
-        stats[10].text = Mathf.Round(PlayerManager.Instance.expGain * 100).ToString() + " %";
-        stats[11].text = Mathf.Round(PlayerManager.Instance.moneyGain * 100).ToString() + " %";
+        stats[0].text = PlayerManager.Instance.PlayerStat_Now.hpMax.ToString();
+        stats[1].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.power * 100).ToString() + " %";
+        stats[2].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.armor * 100).ToString() + " %";
+        stats[3].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.moveSpeed * 100).ToString() + " %";
+        stats[4].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.projectileNum * 100).ToString() + " %";
+        stats[5].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.speed * 100).ToString() + " %";
+        stats[6].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.coolTime * 100).ToString() + " %";
+        stats[7].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.duration * 100).ToString() + " %";
+        stats[8].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.range * 100).ToString() + " %";
+        stats[9].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.luck * 100).ToString() + " %";
+        stats[10].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.expGain * 100).ToString() + " %";
+        stats[11].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.moneyGain * 100).ToString() + " %";
 
-        stats[12].text = Mathf.Round(PlayerManager.Instance.earth_atk * 100).ToString() + " %";
-        stats[13].text = Mathf.Round(PlayerManager.Instance.fire_atk * 100).ToString() + " %";
-        stats[14].text = Mathf.Round(PlayerManager.Instance.life_atk * 100).ToString() + " %";
-        stats[15].text = Mathf.Round(PlayerManager.Instance.lightning_atk * 100).ToString() + " %";
-        stats[16].text = Mathf.Round(PlayerManager.Instance.water_atk * 100).ToString() + " %";
-        stats[17].text = Mathf.Round(PlayerManager.Instance.wind_atk * 100).ToString() + " %";
+        stats[12].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.earth_atk * 100).ToString() + " %";
+        stats[13].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.fire_atk * 100).ToString() + " %";
+        stats[14].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.life_atk * 100).ToString() + " %";
+        stats[15].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.lightning_atk * 100).ToString() + " %";
+        stats[16].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.water_atk * 100).ToString() + " %";
+        stats[17].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.wind_atk * 100).ToString() + " %";
     }
 
     public void PopupUI(GameObject popup)
@@ -485,10 +523,17 @@ public class UIManager : MonoBehaviour
         popup.SetActive(!popup.activeSelf);
 
         // 시간 정지 토글
-        Time.timeScale = popup.activeSelf ? 0 : 1;
+        // Time.timeScale = popup.activeSelf ? 0 : 1;
+        if(popup.activeSelf)
+        VarManager.Instance.TimeStopToggle(true);
+        else
+        VarManager.Instance.TimeStopToggle(false);
 
         // 팝업 꺼질때 UI 커서 끄기
         UI_Cursor.SetActive(false);
+
+        //null 선택하기
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void PopupUI(GameObject popup, bool forceSwitch = true)
@@ -497,7 +542,11 @@ public class UIManager : MonoBehaviour
         popup.SetActive(forceSwitch);
 
         // 시간 정지 토글
-        Time.timeScale = popup.activeSelf ? 0 : 1;
+        // Time.timeScale = popup.activeSelf ? 0 : 1;
+        if(popup.activeSelf)
+        VarManager.Instance.TimeStopToggle(true);
+        else
+        VarManager.Instance.TimeStopToggle(false);
 
         // 팝업 꺼질때 UI 커서 끄기
         UI_Cursor.SetActive(false);

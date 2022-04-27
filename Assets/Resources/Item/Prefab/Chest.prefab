@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2539606679091371}
   - component: {fileID: 8348513666446652799}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: ChestCover
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -68,9 +68,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 572514883
+  m_SortingLayer: 3
+  m_SortingOrder: 1
   m_Sprite: {fileID: -6265155566855376615, guid: 7d8f81a996a4f4a4aa23c23088ccb87e,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -97,9 +97,9 @@ GameObject:
   - component: {fileID: 4512880338924512487}
   - component: {fileID: 8521050675796039438}
   - component: {fileID: 5346713223538836836}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Chest
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -170,9 +170,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 572514883
+  m_SortingLayer: 3
+  m_SortingOrder: 1
   m_Sprite: {fileID: -2258990297082342245, guid: 7d8f81a996a4f4a4aa23c23088ccb87e,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

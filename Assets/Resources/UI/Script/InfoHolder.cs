@@ -7,9 +7,10 @@ public class InfoHolder : MonoBehaviour
     public GameObject popupMenu;
     public enum HolderType { itemHolder, magicHolder };
     public HolderType holderType;
+    public int gemType = -1; //해당 상품의 화폐 종류
     public int id;
 
-    public void ChooseBtn(bool PopupQuit)
+    public void ChooseBtn(bool PopupQuit = false)
     {
         //아이템 버튼일때
         if (holderType == HolderType.itemHolder)

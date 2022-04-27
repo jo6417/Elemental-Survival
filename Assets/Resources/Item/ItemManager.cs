@@ -182,7 +182,7 @@ public class ItemManager : MonoBehaviour
         // 아이템이 힐 타입일때
         else if (item.itemType == "Heal")
         {
-            PlayerManager.Instance.GetHeal(amount);
+            StartCoroutine(PlayerManager.Instance.GetHeal(amount));
         }
         else
         {
@@ -197,5 +197,18 @@ public class ItemManager : MonoBehaviour
 
         //아이템 비활성화
         LeanPool.Despawn(transform);
+    }
+
+    IEnumerator StopCheck()
+    {
+        while (gameObject.activeSelf)
+        {
+            if(VarManager.Instance.timeScale == 0)
+            rigid.DOPause();
+            else
+            rigid.DOPlay();
+
+            yield return null;
+        }
     }
 }

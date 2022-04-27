@@ -18,7 +18,7 @@ public class MagicInfo
     public string element_B; //해당 마법을 만들 재료 B
     public string castType; //시전 타입
     public string description; //마법 설명
-    public string priceType; //마법 구매시 지불수단
+    public string priceType; //마법 구매시 화폐
     public int price; //마법 구매시 가격
     // public bool onlyOne = false; //1이면 다중 발사 금지
 
@@ -298,43 +298,36 @@ public class MagicDB : MonoBehaviour
     }
 
     //랜덤 마법 뽑기
-    public int[] RandomMagicIndex(int MagicPoolNum, int amount)
+    public int[] RandomMagicIndex(int amount)
     {
         //모든 마법 인덱스를 넣을 리스트
         List<int> magicIndex = new List<int>();
 
-        //인덱스 모두 넣기
-        for (int i = 0; i < MagicPoolNum; i++)
+        //언락된 마법 인덱스 모두 넣기
+        for (int i = 0; i < unlockMagics.Count; i++)
         {
-            magicIndex.Add(i);
+            magicIndex.Add(unlockMagics[i]);
         }
 
-        //랜덤 인덱스 3개를 넣을 배열
-        int[] randomNum = new int[amount];
+        //뽑을 인덱스 최대 개수
+        int numMax = unlockMagics.Count < amount ? unlockMagics.Count : amount;
 
-        for (int i = 0; i < amount; i++)
+        //랜덤 인덱스를 넣을 배열
+        int[] randomNum = new int[numMax];
+
+        for (int i = 0; i < numMax; i++)
         {
-            // 획득 가능한 마법 없을때
-            if (magicIndex.Count == 0)
-            {
-                randomNum[i] = -1;
-            }
-            else
-            {
-                //인덱스 리스트에서 랜덤한 난수 생성
-                int j = Random.Range(0, magicIndex.Count);
-                int index = magicIndex[j];
-                // print(magicIndex.Count + " : " + index);
+            //TODO 등급마다 확률 다르게
+            //인덱스 리스트에서 랜덤한 난수 생성
+            int j = Random.Range(0, magicIndex.Count);
+            int index = magicIndex[j];
+            // print(magicIndex.Count + " : " + index);
 
-                //랜덤 인덱스 숫자 넣기
-                randomNum[i] = index;
+            //랜덤 인덱스 숫자 넣기
+            randomNum[i] = index;
 
-                //! 테스트용 인덱스
-                // randomNum[i] = 14;
-
-                //이미 선택된 인덱스 제거
-                magicIndex.RemoveAt(j);
-            }
+            //이미 선택된 인덱스 제거
+            magicIndex.RemoveAt(j);
         }
 
         //인덱스 리스트 리턴
@@ -377,7 +370,7 @@ public class MagicDB : MonoBehaviour
         //마법 파워 및 레벨당 증가량 계산
         power = magic.power + magic.powerPerLev * (magic.magicLevel - 1);
         //플레이어 자체 파워 증가량 계산
-        power = power + power * (PlayerManager.Instance.power - 1);
+        power = power + power * (PlayerManager.Instance.PlayerStat_Now.power - 1);
 
         return power;
     }
@@ -393,8 +386,8 @@ public class MagicDB : MonoBehaviour
 
         //플레이어 speed 스탯 곱하기
         speed = bigNumFast
-        ? speed + speed * (PlayerManager.Instance.speed - 1)
-        : speed - speed * (PlayerManager.Instance.speed - 1);
+        ? speed + speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1)
+        : speed - speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1);
 
         //값 제한하기
         speed = Mathf.Clamp(speed, 0.01f, 100f);
@@ -409,7 +402,7 @@ public class MagicDB : MonoBehaviour
         //마법 범위 및 레벨당 증가량 계산
         range = magic.range + magic.rangePerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 범위 증가량 계산
-        range = range + range * (PlayerManager.Instance.range - 1);
+        range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
         //값 제한하기
         range = Mathf.Clamp(range, 0.1f, 10f);
 
@@ -423,7 +416,7 @@ public class MagicDB : MonoBehaviour
         //마법 지속시간 및 레벨당 증가량 계산
         duration = magic.duration + magic.durationPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 지속시간 증가량 계산
-        duration = duration + duration * (PlayerManager.Instance.duration - 1);
+        duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
         //값 제한하기
         duration = Mathf.Clamp(duration, 0.1f, 100f);
 
@@ -438,7 +431,7 @@ public class MagicDB : MonoBehaviour
         //마법 크리티컬 확률 및 레벨당 증가량 계산
         float critical = magic.critical + magic.criticalPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 크리티컬 확률 증가량 계산
-        critical = critical * PlayerManager.Instance.luck;
+        critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
         //값 제한하기 0% ~ 100%
         critical = Mathf.Clamp(critical, 0f, 1f);
 
@@ -463,7 +456,7 @@ public class MagicDB : MonoBehaviour
         //마법 크리티컬 데미지 및 레벨당 증가량 계산
         criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 크리티컬 데미지 증가량 계산
-        criticalPower = criticalPower + criticalPower * (PlayerManager.Instance.luck - 1);
+        criticalPower = criticalPower + criticalPower * (PlayerManager.Instance.PlayerStat_Now.luck - 1);
 
         return criticalPower;
     }
@@ -476,7 +469,7 @@ public class MagicDB : MonoBehaviour
         pierce =
         magic.pierce +
         Mathf.FloorToInt(magic.piercePerLev * (magic.magicLevel - 1)) +
-        PlayerManager.Instance.pierce;
+        PlayerManager.Instance.PlayerStat_Now.pierce;
 
         return pierce;
     }
@@ -489,7 +482,7 @@ public class MagicDB : MonoBehaviour
         projectile =
         magic.projectile +
         Mathf.FloorToInt(magic.projectilePerLev * (magic.magicLevel - 1)) +
-        PlayerManager.Instance.projectileNum;
+        PlayerManager.Instance.PlayerStat_Now.projectileNum;
 
         //최소값 1 제한
         projectile = Mathf.Clamp(projectile, 1, projectile);
@@ -504,7 +497,7 @@ public class MagicDB : MonoBehaviour
         //마법 쿨타임 및 레벨당 증가량 계산
         coolTime = magic.coolTime - magic.coolTimePerLev * (magic.magicLevel - 1);
         //플레이어 자체 쿨타임 증가량 계산
-        coolTime = coolTime - coolTime * (PlayerManager.Instance.coolTime - 1);
+        coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
         //값 제한하기
         coolTime = Mathf.Clamp(coolTime, 0.01f, 10f);
 

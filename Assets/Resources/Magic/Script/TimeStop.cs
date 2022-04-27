@@ -66,7 +66,15 @@ public class TimeStop : MonoBehaviour
         });
 
         //쿨타임 시작
-        yield return new WaitForSeconds(coolTime);
+        // yield return new WaitForSeconds(coolTime);
+        float coolCount = coolTime;
+        while (coolCount > 0)
+        {
+            //카운트 차감, 플레이어 자체속도 반영
+            coolCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+
+            yield return null;
+        }
 
         //마법 범위
         float range = MagicDB.Instance.MagicRange(magic);

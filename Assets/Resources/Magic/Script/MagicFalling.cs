@@ -15,10 +15,11 @@ public class MagicFalling : MonoBehaviour
     public Collider2D col;
     Vector2 originScale; //원래 오브젝트 크기
     public Ease fallEase;
-    public float addAngle; //스프라이트 방향 보정
+    // public float addAngle; //스프라이트 방향 보정
     public Vector2 startPos; //시작할 위치
     public bool isExpand = false; //커지면서 등장 여부
     public bool isFade = false; //domove 끝나고 사라지기 여부
+    bool magicLoading; //마법 진행중 여부
 
     [Header("Effect")]
     public GameObject particle; //파티클 오브젝트
@@ -103,6 +104,12 @@ public class MagicFalling : MonoBehaviour
         if (isExpand)
             transform.localScale = Vector2.zero;
         transform.DOScale(originScale, 0.5f)
+        .OnStart(() => {
+            //마법 시작
+            magicLoading = true;
+            //정지 체크 시작
+            StartCoroutine(StopCheck());
+        })
         .SetEase(Ease.OutBack);
 
         //시작 위치
@@ -141,7 +148,11 @@ public class MagicFalling : MonoBehaviour
             // float duration = MagicDB.Instance.MagicDuration(magic);
 
             // 오브젝트 자동 디스폰하기
+            if(gameObject.activeSelf)
             StartCoroutine(AutoDespawn(0.5f));
+
+            //마법 끝
+            magicLoading = false;
         });
     }
 
@@ -184,18 +195,48 @@ public class MagicFalling : MonoBehaviour
     //애니메이션 끝날때 이벤트 함수
     public void AnimEndDespawn()
     {
+        if(gameObject.activeSelf)
         StartCoroutine(AutoDespawn());
     }
 
-    IEnumerator AutoDespawn(float duration = 0)
+    IEnumerator AutoDespawn(float delay = 0)
     {
         //range 속성만큼 지속시간 부여
-        yield return new WaitForSeconds(duration);
+        float delayCount = delay;
+        while (delayCount > 0)
+        {
+            delayCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+            yield return null;
+        }
 
         //콜라이더 끄고 종료
         ColliderTrigger(false);
 
         // 오브젝트 디스폰하기
         LeanPool.Despawn(transform);
+    }
+
+    IEnumerator StopCheck()
+    {
+        while (magicLoading)
+        {
+            if (VarManager.Instance.playerTimeScale == 0)
+            {
+                transform.DOPause();
+                sprite.DOPause();
+
+                if (magicEffect)
+                effectAnim.speed = 0;
+            }
+            else
+            {
+                transform.DOPlay();
+                sprite.DOPlay();
+
+                if (magicEffect)
+                effectAnim.speed = 1;
+            }
+            yield return null;
+        }
     }
 }

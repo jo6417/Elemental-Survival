@@ -76,14 +76,13 @@ MonoBehaviour:
   anim: {fileID: 0}
   magicName: 
   col: {fileID: 8511969488732639964}
-  originScale: {x: 0, y: 0}
   fallEase: 26
   addAngle: 0
   startPos: {x: 0, y: 2}
-  moveDistance: 2
   isExpand: 1
+  isFade: 0
+  particle: {fileID: 0}
   magicEffect: {fileID: 5619414736512131746}
-  effectPos: {x: 0, y: 0, z: 0}
 --- !u!212 &8370058618797703207
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5041,7 +5040,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: StompDust_Effect
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2346020423735354293, guid: e14cb71711a4cb040bdbc33d28d1ee38, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e14cb71711a4cb040bdbc33d28d1ee38, type: 3}
 --- !u!1 &5619414736512131746 stripped
 GameObject:

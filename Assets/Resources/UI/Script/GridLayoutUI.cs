@@ -161,7 +161,7 @@ public class GridLayoutUI : MonoBehaviour
 
             if (isOverlap)
             {
-                print(child.name);
+                // print(child.name);
                 
                 //현재 위치로부터 오른쪽으로 한칸 이동
                 child.anchoredPosition =

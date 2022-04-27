@@ -50,6 +50,14 @@ public class MagicProjectile : MonoBehaviour
             //마법 속도만큼 날리기 (벡터 기본값 5 * 스피드 스탯 * 10 / 100)
             rigid.velocity = targetPos.normalized * MagicDB.Instance.MagicSpeed(magic, true);
 
+        //원래 속도에 플레이어 타임스케일 지속 반영
+        Vector2 originVel = rigid.velocity;
+        while (gameObject.activeSelf)
+        {
+            rigid.velocity = originVel * VarManager.Instance.playerTimeScale;
+            yield return null;
+        }
+
         //타겟 위치 초기화
         targetPos = Vector2.one * 10f;
     }
@@ -67,8 +75,12 @@ public class MagicProjectile : MonoBehaviour
 
     IEnumerator DespawnMagic(float delay = 0)
     {
-        //마법 지속시간
-        yield return new WaitForSeconds(delay);
+        while (delay > 0)
+        {
+            delay -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+
+            yield return null;
+        }
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)

@@ -71,7 +71,7 @@ public class EnemySpawn : MonoBehaviour
         if (spawnCoolCount <= 0)
         {
             // 1~5초 사이 랜덤 쿨타임, 쿨타임 최대치는 플레이어 전투력마다 0.05초씩 줄어듬, 100레벨시 1초
-            float maxCoolTime = 5 - PlayerManager.Instance.playerPower * 0.05f;
+            float maxCoolTime = 5 - PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
             //1~5초 사이 값으로 범위 제한
             maxCoolTime = Mathf.Clamp(maxCoolTime, 1f, maxCoolTime * 2);
             // 플레이어 전투력에 따라 줄어드는 쿨타임 계산
@@ -81,7 +81,7 @@ public class EnemySpawn : MonoBehaviour
             spawnCoolCount = spawnCoolTime;
 
             //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
-            float maxSpawnNum = 5 + PlayerManager.Instance.playerPower * 0.05f;
+            float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
             // 스폰 횟수 범위 제한
             maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
 
@@ -114,7 +114,7 @@ public class EnemySpawn : MonoBehaviour
         int timePower = Mathf.FloorToInt(time / 30f);
 
         //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수
-        MaxEnemyPower = PlayerManager.Instance.playerPower + timePower;
+        MaxEnemyPower = PlayerManager.Instance.PlayerStat_Now.playerPower + timePower;
 
         //max 전투력 넘었으면 중단
         if (MaxEnemyPower <= NowEnemyPower)
@@ -294,7 +294,16 @@ public class EnemySpawn : MonoBehaviour
             })
         );
 
-        yield return null;
+        //시간 멈추는동안 포탈 시퀀스 멈추기
+        while (portalSeq.IsActive())
+        {
+            if(VarManager.Instance.timeScale == 0)
+            portalSeq.Pause();
+            else
+            portalSeq.Play();
+
+            yield return null;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)

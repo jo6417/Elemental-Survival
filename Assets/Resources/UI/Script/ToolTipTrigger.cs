@@ -38,6 +38,8 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        //마우스 잠겨있지 않으면
+        if(Cursor.lockState == CursorLockMode.None)
         QuitTooltip();
     }
 

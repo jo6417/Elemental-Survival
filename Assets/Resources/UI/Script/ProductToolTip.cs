@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class ProductToolTip : MonoBehaviour
 {
@@ -34,10 +35,12 @@ public class ProductToolTip : MonoBehaviour
     }
     #endregion
 
-    // public bool isTooltipOn = true;
+    public enum ToolTipCorner {LeftUp, LeftDown, RightUp, RightDown};
+    // public ToolTipCorner toolTipCorner;
     public TextMeshProUGUI productName;
     public TextMeshProUGUI productDescript;
     public Sprite questionMark;
+    RectTransform rect;
 
     [Header("Magic")]
     public MagicInfo magic;
@@ -52,6 +55,10 @@ public class ProductToolTip : MonoBehaviour
     [Header("Item")]
     public ItemInfo item;
 
+    private void Awake() {
+        rect = GetComponent<RectTransform>();
+    }
+
     void Update()
     {
         FollowMouse();
@@ -59,16 +66,58 @@ public class ProductToolTip : MonoBehaviour
 
     void FollowMouse()
     {
-        // Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 0;
-        transform.position = mousePos;
+        //마우스 클릭하면 툴팁 끄기
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        {
+            QuitTooltip();
+        }
+
+        //마우스 숨김 상태면
+        if (Cursor.lockState == CursorLockMode.Locked)
+            return;
+
+        if (transform.position != Input.mousePosition)
+        {
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 0;
+            transform.position = mousePos;
+        }
     }
 
     //툴팁 켜기
-    public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null)
+    public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null, ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown, Vector2 position = default(Vector2))
     {
-        FollowMouse();
+        //툴팁 켜져있으면 끄기
+        gameObject.SetActive(false);
+
+        //툴팁 위치 들어왔으면 이동
+        if (position != default(Vector2))
+        {            
+            //입력된 위치로 이동
+            transform.position = position;
+        }
+
+        if(!rect)
+        rect = GetComponent<RectTransform>();
+        
+        //툴팁 피벗 바꾸기
+        switch (toolTipCorner)
+        {            
+            case ToolTipCorner.LeftUp : 
+            rect.pivot = Vector2.up;
+            break;
+            case ToolTipCorner.LeftDown : 
+            rect.pivot = Vector2.zero;
+            break;
+            case ToolTipCorner.RightUp : 
+            rect.pivot = Vector2.one;
+            break;
+            case ToolTipCorner.RightDown : 
+            rect.pivot = Vector2.right;
+            break;
+        }
+
+        //툴팁 켜기
         gameObject.SetActive(true);
 
         //마법 or 아이템 정보 넣기

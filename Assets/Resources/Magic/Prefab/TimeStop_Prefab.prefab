@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 5386368947932050671}
   m_Layer: 5
   m_Name: TimeStop_Prefab
-  m_TagString: Untagged
+  m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

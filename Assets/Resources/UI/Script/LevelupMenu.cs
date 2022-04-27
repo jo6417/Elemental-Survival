@@ -35,7 +35,7 @@ public class LevelupMenu : MonoBehaviour
         //아이템 타입이 아티팩트인 모든아이템 리스트
         List<ItemInfo> artifactList = ItemDB.Instance.itemDB.FindAll(x => x.itemType == "Artifact");
         // 랜덤 아티팩트ID 뽑기, 중복제거됨
-        int[] randomIDs = ItemDB.Instance.RandomArtifactIndex(artifactList, 3);
+        int[] randomIDs = ItemDB.Instance.RandomItemIndex(3);
 
         // 고정된 3개 아티팩트 버튼에 정보 (아티팩트ID, 아이콘, 등급색깔, 이름, 설명)
         for (int i = 0; i < randomIDs.Length; i++)

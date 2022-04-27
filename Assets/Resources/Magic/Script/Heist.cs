@@ -20,13 +20,14 @@ public class Heist : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
-        //원래 속도 버프 빼기
+        //원래 속도 변수가 있으면 버프 빼기
         if(speed != 0)
-        PlayerManager.Instance.moveSpeed = PlayerManager.Instance.moveSpeed / speed;
+        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed / speed;
+        
         //버프할 스피드 불러오기
         speed = MagicDB.Instance.MagicSpeed(magic, true);
         //플레이어 이동속도 버프하기
-        PlayerManager.Instance.moveSpeed = PlayerManager.Instance.moveSpeed * speed;
+        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * speed;
 
         //속도에 따라 사이즈 변화
         transform.localScale = Vector3.one * speed;

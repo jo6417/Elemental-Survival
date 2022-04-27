@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4913014920624679320}
   - component: {fileID: 2702731958423311536}
   - component: {fileID: 3475788794744987400}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: LifeSeed_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}

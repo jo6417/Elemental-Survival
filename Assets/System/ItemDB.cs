@@ -191,16 +191,16 @@ public class ItemDB : MonoBehaviour
     }
 
     //랜덤 아티팩트 뽑기
-    public int[] RandomArtifactIndex(List<ItemInfo> dbList, int amount)
+    public int[] RandomItemIndex(int amount)
     {
         //모든 아이템 인덱스를 넣을 리스트
         List<int> randomIndex = new List<int>();
 
-        //아이템 id 모두 넣기
-        for (int i = 0; i < dbList.Count; i++)
-        {
-            randomIndex.Add(dbList[i].id);
-        }
+        // 랜덤 아이템 풀
+        randomIndex.Add(GetItemByName("Empty Scroll").id);
+        randomIndex.Add(GetItemByName("Health Potion").id);
+        randomIndex.Add(GetItemByName("Mana Shard").id);
+        randomIndex.Add(GetItemByName("Random Box").id);
 
         //랜덤 인덱스를 넣을 배열
         int[] randomNum = new int[amount];

@@ -19,6 +19,9 @@ public class BuckShot : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(Initial());
+
+        //시간 멈춤 확인
+        StartCoroutine(StopCheck());
     }
 
     IEnumerator Initial()
@@ -46,5 +49,16 @@ public class BuckShot : MonoBehaviour
         // 멈추면 디스폰
         yield return new WaitUntil(() => particle.isStopped);
         LeanPool.Despawn(transform);
+    }
+
+    IEnumerator StopCheck()
+    {
+        while (gameObject.activeSelf)
+        {
+            if (VarManager.Instance.playerTimeScale == 0)
+                particle.Pause();
+
+            yield return null;
+        }
     }
 }

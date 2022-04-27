@@ -79,7 +79,7 @@ public class CastMagic : MonoBehaviour
                     //이미 소환되지 않았을때
                     if (!magic.exist)
                     {
-                        print("magic Summon : " + magic.magicName);
+                        // print("magic Summon : " + magic.magicName);
                         magic.exist = true;
 
                         // 플레이어 위치에 마법 생성
@@ -132,6 +132,9 @@ public class CastMagic : MonoBehaviour
 
         for (int i = 0; i < enemyPos.Count; i++)
         {
+            //시간 멈췄으면 대기
+            yield return new WaitUntil(() => VarManager.Instance.playerTimeScale > 0);
+
             // 마법 오브젝트 생성
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, magicPool);
 
@@ -148,8 +151,17 @@ public class CastMagic : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
+        float coolCount = coolTime;
+        while (coolCount > 0)
+        {
+            //카운트 차감, 플레이어 자체속도 반영
+            coolCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+
+            yield return null;
+        }
+
         //쿨타임 만큼 대기
-        yield return new WaitForSeconds(coolTime);
+        // yield return new WaitUntil(() => cooltimeCount <= 0);
 
         //코루틴 재실행
         StartCoroutine(SummonMagic(magicPrefab, magic));

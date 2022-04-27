@@ -73,9 +73,8 @@ public class MagicSting : MonoBehaviour
         //목표 위치 가져오기
         Vector2 targetPos = magicHolder.targetPos;
 
-        // 0,0에서 점점 커지면서 오브젝트 나타내기
+        // 위치 초기화
         transform.localScale = Vector2.zero;
-        transform.DOScale(originScale, 0.5f);
 
         //시작 위치
         Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position;
@@ -101,6 +100,10 @@ public class MagicSting : MonoBehaviour
         //목표 위치로 찌르기
         Sequence stingSeq = DOTween.Sequence();
         stingSeq
+        .Append(
+            // 0,0에서 점점 커지면서 오브젝트 나타내기
+            transform.DOScale(originScale, 0.5f)
+        )
         .Append(
             //진행할 방향 바라보기
             transform.DORotate(Vector3.forward * endRotation, 0.5f)
@@ -129,6 +132,17 @@ public class MagicSting : MonoBehaviour
             // 오브젝트 자동 디스폰하기
             StartCoroutine(AutoDespawn(duration));
         });
+
+        //시간 멈춘동안 시퀀스 멈추기
+        while (stingSeq.IsActive())
+        {
+            if (VarManager.Instance.timeScale == 0)
+                stingSeq.Pause();
+            else
+                stingSeq.Play();
+
+            yield return null;
+        }
     }
 
     public void ColliderTrigger(bool magicTrigger = true)

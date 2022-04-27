@@ -31,6 +31,9 @@ public class ChestMenu : MonoBehaviour
         chestBody.sprite = chestBody_Close;
         //버튼 상호작용 초기화
         openBtn.interactable = true;
+        
+        //버튼 선택
+        openBtn.Select();
 
         //상자 안에서 올라올 상품 이미지 초기화
         // prize.SetActive(false);
@@ -75,7 +78,7 @@ public class ChestMenu : MonoBehaviour
         int index = RandomPick();
 
         //! test 0으로 고정됨!
-        index = 1;
+        index = 0;
         
         switch (index)
         {
