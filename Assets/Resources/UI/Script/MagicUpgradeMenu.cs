@@ -74,7 +74,7 @@ public class MagicUpgradeMenu : MonoBehaviour
         .SetEase(ease)
         .OnComplete(() =>
         {
-            statPolygon.OnRebuildRequested();
+            // statPolygon.OnRebuildRequested();
         });
 
         // 룰렛 시작 버튼 상호작용 활성화
@@ -178,7 +178,7 @@ public class MagicUpgradeMenu : MonoBehaviour
     void UpdateStats()
     {
         statPolygon.VerticesDistances = convertValue().ToArray();
-        statPolygon.OnRebuildRequested();
+        // statPolygon.OnRebuildRequested();
     }
 
     List<float> convertValue()

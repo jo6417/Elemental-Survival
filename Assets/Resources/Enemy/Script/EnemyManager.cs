@@ -19,6 +19,7 @@ public class EnemyManager : MonoBehaviour
     public float particleHitCount = 0;
     public float stopCount = 0;
     public float hitCount = 0;
+    public float oppositeCount = 0;
     Sequence txtSeq;
     // public Animator anim;
 
@@ -73,6 +74,7 @@ public class EnemyManager : MonoBehaviour
 
         hitCount = 0; //데미지 카운트 초기화
         stopCount = 0; //시간 정지 카운트 초기화
+        oppositeCount = 0; //반대편 전송 카운트 초기화
         HpNow = enemy.hpMax; //체력 초기화
         sprite.color = Color.white; //스프라이트 색깔 초기화
 
@@ -81,7 +83,7 @@ public class EnemyManager : MonoBehaviour
         //색상 정보 저장
         originColor = sprite.color;
         //아웃라인이면 머터리얼 색상 저장
-        if (sprite.material == EnemySpawn.Instance.outLineMat)
+        if (sprite.material == VarManager.Instance.outLineMat)
             originMatColor = sprite.material.color;
 
         enemyName = enemy.enemyName;
@@ -110,7 +112,7 @@ public class EnemyManager : MonoBehaviour
     {
         if (other.transform.CompareTag("Magic") && !isDead && particleHitCount <= 0)
         {
-            HitMagic(other);
+            HitMagic(other.gameObject);
 
             //파티클 피격 딜레이 시작
             particleHitCount = 0.2f;
@@ -119,14 +121,25 @@ public class EnemyManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        HitMagic(other.gameObject);
+        if (other.transform.CompareTag("Magic"))
+        {
+            HitMagic(other.gameObject);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        //계속 콜라이더 안에 있을때
-        if (hitCount <= 0)
-            HitMagic(other.gameObject);
+        // 계속 마법 콜라이더 안에 있을때
+        if (other.transform.CompareTag("Magic") && hitCount <= 0)
+        {
+            // 마법 정보 찾기
+            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+            MagicInfo magic = magicHolder.magic;
+
+            // 다단히트 마법일때만
+            if (magic.multiHit)
+                HitMagic(other.gameObject);
+        }
     }
 
     void HitMagic(GameObject other)
@@ -134,34 +147,30 @@ public class EnemyManager : MonoBehaviour
         if (isDead)
             return;
 
-        // 마법 투사체와 충돌 했을때
-        if (other.transform.CompareTag("Magic"))
+        // 마법 정보 찾기
+        MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+        MagicInfo magic = magicHolder.magic;
+
+        // print(transform.name + " : " + magic.magicName);
+
+        // 체력 감소
+        if (magic.power > 0)
+            StartCoroutine(Damaged(magicHolder));
+
+        //넉백
+        if (magicHolder.knockbackForce > 0)
         {
-            // 마법 정보 찾기
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-            MagicInfo magic = magicHolder.magic;
+            StartCoroutine(Knockback(magicHolder.knockbackForce));
+        }
 
-            // print(transform.name + " : " + magic.magicName);
+        //시간 정지
+        if (magicHolder.isStop)
+        {
+            //몬스터 경직 카운터에 duration 만큼 추가
+            stopCount = MagicDB.Instance.MagicDuration(magic);
 
-            // 체력 감소
-            if (magic.power > 0)
-                StartCoroutine(Damaged(magicHolder));
-
-            //넉백
-            if (magicHolder.knockbackForce > 0)
-            {
-                StartCoroutine(Knockback(magicHolder.knockbackForce));
-            }
-
-            //시간 정지
-            if (magicHolder.isStop)
-            {
-                //몬스터 경직 카운터에 duration 만큼 추가
-                stopCount = MagicDB.Instance.MagicDuration(magic);
-
-                // 해당 위치에 고정
-                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-            }
+            // 해당 위치에 고정
+            // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
         }
     }
 
@@ -198,12 +207,23 @@ public class EnemyManager : MonoBehaviour
         //크리티컬 성공 여부
         bool isCritical = MagicDB.Instance.MagicCritical(magic);
         //크리티컬 데미지 계산
-        float criticalPower = isCritical ? MagicDB.Instance.MagicCriticalPower(magic) : 1f;
+        float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
         //데미지 계산
         float damage = MagicDB.Instance.MagicPower(magic);
-        // 고정 데미지에 확률 계산 및 크리티컬 데미지 곱해서 int로 반올림
-        damage = Mathf.RoundToInt(Random.Range(damage * 0.8f, damage * 1.2f) * criticalPower);
+        // 고정 데미지에 확률 계산
+        damage = Random.Range(damage * 0.8f, damage * 1.2f);
+
+        //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
+        if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
+        {
+            isCritical = false;
+            damage = Mathf.RoundToInt(damage);
+        }
+        else
+        {
+            damage = Mathf.RoundToInt(damage * criticalPower);
+        }
 
         // 데미지가 0이 아닐때 최소 데미지 1 보장
         if (damage != 0)
@@ -233,7 +253,9 @@ public class EnemyManager : MonoBehaviour
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, UIManager.Instance.overlayCanvas);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
-        dmgTxt.text = damage.ToString();
+
+        //데미지 텍스트, 데미지 0일때 miss 처리
+        dmgTxt.text = damage == 0 ? "MISS" : damage.ToString();
 
         // 크리티컬 떴을때 추가 강조효과 UI
         if (isCritical && damage != 0)
@@ -280,7 +302,7 @@ public class EnemyManager : MonoBehaviour
         Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.PlayerStat_Now.knockbackForce - 1));
         knockbackDir = knockbackDir.normalized + knockbackBuff;
 
-        //반대방향으로 이동
+        // 피격 반대방향으로 이동
         transform.DOMove((Vector2)transform.position + knockbackDir, enemy.hitDelay)
         .SetEase(Ease.OutExpo);
 
@@ -306,18 +328,18 @@ public class EnemyManager : MonoBehaviour
         EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
 
         // 머터리얼 및 색 변경
-        sprite.material = EnemySpawn.Instance.hitMat;
-        sprite.color = EnemySpawn.Instance.hitColor;
+        sprite.material = VarManager.Instance.hitMat;
+        sprite.color = VarManager.Instance.hitColor;
 
         // 색깔 점점 흰색으로
-        sprite.DOColor(EnemySpawn.Instance.DeadColor, 1f);
+        sprite.DOColor(VarManager.Instance.DeadColor, 1f);
 
         //색 변경 완료 될때까지 대기
-        yield return new WaitUntil(() => sprite.color == EnemySpawn.Instance.DeadColor);
+        yield return new WaitUntil(() => sprite.color == VarManager.Instance.DeadColor);
         // while (sprite.color != EnemySpawn.Instance.DeadColor)
         // {
         //     sprite.DOPlay();
-            
+
         //     yield return null;
         // }
 

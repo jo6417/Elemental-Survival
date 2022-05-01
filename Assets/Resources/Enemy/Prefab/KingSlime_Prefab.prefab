@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2509715483586209081}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4, y: 1.7, z: 1}
   m_Children: []
   m_Father: {fileID: 7200008655959220578}
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingOrder: -2
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
     type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.31764707}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.47058824}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -137,7 +137,7 @@ MonoBehaviour:
   isElite: 0
   eliteClass: 0
   isDead: 0
-  particleCount: 0
+  particleHitCount: 0
   stopCount: 0
   hitCount: 0
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
@@ -170,11 +170,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nowState: 0
   moveType: 1
-  rigid: {fileID: 7200008655959220576}
+  nowJumping: 0
+  jumpStartDistance: 10
+  jumpHeight: 4
+  jumpDelay: 1
+  jumpCollisionOff: 1
   landEffect: {fileID: 3222180882172883121, guid: 857e027e861f7f241bc702a0ea89ef2a,
     type: 3}
-  anim: {fileID: 7200008655959220579}
   shadow: {fileID: 4491742388013230503}
 --- !u!212 &7200008655959220509
 SpriteRenderer:
@@ -259,7 +263,7 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.3}
+  m_Offset: {x: 0, y: 1.2}
   m_Size: {x: 4.8, y: 3.6}
   m_Direction: 1
 --- !u!50 &7200008655959220576

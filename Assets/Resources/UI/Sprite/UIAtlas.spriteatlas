@@ -57,6 +57,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3d6ebe71f5793f94b981a22a86b165bc, type: 3}
   - {fileID: 21300000, guid: 89e7a2c115b5e5b4493829838a4d7f4c, type: 3}
   - {fileID: 21300000, guid: 246724223ffb08d459ffa9bd31090b5b, type: 3}
+  - {fileID: 21300000, guid: affb989204e7f644bad785ea7045eccc, type: 3}
   - {fileID: 21300000, guid: 1a89c8d251702834296b7e9863d19a5b, type: 3}
   - {fileID: 21300000, guid: 89bb8fd2c5626e143aeaf45371627109, type: 3}
   - {fileID: 21300000, guid: 0b1bbec335870ae40a3a302d7989ea72, type: 3}
@@ -73,26 +74,31 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dd36bc68b5f886b4f95330ca9b853deb, type: 3}
   - {fileID: 21300000, guid: 8d475a787a61b424fab5bc2cb7fd2a0b, type: 3}
   - {fileID: 21300000, guid: 52e83dd81a88d7d4bab3ece01579bbb7, type: 3}
+  - {fileID: 21300000, guid: 9c2b93e8e4dc1f244a7618fc1ae04543, type: 3}
   - {fileID: 21300000, guid: 4d3bda59151dc13478e62e3262203dad, type: 3}
   - {fileID: 21300000, guid: 0c549569adb0a3b49936f5565d092ae5, type: 3}
   - {fileID: 21300000, guid: 9bb462e99fdc78b4fb3acc6a8c8663f8, type: 3}
   - {fileID: 21300000, guid: 3985b7f971b67f442a0f8a9e8edd485e, type: 3}
+  - {fileID: 21300000, guid: c884c8ba1e98dc44bbbc33aec406c544, type: 3}
   - {fileID: 21300000, guid: 3db02d8ba8b13d643874692e6201f999, type: 3}
   - {fileID: 21300000, guid: d487c60c58d4f1c4e8c69a15f53f2d4e, type: 3}
   - {fileID: 21300000, guid: 187ae60c2a2e50b4ba0b011289cdc153, type: 3}
   - {fileID: 21300000, guid: 479f754cd052f0c4c94f8914f91b8453, type: 3}
   - {fileID: 21300000, guid: e3d5bb6c8b28bc24998aa39eb024bc09, type: 3}
+  - {fileID: 21300000, guid: 7750188ce51fb13408118edaa8e24cbe, type: 3}
   - {fileID: 2673825320610237887, guid: c25644ecd3b3e29438334a1384722a1d, type: 3}
   - {fileID: 7508019912091488383, guid: c25644ecd3b3e29438334a1384722a1d, type: 3}
   - {fileID: 21300000, guid: 123ed48da6a18864b87a697e47122908, type: 3}
   - {fileID: 21300000, guid: 58d9c3bde87690049878286ad3477b3b, type: 3}
   - {fileID: 21300000, guid: ddfd2fddc0c8d8e479eb75ea8e82a336, type: 3}
   - {fileID: 21300000, guid: 342bd81ee6489c54e998d5c97b516cde, type: 3}
+  - {fileID: 21300000, guid: c5e59b5eb5482c24e9169325b5e31b03, type: 3}
   - {fileID: 21300000, guid: 28903d6eed8ae3f42b6954abd82803d2, type: 3}
   - {fileID: 21300000, guid: 54b34c0fedfa777408c8a9dc41f1a355, type: 3}
   - {fileID: 21300000, guid: 00d2a63f3f545a44d9508bd1f24415b9, type: 3}
   - {fileID: 21300000, guid: dae2664f13c890e4ab85c47dd7820896, type: 3}
   - {fileID: 21300000, guid: d4bb8a7fac6d50f4fb0a7b4871740925, type: 3}
+  - {fileID: 21300000, guid: 9fbef3af995524f429d5b25d67c03c35, type: 3}
   m_PackedSpriteNamesToIndex:
   - SlotMachineButton
   - PaperUI2
@@ -102,6 +108,7 @@ SpriteAtlas:
   - ItemFrame
   - PageUI
   - backPack_blank
+  - EarthGem_UI
   - ItemFrame_Selected
   - BookMark
   - SlotMachineLED
@@ -118,26 +125,31 @@ SpriteAtlas:
   - FrameCursor
   - ProgressBar1
   - _ManaGemUI
+  - LightningGem_UI
   - ButtonUI
   - HexItemFrame
   - CircleBorder
   - EmptyImg
+  - WindGem_UI
   - backPack1
   - HexStatBackground
   - BookUI
   - ItemBack
   - PaperTitleUI
+  - WaterGem_UI
   - SlotMachineTitle_1
   - SlotMachineTitle_0
   - ScrollBackground
   - ScrollOpening-Sheet
   - SideButtonUI
   - ScrollOpening_Horizon-Sheet
+  - LifeGem_UI
   - SlotMachine
   - BlueGradient
   - Cursor_Menu
   - Arrow
   - ProgressBar
+  - FireGem_UI
   m_RenderDataMap: {}
   m_Tag: UIAtlas
   m_IsVariant: 0

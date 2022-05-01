@@ -10,8 +10,8 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class PlayerStat
 {
     public int playerPower; //플레이어 전투력
-    public float hpMax = 20; // 최대 체력
-    public float hpNow = 20; // 체력
+    public float hpMax = 100; // 최대 체력
+    public float hpNow = 100; // 체력
     public float Level = 1; //레벨
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
@@ -65,11 +65,12 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
+    bool isDash; //현재 대쉬중 여부
+
     [Header("<Refer>")]
     public GameObject mobSpawner;
     private Animator animator;
     public SpriteRenderer sprite;
-    // public GameObject levelupPopup;
     public Rigidbody2D rigid;
     public Vector3 lastDir; //마지막 바라봤던 방향
     public GameObject txtPrefab; //체력 회복 텍스트 UI
@@ -80,12 +81,11 @@ public class PlayerManager : MonoBehaviour
     public PlayerStat PlayerStat_Now; //현재 스탯
 
     [Header("<Damaged>")]
-    public float HitDelay = 0.1f; //피격 무적시간
-    public float flickSpeed = 10f; //깜빡이는 속도
-    public float ShakeTime;
-    public float ShakeIntensity;
-    private Color originColor;
-    private bool isDamage = false;
+    float hitCount = 0f;
+    public float HitDelay = 0.5f; //피격 무적시간
+    //TODO 피격시 카메라 흔들기
+    // public float ShakeTime;
+    // public float ShakeIntensity;
 
     [Header("<Pocket>")]
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
@@ -94,7 +94,8 @@ public class PlayerManager : MonoBehaviour
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
 
-    private void Awake() {
+    private void Awake()
+    {
         //플레이어 스탯 인스턴스 생성
         PlayerStat_Now = new PlayerStat();
 
@@ -107,7 +108,6 @@ public class PlayerManager : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
-        originColor = sprite.color;
 
         // 원소젬 UI 업데이트
         for (int i = 0; i < 6; i++)
@@ -130,7 +130,7 @@ public class PlayerManager : MonoBehaviour
     {
         //애니메이션 스피드 적용
         animator.speed = VarManager.Instance.playerTimeScale;
-        
+
         //플레이어 속도 0이면 리턴
         if (VarManager.Instance.playerTimeScale == 0)
         {
@@ -159,16 +159,25 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.UseUltimateMagic());
         }
 
+        //히트 카운트 감소
+        if(hitCount > 0)
+        hitCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+
         //이동
         Move();
     }
 
     void Move()
     {
+        //대쉬 중에는 이동 조작불가
+        if(isDash)
+        return;
+
         //이동 입력값 받기
         Vector2 dir = Vector2.zero;
         float horizonInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
+        float dashBoost = 1;
 
         // x축 이동
         if (horizonInput != 0)
@@ -191,19 +200,28 @@ public class PlayerManager : MonoBehaviour
             dir.y = verticalInput;
         }
 
-        // 애니메이터
+        // 방향키 입력에 따라 애니메이터 걷기 변수 입력
         if (horizonInput == 0 && verticalInput == 0)
         {
-            animator.SetBool("isWalking", false);
+            animator.SetBool("isWalk", false);
         }
         else
         {
-            animator.SetBool("isWalking", true);
+            //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                DashToggle();
+                dashBoost = 2f;
+            }
+            else
+            {
+                animator.SetBool("isWalk", true);
+            }
         }
 
         dir.Normalize();
-        rigid.velocity = PlayerStat_Now.moveSpeed * dir * VarManager.Instance.playerTimeScale;
-        
+        rigid.velocity = PlayerStat_Now.moveSpeed * dir * VarManager.Instance.playerTimeScale * dashBoost;
+
         // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
         //마지막 방향 기억
@@ -211,10 +229,16 @@ public class PlayerManager : MonoBehaviour
             lastDir = dir;
     }
 
+    public void DashToggle()
+    {
+        isDash = !isDash;
+        animator.SetBool("isDash", isDash);
+    }
+
     private void OnCollisionStay2D(Collision2D other)
     {
         //적에게 충돌
-        if (other.gameObject.CompareTag("Enemy") && !isDamage)
+        if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
         {
             // print("적 충돌");
 
@@ -231,15 +255,21 @@ public class PlayerManager : MonoBehaviour
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
     IEnumerator HitDelayCoroutine()
     {
-        isDamage = true;
+        hitCount = HitDelay;
 
-        sprite.color = new Color(255, 20, 20); //스프라이트 색 변환
+        //머터리얼 변환
+        sprite.material = VarManager.Instance.hitMat;
 
-        yield return new WaitForSeconds(HitDelay);
+        //스프라이트 색 변환
+        // sprite.color = VarManager.Instance.hitColor;
 
-        sprite.color = originColor; //원래 색으로 복구
+        yield return new WaitUntil(() => hitCount <= 0);
 
-        isDamage = false;
+        //머터리얼 복구
+        sprite.material = VarManager.Instance.spriteMat;
+
+        //원래 색으로 복구
+        sprite.color = Color.white;
     }
 
     void Damage(float damage)

@@ -44,14 +44,6 @@ public class EnemySpawn : MonoBehaviour
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
 
-    [Header("Material")]
-    public Material spriteMat; //일반 스프라이트 머터리얼
-    public Material outLineMat; //아웃라인 머터리얼
-    public Material hitMat; //맞았을때 단색 머터리얼
-    public Color stopColor; //시간 멈췄을때 색깔
-    public Color hitColor; //맞았을때 깜빡일 색깔
-    public Color DeadColor; //죽을때 점점 변할 색깔
-
     void Start()
     {
         col = GetComponent<BoxCollider2D>();
@@ -201,7 +193,7 @@ public class EnemySpawn : MonoBehaviour
                     //체력 1.5배
                     enemyInfo.hpMax = enemyInfo.hpMax * 1.5f;
                     // 초록 아웃라인 머터리얼
-                    enemySprite.material = outLineMat;
+                    enemySprite.material = VarManager.Instance.outLineMat;
                     enemySprite.material.color = Color.green;
                     break;
 
@@ -209,7 +201,7 @@ public class EnemySpawn : MonoBehaviour
                     //공격력 1.5배
                     enemyInfo.power = enemyInfo.power * 1.5f;
                     // 빨강 아웃라인 머터리얼
-                    enemySprite.material = outLineMat;
+                    enemySprite.material = VarManager.Instance.outLineMat;
                     enemySprite.material.color = Color.red;
                     break;
 
@@ -217,7 +209,7 @@ public class EnemySpawn : MonoBehaviour
                     //속도 1.5배
                     enemyInfo.speed = enemyInfo.speed * 1.5f;
                     // 하늘색 아웃라인 머터리얼
-                    enemySprite.material = outLineMat;
+                    enemySprite.material = VarManager.Instance.outLineMat;
                     enemySprite.material.color = Color.cyan;
                     break;
 
@@ -230,7 +222,7 @@ public class EnemySpawn : MonoBehaviour
         else
         {
             //일반 스프라이트 머터리얼
-            enemySprite.material = spriteMat;
+            enemySprite.material = VarManager.Instance.spriteMat;
             enemyManager.isElite = false;
         }
 
@@ -311,14 +303,27 @@ public class EnemySpawn : MonoBehaviour
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기
         if (other.CompareTag("Enemy") && other.gameObject.activeSelf)
         {
+            EnemyManager manager = other.GetComponent<EnemyManager>();
+            EnemyAI enemyAI = other.GetComponent<EnemyAI>();
+
             //죽은 몬스터는 미적용
-            if (other.GetComponent<EnemyManager>().isDead)
+            if (manager.isDead)
                 return;
 
-            Transform originParent = other.transform.parent; //원래 부모 기억
+            //점프 몬스터는 점프 시퀀스 초기화
+            if(enemyAI.moveType == EnemyAI.MoveType.Jump)
+            enemyAI.jumpSeq.Pause();
 
-            other.transform.parent = transform; //몹 스포너로 부모 지정
-            other.transform.localPosition = -other.transform.localPosition; // 내부 포지션 역전시키기
+            //이동 대기 카운트 초기화
+            manager.oppositeCount = 0.5f;
+
+            //원래 부모 기억
+            Transform originParent = other.transform.parent;
+
+            //몹 스포너로 부모 지정
+            other.transform.parent = transform;
+            // 내부 포지션 역전 및 거리 추가
+            other.transform.localPosition *= -0.8f;
 
             other.transform.parent = originParent; //원래 부모로 복귀
         }

@@ -26,7 +26,7 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 상품 구매 버튼일때
         if (toolTipType == ToolTipType.ProductTip)
         {
-            ProductToolTip.Instance.OpenTooltip(magic, item);
+            StartCoroutine(ProductToolTip.Instance.OpenTooltip(magic, item));
         }
 
         // 소지품 아이콘일때

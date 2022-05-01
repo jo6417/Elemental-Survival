@@ -73,25 +73,27 @@ public class MagicSting : MonoBehaviour
         //목표 위치 가져오기
         Vector2 targetPos = magicHolder.targetPos;
 
-        // 위치 초기화
+        // 크기 초기화
         transform.localScale = Vector2.zero;
 
-        //시작 위치
-        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position;
-
-        //목적지 = 시작점 + (목적지 방향 벡터) * 범위
+        //바라볼 방향 = 목표위치 - 시작점
         Vector2 endDir = targetPos - (Vector2)PlayerManager.Instance.transform.position;
-        Vector2 endPos = startPos + endDir.normalized * range;
+
+        //시작점 = 플레이어 위치로부터 목표 방향 20% 위치
+        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + endDir.normalized * range * 0.2f;
+
+        //목적지 = 플레이어 위치 + (목표 방향 * 범위)
+        Vector2 endPos = (Vector2)PlayerManager.Instance.transform.position + endDir.normalized * range;
 
         //방향 각도 구하기
         float endRotation = Mathf.Atan2(endDir.y, endDir.x) * Mathf.Rad2Deg;
         endRotation += addAngle;
-        float startRotation = endRotation + 180f;
+        // float startRotation = endRotation + 181f;
 
         //목표 위치로 회전
-        transform.rotation = Quaternion.Euler(Vector3.forward * startRotation);
+        transform.rotation = Quaternion.Euler(Vector3.forward * endRotation);
 
-        //플레이어 위치에서 시작
+        //시작 위치로 이동
         transform.position = startPos;
 
         //방향 전환을 위한 마지막 위치 벡터
@@ -102,11 +104,12 @@ public class MagicSting : MonoBehaviour
         stingSeq
         .Append(
             // 0,0에서 점점 커지면서 오브젝트 나타내기
-            transform.DOScale(originScale, 0.5f)
+            transform.DOScale(originScale, speed)
+            .SetEase(Ease.OutBack)
         )
-        .Append(
-            //진행할 방향 바라보기
-            transform.DORotate(Vector3.forward * endRotation, 0.5f)
+        .Join(
+            //한바퀴 돌리기
+            transform.DORotate(Vector3.forward * 360f, speed, RotateMode.LocalAxisAdd)
             .SetEase(Ease.OutBack)
         )
         .AppendCallback(() =>
@@ -130,7 +133,7 @@ public class MagicSting : MonoBehaviour
             float duration = MagicDB.Instance.MagicDuration(magic);
 
             // 오브젝트 자동 디스폰하기
-            StartCoroutine(AutoDespawn(duration));
+            StartCoroutine(AutoDespawn());
         });
 
         //시간 멈춘동안 시퀀스 멈추기
@@ -162,7 +165,7 @@ public class MagicSting : MonoBehaviour
         }
     }
 
-    IEnumerator AutoDespawn(float duration)
+    IEnumerator AutoDespawn(float duration = 0f)
     {
         //range 속성만큼 지속시간 부여
         yield return new WaitForSeconds(duration);

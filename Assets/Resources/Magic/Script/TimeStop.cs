@@ -49,14 +49,14 @@ public class TimeStop : MonoBehaviour
         //애니메이션 멈추기
         anim.speed = 0f;
 
-        //플레이어를 부모로
-        transform.parent = PlayerManager.Instance.transform;
+        //플레이어 위치로 이동
+        transform.position = PlayerManager.Instance.transform.position;
 
         //플레이어 위치에서 시작
-        transform.localPosition = Vector2.zero;
+        // transform.localPosition = Vector2.zero;
 
         //플레이어 머리 위까지 올라가기
-        transform.DOLocalMove(Vector2.up * 2f, 0.5f)
+        transform.DOLocalMove((Vector2)transform.position + Vector2.up * 2f, 0.5f)
         .OnComplete(() =>
         {
             //애니메이션 처음부터 재생
@@ -65,9 +65,8 @@ public class TimeStop : MonoBehaviour
             anim.Play("TimeStop");
         });
 
-        //쿨타임 시작
-        // yield return new WaitForSeconds(coolTime);
-        float coolCount = coolTime;
+        //모래시계 돌리는 시간
+        float coolCount = coolTime * 0.5f; //쿨타임의 절반
         while (coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영

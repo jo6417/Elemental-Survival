@@ -33,6 +33,16 @@ public class VarManager : MonoBehaviour
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float timeScale = 1f; //전역으로 사용하는 타임스케일
 
+    [Header("Material")]
+    public Material spriteMat; //일반 스프라이트 머터리얼
+    public Material outLineMat; //아웃라인 머터리얼
+    public Material hitMat; //맞았을때 단색 머터리얼
+
+    [Header("Color")]
+    public Color stopColor; //시간 멈췄을때 색깔
+    public Color hitColor; //맞았을때 깜빡일 색깔
+    public Color DeadColor; //죽을때 점점 변할 색깔
+
     public void AllTimeScale(float scale)
     {
         playerTimeScale = scale;

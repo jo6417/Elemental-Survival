@@ -19,6 +19,7 @@ public class MagicInfo
     public string castType; //시전 타입
     public string description; //마법 설명
     public string priceType; //마법 구매시 화폐
+    public bool multiHit; //다단 히트 여부
     public int price; //마법 구매시 가격
     // public bool onlyOne = false; //1이면 다중 발사 금지
 
@@ -44,7 +45,9 @@ public class MagicInfo
     public float projectilePerLev;
     public float coolTimePerLev;
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price, float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime, float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price, 
+    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime, 
+    float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
     {
         this.id = id;
         this.grade = grade;
@@ -54,6 +57,7 @@ public class MagicInfo
         this.castType = castType;
         this.description = description;
         this.priceType = priceType;
+        this.multiHit = multiHit;
         this.price = price;
 
         this.power = power;
@@ -184,7 +188,7 @@ public class MagicDB : MonoBehaviour
 
                 //받아온 데이터를 id를 키값으로 MagicInfo 딕셔너리에 넣기
                 magicDB[magic["id"]] = (new MagicInfo(
-                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["price"],
+                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["multiHit"], magic["price"],
                 magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["projectile"], magic["coolTime"],
                 magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["projectilePerLev"], magic["coolTimePerLev"]
                 ));
@@ -192,17 +196,6 @@ public class MagicDB : MonoBehaviour
 
             //모든 마법 초기화
             InitialMagic();
-
-            // foreach (var item in magicDB)
-            // {
-            //     print(
-            //     " id : " + item.id + " / " +
-            //     " grade : " + item.grade + " / " +
-            //     " magicName : " + item.magicName + " / " +
-            //     " element_A : " + item.element_A + " / " +
-            //     " element_B : " + item.element_B + " / " +
-            //     " description : " + item.description);
-            // }
         }
 
         loadDone = true;
@@ -217,6 +210,7 @@ public class MagicDB : MonoBehaviour
 
         foreach (KeyValuePair<int, MagicInfo> value in magicDB)
         {
+            // print(value.Value.id + " : " + value.Value.magicName.Replace(" ", "") + " : " + name.Replace(" ", ""));
             if (value.Value.magicName.Replace(" ", "") == name.Replace(" ", ""))
             {
                 magic = value.Value;
@@ -456,7 +450,7 @@ public class MagicDB : MonoBehaviour
         //마법 크리티컬 데미지 및 레벨당 증가량 계산
         criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 크리티컬 데미지 증가량 계산
-        criticalPower = criticalPower + criticalPower * (PlayerManager.Instance.PlayerStat_Now.luck - 1);
+        criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
 
         return criticalPower;
     }

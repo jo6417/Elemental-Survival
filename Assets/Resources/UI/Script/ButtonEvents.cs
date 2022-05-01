@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public delegate void OnSelectCallBack();
-public class OnSelect : MonoBehaviour, ISelectHandler
+// public delegate void OnSelectCallBack();
+public class ButtonEvents : MonoBehaviour, ISelectHandler
 {
     [SerializeField]
     private bool isAutoClick = false; //선택만해도 클릭되게
+    public OnSelectAutoScroll autoScroll = null;
 
-    public OnSelectCallBack onSelect;
+    // public OnSelectCallBack onSelect;
     private Button button;
     Vector3[] maskCorners = new Vector3[4];
     Vector3[] myCorners = new Vector3[4];
@@ -27,8 +28,8 @@ public class OnSelect : MonoBehaviour, ISelectHandler
             button.onClick.Invoke();
 
         //콜백에 들어있는 함수를 실행
-        if (onSelect != null)
-            onSelect();
+        // if (onSelect != null)
+        //     onSelect();
 
         // 해당 버튼 네비 불러오기
         Navigation btnNav = button.navigation;
@@ -39,10 +40,11 @@ public class OnSelect : MonoBehaviour, ISelectHandler
             button.navigation = btnNav;
         }
 
-        //TODO 선택됬을때 해당 아이템 보이는 위치로 스크롤하기
-        //TODO mask 1번 모서리가 transform 1번 모서리보다 아래에 있으면
-        //TODO mask 3번 모서리가 transform 3번 모서리보다 위에 있으면
-        //TODO 둘의 좌표 같아 질때까지 스크롤 올리기, 도중에 아이템MouseDown or Select or 들어오면 중지
+        //TODO 스크롤뷰 변수 있으면 신호 보내기
+        if(autoScroll != null)
+        {
+            autoScroll.SetScrollItem(transform);
+        }
     }
 
     IEnumerator ScrollMove()
@@ -57,5 +59,19 @@ public class OnSelect : MonoBehaviour, ISelectHandler
 
             yield return null;
         }
+    }
+
+    public void ButtonNavOff()
+    {
+        Navigation nav = button.navigation;
+        nav.mode = Navigation.Mode.Explicit;
+        button.navigation = nav;
+    }
+
+    public void ButtonNavAuto()
+    {
+        Navigation nav = button.navigation;
+        nav.mode = Navigation.Mode.Automatic;
+        button.navigation = nav;
     }
 }

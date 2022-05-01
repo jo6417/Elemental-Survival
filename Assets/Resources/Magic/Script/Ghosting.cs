@@ -56,7 +56,7 @@ public class Ghosting : MonoBehaviour
         fogCircle.DOScale(Vector2.one, 1f);
 
         // 플레이어 하얗게 빛나고 투명하게
-        PlayerManager.Instance.sprite.material = EnemySpawn.Instance.outLineMat;
+        PlayerManager.Instance.sprite.material = VarManager.Instance.outLineMat;
         PlayerManager.Instance.sprite.material.color = Color.cyan;
         PlayerManager.Instance.playerLight.enabled = true;
 
@@ -73,7 +73,7 @@ public class Ghosting : MonoBehaviour
         .OnComplete(() =>
         {
             // 플레이어 색깔 초기화
-            PlayerManager.Instance.sprite.material = EnemySpawn.Instance.spriteMat;
+            PlayerManager.Instance.sprite.material = VarManager.Instance.spriteMat;
             PlayerManager.Instance.sprite.material.color = Color.white;
             PlayerManager.Instance.playerLight.enabled = false;
 

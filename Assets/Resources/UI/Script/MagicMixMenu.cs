@@ -12,16 +12,17 @@ public class MagicMixMenu : MonoBehaviour
 {
     [Header("Refer")]
     public GameObject classPrefab; //클래스 전체 프리팹
+    public GameObject iconGridPrefab; //아이콘 들어갈 그리드 프리팹
     public GameObject magicIconPrefab; //마법 아이콘 프리팹
     public GameObject recipePrefab; //마법 도감 레시피 프리팹
     public TextMeshProUGUI noMagicTxt; //합성 불가시 텍스트
     public TextMeshProUGUI scrollAmount; // 플레이어 보유 스크롤 개수
     public Sprite questionMark; //물음표 스프라이트
 
-    [Header("Scrollbar")]
-    public Scrollbar leftScrollbar; //왼쪽 스크롤바
-    public Scrollbar rightScrollbar; //오른쪽 스크롤바
-    public Scrollbar recipeScrollbar; //레시피 스크롤바
+    [Header("ScrollRect")]
+    public ScrollRect leftScroll; //왼쪽 스크롤
+    public ScrollRect rightScroll; //오른쪽 스크롤
+    public ScrollRect recipeScroll; //레시피 스크롤바
 
     [Header("List")]
     public Transform leftContainer; //왼쪽 마법 리스트
@@ -81,17 +82,16 @@ public class MagicMixMenu : MonoBehaviour
         notHasMagic.Clear();
         notHasMagic = MagicDB.Instance.magicDB.Values.ToList().FindAll(x => x.magicLevel == 0);
 
-        //왼쪽 페이지 채우기
-        bool leftPageDone = SetPage(true);
-        //오른쪽 페이지 채우기
-        bool rightPageDone = SetPage(false);
+        //Vertical 레이아웃 켜기
+        leftContainer.GetComponent<VerticalLayoutGroup>().enabled = true;
+        rightContainer.GetComponent<VerticalLayoutGroup>().enabled = true;
+        //fitter 켜기
+        leftContainer.GetComponent<ContentSizeFitter>().enabled = true;
+        rightContainer.GetComponent<ContentSizeFitter>().enabled = true;
 
         //양쪽 뒤로 버튼 넣기
         ToggleBackBtn(true, 0);
         ToggleBackBtn(false, 0);
-
-        //팝업 렌더링 완료 후 버튼 튀어나오기
-        yield return new WaitUntil(() => SetRecipe());
 
         //마법 레시피 버튼 띄우기
         ToggleRecipeBtn(true);
@@ -100,18 +100,50 @@ public class MagicMixMenu : MonoBehaviour
         ToggleExitBtn(true);
 
         // 페이지 로딩 끝날때까지 대기
-        yield return new WaitUntil(() => leftPageDone && rightPageDone && leftSelected);
+        yield return new WaitUntil(() => 
+        SetPage(true) && 
+        SetPage(false) && 
+        SetRecipe() && 
+        leftSelected);
 
-        //좌측 첫번째 아이콘 버튼 선택하기
-        leftSelected.Select();
+        //그리드 레이아웃 업데이트
+        List<GridLayoutUI> leftGrid = leftContainer.GetComponentsInChildren<GridLayoutUI>().ToList();
+        List<GridLayoutUI> rightGrid = rightContainer.GetComponentsInChildren<GridLayoutUI>().ToList();
+        List<GridLayoutUI> recipeGrid = recipeContainer.GetComponentsInChildren<GridLayoutUI>().ToList();
+        foreach (var grid in leftGrid)
+        {
+            grid.GridUpdate();
+            grid.enabled = false;
+        }
+        foreach (var grid in rightGrid)
+        {
+            grid.GridUpdate();
+            grid.enabled = false;
+        }
+        foreach (var grid in recipeGrid)
+        {
+            grid.GridUpdate();
+            grid.enabled = false;
+        }
 
         // UI 레이아웃 리빌드하기
         LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)leftContainer.transform);
         LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)rightContainer.transform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)recipeContainer.transform);
 
-        // 모든 sizeFitter, LayoutGroup 끄기
-        ToggleLayout(leftContainer);
-        ToggleLayout(rightContainer);
+        //Vertical 레이아웃 끄기
+        leftContainer.GetComponent<VerticalLayoutGroup>().enabled = false;
+        rightContainer.GetComponent<VerticalLayoutGroup>().enabled = false;
+        //fitter 끄기
+        leftContainer.GetComponent<ContentSizeFitter>().enabled = false;
+        rightContainer.GetComponent<ContentSizeFitter>().enabled = false;
+
+        // 최상단으로 스크롤하기
+        leftScroll.verticalNormalizedPosition = 1f;
+        rightScroll.verticalNormalizedPosition = 1f;
+
+        //좌측 첫번째 아이콘 버튼 선택하기
+        leftSelected.Select();
     }
 
     bool SetPage(bool isLeft)
@@ -132,9 +164,6 @@ public class MagicMixMenu : MonoBehaviour
         //좌,우 정보창 비활성화
         selectInfoPanel.gameObject.SetActive(false);
 
-        //해당 페이지의 스크롤바
-        Scrollbar scrollbar = isLeft ? leftScrollbar : rightScrollbar;
-
         //마법 리스트
         Transform container = isLeft ? leftContainer : rightContainer;
         // 리스트의 자식 모두 제거
@@ -142,10 +171,8 @@ public class MagicMixMenu : MonoBehaviour
         // 리스트 활성화
         container.gameObject.SetActive(true);
 
-        ContentSizeFitter containerFitter = container.GetComponent<ContentSizeFitter>();
-        VerticalLayoutGroup containerLayout = container.GetComponent<VerticalLayoutGroup>();
-        containerFitter.enabled = true;
-        containerLayout.enabled = true;
+        //아이콘 들어가는 스크롤
+        ScrollRect scroll = isLeft ? leftScroll : rightScroll;
 
         // 모든 마법 정보 비우기
         leftMagic = null;
@@ -164,28 +191,24 @@ public class MagicMixMenu : MonoBehaviour
             // 6 ~ 1 등급 마법 있으면 아이콘 생성
             if (playerMagics.Exists(x => x.grade == i))
             {
-                GameObject classMenu = LeanPool.Spawn(classPrefab, container);
+                //클래스명 오브젝트 생성
+                GameObject classTitle = LeanPool.Spawn(classPrefab, container);
 
-                ContentSizeFitter classFitter = classMenu.GetComponent<ContentSizeFitter>();
-                VerticalLayoutGroup classLayout = classMenu.GetComponent<VerticalLayoutGroup>();
-                classFitter.enabled = true;
-                classLayout.enabled = true;
+                //아이콘 넣을 그리드 오브젝트 생성
+                Transform magicList = LeanPool.Spawn(iconGridPrefab, container).transform;
+
+                //그리드 내부 아이템 사이즈 수정
+                GridLayoutUI grid = magicList.GetComponent<GridLayoutUI>();
+                grid.cellSize = new Vector2(150f, 150f);
+                grid.spacing = new Vector2(10f, 10f);
 
                 //등급 타이틀
-                Transform classTitle = classMenu.transform.Find("ClassTitle");
                 TextMeshProUGUI classTxt = classTitle.GetComponentInChildren<TextMeshProUGUI>();
 
                 //등급 색깔 넣기
                 classTitle.GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
                 //등급 텍스트 넣기
                 classTxt.text = "Class " + i;
-
-                //해당 등급 마법 아이콘 넣을 그리드 오브젝트 찾기
-                Transform magicList = classMenu.transform.Find("Magics");
-                ContentSizeFitter gridFitter = magicList.GetComponent<ContentSizeFitter>();
-                GridLayoutGroup gridLayout = magicList.GetComponent<GridLayoutGroup>();
-                gridFitter.enabled = true;
-                gridLayout.enabled = true;
 
                 //해당 등급 마법 모두 찾기
                 List<MagicInfo> magics = new List<MagicInfo>();
@@ -197,17 +220,8 @@ public class MagicMixMenu : MonoBehaviour
                     //해당 등급 리스트에 마법 아이콘 스폰
                     GameObject magicIcon = LeanPool.Spawn(magicIconPrefab, magicList);
 
-                    //좌,우 각각 최상단 첫번째 마법 아이콘일때
-                    // if (firstIcon == null)
-                    // {
-                    //     firstIcon = magicIcon.GetComponent<Button>();
-
-                    //     //버튼 네비게이션 연결하기
-                    //     Button indexBtn = isLeft ? recipeBtn.GetComponent<Button>() : exitBtn.GetComponent<Button>();
-                    //     Navigation nav = indexBtn.navigation;
-                    //     nav.selectOnUp = firstIcon;
-                    //     indexBtn.navigation = nav;
-                    // }
+                    //자동 스크롤 스크립트 참조시키기
+                    magicIcon.GetComponent<ButtonEvents>().autoScroll = scroll.GetComponent<OnSelectAutoScroll>();
 
                     //좌측 패널 첫번째 마법 아이콘 기억하기
                     if (isLeft && leftSelected == null)
@@ -341,37 +355,11 @@ public class MagicMixMenu : MonoBehaviour
                         }
                     });
                 }
-                // UI 레이아웃 리빌드하기
-                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)classMenu.transform);
+                
             }
         }
 
-        //해당 페이지의 스크롤바 초기화
-        scrollbar.value = 1f;
-
         return true;
-    }
-
-    void ToggleLayout(Transform container)
-    {
-        //TODO 모든 사이즈피터 끄기
-        List<ContentSizeFitter> allFitter = container.GetComponentsInChildren<ContentSizeFitter>().ToList();
-        foreach (var fitter in allFitter)
-        {
-            fitter.enabled = false;
-        }
-        //TODO 모든 그리드 레이아웃 끄기
-        List<GridLayoutGroup> allGrid = container.GetComponentsInChildren<GridLayoutGroup>().ToList();
-        foreach (var grid in allGrid)
-        {
-            grid.enabled = false;
-        }
-        //TODO 모든 버티컬 레이아웃 끄기
-        List<VerticalLayoutGroup> allVertical = container.GetComponentsInChildren<VerticalLayoutGroup>().ToList();
-        foreach (var vertical in allVertical)
-        {
-            vertical.enabled = false;
-        }
     }
 
     bool SetRecipe()
@@ -388,26 +376,25 @@ public class MagicMixMenu : MonoBehaviour
             // 6 ~ 1 등급 마법 있으면 아이콘 생성
             if (allMagics.Exists(x => x.grade == i))
             {
-                GameObject classMenu = LeanPool.Spawn(classPrefab, recipeContainer);
+                //등급 타이틀
+                GameObject classTitle = LeanPool.Spawn(classPrefab, recipeContainer);
+
+                //아이콘 넣을 그리드 오브젝트 생성
+                Transform magicList = LeanPool.Spawn(iconGridPrefab, recipeContainer).transform;
+
+                //그리드 내부 아이템 사이즈 수정
+                GridLayoutUI grid = magicList.GetComponent<GridLayoutUI>();
+                grid.cellSize = new Vector2(650f, 170f);
+                grid.spacing = new Vector2(0f, 0f);
 
                 //등급 타이틀
-                Transform classTitle = classMenu.transform.Find("ClassTitle");
+                // Transform classTitle = classMenu.transform.Find("ClassTitle");
                 TextMeshProUGUI classTxt = classTitle.GetComponentInChildren<TextMeshProUGUI>();
 
                 //등급 색깔 넣기
                 classTitle.GetComponent<Image>().color = MagicDB.Instance.gradeColor[i];
                 //등급 텍스트 넣기
                 classTxt.text = "Class " + i;
-
-                //해당 등급 레시피 넣을 부모 오브젝트 찾기
-                Transform magicList = classMenu.transform.Find("Magics");
-
-                //레시피 넣을 그리드
-                GridLayoutGroup grid = magicList.GetComponent<GridLayoutGroup>();
-                //한줄 사이즈 수정
-                grid.cellSize = new Vector2(600, 170);
-                //레시피 한줄에 1개씩 넣기
-                grid.constraintCount = 1;
 
                 //해당 등급 마법 모두 찾기
                 List<MagicInfo> magics = new List<MagicInfo>();
@@ -423,8 +410,11 @@ public class MagicMixMenu : MonoBehaviour
                     //합성 성공 내역 있는 마법만 보여주기
                     bool unlockMagic = MagicDB.Instance.unlockMagics.Exists(x => x == magic.id);
 
-                    //해당 등급 리스트에 마법 아이콘 스폰
+                    //해당 등급 리스트에 레시피 스폰
                     GameObject recipe = LeanPool.Spawn(recipePrefab, magicList);
+
+                    //자동 스크롤 스크립트 참조시키기
+                    recipe.GetComponent<ButtonEvents>().autoScroll = recipeScroll.GetComponent<OnSelectAutoScroll>();
 
                     //첫번째 레시피일때 기억하기
                     if (firstRecipe == null)
@@ -492,24 +482,9 @@ public class MagicMixMenu : MonoBehaviour
                     // 아이콘 눌렀을때 일어날 이벤트 넣기
                     Button btn = recipe.GetComponent<Button>();
 
-                    //레시피 오픈,닫기 버튼 네비 불러오기
-                    // Button _recipeBtn = recipeBtn.GetComponent<Button>();
-                    // Navigation recipeBtnNav = _recipeBtn.navigation;
-
-                    //해당 레시피에서 왼쪽으로 가면 레시피 닫기 버튼
-                    // Navigation btnNav = btn.navigation;
-                    // btnNav.selectOnLeft = _recipeBtn;
-
                     btn.onClick.AddListener(delegate
                     {
                         // print("Recipe : " + magic.magicName);
-
-                        //마지막 선택된 버튼 기억
-                        // UIManager.Instance.SelectAndSave(btn);
-
-                        //레시피 오픈 버튼에서 위로가면 마지막 선택된 레시피
-                        // recipeBtnNav.selectOnUp = UIManager.Instance.lastSelected;
-                        // _recipeBtn.navigation = recipeBtnNav;
 
                         //마법 타이틀 찾기
                         Transform title = recipeInfoPanel.Find("TitleFrame");
@@ -538,12 +513,9 @@ public class MagicMixMenu : MonoBehaviour
                     });
                 }
                 // UI 레이아웃 리빌드하기
-                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)classMenu.transform);
+                // LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)classMenu.transform);
             }
         }
-
-        //해당 페이지의 스크롤바 초기화
-        recipeScrollbar.value = 1f;
 
         //레시피 리스트 및 정보 패널 비활성화
         recipePanel.gameObject.SetActive(false);
@@ -780,6 +752,67 @@ public class MagicMixMenu : MonoBehaviour
         }
     }
 
+    void ToggleBackBtn(bool isLeft, float duration = 0.5f)
+    {
+        //해당 페이지의 뒤로가기 버튼
+        Transform backBtn = isLeft ? leftBackBtn : rightBackBtn;
+        //해당 페이지의 선택된 마법 아이콘
+        Transform selectPage = isLeft ? leftInfoPanel : rightInfoPanel;
+
+        // 버튼 끌때
+        if (!selectPage.gameObject.activeSelf)
+        {
+            // 좌,우 각각 마법 정보 없에기
+            if (isLeft)
+                leftMagic = null;
+            else
+                rightMagic = null;
+        }
+
+        // 움직일때는 상호작용 비활성화
+        backBtn.GetComponent<Button>().interactable = false;
+
+        //아이콘 트윈 강제로 끝내기
+        selectPage.DOComplete();
+
+        //뒤로 버튼 트윈 강제로 끝내기
+        backBtn.DOComplete();
+
+        float startY = 140f;
+        float endY = 0;
+        //왼쪽 백 버튼일때
+        if (isLeft)
+        {
+            endY = selectPage.gameObject.activeSelf ? startY - 100f : startY;
+        }
+        //오른쪽 백 버튼일때
+        else
+        {
+            endY = selectPage.gameObject.activeSelf ? startY - 100f : startY;
+        }
+
+        //켤때, 끌때 다른 Ease
+        Ease ease = selectPage.gameObject.activeSelf ? Ease.OutBack : Ease.InBack;
+
+        //원래 위치로 돌아오기
+        backBtn.DOLocalMoveY(endY, duration)
+        .OnStart(() =>
+        {
+            backBtn.gameObject.SetActive(true);
+        })
+        .SetEase(ease)
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            //버튼 안보일땐 비활성화
+            if (!selectPage.gameObject.activeSelf)
+                backBtn.gameObject.SetActive(false);
+
+            //상호작용 토글
+            backBtn.GetComponent<Button>().interactable = selectPage.gameObject.activeSelf;
+        });
+    }
+
     public void ClickRecipeBtn()
     {
         StartCoroutine(ToggleRecipePage());
@@ -796,10 +829,10 @@ public class MagicMixMenu : MonoBehaviour
         if (recipePanel.gameObject.activeSelf)
         {
             // 첫번째 항목 버튼 클릭하기
-            firstRecipe.onClick.Invoke();
+            // firstRecipe.onClick.Invoke();
 
             //! 스크롤 아래 끝까지 내리는 버그 있음
-            // firstRecipe.Select();
+            firstRecipe.Select();
         }
 
         // 재료 리스트 패널 토글
@@ -833,65 +866,6 @@ public class MagicMixMenu : MonoBehaviour
         ToggleRecipeBtn(true);
     }
 
-    void ToggleBackBtn(bool isLeft, float duration = 0.5f)
-    {
-        //해당 페이지의 뒤로가기 버튼
-        Transform backBtn = isLeft ? leftBackBtn : rightBackBtn;
-        //해당 페이지의 선택된 마법 아이콘
-        Transform selectPage = isLeft ? leftInfoPanel : rightInfoPanel;
-
-        // 버튼 끌때
-        if (!selectPage.gameObject.activeSelf)
-        {
-            // 좌,우 각각 마법 정보 없에기
-            if (isLeft)
-                leftMagic = null;
-            else
-                rightMagic = null;
-        }
-
-        // 움직일때는 상호작용 비활성화
-        backBtn.GetComponent<Button>().interactable = false;
-
-        //아이콘 트윈 강제로 끝내기
-        selectPage.DOComplete();
-
-        //뒤로 버튼 트윈 강제로 끝내기
-        backBtn.DOComplete();
-
-        float endX = 0;
-        //왼쪽 백 버튼일때
-        if (isLeft)
-        {
-            endX = selectPage.gameObject.activeSelf ? 40f : 240f;
-        }
-        //오른쪽 백 버튼일때
-        else
-        {
-            endX = selectPage.gameObject.activeSelf ? -40f : -240f;
-        }
-
-        //켤때, 끌때 다른 Ease
-        Ease ease = selectPage.gameObject.activeSelf ? Ease.OutBack : Ease.InBack;
-
-        //원래 위치로 돌아오기
-        backBtn.GetComponent<RectTransform>().DOAnchorPosX(endX, duration)
-        .OnStart(() =>
-        {
-            backBtn.gameObject.SetActive(true);
-        })
-        .SetEase(ease)
-        .SetUpdate(true)
-        .OnComplete(() =>
-        {
-            //버튼 안보일땐 비활성화
-            if (!selectPage.gameObject.activeSelf)
-                backBtn.gameObject.SetActive(false);
-
-            //상호작용 토글
-            backBtn.GetComponent<Button>().interactable = selectPage.gameObject.activeSelf;
-        });
-    }
     void ToggleRecipeBtn(bool isActive, float duration = 0.5f)
     {
         //버튼 상호작용 비활성화
@@ -900,14 +874,13 @@ public class MagicMixMenu : MonoBehaviour
         //버튼 트윈 강제로 끝내기
         recipeBtn.DOComplete();
 
-        float startY = 140f;
-        float endY = isActive ? startY - 100f : startY;
+        float endX = isActive ? 40f : 240f;
 
         //켤때, 끌때 다른 Ease
         Ease ease = isActive ? Ease.OutBack : Ease.InBack;
 
         //버튼 이동
-        recipeBtn.DOLocalMoveY(endY, duration)
+        recipeBtn.GetComponent<RectTransform>().DOAnchorPosX(endX, duration)
         .OnStart(() =>
         {
             //버튼 내려갈때만
@@ -917,7 +890,7 @@ public class MagicMixMenu : MonoBehaviour
                 recipeBtn.GetComponentInChildren<TextMeshProUGUI>().text = recipePanel.gameObject.activeSelf ? "Back" : "Recipe";
                 //레시피 켤때는 빨간색, 레시피 끌때는 초록색으로 전환
                 recipeBtn.GetComponent<Image>().color = recipePanel.gameObject.activeSelf ?
-                MagicDB.Instance.HexToRGBA("F06464") : MagicDB.Instance.HexToRGBA("9BFF5A");
+                MagicDB.Instance.HexToRGBA("F06464") : MagicDB.Instance.HexToRGBA("3742CC");
             }
         })
         .SetEase(ease)
@@ -930,15 +903,14 @@ public class MagicMixMenu : MonoBehaviour
 
         //뒤로 버튼 트윈 강제로 끝내기
         exitBtn.DOComplete();
-
-        float startY = 140f;
-        float endY = isActive ? startY - 100f : startY;
+        
+        float endX = isActive ? -40f : -240f;
 
         //켤때, 끌때 다른 Ease
         Ease ease = isActive ? Ease.OutBack : Ease.InBack;
 
         //버튼 이동
-        exitBtn.DOLocalMoveY(endY, duration)
+        exitBtn.GetComponent<RectTransform>().DOAnchorPosX(endX, duration)
         .SetEase(ease)
         .SetUpdate(true);
     }

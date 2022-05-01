@@ -8,14 +8,14 @@ public class MagicArea : MonoBehaviour
 {
     private MagicInfo magic;
     public SpriteRenderer sprite;
-    public Vector2 originScale; //원래 사이즈
+    // public Vector2 originScale; //원래 사이즈
     public float frontDistance = 2f; //오브젝트를 얼마나 앞에서 생성할지
     public Ease ease;
     public bool isThrow; //던지기 시퀀스 실행 여부
 
     private void Awake()
     {
-        originScale = transform.localScale;
+        // originScale = transform.localScale;
     }
 
     private void OnEnable()
@@ -65,7 +65,7 @@ public class MagicArea : MonoBehaviour
             transform.localScale = Vector2.zero;
 
             //range 적용된 크기까지 커지기
-            transform.DOScale(originScale * range, fallingTime)
+            transform.DOScale(Vector2.one * range, fallingTime)
             .SetEase(Ease.OutBack);
 
             // 플레이어 방향으로 날리기
@@ -84,7 +84,7 @@ public class MagicArea : MonoBehaviour
         else
         {
             //range 따라 사이즈 키우기
-            transform.localScale = originScale * range;
+            // transform.localScale = originScale * range;
 
             //점점 투명해지기
             sprite.DOColor(Color.clear, duration)

@@ -41,6 +41,7 @@ public class ProductToolTip : MonoBehaviour
     public TextMeshProUGUI productDescript;
     public Sprite questionMark;
     RectTransform rect;
+    bool isFollow = false;
 
     [Header("Magic")]
     public MagicInfo magic;
@@ -66,6 +67,9 @@ public class ProductToolTip : MonoBehaviour
 
     void FollowMouse()
     {
+        if(!isFollow)
+        return;
+
         //마우스 클릭하면 툴팁 끄기
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
@@ -85,10 +89,12 @@ public class ProductToolTip : MonoBehaviour
     }
 
     //툴팁 켜기
-    public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null, ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown, Vector2 position = default(Vector2))
+    public IEnumerator OpenTooltip(MagicInfo magic = null, ItemInfo item = null, ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown, Vector2 position = default(Vector2))
     {
         //툴팁 켜져있으면 끄기
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
+
+        isFollow = false;
 
         //툴팁 위치 들어왔으면 이동
         if (position != default(Vector2))
@@ -124,15 +130,20 @@ public class ProductToolTip : MonoBehaviour
         this.magic = magic;
         this.item = item;
 
+        bool SetDone = false;
         if (magic != null)
         {
-            SetMagicInfo();
+            SetDone = SetMagicInfo();
         }
 
         if (item != null)
         {
-            SetItemInfo();
+            SetDone = SetItemInfo();
         }
+
+        yield return new WaitUntil(() => SetDone);
+
+        isFollow = true;
     }
 
     //툴팁 끄기
@@ -142,15 +153,17 @@ public class ProductToolTip : MonoBehaviour
         magic = null;
         item = null;
 
+        isFollow = false;
+
         gameObject.SetActive(false);
     }
 
-    void SetMagicInfo()
+    bool SetMagicInfo()
     {
         if (magic == null)
         {
             Debug.Log("magic is null!");
-            return;
+            return false;
         }
 
         //마법 이름, 설명 넣기
@@ -168,7 +181,7 @@ public class ProductToolTip : MonoBehaviour
         if (magicA == null || magicB == null)
         {
             recipeObj.SetActive(false);
-            return;
+            return false;
         }
         else
         {
@@ -182,13 +195,17 @@ public class ProductToolTip : MonoBehaviour
         // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
         elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
         elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
+
+        return true;
     }
 
-    void SetItemInfo()
+    bool SetItemInfo()
     {
         // 아이템 이름, 설명 넣기
         productName.text = item.itemName;
         productDescript.text = item.description;
+
+        return false;
     }
 
     List<float> convertValue()
