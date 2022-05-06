@@ -78,6 +78,7 @@ public class EnemyAI : MonoBehaviour
         jumpSeq.Kill();
 
         //애니메이션 스피드 초기화
+        if(anim != null)
         anim.speed = 1f;
 
         // 위치 고정 해제
@@ -106,6 +107,8 @@ public class EnemyAI : MonoBehaviour
 
             rigid.velocity = Vector2.zero; //이동 초기화
             rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+
+            if(anim != null)
             anim.speed = 0f;
 
             transform.DOPause();
@@ -119,8 +122,10 @@ public class EnemyAI : MonoBehaviour
         {
             nowState = NowState.SystemStop;
 
-            rigid.velocity = Vector2.zero; //이동 초기화
+            if(anim != null)
             anim.speed = 0f;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
             transform.DOPause();
             return;
         }
@@ -183,8 +188,9 @@ public class EnemyAI : MonoBehaviour
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation; // 위치 고정 해제
         sprite.material = enemyManager.originMat;
         sprite.color = enemyManager.originColor;
-        anim.speed = 1f; //애니메이션 속도 초기화
         transform.DOPlay();
+        if(anim != null)
+        anim.speed = 1f; //애니메이션 속도 초기화
 
         if (moveType == MoveType.Walk)
         {
@@ -236,7 +242,7 @@ public class EnemyAI : MonoBehaviour
         nowState = NowState.Walk;
 
         //애니메이터 켜기
-        if (!anim.enabled)
+        if (anim != null && !anim.enabled)
             anim.enabled = true;
 
         //움직일 방향
@@ -263,7 +269,7 @@ public class EnemyAI : MonoBehaviour
         nowJumping = true;
 
         //애니메이터 끄기
-        if (anim.enabled)
+        if (anim != null && !anim.enabled)
             anim.enabled = false;
 
         // rigid.velocity = Vector2.zero;
@@ -314,6 +320,7 @@ public class EnemyAI : MonoBehaviour
             if (enemyManager.stopCount > 0)
             {
                 //애니메이션 멈추기
+                if (anim != null)
                 anim.speed = 0f;
                 //시퀀스 멈추기
                 jumpSeq.Pause();

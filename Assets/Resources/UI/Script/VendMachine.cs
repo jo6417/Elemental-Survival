@@ -13,6 +13,7 @@ public class VendMachine : MonoBehaviour
     enum ProductType { Item, Magic };
     private List<ItemInfo> items = new List<ItemInfo>(); //자판기에 들어갈 아이템 목록
     private List<MagicInfo> magics = new List<MagicInfo>(); //자판기에 들어갈 마법 목록
+    Sequence outputSeq;
 
     [Header("Refer")]
     [SerializeField]
@@ -33,13 +34,16 @@ public class VendMachine : MonoBehaviour
     private GameObject productObj; // 토출구에서 나올 상품 프리팹
     // private float rate = 0.5f; //아티팩트가 아닌 마법이 나올 확률
     [SerializeField]
-    private TextMeshProUGUI ProductPriceType; // 현재 선택 상품 지불 수단 텍스트
+    private TextMeshProUGUI productPriceType; // 현재 선택 상품 지불 수단 텍스트
     [SerializeField]
-    private TextMeshProUGUI ProductPrice; // 현재 선택 상품 가격 텍스트
+    private TextMeshProUGUI productPrice; // 현재 선택 상품 가격 텍스트
+    [SerializeField]
+    private Transform outputHole; // 아이템 나올 토출구
 
     private void OnEnable()
     {
-        VarManager.Instance.TimeStopToggle(true);
+        //시간 멈추기
+        Time.timeScale = 0f;
 
         GetComponent<Animator>().enabled = true;
 
@@ -382,8 +386,8 @@ public class VendMachine : MonoBehaviour
         Vector2 pos = (Vector2)product.transform.position + new Vector2(product.GetComponent<RectTransform>().sizeDelta.x, -product.GetComponent<RectTransform>().sizeDelta.y);
 
         // 해당 상품의 화폐과 같은 원소젬 개수 보여주기
-        ProductPriceType.text = (MagicDB.Instance.elementNames[gemTypeIndex] + " Gem").ToString(); // 화폐 원소젬 이름
-        ProductPrice.text = PlayerManager.Instance.hasGems[gemTypeIndex].ToString(); //지불할 가격
+        productPriceType.text = (MagicDB.Instance.elementNames[gemTypeIndex] + " Gem").ToString(); // 화폐 원소젬 이름
+        productPrice.text = PlayerManager.Instance.hasGems[gemTypeIndex].ToString(); //지불할 가격
 
         // 상품 모서리에 툴팁 띄우고 고정
         ProductToolTip.Instance.OpenTooltip(magic, item, ProductToolTip.ToolTipCorner.LeftUp, pos);
@@ -451,7 +455,6 @@ public class VendMachine : MonoBehaviour
             soldoutSlash.gameObject.SetActive(true); //가격 표시 사선 표시
 
             // 토출구에서 상품 떨어뜨리기
-            // 상품 인스턴스 생성
             GameObject outputObj = LeanPool.Spawn(productObj, product.transform.position, Quaternion.identity, productOutput);
 
             //배경 스프라이트 바꾸기
@@ -472,18 +475,20 @@ public class VendMachine : MonoBehaviour
             else
                 outputFrame.sprite = itemFrame; //아이템이면 아이템 프레임
 
-            //리지드바디 찾기
-            Rigidbody2D outputRigid = outputObj.GetComponent<Rigidbody2D>();
-            //랜덤 방향으로 날리기
-            Vector2 randDir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            outputRigid.AddForce(randDir);
-            //랜덤 방향으로 돌리기
-            outputRigid.angularVelocity = Random.Range(-500f, 500f);
-
-            //몇초 후에 스케일 줄이기, 제로 사이즈 되면 디스폰
-            outputObj.transform.DOScale(Vector2.zero, 1f)
+            outputObj.transform.localScale = Vector2.one;
+            
+            outputSeq = DOTween.Sequence();
+            outputSeq
+            .Append(
+                // 토출구 가운데까지 DoMove 하기
+                outputObj.transform.DOMove(outputHole.position, 1f)
+            )
+            .Append(
+                // 점점 줄어들어 사라지기
+                outputObj.transform.DOScale(Vector2.zero, 1f)
+                .SetEase(Ease.InBack)
+            )
             .SetUpdate(true)
-            .SetDelay(2f)
             .OnComplete(() =>
             {
                 LeanPool.Despawn(outputObj);
@@ -535,6 +540,9 @@ public class VendMachine : MonoBehaviour
 
     public void Exit()
     {
+        //아이템 받는 시퀀스 강제 완료시키기
+        outputSeq.Complete();
+
         //팝업 메뉴 닫기
         UIManager.Instance.PopupUI(UIManager.Instance.vendMachineUI);
     }

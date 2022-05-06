@@ -132,6 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasItemId: ffffffff
   enemyName: 
   portalSize: 1.2
   isElite: 0
@@ -140,16 +141,10 @@ MonoBehaviour:
   particleHitCount: 0
   stopCount: 0
   hitCount: 0
+  oppositeCount: 0
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
     type: 3}
   sprite: {fileID: 0}
-  hasItem:
-  - {fileID: 1238164818883177754, guid: ef4fa370cafa0db47a068f6aa8079d8d, type: 3}
-  - {fileID: 1238164818883177754, guid: 8de7c48589275fe41a7dfc8e8ce418ba, type: 3}
-  - {fileID: 1238164818883177754, guid: 566c61156fa9fe249ba4647a67027133, type: 3}
-  - {fileID: 1238164818883177754, guid: 7f418cb9e55249f448f2bc0b72f64b7a, type: 3}
-  - {fileID: 1238164818883177754, guid: 66d941081ed66fc44a4cc18722c94d7e, type: 3}
-  - {fileID: 1238164818883177754, guid: 9c0a1ffea5c7e9d4598050d164f06d70, type: 3}
   originMat: {fileID: 0}
   originMatColor: {r: 0, g: 0, b: 0, a: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}
@@ -170,13 +165,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyState: 0
+  nowState: 0
   moveType: 0
-  rigid: {fileID: 4498973164959321897}
+  nowJumping: 0
+  jumpStartDistance: 10
+  jumpHeight: 4
+  jumpUptime: 2
+  jumpDelay: 1
+  jumpCollisionOff: 0
   landEffect: {fileID: 0}
-  anim: {fileID: 0}
   shadow: {fileID: 0}
-  isJumping: 0
 --- !u!212 &8103560175905507847
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -264,7 +262,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 1.1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.18}
+    pivot: {x: 0.5, y: 0.16}
     oldSize: {x: 4, y: 4}
     newSize: {x: 1.4375, y: 1.1875}
     adaptiveTilingThreshold: 0.5

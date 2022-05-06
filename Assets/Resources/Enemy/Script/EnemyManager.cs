@@ -8,6 +8,7 @@ using TMPro;
 
 public class EnemyManager : MonoBehaviour
 {
+    public List<int> hasItemId = new List<int>(); //가진 아이템
     public EnemyInfo enemy;
     EnemyAI enemyAI;
     public string enemyName;
@@ -27,7 +28,6 @@ public class EnemyManager : MonoBehaviour
     public GameObject damageTxt; //데미지 UI
     [HideInInspector]
     public SpriteRenderer sprite;
-    public GameObject[] hasItem; //가진 아이템
 
     public Material originMat;
     public Color originMatColor; //해당 몬스터 머터리얼 원래 색
@@ -357,7 +357,7 @@ public class EnemyManager : MonoBehaviour
         // 10초후 디스폰
         // LeanPool.Despawn(blood, 10f);
 
-        if (enemy.dropRate >= Random.Range(0, 1) && hasItem.Length > 0)
+        if (enemy.dropRate >= Random.Range(0, 1) && hasItemId.Count > 0)
         {
             //아이템 드랍
             DropItem();
@@ -373,9 +373,25 @@ public class EnemyManager : MonoBehaviour
     void DropItem()
     {
         Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
-        LeanPool.Spawn(hasItem[Random.Range(0, hasItem.Length)], transform.position, Quaternion.identity, itemPool);
 
-        //TODO 랜덤 방향으로 아이템 날리기
+        //보유한 모든 아이템 드랍
+        foreach (var id in hasItemId)
+        {
+            int itemId = id;
+            // -1이면 랜덤 원소젬 뽑기
+            if (id == -1)
+                itemId = Random.Range(0, 5);
+
+            //아이템 프리팹 찾기
+            GameObject prefab = ItemDB.Instance.GetItemPrefab(itemId);
+            //아이템 오브젝트 소환
+            GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, itemPool);
+
+            //TODO 랜덤 방향으로 아이템 날리기
+            Vector2 pos = (Vector2)transform.position + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 3f;
+            itemObj.transform.DOMove(pos, 1f)
+            .SetEase(Ease.OutExpo);
+        }
 
         //체력 씨앗 드랍
         DropHealSeed();

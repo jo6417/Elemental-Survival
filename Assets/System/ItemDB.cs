@@ -16,7 +16,7 @@ public class ItemInfo
     public string description; //아이템 설명
     public string priceType; //지불 원소 종류
     public int price; //아이템 가격
-    
+
     [Header("Buff")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
     public int projectileNum = 0; // 투사체 개수
     public float hpMax = 1; //최대 체력
@@ -146,9 +146,9 @@ public class ItemDB : MonoBehaviour
 
                 //받아온 데이터를 List<ItemInfo>에 넣기
                 itemDB.Add(new ItemInfo
-                (item["id"], item["grade"], item["name"], item["itemType"], item["description"], item["priceType"], item["price"], 
-                item["projectileNum"], item["hpMax"], item["power"], item["armor"], item["moveSpeed"], 
-                item["rateFire"], item["coolTime"], item["duration"], item["range"], item["luck"], item["expGain"], item["moneyGain"], 
+                (item["id"], item["grade"], item["name"], item["itemType"], item["description"], item["priceType"], item["price"],
+                item["projectileNum"], item["hpMax"], item["power"], item["armor"], item["moveSpeed"],
+                item["rateFire"], item["coolTime"], item["duration"], item["range"], item["luck"], item["expGain"], item["moneyGain"],
                 item["earth"], item["fire"], item["life"], item["lightning"], item["water"], item["wind"]
                 ));
             }
@@ -183,7 +183,8 @@ public class ItemDB : MonoBehaviour
         yield return null;
     }
 
-    public void InitialItems(){
+    public void InitialItems()
+    {
         foreach (var item in itemDB)
         {
             item.amount = 0;
@@ -253,5 +254,16 @@ public class ItemDB : MonoBehaviour
         ItemInfo item = itemDB.Find(x => x.itemName.Replace(" ", "") == name.Replace(" ", ""));
         // print(item.itemName.Replace(" ", "") + " : " + name.Replace(" ", ""));
         return item;
+    }
+
+    public GameObject GetItemPrefab(int id)
+    {
+        //프리팹의 이름
+        string itemName = GetItemByID(id).itemName.Replace(" ", "") + "_Prefab";
+
+        GameObject prefab = null;
+
+        prefab = itemPrefab.Find(x => x.name == itemName);
+            return prefab;
     }
 }

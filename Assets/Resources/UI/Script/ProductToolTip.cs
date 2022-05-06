@@ -35,13 +35,14 @@ public class ProductToolTip : MonoBehaviour
     }
     #endregion
 
-    public enum ToolTipCorner {LeftUp, LeftDown, RightUp, RightDown};
+    public enum ToolTipCorner { LeftUp, LeftDown, RightUp, RightDown };
     // public ToolTipCorner toolTipCorner;
     public TextMeshProUGUI productName;
     public TextMeshProUGUI productDescript;
     public Sprite questionMark;
     RectTransform rect;
-    bool isFollow = false;
+    // bool isFollow = false; //마우스 따라가기 여부
+    bool SetDone = false; //모든 정보 표시 완료 여부
 
     [Header("Magic")]
     public MagicInfo magic;
@@ -56,7 +57,8 @@ public class ProductToolTip : MonoBehaviour
     [Header("Item")]
     public ItemInfo item;
 
-    private void Awake() {
+    private void Awake()
+    {
         rect = GetComponent<RectTransform>();
     }
 
@@ -67,8 +69,8 @@ public class ProductToolTip : MonoBehaviour
 
     void FollowMouse()
     {
-        if(!isFollow)
-        return;
+        // if (!SetDone)
+        //     return;
 
         //마우스 클릭하면 툴팁 끄기
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
@@ -76,7 +78,7 @@ public class ProductToolTip : MonoBehaviour
             QuitTooltip();
         }
 
-        //마우스 숨김 상태면
+        //마우스 숨김 상태면 안따라감
         if (Cursor.lockState == CursorLockMode.Locked)
             return;
 
@@ -94,43 +96,45 @@ public class ProductToolTip : MonoBehaviour
         //툴팁 켜져있으면 끄기
         // gameObject.SetActive(false);
 
-        isFollow = false;
+        // isFollow = false;
 
-        //툴팁 위치 들어왔으면 이동
+        //툴팁 고정 위치 들어왔으면 이동
         if (position != default(Vector2))
-        {            
+        {
             //입력된 위치로 이동
             transform.position = position;
         }
-
-        if(!rect)
-        rect = GetComponent<RectTransform>();
-        
-        //툴팁 피벗 바꾸기
-        switch (toolTipCorner)
-        {            
-            case ToolTipCorner.LeftUp : 
-            rect.pivot = Vector2.up;
-            break;
-            case ToolTipCorner.LeftDown : 
-            rect.pivot = Vector2.zero;
-            break;
-            case ToolTipCorner.RightUp : 
-            rect.pivot = Vector2.one;
-            break;
-            case ToolTipCorner.RightDown : 
-            rect.pivot = Vector2.right;
-            break;
+        else
+        {
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 0;
+            transform.position = mousePos;
         }
 
-        //툴팁 켜기
-        gameObject.SetActive(true);
+        if (!rect)
+            rect = GetComponent<RectTransform>();
+
+        //툴팁 피벗 바꾸기
+        switch (toolTipCorner)
+        {
+            case ToolTipCorner.LeftUp:
+                rect.pivot = Vector2.up;
+                break;
+            case ToolTipCorner.LeftDown:
+                rect.pivot = Vector2.zero;
+                break;
+            case ToolTipCorner.RightUp:
+                rect.pivot = Vector2.one;
+                break;
+            case ToolTipCorner.RightDown:
+                rect.pivot = Vector2.right;
+                break;
+        }
 
         //마법 or 아이템 정보 넣기
         this.magic = magic;
         this.item = item;
 
-        bool SetDone = false;
         if (magic != null)
         {
             SetDone = SetMagicInfo();
@@ -143,7 +147,8 @@ public class ProductToolTip : MonoBehaviour
 
         yield return new WaitUntil(() => SetDone);
 
-        isFollow = true;
+        //툴팁 켜기
+        gameObject.SetActive(true);
     }
 
     //툴팁 끄기
@@ -153,7 +158,7 @@ public class ProductToolTip : MonoBehaviour
         magic = null;
         item = null;
 
-        isFollow = false;
+        SetDone = false;
 
         gameObject.SetActive(false);
     }
@@ -181,31 +186,32 @@ public class ProductToolTip : MonoBehaviour
         if (magicA == null || magicB == null)
         {
             recipeObj.SetActive(false);
-            return false;
         }
         else
         {
+            // 재료 A,B 아이콘 넣기, 미해금 마법이면 물음표 넣기
+            elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicA.id) : questionMark;
+            elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : questionMark;
+
+            // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
+            elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
+            elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
+
             recipeObj.SetActive(true);
         }
-
-        // 재료 A,B 아이콘 넣기, 미해금 마법이면 물음표 넣기
-        elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicA.id) : questionMark;
-        elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : questionMark;
-
-        // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
-        elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
-        elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
 
         return true;
     }
 
     bool SetItemInfo()
     {
+        recipeObj.SetActive(false);
+        
         // 아이템 이름, 설명 넣기
         productName.text = item.itemName;
         productDescript.text = item.description;
 
-        return false;
+        return true;
     }
 
     List<float> convertValue()

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 // public delegate void OnSelectCallBack();
 public class ButtonEvents : MonoBehaviour, ISelectHandler
 {
+    public bool showUICursor = true; //ui커서 표시 여부
     [SerializeField]
     private bool isAutoClick = false; //선택만해도 클릭되게
     public OnSelectAutoScroll autoScroll = null;
@@ -40,7 +41,7 @@ public class ButtonEvents : MonoBehaviour, ISelectHandler
             button.navigation = btnNav;
         }
 
-        //TODO 스크롤뷰 변수 있으면 신호 보내기
+        // 스크롤뷰 변수 있으면 신호 보내기
         if(autoScroll != null)
         {
             autoScroll.SetScrollItem(transform);

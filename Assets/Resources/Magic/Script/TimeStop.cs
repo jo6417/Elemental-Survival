@@ -39,6 +39,7 @@ public class TimeStop : MonoBehaviour
         //magic 정보 들어올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
+        Vector2 targetPos = magicHolder.targetPos;
 
         //마법 쿨타임
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
@@ -50,7 +51,7 @@ public class TimeStop : MonoBehaviour
         anim.speed = 0f;
 
         //플레이어 위치로 이동
-        transform.position = PlayerManager.Instance.transform.position;
+        transform.position = targetPos;
 
         //플레이어 위치에서 시작
         // transform.localPosition = Vector2.zero;

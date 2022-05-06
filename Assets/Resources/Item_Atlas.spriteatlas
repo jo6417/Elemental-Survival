@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ItemAtlas
+  m_Name: Item_Atlas
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -87,5 +87,5 @@ SpriteAtlas:
   - EarthGem_Icon
   - EmptyScroll_Icon
   m_RenderDataMap: {}
-  m_Tag: ItemAtlas
+  m_Tag: Item_Atlas
   m_IsVariant: 0

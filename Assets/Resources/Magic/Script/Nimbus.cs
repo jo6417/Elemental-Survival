@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Lean.Pool;
 using UnityEngine;
 
-public class MagicHover : MonoBehaviour
+public class Nimbus : MonoBehaviour
 {
     private MagicInfo magic;
     public MagicHolder magicHolder;
@@ -22,8 +22,8 @@ public class MagicHover : MonoBehaviour
 
     private void Update()
     {
-        if(VarManager.Instance.playerTimeScale == 0)
-        return;
+        if (VarManager.Instance.playerTimeScale == 0)
+            return;
 
         if (magic != null)
         {
@@ -39,12 +39,12 @@ public class MagicHover : MonoBehaviour
         if (cooltimeCounter <= 0)
         {
             // Attack 애니메이션 켜기
-            anim.SetTrigger("Attack");
+            anim.SetBool("isAttack", true);
 
             //쿨타임 입력
-            float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+            // float coolTime = MagicDB.Instance.MagicCoolTime(magic);
             // print("coolTime : " + coolTime);
-            cooltimeCounter = coolTime;
+            // cooltimeCounter = coolTime;
         }
         else
         {
@@ -96,6 +96,11 @@ public class MagicHover : MonoBehaviour
         magicCol.enabled = false;
 
         // Idle 애니메이션 켜기
-        anim.SetTrigger("Idle");
+        anim.SetBool("isAttack", false);
+
+        //쿨타임 입력
+        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+        cooltimeCounter = coolTime;
+        // print("coolTime : " + coolTime);
     }
 }

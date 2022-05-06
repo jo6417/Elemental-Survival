@@ -176,6 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b96de69648404c4aab4d5df78cc2b4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showUICursor: 0
   isAutoClick: 0
   autoScroll: {fileID: 0}
 --- !u!114 &1692126958725130639

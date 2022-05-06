@@ -48,7 +48,7 @@ public class LavaWalk : MonoBehaviour
             return;
 
         //일정 거리마다 발자국 생성
-        if (Vector2.Distance(lastFootPos, transform.position) > distance)
+        if (Vector2.Distance(lastFootPos, PlayerManager.Instance.transform.position) > distance)
             MakeFootprint();
     }
 

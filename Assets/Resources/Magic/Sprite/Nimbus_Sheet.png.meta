@@ -29,6 +29,9 @@ TextureImporter:
   - first:
       213: -2366385105781249481
     second: Nimbus_Sheet_8
+  - first:
+      213: 4185719524831961608
+    second: Nimbus_Sheet_9
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -302,6 +305,27 @@ TextureImporter:
       bones: []
       spriteID: 73a2220b849e82fd0800000000000000
       internalID: -2366385105781249481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nimbus_Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 128
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 802a60f1bb9a61a30800000000000000
+      internalID: 4185719524831961608
       vertices: []
       indices: 
       edges: []

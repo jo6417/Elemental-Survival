@@ -139,7 +139,10 @@ public class PlayerManager : MonoBehaviour
         }
 
         //카메라 따라오기
-        Camera.main.transform.position = transform.position + new Vector3(0, 0, -10);
+        foreach (var cam in VarManager.Instance.camList)
+        {
+            cam.transform.position = transform.position + new Vector3(0, 0, -10);
+        }
 
         //몬스터 스포너 따라오기
         if (mobSpawner.activeSelf)
@@ -291,8 +294,7 @@ public class PlayerManager : MonoBehaviour
     void Dead()
     {
         // 시간 멈추기
-        // Time.timeScale = 0;
-        VarManager.Instance.AllTimeScale(0);
+        Time.timeScale = 0;
 
         //TODO 게임오버 UI 띄우기
         // gameOverUI.SetActive(true);
@@ -562,8 +564,7 @@ public class PlayerManager : MonoBehaviour
     void Levelup()
     {
         // 시간 멈추기
-        // Time.timeScale = 0;
-        VarManager.Instance.AllTimeScale(0);
+        Time.timeScale = 0;
 
         //레벨업
         PlayerStat_Now.Level++;

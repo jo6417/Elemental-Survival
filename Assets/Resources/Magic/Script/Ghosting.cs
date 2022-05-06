@@ -78,7 +78,7 @@ public class Ghosting : MonoBehaviour
             PlayerManager.Instance.playerLight.enabled = false;
 
             //플레이어 및 전역 시간 속도 초기화
-            VarManager.Instance.AllTimeScale(1f);
+            VarManager.Instance.timeScale = 1f;
 
             //모든 오브젝트 속도 재개
             ToggleGhosting(false);

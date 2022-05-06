@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UIAtlas
+  m_Name: UI_Atlas
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -151,5 +151,5 @@ SpriteAtlas:
   - ProgressBar
   - FireGem_UI
   m_RenderDataMap: {}
-  m_Tag: UIAtlas
+  m_Tag: UI_Atlas
   m_IsVariant: 0

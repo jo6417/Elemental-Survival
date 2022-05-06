@@ -37,6 +37,46 @@ public class CastMagic : MonoBehaviour
     public List<int> basicMagic = new List<int>(); //기본 마법
     public bool testAllMagic; //! 모든 마법 테스트
 
+    Vector3 slowFollowPos;
+    Vector3 spinOffset;
+    float orbitAngle = 0f; // 현재 자전 각도
+    public float spinSpeed = 1f; // 자전하는 속도
+    public float rotationSpeed = 50f; // 공전하는 속도
+    public float spinRange = 5f; //회전 반경
+    public float followSpeed = 5f; //플레이어 따라가는 속도
+
+    private void OnEnable() {
+        transform.position = slowFollowPos + Vector3.up * spinRange;
+        spinOffset = transform.position - slowFollowPos;
+    }
+
+    private void Update() {
+        SpinObject();
+    }
+
+    void SpinObject()
+    {
+        // 중심점 벡터 slowFollowPos 가 플레이어 천천히 따라가기
+        slowFollowPos = Vector3.Lerp(slowFollowPos, PlayerManager.Instance.transform.position, Time.deltaTime * followSpeed);
+
+        // 중심점 기준으로 마법 오브젝트 위치 보정
+        transform.position = slowFollowPos + spinOffset;
+
+        // 중심점 기준 공전위치로 회전
+        float speed = Time.deltaTime * 50f;
+        transform.RotateAround(slowFollowPos, Vector3.back, speed);
+
+        //z축 위치 보정
+        transform.position = new Vector3(transform.position.x, transform.position.y, -1f);
+
+        // 중심점 벡터 기준으로 오프셋 재설정
+        spinOffset = transform.position - slowFollowPos;
+
+        //오브젝트 각도 초기화, 자전 각도 추가
+        orbitAngle += spinSpeed;
+        transform.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
+    }
+
     public void CastAllMagics()
     {
         //플레이어 보유중인 모든 마법 ID
@@ -184,7 +224,9 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < magicProjectile; i++)
         {
             // 범위내 랜덤 위치 벡터 생성
-            Vector2 pos = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized * range;
+            Vector2 pos = 
+            (Vector2)PlayerManager.Instance.transform.position 
+            + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized * range;
 
             // 범위내 랜덤한 적의 위치
             if (enemyColList.Count > 0)

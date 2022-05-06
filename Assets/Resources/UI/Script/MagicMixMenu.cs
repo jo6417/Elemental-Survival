@@ -68,7 +68,7 @@ public class MagicMixMenu : MonoBehaviour
     IEnumerator SetMenu()
     {
         //시간 멈추기
-        VarManager.Instance.TimeStopToggle(true);
+        Time.timeScale = 0f;
 
         //플레이어 보유 스크롤 개수 업데이트
         int amount = 0;
@@ -104,7 +104,7 @@ public class MagicMixMenu : MonoBehaviour
         SetPage(true) && 
         SetPage(false) && 
         SetRecipe() && 
-        leftSelected);
+        leftSelected != null);
 
         //그리드 레이아웃 업데이트
         List<GridLayoutUI> leftGrid = leftContainer.GetComponentsInChildren<GridLayoutUI>().ToList();

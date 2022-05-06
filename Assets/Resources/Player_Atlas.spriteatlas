@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CharacterAtlas
+  m_Name: Player_Atlas
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -55,7 +55,7 @@ SpriteAtlas:
   - {fileID: -6052334737088004603, guid: 4c391aa25c54ac743a6b948560dffac0, type: 3}
   - {fileID: -1987931465034253723, guid: 4c391aa25c54ac743a6b948560dffac0, type: 3}
   - {fileID: 21300000, guid: 17353a84cabc39b4ca9b0892145dcbf6, type: 3}
-  - {fileID: 21300000, guid: 4889d1b63bf918049a140e08ee1c2e51, type: 3}
+  - {fileID: 21300000, guid: af103d46c447d6f42bed3366578fbe2f, type: 3}
   - {fileID: -72156996025545272, guid: 132737a8fc329494fb13e85055a025da, type: 3}
   - {fileID: 762285596150805325, guid: 132737a8fc329494fb13e85055a025da, type: 3}
   - {fileID: 5284682831647481556, guid: 132737a8fc329494fb13e85055a025da, type: 3}
@@ -100,7 +100,7 @@ SpriteAtlas:
   - Player_Idle_Sheet_1
   - Player_Idle_Sheet_2
   - Player_Idle
-  - SmartPhone
+  - Phone
   - Player_Walk-Sheet_7
   - Player_Walk-Sheet_6
   - Player_Walk-Sheet_5
@@ -139,5 +139,5 @@ SpriteAtlas:
   - Player_Walk_Sheet_8
   - Player_Icon
   m_RenderDataMap: {}
-  m_Tag: CharacterAtlas
+  m_Tag: Player_Atlas
   m_IsVariant: 0

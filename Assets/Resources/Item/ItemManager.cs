@@ -38,8 +38,10 @@ public class ItemManager : MonoBehaviour
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
         if (item == null)
+        {
             item = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
-        itemName = item.itemName;
+            itemName = item.itemName;
+        }
 
         //지불 원소젬 이름을 인덱스로 반환
         gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
@@ -141,8 +143,8 @@ public class ItemManager : MonoBehaviour
         Vector2 dir = player.transform.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
-        if(rigid)
-        rigid.DOMove((Vector2)player.transform.position - dir.normalized * 5f, 0.3f);
+        if (rigid)
+            rigid.DOMove((Vector2)player.transform.position - dir.normalized * 5f, 0.3f);
 
         yield return new WaitForSeconds(0.3f);
 
@@ -154,8 +156,8 @@ public class ItemManager : MonoBehaviour
             itemSpeed -= Time.deltaTime;
             itemSpeed = Mathf.Clamp(itemSpeed, 0.01f, 1f);
 
-            if(gameObject.activeSelf && rigid)
-            rigid.DOMove(player.transform.position, itemSpeed);
+            if (gameObject.activeSelf && rigid)
+                rigid.DOMove(player.transform.position, itemSpeed);
 
             //거리가 0.5f 이하일때 획득
             if (Vector2.Distance(player.transform.position, transform.position) <= 0.5f)
@@ -189,10 +191,10 @@ public class ItemManager : MonoBehaviour
             //아이템 획득
             PlayerManager.Instance.GetItem(item);
         }
-        
+
         //아이템 속도 초기화
-        if(gameObject.activeSelf && rigid)
-        rigid.DOKill();
+        if (gameObject.activeSelf && rigid)
+            rigid.DOKill();
         rigid.velocity = Vector2.zero;
 
         //아이템 비활성화
@@ -203,10 +205,10 @@ public class ItemManager : MonoBehaviour
     {
         while (gameObject.activeSelf)
         {
-            if(VarManager.Instance.timeScale == 0)
-            rigid.DOPause();
+            if (VarManager.Instance.timeScale == 0)
+                rigid.DOPause();
             else
-            rigid.DOPlay();
+                rigid.DOPlay();
 
             yield return null;
         }
