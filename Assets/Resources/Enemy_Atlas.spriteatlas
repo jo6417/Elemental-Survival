@@ -72,7 +72,9 @@ SpriteAtlas:
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
   - {fileID: 21300000, guid: c1cb3f0de7340df48944eae11705b06c, type: 3}
-  - {fileID: 21300000, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
+  - {fileID: 4250153402159111836, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
+  - {fileID: -8609229472539899035, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
+  - {fileID: -3411505516414708846, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: 21300000, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: 4556296039571860405, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: -8476369765895928004, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
@@ -107,7 +109,9 @@ SpriteAtlas:
   - BloodEffect_Light_5
   - MiniDrone_Icon
   - Vacumm_Icon
-  - Vacuum-Sheet
+  - Vacuum-Sheet_1
+  - Vacuum-Sheet_0
+  - Vacuum-Sheet_2
   - BloodEffect
   - A-800_Sheet_6
   - A-800_Sheet_7

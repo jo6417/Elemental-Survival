@@ -40,17 +40,19 @@ public class UIManager : MonoBehaviour
     // public OnGemChanged onGemChangedCallback;
     float time_start;
     public float time_current; // 현재 스테이지 플레이 타임
+    public int killCount;
 
     [Header("ReferUI")]
-    public GameObject pauseMenu;
-    public GameObject magicMixUI;
-    public GameObject chestUI;
-    public GameObject vendMachineUI;
-    public GameObject slotMachineUI;
-    public GameObject magicUpgradeUI;
-    public GameObject ultimateMagicUI;
-    public TextMeshProUGUI timerUI;
+    public GameObject magicMixPanel;
+    public GameObject chestPanel;
+    public GameObject vendMachinePanel;
+    public GameObject slotMachinePanel;
+    public GameObject magicUpgradePanel;
+    public GameObject ultimateMagicPanel;
+    public GameObject pausePanel;
     public Transform overlayCanvas;
+    public TextMeshProUGUI timer;
+    public TextMeshProUGUI killCountTxt;
 
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
@@ -60,7 +62,8 @@ public class UIManager : MonoBehaviour
     public Selectable lastSelected; //마지막 선택된 오브젝트
     public Color lastOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
     public float UI_CursorPadding; //UI 커서 여백
-    bool isFlicking = false; //현재 깜빡임 여부
+    bool isFlicking = false; //커서 깜빡임 여부
+    bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
     Vector2 lastMousePos; //마지막 마우스 위치
 
@@ -102,6 +105,9 @@ public class UIManager : MonoBehaviour
             //밝기 0으로 낮추기
             light.intensity = 0;
         }
+
+        //킬 카운트 초기화
+        UpdateKillCount();
     }
 
     private void Update()
@@ -118,7 +124,7 @@ public class UIManager : MonoBehaviour
         }
 
         //게임시간 타이머 업데이트
-        if (VarManager.Instance.playerTimeScale != 0)
+        if (SystemManager.Instance.playerTimeScale != 0)
             UpdateTimer();
         else
             ResumeTimer();
@@ -167,7 +173,8 @@ public class UIManager : MonoBehaviour
         if (EventSystem.current.currentSelectedGameObject == null
         || !EventSystem.current.currentSelectedGameObject.activeSelf
         || !EventSystem.current.currentSelectedGameObject.activeInHierarchy
-        || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>())
+        || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>()
+        || Cursor.lockState == CursorLockMode.None)
         {
             // UI커서 애니메이션 켜져있으면
             if (isFlicking)
@@ -176,12 +183,12 @@ public class UIManager : MonoBehaviour
                 cursorSeq.Pause();
                 cursorSeq.Kill();
 
-                //커서 애니메이션 끝
-                isFlicking = false;
-
                 //기억하고 있는 버튼 있으면 색 복구하기
                 if (lastSelected)
                     lastSelected.GetComponent<Image>().color = lastOriginColor;
+
+                //커서 애니메이션 끝
+                isFlicking = false;
             }
 
             // UI 커서 끄기
@@ -197,14 +204,19 @@ public class UIManager : MonoBehaviour
             //! 테스트, 현재 선택된 UI 이름 표시
             nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
 
-            //ui커서 따라가기
-            // UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
-
             if (!isFlicking)
             {
                 //커서 애니메이션 시작
+                isFlicking = true;
+                isMove = true;
+
+                //커서 애니메이션 시작
                 CursorAnim();
             }
+
+            //ui커서 따라가기
+            if (!isMove)
+                UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
         }
 
         //방향키 입력 들어왔을때
@@ -218,9 +230,6 @@ public class UIManager : MonoBehaviour
 
     void CursorAnim()
     {
-        //커서 애니메이션 시작
-        isFlicking = true;
-
         Image image = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>();
         RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
         RectTransform lastRect = EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>();
@@ -249,15 +258,17 @@ public class UIManager : MonoBehaviour
         float moveCount = 0f;
         //버튼 위치로 UI커서 이동
         UI_Cursor.transform.DOMove(btnPos, flickTime)
-        .OnStart(() => {
+        .OnStart(() =>
+        {
             float moveCount = flickTime;
         })
-        .OnUpdate(() => {
+        .OnUpdate(() =>
+        {
             //남은 이동 시간
             moveCount -= Time.deltaTime;
 
             //이동 중 버튼 위치가 바뀌면
-            if(btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
+            if (btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
             {
                 //버튼 위치 갱신
                 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
@@ -267,13 +278,12 @@ public class UIManager : MonoBehaviour
                 .SetUpdate(true);
             }
         })
-        .SetUpdate(true);
-
-        // 선택된 버튼과 커서 크기 맞추기
-        cursorRect.DOSizeDelta(size, flickTime)
         .SetUpdate(true)
         .OnComplete(() =>
         {
+            //커서 이동 끝
+            isMove = false;
+
             cursorSeq = DOTween.Sequence();
             cursorSeq
             .SetLoops(-1)
@@ -281,24 +291,6 @@ public class UIManager : MonoBehaviour
             {
                 // 선택된 버튼과 커서 크기 맞추기
                 cursorRect.sizeDelta = size;
-
-                //UI 커서 비활성 옵션 확인되면 끄기
-                // if (EventSystem.current.currentSelectedGameObject.TryGetComponent(out ButtonEvents btnEvent))
-                // {
-                //     if (!btnEvent.showUICursor)
-                //         UI_Cursor.SetActive(false);
-                //     else
-                //         UI_Cursor.SetActive(true); //UI 커서 활성화
-                // }
-                // else
-                // {
-                //     UI_Cursor.SetActive(true); //UI 커서 활성화
-                // }
-            })
-            .OnUpdate(() =>
-            {
-                if(UI_Cursor.transform.position != EventSystem.current.currentSelectedGameObject.transform.position)
-                UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
             })
             // 깜빡이는 색으로 변경, 해당 버튼 사이즈보다 확대
             .Append(
@@ -320,6 +312,10 @@ public class UIManager : MonoBehaviour
             })
             .SetUpdate(true);
         });
+
+        // 선택된 버튼과 커서 크기 맞추기
+        cursorRect.DOSizeDelta(size, flickTime)
+        .SetUpdate(true);
     }
 
     public void QuitMainMenu()
@@ -338,10 +334,10 @@ public class UIManager : MonoBehaviour
     public void Resume()
     {
         //일시정지 메뉴 UI 토글
-        pauseMenu.SetActive(!pauseMenu.activeSelf);
+        pausePanel.SetActive(!pausePanel.activeSelf);
 
         // 시간 정지 토글
-        Time.timeScale = pauseMenu.activeSelf ? 0 : 1;
+        Time.timeScale = pausePanel.activeSelf ? 0 : 1;
     }
 
     public void InitialStat()
@@ -356,7 +352,7 @@ public class UIManager : MonoBehaviour
     {
         time_start = Time.time;
         time_current = 0;
-        timerUI.text = "00:00";
+        timer.text = "00:00";
     }
 
     public void ResumeTimer()
@@ -376,10 +372,16 @@ public class UIManager : MonoBehaviour
         string second = string.Format("{0:00}", time_current % 60f);
 
         //시간 출력
-        timerUI.text = hour + minute + second;
+        timer.text = hour + minute + second;
 
         //TODO 시간 UI 색깔 변경
         //TODO 색깔에 따라 난이도 변경
+    }
+
+    public void UpdateKillCount()
+    {
+        //킬 카운트 표시
+        killCountTxt.text = killCount.ToString();
     }
 
     public void UpdateExp()

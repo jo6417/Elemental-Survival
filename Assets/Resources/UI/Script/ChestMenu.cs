@@ -83,11 +83,11 @@ public class ChestMenu : MonoBehaviour
         switch (index)
         {
             case 0:
-            popupUI = UIManager.Instance.vendMachineUI;
+            popupUI = UIManager.Instance.vendMachinePanel;
             break;
 
             case 1:
-            popupUI = UIManager.Instance.slotMachineUI;
+            popupUI = UIManager.Instance.slotMachinePanel;
             break;
         }
 

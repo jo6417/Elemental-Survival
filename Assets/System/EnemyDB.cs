@@ -10,6 +10,7 @@ public class EnemyInfo
     public int id;
     public int grade;
     public string enemyName;
+    public string enemyType;
     public string description;
 
     [Header("Spec")]
@@ -32,11 +33,12 @@ public class EnemyInfo
 
     public EnemyInfo(){}
 
-    public EnemyInfo(int id, int grade, string enemyName, string description, float power, float speed, float range, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
+    public EnemyInfo(int id, int grade, string enemyName, string enemyType, string description, float power, float speed, float range, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
         this.grade = grade;
         this.enemyName = enemyName;
+        this.enemyType = enemyType;
         this.description = description;
         this.power = power;
         this.speed = speed;
@@ -158,7 +160,7 @@ public class EnemyDB : MonoBehaviour
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기
                 enemyInfo[enemy["id"]] = new EnemyInfo
-                (enemy["id"], enemy["grade"], enemy["name"], enemy["description"], 
+                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["description"], 
                 enemy["power"], enemy["speed"], enemy["range"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"], 
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
                 );
@@ -237,7 +239,8 @@ public class EnemyDB : MonoBehaviour
         List<int> tempList = new List<int>();
         foreach (KeyValuePair<int, EnemyInfo> info in enemyInfo)
         {
-            if (info.Value.grade == randGrade)
+            //해당 등급이고, 일반 몬스터면 리스트에 추가
+            if (info.Value.grade == randGrade && info.Value.enemyType == "normal")
             {
                 tempList.Add(info.Value.id);
             }

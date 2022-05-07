@@ -35,7 +35,7 @@ public class Chest : MonoBehaviour
             animator.SetBool("Open", true);
 
             //TODO 상자 팝업 UI 띄우기
-            UIManager.Instance.PopupUI(UIManager.Instance.chestUI);
+            UIManager.Instance.PopupUI(UIManager.Instance.chestPanel);
         }
     }
 }

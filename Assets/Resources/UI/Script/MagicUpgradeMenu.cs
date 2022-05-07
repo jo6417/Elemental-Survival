@@ -227,9 +227,9 @@ public class MagicUpgradeMenu : MonoBehaviour
         PlayerManager.Instance.PayGem(gemTypeIndex, magic.price);
 
         // 팝업 닫기
-        UIManager.Instance.magicMixUI.SetActive(false);
-        UIManager.Instance.vendMachineUI.SetActive(false);
-        UIManager.Instance.PopupUI(UIManager.Instance.magicUpgradeUI);
+        UIManager.Instance.magicMixPanel.SetActive(false);
+        UIManager.Instance.vendMachinePanel.SetActive(false);
+        UIManager.Instance.PopupUI(UIManager.Instance.magicUpgradePanel);
     }
 
     void UpdateMesh()

@@ -200,17 +200,4 @@ public class ItemManager : MonoBehaviour
         //아이템 비활성화
         LeanPool.Despawn(transform);
     }
-
-    IEnumerator StopCheck()
-    {
-        while (gameObject.activeSelf)
-        {
-            if (VarManager.Instance.timeScale == 0)
-                rigid.DOPause();
-            else
-                rigid.DOPlay();
-
-            yield return null;
-        }
-    }
 }

@@ -59,7 +59,7 @@ public class LavaToss : MonoBehaviour
         float delayCount = delay;
         while (delayCount > 0)
         {
-            delayCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+            delayCount -= Time.deltaTime;
             yield return null;
         }
 

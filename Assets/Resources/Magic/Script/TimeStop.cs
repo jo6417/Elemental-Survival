@@ -71,7 +71,7 @@ public class TimeStop : MonoBehaviour
         while (coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            coolCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+            coolCount -= Time.deltaTime;
 
             yield return null;
         }

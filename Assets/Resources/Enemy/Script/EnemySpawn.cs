@@ -193,7 +193,7 @@ public class EnemySpawn : MonoBehaviour
                     //체력 1.5배
                     enemyInfo.hpMax = enemyInfo.hpMax * 1.5f;
                     // 초록 아웃라인 머터리얼
-                    enemySprite.material = VarManager.Instance.outLineMat;
+                    enemySprite.material = SystemManager.Instance.outLineMat;
                     enemySprite.material.color = Color.green;
                     break;
 
@@ -201,7 +201,7 @@ public class EnemySpawn : MonoBehaviour
                     //공격력 1.5배
                     enemyInfo.power = enemyInfo.power * 1.5f;
                     // 빨강 아웃라인 머터리얼
-                    enemySprite.material = VarManager.Instance.outLineMat;
+                    enemySprite.material = SystemManager.Instance.outLineMat;
                     enemySprite.material.color = Color.red;
                     break;
 
@@ -209,7 +209,7 @@ public class EnemySpawn : MonoBehaviour
                     //속도 1.5배
                     enemyInfo.speed = enemyInfo.speed * 1.5f;
                     // 하늘색 아웃라인 머터리얼
-                    enemySprite.material = VarManager.Instance.outLineMat;
+                    enemySprite.material = SystemManager.Instance.outLineMat;
                     enemySprite.material.color = Color.cyan;
                     break;
 
@@ -222,7 +222,7 @@ public class EnemySpawn : MonoBehaviour
         else
         {
             //일반 스프라이트 머터리얼
-            enemySprite.material = VarManager.Instance.spriteMat;
+            enemySprite.material = SystemManager.Instance.spriteMat;
             enemyManager.isElite = false;
         }
 
@@ -285,17 +285,8 @@ public class EnemySpawn : MonoBehaviour
                 LeanPool.Despawn(portal);
             })
         );
-
-        //시간 멈추는동안 포탈 시퀀스 멈추기
-        while (portalSeq.IsActive())
-        {
-            if(VarManager.Instance.timeScale == 0)
-            portalSeq.Pause();
-            else
-            portalSeq.Play();
-
-            yield return null;
-        }
+        
+        yield return null;
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -311,8 +302,8 @@ public class EnemySpawn : MonoBehaviour
                 return;
 
             //점프 몬스터는 점프 시퀀스 초기화
-            if(enemyAI.moveType == EnemyAI.MoveType.Jump)
-            enemyAI.jumpSeq.Pause();
+            if (enemyAI.moveType == EnemyAI.MoveType.Jump)
+                enemyAI.jumpSeq.Pause();
 
             //이동 대기 카운트 초기화
             manager.oppositeCount = 0.5f;

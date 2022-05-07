@@ -14,9 +14,6 @@ public class ParticleManager : MonoBehaviour
     private void OnEnable() {
         //초기화
         StartCoroutine(Initial());
-
-        //시간 멈춤 확인
-        StartCoroutine(StopCheck());
     }
 
     IEnumerator Initial()
@@ -29,16 +26,5 @@ public class ParticleManager : MonoBehaviour
 
         //파티클 끝나면 디스폰
         LeanPool.Despawn(transform);
-    }
-
-    IEnumerator StopCheck()
-    {
-        while (gameObject.activeSelf)
-        {
-            if (VarManager.Instance.playerTimeScale == 0)
-                particle.Pause();
-
-            yield return null;
-        }
     }
 }

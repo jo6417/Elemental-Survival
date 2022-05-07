@@ -107,8 +107,6 @@ public class MagicFalling : MonoBehaviour
         .OnStart(() => {
             //마법 시작
             magicLoading = true;
-            //정지 체크 시작
-            StartCoroutine(StopCheck());
         })
         .SetEase(Ease.OutBack);
 
@@ -205,7 +203,7 @@ public class MagicFalling : MonoBehaviour
         float delayCount = delay;
         while (delayCount > 0)
         {
-            delayCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+            delayCount -= Time.deltaTime;
             yield return null;
         }
 
@@ -214,29 +212,5 @@ public class MagicFalling : MonoBehaviour
 
         // 오브젝트 디스폰하기
         LeanPool.Despawn(transform);
-    }
-
-    IEnumerator StopCheck()
-    {
-        while (magicLoading)
-        {
-            if (VarManager.Instance.playerTimeScale == 0)
-            {
-                transform.DOPause();
-                sprite.DOPause();
-
-                if (magicEffect)
-                effectAnim.speed = 0;
-            }
-            else
-            {
-                transform.DOPlay();
-                sprite.DOPlay();
-
-                if (magicEffect)
-                effectAnim.speed = 1;
-            }
-            yield return null;
-        }
     }
 }

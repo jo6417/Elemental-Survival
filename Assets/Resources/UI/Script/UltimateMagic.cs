@@ -139,9 +139,9 @@ public class UltimateMagic : MonoBehaviour
     public void AcceptBtn()
     {
         // 팝업 닫기
-        UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicUI);
+        UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicPanel);
         //마법 합성 팝업 닫기
-        UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI, false);
+        UIManager.Instance.PopupUI(UIManager.Instance.magicMixPanel, false);
 
         // 해당 마법 장착
         PlayerManager.Instance.GetUltimateMagic(newMagic);

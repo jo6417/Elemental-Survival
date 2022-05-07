@@ -135,17 +135,6 @@ public class MagicSting : MonoBehaviour
             // 오브젝트 자동 디스폰하기
             StartCoroutine(AutoDespawn());
         });
-
-        //시간 멈춘동안 시퀀스 멈추기
-        while (stingSeq.IsActive())
-        {
-            if (VarManager.Instance.timeScale == 0)
-                stingSeq.Pause();
-            else
-                stingSeq.Play();
-
-            yield return null;
-        }
     }
 
     public void ColliderTrigger(bool magicTrigger = true)

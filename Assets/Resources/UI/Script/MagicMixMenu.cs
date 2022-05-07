@@ -671,7 +671,7 @@ public class MagicMixMenu : MonoBehaviour
             if (mixedMagic.castType == "ultimate")
             {
                 //궁극기 팝업창 열기
-                UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicUI);
+                UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicPanel);
 
                 //마법 정보 넣기
                 UltimateMagic.Instance.newMagic = mixedMagic;
@@ -956,6 +956,6 @@ public class MagicMixMenu : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
 
         //해당 팝업 끄기
-        UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+        UIManager.Instance.PopupUI(UIManager.Instance.magicMixPanel);
     }
 }

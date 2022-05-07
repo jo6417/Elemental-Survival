@@ -57,9 +57,6 @@ public class EnemyAI : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(Initial());
-
-        //시간 멈춤 확인
-        StartCoroutine(StopCheck());
     }
 
     IEnumerator Initial()
@@ -118,7 +115,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         //전역 타임스케일이 0 일때
-        if (VarManager.Instance.timeScale == 0)
+        if (SystemManager.Instance.timeScale == 0)
         {
             nowState = NowState.SystemStop;
 
@@ -140,10 +137,10 @@ public class EnemyAI : MonoBehaviour
             anim.speed = 0f;
 
             sprite.material = enemyManager.originMat;
-            sprite.color = VarManager.Instance.stopColor; //시간 멈춤 색깔
+            sprite.color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
             transform.DOPause();
 
-            enemyManager.stopCount -= Time.deltaTime * VarManager.Instance.timeScale;
+            enemyManager.stopCount -= Time.deltaTime * SystemManager.Instance.timeScale;
             return;
         }
 
@@ -155,10 +152,10 @@ public class EnemyAI : MonoBehaviour
             rigid.velocity = Vector2.zero; //이동 초기화
 
             // 머터리얼 및 색 변경
-            sprite.material = VarManager.Instance.hitMat;
-            sprite.color = VarManager.Instance.hitColor;
+            sprite.material = SystemManager.Instance.hitMat;
+            sprite.color = SystemManager.Instance.hitColor;
 
-            enemyManager.hitCount -= Time.deltaTime * VarManager.Instance.timeScale;
+            enemyManager.hitCount -= Time.deltaTime * SystemManager.Instance.timeScale;
             return;
         }
 
@@ -180,7 +177,7 @@ public class EnemyAI : MonoBehaviour
                     shadow.localPosition = Vector2.zero;
             }
 
-            enemyManager.oppositeCount -= Time.deltaTime * VarManager.Instance.timeScale;
+            enemyManager.oppositeCount -= Time.deltaTime * SystemManager.Instance.timeScale;
             return;
         }
 
@@ -206,7 +203,7 @@ public class EnemyAI : MonoBehaviour
             if (nowJumping && jumpSeq.IsActive())
             {
                 //전역 타임스케일 적용
-                jumpSeq.timeScale = VarManager.Instance.timeScale;
+                jumpSeq.timeScale = SystemManager.Instance.timeScale;
 
                 // 점프 일시정지였으면 시퀀스 재생
                 if (!jumpSeq.IsPlaying())
@@ -224,17 +221,6 @@ public class EnemyAI : MonoBehaviour
                 Walk();
             }
         }
-
-        // // 전체 슬로우일때
-        // if (VarManager.Instance.timeScale < 1)
-        // {
-        //     //시간 멈춤 색깔
-        //     sprite.color = EnemySpawn.Instance.stopColor;
-
-        //     // rigid.velocity = Vector2.zero;
-        //     anim.speed = VarManager.Instance.timeScale;
-        //     jumpSeq.timeScale = VarManager.Instance.timeScale;
-        // }
     }
 
     void Walk()
@@ -249,7 +235,7 @@ public class EnemyAI : MonoBehaviour
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
 
         //해당 방향으로 가속
-        rigid.velocity = dir.normalized * speed * VarManager.Instance.timeScale;
+        rigid.velocity = dir.normalized * speed * SystemManager.Instance.timeScale;
 
         //움직일 방향에따라 회전
         if (dir.x > 0)
@@ -314,7 +300,7 @@ public class EnemyAI : MonoBehaviour
         .OnUpdate(() =>
         {
             //전역 타임스케일 적용
-            jumpSeq.timeScale = VarManager.Instance.timeScale;
+            jumpSeq.timeScale = SystemManager.Instance.timeScale;
 
             //시간 정지 디버프 중일때
             if (enemyManager.stopCount > 0)
@@ -394,29 +380,5 @@ public class EnemyAI : MonoBehaviour
             nowJumping = false;
         });
         jumpSeq.Restart();
-    }
-
-    IEnumerator StopCheck()
-    {
-        while (gameObject.activeSelf)
-        {
-            if (VarManager.Instance.playerTimeScale == 0)
-            {
-                //애니메이션 멈춤
-                if (anim != null)
-                    anim.speed = 0f;
-            }
-            else
-            {
-                //살아있을때, 정지 디버프 아닐때
-                if (!enemyManager.isDead && enemyManager.stopCount <= 0)
-                {
-                    //애니메이션 재시작
-                    if (anim != null)
-                        anim.speed = 1f;
-                }
-            }
-            yield return null;
-        }
     }
 }

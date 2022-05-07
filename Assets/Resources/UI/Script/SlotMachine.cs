@@ -256,7 +256,7 @@ public class SlotMachine : MonoBehaviour
         // }
 
         //팝업창 끄기
-        UIManager.Instance.PopupUI(UIManager.Instance.slotMachineUI);
+        UIManager.Instance.PopupUI(UIManager.Instance.slotMachinePanel);
     }
 
     List<GameObject> GetSlotItems(int slotIndex)

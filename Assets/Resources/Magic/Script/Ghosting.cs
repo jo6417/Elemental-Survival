@@ -34,7 +34,7 @@ public class Ghosting : MonoBehaviour
         duration = MagicDB.Instance.MagicDuration(magic); //시간정지 지속시간
         speed = MagicDB.Instance.MagicSpeed(magic, false); //스피드만큼 플레이어 속도감소 효과 반감됨
 
-        VarManager.Instance.timeScale = 0f;
+        SystemManager.Instance.timeScale = 0f;
 
         //원 사이즈 줄이기
         fogCircle.localScale = Vector2.zero;
@@ -56,12 +56,12 @@ public class Ghosting : MonoBehaviour
         fogCircle.DOScale(Vector2.one, 1f);
 
         // 플레이어 하얗게 빛나고 투명하게
-        PlayerManager.Instance.sprite.material = VarManager.Instance.outLineMat;
+        PlayerManager.Instance.sprite.material = SystemManager.Instance.outLineMat;
         PlayerManager.Instance.sprite.material.color = Color.cyan;
         PlayerManager.Instance.playerLight.enabled = true;
 
         // 플레이어 이동속도 버프
-        VarManager.Instance.playerTimeScale = 2f;
+        SystemManager.Instance.playerTimeScale = 2f;
 
         //적 스폰 멈추기
         EnemySpawn.Instance.spawnSwitch = false;
@@ -73,12 +73,12 @@ public class Ghosting : MonoBehaviour
         .OnComplete(() =>
         {
             // 플레이어 색깔 초기화
-            PlayerManager.Instance.sprite.material = VarManager.Instance.spriteMat;
+            PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteMat;
             PlayerManager.Instance.sprite.material.color = Color.white;
             PlayerManager.Instance.playerLight.enabled = false;
 
             //플레이어 및 전역 시간 속도 초기화
-            VarManager.Instance.timeScale = 1f;
+            SystemManager.Instance.timeScale = 1f;
 
             //모든 오브젝트 속도 재개
             ToggleGhosting(false);
@@ -111,7 +111,7 @@ public class Ghosting : MonoBehaviour
             //애니메이터 멈추기 토글
             if (enemy.TryGetComponent(out Animator anim))
             {
-                anim.speed = VarManager.Instance.timeScale;
+                anim.speed = SystemManager.Instance.timeScale;
             }
 
             //파티클 멈추기 토글

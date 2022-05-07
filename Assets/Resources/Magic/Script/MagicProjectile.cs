@@ -54,7 +54,7 @@ public class MagicProjectile : MonoBehaviour
         Vector2 originVel = rigid.velocity;
         while (gameObject.activeSelf)
         {
-            rigid.velocity = originVel * VarManager.Instance.playerTimeScale;
+            rigid.velocity = originVel;
             yield return null;
         }
 
@@ -71,20 +71,6 @@ public class MagicProjectile : MonoBehaviour
     void OffCollider()
     {
         col.enabled = false;
-    }
-
-    IEnumerator DespawnMagic(float delay = 0)
-    {
-        while (delay > 0)
-        {
-            delay -= Time.deltaTime * VarManager.Instance.playerTimeScale;
-
-            yield return null;
-        }
-
-        // 오브젝트 디스폰하기
-        if (gameObject.activeSelf)
-            LeanPool.Despawn(transform);
     }
 
     IEnumerator Initial()
@@ -115,6 +101,7 @@ public class MagicProjectile : MonoBehaviour
             // print(gameObject.name + " : " + pierceNum);
             if (pierceNum == 0)
             {
+                if (gameObject.activeSelf)
                 StartCoroutine(DespawnMagic());
             }
             else
@@ -141,5 +128,19 @@ public class MagicProjectile : MonoBehaviour
             rigid.rotation = rotation;
             lastPos = transform.position;
         }
+    }
+
+    IEnumerator DespawnMagic(float delay = 0)
+    {
+        while (delay > 0)
+        {
+            delay -= Time.deltaTime;
+
+            yield return null;
+        }
+
+        // 오브젝트 디스폰하기
+        if (gameObject.activeSelf)
+            LeanPool.Despawn(transform);
     }
 }

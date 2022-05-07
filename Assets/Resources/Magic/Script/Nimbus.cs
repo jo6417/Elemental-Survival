@@ -22,8 +22,8 @@ public class Nimbus : MonoBehaviour
 
     private void Update()
     {
-        if (VarManager.Instance.playerTimeScale == 0)
-            return;
+        // if (VarManager.Instance.playerTimeScale == 0)
+        //     return;
 
         if (magic != null)
         {
@@ -40,16 +40,11 @@ public class Nimbus : MonoBehaviour
         {
             // Attack 애니메이션 켜기
             anim.SetBool("isAttack", true);
-
-            //쿨타임 입력
-            // float coolTime = MagicDB.Instance.MagicCoolTime(magic);
-            // print("coolTime : " + coolTime);
-            // cooltimeCounter = coolTime;
         }
         else
         {
             //쿨타임 카운트다운
-            cooltimeCounter -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+            cooltimeCounter -= Time.deltaTime;
         }
     }
 

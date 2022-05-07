@@ -59,20 +59,20 @@ public class BabyArrow : MonoBehaviour
 
     void Update()
     {
-        if (VarManager.Instance.playerTimeScale == 0)
-        {
-            tail.time = Mathf.Infinity;
-            return;
-        }
-        else
-        {
-            if (tail.time == Mathf.Infinity)
-            {
-                //서서히 낮추기
-                tail.time = 1000f;
-                DOTween.To(() => tail.time, x => tail.time = x, 1f, 0.5f);
-            }
-        }
+        // if (VarManager.Instance.playerTimeScale == 0)
+        // {
+        //     tail.time = Mathf.Infinity;
+        //     return;
+        // }
+        // else
+        // {
+        //     if (tail.time == Mathf.Infinity)
+        //     {
+        //         //서서히 낮추기
+        //         tail.time = 1000f;
+        //         DOTween.To(() => tail.time, x => tail.time = x, 1f, 0.5f);
+        //     }
+        // }
 
         // 공격 할때만 콜라이더 활성화
         if (state == State.Attack)
@@ -147,17 +147,6 @@ public class BabyArrow : MonoBehaviour
                 LeanPool.Despawn(mark);
             });
 
-            //시간 멈춘동안 시퀀스 멈추기
-            while (sequence.IsActive())
-            {
-                if (VarManager.Instance.timeScale == 0)
-                    sequence.Pause();
-                else
-                    sequence.Play();
-
-                yield return null;
-            }
-
             yield return new WaitUntil(() => !mark.activeSelf);
         }
 
@@ -173,7 +162,7 @@ public class BabyArrow : MonoBehaviour
         while (coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            coolCount -= Time.deltaTime * VarManager.Instance.playerTimeScale;
+            coolCount -= Time.deltaTime;
 
             yield return null;
         }

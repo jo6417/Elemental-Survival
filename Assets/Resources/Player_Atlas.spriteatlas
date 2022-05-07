@@ -43,33 +43,16 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 93127c54a3ee1c744af7b6b18b659ef1, type: 3}
+    - {fileID: 102900000, guid: c0ca030f80982104f87948aa2d8965e0, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 9154224272099592800, guid: 236f1cb1fc4282e42a5a8dc855c8f7d2, type: 3}
-  - {fileID: 4731442542201272339, guid: 236f1cb1fc4282e42a5a8dc855c8f7d2, type: 3}
   - {fileID: -7323827873179354909, guid: 4c391aa25c54ac743a6b948560dffac0, type: 3}
   - {fileID: -6052334737088004603, guid: 4c391aa25c54ac743a6b948560dffac0, type: 3}
   - {fileID: -1987931465034253723, guid: 4c391aa25c54ac743a6b948560dffac0, type: 3}
-  - {fileID: 21300000, guid: 17353a84cabc39b4ca9b0892145dcbf6, type: 3}
   - {fileID: 21300000, guid: af103d46c447d6f42bed3366578fbe2f, type: 3}
-  - {fileID: -72156996025545272, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: 762285596150805325, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: 5284682831647481556, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: 7147400684058513953, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: 6822229301458244722, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: -3900463118331640616, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: 2073424822910784625, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: -6358130550207370711, guid: 132737a8fc329494fb13e85055a025da, type: 3}
-  - {fileID: 1025131237614711717, guid: bbe43ad885ac9a948a81b4ff1daa0c10, type: 3}
-  - {fileID: -8500196181052930554, guid: bbe43ad885ac9a948a81b4ff1daa0c10, type: 3}
-  - {fileID: 1567603734882925431, guid: bbe43ad885ac9a948a81b4ff1daa0c10, type: 3}
-  - {fileID: -7323827873179354909, guid: f930a9b9f9153cd4f99af2f0033cb4b1, type: 3}
-  - {fileID: -6052334737088004603, guid: f930a9b9f9153cd4f99af2f0033cb4b1, type: 3}
-  - {fileID: -1987931465034253723, guid: f930a9b9f9153cd4f99af2f0033cb4b1, type: 3}
   - {fileID: 555406622013188121, guid: 85a55f7c82e3b1c458b5e396c2eeaf72, type: 3}
   - {fileID: 3227976659828036394, guid: 85a55f7c82e3b1c458b5e396c2eeaf72, type: 3}
   - {fileID: 9110297868202859072, guid: 85a55f7c82e3b1c458b5e396c2eeaf72, type: 3}
@@ -92,29 +75,11 @@ SpriteAtlas:
   - {fileID: -7574938215698642108, guid: ff025f3d160d42a4aaeb2591f618b78b, type: 3}
   - {fileID: -4503884086743398294, guid: ff025f3d160d42a4aaeb2591f618b78b, type: 3}
   - {fileID: -7107720426174701412, guid: ff025f3d160d42a4aaeb2591f618b78b, type: 3}
-  - {fileID: 21300000, guid: fb38287fe1c8e5d4a82b2fc0bdac2fa1, type: 3}
   m_PackedSpriteNamesToIndex:
-  - Player_Walk_Sheet_1
-  - Player_Walk_Sheet_0
   - Player_Idle_Sheet_0
   - Player_Idle_Sheet_1
   - Player_Idle_Sheet_2
-  - Player_Idle
   - Phone
-  - Player_Walk-Sheet_7
-  - Player_Walk-Sheet_6
-  - Player_Walk-Sheet_5
-  - Player_Walk-Sheet_4
-  - Player_Walk-Sheet_3
-  - Player_Walk-Sheet_2
-  - Player_Walk-Sheet_1
-  - Player_Walk-Sheet_0
-  - Player_Idle-Sheet_2
-  - Player_Idle-Sheet_0
-  - Player_Idle-Sheet_1
-  - Player_Idle_Sheet_0
-  - Player_Idle_Sheet_1
-  - Player_Idle_Sheet_2
   - Player_Dash_Sheet_11
   - Player_Dash_Sheet_10
   - Player_Dash_Sheet_8
@@ -137,7 +102,6 @@ SpriteAtlas:
   - Player_Walk_Sheet_2
   - Player_Walk_Sheet_9
   - Player_Walk_Sheet_8
-  - Player_Icon
   m_RenderDataMap: {}
   m_Tag: Player_Atlas
   m_IsVariant: 0

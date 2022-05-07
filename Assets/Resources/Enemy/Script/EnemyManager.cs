@@ -83,7 +83,7 @@ public class EnemyManager : MonoBehaviour
         //색상 정보 저장
         originColor = sprite.color;
         //아웃라인이면 머터리얼 색상 저장
-        if (sprite.material == VarManager.Instance.outLineMat)
+        if (sprite.material == SystemManager.Instance.outLineMat)
             originMatColor = sprite.material.color;
 
         enemyName = enemy.enemyName;
@@ -327,15 +327,19 @@ public class EnemyManager : MonoBehaviour
         //몬스터 총 전투력 빼기
         EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
 
+        //몬스터 킬 카운트 올리기
+        UIManager.Instance.killCount++;
+        UIManager.Instance.UpdateKillCount();
+
         // 머터리얼 및 색 변경
-        sprite.material = VarManager.Instance.hitMat;
-        sprite.color = VarManager.Instance.hitColor;
+        sprite.material = SystemManager.Instance.hitMat;
+        sprite.color = SystemManager.Instance.hitColor;
 
         // 색깔 점점 흰색으로
-        sprite.DOColor(VarManager.Instance.DeadColor, 1f);
+        sprite.DOColor(SystemManager.Instance.DeadColor, 1f);
 
         //색 변경 완료 될때까지 대기
-        yield return new WaitUntil(() => sprite.color == VarManager.Instance.DeadColor);
+        yield return new WaitUntil(() => sprite.color == SystemManager.Instance.DeadColor);
         // while (sprite.color != EnemySpawn.Instance.DeadColor)
         // {
         //     sprite.DOPlay();
@@ -344,7 +348,7 @@ public class EnemyManager : MonoBehaviour
         // }
 
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
-        yield return new WaitUntil(() => VarManager.Instance.timeScale > 0);
+        yield return new WaitUntil(() => SystemManager.Instance.timeScale > 0);
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, EnemySpawn.Instance.effectPool);
@@ -393,32 +397,8 @@ public class EnemyManager : MonoBehaviour
             .SetEase(Ease.OutExpo);
         }
 
-        //체력 씨앗 드랍
-        DropHealSeed();
-    }
-
-    void DropHealSeed()
-    {
-        // 플레이어가 HealSeed 마법을 갖고 있을때
-        MagicInfo magic = PlayerManager.Instance.hasMagics.Find(x => x.magicName == "Heal Seed");
-        if (magic != null)
-        {
-            // 크리티컬 확률 = 드랍 확률
-            // print(MagicDB.Instance.MagicCritical(magic));
-            bool isDrop = MagicDB.Instance.MagicCritical(magic);
-            //크리티컬 데미지만큼 회복
-            int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
-            healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
-
-            // HealSeed 마법 크리티컬 확률에 따라 드랍
-            if (isDrop)
-            {
-                Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
-                GameObject healSeed = LeanPool.Spawn(ItemDB.Instance.heartSeed, transform.position, Quaternion.identity, itemPool);
-
-                // 아이템에 체력 회복량 넣기
-                healSeed.GetComponent<ItemManager>().amount = healAmount;
-            }
-        }
+        //몬스터 죽을때 함수 호출, 체력 씨앗 드랍
+        if(SystemManager.Instance.enemyDeadCallback != null)
+        SystemManager.Instance.enemyDeadCallback(transform.position);
     }
 }

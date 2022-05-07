@@ -127,7 +127,7 @@ public class VendMachine : MonoBehaviour
             // 상품 버튼 속성
             InfoHolder infoHolder = product.transform.GetComponent<InfoHolder>();
             //버튼 누르면 종료될 팝업창 오브젝트
-            infoHolder.popupMenu = UIManager.Instance.vendMachineUI;
+            infoHolder.popupMenu = UIManager.Instance.vendMachinePanel;
 
             // 아이템,마법 각각 프레임
             Image frame = product.transform.Find("Frame").GetComponent<Image>();
@@ -544,6 +544,6 @@ public class VendMachine : MonoBehaviour
         outputSeq.Complete();
 
         //팝업 메뉴 닫기
-        UIManager.Instance.PopupUI(UIManager.Instance.vendMachineUI);
+        UIManager.Instance.PopupUI(UIManager.Instance.vendMachinePanel);
     }
 }

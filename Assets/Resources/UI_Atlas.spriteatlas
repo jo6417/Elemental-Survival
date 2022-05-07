@@ -80,6 +80,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9bb462e99fdc78b4fb3acc6a8c8663f8, type: 3}
   - {fileID: 21300000, guid: 3985b7f971b67f442a0f8a9e8edd485e, type: 3}
   - {fileID: 21300000, guid: c884c8ba1e98dc44bbbc33aec406c544, type: 3}
+  - {fileID: 21300000, guid: 3cba488ba3763274ca8f0175e7af643e, type: 3}
   - {fileID: 21300000, guid: 3db02d8ba8b13d643874692e6201f999, type: 3}
   - {fileID: 21300000, guid: d487c60c58d4f1c4e8c69a15f53f2d4e, type: 3}
   - {fileID: 21300000, guid: 187ae60c2a2e50b4ba0b011289cdc153, type: 3}
@@ -131,6 +132,7 @@ SpriteAtlas:
   - CircleBorder
   - EmptyImg
   - WindGem_UI
+  - Skul
   - backPack1
   - HexStatBackground
   - BookUI
