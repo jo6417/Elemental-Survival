@@ -157,17 +157,25 @@ public class EnemySpawn : MonoBehaviour
         // print(enemy.enemyName + " : 스폰");
     }
 
-    IEnumerator PortalSpawn(EnemyInfo enemy, bool isElite)
+    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)
     {
         //몬스터 프리팹 찾기
         GameObject enemyPrefab = EnemyDB.Instance.GetPrefab(enemy.id);
 
         //몬스터 소환 완료 위치
-        Vector2 spawnEndPos = BorderRandPos();
+        Vector2 spawnEndPos;
+        if (fixPos != default)
+            spawnEndPos = fixPos;
+        else
+            spawnEndPos = BorderRandPos();
 
-        // 몬스터 프리팹 소환 및 비활성화
-        GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, enemyPool);
-        enemyObj.SetActive(false);
+        //enemyObj 변수 안들어왔으면 만들어 넣기
+        if (enemyObj == null)
+        {
+            // 몬스터 프리팹 소환 및 비활성화
+            enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, enemyPool);
+            enemyObj.SetActive(false);
+        }
 
         //프리팹에서 스프라이트 컴포넌트 찾기
         SpriteRenderer enemySprite = enemyObj.GetComponentInChildren<SpriteRenderer>();
@@ -230,10 +238,9 @@ public class EnemySpawn : MonoBehaviour
         enemyManager.enemy = enemyInfo;
 
         //포탈 소환 위치
-        Vector2 portalPos = spawnEndPos + Vector2.down * enemySprite.bounds.size.y / 2;
+        Vector2 portalPos = spawnEndPos + Vector2.down * enemyManager.portalSize / 2;
         //몬스터 소환 시작 위치
         Vector2 spawnStartPos = spawnEndPos + Vector2.down * enemySprite.bounds.size.y * 1.5f;
-        // print(enemy.enemyName + " : " + enemySprite.bounds.size.y);
 
         // print(transform.name + ":" + spawnStartPos + ":" + spawnEndPos);
 
@@ -285,7 +292,7 @@ public class EnemySpawn : MonoBehaviour
                 LeanPool.Despawn(portal);
             })
         );
-        
+
         yield return null;
     }
 

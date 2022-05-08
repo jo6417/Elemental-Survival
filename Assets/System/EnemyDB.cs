@@ -105,7 +105,7 @@ public class EnemyDB : MonoBehaviour
     }
     #endregion
 
-    public Dictionary<int, EnemyInfo> enemyInfo = new Dictionary<int, EnemyInfo>(); //마법 정보 DB
+    public Dictionary<int, EnemyInfo> enemyDB = new Dictionary<int, EnemyInfo>(); //마법 정보 DB
     public Dictionary<string, Sprite> enemyIcon = new Dictionary<string, Sprite>(); //마법 아이콘 리스트
     public Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
     [HideInInspector]
@@ -159,7 +159,7 @@ public class EnemyDB : MonoBehaviour
                 var enemy = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기
-                enemyInfo[enemy["id"]] = new EnemyInfo
+                enemyDB[enemy["id"]] = new EnemyInfo
                 (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["description"], 
                 enemy["power"], enemy["speed"], enemy["range"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"], 
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
@@ -176,34 +176,33 @@ public class EnemyDB : MonoBehaviour
 
     public EnemyInfo GetEnemyByID(int id)
     {
-        if(enemyInfo.TryGetValue(id, out EnemyInfo value))
+        if(enemyDB.TryGetValue(id, out EnemyInfo value))
         return value;
         else
         return null;
     }
 
-    public string GetEnemyNameByID(int id)
-    {
-        if(enemyInfo.TryGetValue(id, out EnemyInfo value))
-        return value.enemyName;
-        else
-        return null;
-    }
-
-    public EnemyInfo GetEnemyByName(string name)
+    public EnemyInfo GetEnemyByName(string enemyName)
     {
         EnemyInfo enemy = null;
 
-        foreach (KeyValuePair<int, EnemyInfo> value in enemyInfo)
+        foreach (KeyValuePair<int, EnemyInfo> value in enemyDB)
         {
-            if (value.Value.enemyName.Replace(" ", "") == name)
+            if (value.Value.enemyName.Replace(" ", "") == enemyName)
             {
                 enemy = value.Value;
                 break;
             }
         }
-
         return enemy;
+    }
+
+    public string GetNameByID(int id)
+    {
+        if(enemyDB.TryGetValue(id, out EnemyInfo value))
+        return value.enemyName;
+        else
+        return null;
     }
 
     public Sprite GetIcon(int id)
@@ -237,7 +236,7 @@ public class EnemyDB : MonoBehaviour
 
         //랜덤 등급의 모든 몬스터 임시 리스트에 추가
         List<int> tempList = new List<int>();
-        foreach (KeyValuePair<int, EnemyInfo> info in enemyInfo)
+        foreach (KeyValuePair<int, EnemyInfo> info in enemyDB)
         {
             //해당 등급이고, 일반 몬스터면 리스트에 추가
             if (info.Value.grade == randGrade && info.Value.enemyType == "normal")
