@@ -68,9 +68,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1631629364}
   - component: {fileID: 1631629365}
-  - component: {fileID: 1631629367}
+  - component: {fileID: 5675673050036806075}
   m_Layer: 7
   m_Name: PortalMask
   m_TagString: Untagged
@@ -166,7 +166,7 @@ SpriteMask:
   m_BackSortingOrder: 0
   m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 0
---- !u!210 &1631629367
+--- !u!210 &5675673050036806075
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,9 +174,9 @@ SortingGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1631629363}
   m_Enabled: 1
-  m_SortingLayerID: -1720907977
-  m_SortingLayer: 6
-  m_SortingOrder: 0
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 2
+  m_SortingOrder: 1
 --- !u!1 &1190318300783163360
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,9 +247,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -44025399
+  m_SortingLayerID: -1861760285
   m_SortingLayer: 2
-  m_SortingOrder: -1
+  m_SortingOrder: 0
   m_Sprite: {fileID: -9092649447833480810, guid: 0be678b92f01a944680e1e9193ea5349,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

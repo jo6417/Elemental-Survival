@@ -116,7 +116,7 @@ public class GatePortal : MonoBehaviour
         foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
         {
             //타입이 보스면
-            if (value.Value.enemyType.Replace(" ", "") == "boss")
+            if (value.Value.enemyType == "boss")
             {
                 //리스트에 포함
                 bosses.Add(value.Value);
@@ -142,16 +142,21 @@ public class GatePortal : MonoBehaviour
         // 보스 소환 후 포탈 이펙트 활성화
         anim.gameObject.SetActive(true);
 
-        // 보스 체력이 0 이하가 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.HpNow <= 0);
+        // 보스 죽을때까지 대기
+        yield return new WaitUntil(() => enemyManager.isDead);
+
+        print("boss dead");
 
         // 몬스터 스폰 멈추기
         EnemySpawn.Instance.spawnSwitch = false;
 
-        //TODO 남은 몬스터 화살표로 방향 표시해주기
+        // 남은 몬스터 화살표로 방향 표시해주기
+        UIManager.Instance.enemyPointSwitch = true;
 
         //TODO 모든 몬스터 죽을때까지 대기
-        yield return null;
+        yield return new WaitUntil(() => EnemySpawn.Instance.spawnEnemyList.Count == 0f);
+
+        print("all dead");
 
         // PortalOpen 트리거 true / Open, Idle 애니메이션 순서대로 시작
         anim.SetTrigger("PortalOpen");

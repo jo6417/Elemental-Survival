@@ -41,8 +41,10 @@ public class UIManager : MonoBehaviour
     float time_start;
     public float time_current; // 현재 스테이지 플레이 타임
     public int killCount;
+    public bool enemyPointSwitch = false; //화면 밖의 적 방향 표시 여부
 
     [Header("ReferUI")]
+    RectTransform UIRect;
     public GameObject magicMixPanel;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
@@ -53,6 +55,8 @@ public class UIManager : MonoBehaviour
     public Transform overlayCanvas;
     public TextMeshProUGUI timer;
     public TextMeshProUGUI killCountTxt;
+    public GameObject bossHp;
+    public GameObject arrowPrefab;
 
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
@@ -66,6 +70,7 @@ public class UIManager : MonoBehaviour
     bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
     Vector2 lastMousePos; //마지막 마우스 위치
+    RectTransform cursorRect;
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -89,6 +94,9 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1; //시간값 초기화
 
+        UIRect = GetComponent<RectTransform>();
+        cursorRect = UI_Cursor.GetComponent<RectTransform>();
+
         // GemUI 전부 찾기
         TextMeshProUGUI[] gems = gemUIParent.GetComponentsInChildren<TextMeshProUGUI>();
         foreach (TextMeshProUGUI gemUI in gems)
@@ -108,6 +116,12 @@ public class UIManager : MonoBehaviour
 
         //킬 카운트 초기화
         UpdateKillCount();
+
+        // 보스 체력 UI 초기화
+        bossHp.SetActive(false);
+
+        //화면밖 적 방향 미표시
+        enemyPointSwitch = false;
     }
 
     private void Update()
@@ -163,6 +177,9 @@ public class UIManager : MonoBehaviour
                 ProductToolTip.Instance.QuitTooltip();
                 //마우스 고정해제
                 Cursor.lockState = CursorLockMode.None;
+
+                // UI 커서 끄기
+                UI_Cursor.SetActive(false);
             }
         }
     }
@@ -191,12 +208,15 @@ public class UIManager : MonoBehaviour
                 isFlicking = false;
             }
 
-            // UI 커서 끄기
-            UI_Cursor.SetActive(false);
-
             // lastSelected 새로 갱신해서 기억하기
             if (EventSystem.current.currentSelectedGameObject)
+            {
+                //마지막 버튼 기억 갱신
                 lastSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
+
+                //원본 컬러 기억하기
+                lastOriginColor = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>().color;
+            }
         }
         //선택된 버튼이 바뀌었을때
         else
@@ -228,14 +248,23 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    void HideUICursor()
+    {
+        //UI커서 비활성화
+        UI_Cursor.SetActive(false);
+
+        //UI커서 크기 및 위치 초기화
+        // print(new Vector2(Screen.width, Screen.height));
+        // UI_Cursor.transform.localScale = new Vector2(1920f, 1080f);
+        // UI_Cursor.transform.position = transform.position;
+    }
+
     void CursorAnim()
     {
         Image image = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>();
         RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
         RectTransform lastRect = EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>();
 
-        //원본 컬러
-        lastOriginColor = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>().color;
         //깜빡일 시간
         float flickTime = 0.3f;
         //깜빡일 컬러 강조 비율
@@ -391,6 +420,31 @@ public class UIManager : MonoBehaviour
 
         // 레벨 갱신
         playerLev.text = "Lev. " + PlayerManager.Instance.PlayerStat_Now.Level.ToString();
+    }
+
+    public void UpdateBossHp(float bossHpNow, float bossHpMax, string bossName)
+    {
+        //보스 체력 UI 활성화
+        bossHp.SetActive(true);
+
+        //보스 체력 게이지 갱신
+        bossHp.GetComponentInChildren<SlicedFilledImage>().fillAmount
+        = bossHpNow / bossHpMax;
+
+        //보스 체력 텍스트 갱신
+        bossHp.transform.Find("HpText").GetComponent<TextMeshProUGUI>().text
+        = Mathf.CeilToInt(bossHpNow).ToString() + " / " + Mathf.CeilToInt(bossHpMax).ToString();
+
+        //보스 이름 갱신, 체력 0이하면 공백
+        bossHp.transform.Find("BossName").GetComponent<TextMeshProUGUI>().text
+        = bossHpNow <= 0 ? "" : bossName;
+
+        //체력 0 이하면 체력 UI 끄기
+        if (bossHpNow <= 0)
+        {
+            //보스 체력 UI 비활성화
+            bossHp.SetActive(false);
+        }
     }
 
     public void UpdateHp()
@@ -588,6 +642,9 @@ public class UIManager : MonoBehaviour
 
         // 팝업 꺼질때 UI 커서 끄기
         UI_Cursor.SetActive(false);
+        //UI커서 크기 및 위치 초기화
+        cursorRect.sizeDelta = UIRect.sizeDelta;
+        UI_Cursor.transform.position = transform.position;
 
         //null 선택하기
         EventSystem.current.SetSelectedGameObject(null);
@@ -603,6 +660,9 @@ public class UIManager : MonoBehaviour
 
         // 팝업 꺼질때 UI 커서 끄기
         UI_Cursor.SetActive(false);
+        //UI커서 크기 및 위치 초기화
+        cursorRect.sizeDelta = UIRect.sizeDelta;
+        UI_Cursor.transform.position = transform.position;
     }
 
     //오브젝트의 모든 자식을 제거

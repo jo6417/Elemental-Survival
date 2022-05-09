@@ -49,20 +49,14 @@ TagManager:
   - name: Ground
     uniqueID: 2425651459
     locked: 0
-  - name: Object
-    uniqueID: 4250941897
+  - name: Character&Object
+    uniqueID: 2433207011
     locked: 0
   - name: Item
     uniqueID: 572514883
     locked: 0
   - name: MagicEffect
     uniqueID: 945064743
-    locked: 0
-  - name: Player
-    uniqueID: 4189426099
-    locked: 0
-  - name: Enemy
-    uniqueID: 2574059319
     locked: 0
   - name: Magic
     uniqueID: 918817935

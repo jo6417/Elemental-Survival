@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
 using DG.Tweening;
+using UnityEngine.Experimental;
 
 public class EnemySpawn : MonoBehaviour
 {
@@ -31,14 +32,17 @@ public class EnemySpawn : MonoBehaviour
     #endregion
 
     public bool spawnSwitch;
+    public bool dragSwitch;
     Collider2D col;
     public int MaxEnemyPower; //최대 몬스터 수
     public int NowEnemyPower; //현재 몬스터 수
     public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
     public float spawnCoolCount; //몬스터 스폰 쿨타임 카운트
+    public List<GameObject> spawnEnemyList = new List<GameObject>(); //현재 스폰된 몬스터 리스트
 
     [Header("Refer")]
-    public Transform enemyPool; //몬스터 소환될 부모 오브젝트
+    public Transform enemyPool; //몬스터 풀
+    public Transform overlayPool; //UI 풀
     public Transform effectPool; //이펙트 소환될 부모 오브젝트
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
@@ -175,6 +179,9 @@ public class EnemySpawn : MonoBehaviour
             // 몬스터 프리팹 소환 및 비활성화
             enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, enemyPool);
             enemyObj.SetActive(false);
+
+            //몬스터 리스트에 넣기
+            spawnEnemyList.Add(enemyObj);
         }
 
         //프리팹에서 스프라이트 컴포넌트 찾기
@@ -282,6 +289,9 @@ public class EnemySpawn : MonoBehaviour
             iconObj.SetActive(false);
             // 몬스터 프리팹 활성화
             enemyObj.SetActive(true);
+
+            //TODO 몬스터 위치 가리킬 화살표 UI 소환
+            StartCoroutine(SpawnPoint(enemyObj));
         })
         .Append(
             //포탈 사이즈 줄여 사라지기
@@ -299,7 +309,7 @@ public class EnemySpawn : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기
-        if (other.CompareTag("Enemy") && other.gameObject.activeSelf)
+        if (other.CompareTag("Enemy") && other.gameObject.activeSelf && dragSwitch)
         {
             EnemyManager manager = other.GetComponent<EnemyManager>();
             EnemyAI enemyAI = other.GetComponent<EnemyAI>();
@@ -364,5 +374,50 @@ public class EnemySpawn : MonoBehaviour
         }
 
         return new Vector2(spawnPosX, spawnPosY);
+    }
+
+    IEnumerator SpawnPoint(GameObject enemyObj)
+    {
+        // 오버레이 풀에서 화살표 UI 생성
+        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, overlayPool);
+
+        //몬스터 활성화 되어있으면
+        while (enemyObj.activeSelf)
+        {
+            // 몬스터가 화면 안에 있으면 화살표 비활성화, 밖에 있으면 활성화
+            Vector3 arrowPos = Camera.main.WorldToViewportPoint(enemyObj.transform.position);
+            if (arrowPos.x < 0f
+            || arrowPos.x > 1f
+            || arrowPos.y < 0f
+            || arrowPos.y > 1f)
+            {
+                if (UIManager.Instance.enemyPointSwitch)
+                {
+                    arrowUI.SetActive(true);
+
+                    // 화살표 위치가 화면 밖으로 벗어나지않게 제한
+                    arrowPos.x = Mathf.Clamp(arrowPos.x, 0f, 1f);
+                    arrowPos.y = Mathf.Clamp(arrowPos.y, 0f, 1f);
+                    arrowUI.transform.position = Camera.main.ViewportToWorldPoint(arrowPos);
+
+                    // 몬스터 방향 가리키기
+                    Vector2 dir = enemyObj.transform.position - PlayerManager.Instance.transform.position;
+                    float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                    arrowUI.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+                }
+            }
+            else
+            {
+                arrowUI.SetActive(false);
+            }
+
+            yield return null;
+        }
+
+        //몬스터 비활성화되면
+        yield return new WaitUntil(() => !enemyObj.activeSelf);
+
+        //화살표 디스폰
+        LeanPool.Despawn(arrowUI);
     }
 }

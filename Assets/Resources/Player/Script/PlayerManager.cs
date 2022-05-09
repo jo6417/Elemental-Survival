@@ -180,6 +180,7 @@ public class PlayerManager : MonoBehaviour
         {
             dir.x = horizonInput;
 
+            //방향 따라 캐릭터 회전
             if (horizonInput > 0)
             {
                 transform.rotation = Quaternion.Euler(0, 0, 0);

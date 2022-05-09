@@ -11,7 +11,6 @@ public class EnemyManager : MonoBehaviour
     public List<int> hasItemId = new List<int>(); //가진 아이템
     public EnemyInfo enemy;
     EnemyAI enemyAI;
-    public string enemyName;
     public float portalSize = 1f; //포탈 사이즈 지정값
     Collider2D coll;
     public bool isElite; //엘리트 몬스터 여부
@@ -37,6 +36,10 @@ public class EnemyManager : MonoBehaviour
     public float HpNow = 2;
 
     [Header("Debug")]
+    [SerializeField]
+    string enemyName;
+    [SerializeField]
+    string enemyType;
     [SerializeField]
     float hpMax;
     [SerializeField]
@@ -86,14 +89,15 @@ public class EnemyManager : MonoBehaviour
         if (sprite.material == SystemManager.Instance.outLineMat)
             originMatColor = sprite.material.color;
 
-        enemyName = enemy.enemyName;
-
-        //콜라이더 켜기
-        coll.enabled = true;
         //죽음 여부 초기화
         isDead = false;
 
+        //콜라이더 켜기
+        coll.enabled = true;
+
         //! 테스트 확인용
+        enemyName = enemy.enemyName;
+        enemyType = enemy.enemyType;
         hpMax = enemy.hpMax;
         power = enemy.power;
         speed = enemy.speed;
@@ -238,6 +242,12 @@ public class EnemyManager : MonoBehaviour
         //데미지 UI 띄우기
         DamageText(damage, isCritical);
 
+        //보스면 체력 UI 띄우기
+        if (enemy.enemyType == "boss")
+        {
+            UIManager.Instance.UpdateBossHp(HpNow, hpMax, enemyName);
+        }
+
         // print(HpNow + " / " + enemy.HpMax);
         // 체력 0 이하면 죽음
         if (HpNow <= 0)
@@ -367,6 +377,9 @@ public class EnemyManager : MonoBehaviour
             DropItem();
         }
 
+        // 몬스터 리스트에서 몬스터 본인 빼기
+        EnemySpawn.Instance.spawnEnemyList.Remove(gameObject);
+
         // 몬스터 비활성화
         LeanPool.Despawn(gameObject);
 
@@ -398,7 +411,7 @@ public class EnemyManager : MonoBehaviour
         }
 
         //몬스터 죽을때 함수 호출, 체력 씨앗 드랍
-        if(SystemManager.Instance.enemyDeadCallback != null)
-        SystemManager.Instance.enemyDeadCallback(transform.position);
+        if (SystemManager.Instance.enemyDeadCallback != null)
+            SystemManager.Instance.enemyDeadCallback(transform.position);
     }
 }

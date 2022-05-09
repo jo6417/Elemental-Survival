@@ -61,6 +61,7 @@ public class EnemyInfo
         this.id = enemy.id;
         this.grade = enemy.grade;
         this.enemyName = enemy.enemyName;
+        this.enemyType = enemy.enemyType;
         this.description = enemy.description;
         this.power = enemy.power;
         this.speed = enemy.speed;
