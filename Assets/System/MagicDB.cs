@@ -9,6 +9,7 @@ public class MagicInfo
 {
     public int magicLevel = 0; //현재 마법 레벨
     public bool exist = false; //현재 소환 됬는지 여부
+    public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
     [Header("Info")]
     public int id; //고유 아이디

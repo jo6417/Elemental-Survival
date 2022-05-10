@@ -78,6 +78,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9c2b93e8e4dc1f244a7618fc1ae04543, type: 3}
   - {fileID: 21300000, guid: 4d3bda59151dc13478e62e3262203dad, type: 3}
   - {fileID: 21300000, guid: 0c549569adb0a3b49936f5565d092ae5, type: 3}
+  - {fileID: 21300000, guid: d970898979456634cb02b4c4b8f222d0, type: 3}
   - {fileID: 21300000, guid: 9bb462e99fdc78b4fb3acc6a8c8663f8, type: 3}
   - {fileID: 21300000, guid: 3985b7f971b67f442a0f8a9e8edd485e, type: 3}
   - {fileID: 21300000, guid: c884c8ba1e98dc44bbbc33aec406c544, type: 3}
@@ -131,6 +132,7 @@ SpriteAtlas:
   - LightningGem_UI
   - ButtonUI
   - HexItemFrame
+  - NavIconArrow
   - CircleBorder
   - EmptyImg
   - WindGem_UI

@@ -52,11 +52,12 @@ public class UIManager : MonoBehaviour
     public GameObject magicUpgradePanel;
     public GameObject ultimateMagicPanel;
     public GameObject pausePanel;
-    public Transform overlayCanvas;
+    public Transform overlayPool;
     public TextMeshProUGUI timer;
     public TextMeshProUGUI killCountTxt;
     public GameObject bossHp;
-    public GameObject arrowPrefab;
+    public GameObject arrowPrefab; //적 방향 가리킬 화살표 UI
+    public GameObject iconArrowPrefab; //오브젝트 방향 기리킬 아이콘 화살표 UI
 
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
@@ -529,16 +530,11 @@ public class UIManager : MonoBehaviour
 
     public void UpdateMagics()
     {
-        //기존 아이콘 모두 없에기
-        Image[] children = hasMagicsUI.GetComponentsInChildren<Image>();
-        // print(children.Length);
-
         //모든 자식 오브젝트 비활성화
-        if (children != null)
-            for (int j = 0; j < children.Length; j++)
-            {
-                LeanPool.Despawn(children[j].gameObject);
-            }
+        for (int j = 0; j < hasMagicsUI.childCount; j++)
+        {
+            LeanPool.Despawn(hasMagicsUI.GetChild(j).gameObject);
+        }
 
         foreach (var magic in PlayerManager.Instance.hasMagics)
         {
@@ -553,7 +549,7 @@ public class UIManager : MonoBehaviour
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
 
-            // 오브젝트에 마법 정보 저장
+            //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
             toolTipTrigger.magic = magic;
@@ -563,10 +559,64 @@ public class UIManager : MonoBehaviour
             // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
             //마법 개수 넣기, 2개 이상부터 표시
-            Text amount = magicIcon.GetComponentInChildren<Text>(true);
+            TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
             amount.text = "Lev." + magic.magicLevel.ToString();
         }
+    }
+
+    public void AddMagicUI(MagicInfo magic)
+    {
+        Transform matchIcon = null;
+
+        //모든 자식 오브젝트 비활성화
+        for (int j = 0; j < hasMagicsUI.childCount; j++)
+        {
+            // TooltipTrigger의 magic이 같은 아이콘 찾기
+            if (hasMagicsUI.GetChild(j).GetComponent<ToolTipTrigger>().magic == magic)
+            {
+                matchIcon = hasMagicsUI.GetChild(j);
+                break;
+            }
+        }
+
+        // 못찾으면 1렙 새 아이콘 추가
+        if (matchIcon == null)
+        {
+            //0등급은 원소젬이므로 표시 안함
+            if (magic.grade == 0)
+                return;
+
+            //궁극기는 표시 안함
+            if (magic.castType == "ultimate")
+                return;
+
+            //마법 아이콘 오브젝트 생성
+            GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
+
+            //툴팁에 마법 정보 저장
+            ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
+            toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
+            toolTipTrigger.magic = magic;
+
+            //스프라이트 넣기
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+
+            //마법 개수 넣기, 2개 이상부터 표시
+            TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
+            amount.gameObject.SetActive(true);
+            amount.text = "Lev." + magic.magicLevel.ToString();
+        }
+        // 찾으면 해당 아이콘에 레벨 텍스트 갱신
+        else
+        {
+            //마법 개수 넣기, 2개 이상부터 표시
+            TextMeshProUGUI amount = matchIcon.GetComponentInChildren<TextMeshProUGUI>(true);
+            amount.gameObject.SetActive(true);
+            amount.text = "Lev." + magic.magicLevel.ToString();
+        }
+
     }
 
     public void UpdateUltimateIcon()
@@ -678,5 +728,62 @@ public class UIManager : MonoBehaviour
                     Destroy(children[j].gameObject);
                 }
             }
+    }
+
+    // 화면 밖 오브젝트 방향 표시 Nav UI
+    public IEnumerator PointObject(GameObject targetObj, Sprite icon)
+    {
+        // 오버레이 풀에서 화살표 UI 생성
+        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetObj.transform.position, Quaternion.identity, overlayPool);
+
+        //rect 찾기
+        RectTransform rect = arrowUI.GetComponent<RectTransform>();
+
+        // 화살표의 아이콘 이미지 바꾸기
+        arrowUI.transform.Find("Icon").GetComponent<Image>().sprite = icon;
+
+        // 방향 가리킬 화살표
+        Transform arrow = arrowUI.transform.Find("Arrow");
+
+        //오브젝트 활성화 되어있으면
+        while (targetObj.activeSelf)
+        {
+            // 오브젝트가 화면 안에 있으면 화살표 비활성화, 밖에 있으면 활성화
+            Vector3 arrowPos = Camera.main.WorldToViewportPoint(targetObj.transform.position);
+            if (arrowPos.x < 0f
+            || arrowPos.x > 1f
+            || arrowPos.y < 0f
+            || arrowPos.y > 1f)
+            {
+                arrowUI.SetActive(true);
+
+                // 화살표 위치가 화면 밖으로 벗어나지않게 제한
+                arrowPos.x = Mathf.Clamp(arrowPos.x, 0f, 1f);
+                arrowPos.y = Mathf.Clamp(arrowPos.y, 0f, 1f);
+
+                // 화면 가장짜리쪽으로 피벗 변경
+                rect.pivot = arrowPos;
+
+                // 아이콘 화살표 위치 이동
+                arrowUI.transform.position = Camera.main.ViewportToWorldPoint(arrowPos);
+
+                // 오브젝트 방향 가리키기
+                Vector2 dir = targetObj.transform.position - PlayerManager.Instance.transform.position;
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 225f;
+                arrow.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            }
+            else
+            {
+                arrowUI.SetActive(false);
+            }
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        //오브젝트 비활성화되면
+        yield return new WaitUntil(() => !targetObj.activeSelf);
+
+        //화살표 디스폰
+        LeanPool.Despawn(arrowUI);
     }
 }

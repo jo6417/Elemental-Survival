@@ -42,7 +42,6 @@ public class EnemySpawn : MonoBehaviour
 
     [Header("Refer")]
     public Transform enemyPool; //몬스터 풀
-    public Transform overlayPool; //UI 풀
     public Transform effectPool; //이펙트 소환될 부모 오브젝트
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
@@ -290,8 +289,8 @@ public class EnemySpawn : MonoBehaviour
             // 몬스터 프리팹 활성화
             enemyObj.SetActive(true);
 
-            //TODO 몬스터 위치 가리킬 화살표 UI 소환
-            StartCoroutine(SpawnPoint(enemyObj));
+            // 몬스터 위치 가리킬 화살표 UI 소환
+            StartCoroutine(PointEnemyDir(enemyObj));
         })
         .Append(
             //포탈 사이즈 줄여 사라지기
@@ -376,10 +375,10 @@ public class EnemySpawn : MonoBehaviour
         return new Vector2(spawnPosX, spawnPosY);
     }
 
-    IEnumerator SpawnPoint(GameObject enemyObj)
+    IEnumerator PointEnemyDir(GameObject enemyObj)
     {
         // 오버레이 풀에서 화살표 UI 생성
-        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, overlayPool);
+        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, UIManager.Instance.overlayPool);
 
         //몬스터 활성화 되어있으면
         while (enemyObj.activeSelf)
@@ -405,6 +404,8 @@ public class EnemySpawn : MonoBehaviour
                     float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                     arrowUI.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                 }
+                else
+                arrowUI.SetActive(false);
             }
             else
             {

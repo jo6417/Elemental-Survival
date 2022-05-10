@@ -152,6 +152,8 @@ public class PlayerManager : MonoBehaviour
         // 쿨타임 가능하고 스페이스바 눌렀을때
         if (Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
         {
+            // print("ultimate use");
+
             StartCoroutine(CastMagic.Instance.UseUltimateMagic());
         }
 
@@ -357,7 +359,7 @@ public class PlayerManager : MonoBehaviour
         Vector2 endPos = (Vector2)transform.position + Vector2.up * 1f;
 
         // 회복 텍스트 띄우기
-        GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, UIManager.Instance.overlayCanvas);
+        GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, UIManager.Instance.overlayPool);
         TextMeshProUGUI healTxt = healUI.GetComponent<TextMeshProUGUI>();
         healTxt.color = Color.green;
         healTxt.text = "+ " + amount.ToString();
@@ -414,7 +416,10 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 보유한 모든 마법 아이콘 갱신
-        UIManager.Instance.UpdateMagics();
+        // UIManager.Instance.UpdateMagics();
+
+        // 마법 아이콘 UI 추가
+        UIManager.Instance.AddMagicUI(getMagic);
 
         // 마법 캐스팅 다시 시작
         if (resetAllMagic)

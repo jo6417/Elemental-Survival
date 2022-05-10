@@ -261,7 +261,7 @@ public class EnemyManager : MonoBehaviour
     void DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, UIManager.Instance.overlayCanvas);
+        GameObject damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, UIManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
         //데미지 텍스트, 데미지 0일때 miss 처리

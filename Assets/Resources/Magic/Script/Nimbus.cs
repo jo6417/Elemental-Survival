@@ -12,7 +12,7 @@ public class Nimbus : MonoBehaviour
     Vector3 slowFollowPlayer;
     public float followSpeed = 5f;
     Vector3 spinOffset;
-    public float cooltimeCounter = 0;
+    // public float cooltimeCounter = 0;
 
     private void OnEnable()
     {
@@ -36,7 +36,7 @@ public class Nimbus : MonoBehaviour
 
     void CoolTimeCount()
     {
-        if (cooltimeCounter <= 0)
+        if (magic.coolCount <= 0)
         {
             // Attack 애니메이션 켜기
             anim.SetBool("isAttack", true);
@@ -44,7 +44,7 @@ public class Nimbus : MonoBehaviour
         else
         {
             //쿨타임 카운트다운
-            cooltimeCounter -= Time.deltaTime;
+            magic.coolCount -= Time.deltaTime;
         }
     }
 
@@ -95,7 +95,7 @@ public class Nimbus : MonoBehaviour
 
         //쿨타임 입력
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
-        cooltimeCounter = coolTime;
+        magic.coolCount = coolTime;
         // print("coolTime : " + coolTime);
     }
 }

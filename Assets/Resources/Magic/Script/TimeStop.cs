@@ -67,11 +67,11 @@ public class TimeStop : MonoBehaviour
         });
 
         //모래시계 돌리는 시간
-        float coolCount = coolTime * 0.5f; //쿨타임의 절반
-        while (coolCount > 0)
+        magic.coolCount = coolTime * 0.5f; //쿨타임의 절반
+        while (magic.coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            coolCount -= Time.deltaTime;
+            magic.coolCount -= Time.deltaTime;
 
             yield return null;
         }

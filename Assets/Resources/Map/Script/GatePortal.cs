@@ -11,6 +11,8 @@ public class GatePortal : MonoBehaviour
     float delayCount; //상호작용 딜레이 카운트
     [SerializeField]
     float interactDelay = 1f; //상호작용 딜레이
+    [SerializeField]
+    float farDistance = 150f; //해당 거리 이상 벌어지면 포탈 이동
 
     [Header("Refer")]
     [SerializeField]
@@ -67,6 +69,11 @@ public class GatePortal : MonoBehaviour
         // 상호작용 키 누르면
         if (showKey.activeSelf && Input.GetKey(KeyCode.E) && delayCount <= 0)
         {
+            //첫번째 젬 넣을때
+            if(nowGem == 0)
+            //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI
+            StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
+
             // 젬 하나씩 넣기
             nowGem++;
 
@@ -92,7 +99,8 @@ public class GatePortal : MonoBehaviour
                 delayCount -= Time.deltaTime;
         }
 
-        //TODO 게이지 이미지 색깔 그라데이션으로 바꾸기
+        //TODO 플레이어와 거리 너무 멀어지면 위치 이동
+        MoveClose();
     }
 
     void UpdateGemNum()
@@ -153,12 +161,26 @@ public class GatePortal : MonoBehaviour
         // 남은 몬스터 화살표로 방향 표시해주기
         UIManager.Instance.enemyPointSwitch = true;
 
-        //TODO 모든 몬스터 죽을때까지 대기
+        // 모든 몬스터 죽을때까지 대기
         yield return new WaitUntil(() => EnemySpawn.Instance.spawnEnemyList.Count == 0f);
 
         print("all dead");
 
         // PortalOpen 트리거 true / Open, Idle 애니메이션 순서대로 시작
         anim.SetTrigger("PortalOpen");
+    }
+
+    void MoveClose()
+    {
+        // farDistance 보다 멀어지면
+        float distance = Vector2.Distance(transform.position, PlayerManager.Instance.transform.position);
+        if(distance >= farDistance)
+        {
+            //포탈이 생성될 위치
+            Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * SystemManager.Instance.portalRange;
+
+            // 플레이어 주변으로 재이동
+            transform.position = pos;
+        }
     }
 }

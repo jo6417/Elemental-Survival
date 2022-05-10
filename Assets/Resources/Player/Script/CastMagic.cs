@@ -192,11 +192,11 @@ public class CastMagic : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        float coolCount = coolTime;
-        while (coolCount > 0)
+        magic.coolCount = coolTime;
+        while (magic.coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            coolCount -= Time.deltaTime;
+            magic.coolCount -= Time.deltaTime;
 
             yield return null;
         }
