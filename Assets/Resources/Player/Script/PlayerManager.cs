@@ -251,6 +251,28 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other) {
+        //적에게 충돌
+        if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
+        {
+            // print("적 충돌");
+
+            EnemyManager enemyManager = other.gameObject.GetComponent<EnemyManager>();
+
+            EnemyInfo enemy = enemyManager.enemy;
+            bool isFallAttack = enemyManager.isFallAttack;
+
+            //피격 딜레이 무적
+            IEnumerator hitDelay = HitDelayCoroutine();
+            StartCoroutine(hitDelay);
+
+            Damage(enemy.power);
+
+            //TODO fallAttack 일때 일정시간동안 플레이어 멈추고 납작해지기
+            
+        }
+    }
+
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
     IEnumerator HitDelayCoroutine()
     {

@@ -35,6 +35,9 @@ public class EnemyManager : MonoBehaviour
     [Header("Stat")]
     public float HpNow = 2;
 
+    [Header("Attack Effect")]
+    public bool isFallAttack = false;
+
     [Header("Debug")]
     [SerializeField]
     string enemyName;
