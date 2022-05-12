@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hasItemId: ffffffff
+  referEnemyManager: {fileID: 0}
   portalSize: 1
   isElite: 0
   eliteClass: 0
@@ -161,11 +162,12 @@ MonoBehaviour:
   oppositeCount: 0
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
     type: 3}
-  sprite: {fileID: 0}
+  enemySprite: {fileID: 2790978120402739609}
   originMat: {fileID: 0}
   originMatColor: {r: 0, g: 0, b: 0, a: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}
   HpNow: 1
+  isFallAttack: 0
   enemyName: 
   enemyType: 
   hpMax: 0

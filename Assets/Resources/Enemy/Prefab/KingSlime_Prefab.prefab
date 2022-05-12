@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hasItemId: ffffffff
+  referEnemyManager: {fileID: 0}
   portalSize: 2
   isElite: 0
   eliteClass: 0
@@ -60,11 +61,12 @@ MonoBehaviour:
   oppositeCount: 0
   damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
     type: 3}
-  sprite: {fileID: 0}
+  enemySprite: {fileID: 7200008655959220509}
   originMat: {fileID: 0}
   originMatColor: {r: 0, g: 0, b: 0, a: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}
   HpNow: 1
+  isFallAttack: 0
   enemyName: 
   enemyType: 
   hpMax: 0
@@ -221,12 +223,12 @@ PrefabInstance:
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 4
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.7
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}

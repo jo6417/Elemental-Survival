@@ -251,7 +251,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other) {
+    private void OnTriggerStay2D(Collider2D other) {
         //적에게 충돌
         if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
         {

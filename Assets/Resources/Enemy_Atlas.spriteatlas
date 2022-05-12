@@ -71,11 +71,22 @@ SpriteAtlas:
   - {fileID: -1393387521054166907, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
+  - {fileID: -3570135257023498171, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+  - {fileID: 6662618489849775281, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+  - {fileID: 1727079075786078967, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+  - {fileID: 4854717294251204818, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 21300000, guid: c1cb3f0de7340df48944eae11705b06c, type: 3}
   - {fileID: 4250153402159111836, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -8609229472539899035, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -3411505516414708846, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: 21300000, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -6404539822265595652, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: -6511475048532732289, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: -7901897369145345293, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: -434441571953917910, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: -6808187854587747357, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: -8221661799491774684, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: -1992862642441321592, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: 4556296039571860405, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: -8476369765895928004, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: 7270431731576066618, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
@@ -86,8 +97,9 @@ SpriteAtlas:
   - {fileID: -4924971180576566181, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: -597171090907663275, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: -6807713283490877021, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 21300000, guid: 747f05bf566f9984480f347151bfaf09, type: 3}
   m_PackedSpriteNamesToIndex:
-  - KingSlime_IconTest
+  - KingSlime_Icon
   - StoneGolem_Icon
   - Golem-Sheet_2
   - Golem-Sheet_3
@@ -108,11 +120,22 @@ SpriteAtlas:
   - BloodEffect_Light_4
   - BloodEffect_Light_5
   - MiniDrone_Icon
+  - Screen_Walk-Sheet_2
+  - Screen_Walk-Sheet_3
+  - Screen_Walk-Sheet_0
+  - Screen_Walk-Sheet_1
   - Vacumm_Icon
   - Vacuum-Sheet_1
   - Vacuum-Sheet_0
   - Vacuum-Sheet_2
   - BloodEffect
+  - Screen_Fall-Sheet_2
+  - Screen_Fall-Sheet_3
+  - Screen_Fall-Sheet_0
+  - Screen_Fall-Sheet_1
+  - Screen_Fall-Sheet_6
+  - Screen_Fall-Sheet_4
+  - Screen_Fall-Sheet_5
   - A-800_Sheet_6
   - A-800_Sheet_7
   - A-800_Sheet_4
@@ -123,6 +146,7 @@ SpriteAtlas:
   - A-800_Sheet_1
   - A-800_Sheet_8
   - A-800_Sheet_9
+  - Ascii_Idle
   m_RenderDataMap: {}
   m_Tag: Enemy_Atlas
   m_IsVariant: 0

@@ -9,6 +9,7 @@ using TMPro;
 public class EnemyManager : MonoBehaviour
 {
     public List<int> hasItemId = new List<int>(); //가진 아이템
+    public EnemyManager referEnemyManager = null;
     public EnemyInfo enemy;
     EnemyAI enemyAI;
     public float portalSize = 1f; //포탈 사이즈 지정값
@@ -25,8 +26,7 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Refer")]
     public GameObject damageTxt; //데미지 UI
-    [HideInInspector]
-    public SpriteRenderer sprite;
+    public SpriteRenderer enemySprite;
 
     public Material originMat;
     public Color originMatColor; //해당 몬스터 머터리얼 원래 색
@@ -54,7 +54,7 @@ public class EnemyManager : MonoBehaviour
 
     void Awake()
     {
-        sprite = GetComponentInChildren<SpriteRenderer>();
+        // sprite = GetComponentInChildren<SpriteRenderer>();
         enemyAI = GetComponent<EnemyAI>();
         coll = GetComponent<Collider2D>();
     }
@@ -70,7 +70,7 @@ public class EnemyManager : MonoBehaviour
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
-        if (enemy == null)
+        if (enemy == null && referEnemyManager == null)
             //적 정보 인스턴싱
             enemy = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]));
 
@@ -82,15 +82,19 @@ public class EnemyManager : MonoBehaviour
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
         HpNow = enemy.hpMax; //체력 초기화
-        sprite.color = Color.white; //스프라이트 색깔 초기화
 
-        //머터리얼 정보 저장
-        originMat = sprite.material;
-        //색상 정보 저장
-        originColor = sprite.color;
-        //아웃라인이면 머터리얼 색상 저장
-        if (sprite.material == SystemManager.Instance.outLineMat)
-            originMatColor = sprite.material.color;
+        if (enemySprite != null)
+        {
+            enemySprite.color = Color.white; //스프라이트 색깔 초기화
+
+            //머터리얼 정보 저장
+            originMat = enemySprite.material;
+            //색상 정보 저장
+            originColor = enemySprite.color;
+            //아웃라인이면 머터리얼 색상 저장
+            if (enemySprite.material == SystemManager.Instance.outLineMat)
+                originMatColor = enemySprite.material.color;
+        }
 
         //죽음 여부 초기화
         isDead = false;
@@ -344,21 +348,18 @@ public class EnemyManager : MonoBehaviour
         UIManager.Instance.killCount++;
         UIManager.Instance.UpdateKillCount();
 
-        // 머터리얼 및 색 변경
-        sprite.material = SystemManager.Instance.hitMat;
-        sprite.color = SystemManager.Instance.hitColor;
+        if (enemySprite != null)
+        {
+            // 머터리얼 및 색 변경
+            enemySprite.material = SystemManager.Instance.hitMat;
+            enemySprite.color = SystemManager.Instance.hitColor;
 
-        // 색깔 점점 흰색으로
-        sprite.DOColor(SystemManager.Instance.DeadColor, 1f);
+            // 색깔 점점 흰색으로
+            enemySprite.DOColor(SystemManager.Instance.DeadColor, 1f);
 
-        //색 변경 완료 될때까지 대기
-        yield return new WaitUntil(() => sprite.color == SystemManager.Instance.DeadColor);
-        // while (sprite.color != EnemySpawn.Instance.DeadColor)
-        // {
-        //     sprite.DOPlay();
-
-        //     yield return null;
-        // }
+            //색 변경 완료 될때까지 대기
+            yield return new WaitUntil(() => enemySprite.color == SystemManager.Instance.DeadColor);
+        }
 
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
         yield return new WaitUntil(() => SystemManager.Instance.timeScale > 0);
