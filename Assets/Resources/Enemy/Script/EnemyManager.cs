@@ -36,7 +36,7 @@ public class EnemyManager : MonoBehaviour
     public float HpNow = 2;
 
     [Header("Attack Effect")]
-    public bool isFallAttack = false;
+    public bool flatDebuff = false;
 
     [Header("Debug")]
     [SerializeField]
@@ -151,6 +151,32 @@ public class EnemyManager : MonoBehaviour
             if (magic.multiHit)
                 HitMagic(other.gameObject);
         }
+
+        //적에게 맞았을때
+        if (other.transform.CompareTag("Enemy"))
+        {
+            if (other.gameObject.TryGetComponent<EnemyManager>(out EnemyManager hitEnemy))
+            {
+                // flat 디버프 있을때, stop 카운트 중 아닐때
+                if (hitEnemy.enabled && hitEnemy.flatDebuff && stopCount <= 0)
+                {
+                    print("enemy flat");
+                    //TODO 납작해지고 행동불능
+                    StartCoroutine(FlatDebuff());
+                }
+            }
+        }
+    }
+
+    IEnumerator FlatDebuff()
+    {
+        stopCount = 2f;
+        transform.localScale = new Vector2(1f, 0.5f);
+
+        //2초간 깔린채로 대기
+        yield return new WaitForSeconds(2f);
+
+        transform.localScale = Vector2.one;
     }
 
     void HitMagic(GameObject other)

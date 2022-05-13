@@ -65,11 +65,9 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
-    bool isDash; //현재 대쉬중 여부
-
     [Header("<Refer>")]
     public GameObject mobSpawner;
-    private Animator animator;
+    private Animator anim;
     public SpriteRenderer sprite;
     public Rigidbody2D rigid;
     public Vector3 lastDir; //마지막 바라봤던 방향
@@ -80,9 +78,12 @@ public class PlayerManager : MonoBehaviour
     public PlayerStat PlayerStat_Origin; //초기 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
 
-    [Header("<Damaged>")]
-    float hitCount = 0f;
+    [Header("<State>")]
     public float HitDelay = 0.5f; //피격 무적시간
+    float hitCount = 0f;
+    bool isDash; //현재 대쉬중 여부
+    public bool isParalysis; //깔려서 납작해졌을때
+
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;
     // public float ShakeIntensity;
@@ -106,7 +107,7 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
 
         // 원소젬 UI 업데이트
@@ -128,8 +129,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
-        if(Time.timeScale == 0f)
-        return;
+        if (Time.timeScale == 0f)
+            return;
 
         //카메라 따라오기
         foreach (var cam in SystemManager.Instance.camList)
@@ -149,6 +150,22 @@ public class PlayerManager : MonoBehaviour
             UIManager.Instance.UltimateCooltime();
         }
 
+        //히트 카운트 감소
+        if (hitCount > 0)
+            hitCount -= Time.deltaTime;
+
+        // 대쉬중 조작 불가
+        if (isDash)
+            return;
+
+        // 깔렸을때 조작불가
+        if (isParalysis)
+        {
+            rigid.velocity = Vector2.zero;
+            anim.speed = 0; //애니메이션 멈추기
+            return;
+        }
+
         // 쿨타임 가능하고 스페이스바 눌렀을때
         if (Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
         {
@@ -157,19 +174,14 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.UseUltimateMagic());
         }
 
-        //히트 카운트 감소
-        if (hitCount > 0)
-            hitCount -= Time.deltaTime;
-
         //이동
         Move();
     }
 
     void Move()
     {
-        //대쉬 중에는 이동 조작불가
-        if (isDash)
-            return;
+        //애니메이터 스피드 초기화
+        anim.speed = 1;
 
         //이동 입력값 받기
         Vector2 dir = Vector2.zero;
@@ -202,7 +214,7 @@ public class PlayerManager : MonoBehaviour
         // 방향키 입력에 따라 애니메이터 걷기 변수 입력
         if (horizonInput == 0 && verticalInput == 0)
         {
-            animator.SetBool("isWalk", false);
+            anim.SetBool("isWalk", false);
         }
         else
         {
@@ -214,7 +226,7 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
-                animator.SetBool("isWalk", true);
+                anim.SetBool("isWalk", true);
             }
         }
 
@@ -231,7 +243,7 @@ public class PlayerManager : MonoBehaviour
     public void DashToggle()
     {
         isDash = !isDash;
-        animator.SetBool("isDash", isDash);
+        anim.SetBool("isDash", isDash);
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -251,30 +263,41 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D other) {
-        //적에게 충돌
-        if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
-        {
-            // print("적 충돌");
+    // private void OnTriggerStay2D(Collider2D other)
+    // {
+    //     //적에게 충돌
+    //     if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash && !isParalysis)
+    //     {
+    //         // print("적 충돌");
 
-            EnemyManager enemyManager = other.gameObject.GetComponent<EnemyManager>();
+    //         // EnemyManager enemyManager = other.gameObject.GetComponent<EnemyManager>();
 
-            EnemyInfo enemy = enemyManager.enemy;
-            bool isFallAttack = enemyManager.isFallAttack;
+    //         // enemyManager 컴포넌트 있고 활성화 되어있을때
+    //         if (other.gameObject.TryGetComponent<EnemyManager>(out EnemyManager enemyManager) && enemyManager.enabled)
+    //         {
+    //             EnemyInfo enemy = enemyManager.enemy;
 
-            //피격 딜레이 무적
-            IEnumerator hitDelay = HitDelayCoroutine();
-            StartCoroutine(hitDelay);
+    //             //피격 딜레이 무적
+    //             IEnumerator hitDelay = HitDelayCoroutine();
+    //             StartCoroutine(hitDelay);
 
-            Damage(enemy.power);
+    //             bool isDead = Damage(enemy.power);
 
-            //TODO fallAttack 일때 일정시간동안 플레이어 멈추고 납작해지기
-            
-        }
-    }
+    //             //죽었으면 리턴
+    //             // if(isDead)
+    //             // return;
+
+    //             // flatDebuff 일때 일정시간동안 플레이어 멈추고 납작해지기
+    //             if (enemyManager.flatDebuff)
+    //             {
+    //                 StartCoroutine(FlatDebuff());
+    //             }
+    //         }
+    //     }
+    // }
 
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
-    IEnumerator HitDelayCoroutine()
+    public IEnumerator HitDelayCoroutine()
     {
         hitCount = HitDelay;
 
@@ -293,20 +316,44 @@ public class PlayerManager : MonoBehaviour
         sprite.color = Color.white;
     }
 
-    void Damage(float damage)
+    public bool Damage(float damage)
     {
         // 체력 감소
         PlayerStat_Now.hpNow -= damage;
 
-        //체력 0 이하가 되면 사망
+        //체력 0 이하로 내려가지 않음
         if (PlayerStat_Now.hpNow <= 0)
         {
             PlayerStat_Now.hpNow = 0;
-            // print("Game Over");
-            // Dead();
         }
 
-        UIManager.Instance.UpdateHp(); //체력 UI 업데이트        
+        UIManager.Instance.UpdateHp(); //체력 UI 업데이트
+
+        //체력 0 이하가 되면 사망
+        if(PlayerStat_Now.hpNow <= 0)
+        {
+            // print("Game Over");
+            // Dead();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public IEnumerator FlatDebuff()
+    {
+        //마비됨
+        isParalysis = true;
+        //플레이어 스프라이트 납작해짐
+        transform.localScale = new Vector2(1f, 0.5f);
+
+        yield return new WaitForSeconds(2f);
+
+        //마비 해제
+        isParalysis = false;
+        //플레이어 스프라이트 복구
+        transform.localScale = Vector2.one;
     }
 
     void Dead()

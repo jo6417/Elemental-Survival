@@ -10,15 +10,17 @@ public class AsciiBossAI : MonoBehaviour
     public enum NowState { Idle, SystemStop, TimeStop, Dead, Hit, Walk, Attack, Rest }
 
     [Header("Refer")]
-    
+    public AtkRangeTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
+    public GameObject blueText;
+    public TextMeshProUGUI laserText;
     EnemyManager enemyManager;
     Collider2D coll;
     Animator anim;
     Rigidbody2D rigid;
     public GameObject fallRangeObj;
     SpriteRenderer fallSprite;
-    Collider2D fallColl;
+    // Collider2D fallColl;
 
     EnemyInfo enemy;
     float speed;
@@ -34,7 +36,7 @@ public class AsciiBossAI : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
 
         fallSprite = fallRangeObj.GetComponent<SpriteRenderer>();
-        fallColl = fallRangeObj.GetComponent<Collider2D>();
+        // fallColl = fallRangeObj.GetComponent<Collider2D>();
     }
 
     private void OnEnable()
@@ -72,9 +74,9 @@ public class AsciiBossAI : MonoBehaviour
         coll.isTrigger = false;
 
         //공격범위 오브젝트 초기화
-        fallRangeObj.SetActive(false);
         fallSprite.enabled = false;
-        fallColl.enabled = false;
+        // fallRangeObj.SetActive(false);
+        // fallColl.enabled = false;
     }
 
     private void Update()
@@ -93,12 +95,13 @@ public class AsciiBossAI : MonoBehaviour
         }
         else
         {
+            //걸어오다가 가까워지면 걷기 취소
             if (nowState == NowState.Walk)
             {
                 // 걷기 애니메이션 끝내기
                 anim.SetBool("isWalk", false);
 
-                //가까워지면 idle 상태로 전환
+                // idle 상태로 전환
                 nowState = NowState.Idle;
 
                 // Idle 애니메이션 시작
@@ -109,28 +112,34 @@ public class AsciiBossAI : MonoBehaviour
 
         if (nowState == NowState.Walk)
         {
+            // 위치 고정 해제
+            rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
             //플레이어 따라가기
             Walk();
         }
         else
         {
+            //rigid 고정, 밀어도 안밀리게
+            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+
             //이동 멈추기
             rigid.velocity = Vector2.zero;
         }
 
-        if (nowState == NowState.Idle)
+        // 공격 쿨타임 돌리기
+        if (coolCount <= 0)
         {
-            // 공격 쿨타임 돌리기
-            if (coolCount <= 0 && nowState != NowState.Attack)
+            if (nowState == NowState.Idle)
             {
                 nowState = NowState.Attack;
 
                 Attack();
             }
-            else
-            {
-                coolCount -= Time.deltaTime;
-            }
+        }
+        else
+        {
+            coolCount -= Time.deltaTime;
         }
     }
 
@@ -140,8 +149,8 @@ public class AsciiBossAI : MonoBehaviour
         faceText.text = "● ▽ ●";
 
         //애니메이터 켜기
-        if (anim != null && !anim.enabled)
-            anim.enabled = true;
+        // if (anim != null && !anim.enabled)
+        //     anim.enabled = true;
 
         //움직일 방향
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
@@ -164,30 +173,40 @@ public class AsciiBossAI : MonoBehaviour
     {
         nowState = NowState.Attack;
 
-        // 범위 랜덤 쿨타임 입력
-        coolCount = Random.Range(1f, 3f);
+        // fall 콜라이더에 플레이어 있으면 엎어지기 공격 시작
+        if (fallRangeTrigger.atkTrigger)
+        {
+            FalldownAttack();
 
-        //TODO fall 콜라이더에 플레이어 있으면 엎어지기 공격 시작
-        FalldownAttack();
+            // 랜덤 쿨타임 입력
+            coolCount = Random.Range(1f, 5f);
+        }
+        else
+        {
+            LaserAtk();
+
+            // 랜덤 쿨타임 입력
+            coolCount = Random.Range(1f, 5f);
+        }
     }
 
     void FalldownAttack()
     {
-        //당황하는 표정
+        // 앞뒤로 흔들려서 당황하는 표정
         faceText.text = "◉ Д ◉";
 
         // 엎어질 준비 애니메이션 시작
         anim.SetTrigger("FallReady");
 
         //공격 범위 오브젝트 활성화
-        fallRangeObj.SetActive(true);
+        // fallRangeObj.SetActive(true);
 
         // 엎어질 범위 활성화 및 반짝거리기
         fallSprite.enabled = true;
         Color originColor = new Color(1, 0, 0, 0.3f);
         fallSprite.color = originColor;
 
-        fallSprite.DOColor(new Color(1, 1, 1, 0.5f), 2f)
+        fallSprite.DOColor(new Color(1, 1, 1, 0.5f), 1f)
         .SetEase(Ease.InOutFlash, 5, 0)
         .OnComplete(() =>
         {
@@ -203,6 +222,23 @@ public class AsciiBossAI : MonoBehaviour
 
     void FallAtkCollider()
     {
+        // 콜라이더 내에 플레이어 아직 있으면 멈추기, 데미지 입히기
+        if (fallRangeTrigger.atkTrigger)
+        {
+            //피격 딜레이 무적
+            IEnumerator hitDelay = PlayerManager.Instance.HitDelayCoroutine();
+            StartCoroutine(hitDelay);
+
+            bool isDead = PlayerManager.Instance.Damage(enemy.power);
+
+            //죽었으면 리턴
+            // if(isDead)
+            // return;
+
+            // 플레이어 멈추고 납작해지기
+            StartCoroutine(PlayerManager.Instance.FlatDebuff());
+        }
+
         //일어서는 애니메이션 시작
         StartCoroutine(FallAtkCoroutine());
     }
@@ -221,6 +257,37 @@ public class AsciiBossAI : MonoBehaviour
         // print("콜라이더 끄기 : " + Time.time);
     }
 
+    IEnumerator LaserAtk()
+    {
+        print("laser atk");
+
+        //채워질 글자
+        string targetText = "무궁화꽃이\n피었습니다";
+
+        // 모니터에 화를 참는 얼굴
+        faceText.text = "◣` ︿ ´◢";
+
+        //공격 준비 글자 채우기
+        StartCoroutine(LaserReadyText(targetText));
+        //TODO 동시에 점점 빨간색 게이지가 차오름
+
+        //TODO 글자 모두 표시되면 Stop 이라고 모니터에 텍스트 표시
+        yield return new WaitUntil(() => laserText.text.Length < targetText.Length);
+        faceText.text = "STOP";
+
+        //TODO 모든 몬스터들도 멈춤, time stop 함수 적용
+
+        //TODO 모두 차오르면 몇초동안 노려보는 얼굴 
+        // faceText.text = "◉` ︿ ´◉";
+
+        //TODO 노려보는 동안 플레이어 움직이면 플레이어에게 눈알 레이저 발사
+
+        // 공격 직후에는 눈이 아파서 지친 얼굴
+        // faceText.text = "x  _  x";
+
+        StateIdle();
+    }
+
     void StateIdle()
     {
         nowState = NowState.Idle;
@@ -233,7 +300,7 @@ public class AsciiBossAI : MonoBehaviour
     {
         string targetText = "...";
 
-        faceText.text = "...";
+        faceText.text = targetText;
 
         while (nowState == NowState.Idle)
         {
@@ -243,6 +310,24 @@ public class AsciiBossAI : MonoBehaviour
                 faceText.text = targetText.Substring(0, 0);
 
             yield return new WaitForSeconds(0.2f);
+        }
+    }
+
+    IEnumerator LaserReadyText(string targetText)
+    {
+        //텍스트 비우기
+        laserText.text = "";
+
+        float delay = 0.2f;
+
+        while (laserText.text.Length < targetText.Length)
+        {
+            laserText.text = targetText.Substring(0, laserText.text.Length + 1);
+
+            //글자마다 랜덤 딜레이 갱신 
+            delay = Random.Range(0.2f, 1f);
+
+            yield return new WaitForSeconds(delay);
         }
     }
 }
