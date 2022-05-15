@@ -52,7 +52,6 @@ public class UIManager : MonoBehaviour
     public GameObject magicUpgradePanel;
     public GameObject ultimateMagicPanel;
     public GameObject pausePanel;
-    public Transform overlayPool;
     public TextMeshProUGUI timer;
     public TextMeshProUGUI killCountTxt;
     public GameObject bossHp;
@@ -734,7 +733,7 @@ public class UIManager : MonoBehaviour
     public IEnumerator PointObject(GameObject targetObj, Sprite icon)
     {
         // 오버레이 풀에서 화살표 UI 생성
-        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetObj.transform.position, Quaternion.identity, overlayPool);
+        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetObj.transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
 
         //rect 찾기
         RectTransform rect = arrowUI.GetComponent<RectTransform>();

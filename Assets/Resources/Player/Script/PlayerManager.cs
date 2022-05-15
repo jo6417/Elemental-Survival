@@ -73,6 +73,7 @@ public class PlayerManager : MonoBehaviour
     public Vector3 lastDir; //마지막 바라봤던 방향
     public GameObject txtPrefab; //체력 회복 텍스트 UI
     public Light2D playerLight;
+    public GameObject bloodPrefab; //플레이어 혈흔 파티클
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Origin; //초기 스탯
@@ -81,7 +82,7 @@ public class PlayerManager : MonoBehaviour
     [Header("<State>")]
     public float HitDelay = 0.5f; //피격 무적시간
     float hitCount = 0f;
-    bool isDash; //현재 대쉬중 여부
+    public bool isDash; //현재 대쉬중 여부
     public bool isParalysis; //깔려서 납작해졌을때
 
     //TODO 피격시 카메라 흔들기
@@ -154,17 +155,30 @@ public class PlayerManager : MonoBehaviour
         if (hitCount > 0)
             hitCount -= Time.deltaTime;
 
-        // 대쉬중 조작 불가
-        if (isDash)
-            return;
-
         // 깔렸을때 조작불가
         if (isParalysis)
         {
+            //대쉬 중이었으면 취소
+            isDash = false;
+
+            //이동 멈추기
             rigid.velocity = Vector2.zero;
-            anim.speed = 0; //애니메이션 멈추기
+
+            //Idle 애니메이션으로 바꾸고 멈추기
+            anim.SetBool("isWalk", false);
+            anim.SetBool("isDash", false);
+            anim.speed = 0;
+
             return;
         }
+        else
+        {
+            anim.speed = 1;
+        }
+
+        // 대쉬중 조작 불가
+        if (isDash)
+            return;
 
         // 쿨타임 가능하고 스페이스바 눌렀을때
         if (Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
@@ -263,38 +277,40 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // private void OnTriggerStay2D(Collider2D other)
-    // {
-    //     //적에게 충돌
-    //     if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash && !isParalysis)
-    //     {
-    //         // print("적 충돌");
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
+        {
+            //적에게 충돌
+            if (other.TryGetComponent<EnemyManager>(out EnemyManager enemyManager))
+            {
+                EnemyInfo enemy = enemyManager.enemy;
 
-    //         // EnemyManager enemyManager = other.gameObject.GetComponent<EnemyManager>();
+                //피격 딜레이 무적
+                IEnumerator hitDelay = HitDelayCoroutine();
+                StartCoroutine(hitDelay);
 
-    //         // enemyManager 컴포넌트 있고 활성화 되어있을때
-    //         if (other.gameObject.TryGetComponent<EnemyManager>(out EnemyManager enemyManager) && enemyManager.enabled)
-    //         {
-    //             EnemyInfo enemy = enemyManager.enemy;
+                Damage(enemy.power);
+            }
 
-    //             //피격 딜레이 무적
-    //             IEnumerator hitDelay = HitDelayCoroutine();
-    //             StartCoroutine(hitDelay);
+            //적의 마법에 충돌
+            if (other.TryGetComponent<MagicHolder>(out MagicHolder magicHolder))
+            {
+                MagicInfo magic = magicHolder.magic;
 
-    //             bool isDead = Damage(enemy.power);
+                //피격 딜레이 무적
+                IEnumerator hitDelay = HitDelayCoroutine();
+                StartCoroutine(hitDelay);
 
-    //             //죽었으면 리턴
-    //             // if(isDead)
-    //             // return;
+                //데미지 계산
+                float damage = MagicDB.Instance.MagicPower(magic);
+                // 고정 데미지에 확률 계산
+                damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-    //             // flatDebuff 일때 일정시간동안 플레이어 멈추고 납작해지기
-    //             if (enemyManager.flatDebuff)
-    //             {
-    //                 StartCoroutine(FlatDebuff());
-    //             }
-    //         }
-    //     }
-    // }
+                Damage(damage);
+            }
+        }
+    }
 
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
     public IEnumerator HitDelayCoroutine()
@@ -327,10 +343,14 @@ public class PlayerManager : MonoBehaviour
             PlayerStat_Now.hpNow = 0;
         }
 
+        //혈흔 파티클 생성
+        LeanPool.Spawn(bloodPrefab, transform.position, Quaternion.identity);
+        print(Time.time);
+
         UIManager.Instance.UpdateHp(); //체력 UI 업데이트
 
         //체력 0 이하가 되면 사망
-        if(PlayerStat_Now.hpNow <= 0)
+        if (PlayerStat_Now.hpNow <= 0)
         {
             // print("Game Over");
             // Dead();
@@ -428,7 +448,7 @@ public class PlayerManager : MonoBehaviour
         Vector2 endPos = (Vector2)transform.position + Vector2.up * 1f;
 
         // 회복 텍스트 띄우기
-        GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, UIManager.Instance.overlayPool);
+        GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI healTxt = healUI.GetComponent<TextMeshProUGUI>();
         healTxt.color = Color.green;
         healTxt.text = "+ " + amount.ToString();

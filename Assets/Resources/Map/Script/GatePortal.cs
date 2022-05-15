@@ -138,7 +138,7 @@ public class GatePortal : MonoBehaviour
         Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle * 10f;
 
         // 보스 소환 및 비활성화
-        GameObject bossObj = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, EnemySpawn.Instance.enemyPool);
+        GameObject bossObj = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, SystemManager.Instance.enemyPool);
         bossObj.SetActive(false);
 
         // 보스 enemyManager 참조

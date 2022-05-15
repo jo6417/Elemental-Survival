@@ -29,17 +29,16 @@ public class BuckShot : MonoBehaviour
         magic = magicHolder.magic;
         targetPos = magicHolder.targetPos;
 
-        //TODO 플레이어 바라보는 방향바라보기
-        //방향 각도 구하기
+        //플레이어가 마지막 바라본 방향의 각도
         float rotation = Mathf.Atan2(PlayerManager.Instance.lastDir.y, PlayerManager.Instance.lastDir.x) * Mathf.Rad2Deg;
 
-        //목표 위치로 회전
+        //해당 각도로 회전
         transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
 
         //파티클 발사
         particle.Play();
 
-        //TODO 파티클 시스템에 속도 적용하기
+        // 파티클 시스템에 속도 적용하기
         ParticleSystem.MainModule particleMain = particle.main;
         particleMain.simulationSpeed = MagicDB.Instance.MagicSpeed(magic, true);
 

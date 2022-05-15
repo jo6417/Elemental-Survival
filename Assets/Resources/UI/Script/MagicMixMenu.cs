@@ -890,7 +890,7 @@ public class MagicMixMenu : MonoBehaviour
                 recipeBtn.GetComponentInChildren<TextMeshProUGUI>().text = recipePanel.gameObject.activeSelf ? "Back" : "Recipe";
                 //레시피 켤때는 빨간색, 레시피 끌때는 초록색으로 전환
                 recipeBtn.GetComponent<Image>().color = recipePanel.gameObject.activeSelf ?
-                MagicDB.Instance.HexToRGBA("F06464") : MagicDB.Instance.HexToRGBA("3742CC");
+                SystemManager.Instance.HexToRGBA("F06464") : SystemManager.Instance.HexToRGBA("3742CC");
             }
         })
         .SetEase(ease)

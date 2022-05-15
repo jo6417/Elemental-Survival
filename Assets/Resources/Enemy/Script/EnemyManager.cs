@@ -294,7 +294,7 @@ public class EnemyManager : MonoBehaviour
     void DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, UIManager.Instance.overlayPool);
+        GameObject damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
         //데미지 텍스트, 데미지 0일때 miss 처리
@@ -391,13 +391,13 @@ public class EnemyManager : MonoBehaviour
         yield return new WaitUntil(() => SystemManager.Instance.timeScale > 0);
 
         // 먼지 이펙트 생성
-        GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, EnemySpawn.Instance.effectPool);
+        GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         dust.tag = "Enemy";
         // 2초후 디스폰
         // LeanPool.Despawn(dust, 2f);
 
         //혈흔 이펙트 생성
-        GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, EnemySpawn.Instance.effectPool);
+        GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         // 10초후 디스폰
         // LeanPool.Despawn(blood, 10f);
 

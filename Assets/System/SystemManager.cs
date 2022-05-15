@@ -40,7 +40,11 @@ public class SystemManager : MonoBehaviour
     public float portalRange = 100f; //포탈게이트 생성될 범위
 
     [Header("Refer")]
-    public GameObject gridObjectPool;
+    public Transform enemyPool;
+    public Transform itemPool;
+    public Transform overlayPool;
+    public Transform magicPool;
+    public Transform effectPool;
     public List<Camera> camList = new List<Camera>();
     MagicInfo lifeSeedMagic;
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
@@ -55,6 +59,14 @@ public class SystemManager : MonoBehaviour
     public Color stopColor; //시간 멈췄을때 색깔
     public Color hitColor; //맞았을때 깜빡일 색깔
     public Color DeadColor; //죽을때 점점 변할 색깔
+
+    public Color HexToRGBA(string hex)
+    {
+        Color color;
+        ColorUtility.TryParseHtmlString("#" + hex, out color);
+
+        return color;
+    }
 
     public void AllTimeScale(float scale)
     {

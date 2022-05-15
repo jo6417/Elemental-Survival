@@ -132,11 +132,11 @@ public class SlotMachine : MonoBehaviour
         {
             if (i == 2)
             {
-                leds[i].color = MagicDB.Instance.HexToRGBA("FFFFFF");
+                leds[i].color = SystemManager.Instance.HexToRGBA("FFFFFF");
             }
             else
             {
-                leds[i].color = MagicDB.Instance.HexToRGBA("646464");
+                leds[i].color = SystemManager.Instance.HexToRGBA("646464");
             }
         }
     }
@@ -154,11 +154,11 @@ public class SlotMachine : MonoBehaviour
         {
             if (i == 2)
             {
-                leds[i].color = MagicDB.Instance.HexToRGBA("FFFFFF");
+                leds[i].color = SystemManager.Instance.HexToRGBA("FFFFFF");
             }
             else
             {
-                leds[i].color = MagicDB.Instance.HexToRGBA("646464");
+                leds[i].color = SystemManager.Instance.HexToRGBA("646464");
             }
         }
 
@@ -204,7 +204,7 @@ public class SlotMachine : MonoBehaviour
         List<int> prizeIndex = new List<int>();
         for (int i = 0; i < leds.Count; i++)
         {
-            if (leds[i].color == MagicDB.Instance.HexToRGBA("FFFFFF"))
+            if (leds[i].color == SystemManager.Instance.HexToRGBA("FFFFFF"))
             {
                 //led 켜져있는 인덱스 넣기
                 prizeIndex.Add(i);
@@ -216,14 +216,14 @@ public class SlotMachine : MonoBehaviour
         {
             for (int j = 0; j < prizeIndex.Count; j++)
             {
-                leds[prizeIndex[j]].color = MagicDB.Instance.HexToRGBA("646464");
+                leds[prizeIndex[j]].color = SystemManager.Instance.HexToRGBA("646464");
             }
 
             yield return new WaitForSecondsRealtime(0.2f);
 
             for (int j = 0; j < prizeIndex.Count; j++)
             {
-                leds[prizeIndex[j]].color = MagicDB.Instance.HexToRGBA("FFFFFF");
+                leds[prizeIndex[j]].color = SystemManager.Instance.HexToRGBA("FFFFFF");
             }
 
             yield return new WaitForSecondsRealtime(0.2f);
@@ -293,7 +293,7 @@ public class SlotMachine : MonoBehaviour
     void OnFeverLED(int ledIndex)
     {
         //해당 슬롯 피버 LED 켜기
-        leds[ledIndex].color = MagicDB.Instance.HexToRGBA("FFFFFF");
+        leds[ledIndex].color = SystemManager.Instance.HexToRGBA("FFFFFF");
     }
 
     IEnumerator SpinSlot(List<GameObject> items, int spinNum)

@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using Lean.Pool;
 
 public class AsciiBossAI : MonoBehaviour
 {
     public NowState nowState;
-    public enum NowState { Idle, SystemStop, TimeStop, Dead, Hit, Walk, Attack, Rest }
+    public enum NowState { Idle, Walk, Attack, Rest, Hit, Dead, TimeStop, SystemStop }
 
     [Header("Refer")]
+    public Image angryGauge; //분노 게이지 이미지
     public AtkRangeTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
     public GameObject blueText;
@@ -21,6 +24,8 @@ public class AsciiBossAI : MonoBehaviour
     public GameObject fallRangeObj;
     SpriteRenderer fallSprite;
     // Collider2D fallColl;
+    public GameObject LaserPrefab; //발사할 레이저 마법 프리팹
+    MagicInfo laserMagic = null; //발사할 레이저 마법 데이터
 
     EnemyInfo enemy;
     float speed;
@@ -77,10 +82,26 @@ public class AsciiBossAI : MonoBehaviour
         fallSprite.enabled = false;
         // fallRangeObj.SetActive(false);
         // fallColl.enabled = false;
+
+        //EnemyDB 로드 될때까지 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        // 레이저 마법 데이터 찾기
+        if(laserMagic == null)
+        {
+            //찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
+            laserMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Laser Beam"));
+
+            // 강력한 데미지로 고정
+            laserMagic.power = 20f;
+        }
     }
 
     private void Update()
     {
+        if(enemy == null || laserMagic == null)
+        return;
+
         //일정 거리 이상 멀면 플레이어 따라가기
         if (Vector2.Distance(transform.position, PlayerManager.Instance.transform.position) >= followDistance)
         {
@@ -101,11 +122,8 @@ public class AsciiBossAI : MonoBehaviour
                 // 걷기 애니메이션 끝내기
                 anim.SetBool("isWalk", false);
 
-                // idle 상태로 전환
-                nowState = NowState.Idle;
-
                 // Idle 애니메이션 시작
-                StateIdle();
+                SetIdle();
             }
         }
 
@@ -128,18 +146,18 @@ public class AsciiBossAI : MonoBehaviour
         }
 
         // 공격 쿨타임 돌리기
-        if (coolCount <= 0)
+        if (nowState == NowState.Idle)
         {
-            if (nowState == NowState.Idle)
+            if (coolCount <= 0)
             {
                 nowState = NowState.Attack;
 
-                Attack();
+                ChooseAttack();
             }
-        }
-        else
-        {
-            coolCount -= Time.deltaTime;
+            else
+            {
+                coolCount -= Time.deltaTime;
+            }
         }
     }
 
@@ -169,7 +187,7 @@ public class AsciiBossAI : MonoBehaviour
         }
     }
 
-    void Attack()
+    void ChooseAttack()
     {
         nowState = NowState.Attack;
 
@@ -183,7 +201,7 @@ public class AsciiBossAI : MonoBehaviour
         }
         else
         {
-            LaserAtk();
+            StartCoroutine(LaserAtk());
 
             // 랜덤 쿨타임 입력
             coolCount = Random.Range(1f, 5f);
@@ -239,11 +257,11 @@ public class AsciiBossAI : MonoBehaviour
             StartCoroutine(PlayerManager.Instance.FlatDebuff());
         }
 
-        //일어서는 애니메이션 시작
-        StartCoroutine(FallAtkCoroutine());
+        //일어서기, 휴식 애니메이션 재생
+        StartCoroutine(GetUpAnim());
     }
 
-    IEnumerator FallAtkCoroutine()
+    IEnumerator GetUpAnim()
     {
         //일어날때 표정
         faceText.text = "x  _  x";
@@ -251,44 +269,137 @@ public class AsciiBossAI : MonoBehaviour
         // 엎어진채로 1초 대기
         yield return new WaitForSeconds(1f);
 
-        // 일어서는 애니메이션 시작
+        // 일어서기, 휴식 애니메이션 시작
         anim.SetBool("isFallAtk", false);
 
-        // print("콜라이더 끄기 : " + Time.time);
+        StartCoroutine(RestAnim(2f));
     }
 
     IEnumerator LaserAtk()
     {
-        print("laser atk");
+        // print("laser atk");
+
+        // 레이저 준비 애니메이션 시작
+        anim.SetTrigger("LaserReady");
+
+        // 모니터에 화를 참는 얼굴
+        faceText.text = "◣` ︿ ´◢"; //TODO 얼굴 바꾸기
+
+        // 동시에 점점 빨간색 게이지가 차오름
+        angryGauge.fillAmount = 0f;
+        DOTween.To(() => angryGauge.fillAmount, x => angryGauge.fillAmount = x, 1f, 2f);
+
+        //게이지 모두 차오르면 
+        yield return new WaitUntil(() => angryGauge.fillAmount >= 1f);
+
+        // 무궁화 애니메이션 시작
+        anim.SetTrigger("LaserSet");
 
         //채워질 글자
         string targetText = "무궁화꽃이\n피었습니다";
 
-        // 모니터에 화를 참는 얼굴
-        faceText.text = "◣` ︿ ´◢";
+        //텍스트 비우기
+        laserText.text = "";
 
         //공격 준비 글자 채우기
         StartCoroutine(LaserReadyText(targetText));
-        //TODO 동시에 점점 빨간색 게이지가 차오름
 
-        //TODO 글자 모두 표시되면 Stop 이라고 모니터에 텍스트 표시
-        yield return new WaitUntil(() => laserText.text.Length < targetText.Length);
-        faceText.text = "STOP";
+        // 글자 모두 표시되면 Stop 표시
+        yield return new WaitUntil(() => laserText.text == "STOP");
 
-        //TODO 모든 몬스터들도 멈춤, time stop 함수 적용
+        // 감시 애니메이션 시작
+        anim.SetBool("isLaserWatch", true);
 
-        //TODO 모두 차오르면 몇초동안 노려보는 얼굴 
-        // faceText.text = "◉` ︿ ´◉";
+        // 노려보는 얼굴
+        faceText.text = "⚆`  ︿  ´⚆";
 
-        //TODO 노려보는 동안 플레이어 움직이면 플레이어에게 눈알 레이저 발사
+        //TODO 모든 몬스터 멈추기, time stop 함수 적용
 
-        // 공격 직후에는 눈이 아파서 지친 얼굴
-        // faceText.text = "x  _  x";
+        //감시 시간
+        float watchTime = 3f;
+        //플레이어 현재 위치
+        Vector3 playerPos = PlayerManager.Instance.transform.position;
 
-        StateIdle();
+        // 플레이어 움직이는지 감시
+        while (watchTime > 0)
+        {
+            //플레이어 위치 변경됬으면 레이저 발사
+            if (playerPos != PlayerManager.Instance.transform.position)
+            {
+                //움직이면 레이저 발사 애니메이션 재생
+                anim.SetBool("isLaserAtk", true);
+
+                // 레이저 쏠때 얼굴
+                faceText.text = "◣` ︿ ´◢";
+
+                // 플레이어에게 레이저 발사
+                ShotLaser();
+
+                //레이저 쏘는 시간 대기
+                yield return new WaitForSeconds(1f);
+
+                //레이저 발사 종료
+                anim.SetBool("isLaserAtk", false);
+
+                // while문 탈출
+                break;
+            }
+
+            yield return new WaitForSeconds(Time.deltaTime);
+            watchTime -= Time.deltaTime;
+        }
+
+        // 감시 종료
+        anim.SetBool("isLaserWatch", false);
+
+        //TODO 모든 몬스터 멈춤 해제
+
+        //휴식 시작
+        StartCoroutine(RestAnim(3f));
     }
 
-    void StateIdle()
+    void ShotLaser()
+    {
+        print("레이저 발사");
+
+        //레이저 생성
+        GameObject magicObj = LeanPool.Spawn(LaserPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+        LaserBeam laser = magicObj.GetComponent<LaserBeam>();
+        // 레이저 조준 시간 넣기
+        // laser.aimTime = 0f;
+        // 레이저 발사할 오브젝트 넣기
+        laser.startObj = transform;
+
+        MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+        // magic 데이터 넣기
+        magicHolder.magic = laserMagic;
+
+        // 타겟을 플레이어로 전환
+        magicHolder.SetTarget(MagicHolder.Target.Player);
+        // 레이저 목표지점 targetPos 넣기
+        magicHolder.targetPos = PlayerManager.Instance.transform.position;
+    }
+
+    IEnumerator RestAnim(float restTime)
+    {
+        //휴식 시작
+        anim.SetBool("isRest", true);
+        //휴식할때 표정
+        faceText.text = "x  _  x";
+
+        nowState = NowState.Rest;
+
+        yield return new WaitForSeconds(restTime);
+
+        //휴식 끝
+        anim.SetBool("isRest", false);
+
+        // Idle 상태로 전환
+        SetIdle();
+    }
+
+    void SetIdle()
     {
         nowState = NowState.Idle;
 
@@ -315,9 +426,6 @@ public class AsciiBossAI : MonoBehaviour
 
     IEnumerator LaserReadyText(string targetText)
     {
-        //텍스트 비우기
-        laserText.text = "";
-
         float delay = 0.2f;
 
         while (laserText.text.Length < targetText.Length)
@@ -325,9 +433,12 @@ public class AsciiBossAI : MonoBehaviour
             laserText.text = targetText.Substring(0, laserText.text.Length + 1);
 
             //글자마다 랜덤 딜레이 갱신 
-            delay = Random.Range(0.2f, 1f);
+            delay = Random.Range(0.2f, 0.5f);
+            delay = 0.1f;
 
             yield return new WaitForSeconds(delay);
         }
+
+        laserText.text = "STOP";
     }
 }

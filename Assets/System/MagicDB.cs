@@ -81,6 +81,38 @@ public class MagicInfo
         this.projectilePerLev = projectilePerLev;
         this.coolTimePerLev = coolTimePerLev;
     }
+
+    public MagicInfo(MagicInfo magic)
+    {
+        this.id = magic.id;
+        this.grade = magic.grade;
+        this.magicName = magic.magicName;
+        this.element_A = magic.element_A;
+        this.element_B = magic.element_B;
+        this.castType = magic.castType;
+        this.description = magic.description;
+        this.priceType = magic.priceType;
+        this.multiHit = magic.multiHit;
+        this.price = magic.price;
+        this.power = magic.power;
+        this.speed = magic.speed;
+        this.range = magic.range;
+        this.duration = magic.duration;
+        this.critical = magic.critical;
+        this.criticalPower = magic.criticalPower;
+        this.pierce = magic.pierce;
+        this.projectile = magic.projectile;
+        this.coolTime = magic.coolTime;
+        this.powerPerLev = magic.powerPerLev;
+        this.speedPerLev = magic.speedPerLev;
+        this.rangePerLev = magic.rangePerLev;
+        this.durationPerLev = magic.durationPerLev;
+        this.criticalPerLev = magic.criticalPerLev;
+        this.criticalPowerPerLev = magic.criticalPowerPerLev;
+        this.piercePerLev = magic.piercePerLev;
+        this.projectilePerLev = magic.projectilePerLev;
+        this.coolTimePerLev = magic.coolTimePerLev;
+    }
 }
 
 public class MagicDB : MonoBehaviour
@@ -126,13 +158,13 @@ public class MagicDB : MonoBehaviour
     void Awake()
     {
         // 등급 색깔
-        Color[] _gradeColor = {HexToRGBA("FFFFFF"), HexToRGBA("4FF84C"), HexToRGBA("3EC1FF"), HexToRGBA("CD45FF"),
-        HexToRGBA("FF3310"), HexToRGBA("FF8C00"), HexToRGBA("FFFF00")};
+        Color[] _gradeColor = {SystemManager.Instance.HexToRGBA("FFFFFF"), SystemManager.Instance.HexToRGBA("4FF84C"), SystemManager.Instance.HexToRGBA("3EC1FF"), SystemManager.Instance.HexToRGBA("CD45FF"),
+        SystemManager.Instance.HexToRGBA("FF3310"), SystemManager.Instance.HexToRGBA("FF8C00"), SystemManager.Instance.HexToRGBA("FFFF00")};
         gradeColor = _gradeColor;
 
         // 원소젬 색깔
-        Color[] _elementColor = {HexToRGBA("C88C5E"), HexToRGBA("FF5B5B"), HexToRGBA("5BFF64"),
-        HexToRGBA("FFF45B"), HexToRGBA("739CFF"), HexToRGBA("5BFEFF")};
+        Color[] _elementColor = {SystemManager.Instance.HexToRGBA("C88C5E"), SystemManager.Instance.HexToRGBA("FF5B5B"), SystemManager.Instance.HexToRGBA("5BFF64"),
+        SystemManager.Instance.HexToRGBA("FFF45B"), SystemManager.Instance.HexToRGBA("739CFF"), SystemManager.Instance.HexToRGBA("5BFEFF")};
         elementColor = _elementColor;
 
         // 원소 이름
@@ -348,14 +380,6 @@ public class MagicDB : MonoBehaviour
 
             default: return Color.white;
         }
-    }
-
-    public Color HexToRGBA(string hex)
-    {
-        Color color;
-        ColorUtility.TryParseHtmlString("#" + hex, out color);
-
-        return color;
     }
 
     public float MagicPower(MagicInfo magic)

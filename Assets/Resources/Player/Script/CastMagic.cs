@@ -31,7 +31,6 @@ public class CastMagic : MonoBehaviour
     }
     #endregion
 
-    public Transform magicPool;
     List<GameObject> passiveMagics = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
     List<int> nowCastMagicIDs = new List<int>(); //현재 사용중인 마법
     public List<int> basicMagic = new List<int>(); //기본 마법
@@ -127,7 +126,7 @@ public class CastMagic : MonoBehaviour
                         magic.exist = true;
 
                         // 플레이어 위치에 마법 생성
-                        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, magicPool);
+                        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
                         //마법 정보 넣기
                         magicObj.GetComponentInChildren<MagicHolder>().magic = magic;
@@ -177,10 +176,13 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < enemyPos.Count; i++)
         {
             // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, magicPool);
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
             //매직 홀더 찾기
-            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();
+            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+            //타겟 정보 넣기
+            magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
             //마법 정보 넣기
             if (magicHolder.magic == null)
@@ -224,12 +226,12 @@ public class CastMagic : MonoBehaviour
         // 적 위치 리스트에 넣기
         for (int i = 0; i < magicProjectile; i++)
         {
-            // 범위내 랜덤 위치 벡터 생성
+            // 플레이어 주변 범위내 랜덤 위치 벡터 생성
             Vector2 pos = 
             (Vector2)PlayerManager.Instance.transform.position 
-            + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized * range;
+            + Random.insideUnitCircle.normalized * range;
 
-            // 범위내 랜덤한 적의 위치
+            // 플레이어 주변 범위내 랜덤한 적의 위치
             if (enemyColList.Count > 0)
             {
                 Collider2D col = enemyColList[Random.Range(0, enemyColList.Count)];
@@ -298,7 +300,7 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < enemyPos.Count; i++)
         {
             // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, magicPool);
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
             //매직 홀더 찾기
             MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();

@@ -79,7 +79,14 @@ SpriteAtlas:
   - {fileID: 4250153402159111836, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -8609229472539899035, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -3411505516414708846, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
-  - {fileID: 21300000, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -7541850853189336606, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -3998438342723584634, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: 8497403174052090491, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -228326324616204210, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -2757237869460181581, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: 7228631525748936017, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -8875189012816492520, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: -1734320689928235968, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: -6404539822265595652, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -6511475048532732289, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -7901897369145345293, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
@@ -128,7 +135,14 @@ SpriteAtlas:
   - Vacuum-Sheet_1
   - Vacuum-Sheet_0
   - Vacuum-Sheet_2
-  - BloodEffect
+  - BloodEffect_7
+  - BloodEffect_6
+  - BloodEffect_5
+  - BloodEffect_4
+  - BloodEffect_3
+  - BloodEffect_2
+  - BloodEffect_1
+  - BloodEffect_0
   - Screen_Fall-Sheet_2
   - Screen_Fall-Sheet_3
   - Screen_Fall-Sheet_0

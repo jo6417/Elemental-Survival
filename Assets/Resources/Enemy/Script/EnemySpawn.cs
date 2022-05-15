@@ -41,8 +41,6 @@ public class EnemySpawn : MonoBehaviour
     public List<GameObject> spawnEnemyList = new List<GameObject>(); //현재 스폰된 몬스터 리스트
 
     [Header("Refer")]
-    public Transform enemyPool; //몬스터 풀
-    public Transform effectPool; //이펙트 소환될 부모 오브젝트
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
@@ -176,7 +174,7 @@ public class EnemySpawn : MonoBehaviour
         if (enemyObj == null)
         {
             // 몬스터 프리팹 소환 및 비활성화
-            enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, enemyPool);
+            enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, SystemManager.Instance.enemyPool);
             enemyObj.SetActive(false);
 
             //몬스터 리스트에 넣기
@@ -251,7 +249,7 @@ public class EnemySpawn : MonoBehaviour
         // print(transform.name + ":" + spawnStartPos + ":" + spawnEndPos);
 
         // 몬스터 발밑에서 포탈생성
-        GameObject portal = LeanPool.Spawn(mobPortal, portalPos, Quaternion.identity, enemyPool);
+        GameObject portal = LeanPool.Spawn(mobPortal, portalPos, Quaternion.identity, SystemManager.Instance.enemyPool);
 
         //아이콘 찾기
         GameObject iconObj = portal.transform.Find("PortalMask").Find("EnemyIcon").gameObject;
@@ -378,7 +376,7 @@ public class EnemySpawn : MonoBehaviour
     IEnumerator PointEnemyDir(GameObject enemyObj)
     {
         // 오버레이 풀에서 화살표 UI 생성
-        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, UIManager.Instance.overlayPool);
+        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
 
         //몬스터 활성화 되어있으면
         while (enemyObj.activeSelf)
