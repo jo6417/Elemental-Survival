@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HDRMat
+  m_Name: GhostHDRMat
   m_Shader: {fileID: -6465566751694194690, guid: a458971ae0fb57343886d687b343357b,
     type: 3}
   m_ShaderKeywords: 
@@ -42,5 +42,5 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats: []
     m_Colors:
-    - _Color: {r: 108.925476, g: 8.554357, b: 4.5623236, a: 0}
+    - _Color: {r: 0, g: 36.35602, b: 36.35602, a: 0}
   m_BuildTextureStacks: []

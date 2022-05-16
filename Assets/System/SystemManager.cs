@@ -49,11 +49,14 @@ public class SystemManager : MonoBehaviour
     MagicInfo lifeSeedMagic;
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public Sprite gateIcon; //포탈게이트 아이콘
+    public GameObject dmgTxtPrefab; //데미지 텍스트 UI
+    public Sprite questionMark; //물음표 스프라이트
 
     [Header("Material")]
     public Material spriteMat; //일반 스프라이트 머터리얼
     public Material outLineMat; //아웃라인 머터리얼
     public Material hitMat; //맞았을때 단색 머터리얼
+    public Material ghostHDRMat; //고스팅 마법 HDR 머터리얼
 
     [Header("Color")]
     public Color stopColor; //시간 멈췄을때 색깔

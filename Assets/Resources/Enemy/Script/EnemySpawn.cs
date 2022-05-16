@@ -102,6 +102,10 @@ public class EnemySpawn : MonoBehaviour
 
     IEnumerator SpawnMob(bool ForceSpawn = false)
     {
+        //스폰 스위치 꺼졌으면 스폰 멈추기
+        if(!spawnSwitch)
+        yield break;
+
         //총 누적시간 30초로 나눴을때의 몫
         float time = UIManager.Instance.time_current;
         int timePower = Mathf.FloorToInt(time / 30f);
@@ -160,6 +164,10 @@ public class EnemySpawn : MonoBehaviour
 
     public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)
     {
+        //스폰 스위치 꺼졌으면 스폰 멈추기
+        if(!spawnSwitch)
+        yield break;
+        
         //몬스터 프리팹 찾기
         GameObject enemyPrefab = EnemyDB.Instance.GetPrefab(enemy.id);
 

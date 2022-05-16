@@ -60,6 +60,7 @@ SpriteAtlas:
   - {fileID: 410387071126374719, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
   - {fileID: 21300000, guid: 5a0c9a38efcb7a14cbfae9eeb2e37617, type: 3}
   - {fileID: -640876303977768716, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
@@ -116,6 +117,7 @@ SpriteAtlas:
   - Golem-Sheet_7
   - Golem-Sheet_4
   - Golem-Sheet_5
+  - KingSlime_Skin
   - A-800_Icon
   - Slime_Icon
   - BloodEffect_Light_2

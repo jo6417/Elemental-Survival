@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Lean.Pool;
+using System.Linq;
 
 public class AsciiBossAI : MonoBehaviour
 {
@@ -14,24 +15,30 @@ public class AsciiBossAI : MonoBehaviour
     [Header("Refer")]
     public Image angryGauge; //분노 게이지 이미지
     public AtkRangeTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
+    public AtkRangeTrigger LaserRangeTrigger; //레이저 범위 내에 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
-    public GameObject blueText;
     public TextMeshProUGUI laserText;
+    public Transform canvasChildren;
     EnemyManager enemyManager;
     Collider2D coll;
     Animator anim;
     Rigidbody2D rigid;
-    public GameObject fallRangeObj;
     SpriteRenderer fallSprite;
     // Collider2D fallColl;
     public GameObject LaserPrefab; //발사할 레이저 마법 프리팹
+    public GameObject pulseEffect; //laser stop 할때 펄스 이펙트
     MagicInfo laserMagic = null; //발사할 레이저 마법 데이터
+    SpriteRenderer laserSprite;
 
     EnemyInfo enemy;
     float speed;
     float coolCount;
-    [SerializeField]
-    float followDistance = 5f; //해당 거리보다 멀면 따라가기
+    List<int> atkList = new List<int>(); //공격 패턴 담을 변수
+
+    //! 테스트
+    [Header("Debug")]
+    public bool fallAtkAble;
+    public bool laserAtkAble;
 
     private void Awake()
     {
@@ -40,8 +47,8 @@ public class AsciiBossAI : MonoBehaviour
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
 
-        fallSprite = fallRangeObj.GetComponent<SpriteRenderer>();
-        // fallColl = fallRangeObj.GetComponent<Collider2D>();
+        fallSprite = fallRangeTrigger.GetComponent<SpriteRenderer>();
+        laserSprite = LaserRangeTrigger.GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
@@ -51,6 +58,9 @@ public class AsciiBossAI : MonoBehaviour
 
     IEnumerator Initial()
     {
+        //표정 초기화
+        faceText.text = "...";
+
         rigid.velocity = Vector2.zero; //속도 초기화
 
         //EnemyDB 로드 될때까지 대기
@@ -61,7 +71,7 @@ public class AsciiBossAI : MonoBehaviour
             enemy = enemyManager.enemy;
 
         //fall어택 콜라이더에 enemy 정보 넣어주기
-        fallRangeObj.GetComponent<EnemyManager>().enemy = enemy;
+        fallRangeTrigger.GetComponent<EnemyManager>().enemy = enemy;
 
         transform.DOKill();
 
@@ -80,14 +90,13 @@ public class AsciiBossAI : MonoBehaviour
 
         //공격범위 오브젝트 초기화
         fallSprite.enabled = false;
-        // fallRangeObj.SetActive(false);
-        // fallColl.enabled = false;
+        laserSprite.enabled = false;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         // 레이저 마법 데이터 찾기
-        if(laserMagic == null)
+        if (laserMagic == null)
         {
             //찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
             laserMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Laser Beam"));
@@ -99,11 +108,35 @@ public class AsciiBossAI : MonoBehaviour
 
     private void Update()
     {
-        if(enemy == null || laserMagic == null)
-        return;
+        if (enemy == null || laserMagic == null)
+            return;
 
-        //일정 거리 이상 멀면 플레이어 따라가기
-        if (Vector2.Distance(transform.position, PlayerManager.Instance.transform.position) >= followDistance)
+        // fall 콜라이더에 플레이어 있으면 리스트에 fall 공격패턴 담기
+        if (fallRangeTrigger.atkTrigger)
+        {
+            atkList.Add(0);
+            fallAtkAble = true;
+        }
+        else
+        {
+            atkList.Remove(0);
+            fallAtkAble = false;
+        }
+
+        // Laser 콜라이더에 플레이어 있으면 리스트에 Laser 공격패턴 담기
+        if (LaserRangeTrigger.atkTrigger)
+        {
+            atkList.Add(1);
+            laserAtkAble = true;
+        }
+        else
+        {
+            atkList.Remove(1);
+            laserAtkAble = false;
+        }
+
+        // 공격 가능한 패턴 없을때 플레이어 따라가기
+        if (atkList.Count == 0)
         {
             // 대기 상태면 걷기 시작
             if (nowState == NowState.Idle)
@@ -116,7 +149,7 @@ public class AsciiBossAI : MonoBehaviour
         }
         else
         {
-            //걸어오다가 가까워지면 걷기 취소
+            //공격 가능하면 걷기 멈춤
             if (nowState == NowState.Walk)
             {
                 // 걷기 애니메이션 끝내기
@@ -126,7 +159,6 @@ public class AsciiBossAI : MonoBehaviour
                 SetIdle();
             }
         }
-
 
         if (nowState == NowState.Walk)
         {
@@ -138,6 +170,9 @@ public class AsciiBossAI : MonoBehaviour
         }
         else
         {
+            //보스 자체 회전값 따라 캔버스 자식들 모두 역반전
+            // canvasChildren.rotation = transform.rotation;
+
             //rigid 고정, 밀어도 안밀리게
             rigid.constraints = RigidbodyConstraints2D.FreezeAll;
 
@@ -166,10 +201,6 @@ public class AsciiBossAI : MonoBehaviour
         //걸을때 표정
         faceText.text = "● ▽ ●";
 
-        //애니메이터 켜기
-        // if (anim != null && !anim.enabled)
-        //     anim.enabled = true;
-
         //움직일 방향
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
 
@@ -179,11 +210,23 @@ public class AsciiBossAI : MonoBehaviour
         //움직일 방향에따라 회전
         if (dir.x > 0)
         {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            //내부 텍스트 오브젝트들 좌우반전
+            if(transform.rotation == Quaternion.Euler(0, 0, 0))
+            {
+                canvasChildren.rotation = Quaternion.Euler(0, 180, 0);
+            }
+
+            transform.rotation = Quaternion.Euler(0, 180, 0);
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            //내부 텍스트 오브젝트들 좌우반전
+            if(transform.rotation == Quaternion.Euler(0, 180, 0))
+            {
+                canvasChildren.rotation = Quaternion.Euler(0, 0, 0);
+            }
+
+            transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
 
@@ -191,21 +234,30 @@ public class AsciiBossAI : MonoBehaviour
     {
         nowState = NowState.Attack;
 
-        // fall 콜라이더에 플레이어 있으면 엎어지기 공격 시작
-        if (fallRangeTrigger.atkTrigger)
+        // 가능한 공격 중에서 랜덤 뽑기
+        int randAtk = -1;
+        if (atkList.Count > 0)
         {
-            FalldownAttack();
-
-            // 랜덤 쿨타임 입력
-            coolCount = Random.Range(1f, 5f);
+            randAtk = atkList[Random.Range(0, atkList.Count)];
         }
-        else
+
+        // 결정된 공격 패턴 실행
+        switch (randAtk)
         {
-            StartCoroutine(LaserAtk());
+            case 0:
+                FalldownAttack();
+                break;
 
-            // 랜덤 쿨타임 입력
-            coolCount = Random.Range(1f, 5f);
+            case 1:
+                StartCoroutine(LaserAtk());
+                break;
         }
+
+        // 랜덤 쿨타임 입력
+        coolCount = Random.Range(1f, 5f);
+
+        //패턴 리스트 비우기
+        atkList.Clear();
     }
 
     void FalldownAttack()
@@ -289,6 +341,19 @@ public class AsciiBossAI : MonoBehaviour
         angryGauge.fillAmount = 0f;
         DOTween.To(() => angryGauge.fillAmount, x => angryGauge.fillAmount = x, 1f, 2f);
 
+        // 동시에 공격 범위 표시
+        // 엎어질 범위 활성화 및 반짝거리기
+        laserSprite.enabled = true;
+        Color originColor = new Color(1, 0, 0, 0.3f);
+        laserSprite.color = originColor;
+
+        laserSprite.DOColor(new Color(1, 1, 1, 0.5f), 1f)
+        .SetEase(Ease.InOutFlash, 5, 0)
+        .OnComplete(() =>
+        {
+            laserSprite.color = originColor;
+        });
+
         //게이지 모두 차오르면 
         yield return new WaitUntil(() => angryGauge.fillAmount >= 1f);
 
@@ -313,15 +378,24 @@ public class AsciiBossAI : MonoBehaviour
         // 노려보는 얼굴
         faceText.text = "⚆`  ︿  ´⚆";
 
-        //TODO 모든 몬스터 멈추기, time stop 함수 적용
+        //몬스터 스폰 멈추기
+        EnemySpawn.Instance.spawnSwitch = false;
+        // 모든 몬스터 멈추기, time stop 함수 적용
+        List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
+        foreach (var enemy in enemys)
+        {
+            enemy.stopCount = 3f;
+        }
 
         //감시 시간
-        float watchTime = 3f;
+        float watchTime = Time.time;
         //플레이어 현재 위치
         Vector3 playerPos = PlayerManager.Instance.transform.position;
 
+        print("watch start : " + Time.time);
+
         // 플레이어 움직이는지 감시
-        while (watchTime > 0)
+        while (Time.time - watchTime < 3)
         {
             //플레이어 위치 변경됬으면 레이저 발사
             if (playerPos != PlayerManager.Instance.transform.position)
@@ -332,11 +406,21 @@ public class AsciiBossAI : MonoBehaviour
                 // 레이저 쏠때 얼굴
                 faceText.text = "◣` ︿ ´◢";
 
-                // 플레이어에게 레이저 발사
-                ShotLaser();
+                // 플레이어에게 양쪽눈에서 레이저 여러번 발사
+                int whitchEye = 0;
+                for (int i = 0; i < 10; i++)
+                {
+                    ShotLaser(LaserRangeTrigger.transform.GetChild(whitchEye));
+
+                    //쏘는 눈 변경
+                    whitchEye = whitchEye == 0 ? 1 : 0;
+
+                    //레이저 쏘는 시간 대기
+                    yield return new WaitForSeconds(0.3f);
+                }
 
                 //레이저 쏘는 시간 대기
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(2f);
 
                 //레이저 발사 종료
                 anim.SetBool("isLaserAtk", false);
@@ -346,30 +430,30 @@ public class AsciiBossAI : MonoBehaviour
             }
 
             yield return new WaitForSeconds(Time.deltaTime);
-            watchTime -= Time.deltaTime;
         }
+
+        print("watch end : " + Time.time);
 
         // 감시 종료
         anim.SetBool("isLaserWatch", false);
 
-        //TODO 모든 몬스터 멈춤 해제
+        //몬스터 스폰 재개
+        EnemySpawn.Instance.spawnSwitch = true;
 
         //휴식 시작
         StartCoroutine(RestAnim(3f));
     }
 
-    void ShotLaser()
+    void ShotLaser(Transform shotter)
     {
         print("레이저 발사");
 
         //레이저 생성
-        GameObject magicObj = LeanPool.Spawn(LaserPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        GameObject magicObj = LeanPool.Spawn(LaserPrefab, shotter.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
         LaserBeam laser = magicObj.GetComponent<LaserBeam>();
-        // 레이저 조준 시간 넣기
-        // laser.aimTime = 0f;
         // 레이저 발사할 오브젝트 넣기
-        laser.startObj = transform;
+        laser.startObj = shotter;
 
         MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
         // magic 데이터 넣기
@@ -440,5 +524,8 @@ public class AsciiBossAI : MonoBehaviour
         }
 
         laserText.text = "STOP";
+
+        //펄스 이펙트 활성화
+        pulseEffect.SetActive(true);
     }
 }

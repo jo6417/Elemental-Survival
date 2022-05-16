@@ -21,11 +21,10 @@ public class EnemyManager : MonoBehaviour
     public float stopCount = 0;
     public float hitCount = 0;
     public float oppositeCount = 0;
-    Sequence txtSeq;
+    Sequence damageTextSeq;
     // public Animator anim;
 
     [Header("Refer")]
-    public GameObject damageTxt; //데미지 UI
     public SpriteRenderer enemySprite;
 
     public Material originMat;
@@ -161,7 +160,7 @@ public class EnemyManager : MonoBehaviour
                 if (hitEnemy.enabled && hitEnemy.flatDebuff && stopCount <= 0)
                 {
                     print("enemy flat");
-                    //TODO 납작해지고 행동불능
+                    // 납작해지고 행동불능
                     StartCoroutine(FlatDebuff());
                 }
             }
@@ -192,7 +191,30 @@ public class EnemyManager : MonoBehaviour
 
         // 체력 감소
         if (magic.power > 0)
-            StartCoroutine(Damaged(magicHolder));
+        {
+            //크리티컬 성공 여부
+            bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            //크리티컬 데미지 계산
+            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+
+            //데미지 계산
+            float damage = MagicDB.Instance.MagicPower(magic);
+            // 고정 데미지에 확률 계산
+            damage = Random.Range(damage * 0.8f, damage * 1.2f);
+
+            //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
+            if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
+            {
+                isCritical = false;
+            }
+            else
+            {
+                damage = damage * criticalPower;
+            }
+
+            //데미지 적용
+            Damage(damage, isCritical);
+        }
 
         //넉백
         if (magicHolder.knockbackForce > 0)
@@ -234,43 +256,23 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    IEnumerator Damaged(MagicHolder magicHolder)
+    public void Damage(float damage, bool isCritical)
     {
         if (enemy == null || isDead)
-            yield break;
+            return;
 
-        MagicInfo magic = magicHolder.magic;
+        //데미지 int로 바꾸기
+        damage = Mathf.RoundToInt(damage);
 
-        //크리티컬 성공 여부
-        bool isCritical = MagicDB.Instance.MagicCritical(magic);
-        //크리티컬 데미지 계산
-        float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
-        //데미지 계산
-        float damage = MagicDB.Instance.MagicPower(magic);
-        // 고정 데미지에 확률 계산
-        damage = Random.Range(damage * 0.8f, damage * 1.2f);
-
-        //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
-        if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
-        {
-            isCritical = false;
-            damage = Mathf.RoundToInt(damage);
-        }
-        else
-        {
-            damage = Mathf.RoundToInt(damage * criticalPower);
-        }
-
-        // 데미지가 0이 아닐때 최소 데미지 1 보장
-        if (damage != 0)
-            damage = Mathf.Clamp(damage, 1, damage);
-
-        // 체력 감소
+        // 데미지 적용
         HpNow -= damage;
 
+        //체력 범위 제한
+        HpNow = Mathf.Clamp(HpNow, 0, hpMax);
+
         // 경직 시간 추가
-        hitCount = enemy.hitDelay;
+        if (damage > 0)
+            hitCount = enemy.hitDelay;
 
         //데미지 UI 띄우기
         DamageText(damage, isCritical);
@@ -294,27 +296,39 @@ public class EnemyManager : MonoBehaviour
     void DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(damageTxt, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
-        //데미지 텍스트, 데미지 0일때 miss 처리
-        dmgTxt.text = damage == 0 ? "MISS" : damage.ToString();
-
         // 크리티컬 떴을때 추가 강조효과 UI
-        if (isCritical && damage != 0)
+        if (damage > 0)
         {
-            dmgTxt.fontSize = 120;
-            dmgTxt.color = new Color(1, 100 / 255, 100 / 255);
+            if (isCritical)
+            {
+                dmgTxt.color = Color.yellow;
+            }
+            else
+            {
+                dmgTxt.color = Color.white;
+            }
+
+            dmgTxt.text = damage.ToString();
         }
-        else
+        // 데미지 없을때
+        else if (damage == 0)
         {
-            dmgTxt.fontSize = 100;
-            dmgTxt.color = Color.white;
+            dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+            dmgTxt.text = "MISS";
+        }
+        // 데미지가 마이너스일때 (체력회복일때)
+        else if (damage < 0)
+        {
+            dmgTxt.color = new Color(0, 100f/255f, 1);
+            dmgTxt.text = "+" + (-damage).ToString();
         }
 
         //데미지 UI 애니메이션
-        txtSeq = DOTween.Sequence();
-        txtSeq
+        damageTextSeq = DOTween.Sequence();
+        damageTextSeq
         .PrependCallback(() =>
         {
             //제로 사이즈로 시작
@@ -322,7 +336,9 @@ public class EnemyManager : MonoBehaviour
         })
         .Append(
             //위로 살짝 올리기
-            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 1f, 1f)
+            // damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 1f, 1f)
+            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
+            .SetEase(Ease.OutBounce)
         )
         .Join(
             //원래 크기로 늘리기

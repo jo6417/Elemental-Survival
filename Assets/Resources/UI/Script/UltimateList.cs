@@ -98,7 +98,8 @@ public class UltimateList : MonoBehaviour
         if (ultimateList.Count >= num)
         {
             ultimateSlots[objIndex].transform.Find("Icon").gameObject.SetActive(true);
-            ultimateSlots[objIndex].transform.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(ultimateList[magicIndex].id);
+            Sprite sprite = MagicDB.Instance.GetMagicIcon(ultimateList[magicIndex].id);
+            ultimateSlots[objIndex].transform.Find("Icon").GetComponent<Image>().sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
             ultimateSlots[objIndex].transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[ultimateList[magicIndex].grade];
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기

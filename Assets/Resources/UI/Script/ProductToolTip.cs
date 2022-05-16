@@ -39,7 +39,6 @@ public class ProductToolTip : MonoBehaviour
     // public ToolTipCorner toolTipCorner;
     public TextMeshProUGUI productName;
     public TextMeshProUGUI productDescript;
-    public Sprite questionMark;
     RectTransform rect;
     // bool isFollow = false; //마우스 따라가기 여부
     bool SetDone = false; //모든 정보 표시 완료 여부
@@ -190,8 +189,8 @@ public class ProductToolTip : MonoBehaviour
         else
         {
             // 재료 A,B 아이콘 넣기, 미해금 마법이면 물음표 넣기
-            elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicA.id) : questionMark;
-            elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : questionMark;
+            elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicA.id) : SystemManager.Instance.questionMark;
+            elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : SystemManager.Instance.questionMark;
 
             // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
             elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];

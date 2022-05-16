@@ -4891,7 +4891,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 515477353108599136}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.9, y: -3.93, z: 0}
+  m_LocalPosition: {x: 12.6, y: -1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 515477352032948623}
@@ -14757,6 +14757,7 @@ MonoBehaviour:
   laserExpandSpeed: 0.2
   magicHolder: {fileID: 5206010448027301751}
   subMagicHolder: {fileID: 2909977851084587480}
+  startObj: {fileID: 0}
   effectColl: {fileID: 890574463894873209}
   laserLine: {fileID: 6558328931824545046}
   explosion: {fileID: 515477353108599136}
@@ -14797,8 +14798,8 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 918817935
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Positions:
   - {x: 10, y: 3, z: 0}
@@ -14832,8 +14833,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0.48230654, b: 0.23270434, a: 1}
-      key1: {r: 1, g: 0.48230654, b: 0.23270434, a: 1}
+      key0: {r: 0, g: 1, b: 1, a: 1}
+      key1: {r: 0, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}

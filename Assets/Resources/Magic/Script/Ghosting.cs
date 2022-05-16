@@ -34,6 +34,10 @@ public class Ghosting : MonoBehaviour
         duration = MagicDB.Instance.MagicDuration(magic); //시간정지 지속시간
         speed = MagicDB.Instance.MagicSpeed(magic, false); //스피드만큼 플레이어 속도감소 효과 반감됨
 
+        //플레이어 위치로 이동
+        transform.position = PlayerManager.Instance.transform.position;
+
+        //시간 멈추기
         SystemManager.Instance.timeScale = 0f;
 
         //원 사이즈 줄이기
@@ -56,8 +60,11 @@ public class Ghosting : MonoBehaviour
         fogCircle.DOScale(Vector2.one, 1f);
 
         // 플레이어 하얗게 빛나고 투명하게
-        PlayerManager.Instance.sprite.material = SystemManager.Instance.outLineMat;
-        PlayerManager.Instance.sprite.material.color = Color.cyan;
+        Color playerColor = Color.white;
+        playerColor.a = 130f/255f;
+        PlayerManager.Instance.sprite.color = playerColor;
+
+        PlayerManager.Instance.sprite.material = SystemManager.Instance.ghostHDRMat;
         PlayerManager.Instance.playerLight.enabled = true;
 
         // 플레이어 이동속도 버프
@@ -73,8 +80,8 @@ public class Ghosting : MonoBehaviour
         .OnComplete(() =>
         {
             // 플레이어 색깔 초기화
+            PlayerManager.Instance.sprite.color = Color.white;
             PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteMat;
-            PlayerManager.Instance.sprite.material.color = Color.white;
             PlayerManager.Instance.playerLight.enabled = false;
 
             //플레이어 및 전역 시간 속도 초기화

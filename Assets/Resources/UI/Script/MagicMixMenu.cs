@@ -17,7 +17,6 @@ public class MagicMixMenu : MonoBehaviour
     public GameObject recipePrefab; //마법 도감 레시피 프리팹
     public TextMeshProUGUI noMagicTxt; //합성 불가시 텍스트
     public TextMeshProUGUI scrollAmount; // 플레이어 보유 스크롤 개수
-    public Sprite questionMark; //물음표 스프라이트
 
     [Header("ScrollRect")]
     public ScrollRect leftScroll; //왼쪽 스크롤
@@ -433,7 +432,7 @@ public class MagicMixMenu : MonoBehaviour
 
                     //! 미구현 아이콘은 물음표 넣기
                     if (iconSprite == null)
-                        iconSprite = questionMark;
+                        iconSprite = SystemManager.Instance.questionMark;
 
                     // 마법 아이콘 이미지 넣기
                     Image magicIcon_icon = magicIcon.Find("Icon").GetComponent<Image>();
@@ -458,7 +457,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 마법 아이콘 이미지 넣기, 미획득이면 물음표 스프라이트 넣기
                     element_A.Find("Icon").GetComponent<Image>().sprite = unlockMagic
                     ? MagicDB.Instance.GetMagicIcon(magic.id)
-                    : questionMark;
+                    : SystemManager.Instance.questionMark;
 
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip_A = element_A.GetComponent<ToolTipTrigger>();
@@ -472,7 +471,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 마법 아이콘 이미지 넣기
                     element_B.Find("Icon").GetComponent<Image>().sprite = unlockMagic
                     ? MagicDB.Instance.GetMagicIcon(magic.id)
-                    : questionMark;
+                    : SystemManager.Instance.questionMark;
 
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip_B = element_B.GetComponent<ToolTipTrigger>();

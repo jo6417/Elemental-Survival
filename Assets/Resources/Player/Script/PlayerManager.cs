@@ -65,19 +65,22 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
+    Sequence damageTextSeq; //데미지 텍스트 시퀀스
+
     [Header("<Refer>")]
     public GameObject mobSpawner;
     private Animator anim;
     public SpriteRenderer sprite;
     public Rigidbody2D rigid;
     public Vector3 lastDir; //마지막 바라봤던 방향
-    public GameObject txtPrefab; //체력 회복 텍스트 UI
     public Light2D playerLight;
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Origin; //초기 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
+    float dashSpeed; //대쉬 버프 속도
+    public float speedDebuff; //이동속도 디버프
 
     [Header("<State>")]
     public float HitDelay = 0.5f; //피격 무적시간
@@ -201,7 +204,7 @@ public class PlayerManager : MonoBehaviour
         Vector2 dir = Vector2.zero;
         float horizonInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
-        float dashBoost = 1;
+        dashSpeed = 1;
 
         // x축 이동
         if (horizonInput != 0)
@@ -236,7 +239,7 @@ public class PlayerManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 DashToggle();
-                dashBoost = 2f;
+                dashSpeed = 2f;
             }
             else
             {
@@ -245,7 +248,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         dir.Normalize();
-        rigid.velocity = PlayerStat_Now.moveSpeed * dir * dashBoost;
+        rigid.velocity = PlayerStat_Now.moveSpeed * dir * dashSpeed * speedDebuff;
 
         // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
@@ -281,8 +284,11 @@ public class PlayerManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
         {
+            EnemyManager enemyManager = other.GetComponent<EnemyManager>();
+            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+
             //적에게 충돌
-            if (other.TryGetComponent<EnemyManager>(out EnemyManager enemyManager))
+            if (enemyManager != null && enemyManager.enabled)
             {
                 EnemyInfo enemy = enemyManager.enemy;
 
@@ -294,7 +300,7 @@ public class PlayerManager : MonoBehaviour
             }
 
             //적의 마법에 충돌
-            if (other.TryGetComponent<MagicHolder>(out MagicHolder magicHolder))
+            if (magicHolder != null && magicHolder.enabled)
             {
                 MagicInfo magic = magicHolder.magic;
 
@@ -334,18 +340,20 @@ public class PlayerManager : MonoBehaviour
 
     public bool Damage(float damage)
     {
-        // 체력 감소
+        //데미지 int로 바꾸기
+        damage = Mathf.RoundToInt(damage);
+
+        // 데미지 적용
         PlayerStat_Now.hpNow -= damage;
 
-        //체력 0 이하로 내려가지 않음
-        if (PlayerStat_Now.hpNow <= 0)
-        {
-            PlayerStat_Now.hpNow = 0;
-        }
+        //체력 범위 제한
+        PlayerStat_Now.hpNow = Mathf.Clamp(PlayerStat_Now.hpNow, 0, PlayerStat_Now.hpNow);
 
         //혈흔 파티클 생성
         LeanPool.Spawn(bloodPrefab, transform.position, Quaternion.identity);
-        print(Time.time);
+
+        //데미지 UI 띄우기
+        DamageText(damage, false);
 
         UIManager.Instance.UpdateHp(); //체력 UI 업데이트
 
@@ -359,6 +367,67 @@ public class PlayerManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    void DamageText(float damage, bool isCritical)
+    {
+        // 데미지 UI 띄우기
+        GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
+
+        // 크리티컬 떴을때 추가 강조효과 UI
+        if (damage > 0)
+        {
+            if (isCritical)
+            {
+                // dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+            }
+            else
+            {
+                dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+            }
+
+            dmgTxt.text = damage.ToString();
+        }
+        // 데미지 없을때
+        else if(damage == 0)
+        {
+            dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+            dmgTxt.text = "MISS";
+        }
+        // 데미지가 마이너스일때 (체력회복일때)
+        else if(damage < 0)
+        {
+            dmgTxt.color = Color.green;
+            dmgTxt.text = "+" + (-damage).ToString();
+        }
+
+        //데미지 UI 애니메이션
+        damageTextSeq = DOTween.Sequence();
+        damageTextSeq
+        .PrependCallback(() =>
+        {
+            //제로 사이즈로 시작
+            damageUI.transform.localScale = Vector3.zero;
+        })
+        .Append(
+            //위로 살짝 올리기
+            // damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 1f, 1f)
+            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.left * 2f, 1f, 1, 1f)
+            .SetEase(Ease.OutBounce)
+        )
+        .Join(
+            //원래 크기로 늘리기
+            damageUI.transform.DOScale(Vector3.one, 0.5f)
+        )
+        .Append(
+            //줄어들어 사라지기
+            damageUI.transform.DOScale(Vector3.zero, 0.5f)
+        )
+        .OnComplete(() =>
+        {
+            LeanPool.Despawn(damageUI);
+        });
     }
 
     public IEnumerator FlatDebuff()
@@ -432,55 +501,55 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public IEnumerator GetHeal(int amount)
-    {
-        //플레이어 체력 회복하기
-        PlayerStat_Now.hpNow += amount;
+    // public IEnumerator GetHeal(int amount)
+    // {
+    //     //플레이어 체력 회복하기
+    //     PlayerStat_Now.hpNow += amount;
 
-        //초과 회복 방지
-        if (PlayerStat_Now.hpNow > PlayerStat_Now.hpMax)
-            PlayerStat_Now.hpNow = PlayerStat_Now.hpMax;
+    //     //초과 회복 방지
+    //     if (PlayerStat_Now.hpNow > PlayerStat_Now.hpMax)
+    //         PlayerStat_Now.hpNow = PlayerStat_Now.hpMax;
 
-        //UI 업데이트
-        UIManager.Instance.UpdateHp();
+    //     //UI 업데이트
+    //     UIManager.Instance.UpdateHp();
 
-        Vector2 startPos = transform.position;
-        Vector2 endPos = (Vector2)transform.position + Vector2.up * 1f;
+    //     Vector2 startPos = transform.position;
+    //     Vector2 endPos = (Vector2)transform.position + Vector2.up * 1f;
 
-        // 회복 텍스트 띄우기
-        GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, SystemManager.Instance.overlayPool);
-        TextMeshProUGUI healTxt = healUI.GetComponent<TextMeshProUGUI>();
-        healTxt.color = Color.green;
-        healTxt.text = "+ " + amount.ToString();
+    //     // 회복 텍스트 띄우기
+    //     GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, SystemManager.Instance.overlayPool);
+    //     TextMeshProUGUI healTxt = healUI.GetComponent<TextMeshProUGUI>();
+    //     healTxt.color = Color.green;
+    //     healTxt.text = "+ " + amount.ToString();
 
-        // 회복량 UI 애니메이션
-        Sequence txtSeq = DOTween.Sequence();
-        txtSeq
-        .PrependCallback(() =>
-        {
-            //제로 사이즈로 시작
-            healUI.transform.localScale = Vector3.zero;
-        })
-        .Append(
-            //위로 살짝 올리기
-            healUI.transform.DOMove(endPos, 1f)
-        )
-        .Join(
-            //원래 크기로 늘리기
-            healUI.transform.DOScale(Vector3.one, 0.5f)
-        )
-        .Append(
-            //줄어들어 사라지기
-            healUI.transform.DOScale(Vector3.zero, 0.5f)
-            .SetEase(Ease.InBack)
-        )
-        .OnComplete(() =>
-        {
-            LeanPool.Despawn(healUI);
-        });
+    //     // 회복량 UI 애니메이션
+    //     Sequence txtSeq = DOTween.Sequence();
+    //     txtSeq
+    //     .PrependCallback(() =>
+    //     {
+    //         //제로 사이즈로 시작
+    //         healUI.transform.localScale = Vector3.zero;
+    //     })
+    //     .Append(
+    //         //위로 살짝 올리기
+    //         healUI.transform.DOMove(endPos, 1f)
+    //     )
+    //     .Join(
+    //         //원래 크기로 늘리기
+    //         healUI.transform.DOScale(Vector3.one, 0.5f)
+    //     )
+    //     .Append(
+    //         //줄어들어 사라지기
+    //         healUI.transform.DOScale(Vector3.zero, 0.5f)
+    //         .SetEase(Ease.InBack)
+    //     )
+    //     .OnComplete(() =>
+    //     {
+    //         LeanPool.Despawn(healUI);
+    //     });
 
-        yield return null;
-    }
+    //     yield return null;
+    // }
 
     public void GetMagic(MagicInfo getMagic, bool resetAllMagic = true)
     {

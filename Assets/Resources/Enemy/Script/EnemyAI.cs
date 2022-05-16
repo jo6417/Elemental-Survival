@@ -7,25 +7,36 @@ using Lean.Pool;
 public class EnemyAI : MonoBehaviour
 {
     [Header("Enemy")]
-    public NowState nowState;
-    public enum NowState { Idle, SystemStop, Dead, Hit, TimeStop, Walk, Jump }
+    public State state;
+    public enum State { Idle, Move, Attack, Hit, Dead, TimeStop, SystemStop }
     public MoveType moveType;
-    public enum MoveType { Walk, Jump, Dash, Slide };
-    private EnemyInfo enemy;
+    public enum MoveType
+    {
+        // 걸어서 등속도이동
+        Walk,
+        // 시간마다 점프
+        Jump,
+        // 시간마다 대쉬
+        Dash,
+        // 시간마다 플레이어 주변 위치로 텔레포트
+        Teleport,
+        // 플레이어와 일정거리 고정하며 따라다님
+        Follow
+    };
+    public EnemyInfo enemy;
     private float speed;
+    public bool stopMove; //true가 되면 이동 하지 않음
 
     [Header("Refer")]
     private EnemyManager enemyManager;
     private Rigidbody2D rigid;
     private SpriteRenderer sprite;
-    private Collider2D coll;
-    private Animator anim;
+    public Collider2D coll;
+    public Animator anim;
 
     [Header("Jump")]
     [SerializeField]
     private bool nowJumping;
-    [SerializeField]
-    private float jumpStartDistance = 10f;
     [SerializeField]
     private float jumpHeight = 4f;
     [SerializeField]
@@ -40,6 +51,7 @@ public class EnemyAI : MonoBehaviour
     private Transform shadow;
     // private Vector2 shadowPos; //그림자 초기 위치
     public Sequence jumpSeq;
+    public Vector2 jumpLandPos; //점프 착지 위치
 
     private void Awake()
     {
@@ -75,8 +87,8 @@ public class EnemyAI : MonoBehaviour
         jumpSeq.Kill();
 
         //애니메이션 스피드 초기화
-        if(anim != null)
-        anim.speed = 1f;
+        if (anim != null)
+            anim.speed = 1f;
 
         // 위치 고정 해제
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -100,13 +112,13 @@ public class EnemyAI : MonoBehaviour
         //죽음 애니메이션 중일때
         if (enemyManager.isDead)
         {
-            nowState = NowState.Dead;
+            state = State.Dead;
 
             rigid.velocity = Vector2.zero; //이동 초기화
             rigid.constraints = RigidbodyConstraints2D.FreezeAll;
 
-            if(anim != null)
-            anim.speed = 0f;
+            if (anim != null)
+                anim.speed = 0f;
 
             transform.DOPause();
             jumpSeq.Pause();
@@ -117,10 +129,10 @@ public class EnemyAI : MonoBehaviour
         //전역 타임스케일이 0 일때
         if (SystemManager.Instance.timeScale == 0)
         {
-            nowState = NowState.SystemStop;
+            state = State.SystemStop;
 
-            if(anim != null)
-            anim.speed = 0f;
+            if (anim != null)
+                anim.speed = 0f;
 
             rigid.velocity = Vector2.zero; //이동 초기화
             transform.DOPause();
@@ -130,7 +142,7 @@ public class EnemyAI : MonoBehaviour
         //시간 정지 디버프일때
         if (enemyManager.stopCount > 0)
         {
-            nowState = NowState.TimeStop;
+            state = State.TimeStop;
 
             rigid.velocity = Vector2.zero; //이동 초기화
             rigid.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -147,7 +159,7 @@ public class EnemyAI : MonoBehaviour
         //맞고 경직일때
         if (enemyManager.hitCount > 0)
         {
-            nowState = NowState.Hit;
+            state = State.Hit;
 
             rigid.velocity = Vector2.zero; //이동 초기화
 
@@ -159,7 +171,7 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        nowState = NowState.Idle;
+        state = State.Idle;
 
         //스폰 콜라이더에 닿아 반대편으로 보내질때 잠시대기
         if (enemyManager.oppositeCount > 0)
@@ -186,47 +198,49 @@ public class EnemyAI : MonoBehaviour
         sprite.material = enemyManager.originMat;
         sprite.color = enemyManager.originColor;
         transform.DOPlay();
-        if(anim != null)
-        anim.speed = 1f; //애니메이션 속도 초기화
+        if (anim != null)
+            anim.speed = 1f; //애니메이션 속도 초기화
 
-        if (moveType == MoveType.Walk)
+        // Idle 상태고 stopMove가 false일때
+        if (state == State.Idle && !stopMove)
         {
-            Walk();
-        }
+            state = State.Move;
 
-        if (moveType == MoveType.Jump)
-        {
-            //플레이어 사이 거리
-            float dis = Vector2.Distance(transform.position, PlayerManager.Instance.transform.position);
-
-            //점프중 멈췄다면 다시 재생
-            if (nowJumping && jumpSeq.IsActive())
+            if (moveType == MoveType.Walk)
             {
-                //전역 타임스케일 적용
-                jumpSeq.timeScale = SystemManager.Instance.timeScale;
-
-                // 점프 일시정지였으면 시퀀스 재생
-                if (!jumpSeq.IsPlaying())
-                    jumpSeq.Play();
-
-                return;
-            }
-
-            // 점프중 아니고 일정 거리 내 들어오면 점프
-            if (!nowJumping && dis < jumpStartDistance)
-                Jump();
-            else
-            {
-                //멀면 걸어가기
                 Walk();
+            }
+            else if (moveType == MoveType.Jump)
+            {
+                //플레이어 사이 거리
+                float dis = Vector2.Distance(transform.position, PlayerManager.Instance.transform.position);
+
+                //점프중 멈췄다면 다시 재생
+                if (nowJumping && jumpSeq.IsActive())
+                {
+                    //전역 타임스케일 적용
+                    jumpSeq.timeScale = SystemManager.Instance.timeScale;
+
+                    // 점프 일시정지였으면 시퀀스 재생
+                    if (!jumpSeq.IsPlaying())
+                        jumpSeq.Play();
+
+                    return;
+                }
+
+                // 점프중 아니고 일정 거리 내 들어오면 점프
+                if (!nowJumping)
+                {
+                    Jump();
+
+                    // print("jump");
+                }
             }
         }
     }
 
     void Walk()
     {
-        nowState = NowState.Walk;
-
         //애니메이터 켜기
         if (anim != null && !anim.enabled)
             anim.enabled = true;
@@ -246,16 +260,16 @@ public class EnemyAI : MonoBehaviour
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
         }
+
+        state = State.Idle;
     }
 
     void Jump()
     {
-        nowState = NowState.Jump;
-
         nowJumping = true;
 
         //애니메이터 끄기
-        if (anim != null && !anim.enabled)
+        if (anim != null && anim.enabled)
             anim.enabled = false;
 
         // rigid.velocity = Vector2.zero;
@@ -270,12 +284,12 @@ public class EnemyAI : MonoBehaviour
         float distance = dir.magnitude > enemy.range ? enemy.range : dir.magnitude;
 
         //점프 착지 위치
-        Vector2 endPos = (Vector2)transform.position + dir.normalized * distance;
+        jumpLandPos = (Vector2)transform.position + dir.normalized * distance;
 
         //착지 위치에서 최상단 위치
-        Vector2 topPos = endPos + Vector2.up * jumpHeight;
+        Vector2 topPos = jumpLandPos + Vector2.up * jumpHeight;
 
-        Ease jumpEase = Ease.OutCirc;
+        Ease jumpEase = Ease.OutExpo;
 
         //점프 속도
         float speed = enemy.speed;
@@ -307,7 +321,7 @@ public class EnemyAI : MonoBehaviour
             {
                 //애니메이션 멈추기
                 if (anim != null)
-                anim.speed = 0f;
+                    anim.speed = 0f;
                 //시퀀스 멈추기
                 jumpSeq.Pause();
                 // transform.DOPause();
@@ -319,21 +333,21 @@ public class EnemyAI : MonoBehaviour
             if (jumpCollisionOff)
                 coll.isTrigger = true;
 
-            //TODO 납작해졌다가 세로로 길어지는 애니메이션
-
             // 이펙트 끄기
             if (landEffect)
                 landEffect.SetActive(false);
         })
         .Append(
+            // 점프 전 납작해지기
             transform.DOScale(new Vector2(1.2f, 0.8f), 0.2f)
         )
         .Append(
-            //움직일 거리 절반 만큼 가면서 점프
+            //topPos로 가면서 점프
             transform.DOMove(topPos, jumpUptime)
             .SetEase(jumpEase)
         )
         .Join(
+            //위로 길쭉해지기
             transform.DOScale(new Vector2(0.8f, 1.2f), 0.1f)
         )
         .Join(
@@ -348,11 +362,11 @@ public class EnemyAI : MonoBehaviour
                 coll.isTrigger = false;
 
             //현재위치 기준 착지위치 다시 계산
-            endPos = (Vector2)transform.position + Vector2.down * jumpHeight;
+            jumpLandPos = (Vector2)transform.position + Vector2.down * jumpHeight;
         })
         .Append(
             //착지위치까지 내려가기
-            transform.DOMove(endPos, downTime)
+            transform.DOMove(jumpLandPos, downTime)
         )
         .Join(
             //그림자 올리기
@@ -369,6 +383,7 @@ public class EnemyAI : MonoBehaviour
             }
         })
         .Join(
+            //착지시 납작해지기
             transform.DOScale(new Vector2(1.2f, 0.8f), 0.1f)
         )
         .AppendInterval(jumpDelay) //점프 후 딜레이
@@ -378,6 +393,8 @@ public class EnemyAI : MonoBehaviour
         .OnComplete(() =>
         {
             nowJumping = false;
+
+            state = State.Idle;
         });
         jumpSeq.Restart();
     }

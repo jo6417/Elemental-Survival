@@ -12,7 +12,9 @@ public class LaserBeam : MonoBehaviour
     MagicInfo magic;
     public Transform startObj;
     Vector2 targetPos;
-    public float aimTime = 1f; // 조준 소요 시간
+    Color aimColor;
+    Color laserColor;
+    float aimTime = 1f; // 조준 소요 시간
     public Collider2D effectColl; //폭발 콜라이더
     public LineRenderer laserLine; //레이저 이펙트
     public GameObject explosion; //레이저 타격 지점에 폭발 이펙트
@@ -48,17 +50,33 @@ public class LaserBeam : MonoBehaviour
         // 발사 주체 입력 될때까지 대기
         yield return new WaitUntil(() => magicHolder.GetTarget() != MagicHolder.Target.None);
 
-        // 플레이어가 발사 주체면 스마트폰에서 시작
+        // 시작 오브젝트 초기화
         if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
         {
-            // 시작 오브젝트 초기화
+            // 플레이어가 발사 주체면 스마트폰에서 시작
             startObj = CastMagic.Instance.transform;
 
+            // 엎어지기 콜라이더도 타겟 변경
             subMagicHolder.SetTarget(MagicHolder.Target.Enemy);
+
+            //조준시간 초기화
+            aimTime = 1f;
+            //조준선 색깔 초기화
+            aimColor = Color.red;
+            //레이저 색깔 초기화
+            laserColor = SystemManager.Instance.HexToRGBA("FF7B3B");
         }
         else if (magicHolder.GetTarget() == MagicHolder.Target.Player)
         {
+            // 엎어지기 콜라이더도 타겟 변경
             subMagicHolder.SetTarget(MagicHolder.Target.Player);
+
+            //적이 쏠때는 더 빠르게 조준
+            aimTime = 0.5f;
+            //조준선 색깔 변경
+            aimColor = Color.blue;
+            //레이저 색깔 변경
+            laserColor = Color.cyan;
         }
 
         //폭발 magicHolder에 magic 넣기
@@ -138,21 +156,15 @@ public class LaserBeam : MonoBehaviour
         // 폭발 이펙트 대기 후 디스폰
         yield return new WaitForSeconds(2f);
 
-        // 폭발 이펙트 끄기
-        explosion.SetActive(false);
-
-        // 발사 주체 변수 비우기
-        startObj = null;
-
-        //레이저 오브젝트 디스폰
-        LeanPool.Despawn(transform);
+        //디스폰
+        Despawn();
     }
 
     IEnumerator FollowAim()
     {
         //조준선 색으로 바꾸기
-        laserLine.startColor = Color.red;
-        laserLine.endColor = Color.red;
+        laserLine.startColor = aimColor;
+        laserLine.endColor = aimColor;
 
         while (laserLine.endWidth > 0f)
         {
@@ -171,16 +183,8 @@ public class LaserBeam : MonoBehaviour
     IEnumerator ShotLaser()
     {
         //레이저 색으로 바꾸기
-        if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
-        {
-            laserLine.startColor = SystemManager.Instance.HexToRGBA("FF7B3B");
-            laserLine.endColor = SystemManager.Instance.HexToRGBA("FF7B3B");
-        }
-        else if (magicHolder.GetTarget() == MagicHolder.Target.Player)
-        {
-            laserLine.startColor = Color.red;
-            laserLine.endColor = Color.red;
-        }
+        laserLine.startColor = laserColor;
+        laserLine.endColor = laserColor;
 
         // 레이저 두번째 포인트 시작지점으로 초기화
         laserLine.SetPosition(1, laserLine.GetPosition(0));
@@ -218,5 +222,22 @@ public class LaserBeam : MonoBehaviour
 
         // 폭발 콜라이더 끄기
         effectColl.enabled = false;
+    }
+
+    void Despawn()
+    {
+        // 폭발 이펙트 끄기
+        explosion.SetActive(false);
+
+        // 발사 주체 변수 비우기
+        startObj = null;
+
+        //마법 데이터 비우기
+        magicHolder.magic = null;
+        subMagicHolder.magic = null;
+        magic = null;
+
+        //레이저 오브젝트 디스폰
+        LeanPool.Despawn(transform);
     }
 }

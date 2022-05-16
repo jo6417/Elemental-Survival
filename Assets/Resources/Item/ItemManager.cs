@@ -184,7 +184,7 @@ public class ItemManager : MonoBehaviour
         // 아이템이 힐 타입일때
         else if (item.itemType == "Heal")
         {
-            StartCoroutine(PlayerManager.Instance.GetHeal(amount));
+            PlayerManager.Instance.Damage(-amount);
         }
         else
         {
