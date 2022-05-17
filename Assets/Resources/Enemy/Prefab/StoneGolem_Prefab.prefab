@@ -59,20 +59,22 @@ MonoBehaviour:
   stopCount: 0
   hitCount: 0
   oppositeCount: 0
-  damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
-    type: 3}
-  enemySprite: {fileID: 8103560175905507847}
+  spriteObj: {fileID: 0}
+  sprite: {fileID: 0}
+  anim: {fileID: 0}
+  rigid: {fileID: 0}
+  coll: {fileID: 0}
   originMat: {fileID: 0}
   originMatColor: {r: 0, g: 0, b: 0, a: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}
-  HpNow: 1
-  isFallAttack: 0
-  enemyName: 
-  enemyType: 
   hpMax: 0
-  power: 0
+  HpNow: 1
   speed: 0
   range: 0
+  flatDebuff: 0
+  enemyName: 
+  enemyType: 
+  power: 0
 --- !u!114 &5097144648422318720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,16 +87,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nowState: 0
+  state: 0
   moveType: 0
-  nowJumping: 0
-  jumpStartDistance: 10
+  enemyManager: {fileID: 0}
   jumpHeight: 4
   jumpUptime: 2
-  jumpDelay: 1
+  jumpCoolTime: 1
+  jumpCoolCount: 0
   jumpCollisionOff: 0
   landEffect: {fileID: 0}
   shadow: {fileID: 0}
+  jumpLandPos: {x: 0, y: 0}
 --- !u!212 &8103560175905507847
 SpriteRenderer:
   m_ObjectHideFlags: 0

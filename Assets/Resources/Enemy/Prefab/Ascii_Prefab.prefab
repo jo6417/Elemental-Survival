@@ -538,6 +538,7 @@ MonoBehaviour:
   canvasChildren: {fileID: 7213583925062649118}
   LaserPrefab: {fileID: 7926826525422491209, guid: 0e722d7d39f2c794ba1d4a1f40636d04,
     type: 3}
+  pulseEffect: {fileID: 4958593465809026631}
   fallAtkAble: 0
   laserAtkAble: 0
 --- !u!114 &6014433321399679243
@@ -562,20 +563,22 @@ MonoBehaviour:
   stopCount: 0
   hitCount: 0
   oppositeCount: 0
-  damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
-    type: 3}
-  enemySprite: {fileID: 6014433321399679344}
+  spriteObj: {fileID: 0}
+  sprite: {fileID: 0}
+  anim: {fileID: 0}
+  rigid: {fileID: 0}
+  coll: {fileID: 0}
   originMat: {fileID: 0}
   originMatColor: {r: 0, g: 0, b: 0, a: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}
+  hpMax: 0
   HpNow: 1
+  speed: 0
+  range: 0
   flatDebuff: 0
   enemyName: 
   enemyType: 
-  hpMax: 0
   power: 0
-  speed: 0
-  range: 0
 --- !u!212 &6014433321399679344
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -742,6 +745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atkTrigger: 0
+  collTrigger: {fileID: 0}
 --- !u!212 &2028642404204801092
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1119,20 +1123,22 @@ MonoBehaviour:
   stopCount: 0
   hitCount: 0
   oppositeCount: 0
-  damageTxt: {fileID: 1994186851635255839, guid: 9de8c74e05899784a808aabe418695ce,
-    type: 3}
-  enemySprite: {fileID: 0}
+  spriteObj: {fileID: 0}
+  sprite: {fileID: 0}
+  anim: {fileID: 0}
+  rigid: {fileID: 0}
+  coll: {fileID: 0}
   originMat: {fileID: 0}
   originMatColor: {r: 0, g: 0, b: 0, a: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}
+  hpMax: 0
   HpNow: 1
+  speed: 0
+  range: 0
   flatDebuff: 1
   enemyName: 
   enemyType: 
-  hpMax: 0
   power: 0
-  speed: 0
-  range: 0
 --- !u!114 &6909717035306626906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1146,6 +1152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atkTrigger: 0
+  collTrigger: {fileID: 0}
 --- !u!212 &9177898890322600236
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1554,6 +1561,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c56d9e1ec2686f4e82384715391d76a, type: 3}
+--- !u!1 &4958593465809026631 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6906024197699431768, guid: 0c56d9e1ec2686f4e82384715391d76a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1947620021874119455}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4958593465809026628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6906024197699431771, guid: 0c56d9e1ec2686f4e82384715391d76a,

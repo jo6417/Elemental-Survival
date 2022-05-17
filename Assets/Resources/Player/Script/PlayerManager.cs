@@ -80,7 +80,8 @@ public class PlayerManager : MonoBehaviour
     public PlayerStat PlayerStat_Origin; //초기 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
     float dashSpeed; //대쉬 버프 속도
-    public float speedDebuff; //이동속도 디버프
+    [HideInInspector]
+    public float speedDebuff = 1f; //이동속도 디버프
 
     [Header("<State>")]
     public float HitDelay = 0.5f; //피격 무적시간

@@ -72,6 +72,8 @@ SpriteAtlas:
   - {fileID: -1393387521054166907, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
+  - {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
+  - {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
   - {fileID: -3570135257023498171, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 6662618489849775281, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 1727079075786078967, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
@@ -129,6 +131,8 @@ SpriteAtlas:
   - BloodEffect_Light_4
   - BloodEffect_Light_5
   - MiniDrone_Icon
+  - KingSlime_Bubble
+  - KingSlime_Crown
   - Screen_Walk-Sheet_2
   - Screen_Walk-Sheet_3
   - Screen_Walk-Sheet_0

@@ -11,9 +11,7 @@ public class EnemyManager : MonoBehaviour
     public List<int> hasItemId = new List<int>(); //가진 아이템
     public EnemyManager referEnemyManager = null;
     public EnemyInfo enemy;
-    EnemyAI enemyAI;
     public float portalSize = 1f; //포탈 사이즈 지정값
-    Collider2D coll;
     public bool isElite; //엘리트 몬스터 여부
     public int eliteClass; //엘리트 클래스 종류
     public bool isDead; //죽음 코루틴 진행중 여부
@@ -25,14 +23,23 @@ public class EnemyManager : MonoBehaviour
     // public Animator anim;
 
     [Header("Refer")]
-    public SpriteRenderer enemySprite;
+    public Transform spriteObj;
+    public SpriteRenderer sprite;
+    public Animator anim;
+    public Rigidbody2D rigid;
+    public Collider2D coll;
+    EnemyAI enemyAI;
 
     public Material originMat;
     public Color originMatColor; //해당 몬스터 머터리얼 원래 색
     public Color originColor; //해당 몬스터 원래 색
 
     [Header("Stat")]
+    public float hpMax;
     public float HpNow = 2;
+    public float power;
+    public float speed;
+    public float range;
 
     [Header("Attack Effect")]
     public bool flatDebuff = false;
@@ -42,20 +49,27 @@ public class EnemyManager : MonoBehaviour
     string enemyName;
     [SerializeField]
     string enemyType;
-    [SerializeField]
-    float hpMax;
-    [SerializeField]
-    float power;
-    [SerializeField]
-    float speed;
-    [SerializeField]
-    float range;
 
     void Awake()
     {
-        // sprite = GetComponentInChildren<SpriteRenderer>();
+        spriteObj = spriteObj == null ? transform : spriteObj;
+        sprite = sprite == null ? spriteObj.GetComponentInChildren<SpriteRenderer>(true) : sprite;
+        anim = anim == null ? spriteObj.GetComponentInChildren<Animator>(true) : anim;
+        rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
+        coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
+        
         enemyAI = GetComponent<EnemyAI>();
-        coll = GetComponent<Collider2D>();
+
+        if (sprite != null)
+        {
+            //머터리얼 정보 저장
+            originMat = sprite.material;
+            //색상 정보 저장
+            originColor = sprite.color;
+            //아웃라인이면 머터리얼 색상 저장
+            if (sprite.material == SystemManager.Instance.outLineMat)
+                originMatColor = sprite.material.color;
+        }
     }
 
     private void OnEnable()
@@ -81,19 +95,6 @@ public class EnemyManager : MonoBehaviour
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
         HpNow = enemy.hpMax; //체력 초기화
-
-        if (enemySprite != null)
-        {
-            enemySprite.color = Color.white; //스프라이트 색깔 초기화
-
-            //머터리얼 정보 저장
-            originMat = enemySprite.material;
-            //색상 정보 저장
-            originColor = enemySprite.color;
-            //아웃라인이면 머터리얼 색상 저장
-            if (enemySprite.material == SystemManager.Instance.outLineMat)
-                originMatColor = enemySprite.material.color;
-        }
 
         //죽음 여부 초기화
         isDead = false;
@@ -390,17 +391,17 @@ public class EnemyManager : MonoBehaviour
         UIManager.Instance.killCount++;
         UIManager.Instance.UpdateKillCount();
 
-        if (enemySprite != null)
+        if (sprite != null)
         {
             // 머터리얼 및 색 변경
-            enemySprite.material = SystemManager.Instance.hitMat;
-            enemySprite.color = SystemManager.Instance.hitColor;
+            sprite.material = SystemManager.Instance.hitMat;
+            sprite.color = SystemManager.Instance.hitColor;
 
             // 색깔 점점 흰색으로
-            enemySprite.DOColor(SystemManager.Instance.DeadColor, 1f);
+            sprite.DOColor(SystemManager.Instance.DeadColor, 1f);
 
             //색 변경 완료 될때까지 대기
-            yield return new WaitUntil(() => enemySprite.color == SystemManager.Instance.DeadColor);
+            yield return new WaitUntil(() => sprite.color == SystemManager.Instance.DeadColor);
         }
 
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
@@ -425,6 +426,10 @@ public class EnemyManager : MonoBehaviour
 
         // 몬스터 리스트에서 몬스터 본인 빼기
         EnemySpawn.Instance.spawnEnemyList.Remove(gameObject);
+
+        // 트윈 및 시퀀스 끝내기
+        transform.DOKill();
+        enemyAI.jumpSeq.Kill();
 
         // 몬스터 비활성화
         LeanPool.Despawn(gameObject);
