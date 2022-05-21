@@ -84,7 +84,8 @@ public class PlayerManager : MonoBehaviour
     public float speedDebuff = 1f; //이동속도 디버프
 
     [Header("<State>")]
-    public float HitDelay = 0.5f; //피격 무적시간
+    public float poisonDuration; //독 도트뎀 남은시간
+    public float hitDelayTime = 0.5f; //피격 무적시간
     float hitCount = 0f;
     public bool isDash; //현재 대쉬중 여부
     public bool isParalysis; //깔려서 납작해졌을때
@@ -274,7 +275,7 @@ public class PlayerManager : MonoBehaviour
             EnemyInfo enemy = other.gameObject.GetComponent<EnemyManager>().enemy;
 
             //피격 딜레이 무적
-            IEnumerator hitDelay = HitDelayCoroutine();
+            IEnumerator hitDelay = HitDelay();
             StartCoroutine(hitDelay);
 
             Damage(enemy.power);
@@ -294,7 +295,7 @@ public class PlayerManager : MonoBehaviour
                 EnemyInfo enemy = enemyManager.enemy;
 
                 //피격 딜레이 무적
-                IEnumerator hitDelay = HitDelayCoroutine();
+                IEnumerator hitDelay = HitDelay();
                 StartCoroutine(hitDelay);
 
                 Damage(enemy.power);
@@ -306,7 +307,7 @@ public class PlayerManager : MonoBehaviour
                 MagicInfo magic = magicHolder.magic;
 
                 //피격 딜레이 무적
-                IEnumerator hitDelay = HitDelayCoroutine();
+                IEnumerator hitDelay = HitDelay();
                 StartCoroutine(hitDelay);
 
                 //데미지 계산
@@ -320,19 +321,50 @@ public class PlayerManager : MonoBehaviour
     }
 
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
-    public IEnumerator HitDelayCoroutine()
+    public IEnumerator HitDelay()
     {
-        hitCount = HitDelay;
+        hitCount = hitDelayTime;
 
         //머터리얼 변환
         sprite.material = SystemManager.Instance.hitMat;
 
         //스프라이트 색 변환
-        // sprite.color = VarManager.Instance.hitColor;
+        sprite.color = SystemManager.Instance.hitColor;
 
         yield return new WaitUntil(() => hitCount <= 0);
 
         //머터리얼 복구
+        sprite.material = SystemManager.Instance.spriteMat;
+
+        //원래 색으로 복구
+        sprite.color = Color.white;
+    }
+
+    public IEnumerator PoisonDotHit(float tickDamage, float duration)
+    {
+        //독 데미지 지속시간 넣기
+        poisonDuration = duration;
+
+        // 포이즌 머터리얼로 변환
+        sprite.material = SystemManager.Instance.outLineMat;
+
+        // 보라색으로 스프라이트 색 변환
+        sprite.color = SystemManager.Instance.poisonColor;
+
+        // 독 데미지 지속시간 남았을때 진행
+        while (poisonDuration > 0)
+        {
+            // 독 데미지 입히기
+            Damage(tickDamage);
+
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 독 데미지 지속시간에서 한틱 차감
+            poisonDuration -= 1f;
+        }
+
+        //원래 머터리얼로 복구
         sprite.material = SystemManager.Instance.spriteMat;
 
         //원래 색으로 복구
@@ -385,19 +417,19 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
-                dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+                dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
             }
 
             dmgTxt.text = damage.ToString();
         }
         // 데미지 없을때
-        else if(damage == 0)
+        else if (damage == 0)
         {
-            dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+            dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
             dmgTxt.text = "MISS";
         }
         // 데미지가 마이너스일때 (체력회복일때)
-        else if(damage < 0)
+        else if (damage < 0)
         {
             dmgTxt.color = Color.green;
             dmgTxt.text = "+" + (-damage).ToString();
@@ -619,7 +651,7 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            magics = CastMagic.Instance.basicMagic;
+            magics = CastMagic.Instance.defaultMagic;
         }
 
         // 캐릭터 기본 마법 추가

@@ -33,7 +33,7 @@ public class CastMagic : MonoBehaviour
 
     List<GameObject> passiveMagics = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
     List<int> nowCastMagicIDs = new List<int>(); //현재 사용중인 마법
-    public List<int> basicMagic = new List<int>(); //기본 마법
+    public List<int> defaultMagic = new List<int>(); //기본 마법
     public bool testAllMagic; //! 모든 마법 테스트
 
     [Header("Phone Spin")]

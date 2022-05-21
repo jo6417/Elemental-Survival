@@ -16,14 +16,34 @@ public class GemAbsorb : MonoBehaviour
         if (other.CompareTag("Item"))
         {
             Rigidbody2D rigid = other.GetComponent<Rigidbody2D>();
+            ItemManager itemManager = other.GetComponent<ItemManager>();
+
+            //해당 아이템 획득 여부 갱신, 중복 획득 방지
+            itemManager.isGot = true;
 
             // 너무 가까우면 흡수해서 소지 아이템에 포함
             if (Vector2.Distance(transform.position, other.transform.position) <= getRange)
             {
-                ItemInfo item = other.GetComponent<ItemManager>().item;
+                ItemInfo item = itemManager.item;
 
-                //몬스터가 아이템 획득
-                enemyManager.hasItemId.Add(item.id);
+                if (item == null)
+                {
+                    print(other.name + " : " + other.transform.position);
+                }
+
+                //보유 아이템중 해당 아이템 있는지 찾기
+                ItemInfo findItem = enemyManager.nowHasItem.Find(x => x == item);
+                // 해당 아이템 보유하지 않았을때
+                if (findItem == null)
+                {
+                    enemyManager.nowHasItem.Add(item);
+                }
+                // 해당 아이템 이미 보유했을때
+                else
+                {
+                    // 보유한 아이템에 개수 증가
+                    findItem.amount++;
+                }
 
                 //아이템 속도 초기화
                 rigid.velocity = Vector2.zero;

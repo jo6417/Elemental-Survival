@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AtkRangeTrigger : MonoBehaviour
+public class EnemyAtkTrigger : MonoBehaviour
 {
     public bool atkTrigger;
     public Collider2D collTrigger;

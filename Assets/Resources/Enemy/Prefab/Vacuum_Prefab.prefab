@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasItemId: ffffffff
+  defaultHasItem: ffffffff
   referEnemyManager: {fileID: 0}
   portalSize: 1.2
   isElite: 0
@@ -60,6 +60,11 @@ MonoBehaviour:
   stopCount: 0
   hitCount: 0
   oppositeCount: 0
+  isAbsorb: 1
+  state: 0
+  nowAction: 0
+  nextAction: 0
+  moveType: 0
   spriteObj: {fileID: 0}
   sprite: {fileID: 0}
   anim: {fileID: 0}
@@ -70,12 +75,12 @@ MonoBehaviour:
   originColor: {r: 0, g: 0, b: 0, a: 0}
   hpMax: 0
   HpNow: 1
+  power: 0
   speed: 0
   range: 0
   flatDebuff: 0
   enemyName: 
   enemyType: 
-  power: 0
 --- !u!114 &3988004795875851619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,13 +93,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
-  moveType: 0
   enemyManager: {fileID: 0}
   jumpHeight: 4
   jumpUptime: 2
   jumpCoolTime: 1
-  jumpCoolCount: 0
   jumpCollisionOff: 0
   landEffect: {fileID: 0}
   shadow: {fileID: 0}
@@ -137,7 +139,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: c1cb3f0de7340df48944eae11705b06c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -277,7 +279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 6693188225388731334}
-  absorbSpeed: 0.1
+  absorbSpeed: 500
   getRange: 1
 --- !u!1001 &4391171326095702058
 PrefabInstance:

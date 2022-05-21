@@ -49,11 +49,11 @@ TagManager:
   - name: Ground
     uniqueID: 2425651459
     locked: 0
-  - name: Character&Object
-    uniqueID: 2433207011
-    locked: 0
   - name: Item
     uniqueID: 572514883
+    locked: 0
+  - name: Character&Object
+    uniqueID: 2433207011
     locked: 0
   - name: MagicEffect
     uniqueID: 945064743

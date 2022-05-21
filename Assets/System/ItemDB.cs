@@ -69,6 +69,35 @@ public class ItemInfo
         this.water = water;
         this.wind = wind;
     }
+
+    public ItemInfo(ItemInfo item)
+    {
+        this.id = item.id;
+        this.grade = item.grade;
+        this.itemName = item.itemName;
+        this.itemType = item.itemType;
+        this.description = item.description;
+        this.priceType = item.priceType;
+        this.price = item.price;
+        this.projectileNum = item.projectileNum;
+        this.hpMax = item.hpMax;
+        this.power = item.power;
+        this.armor = item.armor;
+        this.moveSpeed = item.moveSpeed;
+        this.rateFire = item.rateFire;
+        this.coolTime = item.coolTime;
+        this.duration = item.duration;
+        this.range = item.range;
+        this.luck = item.luck;
+        this.expGain = item.expGain;
+        this.moneyGain = item.moneyGain;
+        this.earth = item.earth;
+        this.fire = item.fire;
+        this.life = item.life;
+        this.lightning = item.lightning;
+        this.water = item.water;
+        this.wind = item.wind;
+    }
 }
 
 public class ItemDB : MonoBehaviour

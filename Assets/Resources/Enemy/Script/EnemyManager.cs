@@ -8,7 +8,9 @@ using TMPro;
 
 public class EnemyManager : MonoBehaviour
 {
-    public List<int> hasItemId = new List<int>(); //가진 아이템
+    [SerializeField]
+    private List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
+    public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
     public EnemyManager referEnemyManager = null;
     public EnemyInfo enemy;
     public float portalSize = 1f; //포탈 사이즈 지정값
@@ -20,7 +22,23 @@ public class EnemyManager : MonoBehaviour
     public float hitCount = 0;
     public float oppositeCount = 0;
     Sequence damageTextSeq;
-    // public Animator anim;
+    public bool isAbsorb; //해당 몬스터가 젬 흡수 하는지 여부
+
+    [Header("State")]
+    public State state; //현재 상태
+    public enum State { Idle, Hit, Dead, TimeStop, SystemStop }
+    public Action nowAction = Action.Idle; //현재 행동
+    public Action nextAction = Action.Idle; //다음에 할 행동 예약
+    public enum Action { Idle, Walk, Jump, Attack }
+    public MoveType moveType;
+    public enum MoveType
+    {
+        Walk, // 걸어서 등속도이동
+        Jump, // 시간마다 점프
+        Dash, // 시간마다 대쉬
+        Teleport, // 시간마다 플레이어 주변 위치로 텔레포트
+        Follow // 플레이어와 일정거리 고정하며 따라다님
+    };
 
     [Header("Refer")]
     public Transform spriteObj;
@@ -57,7 +75,7 @@ public class EnemyManager : MonoBehaviour
         anim = anim == null ? spriteObj.GetComponentInChildren<Animator>(true) : anim;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
-        
+
         enemyAI = GetComponent<EnemyAI>();
 
         if (sprite != null)
@@ -79,17 +97,52 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator Initial()
     {
+        //콜라이더 끄기
+        coll.enabled = false;
+
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
         if (enemy == null && referEnemyManager == null)
-            //적 정보 인스턴싱
-            enemy = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]));
+            //적 정보 찾기
+            enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+
+        //적 정보 인스턴싱
+        if (enemy != null)
+            enemy = new EnemyInfo(enemy);
 
         //enemy 못찾으면 코루틴 종료
         if (enemy == null)
             yield break;
+
+        //보스면 체력 UI 띄우기
+        if (enemy.enemyType == "boss")
+        {
+            UIManager.Instance.UpdateBossHp(HpNow, hpMax, enemyName);
+        }
+
+        //ItemDB 로드 될때까지 대기
+        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+
+        //보유 아이템 초기화
+        nowHasItem.Clear();
+        foreach (var itemId in defaultHasItem)
+        {
+            // id 할당을 위해 변수 선언
+            int id = itemId;
+
+            // -1이면 랜덤 원소젬 뽑기
+            if (id == -1)
+                id = Random.Range(0, 5);
+
+            // item 인스턴스 생성 및 amount 초기화
+            ItemInfo item = new ItemInfo(ItemDB.Instance.GetItemByID(id));
+            item.amount = 1;
+
+            //item 정보 넣기
+            nowHasItem.Add(item);
+        }
 
         hitCount = 0; //데미지 카운트 초기화
         stopCount = 0; //시간 정지 카운트 초기화
@@ -132,7 +185,7 @@ public class EnemyManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.transform.CompareTag("Magic"))
+        if (other.CompareTag("Magic"))
         {
             HitMagic(other.gameObject);
         }
@@ -220,7 +273,10 @@ public class EnemyManager : MonoBehaviour
         //넉백
         if (magicHolder.knockbackForce > 0)
         {
-            StartCoroutine(Knockback(magicHolder.knockbackForce));
+            if (nowAction != Action.Jump && nowAction != Action.Attack)
+            {
+                StartCoroutine(Knockback(magicHolder.knockbackForce));
+            }
         }
 
         //시간 정지
@@ -317,13 +373,13 @@ public class EnemyManager : MonoBehaviour
         // 데미지 없을때
         else if (damage == 0)
         {
-            dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+            dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
             dmgTxt.text = "MISS";
         }
         // 데미지가 마이너스일때 (체력회복일때)
         else if (damage < 0)
         {
-            dmgTxt.color = new Color(0, 100f/255f, 1);
+            dmgTxt.color = new Color(0, 100f / 255f, 1);
             dmgTxt.text = "+" + (-damage).ToString();
         }
 
@@ -336,8 +392,7 @@ public class EnemyManager : MonoBehaviour
             damageUI.transform.localScale = Vector3.zero;
         })
         .Append(
-            //위로 살짝 올리기
-            // damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 1f, 1f)
+            //오른쪽으로 dojump
             damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
             .SetEase(Ease.OutBounce)
         )
@@ -418,7 +473,7 @@ public class EnemyManager : MonoBehaviour
         // 10초후 디스폰
         // LeanPool.Despawn(blood, 10f);
 
-        if (enemy.dropRate >= Random.Range(0, 1) && hasItemId.Count > 0)
+        if (enemy.dropRate >= Random.Range(0, 1) && nowHasItem.Count > 0)
         {
             //아이템 드랍
             DropItem();
@@ -440,25 +495,25 @@ public class EnemyManager : MonoBehaviour
     // 갖고있는 아이템 드랍
     void DropItem()
     {
-        Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
-
         //보유한 모든 아이템 드랍
-        foreach (var id in hasItemId)
+        foreach (var item in nowHasItem)
         {
-            int itemId = id;
-            // -1이면 랜덤 원소젬 뽑기
-            if (id == -1)
-                itemId = Random.Range(0, 5);
+            //해당 아이템의 amount 만큼 드랍
+            for (int i = 0; i < item.amount; i++)
+            {
+                //아이템 프리팹 찾기
+                GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
+                //아이템 오브젝트 소환
+                GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
-            //아이템 프리팹 찾기
-            GameObject prefab = ItemDB.Instance.GetItemPrefab(itemId);
-            //아이템 오브젝트 소환
-            GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, itemPool);
+                //아이템 정보 넣기
+                itemObj.GetComponent<ItemManager>().item = item;
 
-            //TODO 랜덤 방향으로 아이템 날리기
-            Vector2 pos = (Vector2)transform.position + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 3f;
-            itemObj.transform.DOMove(pos, 1f)
-            .SetEase(Ease.OutExpo);
+                // 랜덤 방향으로 아이템 날리기
+                Vector2 pos = (Vector2)transform.position + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 3f;
+                itemObj.transform.DOMove(pos, 1f)
+                .SetEase(Ease.OutExpo);
+            }
         }
 
         //몬스터 죽을때 함수 호출, 체력 씨앗 드랍

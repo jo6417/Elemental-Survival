@@ -6,11 +6,11 @@ using UnityEngine;
 public class MagicProjectile : MonoBehaviour
 {
     public MagicInfo magic;
-    public MagicHolder magicHolder;
+    MagicHolder magicHolder;
 
     Rigidbody2D rigid;
     Collider2D col;
-    public SpriteRenderer sprite;
+    SpriteRenderer sprite;
     float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
 

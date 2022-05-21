@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3484880535147149815
+--- !u!1 &3269699836713588291
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,10 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3484880535147149802}
-  - component: {fileID: -6536153980201780495}
-  - component: {fileID: 3484880535147149801}
-  - component: {fileID: 3484880535147149800}
+  - component: {fileID: 3269699836713588318}
+  - component: {fileID: 4068558448314815813}
+  - component: {fileID: 3269699836713588317}
+  - component: {fileID: 3269699836713588316}
   m_Layer: 7
   m_Name: BloodParticle
   m_TagString: Enemy
@@ -19,42 +19,41 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3484880535147149802
+--- !u!4 &3269699836713588318
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3484880535147149815}
+  m_GameObject: {fileID: 3269699836713588291}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.921784, y: -1.7993599, z: 643.2896}
+  m_LocalPosition: {x: 15.88, y: -5.62, z: 643.2896}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6536153980201780495
+--- !u!114 &4068558448314815813
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3484880535147149815}
+  m_GameObject: {fileID: 3269699836713588291}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!198 &3484880535147149801
+--- !u!198 &3269699836713588317
 ParticleSystem:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 1994870664517383051, guid: bc54517fb2df17248b06dc8e1e51333c,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3484880535147149815}
+  m_GameObject: {fileID: 3269699836713588291}
   serializedVersion: 7
-  lengthInSec: 10
+  lengthInSec: 600
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -129,8 +128,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 10
-      minScalar: 8
+      scalar: 600
+      minScalar: 540
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1062,7 +1061,7 @@ ParticleSystem:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 0.04263585
+          time: 0.0007148043
           value: 1
           inSlope: 0
           outSlope: 0
@@ -1392,9 +1391,9 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 58982
+        atime1: 65469
         atime2: 65535
-        atime3: 0
+        atime3: 65535
         atime4: 0
         atime5: 0
         atime6: 0
@@ -2112,7 +2111,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0.17908746
+          value: 0.19080532
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -2120,7 +2119,7 @@ ParticleSystem:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 0.054035515
+          time: 0.0010085949
           value: -0.0000030957162
           inSlope: -0.099382706
           outSlope: -0.099382706
@@ -4825,14 +4824,14 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!199 &3484880535147149800
+--- !u!199 &3269699836713588316
 ParticleSystemRenderer:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3484880535147149815}
+  m_GameObject: {fileID: 3269699836713588291}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -4864,7 +4863,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -44025399
-  m_SortingLayer: 2
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0

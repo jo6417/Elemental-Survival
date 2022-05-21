@@ -14,8 +14,8 @@ public class AsciiBossAI : MonoBehaviour
 
     [Header("Refer")]
     public Image angryGauge; //분노 게이지 이미지
-    public AtkRangeTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
-    public AtkRangeTrigger LaserRangeTrigger; //레이저 범위 내에 들어왔는지 보는 트리거
+    public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
+    public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
     public TextMeshProUGUI laserText;
     public Transform canvasChildren;
@@ -296,7 +296,7 @@ public class AsciiBossAI : MonoBehaviour
         if (fallRangeTrigger.atkTrigger)
         {
             //피격 딜레이 무적
-            IEnumerator hitDelay = PlayerManager.Instance.HitDelayCoroutine();
+            IEnumerator hitDelay = PlayerManager.Instance.HitDelay();
             StartCoroutine(hitDelay);
 
             bool isDead = PlayerManager.Instance.Damage(enemy.power);

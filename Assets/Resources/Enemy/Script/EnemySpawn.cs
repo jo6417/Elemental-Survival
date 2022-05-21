@@ -31,8 +31,9 @@ public class EnemySpawn : MonoBehaviour
     }
     #endregion
 
-    public bool spawnSwitch;
-    public bool dragSwitch;
+    public bool spawnSwitch; //몬스터 스폰 ON/OFF
+    public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
+    public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
     Collider2D col;
     public int MaxEnemyPower; //최대 몬스터 수
     public int NowEnemyPower; //현재 몬스터 수
@@ -103,8 +104,8 @@ public class EnemySpawn : MonoBehaviour
     IEnumerator SpawnMob(bool ForceSpawn = false)
     {
         //스폰 스위치 꺼졌으면 스폰 멈추기
-        if(!spawnSwitch)
-        yield break;
+        if (!spawnSwitch)
+            yield break;
 
         //총 누적시간 30초로 나눴을때의 몫
         float time = UIManager.Instance.time_current;
@@ -126,25 +127,41 @@ public class EnemySpawn : MonoBehaviour
         int maxGrade = MaxEnemyPower - NowEnemyPower;
         maxGrade = Mathf.Clamp(maxGrade, 1, 6); //최대 6까지
 
-        // 스폰 가능한 몬스터 찾을때까지 반복
-        while (enemy == null || enemyObj == null)
+        //랜덤 스폰일때
+        if (randomSpawn || spawnEnemyList.Count == 0)
         {
-            //랜덤 id 찾기
-            enemyId = EnemyDB.Instance.RandomEnemy(maxGrade);
+            // 스폰 가능한 몬스터 찾을때까지 반복
+            while (enemy == null || enemyObj == null)
+            {
+                //랜덤 id 찾기
+                enemyId = EnemyDB.Instance.RandomEnemy(maxGrade);
 
-            if (enemyId == -1)
-                continue;
+                if (enemyId == -1)
+                    continue;
 
-            //enemy 찾기
-            enemy = EnemyDB.Instance.GetEnemyByID(enemyId);
+                //enemy 찾기
+                enemy = EnemyDB.Instance.GetEnemyByID(enemyId);
 
-            if (enemy == null)
-                continue;
+                if (enemy == null)
+                    continue;
 
-            //프리팹 찾기
-            enemyObj = EnemyDB.Instance.GetPrefab(enemyId);
+                //프리팹 찾기
+                enemyObj = EnemyDB.Instance.GetPrefab(enemyId);
 
-            yield return null;
+                yield return null;
+            }
+        }
+        //랜덤 스폰 아닐때, spawnEnemyList 에서 뽑아서 랜덤 스폰
+        else
+        {
+            //프리팹 오브젝트 찾기
+            enemyObj = spawnEnemyList[Random.Range(0, spawnEnemyList.Count)];
+
+            //몬스터 정보 찾기
+            enemy = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(enemyObj.name.Split('_')[0]));
+
+            //몬스터 id 찾기
+            enemyId = enemy.id;
         }
 
         //엘리트 출현 유무 (시간에 따라 엘리트 출현율 상승)
@@ -165,9 +182,9 @@ public class EnemySpawn : MonoBehaviour
     public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)
     {
         //스폰 스위치 꺼졌으면 스폰 멈추기
-        if(!spawnSwitch)
-        yield break;
-        
+        if (!spawnSwitch)
+            yield break;
+
         //몬스터 프리팹 찾기
         GameObject enemyPrefab = EnemyDB.Instance.GetPrefab(enemy.id);
 
@@ -301,6 +318,7 @@ public class EnemySpawn : MonoBehaviour
         .Append(
             //포탈 사이즈 줄여 사라지기
             portal.transform.DOScale(Vector3.zero, 0.5f)
+            .SetAutoKill()
             .OnComplete(() =>
             {
                 //포탈 디스폰
@@ -324,7 +342,7 @@ public class EnemySpawn : MonoBehaviour
                 return;
 
             //점프 몬스터는 점프 시퀀스 초기화
-            if (enemyAI.moveType == EnemyAI.MoveType.Jump)
+            if (manager.moveType == EnemyManager.MoveType.Jump)
                 enemyAI.jumpSeq.Pause();
 
             //이동 대기 카운트 초기화
@@ -411,7 +429,7 @@ public class EnemySpawn : MonoBehaviour
                     arrowUI.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                 }
                 else
-                arrowUI.SetActive(false);
+                    arrowUI.SetActive(false);
             }
             else
             {

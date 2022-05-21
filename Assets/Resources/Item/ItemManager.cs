@@ -6,6 +6,7 @@ using DG.Tweening;
 
 public class ItemManager : MonoBehaviour
 {
+    public bool isGot = false; //획득 됬는지 여부
     public ItemInfo item;
     [HideInInspector]
     public int amount = 1; //아이템 개수
@@ -15,36 +16,17 @@ public class ItemManager : MonoBehaviour
     public int gemTypeIndex = -1;
 
     public string itemName;
-    GameObject player;
-    Collider2D col;
+    Collider2D coll;
     Rigidbody2D rigid;
+    Vector3 velocity;
     bool isGet = false; //플레이어가 획득했는지
-
     private float radius = 5;
 
-    private void Start()
+    private void Awake()
     {
-        StartCoroutine(StartInitial());
-    }
-
-    IEnumerator StartInitial()
-    {
-        player = PlayerManager.Instance.gameObject;
         rigid = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
-
-        //아이템DB 로드 완료까지 대기
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
-
-        //프리팹 이름으로 아이템 정보 찾아 넣기
-        if (item == null)
-        {
-            item = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
-            itemName = item.itemName;
-        }
-
-        //지불 원소젬 이름을 인덱스로 반환
-        gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
+        coll = GetComponent<Collider2D>();
+        velocity = rigid.velocity;
     }
 
     private void OnEnable()
@@ -55,8 +37,25 @@ public class ItemManager : MonoBehaviour
 
     IEnumerator Initial()
     {
+        //아이템 정보 없을때 충돌 끄기
+        coll.enabled = false;
+
         //아이템DB 로드 완료까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+
+        // item 정보 불러올때까지 대기
+        // yield return new WaitUntil(() => item != null);
+
+        // item 정보 없으면 프리팹 이름으로 아이템 정보 찾아 넣기
+        if (item == null)
+        {
+            item = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
+        }
+        itemName = item.itemName;
+        print(itemName + " : " + item.itemName);
+
+        //지불 원소젬 이름을 인덱스로 반환
+        gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
 
         // 아이템 획득여부 초기화
         isGet = false;
@@ -68,8 +67,10 @@ public class ItemManager : MonoBehaviour
         isBundle = false;
 
         // 콜라이더 초기화
-        if (col)
-            col.enabled = true;
+        coll.enabled = true;
+
+        // 획득 여부 초기화
+        isGot = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -84,13 +85,20 @@ public class ItemManager : MonoBehaviour
             //원소젬 리스트에서 빼기
             ItemDB.Instance.outGem.Remove(gameObject);
         }
+
         // 플레이어와 충돌 했을때
         if (other.CompareTag("Player"))
         {
             // print("플레이어 아이템 획득");
-            col.enabled = false; //이중 충돌 방지
+
+            //이중 충돌 방지
+            coll.enabled = false;
+
+            // 획득 여부 갱신, 중복 획득 방지
+            isGot = true;
+
             // 플레이어에게 날아가기
-            StartCoroutine(GotoPlayer());
+            StartCoroutine(GetMove(PlayerManager.Instance.transform));
         }
     }
 
@@ -137,14 +145,14 @@ public class ItemManager : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, radius);
     }
 
-    IEnumerator GotoPlayer()
+    IEnumerator GetMove(Transform Getter)
     {
         // 아이템 위치부터 플레이어 쪽으로 방향 벡터
-        Vector2 dir = player.transform.position - transform.position;
+        Vector2 dir = Getter.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
         if (rigid)
-            rigid.DOMove((Vector2)player.transform.position - dir.normalized * 5f, 0.3f);
+            rigid.DOMove((Vector2)Getter.position - dir.normalized * 5f, 0.3f);
 
         yield return new WaitForSeconds(0.3f);
 
@@ -157,16 +165,16 @@ public class ItemManager : MonoBehaviour
             itemSpeed = Mathf.Clamp(itemSpeed, 0.01f, 1f);
 
             if (gameObject.activeSelf && rigid)
-                rigid.DOMove(player.transform.position, itemSpeed);
+                rigid.DOMove(Getter.position, itemSpeed);
 
             //거리가 0.5f 이하일때 획득
-            if (Vector2.Distance(player.transform.position, transform.position) <= 0.5f)
+            if (Vector2.Distance(Getter.position, transform.position) <= 0.5f)
             {
                 GainItem();
                 break;
             }
 
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 

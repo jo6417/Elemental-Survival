@@ -57,11 +57,13 @@ public class SystemManager : MonoBehaviour
     public Material outLineMat; //아웃라인 머터리얼
     public Material hitMat; //맞았을때 단색 머터리얼
     public Material ghostHDRMat; //고스팅 마법 HDR 머터리얼
+    public Material verticalFillMat; // Vertical Fill Sprite 머터리얼
 
     [Header("Color")]
-    public Color stopColor; //시간 멈췄을때 색깔
-    public Color hitColor; //맞았을때 깜빡일 색깔
-    public Color DeadColor; //죽을때 점점 변할 색깔
+    public Color stopColor; //시간 멈췄을때 컬러
+    public Color hitColor; //맞았을때 flash 컬러
+    public Color poisonColor; //독 데미지 flash 컬러
+    public Color DeadColor; //죽을때 서서히 변할 컬러
 
     public Color HexToRGBA(string hex)
     {

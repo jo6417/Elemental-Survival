@@ -63,6 +63,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4a398ef2ce174b34193cf56800e33368, type: 3}
   - {fileID: 21300000, guid: 0b1bbec335870ae40a3a302d7989ea72, type: 3}
   - {fileID: 21300000, guid: a46ddfe3422604d439b9a7e4d01361f7, type: 3}
+  - {fileID: 21300000, guid: 08889cf305a467443baf104bf4f996b9, type: 3}
   - {fileID: 21300000, guid: 27c4a944c417c414cb1e1e610b6f7ff3, type: 3}
   - {fileID: 21300000, guid: c4f8c2358ac84944b811a7edb0ac6f71, type: 3}
   - {fileID: 21300000, guid: 4621d275f5f58f848909c898d8727704, type: 3}
@@ -117,6 +118,7 @@ SpriteAtlas:
   - ProgressBar3
   - SlotMachineLED
   - Glass2
+  - CutOffImg
   - VendMachine
   - BlueGradientOutline
   - HexStatFrame
