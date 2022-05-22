@@ -52,7 +52,7 @@ public class ItemManager : MonoBehaviour
             item = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
         }
         itemName = item.itemName;
-        print(itemName + " : " + item.itemName);
+        // print(itemName + " : " + item.itemName);
 
         //지불 원소젬 이름을 인덱스로 반환
         gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);

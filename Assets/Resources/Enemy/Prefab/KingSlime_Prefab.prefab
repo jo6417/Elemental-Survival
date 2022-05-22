@@ -9742,9 +9742,6 @@ MonoBehaviour:
   isInside: 0
   poisonAtkRange: 20
   atkRatio: 50
-  state: 0
-  nowAction: 0
-  nextAction: 0
   crownObj: {fileID: 3939066445554554373}
   slimePrefab: {fileID: 8153751317921983363, guid: f38322a01d9b7f84d9914275f0eff236,
     type: 3}
@@ -9753,7 +9750,6 @@ MonoBehaviour:
   spriteFill: {fileID: 4482655199273524325}
   jumpHeight: 4
   jumpUptime: 1
-  jumpCoolTime: 1
   jumpCollisionOff: 0
   landEffect: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
     type: 3}
@@ -9782,6 +9778,12 @@ MonoBehaviour:
   hitCount: 0
   oppositeCount: 0
   isAbsorb: 0
+  selfExplosion: 0
+  state: 0
+  nowAction: 0
+  nextAction: 0
+  moveType: 0
+  explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 7073894444999465860}
   sprite: {fileID: 7073894444999465979}
   anim: {fileID: 5312835077595385824}
@@ -9795,7 +9797,9 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  friendlyFire: 0
   flatDebuff: 0
+  knockBackDebuff: 0
   enemyName: 
   enemyType: 
 --- !u!95 &5312835077595385824
@@ -9923,7 +9927,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 12
   m_Sprite: {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -10005,7 +10009,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 12
   m_Sprite: {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   m_Color: {r: 0.7139659, g: 0, b: 1, a: 0.5647059}
@@ -10089,7 +10093,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 11
   m_Sprite: {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
@@ -15044,7 +15048,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 12
   m_Sprite: {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -15075,7 +15079,7 @@ GameObject:
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &7394732797027361394
 Transform:
@@ -15129,7 +15133,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
     type: 3}
@@ -15155,8 +15159,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 689d3661b17e19b4a8fc3a81528a9968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosionPrefab: {fileID: 0}
+  atkRangeSprite: {fileID: 0}
+  enemyManager: {fileID: 0}
   atkTrigger: 0
-  collTrigger: {fileID: 1136543484236284355}
 --- !u!58 &1136543484236284355
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -15181,14 +15187,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8776520837824111525}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1

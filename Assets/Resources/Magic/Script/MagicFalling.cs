@@ -19,7 +19,6 @@ public class MagicFalling : MonoBehaviour
     public Vector2 startPos; //시작할 위치
     public bool isExpand = false; //커지면서 등장 여부
     public bool isFade = false; //domove 끝나고 사라지기 여부
-    bool magicLoading; //마법 진행중 여부
 
     [Header("Effect")]
     public GameObject particle; //파티클 오브젝트
@@ -104,10 +103,6 @@ public class MagicFalling : MonoBehaviour
         if (isExpand)
             transform.localScale = Vector2.zero;
         transform.DOScale(originScale, 0.5f)
-        .OnStart(() => {
-            //마법 시작
-            magicLoading = true;
-        })
         .SetEase(Ease.OutBack);
 
         //시작 위치
@@ -148,9 +143,6 @@ public class MagicFalling : MonoBehaviour
             // 오브젝트 자동 디스폰하기
             if(gameObject.activeSelf)
             StartCoroutine(AutoDespawn(0.5f));
-
-            //마법 끝
-            magicLoading = false;
         });
     }
 

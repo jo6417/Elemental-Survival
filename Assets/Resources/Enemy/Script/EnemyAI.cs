@@ -16,25 +16,17 @@ public class EnemyAI : MonoBehaviour
     [SerializeField]
     private float jumpUptime = 2f;
     [SerializeField]
-    private float jumpCoolTime = 1f;
-    // public float jumpCoolCount;
-    [SerializeField]
     private bool jumpCollisionOff = false; //도약시 충돌 여부
     [SerializeField]
     private GameObject landEffect;
     [SerializeField]
     private Transform shadow;
-    // private Vector2 shadowPos; //그림자 초기 위치
     public Sequence jumpSeq;
     public Vector2 jumpLandPos; //점프 착지 위치
 
     private void Awake()
     {
         enemyManager = enemyManager == null ? GetComponent<EnemyManager>() : enemyManager;
-
-        //그림자 초기 위치
-        // if (shadow != null)
-        //     shadowPos = shadow.localPosition;
     }
 
     private void OnEnable()

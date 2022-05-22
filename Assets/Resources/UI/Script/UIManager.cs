@@ -130,11 +130,6 @@ public class UIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Resume();
-
-            // 보유한 모든 마법 아이콘 갱신
-            // UpdateMagics();
-            // 보유한 모든 아이템 아이콘 갱신
-            // UpdateItems();
         }
 
         //게임시간 타이머 업데이트
@@ -191,7 +186,8 @@ public class UIManager : MonoBehaviour
         || !EventSystem.current.currentSelectedGameObject.activeSelf
         || !EventSystem.current.currentSelectedGameObject.activeInHierarchy
         || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>()
-        || Cursor.lockState == CursorLockMode.None)
+        || Cursor.lockState == CursorLockMode.None
+        )
         {
             // UI커서 애니메이션 켜져있으면
             if (isFlicking)
@@ -363,10 +359,7 @@ public class UIManager : MonoBehaviour
     public void Resume()
     {
         //일시정지 메뉴 UI 토글
-        pausePanel.SetActive(!pausePanel.activeSelf);
-
-        // 시간 정지 토글
-        Time.timeScale = pausePanel.activeSelf ? 0 : 1;
+        PopupUI(pausePanel);
     }
 
     public void InitialStat()
@@ -689,14 +682,18 @@ public class UIManager : MonoBehaviour
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
 
-        // 팝업 꺼질때 UI 커서 끄기
-        UI_Cursor.SetActive(false);
-        //UI커서 크기 및 위치 초기화
-        cursorRect.sizeDelta = UIRect.sizeDelta;
-        UI_Cursor.transform.position = transform.position;
+        if (!popup.activeSelf)
+        {
+            // 팝업 꺼질때 UI 커서 끄기
+            UI_Cursor.SetActive(false);
+            //UI커서 크기 및 위치 초기화
+            cursorRect.sizeDelta = UIRect.sizeDelta;
+            UI_Cursor.transform.position = transform.position;
 
-        //null 선택하기
-        EventSystem.current.SetSelectedGameObject(null);
+            //null 선택하기
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
     }
 
     public void PopupUI(GameObject popup, bool forceSwitch = true)
@@ -707,11 +704,17 @@ public class UIManager : MonoBehaviour
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
 
-        // 팝업 꺼질때 UI 커서 끄기
-        UI_Cursor.SetActive(false);
-        //UI커서 크기 및 위치 초기화
-        cursorRect.sizeDelta = UIRect.sizeDelta;
-        UI_Cursor.transform.position = transform.position;
+        if (!popup.activeSelf)
+        {
+            // 팝업 꺼질때 UI 커서 끄기
+            UI_Cursor.SetActive(false);
+            //UI커서 크기 및 위치 초기화
+            cursorRect.sizeDelta = UIRect.sizeDelta;
+            UI_Cursor.transform.position = transform.position;
+
+            //null 선택하기
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     //오브젝트의 모든 자식을 제거

@@ -71,6 +71,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 00e83076a30e4024e8753329d6bfab3d, type: 3}
   - {fileID: 21300000, guid: 6f3d5996a4c088142b42be405ba325fc, type: 3}
   - {fileID: 21300000, guid: b44f867713d9f914fbb1be5e9b516c60, type: 3}
+  - {fileID: 21300000, guid: 49f9d2c7be1425d42b709552bb07d2cb, type: 3}
   - {fileID: 21300000, guid: c3287508b9bfe6048a768f66fcfb011f, type: 3}
   - {fileID: 21300000, guid: 543aa02877c45ee4db30e28c61ea0167, type: 3}
   - {fileID: 21300000, guid: dd36bc68b5f886b4f95330ca9b853deb, type: 3}
@@ -126,6 +127,7 @@ SpriteAtlas:
   - BookIndex
   - HexItemFrameBack
   - Scroll_Opened
+  - CircleFill
   - HexItemBack
   - Glass
   - FrameCursor

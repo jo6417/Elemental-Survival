@@ -32,10 +32,14 @@ public class GemAbsorb : MonoBehaviour
                 }
 
                 //보유 아이템중 해당 아이템 있는지 찾기
-                ItemInfo findItem = enemyManager.nowHasItem.Find(x => x == item);
+                ItemInfo findItem = enemyManager.nowHasItem.Find(x => x.id == item.id);
                 // 해당 아이템 보유하지 않았을때
                 if (findItem == null)
                 {
+                    //개수 1개로 초기화
+                    item.amount = 1;
+
+                    //해당 아이템 획득
                     enemyManager.nowHasItem.Add(item);
                 }
                 // 해당 아이템 이미 보유했을때

@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 4381538907014098182}
   - component: {fileID: 7189318774427322981}
   - component: {fileID: 5896150280637656517}
-  - component: {fileID: 4090739471618789677}
+  - component: {fileID: 8096507129767913019}
   m_Layer: 7
   m_Name: ExplosionRange
   m_TagString: Enemy
@@ -109,8 +109,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3329544533871759512}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children: []
   m_Father: {fileID: 7752522856865055191}
   m_RootOrder: 2
@@ -122,7 +122,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3329544533871759512}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -154,9 +154,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1869315837
   m_SortingLayer: 1
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 9bb462e99fdc78b4fb3acc6a8c8663f8, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.5882353}
+  m_SortingOrder: -1
+  m_Sprite: {fileID: 21300000, guid: 49f9d2c7be1425d42b709552bb07d2cb, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.3137255}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -176,33 +176,29 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 2
---- !u!50 &4090739471618789677
-Rigidbody2D:
-  serializedVersion: 4
+--- !u!114 &8096507129767913019
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3329544533871759512}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 689d3661b17e19b4a8fc3a81528a9968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,
+    type: 3}
+  atkRangeSprite: {fileID: 0}
+  enemyManager: {fileID: 2479297510186365566}
+  atkTrigger: 0
 --- !u!1 &7752522856865055188
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,7 +210,6 @@ GameObject:
   - component: {fileID: 7752522856865055191}
   - component: {fileID: 2479297510186365566}
   - component: {fileID: -5451379877862882109}
-  - component: {fileID: 2335357633471141046}
   - component: {fileID: 7476364165769180974}
   - component: {fileID: 6399995120407093454}
   - component: {fileID: 5294624000008441115}
@@ -265,10 +260,12 @@ MonoBehaviour:
   hitCount: 0
   oppositeCount: 0
   isAbsorb: 0
+  selfExplosion: 1
   state: 0
   nowAction: 0
   nextAction: 0
   moveType: 0
+  explosionTrigger: {fileID: 8096507129767913019}
   spriteObj: {fileID: 7235316671713338324}
   sprite: {fileID: 0}
   anim: {fileID: 7476364165769180974}
@@ -282,7 +279,9 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  friendlyFire: 0
   flatDebuff: 0
+  knockBackDebuff: 0
   enemyName: 
   enemyType: 
 --- !u!114 &-5451379877862882109
@@ -301,24 +300,10 @@ MonoBehaviour:
   attackTrigger_A: {fileID: 0}
   jumpHeight: 4
   jumpUptime: 2
-  jumpCoolTime: 1
   jumpCollisionOff: 0
   landEffect: {fileID: 0}
   shadow: {fileID: 0}
   jumpLandPos: {x: 0, y: 0}
---- !u!114 &2335357633471141046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7752522856865055188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e843af77c010c242beeebaef1e6d72e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  coll: {fileID: 0}
 --- !u!95 &7476364165769180974
 Animator:
   serializedVersion: 3

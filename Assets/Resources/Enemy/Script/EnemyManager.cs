@@ -23,6 +23,7 @@ public class EnemyManager : MonoBehaviour
     public float oppositeCount = 0;
     Sequence damageTextSeq;
     public bool isAbsorb; //해당 몬스터가 젬 흡수 하는지 여부
+    public bool selfExplosion = false; //죽을때 자폭 여부
 
     [Header("State")]
     public State state; //현재 상태
@@ -41,6 +42,7 @@ public class EnemyManager : MonoBehaviour
     };
 
     [Header("Refer")]
+    public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
     public SpriteRenderer sprite;
     public Animator anim;
@@ -60,7 +62,9 @@ public class EnemyManager : MonoBehaviour
     public float range;
 
     [Header("Attack Effect")]
-    public bool flatDebuff = false;
+    public bool friendlyFire = false; // 충돌시 아군 피해 여부
+    public bool flatDebuff = false; //납작해지는 디버프
+    public bool knockBackDebuff = false; //넉백 디버프
 
     [Header("Debug")]
     [SerializeField]
@@ -112,9 +116,12 @@ public class EnemyManager : MonoBehaviour
         if (enemy != null)
             enemy = new EnemyInfo(enemy);
 
-        //enemy 못찾으면 코루틴 종료
-        if (enemy == null)
-            yield break;
+        // enemy 정보 들어올때까지 대기
+        yield return new WaitUntil(() => enemy != null);
+
+        // //enemy 못찾으면 코루틴 종료
+        // if (enemy == null)
+        //     yield break;
 
         //보스면 체력 UI 띄우기
         if (enemy.enemyType == "boss")
@@ -210,12 +217,34 @@ public class EnemyManager : MonoBehaviour
         {
             if (other.gameObject.TryGetComponent<EnemyManager>(out EnemyManager hitEnemy))
             {
-                // flat 디버프 있을때, stop 카운트 중 아닐때
-                if (hitEnemy.enabled && hitEnemy.flatDebuff && stopCount <= 0)
+                if (hitEnemy.enabled)
                 {
-                    print("enemy flat");
-                    // 납작해지고 행동불능
-                    StartCoroutine(FlatDebuff());
+                    // 아군 피해 줄때
+                    if (hitEnemy.friendlyFire)
+                    {
+                        // print("enemy damage");
+
+                        // 데미지 입기
+                        Damage(hitEnemy.enemy.power, false);
+                    }
+
+                    // 넉백 디버프 있을때
+                    if (hitEnemy.knockBackDebuff)
+                    {
+                        // print("enemy knock");
+
+                        // 넉백
+                        StartCoroutine(Knockback(hitEnemy.enemy.power));
+                    }
+
+                    // flat 디버프 있을때, stop 카운트 중 아닐때
+                    if (hitEnemy.flatDebuff && stopCount <= 0)
+                    {
+                        // print("enemy flat");
+
+                        // 납작해지고 행동불능
+                        StartCoroutine(FlatDebuff());
+                    }
                 }
             }
         }
@@ -223,12 +252,16 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator FlatDebuff()
     {
+        //정지 시간 추가
         stopCount = 2f;
+
+        //스케일 납작하게
         transform.localScale = new Vector2(1f, 0.5f);
 
         //2초간 깔린채로 대기
         yield return new WaitForSeconds(2f);
 
+        //스케일 복구
         transform.localScale = Vector2.one;
     }
 
@@ -410,7 +443,7 @@ public class EnemyManager : MonoBehaviour
         });
     }
 
-    IEnumerator Knockback(float knockbackForce)
+    public IEnumerator Knockback(float knockbackForce)
     {
         // 반대 방향 및 넉백파워
         Vector2 knockbackDir = transform.position - PlayerManager.Instance.transform.position;
@@ -426,7 +459,7 @@ public class EnemyManager : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator Dead()
+    public IEnumerator Dead()
     {
         if (enemy == null)
             yield break;
@@ -453,7 +486,23 @@ public class EnemyManager : MonoBehaviour
             sprite.color = SystemManager.Instance.hitColor;
 
             // 색깔 점점 흰색으로
-            sprite.DOColor(SystemManager.Instance.DeadColor, 1f);
+            sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
+            .SetEase(Ease.OutQuad);
+
+            // 폭발 반경 표시
+            if (selfExplosion)
+            {
+                explosionTrigger.atkRangeSprite.enabled = true;
+                explosionTrigger.atkRangeSprite.color = new Color(1, 1, 1, 80f / 255f);
+
+                explosionTrigger.atkRangeSprite.DOColor(new Color(1, 0, 0, 80f / 255f), 1f)
+                .SetEase(Ease.Flash, 3, 0)
+                .OnComplete(() =>
+                {
+                    explosionTrigger.atkRangeSprite.color = new Color(1, 1, 1, 80f / 255f);
+                    explosionTrigger.atkRangeSprite.enabled = false;
+                });
+            }
 
             //색 변경 완료 될때까지 대기
             yield return new WaitUntil(() => sprite.color == SystemManager.Instance.DeadColor);
@@ -461,6 +510,16 @@ public class EnemyManager : MonoBehaviour
 
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
         yield return new WaitUntil(() => SystemManager.Instance.timeScale > 0);
+
+        //폭발 몬스터면 폭발 시키기
+        if (selfExplosion)
+        {
+            // 폭발 이펙트 스폰
+            GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity);
+
+            // enemy 데이터 넣어주기
+            effect.GetComponent<EnemyManager>().enemy = enemy;
+        }
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
@@ -498,6 +557,7 @@ public class EnemyManager : MonoBehaviour
         //보유한 모든 아이템 드랍
         foreach (var item in nowHasItem)
         {
+            print(item.itemName + " : " + item.amount);
             //해당 아이템의 amount 만큼 드랍
             for (int i = 0; i < item.amount; i++)
             {

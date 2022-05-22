@@ -28,15 +28,11 @@ public class KingSlimeAI : MonoBehaviour
     [SerializeField]
     private float jumpUptime = 2f;
     [SerializeField]
-    private float jumpCoolTime = 1f;
-    // public float jumpCoolCount;
-    [SerializeField]
     private bool jumpCollisionOff = false; //도약시 충돌 여부
     [SerializeField]
     private GameObject landEffect;
     [SerializeField]
     private Transform shadow;
-    // private Vector2 shadowPos; //그림자 초기 위치
     public Sequence jumpSeq;
     public Vector2 jumpLandPos; //점프 착지 위치
 
@@ -536,13 +532,13 @@ public class KingSlimeAI : MonoBehaviour
         if (Vector2.Distance(PlayerManager.Instance.transform.position, transform.position) <= poisonAtkRange
         && poisonAtkCoolCount <= 0)
         {
-            // // 독뿜기 공격 쿨타임 갱신
-            // poisonAtkCoolCount = 5f;
+            // 독뿜기 공격 쿨타임 갱신
+            poisonAtkCoolCount = 5f;
 
-            // //독 뿜기 시전
-            // StartCoroutine(PoisonShot());
+            //독 뿜기 시전
+            StartCoroutine(PoisonShot());
 
-            // return;
+            return;
         }
 
         //가능한 공격 없을때
@@ -566,7 +562,7 @@ public class KingSlimeAI : MonoBehaviour
         enemyManager.anim.SetBool("isShaking", true);
 
         //떨림 애니메이션 시간 대기
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         //떨림 애니메이션 끝
         enemyManager.anim.SetBool("isShaking", false);
@@ -656,11 +652,11 @@ public class KingSlimeAI : MonoBehaviour
         //변화되는 fill 값 입력해주기
         while (fillAmount < 1f)
         {
-            fillAmount += Time.deltaTime;
+            fillAmount += Time.deltaTime * 0.1f;
 
             spriteFill.material.SetFloat("_FillRate", fillAmount);
 
-            yield return new WaitForSeconds(Time.deltaTime * 10f);
+            yield return new WaitForSeconds(Time.deltaTime);
         }
 
         // 보라색으로 모두 채워질때까지 대기

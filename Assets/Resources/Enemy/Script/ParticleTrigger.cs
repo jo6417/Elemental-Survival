@@ -19,6 +19,8 @@ public class ParticleTrigger : MonoBehaviour
         // 플레이어와 충돌한 독 파티클이 있을때, 쿨타임중 아닐때, 플레이어 독 도트 피해 중 아닐때
         if (numInside > 0 && PlayerManager.Instance.poisonDuration <= 0)
         {
+            print("poison attack!");
+
             // 플레이어 코루틴으로 도트 피해 입히기
             StartCoroutine(PlayerManager.Instance.PoisonDotHit(2f, 5f));
         }

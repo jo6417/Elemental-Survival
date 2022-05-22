@@ -337,6 +337,9 @@ public class EnemySpawn : MonoBehaviour
             EnemyManager manager = other.GetComponent<EnemyManager>();
             EnemyAI enemyAI = other.GetComponent<EnemyAI>();
 
+            if (manager == null || enemyAI == null)
+                return;
+
             //죽은 몬스터는 미적용
             if (manager.isDead)
                 return;
