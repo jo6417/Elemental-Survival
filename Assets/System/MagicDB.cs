@@ -46,8 +46,8 @@ public class MagicInfo
     public float projectilePerLev;
     public float coolTimePerLev;
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price, 
-    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime, 
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price,
+    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime,
     float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
     {
         this.id = id;
@@ -324,7 +324,29 @@ public class MagicDB : MonoBehaviour
         return isExist;
     }
 
-    //랜덤 마법 뽑기
+    public MagicInfo RandomMagic()
+    {
+        //모든 마법 인덱스를 넣을 리스트
+        List<int> unlockIDs = new List<int>();
+
+        //언락된 마법 인덱스 모두 넣기
+        for (int i = 0; i < unlockMagics.Count; i++)
+        {
+            unlockIDs.Add(unlockMagics[i]);
+        }
+
+        //TODO 등급마다 확률 다르게
+        //인덱스 리스트에서 랜덤으로 뽑기
+        int j = Random.Range(0, unlockIDs.Count);
+        
+        //뽑은 인덱스로 마법 ID 찾기
+        int magicID = unlockIDs[j];
+
+        //마법 ID로 마법정보 불러와서 리턴
+        return GetMagicByID(magicID);
+    }
+
+    //랜덤 마법 리스트 뽑기
     public int[] RandomMagicIndex(int amount)
     {
         //모든 마법 인덱스를 넣을 리스트

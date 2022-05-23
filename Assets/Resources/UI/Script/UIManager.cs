@@ -45,7 +45,8 @@ public class UIManager : MonoBehaviour
 
     [Header("ReferUI")]
     RectTransform UIRect;
-    public GameObject magicMixPanel;
+    public GameObject mixMagicPanel;
+    public GameObject mergeMagicPanel;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
     public GameObject slotMachinePanel;
@@ -528,7 +529,7 @@ public class UIManager : MonoBehaviour
             LeanPool.Despawn(hasMagicsUI.GetChild(j).gameObject);
         }
 
-        foreach (var magic in PlayerManager.Instance.hasMagics)
+        foreach (var magic in PlayerManager.Instance.hasStackMagics)
         {
             //0등급은 원소젬이므로 표시 안함
             if (magic.grade == 0)

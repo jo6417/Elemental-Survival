@@ -65,6 +65,44 @@ public class SystemManager : MonoBehaviour
     public Color poisonColor; //독 데미지 flash 컬러
     public Color DeadColor; //죽을때 서서히 변할 컬러
 
+    private void Awake() {
+        //초기화
+        StartCoroutine(Initial());
+    }
+
+    IEnumerator Initial()
+    {
+        Time.timeScale = 0f;
+
+        //TODO 로딩 UI 띄우기
+        print("로딩 시작");
+
+        //모두 로드 될때까지 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+
+        //TODO 로딩 UI 끄기
+        print("로딩 완료");
+
+        Time.timeScale = 1f;
+    }
+
+    private void OnEnable()
+    {
+        //다음맵으로 넘어가는 포탈게이트 생성하기
+        SpawnPortalGate();
+    }
+
+    void SpawnPortalGate()
+    {
+        //포탈이 생성될 위치
+        Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * portalRange;
+
+        //포탈 게이트 생성
+        GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity);
+    }
+
     public Color HexToRGBA(string hex)
     {
         Color color;
@@ -109,21 +147,5 @@ public class SystemManager : MonoBehaviour
             // 아이템에 체력 회복량 넣기
             healSeed.GetComponent<ItemManager>().amount = healAmount;
         }
-    }
-
-    private void OnEnable()
-    {
-
-        //다음맵으로 넘어가는 포탈게이트 생성하기
-        SpawnPortalGate();
-    }
-
-    void SpawnPortalGate()
-    {
-        //포탈이 생성될 위치
-        Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * portalRange;
-
-        //포탈 게이트 생성
-        GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity);
     }
 }

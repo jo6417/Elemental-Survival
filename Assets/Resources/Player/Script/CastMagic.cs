@@ -84,7 +84,7 @@ public class CastMagic : MonoBehaviour
     {
         //플레이어 보유중인 모든 마법 ID
         List<int> hasMagicIDs = new List<int>();
-        foreach (var magic in PlayerManager.Instance.hasMagics)
+        foreach (var magic in PlayerManager.Instance.hasStackMagics)
         {
             //active 타입 마법만 사용
             // if (magic.castType == "active")

@@ -179,7 +179,7 @@ public class MagicMixMenu : MonoBehaviour
         // mixedMagic = null;
 
         // 플레이어 보유중인 마법 참조
-        List<MagicInfo> playerMagics = PlayerManager.Instance.hasMagics;
+        List<MagicInfo> playerMagics = PlayerManager.Instance.hasStackMagics;
 
         //최상단 첫번째 마법 아이콘 선택하기
         // Button firstIcon = null;
@@ -955,6 +955,6 @@ public class MagicMixMenu : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
 
         //해당 팝업 끄기
-        UIManager.Instance.PopupUI(UIManager.Instance.magicMixPanel);
+        UIManager.Instance.PopupUI(UIManager.Instance.mixMagicPanel);
     }
 }

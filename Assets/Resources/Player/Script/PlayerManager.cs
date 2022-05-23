@@ -89,16 +89,16 @@ public class PlayerManager : MonoBehaviour
     float hitCount = 0f;
     public bool isDash; //현재 대쉬중 여부
     public bool isParalysis; //깔려서 납작해졌을때
-
+    public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;
     // public float ShakeIntensity;
 
     [Header("<Pocket>")]
-    public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
-    public List<MagicInfo> hasMagics = new List<MagicInfo>(); //플레이어가 가진 마법
+    public MagicInfo[] hasMergeMagics = new MagicInfo[20]; // merge 보드에 올려진 플레이어 보유 마법
+    public List<MagicInfo> hasStackMagics = new List<MagicInfo>(); // 스택에 있는 플레이어 보유 마법
     public MagicInfo ultimateMagic; //궁극기 마법
-    public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
+    public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
 
     private void Awake()
@@ -584,13 +584,13 @@ public class PlayerManager : MonoBehaviour
     //     yield return null;
     // }
 
-    public void GetMagic(MagicInfo getMagic, bool resetAllMagic = true)
+    public void GetMagic(MagicInfo getMagic, bool magicReCast = true)
     {
         //보유하지 않은 마법일때
-        if (!hasMagics.Exists(x => x.id == getMagic.id))
+        if (!hasStackMagics.Exists(x => x.id == getMagic.id))
         {
             // 플레이어 보유 마법에 해당 마법 추가하기
-            hasMagics.Add(getMagic);
+            hasStackMagics.Add(getMagic);
         }
 
         // 0등급 마법이면 원소젬이므로 스킵
@@ -598,7 +598,7 @@ public class PlayerManager : MonoBehaviour
             return;
 
         //보유한 마법의 레벨 올리기
-        hasMagics.Find(x => x.id == getMagic.id).magicLevel++;
+        hasStackMagics.Find(x => x.id == getMagic.id).magicLevel++;
 
         //TODO 적이 죽으면 발동되는 마법일때 콜백에 함수포함시키기
         if (getMagic.magicName == "Life Seed")
@@ -613,7 +613,7 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.AddMagicUI(getMagic);
 
         // 마법 캐스팅 다시 시작
-        if (resetAllMagic)
+        if (magicReCast)
             CastMagic.Instance.ReCastMagics();
 
         //플레이어 총 전투력 업데이트
@@ -771,9 +771,9 @@ public class PlayerManager : MonoBehaviour
         //! 테스트용 맥스 경험치
         PlayerStat_Now.ExpMax = 3;
 
-        // 팝업 선택메뉴 띄우기
-        UIManager.Instance.PopupUI(UIManager.Instance.magicMixPanel);
-        // levelupPopup.SetActive(true);
+        // 마법 합성 메뉴 띄우기
+        UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
+        // UIManager.Instance.PopupUI(UIManager.Instance.mixMagicPanel);
     }
 
     public void PayGem(int gemIndex, int price)
@@ -790,7 +790,7 @@ public class PlayerManager : MonoBehaviour
         //플레이어의 총 전투력
         int magicPower = 0;
 
-        foreach (var magic in hasMagics)
+        foreach (var magic in hasStackMagics)
         {
             //총전투력에 해당 마법의 등급*레벨 더하기
             magicPower += magic.grade * magic.magicLevel;

@@ -55,7 +55,7 @@ public class UltimateList : MonoBehaviour
 
         // 보유한 마법 중 궁극기 마법 모두 불러오기
         ultimateList.Clear();
-        ultimateList = PlayerManager.Instance.hasMagics.FindAll(x => x.castType == "ultimate");
+        ultimateList = PlayerManager.Instance.hasStackMagics.FindAll(x => x.castType == "ultimate");
 
         //궁극기 마법이 1개이상 있을때
         if (ultimateList.Count > 0 && PlayerManager.Instance.ultimateMagic != null)
@@ -94,7 +94,7 @@ public class UltimateList : MonoBehaviour
 
     void SetIcon(int objIndex, int num, int magicIndex)
     {
-        //해당 슬롯에 넣을 마법 있을때
+        // ultimateList의 보유 마법이 num 보다 많을때
         if (ultimateList.Count >= num)
         {
             ultimateSlots[objIndex].transform.Find("Icon").gameObject.SetActive(true);
@@ -167,8 +167,8 @@ public class UltimateList : MonoBehaviour
         ultimateList.Insert(endIndex, targetMagic); //타겟 마법 넣기
 
         //hasMagic에서도 순서 바꾸기
-        PlayerManager.Instance.hasMagics.Remove(targetMagic);
-        PlayerManager.Instance.hasMagics.Insert(endIndex, targetMagic);
+        PlayerManager.Instance.hasStackMagics.Remove(targetMagic);
+        PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic);
 
         // 모든 아이콘 다시 넣기
         SetSlots();
