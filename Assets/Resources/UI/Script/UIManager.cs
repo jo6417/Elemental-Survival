@@ -72,6 +72,7 @@ public class UIManager : MonoBehaviour
     Sequence cursorSeq; //깜빡임 시퀀스
     Vector2 lastMousePos; //마지막 마우스 위치
     RectTransform cursorRect;
+    public bool isMouseMove = true; //현재 마우스 움직이고 있는지
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -199,7 +200,7 @@ public class UIManager : MonoBehaviour
 
                 //기억하고 있는 버튼 있으면 색 복구하기
                 if (lastSelected)
-                    lastSelected.GetComponent<Image>().color = lastOriginColor;
+                    lastSelected.targetGraphic.color = lastOriginColor;
 
                 //커서 애니메이션 끝
                 isFlicking = false;
@@ -212,7 +213,7 @@ public class UIManager : MonoBehaviour
                 lastSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
 
                 //원본 컬러 기억하기
-                lastOriginColor = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>().color;
+                lastOriginColor = lastSelected.targetGraphic.color;
             }
         }
         //선택된 버튼이 바뀌었을때
@@ -258,7 +259,7 @@ public class UIManager : MonoBehaviour
 
     void CursorAnim()
     {
-        Image image = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Image>();
+        Image image = lastSelected.targetGraphic.GetComponent<Image>();
         RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
         RectTransform lastRect = EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>();
 
@@ -276,6 +277,7 @@ public class UIManager : MonoBehaviour
         UI_Cursor.SetActive(true); //UI 커서 활성화
 
         //원래 트윈 죽이기
+        image.DOKill();
         UI_Cursor.transform.DOKill();
         cursorRect.DOKill();
         cursorSeq.Kill();
@@ -286,6 +288,10 @@ public class UIManager : MonoBehaviour
         UI_Cursor.transform.DOMove(btnPos, flickTime)
         .OnStart(() =>
         {
+            //커서 애니메이션 시작
+            isFlicking = true;
+            isMove = true;
+
             float moveCount = flickTime;
         })
         .OnUpdate(() =>
@@ -312,6 +318,12 @@ public class UIManager : MonoBehaviour
 
             cursorSeq = DOTween.Sequence();
             cursorSeq
+            .OnStart(() =>
+            {
+                //커서 애니메이션 시작
+                isFlicking = true;
+                isMove = true;
+            })
             .SetLoops(-1)
             .PrependCallback(() =>
             {
@@ -321,6 +333,10 @@ public class UIManager : MonoBehaviour
             // 깜빡이는 색으로 변경, 해당 버튼 사이즈보다 확대
             .Append(
                 image.DOColor(flickColor, flickTime)
+                .OnKill(() =>
+                {
+                    image.color = lastOriginColor;
+                })
             )
             .Join(
                 cursorRect.DOSizeDelta(size + Vector2.one * 20f, flickTime)
@@ -328,12 +344,19 @@ public class UIManager : MonoBehaviour
             // 원본 색깔로 복구, 해당 버튼 사이즈 원본 사이즈 복구
             .Append(
                 image.DOColor(lastOriginColor, flickTime)
+                .OnKill(() =>
+                {
+                    image.color = lastOriginColor;
+                })
             )
             .Join(
                 cursorRect.DOSizeDelta(size, flickTime)
             )
             .OnKill(() =>
             {
+                image.DOKill();
+                UI_Cursor.transform.DOKill();
+                cursorRect.DOKill();
                 image.color = lastOriginColor;
             })
             .SetUpdate(true);

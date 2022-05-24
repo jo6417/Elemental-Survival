@@ -5,24 +5,50 @@ using UnityEngine.UI;
 using TMPro;
 using Lean.Pool;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
 public class MergeMagic : MonoBehaviour
 {
+    #region Singleton
+    private static MergeMagic instance;
+    public static MergeMagic Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                var obj = FindObjectOfType<MergeMagic>();
+                if (obj != null)
+                {
+                    instance = obj;
+                }
+                else
+                {
+                    var newObj = new GameObject().AddComponent<MergeMagic>();
+                    instance = newObj;
+                }
+            }
+            return instance;
+        }
+    }
+    #endregion
+
     //초기 화면 로딩 여부
     public bool loadDone = false;
-    public bool selectStack; // 스택 슬롯을 선택했는지
+    public MergeSlot nowSelectSlot; //현재 선택된 슬롯
 
     [Header("Merge Board")]
     public Transform mergeSlots;
-    public GameObject slotPrefab;
+    public int[] closeSlots = new int[4]; //선택된 슬롯 주변의 인덱스
 
     [Header("Stack List")]
     public Transform stackSlots;
-    List<GameObject> stackList = new List<GameObject>(); //각각 슬롯 오브젝트
+    public List<GameObject> stackList = new List<GameObject>(); //각각 슬롯 오브젝트
     Vector2[] stackSlotPos = new Vector2[7]; //각각 슬롯의 초기 위치
     float scrollCoolCount; //스크롤 쿨타임 카운트
     float scrollCoolTime = 0.1f; //스크롤 쿨타임
-    MagicInfo selectedMagic; //현재 선택된 마법
+    public Button selectedSlot;
+    public MagicInfo selectedMagic; //현재 선택된 마법
     public Image selectedIcon; //마우스 따라다닐 아이콘
 
     private void Awake()
@@ -51,8 +77,33 @@ public class MergeMagic : MonoBehaviour
         //TODO 휴대폰 로딩 화면으로 가리기
         loadDone = false;
 
+        // 선택 아이콘 끄기
+        selectedIcon.enabled = false;
+
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
+        //머지 보드 세팅
+        MergeSet();
+
+        // 스택 슬롯 세팅
+        SetSlots();
+        // 스택 슬롯 사이즈 및 위치 정렬
+        ScrollSlots(true);
+
+        // 첫번째 머지 슬롯 선택하기
+        UIManager.Instance.lastSelected = mergeSlots.GetChild(0).GetComponent<Button>();
+        UIManager.Instance.lastOriginColor = mergeSlots.GetChild(0).GetComponent<Image>().color;
+        // mergeSlots.GetChild(0).GetComponent<Button>().Select();
+
+        //TODO 휴대폰 로딩 화면 끄기
+        loadDone = true;
+
+        //TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
+        //TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
+    }
+
+    void MergeSet()
+    {
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
         for (int i = 0; i < mergeSlots.childCount; i++)
         {
@@ -99,30 +150,13 @@ public class MergeMagic : MonoBehaviour
             level.text = "Lv. " + magic.magicLevel.ToString();
             //TODO 슬롯에 툴팁 정보 넣기
             tooltip.magic = magic;
-
-            // TODO 슬롯에 마우스 오버시 select
-            // TODO 슬롯 마우스 오버시 해당 슬롯에 반투명하게 아이콘 표시
         }
-
-        //TODO 첫번째 머지 슬롯 선택하기
-        mergeSlots.GetChild(0).GetComponent<Button>().Select();
-
-        // 스택 슬롯 세팅
-        SetSlots();
-        // 스택 슬롯 사이즈 및 위치 정렬
-        ScrollSlots(true);
-
-        //TODO 휴대폰 로딩 화면 끄기
-        loadDone = true;
-
-        //TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
-        //TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
     }
 
     private void Update()
     {
         // 좌,우 방향키로 스택 리스트 스크롤하기
-        StackScroll();
+        ScrollListener();
 
         //선택된 마법 아이콘 마우스 따라가기
         FollowMouse();
@@ -130,30 +164,41 @@ public class MergeMagic : MonoBehaviour
 
     void FollowMouse()
     {
-        //TODO 스택 슬롯이 select 되어있으면 진행 아니면 아이콘 끄기
-
-        // 방향키 누르면
+        //방향키 눌렀을때
         if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
         {
-            //아이콘 끄기
-            selectedIcon.gameObject.SetActive(false);
+            //마우스에 아이콘 들고 있을때
+            if (selectedIcon.enabled)
+            {
+                //커서 및 빈 스택 슬롯 초기화 하기
+                ToggleStackSlot();
+            }
         }
 
-        // 마우스 움직이면
-        if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
+        // 마우스 움직이면, 선택된 마법 있으면
+        if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0
+        && selectedMagic != null)
         {
-            //아이콘 켜기
-            selectedIcon.gameObject.SetActive(true);
+            //현재 마우스로 조작중
+            UIManager.Instance.isMouseMove = true;
+
+            //선택된 마법 아이콘 마우스 따라다니기
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 0;
+            selectedIcon.transform.position = mousePos;
+        }
+        else
+        {
+            //현재 키보드로 조작중
+            UIManager.Instance.isMouseMove = false;
         }
 
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 0;
-        selectedIcon.transform.position = mousePos;
     }
 
-    void StackScroll()
+    void ScrollListener()
     {
-        if (scrollCoolCount <= 0f)
+        //쿨타임 가능할때, 스택 슬롯 Select 됬을때
+        if (scrollCoolCount <= 0f && nowSelectSlot != null && nowSelectSlot.isStackSlot)
         {
             if (Input.GetKey(KeyCode.A))
             {
@@ -172,8 +217,26 @@ public class MergeMagic : MonoBehaviour
         }
     }
 
+    public void ToggleStackSlot()
+    {
+        Image targetImage = stackList[3].transform.Find("Icon").GetComponent<Image>();
+
+        // 스택 가운데 슬롯 이미지 토글
+        targetImage.enabled = !targetImage.enabled;
+
+        // 마우스 커서에 아이콘 토글
+        selectedIcon.enabled = !targetImage.enabled;
+    }
+
     public void ScrollSlots(bool isLeft)
     {
+        //마우스에 아이콘 들고 있을때 스크롤하면
+        if (selectedIcon.enabled)
+        {
+            //커서 및 빈 스택 슬롯 초기화 하기
+            ToggleStackSlot();
+        }
+
         //모든 슬롯 domove 강제 즉시 완료
         foreach (var slot in stackList)
         {
@@ -220,27 +283,6 @@ public class MergeMagic : MonoBehaviour
 
             //아이콘 알파값 바꾸기
             stackList[i].GetComponent<CanvasGroup>().alpha = i == 3 ? 1f : 0.5f;
-
-            //버튼 컴포넌트 찾기
-            Button btn = stackList[i].GetComponent<Button>();
-
-            //TODO Stack 슬롯 선택 되어있으면 3번 오브젝트 select 후 이동
-            // btn.Select();
-
-            if (i == 3)
-            {
-                //버튼 네비 설정
-                Navigation nav = btn.navigation;
-                nav.mode = Navigation.Mode.Automatic;
-                btn.navigation = nav;
-            }
-            else
-            {
-                //버튼 네비 끄기
-                Navigation nav = btn.navigation;
-                nav.mode = Navigation.Mode.None;
-                btn.navigation = nav;
-            }
         }
 
         //마법 데이터 리스트 인덱스 계산
@@ -256,6 +298,11 @@ public class MergeMagic : MonoBehaviour
         selectedMagic = PlayerManager.Instance.hasStackMagics[0];
         // 선택된 마법 아이콘 이미지 넣기
         selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id);
+
+        //선택된 슬롯 네비 설정
+        Navigation nav = selectedSlot.navigation;
+        nav.selectOnUp = stackList[3].GetComponent<Button>().FindSelectable(Vector3.up);
+        selectedSlot.navigation = nav;
 
         // 모든 아이콘 다시 넣기
         SetSlots();
@@ -296,18 +343,6 @@ public class MergeMagic : MonoBehaviour
             stackList[objIndex].transform.Find("Frame").GetComponent<Image>().color = Color.white;
         }
     }
-
-    public void MouseOverSlot()
-    {
-        //TODO 함수 실행한 버튼이 몇번째 인덱스 슬롯인지?
-        print(this.transform.GetSiblingIndex());
-        //TODO 슬롯에 마우스 오버시 select
-        //TODO 슬롯 마우스 오버시 해당 슬롯에 반투명하게 아이콘 표시
-    }
-
-    //TODO 슬롯에 마우스 오버시 select
-    //TODO 슬롯 마우스 오버시 해당 슬롯에 반투명하게 아이콘 표시
-    //TODO 4방향에 있는 마법 검사해서 합성 가능하면 인디케이터 (슬롯 사이 화살표, 선택된 슬롯 방향으로 조금씩 움직이려는 트윈)
 
     //TODO 클릭하면 마법 합성
     //TODO 클릭한 슬롯으로 합쳐짐
