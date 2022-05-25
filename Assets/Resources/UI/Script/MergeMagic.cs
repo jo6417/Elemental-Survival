@@ -40,6 +40,7 @@ public class MergeMagic : MonoBehaviour
     [Header("Merge Board")]
     public Transform mergeSlots;
     public int[] closeSlots = new int[4]; //선택된 슬롯 주변의 인덱스
+    public Transform mergeSignal;
 
     [Header("Stack List")]
     public Transform stackSlots;
@@ -50,6 +51,7 @@ public class MergeMagic : MonoBehaviour
     public Button selectedSlot;
     public MagicInfo selectedMagic; //현재 선택된 마법
     public Image selectedIcon; //마우스 따라다닐 아이콘
+    RectTransform selectedIconRect;
 
     private void Awake()
     {
@@ -61,6 +63,8 @@ public class MergeMagic : MonoBehaviour
             stackSlotPos[i] = stackList[i].GetComponent<RectTransform>().anchoredPosition;
             // print(slotPos[i]);
         }
+
+        selectedIconRect = selectedIcon.GetComponent<RectTransform>();
     }
 
     private void OnEnable()
@@ -80,6 +84,9 @@ public class MergeMagic : MonoBehaviour
         // 선택 아이콘 끄기
         selectedIcon.enabled = false;
 
+        //Merge 인디케이터 끄기
+        mergeSignal.gameObject.SetActive(false);
+
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //머지 보드 세팅
@@ -98,8 +105,8 @@ public class MergeMagic : MonoBehaviour
         //TODO 휴대폰 로딩 화면 끄기
         loadDone = true;
 
-        //TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
-        //TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
+        // TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
+        // TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
     }
 
     void MergeSet()
@@ -185,7 +192,8 @@ public class MergeMagic : MonoBehaviour
             //선택된 마법 아이콘 마우스 따라다니기
             Vector3 mousePos = Input.mousePosition;
             mousePos.z = 0;
-            selectedIcon.transform.position = mousePos;
+
+            selectedIconRect.anchoredPosition = mousePos;
         }
         else
         {

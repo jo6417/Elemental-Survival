@@ -87,42 +87,64 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
 
     void MergeCheck()
     {
-        //4방향 슬롯 불러오기
-        MergeMagic.Instance.closeSlots[0] = slotIndex - 4;
-        MergeMagic.Instance.closeSlots[1] = slotIndex + 4;
-        MergeMagic.Instance.closeSlots[2] = slotIndex - 1;
-        MergeMagic.Instance.closeSlots[3] = slotIndex + 1;
+        //이펙트 현재 슬롯 위치로 이동
+        MergeMagic.Instance.mergeSignal.position = transform.position;
 
-        foreach (var closeIndex in MergeMagic.Instance.closeSlots)
+        //4방향 슬롯 불러오기
+        MergeMagic.Instance.closeSlots[0] = slotIndex - 4; //위
+        MergeMagic.Instance.closeSlots[1] = slotIndex + 4; //아래
+        MergeMagic.Instance.closeSlots[2] = slotIndex - 1; //왼쪽
+        MergeMagic.Instance.closeSlots[3] = slotIndex + 1; //오른쪽
+
+        for (int i = 0; i < MergeMagic.Instance.closeSlots.Length; i++)
         {
+            //TODO 해당 방향의 전기 이펙트 끄기
+            MergeMagic.Instance.mergeSignal.GetChild(i).gameObject.SetActive(false);
+
             // 배열 범위 내 인덱스일때
-            if (closeIndex >= 0 && closeIndex < PlayerManager.Instance.hasMergeMagics.Length)
+            if (MergeMagic.Instance.closeSlots[i] >= 0 && MergeMagic.Instance.closeSlots[i] < PlayerManager.Instance.hasMergeMagics.Length)
             {
                 // 슬롯이 비어있지 않을때
-                if (PlayerManager.Instance.hasMergeMagics[closeIndex] != null)
+                if (PlayerManager.Instance.hasMergeMagics[MergeMagic.Instance.closeSlots[i]] != null)
                 {
                     //스택 0번의 현재 선택된 마법
                     MagicInfo selectMagic = PlayerManager.Instance.hasStackMagics[0];
                     //현재 Select 슬롯 주변의 null이 아닌 마법
-                    MagicInfo closeMagic = PlayerManager.Instance.hasMergeMagics[closeIndex];
+                    MagicInfo closeMagic = PlayerManager.Instance.hasMergeMagics[MergeMagic.Instance.closeSlots[i]];
 
                     //두 재료 모두 갖고 있는 마법 찾기
-                    MagicInfo mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == selectMagic.magicName && x.element_B == closeMagic.magicName);
+                    //변수 초기화
+                    MagicInfo mixedMagic = null;
+                    mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == selectMagic.magicName && x.element_B == closeMagic.magicName);
+                    // null이면 재료 순서 바꿔서 재검사
+                    if (mixedMagic == null)
+                    {
+                        mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == closeMagic.magicName && x.element_B == selectMagic.magicName);
+                    }
 
-                    if(mixedMagic != null)
-                    print(mixedMagic.magicName + " = " + selectMagic.magicName + " + " + closeMagic.magicName);
+                    //TODO 해당 방향에 조합 가능 마법 있으면
+                    if (mixedMagic != null)
+                    {
+                        print(mixedMagic.magicName + " = " + selectMagic.magicName + " + " + closeMagic.magicName);
 
-                    //TODO 주변 슬롯에 조합 가능 레시피 있으면 인디케이터 표시
-                    //TODO 슬롯 사이 전기 이펙트, 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈
+                        //TODO 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈
+
+                        //TODO 해당 방향의 전기 이펙트 켜기
+                        MergeMagic.Instance.mergeSignal.GetChild(i).gameObject.SetActive(true);
+                    }
                 }
             }
-
-            // print(closeIndex);
         }
+
+        //TODO Merge 인디케이터 켜기
+        MergeMagic.Instance.mergeSignal.gameObject.SetActive(true);
     }
 
     public void OnDeSelectSlot(bool isMouseSelect = false)
     {
+        //TODO Merge 인디케이터 끄기
+        MergeMagic.Instance.mergeSignal.gameObject.SetActive(false);
+
         // print(slotIndex + " : OnDeSelect");
 
         // 스택 슬롯이면 리턴
@@ -137,8 +159,6 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
 
         // 아이콘 비활성화
         icon.enabled = false;
-
-        //TODO 인디케이터 없에기
     }
 
     public void OnClickSlot(bool isMouseSelect = false)
@@ -152,7 +172,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         if (PlayerManager.Instance.hasMergeMagics[slotIndex] != null)
             return;
         //마우스 커서에 선택된 아이콘 꺼져있으면 리턴
-        if (!MergeMagic.Instance.selectedIcon.enabled && UIManager.Instance.isMouseMove)
+        if (!MergeMagic.Instance.selectedIcon.enabled)
             return;
 
         // 마우스 커서에 선택된 아이콘 비활성화
