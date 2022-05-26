@@ -65,9 +65,10 @@ public class SystemManager : MonoBehaviour
     public Color poisonColor; //독 데미지 flash 컬러
     public Color DeadColor; //죽을때 서서히 변할 컬러
 
-    private void Awake() {
+    private void Awake()
+    {
         //초기화
-        StartCoroutine(Initial());
+        // StartCoroutine(Initial());
     }
 
     IEnumerator Initial()

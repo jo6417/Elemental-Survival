@@ -642,17 +642,14 @@ public class KingSlimeAI : MonoBehaviour
         enemyManager.anim.enabled = true;
         enemyManager.anim.SetBool("isShaking", true);
 
-        //TODO 머터리얼 컬러 보라색으로 색 차오름
+        // 머터리얼 컬러 0으로 초기화
         float fillAmount = 0;
-        spriteFill.material.SetFloat("_FillRate", fillAmount); // 0으로 초기화
-        // DOTween.To(
-        //     () => fillAmount,
-        //     x => fillAmount = x, 1f, 5f);
+        spriteFill.material.SetFloat("_FillRate", fillAmount);
 
-        //변화되는 fill 값 입력해주기
+        // 머터리얼 컬러 보라색으로 색 차오름
         while (fillAmount < 1f)
         {
-            fillAmount += Time.deltaTime * 0.1f;
+            fillAmount += Time.deltaTime;
 
             spriteFill.material.SetFloat("_FillRate", fillAmount);
 
@@ -664,6 +661,7 @@ public class KingSlimeAI : MonoBehaviour
 
         //떨림 애니메이션 종료
         enemyManager.anim.SetBool("isShaking", false);
+        enemyManager.anim.enabled = false;
 
         // 보스에서 플레이어 방향
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
@@ -674,9 +672,11 @@ public class KingSlimeAI : MonoBehaviour
 
         // 납작해지기
         enemyManager.spriteObj.DOScale(new Vector2(1.2f, 0.8f), 0.5f);
+        // 납작해지며 왕관도 내려가기
+        crownObj.DOLocalMove(new Vector2(0, -1), 0.5f);
 
         // 납작해지기 완료까지 대기
-        yield return new WaitUntil(() => enemyManager.spriteObj.transform.localScale == new Vector3(1.2f, 0.8f));
+        yield return new WaitUntil(() => enemyManager.spriteObj.localScale == new Vector3(1.2f, 0.8f));
 
         // 독 뿜기 공격
         poisonAtkParticle.Play();
@@ -684,20 +684,18 @@ public class KingSlimeAI : MonoBehaviour
         // 스케일 복구
         enemyManager.spriteObj.DOScale(Vector2.one, 0.3f)
         .SetEase(Ease.InOutBack);
+        // 왕관 위치 복구
+        crownObj.DOLocalMove(Vector2.zero, 0.3f)
+        .SetEase(Ease.InOutBack);
 
-        //TODO 머터리얼 컬러 보라색 다시 내리기
-        // DOTween.To(
-        //     () => fillAmount,
-        //     x => fillAmount = x, 0f, 2f);
-
-        //변화되는 fill 값 입력해주기
+        // 머터리얼 컬러 보라색 다시 내리기
         while (fillAmount > 0f)
         {
             fillAmount -= Time.deltaTime;
 
             spriteFill.material.SetFloat("_FillRate", fillAmount);
 
-            yield return new WaitForSeconds(Time.deltaTime * 10f);
+            yield return new WaitForSeconds(Time.deltaTime);
         }
 
         // 보라색 모두 내려갈때까지 대기

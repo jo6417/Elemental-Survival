@@ -94,7 +94,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 1; //시간값 초기화
+        // Time.timeScale = 1; //시간값 초기화
 
         UIRect = GetComponent<RectTransform>();
         cursorRect = UI_Cursor.GetComponent<RectTransform>();

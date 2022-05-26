@@ -7,24 +7,24 @@ using Lean.Pool;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 
-public class MergeMagic : MonoBehaviour
+public class MergeMenu : MonoBehaviour
 {
     #region Singleton
-    private static MergeMagic instance;
-    public static MergeMagic Instance
+    private static MergeMenu instance;
+    public static MergeMenu Instance
     {
         get
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<MergeMagic>();
+                var obj = FindObjectOfType<MergeMenu>();
                 if (obj != null)
                 {
                     instance = obj;
                 }
                 else
                 {
-                    var newObj = new GameObject().AddComponent<MergeMagic>();
+                    var newObj = new GameObject().AddComponent<MergeMenu>();
                     instance = newObj;
                 }
             }
@@ -33,14 +33,16 @@ public class MergeMagic : MonoBehaviour
     }
     #endregion
 
-    //초기 화면 로딩 여부
-    public bool loadDone = false;
-    public MergeSlot nowSelectSlot; //현재 선택된 슬롯
+    public bool loadDone = false;//초기 화면 로딩 여부
 
     [Header("Merge Board")]
     public Transform mergeSlots;
+    public MergeSlot nowSelectSlot; //현재 선택된 슬롯
+    public MergeSlot mergeWaitSlot; // 합성 대기중인 슬롯
     public int[] closeSlots = new int[4]; //선택된 슬롯 주변의 인덱스
+    public int[] mergeResultMagics = new int[4]; //합성 가능한 마법 id
     public Transform mergeSignal;
+    public bool mergeChooseMode = false; //마법 놓았을때 합성 가능성이 여러개일때, 선택모드 켜기
 
     [Header("Stack List")]
     public Transform stackSlots;
@@ -162,6 +164,12 @@ public class MergeMagic : MonoBehaviour
 
     private void Update()
     {
+        //TODO MergeChoose 모드에서 취소하기
+        if (Input.GetKey(KeyCode.Escape) && mergeChooseMode)
+        {
+            ChooseModeToggle();
+        }
+
         // 좌,우 방향키로 스택 리스트 스크롤하기
         ScrollListener();
 
@@ -227,6 +235,10 @@ public class MergeMagic : MonoBehaviour
 
     public void ToggleStackSlot()
     {
+        //빈 슬롯이면 리턴
+        if (PlayerManager.Instance.hasStackMagics.Count == 0)
+            return;
+
         Image targetImage = stackList[3].transform.Find("Icon").GetComponent<Image>();
 
         // 스택 가운데 슬롯 이미지 토글
@@ -293,24 +305,22 @@ public class MergeMagic : MonoBehaviour
             stackList[i].GetComponent<CanvasGroup>().alpha = i == 3 ? 1f : 0.5f;
         }
 
-        //마법 데이터 리스트 인덱스 계산
-        int startIndex = isLeft ? PlayerManager.Instance.hasStackMagics.Count - 1 : 0;
-        int endIndex = isLeft ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
+        if (PlayerManager.Instance.hasStackMagics.Count > 0)
+        {
+            //마법 데이터 리스트 인덱스 계산
+            int startIndex = isLeft ? PlayerManager.Instance.hasStackMagics.Count - 1 : 0;
+            int endIndex = isLeft ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
 
-        // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
-        MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 얻기
-        PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 삭제
-        PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 넣기
+            // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
+            MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 얻기
+            PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 삭제
+            PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 넣기
 
-        // 선택된 마법 입력
-        selectedMagic = PlayerManager.Instance.hasStackMagics[0];
-        // 선택된 마법 아이콘 이미지 넣기
-        selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id);
-
-        //선택된 슬롯 네비 설정
-        Navigation nav = selectedSlot.navigation;
-        nav.selectOnUp = stackList[3].GetComponent<Button>().FindSelectable(Vector3.up);
-        selectedSlot.navigation = nav;
+            // 선택된 마법 입력
+            selectedMagic = PlayerManager.Instance.hasStackMagics[0];
+            // 선택된 마법 아이콘 이미지 넣기
+            selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id);
+        }
 
         // 모든 아이콘 다시 넣기
         SetSlots();
@@ -339,20 +349,103 @@ public class MergeMagic : MonoBehaviour
         // hasStackMagics의 보유 마법이 num 보다 많을때
         if (PlayerManager.Instance.hasStackMagics.Count >= num)
         {
+            //아이콘 찾기
             stackList[objIndex].transform.Find("Icon").gameObject.SetActive(true);
             Sprite sprite = MagicDB.Instance.GetMagicIcon(PlayerManager.Instance.hasStackMagics[magicIndex].id);
+            //아이콘 넣기
             stackList[objIndex].transform.Find("Icon").GetComponent<Image>().sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
+            //레벨 넣기
+            stackList[objIndex].transform.Find("Level").gameObject.SetActive(true);
+            stackList[objIndex].transform.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + PlayerManager.Instance.hasStackMagics[magicIndex].magicLevel;
+            //프레임 색 넣기
             stackList[objIndex].transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasStackMagics[magicIndex].grade];
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else
         {
-            stackList[objIndex].transform.Find("Icon").gameObject.SetActive(false);
+            // 프레임, 아이콘, 레벨 숨기기
             stackList[objIndex].transform.Find("Frame").GetComponent<Image>().color = Color.white;
+            stackList[objIndex].transform.Find("Icon").gameObject.SetActive(false);
+            stackList[objIndex].transform.Find("Level").gameObject.SetActive(false);
         }
     }
 
-    //TODO 클릭하면 마법 합성
-    //TODO 클릭한 슬롯으로 합쳐짐
-    //TODO 주변에 합성 가능성이 여러개일때, 선택지 띄우기
+    public void ChooseModeToggle()
+    {
+        //merge 선택 모드 토글
+        mergeChooseMode = !mergeChooseMode;
+
+        if (mergeChooseMode)
+        {
+            // 합성 가능한 슬롯 빼고 모두 상호작용 끄기
+            for (int i = 0; i < mergeSlots.childCount; i++)
+            {
+                //버튼 찾기
+                Button btn = mergeSlots.GetChild(i).GetComponent<Button>();
+                // 상호작용 끄기
+                btn.interactable = false;
+
+                foreach (int closeIndex in closeSlots)
+                {
+                    //주변 슬롯 인덱스와 같으면
+                    if (closeIndex == i)
+                    {
+                        // 상호작용 켜기
+                        btn.interactable = true;
+
+                        //TODO 해당 슬롯 강조 효과 넣기
+
+                        // 배열 범위 내 인덱스일때
+                        if (closeIndex >= 0 && closeIndex < PlayerManager.Instance.hasMergeMagics.Length)
+                        {
+                            //해당 방향의 슬롯 찾기
+                            Transform closeIcon = MergeMenu.Instance.mergeSlots.GetChild(closeIndex).Find("Icon");
+                            Vector2 moveDir = mergeWaitSlot.transform.position - closeIcon.position;
+
+                            // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈
+                            closeIcon.DOLocalMove(moveDir.normalized * 20f, 0.5f)
+                            .OnKill(() =>
+                            {
+                                closeIcon.localPosition = Vector2.zero;
+                            })
+                            .SetEase(Ease.InOutSine)
+                            .SetLoops(-1, LoopType.Yoyo)
+                            .SetUpdate(true);
+                        }
+                    }
+                }
+            }
+
+            //스택 가운데 버튼 상호작용 끄기
+            selectedSlot.interactable = false;
+        }
+        else
+        {
+            // 모든 Merge 슬롯 상호작용 켜기
+            foreach (Transform slot in mergeSlots)
+            {
+                slot.GetComponent<Button>().interactable = true;
+            }
+
+            //스택 가운데 버튼 상호작용 켜기
+            selectedSlot.interactable = true;
+
+            //TODO 슬롯 강조 효과 전부 끄기
+        }
+    }
+
+    public void IconMoveStop()
+    {
+        // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
+        foreach (int index in MergeMenu.Instance.closeSlots)
+        {
+            // 배열 범위 내 인덱스일때
+            if (index >= 0 && index < PlayerManager.Instance.hasMergeMagics.Length)
+            {
+                //해당 방향의 슬롯 찾기
+                Transform closeIcon = MergeMenu.Instance.mergeSlots.GetChild(index).Find("Icon");
+                closeIcon.DOKill();
+            }
+        }
+    }
 }

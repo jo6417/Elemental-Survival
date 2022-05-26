@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 928125691472229720}
   - component: {fileID: 8118748485555589380}
   - component: {fileID: 4769376366172046134}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 7949857906783291903}
   - component: {fileID: 5143239939489363355}
   - component: {fileID: 3965526800493705668}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Frame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 3301929698510718842}
   - component: {fileID: 1508686193982321485}
   - component: {fileID: 1684577416405857271}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 1079797371430412558}
   - component: {fileID: 7428778236925871268}
   - component: {fileID: 6936151576684770963}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: MergeSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -417,7 +417,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 0.39215687}
     m_PressedColor: {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 0.39215687}
     m_SelectedColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 0.39215687}
-    m_DisabledColor: {r: 0, g: 0, b: 0, a: 0}
+    m_DisabledColor: {r: 0.23529412, g: 0.23529412, b: 0.23529412, a: 0.78431374}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -447,7 +447,7 @@ GameObject:
   - component: {fileID: 1726235363352815165}
   - component: {fileID: 8308820464105021738}
   - component: {fileID: 5292703972839419371}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
