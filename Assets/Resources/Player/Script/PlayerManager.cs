@@ -739,7 +739,7 @@ public class PlayerManager : MonoBehaviour
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
 
         // 젬 타입 인덱스로 해당 젬과 같은 마법 찾아서 획득
-        GetMagic(MagicDB.Instance.GetMagicByID(gemTypeIndex));
+        // GetMagic(MagicDB.Instance.GetMagicByID(gemTypeIndex));
 
         //해당 젬 갯수 올리기
         hasGems[gemTypeIndex] = hasGems[gemTypeIndex] + amount;

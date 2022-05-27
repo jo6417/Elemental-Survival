@@ -34,6 +34,7 @@ public class MergeMenu : MonoBehaviour
     #endregion
 
     public bool loadDone = false;//초기 화면 로딩 여부
+    public GameObject loadingPanel; //상호작용 막을 오브젝트
 
     [Header("Merge Board")]
     public Transform mergeSlots;
@@ -80,7 +81,11 @@ public class MergeMenu : MonoBehaviour
         //시간 멈추기
         Time.timeScale = 0f;
 
-        //TODO 휴대폰 로딩 화면으로 가리기
+        //플레이어 위치로 이동
+        transform.position = PlayerManager.Instance.transform.position;
+
+        // 휴대폰 로딩 화면으로 가리기
+        loadingPanel.SetActive(true);
         loadDone = false;
 
         // 선택 아이콘 끄기
@@ -104,7 +109,13 @@ public class MergeMenu : MonoBehaviour
         UIManager.Instance.lastOriginColor = mergeSlots.GetChild(0).GetComponent<Image>().color;
         // mergeSlots.GetChild(0).GetComponent<Button>().Select();
 
-        //TODO 휴대폰 로딩 화면 끄기
+        //선택된 슬롯 네비 설정
+        Navigation nav = selectedSlot.navigation;
+        nav.selectOnUp = stackList[3].GetComponent<Button>().FindSelectable(Vector3.up);
+        selectedSlot.navigation = nav;
+
+        // 휴대폰 로딩 화면 끄기
+        loadingPanel.SetActive(false);
         loadDone = true;
 
         // TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
@@ -126,7 +137,7 @@ public class MergeMenu : MonoBehaviour
             //아이콘 찾기
             Image icon = mergeSlot.Find("Icon").GetComponent<Image>();
             //레벨 찾기
-            TextMeshProUGUI level = mergeSlot.Find("Level").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI level = icon.transform.Find("Level").GetComponent<TextMeshProUGUI>();
             //버튼 찾기
             Button button = mergeSlot.GetComponent<Button>();
             //툴팁 컴포넌트 찾기
@@ -154,7 +165,7 @@ public class MergeMenu : MonoBehaviour
             //등급 프레임 색 넣기
             frame.color = MagicDB.Instance.gradeColor[magic.grade];
             //아이콘 넣기
-            icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(magic.id);
             //레벨 넣기
             level.text = "Lv. " + magic.magicLevel.ToString();
             //TODO 슬롯에 툴팁 정보 넣기
@@ -319,7 +330,7 @@ public class MergeMenu : MonoBehaviour
             // 선택된 마법 입력
             selectedMagic = PlayerManager.Instance.hasStackMagics[0];
             // 선택된 마법 아이콘 이미지 넣기
-            selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id);
+            selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(selectedMagic.id);
         }
 
         // 모든 아이콘 다시 넣기
@@ -346,27 +357,36 @@ public class MergeMenu : MonoBehaviour
 
     void SetIcon(int objIndex, int num, int magicIndex)
     {
+        //프레임 찾기
+        Transform frame = stackList[objIndex].transform.Find("Frame");
+        //아이콘 찾기
+        Transform icon = stackList[objIndex].transform.Find("Icon");
+        //레벨 찾기
+        Transform level = icon.transform.Find("Level");
+
         // hasStackMagics의 보유 마법이 num 보다 많을때
         if (PlayerManager.Instance.hasStackMagics.Count >= num)
         {
-            //아이콘 찾기
-            stackList[objIndex].transform.Find("Icon").gameObject.SetActive(true);
+            //프레임 색 넣기
+            frame.GetComponent<Image>().color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasStackMagics[magicIndex].grade];
+
+            //아이콘 스프라이트 찾기
             Sprite sprite = MagicDB.Instance.GetMagicIcon(PlayerManager.Instance.hasStackMagics[magicIndex].id);
             //아이콘 넣기
-            stackList[objIndex].transform.Find("Icon").GetComponent<Image>().sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
+            icon.gameObject.SetActive(true);
+            icon.GetComponent<Image>().sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
+
             //레벨 넣기
-            stackList[objIndex].transform.Find("Level").gameObject.SetActive(true);
-            stackList[objIndex].transform.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + PlayerManager.Instance.hasStackMagics[magicIndex].magicLevel;
-            //프레임 색 넣기
-            stackList[objIndex].transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasStackMagics[magicIndex].grade];
+            level.gameObject.SetActive(true);
+            level.GetComponent<TextMeshProUGUI>().text = "Lv. " + PlayerManager.Instance.hasStackMagics[magicIndex].magicLevel;
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else
         {
             // 프레임, 아이콘, 레벨 숨기기
-            stackList[objIndex].transform.Find("Frame").GetComponent<Image>().color = Color.white;
-            stackList[objIndex].transform.Find("Icon").gameObject.SetActive(false);
-            stackList[objIndex].transform.Find("Level").gameObject.SetActive(false);
+            frame.GetComponent<Image>().color = Color.white;
+            icon.gameObject.SetActive(false);
+            level.gameObject.SetActive(false);
         }
     }
 

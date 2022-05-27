@@ -64,6 +64,7 @@ public class UIManager : MonoBehaviour
 
     [Header("UI Cursor")]
     public GameObject UI_Cursor; //선택된 UI 따라다니는 UI커서
+    public Canvas UI_CursorCanvas; //UI커서 전용 캔버스
     public Selectable lastSelected; //마지막 선택된 오브젝트
     public Color lastOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
     public float UI_CursorPadding; //UI 커서 여백
@@ -261,7 +262,7 @@ public class UIManager : MonoBehaviour
     {
         Image image = lastSelected.targetGraphic.GetComponent<Image>();
         RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
-        RectTransform lastRect = EventSystem.current.currentSelectedGameObject.GetComponent<RectTransform>();
+        RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
 
         //깜빡일 시간
         float flickTime = 0.3f;
@@ -269,10 +270,30 @@ public class UIManager : MonoBehaviour
         float colorRate = 1.4f;
         //깜빡일 컬러
         Color flickColor = new Color(lastOriginColor.r * colorRate, lastOriginColor.g * colorRate, lastOriginColor.b * colorRate, 1f);
-        //커서 사이즈 + 여백 추가
-        Vector2 size = lastRect.sizeDelta + Vector2.one * UI_CursorPadding;
         //이동할 버튼 위치
         Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
+
+        //커서 사이즈 + 여백 추가
+        Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
+
+        // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
+        if (UI_CursorCanvas.renderMode != lastRect.GetComponentInParent<Canvas>().renderMode)
+        {
+            //렌더 모드 일치 시키기
+            UI_CursorCanvas.renderMode = lastRect.GetComponentInParent<Canvas>().renderMode;
+
+            // 바뀐 렌더모드에 따라 커서 스케일 정의
+            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+            if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                cursorCanvasRect.localScale = Vector2.one;
+            }
+            else
+            {
+                cursorCanvasRect.localScale = Vector2.one / 64f;
+            }
+        }
+
 
         UI_Cursor.SetActive(true); //UI 커서 활성화
 
@@ -339,7 +360,7 @@ public class UIManager : MonoBehaviour
                 })
             )
             .Join(
-                cursorRect.DOSizeDelta(size + Vector2.one * 20f, flickTime)
+                cursorRect.DOSizeDelta(size + size * 0.1f, flickTime)
             )
             // 원본 색깔로 복구, 해당 버튼 사이즈 원본 사이즈 복구
             .Append(

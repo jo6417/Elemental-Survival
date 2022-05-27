@@ -31,7 +31,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         // 마법 아이콘 컴포넌트 찾기
         icon = transform.Find("Icon").GetComponentInChildren<Image>(true);
         // 마법 레벨 컴포넌트 찾기
-        level = transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
+        level = icon.transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -81,7 +81,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         // 아이콘 활성화
         icon.enabled = true;
         // 아이콘 넣기
-        icon.sprite = MergeMenu.Instance.selectedIcon.sprite;
+        icon.sprite = MergeMenu.Instance.selectedIcon.sprite == null ? SystemManager.Instance.questionMark : MergeMenu.Instance.selectedIcon.sprite;
 
         // 주변 슬롯이랑 조합 가능한지 확인
         MergeCheck();
@@ -220,7 +220,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
             int dirIndex = Array.IndexOf(MergeMenu.Instance.closeSlots, slotIndex);
 
             // 방향 인덱스 쪽에 있는 슬롯, 합성 대기중인 슬롯 들의 인덱스 넣어서 합성
-            MergeMagic(dirIndex, MergeMenu.Instance.mergeWaitSlot.transform.GetSiblingIndex());
+            StartCoroutine(MergeMagic(dirIndex, MergeMenu.Instance.mergeWaitSlot.transform.GetSiblingIndex()));
 
             // 머지 선택 모드 종료
             MergeMenu.Instance.ChooseModeToggle();
@@ -284,7 +284,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         if (ableNum == 1)
         {
             // 실제 마법 합성하기
-            MergeMagic(ableDirIndex, slotIndex);
+            StartCoroutine(MergeMagic(ableDirIndex, slotIndex));
         }
 
         // closeSlots 배열에서 합성 가능성 2개 이상이면 - 모든 슬롯 상호작용 금지 및 가능성 슬롯들만 반짝이기
@@ -308,14 +308,49 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         MergeMenu.Instance.ScrollSlots(false);
     }
 
-    public void MergeMagic(int ableDirIndex, int selectedIndex)
+    public IEnumerator MergeMagic(int ableDirIndex, int selectedIndex)
     {
-        //TODO 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
+        //TODO 플레이어 조작 못하게 막기
+        MergeMenu.Instance.loadingPanel.SetActive(true);
 
-        //TODO 합성 가능한 아이콘이 이 슬롯으로 날아오는 트윈, 끝날때 이펙트
+        // 모든 주변 아이콘 무브 트윈 멈추기
+        // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
+        foreach (int index in MergeMenu.Instance.closeSlots)
+        {
+            // 배열 범위 내 인덱스일때
+            if (index >= 0 && index < PlayerManager.Instance.hasMergeMagics.Length)
+            {
+                //해당 방향의 슬롯 찾기
+                Transform dirIcon = MergeMenu.Instance.mergeSlots.GetChild(index).Find("Icon");
+                dirIcon.DOKill();
+            }
 
-        // 합성 가능한 방향 인덱스로 슬롯 인덱스 구하기
+            yield return null;
+        }
+
+        // 합성 가능한 슬롯 방향 인덱스로 슬롯 인덱스 구하기
         int ableSlotIndex = MergeMenu.Instance.closeSlots[ableDirIndex];
+
+        // 합성된 마법을 넣을 슬롯 찾기
+        MergeSlot selectedSlot = MergeMenu.Instance.mergeSlots.GetChild(selectedIndex).GetComponent<MergeSlot>();
+
+        //해당 방향의 슬롯에서 아이콘 찾기
+        Transform closeIcon = MergeMenu.Instance.mergeSlots.GetChild(ableSlotIndex).Find("Icon");
+
+        // 합성 가능한 아이콘이 날아가서 합쳐지는 트윈
+        closeIcon.DOMove(selectedSlot.transform.position, 0.5f)
+        .SetEase(Ease.InBack)
+        .SetUpdate(true);
+
+        //아이콘 이동 끝날때까지 대기
+        yield return new WaitUntil(() => closeIcon.position == selectedSlot.transform.position);
+
+        // 날아간 뒤 슬롯의 아이콘 및 레벨 끄기
+        closeIcon.GetComponent<Image>().enabled = false;
+        closeIcon.Find("Level").GetComponent<TextMeshProUGUI>().enabled = false;
+
+        // 원래 자리로 돌아오기
+        closeIcon.localPosition = Vector2.zero;
 
         // 이 슬롯에 합성된 마법 데이터 넣기
         PlayerManager.Instance.hasMergeMagics[selectedIndex]
@@ -328,20 +363,22 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         + " + " + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicName +
         " = " + PlayerManager.Instance.hasMergeMagics[selectedIndex].magicName);
 
-        //합성된 마법을 넣을 슬롯 찾기
-        MergeSlot selectedSlot = MergeMenu.Instance.mergeSlots.GetChild(selectedIndex).GetComponent<MergeSlot>();
-
         // 슬롯에 합성된 마법 아이콘 넣기
-        selectedSlot.icon.sprite = MagicDB.Instance.GetMagicIcon(MergeMenu.Instance.mergeResultMagics[ableDirIndex]);
+        selectedSlot.icon.sprite = MagicDB.Instance.GetMagicIcon(MergeMenu.Instance.mergeResultMagics[ableDirIndex]) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(MergeMenu.Instance.mergeResultMagics[ableDirIndex]);
         // 슬롯에 합성된 마법 레벨 넣기
         selectedSlot.level.text = "Lv. " + PlayerManager.Instance.hasMergeMagics[selectedIndex].magicLevel.ToString();
 
-        // ableIndex 슬롯의 아이콘 및 레벨 끄기
-        Transform deleteSlot = MergeMenu.Instance.mergeSlots.GetChild(ableSlotIndex);
-        deleteSlot.Find("Icon").GetComponent<Image>().enabled = false;
-        deleteSlot.Find("Level").GetComponent<TextMeshProUGUI>().enabled = false;
+        //TODO 합성 후 이펙트 발생
+        GameObject effect = selectedSlot.transform.Find("ShinyMask").gameObject;
+        effect.SetActive(false);
+        effect.SetActive(true);
+        //이펙트 시간 대기 후 비활성화
+        yield return new WaitForSecondsRealtime(0.2f);
 
         // ableIndex 슬롯의 마법 데이터를 삭제
         PlayerManager.Instance.hasMergeMagics[ableSlotIndex] = null;
+
+        // 상호작용 막기 해제
+        MergeMenu.Instance.loadingPanel.SetActive(false);
     }
 }

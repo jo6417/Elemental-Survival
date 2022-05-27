@@ -61,6 +61,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1a89c8d251702834296b7e9863d19a5b, type: 3}
   - {fileID: 21300000, guid: 89bb8fd2c5626e143aeaf45371627109, type: 3}
   - {fileID: 21300000, guid: 4a398ef2ce174b34193cf56800e33368, type: 3}
+  - {fileID: 5811226740261156932, guid: 185aa503de286f345ac80ec0f9ee50c2, type: 3}
+  - {fileID: -3642145747647058082, guid: 185aa503de286f345ac80ec0f9ee50c2, type: 3}
+  - {fileID: -2232278564953816902, guid: 185aa503de286f345ac80ec0f9ee50c2, type: 3}
+  - {fileID: -6153824139834480287, guid: 185aa503de286f345ac80ec0f9ee50c2, type: 3}
+  - {fileID: -1742786154911513586, guid: 185aa503de286f345ac80ec0f9ee50c2, type: 3}
+  - {fileID: 2423068453881264140, guid: 185aa503de286f345ac80ec0f9ee50c2, type: 3}
   - {fileID: 21300000, guid: 27b99a638b612e3408280290052c37da, type: 3}
   - {fileID: 21300000, guid: 0b1bbec335870ae40a3a302d7989ea72, type: 3}
   - {fileID: 21300000, guid: a46ddfe3422604d439b9a7e4d01361f7, type: 3}
@@ -107,6 +113,20 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dae2664f13c890e4ab85c47dd7820896, type: 3}
   - {fileID: 21300000, guid: d4bb8a7fac6d50f4fb0a7b4871740925, type: 3}
   - {fileID: 21300000, guid: 9fbef3af995524f429d5b25d67c03c35, type: 3}
+  - {fileID: 6559257055453628517, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: -2034415033293819504, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 8917476712000137213, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: -5803011156183100343, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: -7372508704780806015, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 2087935954108411605, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 2446651824433735493, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 8362023869127285887, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 5125747604861260229, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 1708066190631860062, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 6974436855284366940, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: -1830365900327890818, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 3654724141679073729, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
+  - {fileID: 2851585099983086029, guid: 1a50d8efda0e2074f921fe9534b8ae5a, type: 3}
   m_PackedSpriteNamesToIndex:
   - SlotMachineButton
   - PaperUI2
@@ -120,6 +140,12 @@ SpriteAtlas:
   - ItemFrame_Selected
   - BookMark
   - ProgressBar3
+  - Shiny_5
+  - Shiny_4
+  - Shiny_1
+  - Shiny_0
+  - Shiny_3
+  - Shiny_2
   - SpeechBubble
   - SlotMachineLED
   - Glass2
@@ -166,6 +192,20 @@ SpriteAtlas:
   - Arrow
   - ProgressBar1
   - FireGem_UI
+  - PhoneLoading_8
+  - PhoneLoading_9
+  - PhoneLoading_2
+  - PhoneLoading_3
+  - PhoneLoading_0
+  - PhoneLoading_1
+  - PhoneLoading_6
+  - PhoneLoading_7
+  - PhoneLoading_4
+  - PhoneLoading_5
+  - PhoneLoading_11
+  - PhoneLoading_10
+  - PhoneLoading_13
+  - PhoneLoading_12
   m_RenderDataMap: {}
   m_Tag: UI_Atlas
   m_IsVariant: 0
