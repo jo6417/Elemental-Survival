@@ -33,8 +33,16 @@ public class MergeMenu : MonoBehaviour
     }
     #endregion
 
-    public bool loadDone = false;//초기 화면 로딩 여부
+    public bool loadDone = false;//초기 화면 로딩 여부    
+
+    [Header("Effect")]
     public GameObject loadingPanel; //상호작용 막을 오브젝트
+    public Vector3 phonePosition; //핸드폰일때 위치 기억
+    public Vector3 phoneRotation; //핸드폰일때 회전값 기억
+    public Vector3 phoneScale; //핸드폰일때 고정된 스케일
+    public Vector3 UIPosition; //팝업일때 위치
+    public SlicedFilledImage backBtnFill; //뒤로가기 버튼
+    float backBtnCount; //백버튼 더블클릭 카운트
 
     [Header("Merge Board")]
     public Transform mergeSlots;
@@ -81,9 +89,6 @@ public class MergeMenu : MonoBehaviour
         //시간 멈추기
         Time.timeScale = 0f;
 
-        //플레이어 위치로 이동
-        transform.position = PlayerManager.Instance.transform.position;
-
         // 휴대폰 로딩 화면으로 가리기
         loadingPanel.SetActive(true);
         loadDone = false;
@@ -93,6 +98,20 @@ public class MergeMenu : MonoBehaviour
 
         //Merge 인디케이터 끄기
         mergeSignal.gameObject.SetActive(false);
+
+        //위치 기억하기
+        phonePosition = CastMagic.Instance.transform.position;
+        //회전값 기억하기
+        phoneRotation = CastMagic.Instance.transform.rotation.eulerAngles;
+
+        // 팝업UI 위치,회전,스케일로 복구하기
+        CastMagic.Instance.transform.DOMove(PlayerManager.Instance.transform.position + UIPosition, 1f)
+        .SetUpdate(true);
+        CastMagic.Instance.transform.DOScale(Vector3.one, 1f)
+        .SetUpdate(true);
+        CastMagic.Instance.transform.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), 1f, RotateMode.WorldAxisAdd)
+        .SetUpdate(true);
+        transform.localPosition = Vector3.zero;
 
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
@@ -113,6 +132,17 @@ public class MergeMenu : MonoBehaviour
         Navigation nav = selectedSlot.navigation;
         nav.selectOnUp = stackList[3].GetComponent<Button>().FindSelectable(Vector3.up);
         selectedSlot.navigation = nav;
+
+        //트윈 끝날때까지 대기
+        yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
+
+        //모든 슬롯 shiny 효과 순차적으로 켜기
+        for (int i = 0; i < mergeSlots.childCount; i++)
+        {
+            mergeSlots.GetChild(i).Find("ShinyMask").gameObject.SetActive(true);
+
+            yield return new WaitForSecondsRealtime(0.05f);
+        }
 
         // 휴대폰 로딩 화면 끄기
         loadingPanel.SetActive(false);
@@ -181,6 +211,15 @@ public class MergeMenu : MonoBehaviour
             ChooseModeToggle();
         }
 
+        //뒤로가기 시간 카운트
+        if (backBtnCount > 0)
+            backBtnCount -= Time.unscaledDeltaTime;
+        else
+        {
+            DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 0f, 0.2f)
+            .SetUpdate(true);
+        }
+
         // 좌,우 방향키로 스택 리스트 스크롤하기
         ScrollListener();
 
@@ -202,7 +241,7 @@ public class MergeMenu : MonoBehaviour
         }
 
         // 마우스 움직이면, 선택된 마법 있으면
-        if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0
+        if ((Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
         && selectedMagic != null)
         {
             //현재 마우스로 조작중
@@ -225,7 +264,7 @@ public class MergeMenu : MonoBehaviour
     void ScrollListener()
     {
         //쿨타임 가능할때, 스택 슬롯 Select 됬을때
-        if (scrollCoolCount <= 0f && nowSelectSlot != null && nowSelectSlot.isStackSlot)
+        if (scrollCoolCount <= 0f && nowSelectSlot != null && nowSelectSlot.gameObject == selectedSlot.gameObject)
         {
             if (Input.GetKey(KeyCode.A))
             {
@@ -467,5 +506,50 @@ public class MergeMenu : MonoBehaviour
                 closeIcon.DOKill();
             }
         }
+    }
+
+    // Back 버튼 누르면
+    public void BackBtnAction()
+    {
+        //TODO 레시피 화면일때
+        //TODO 메인화면으로 전환
+
+        // 메인 Merge 화면일때
+        if (backBtnCount <= 0)
+        {
+            //버튼 시간 카운트 시작
+            backBtnCount = 1f;
+
+            // 한번 누르면 시간 재면서 버튼 절반 색 채우기
+            DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 0.5f, 0.2f)
+            .SetUpdate(true);
+        }
+        // 시간 내에 한번 더 누르면 팝업 종료
+        else
+        {
+            DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
+            .SetUpdate(true);
+
+            // 매직폰 위치,회전,스케일로 복구하기
+            CastMagic.Instance.transform.DOMove(phonePosition, 1f)
+            .SetUpdate(true);
+            CastMagic.Instance.transform.DOScale(phoneScale, 1f)
+            .SetUpdate(true);
+            CastMagic.Instance.transform.DORotate(phoneRotation + new Vector3(0, 360f, 0), 1f, RotateMode.WorldAxisAdd)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                //백 버튼 변수 초기화
+                backBtnCount = 0f;
+                backBtnFill.fillAmount = 0f;
+
+                // 끝나면 시간 복구하기
+                Time.timeScale = 1f;
+
+                //메뉴 종료하기
+                gameObject.SetActive(false);
+            });
+        }
+
     }
 }

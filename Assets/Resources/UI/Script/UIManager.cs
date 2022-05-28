@@ -45,6 +45,7 @@ public class UIManager : MonoBehaviour
 
     [Header("ReferUI")]
     RectTransform UIRect;
+    public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     public GameObject mixMagicPanel;
     public GameObject mergeMagicPanel;
     public GameObject chestPanel;

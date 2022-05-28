@@ -45,15 +45,20 @@ public class CastMagic : MonoBehaviour
     Vector3 slowFollowPos;
     Vector3 spinOffset;
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
+        // 스케일 초기화
+        transform.localScale = Vector3.one * 0.05f;
+
         transform.position = slowFollowPos + Vector3.up * spinRange;
         spinOffset = transform.position - slowFollowPos;
     }
 
-    private void Update() {
-        if(Time.timeScale == 0f)
-        return;
-        
+    private void Update()
+    {
+        if (Time.timeScale == 0f)
+            return;
+
         SpinObject();
     }
 
@@ -114,7 +119,7 @@ public class CastMagic : MonoBehaviour
 
                 // ultimate 마법일때
                 if (magic.castType == "ultimate")
-                continue;
+                    continue;
 
                 // passive 마법일때
                 if (magic.castType == "passive")
@@ -227,8 +232,8 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < magicProjectile; i++)
         {
             // 플레이어 주변 범위내 랜덤 위치 벡터 생성
-            Vector2 pos = 
-            (Vector2)PlayerManager.Instance.transform.position 
+            Vector2 pos =
+            (Vector2)PlayerManager.Instance.transform.position
             + Random.insideUnitCircle.normalized * range;
 
             // 플레이어 주변 범위내 랜덤한 적의 위치

@@ -368,7 +368,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         // 슬롯에 합성된 마법 레벨 넣기
         selectedSlot.level.text = "Lv. " + PlayerManager.Instance.hasMergeMagics[selectedIndex].magicLevel.ToString();
 
-        //TODO 합성 후 이펙트 발생
+        // 합성 후 이펙트 발생
         GameObject effect = selectedSlot.transform.Find("ShinyMask").gameObject;
         effect.SetActive(false);
         effect.SetActive(true);
