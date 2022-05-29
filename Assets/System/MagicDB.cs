@@ -147,6 +147,7 @@ public class MagicDB : MonoBehaviour
     public Dictionary<string, GameObject> magicPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
 
     public List<int> unlockMagics = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
+    public List<int> touchedMagics = new List<int>(); //이번 게임에서 한번이라도 소지했던 마법들
 
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
@@ -338,7 +339,7 @@ public class MagicDB : MonoBehaviour
         //TODO 등급마다 확률 다르게
         //인덱스 리스트에서 랜덤으로 뽑기
         int j = Random.Range(0, unlockIDs.Count);
-        
+
         //뽑은 인덱스로 마법 ID 찾기
         int magicID = unlockIDs[j];
 

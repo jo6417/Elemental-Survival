@@ -108,7 +108,7 @@ public class EnemySpawn : MonoBehaviour
             yield break;
 
         //총 누적시간 30초로 나눴을때의 몫
-        float time = UIManager.Instance.time_current;
+        float time = SystemManager.Instance.time_current;
         int timePower = Mathf.FloorToInt(time / 30f);
 
         //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수

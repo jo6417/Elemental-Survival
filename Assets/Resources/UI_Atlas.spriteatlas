@@ -93,9 +93,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d970898979456634cb02b4c4b8f222d0, type: 3}
   - {fileID: 21300000, guid: 9bb462e99fdc78b4fb3acc6a8c8663f8, type: 3}
   - {fileID: 21300000, guid: 3985b7f971b67f442a0f8a9e8edd485e, type: 3}
+  - {fileID: 21300000, guid: 86f1415a8a689fc47a6f8e177f210815, type: 3}
+  - {fileID: 21300000, guid: 95d3aa8a9d8cc9644839cbeb405c489e, type: 3}
   - {fileID: 21300000, guid: c884c8ba1e98dc44bbbc33aec406c544, type: 3}
+  - {fileID: 21300000, guid: 4d37df7bc9a770947b6712c6bb9adb45, type: 3}
   - {fileID: 21300000, guid: 3cba488ba3763274ca8f0175e7af643e, type: 3}
   - {fileID: 21300000, guid: 3db02d8ba8b13d643874692e6201f999, type: 3}
+  - {fileID: 21300000, guid: 60bc33cbf7f3850419358ee34ba9d126, type: 3}
   - {fileID: 21300000, guid: d487c60c58d4f1c4e8c69a15f53f2d4e, type: 3}
   - {fileID: 21300000, guid: 187ae60c2a2e50b4ba0b011289cdc153, type: 3}
   - {fileID: 21300000, guid: 479f754cd052f0c4c94f8914f91b8453, type: 3}
@@ -104,11 +108,13 @@ SpriteAtlas:
   - {fileID: 2673825320610237887, guid: c25644ecd3b3e29438334a1384722a1d, type: 3}
   - {fileID: 7508019912091488383, guid: c25644ecd3b3e29438334a1384722a1d, type: 3}
   - {fileID: 21300000, guid: 123ed48da6a18864b87a697e47122908, type: 3}
+  - {fileID: 21300000, guid: 24beea8dc7037b84facf24c85e71b9b7, type: 3}
   - {fileID: 21300000, guid: 58d9c3bde87690049878286ad3477b3b, type: 3}
   - {fileID: 21300000, guid: ddfd2fddc0c8d8e479eb75ea8e82a336, type: 3}
   - {fileID: 21300000, guid: 342bd81ee6489c54e998d5c97b516cde, type: 3}
   - {fileID: 21300000, guid: c5e59b5eb5482c24e9169325b5e31b03, type: 3}
   - {fileID: 21300000, guid: 28903d6eed8ae3f42b6954abd82803d2, type: 3}
+  - {fileID: 21300000, guid: e80b2ffe9a1c7e5439efae3b4a99ec36, type: 3}
   - {fileID: 21300000, guid: 54b34c0fedfa777408c8a9dc41f1a355, type: 3}
   - {fileID: 21300000, guid: 00d2a63f3f545a44d9508bd1f24415b9, type: 3}
   - {fileID: 21300000, guid: dae2664f13c890e4ab85c47dd7820896, type: 3}
@@ -173,9 +179,13 @@ SpriteAtlas:
   - NavIconArrow
   - CircleBorder
   - EmptyImg
+  - Tablet_light
+  - Tablet_Screen_Cracked
   - WindGem_UI
-  - Skul
+  - Tablet
+  - Icon_Skul
   - backPack1
+  - Tablet_Screen
   - HexStatBackground
   - BookUI
   - ItemBack
@@ -184,11 +194,13 @@ SpriteAtlas:
   - SlotMachineTitle_1
   - SlotMachineTitle_0
   - ScrollBackground
+  - Icon_Map
   - ScrollOpening-Sheet
   - SideButtonUI
   - ScrollOpening_Horizon-Sheet
   - LifeGem_UI
   - SlotMachine
+  - Icon_Clock
   - BlueGradient
   - Cursor_Menu
   - Arrow

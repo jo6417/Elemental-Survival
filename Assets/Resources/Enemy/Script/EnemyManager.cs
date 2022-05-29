@@ -476,7 +476,7 @@ public class EnemyManager : MonoBehaviour
         EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
 
         //몬스터 킬 카운트 올리기
-        UIManager.Instance.killCount++;
+        SystemManager.Instance.killCount++;
         UIManager.Instance.UpdateKillCount();
 
         if (sprite != null)

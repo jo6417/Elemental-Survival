@@ -171,7 +171,7 @@ public class MergeMenu : MonoBehaviour
             //버튼 찾기
             Button button = mergeSlot.GetComponent<Button>();
             //툴팁 컴포넌트 찾기
-            ToolTipTrigger tooltip = mergeSlot.Find("Button").GetComponent<ToolTipTrigger>();
+            // ToolTipTrigger tooltip = mergeSlot.Find("Button").GetComponent<ToolTipTrigger>();
 
             //마법 정보 없으면 넘기기
             if (magic == null)
@@ -199,7 +199,7 @@ public class MergeMenu : MonoBehaviour
             //레벨 넣기
             level.text = "Lv. " + magic.magicLevel.ToString();
             //TODO 슬롯에 툴팁 정보 넣기
-            tooltip.magic = magic;
+            // tooltip.magic = magic;
         }
     }
 

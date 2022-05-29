@@ -36,16 +36,12 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    // public delegate void OnGemChanged();
-    // public OnGemChanged onGemChangedCallback;
-    float time_start;
-    public float time_current; // 현재 스테이지 플레이 타임
-    public int killCount;
+
     public bool enemyPointSwitch = false; //화면 밖의 적 방향 표시 여부
 
-    [Header("ReferUI")]
-    RectTransform UIRect;
+    [Header("PopupUI")]
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
+    RectTransform UIRect;
     public GameObject mixMagicPanel;
     public GameObject mergeMagicPanel;
     public GameObject chestPanel;
@@ -54,6 +50,11 @@ public class UIManager : MonoBehaviour
     public GameObject magicUpgradePanel;
     public GameObject ultimateMagicPanel;
     public GameObject pausePanel;
+    public GameObject gameoverPanel;
+
+    [Header("ReferUI")]
+    public Transform gameoverScreen;
+    public GameObject gameoverSlot; //게임 오버 창에 들어갈 마법 슬롯
     public TextMeshProUGUI timer;
     public TextMeshProUGUI killCountTxt;
     public GameObject bossHp;
@@ -418,29 +419,31 @@ public class UIManager : MonoBehaviour
 
     public void ResetTimer()
     {
-        time_start = Time.time;
-        time_current = 0;
+        SystemManager.Instance.time_start = Time.time;
+        SystemManager.Instance.time_current = 0;
         timer.text = "00:00";
     }
 
     public void ResumeTimer()
     {
-        time_start = Time.time - time_current;
+        SystemManager.Instance.time_start = Time.time - SystemManager.Instance.time_current;
     }
 
-    public void UpdateTimer()
+    public string UpdateTimer()
     {
-        time_current = (int)(Time.time - time_start);
+        SystemManager.Instance.time_current = (int)(Time.time - SystemManager.Instance.time_start);
 
         //시간을 3600으로 나눈 몫
-        string hour = 0 < (int)(time_current / 3600f) ? string.Format("{0:00}", Mathf.FloorToInt(time_current / 3600f)) + ":" : "";
+        string hour = 0 < (int)(SystemManager.Instance.time_current / 3600f) ? string.Format("{0:00}", Mathf.FloorToInt(SystemManager.Instance.time_current / 3600f)) + ":" : "";
         //시간을 60으로 나눈 몫을 60으로 나눈 나머지
-        string minute = 0 < (int)(time_current / 60f % 60f) ? string.Format("{0:00}", Mathf.FloorToInt(time_current / 60f % 60f)) + ":" : "00:";
+        string minute = 0 < (int)(SystemManager.Instance.time_current / 60f % 60f) ? string.Format("{0:00}", Mathf.FloorToInt(SystemManager.Instance.time_current / 60f % 60f)) + ":" : "00:";
         //시간을 60으로 나눈 나머지
-        string second = string.Format("{0:00}", time_current % 60f);
+        string second = string.Format("{0:00}", SystemManager.Instance.time_current % 60f);
 
         //시간 출력
         timer.text = hour + minute + second;
+
+        return hour + minute + second;
 
         //TODO 시간 UI 색깔 변경
         //TODO 색깔에 따라 난이도 변경
@@ -449,7 +452,7 @@ public class UIManager : MonoBehaviour
     public void UpdateKillCount()
     {
         //킬 카운트 표시
-        killCountTxt.text = killCount.ToString();
+        killCountTxt.text = SystemManager.Instance.killCount.ToString();
     }
 
     public void UpdateExp()
@@ -833,5 +836,61 @@ public class UIManager : MonoBehaviour
 
         //화살표 디스폰
         LeanPool.Despawn(arrowUI);
+    }
+
+    public void GameOver(bool isClear = false)
+    {
+        // 시간 멈추기
+        Time.timeScale = 0f;
+        // 게임 오버 UI 켜기
+        gameoverPanel.SetActive(true);
+
+        // 클리어 여부에 따라 타이틀 바꾸기
+        TextMeshProUGUI title = gameoverScreen.Find("Title").GetComponent<TextMeshProUGUI>();
+        // 클리어 여부에 따라 스크린 배경색 바꾸기
+        Image background = gameoverScreen.Find("ScreenBackground").GetComponent<Image>();
+        if (isClear)
+        {
+            title.text = "CLEAR";
+            background.color = SystemManager.Instance.HexToRGBA("00903E");
+        }
+        else
+        {
+            title.text = "GAME OVER";
+            background.color = SystemManager.Instance.HexToRGBA("006090");
+        }
+
+        //TODO 캐릭터 넣기
+        gameoverScreen.Find("Stat/Character/Amount").GetComponent<TextMeshProUGUI>().text = "캐릭터 완료";
+        //TODO 맵 넣기
+        gameoverScreen.Find("Stat/Map/Amount").GetComponent<TextMeshProUGUI>().text = "맵 완료";
+        // 현재 시간 넣기
+        gameoverScreen.Find("Stat/Time/Amount").GetComponent<TextMeshProUGUI>().text = UpdateTimer();
+        // 재화 넣기
+        gameoverScreen.Find("Stat/Money/Amount").GetComponent<TextMeshProUGUI>().text = "재화 완료";
+        // 킬 수 넣기
+        gameoverScreen.Find("Stat/KillCount/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.killCount.ToString();
+        //TODO 사망원인 넣기
+        gameoverScreen.Find("Stat/KilledBy/Amount").GetComponent<TextMeshProUGUI>().text = "사망원인 완료";
+
+        //TODO id 순으로(등급순) 정렬하기
+        // 이번 게임에서 보유 했었던 마법 전부 넣기
+        Transform hasMagics = gameoverScreen.Find("HasMagic");
+        DestroyChildren(hasMagics); //모든 자식 제거
+        for (int i = 0; i < MagicDB.Instance.touchedMagics.Count; i++)
+        {
+            //마법 찾기
+            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.touchedMagics[i]);
+            print(magic.magicName);
+            //마법 슬롯 생성
+            Transform slot = LeanPool.Spawn(gameoverSlot, hasMagics.position, Quaternion.identity, hasMagics).transform;
+
+            //프레임 색 넣기
+            slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
+            //아이콘 넣기
+            slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            //레벨 넣기
+            slot.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
+        }
     }
 }

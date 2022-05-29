@@ -11,7 +11,7 @@ public class PlayerStat
 {
     public int playerPower; //플레이어 전투력
     public float hpMax = 100; // 최대 체력
-    public float hpNow = 100; // 체력
+    public float hpNow = 5; // 체력
     public float Level = 1; //레벨
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
@@ -130,7 +130,7 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.InitialStat();
 
         //기본 마법 추가
-        StartCoroutine(CastBasicMagics());
+        StartCoroutine(CastDefaultMagics());
     }
 
     private void Update()
@@ -393,8 +393,8 @@ public class PlayerManager : MonoBehaviour
         //체력 0 이하가 되면 사망
         if (PlayerStat_Now.hpNow <= 0)
         {
-            // print("Game Over");
-            // Dead();
+            print("Game Over");
+            Dead();
 
             return true;
         }
@@ -484,7 +484,7 @@ public class PlayerManager : MonoBehaviour
         Time.timeScale = 0;
 
         //TODO 게임오버 UI 띄우기
-        // gameOverUI.SetActive(true);
+        UIManager.Instance.GameOver();
     }
 
     public void GetItem(ItemInfo getItem)
@@ -586,6 +586,13 @@ public class PlayerManager : MonoBehaviour
 
     public void GetMagic(MagicInfo getMagic, bool magicReCast = true)
     {
+        // touchedMagics에 해당 마법 id가 존재하지 않으면
+        if (!MagicDB.Instance.touchedMagics.Exists(x => x == getMagic.id))
+        {
+            // 보유했던 마법 리스트에 추가
+            MagicDB.Instance.touchedMagics.Add(getMagic.id);
+        }
+
         //보유하지 않은 마법일때
         if (!hasStackMagics.Exists(x => x.id == getMagic.id))
         {
@@ -634,14 +641,19 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.UpdateUltimateIcon();
     }
 
-    IEnumerator CastBasicMagics()
+    IEnumerator CastDefaultMagics()
     {
         // MagicDB 로드 완료까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        //TODO 캐릭터에 따라 basicMagic에 기본마법 넣고 시작
+        //TODO 캐릭터에 따라 defaultMagic 기본마법 넣고 시작
         List<int> magics = new List<int>();
 
+        //! 마법 없이 테스트
+        if (CastMagic.Instance.noMagic)
+            yield break;
+
+        //! 모든 마법 테스트
         if (CastMagic.Instance.testAllMagic)
         {
             foreach (var value in MagicDB.Instance.magicDB.Values)

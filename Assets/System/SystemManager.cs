@@ -38,6 +38,9 @@ public class SystemManager : MonoBehaviour
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float timeScale = 1f; //전역으로 사용하는 타임스케일
     public float portalRange = 100f; //포탈게이트 생성될 범위
+    public float time_start; //시작 시간
+    public float time_current; // 현재 스테이지 플레이 타임
+    public int killCount; //몬스터 킬 수
 
     [Header("Refer")]
     public Transform enemyPool;
