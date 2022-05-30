@@ -33,7 +33,11 @@ public class MergeMenu : MonoBehaviour
     }
     #endregion
 
-    public bool loadDone = false;//초기 화면 로딩 여부    
+    public bool loadDone = false;//초기 화면 로딩 여부
+
+    public Button recipeBtn;
+    public Button backBtn;
+    public Button homeBtn;
 
     [Header("Effect")]
     public GameObject loadingPanel; //상호작용 막을 오브젝트
@@ -46,6 +50,7 @@ public class MergeMenu : MonoBehaviour
 
     [Header("Merge Board")]
     public Transform mergeSlots;
+    public List<Button> mergeList = new List<Button>(); //각각 슬롯 오브젝트
     public MergeSlot nowSelectSlot; //현재 선택된 슬롯
     public MergeSlot mergeWaitSlot; // 합성 대기중인 슬롯
     public int[] closeSlots = new int[4]; //선택된 슬롯 주변의 인덱스
@@ -60,12 +65,21 @@ public class MergeMenu : MonoBehaviour
     float scrollCoolCount; //스크롤 쿨타임 카운트
     float scrollCoolTime = 0.1f; //스크롤 쿨타임
     public Button selectedSlot;
+    public Button leftScrollBtn;
+    public Button rightScrollBtn;
     public MagicInfo selectedMagic; //현재 선택된 마법
     public Image selectedIcon; //마우스 따라다닐 아이콘
     RectTransform selectedIconRect;
 
     private void Awake()
     {
+        //머지 슬롯 오브젝트 모두 저장
+        for (int i = 0; i < mergeSlots.childCount; i++)
+        {
+            mergeList.Add(mergeSlots.GetChild(i).GetComponent<Button>());
+        }
+
+        //스택 오브젝트 및 위치 모두 저장
         for (int i = 0; i < 7; i++)
         {
             // 모든 슬롯 오브젝트 넣기
@@ -88,6 +102,23 @@ public class MergeMenu : MonoBehaviour
     {
         //시간 멈추기
         Time.timeScale = 0f;
+
+        // merge 슬롯 모두 켜기
+        foreach (Button mergeSlot in mergeList)
+        {
+            mergeSlot.interactable = true;
+        }
+        //스택 가운데 버튼 켜기
+        selectedSlot.interactable = true;
+        //스택 좌,우 버튼 켜기
+        leftScrollBtn.interactable = true;
+        rightScrollBtn.interactable = true;
+        //레시피 버튼 켜기
+        recipeBtn.interactable = true;
+        //뒤로 버튼 켜기
+        backBtn.interactable = true;
+        //홈 버튼 켜기
+        homeBtn.interactable = true;
 
         // 휴대폰 로딩 화면으로 가리기
         loadingPanel.SetActive(true);
@@ -124,9 +155,9 @@ public class MergeMenu : MonoBehaviour
         ScrollSlots(true);
 
         // 첫번째 머지 슬롯 선택하기
-        UIManager.Instance.lastSelected = mergeSlots.GetChild(0).GetComponent<Button>();
-        UIManager.Instance.lastOriginColor = mergeSlots.GetChild(0).GetComponent<Image>().color;
-        // mergeSlots.GetChild(0).GetComponent<Button>().Select();
+        UIManager.Instance.lastSelected = mergeList[0];
+        UIManager.Instance.lastOriginColor = mergeList[0].GetComponent<Image>().color;
+        // mergeList[0].GetComponent<Button>().Select();
 
         //선택된 슬롯 네비 설정
         Navigation nav = selectedSlot.navigation;
@@ -139,7 +170,7 @@ public class MergeMenu : MonoBehaviour
         //모든 슬롯 shiny 효과 순차적으로 켜기
         for (int i = 0; i < mergeSlots.childCount; i++)
         {
-            mergeSlots.GetChild(i).Find("ShinyMask").gameObject.SetActive(true);
+            mergeList[i].transform.Find("ShinyMask").gameObject.SetActive(true);
 
             yield return new WaitForSecondsRealtime(0.05f);
         }
@@ -157,7 +188,7 @@ public class MergeMenu : MonoBehaviour
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
         for (int i = 0; i < mergeSlots.childCount; i++)
         {
-            Transform mergeSlot = mergeSlots.GetChild(i);
+            Transform mergeSlot = mergeList[i].transform;
 
             // 마법 정보 찾기
             MagicInfo magic = PlayerManager.Instance.hasMergeMagics[i];
@@ -440,7 +471,7 @@ public class MergeMenu : MonoBehaviour
             for (int i = 0; i < mergeSlots.childCount; i++)
             {
                 //버튼 찾기
-                Button btn = mergeSlots.GetChild(i).GetComponent<Button>();
+                Button btn = mergeList[i].GetComponent<Button>();
                 // 상호작용 끄기
                 btn.interactable = false;
 
@@ -458,7 +489,7 @@ public class MergeMenu : MonoBehaviour
                         if (closeIndex >= 0 && closeIndex < PlayerManager.Instance.hasMergeMagics.Length)
                         {
                             //해당 방향의 슬롯 찾기
-                            Transform closeIcon = MergeMenu.Instance.mergeSlots.GetChild(closeIndex).Find("Icon");
+                            Transform closeIcon = mergeList[closeIndex].transform.Find("Icon");
                             Vector2 moveDir = mergeWaitSlot.transform.position - closeIcon.position;
 
                             // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈
@@ -496,13 +527,13 @@ public class MergeMenu : MonoBehaviour
     public void IconMoveStop()
     {
         // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
-        foreach (int index in MergeMenu.Instance.closeSlots)
+        foreach (int index in closeSlots)
         {
             // 배열 범위 내 인덱스일때
             if (index >= 0 && index < PlayerManager.Instance.hasMergeMagics.Length)
             {
                 //해당 방향의 슬롯 찾기
-                Transform closeIcon = MergeMenu.Instance.mergeSlots.GetChild(index).Find("Icon");
+                Transform closeIcon = mergeList[index].transform.Find("Icon");
                 closeIcon.DOKill();
             }
         }
@@ -527,6 +558,24 @@ public class MergeMenu : MonoBehaviour
         // 시간 내에 한번 더 누르면 팝업 종료
         else
         {
+            //TODO 모든 버튼 상호작용 끄기
+            // merge 슬롯 모두 끄기
+            foreach (Button mergeSlot in mergeList)
+            {
+                mergeSlot.interactable = false;
+            }
+            //스택 가운데 버튼 끄기
+            selectedSlot.interactable = false;
+            //스택 좌,우 버튼 끄기
+            leftScrollBtn.interactable = false;
+            rightScrollBtn.interactable = false;
+            //레시피 버튼 끄기
+            recipeBtn.interactable = false;
+            //뒤로 버튼 끄기
+            backBtn.interactable = false;
+            //홈 버튼 끄기
+            homeBtn.interactable = false;
+
             DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
             .SetUpdate(true);
 

@@ -4,6 +4,8 @@ using System.Linq;
 using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class SystemManager : MonoBehaviour
 {
@@ -54,6 +56,8 @@ public class SystemManager : MonoBehaviour
     public Sprite gateIcon; //포탈게이트 아이콘
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Sprite questionMark; //물음표 스프라이트
+    public Button timeBtn; //! 시간 속도 토글 버튼
+    public Button godModBtn; //! 갓모드 토글 버튼
 
     [Header("Material")]
     public Material spriteMat; //일반 스프라이트 머터리얼
@@ -119,6 +123,46 @@ public class SystemManager : MonoBehaviour
     {
         playerTimeScale = scale;
         timeScale = scale;
+    }
+
+    public void TimeStopToggle()
+    {
+        Image timeImg = timeBtn.GetComponent<Image>();
+        TextMeshProUGUI timeTxt = timeBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+
+        if (Time.timeScale == 0f)
+        {
+            Time.timeScale = 1f;
+
+            timeImg.color = Color.green;
+        }
+        else
+        {
+            Time.timeScale = 0f;
+
+            timeImg.color = Color.red;
+        }
+
+        timeTxt.text = "TimeSpeed = " + Time.timeScale;
+    }
+
+    public void GodModeToggle()
+    {
+        Image godModImg = godModBtn.GetComponent<Image>();
+        TextMeshProUGUI godModTxt = godModBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+
+        PlayerManager.Instance.godMod = !PlayerManager.Instance.godMod;
+
+        if (PlayerManager.Instance.godMod)
+        {
+            godModImg.color = Color.green;
+            godModTxt.text = "GodMod On";
+        }
+        else
+        {
+            godModImg.color = Color.red;
+            godModTxt.text = "GodMod Off";
+        }
     }
 
     public void AddDropSeedEvent(MagicInfo magic)

@@ -36,7 +36,6 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-
     public bool enemyPointSwitch = false; //화면 밖의 적 방향 표시 여부
 
     [Header("PopupUI")]
@@ -137,6 +136,19 @@ public class UIManager : MonoBehaviour
             Resume();
         }
 
+        //스마트폰 메뉴 토글
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (mergeMagicPanel.activeSelf)
+            {
+                MergeMenu.Instance.BackBtnAction();
+            }
+            else
+            {
+                PopupUI(mergeMagicPanel);
+            }
+        }
+
         //게임시간 타이머 업데이트
         if (SystemManager.Instance.playerTimeScale != 0)
             UpdateTimer();
@@ -187,11 +199,12 @@ public class UIManager : MonoBehaviour
     void FollowUICursor()
     {
         // lastSelected와 현재 선택버튼이 같으면 버튼 깜빡임 코루틴 시작
-        if (EventSystem.current.currentSelectedGameObject == null
-        || !EventSystem.current.currentSelectedGameObject.activeSelf
-        || !EventSystem.current.currentSelectedGameObject.activeInHierarchy
-        || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>()
-        || Cursor.lockState == CursorLockMode.None
+        if (EventSystem.current.currentSelectedGameObject == null //현재 선택 버튼이 없을때
+        || !EventSystem.current.currentSelectedGameObject.activeSelf //현재 선택 버튼 비활성화 체크 됬을때
+        || !EventSystem.current.currentSelectedGameObject.activeInHierarchy //현재 선택 버튼 실제로 비활성화 됬을때
+        || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>() //다른 버튼 선택 됬을때
+        || !lastSelected.interactable //버튼 상호작용 꺼졌을때
+        || Cursor.lockState == CursorLockMode.None //마우스 켜져있을때
         )
         {
             // UI커서 애니메이션 켜져있으면
@@ -237,7 +250,7 @@ public class UIManager : MonoBehaviour
 
             //ui커서 따라가기
             if (!isMove)
-                UI_Cursor.transform.position = EventSystem.current.currentSelectedGameObject.transform.position;
+                UI_Cursor.transform.position = lastSelected.transform.position;
         }
 
         //방향키 입력 들어왔을때
@@ -263,7 +276,6 @@ public class UIManager : MonoBehaviour
     void CursorAnim()
     {
         Image image = lastSelected.targetGraphic.GetComponent<Image>();
-        RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
         RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
 
         //깜빡일 시간
@@ -278,11 +290,14 @@ public class UIManager : MonoBehaviour
         //커서 사이즈 + 여백 추가
         Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
 
+        //마지막 선택된 버튼의 캔버스
+        Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
+
         // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
-        if (UI_CursorCanvas.renderMode != lastRect.GetComponentInParent<Canvas>().renderMode)
+        if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
         {
             //렌더 모드 일치 시키기
-            UI_CursorCanvas.renderMode = lastRect.GetComponentInParent<Canvas>().renderMode;
+            UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
 
             // 바뀐 렌더모드에 따라 커서 스케일 정의
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
@@ -293,17 +308,28 @@ public class UIManager : MonoBehaviour
             else
             {
                 cursorCanvasRect.localScale = Vector2.one / 64f;
+
+                //캔버스 z축을 선택된 캔버스에 맞추기
+                Vector3 canvasPos = cursorCanvasRect.position;
+                canvasPos.z = selectedCanvas.transform.position.z;
+                cursorCanvasRect.position = canvasPos;
             }
         }
 
-
         UI_Cursor.SetActive(true); //UI 커서 활성화
 
-        //원래 트윈 죽이기
-        image.DOKill();
-        UI_Cursor.transform.DOKill();
-        cursorRect.DOKill();
-        cursorSeq.Kill();
+        //원래 트윈 있으면 죽이기
+        if (DOTween.IsTweening(image))
+            image.DOKill();
+
+        if (DOTween.IsTweening(UI_Cursor.transform))
+            UI_Cursor.transform.DOKill();
+
+        if (DOTween.IsTweening(cursorRect))
+            cursorRect.DOKill();
+
+        if (cursorSeq.IsActive())
+            cursorSeq.Kill();
 
         //이동 시간 카운트
         float moveCount = 0f;

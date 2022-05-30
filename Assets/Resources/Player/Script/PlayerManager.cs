@@ -66,6 +66,7 @@ public class PlayerManager : MonoBehaviour
     #endregion
 
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
+    public bool godMod = true; //! 플레이어 갓모드
 
     [Header("<Refer>")]
     public GameObject mobSpawner;
@@ -373,6 +374,10 @@ public class PlayerManager : MonoBehaviour
 
     public bool Damage(float damage)
     {
+        //! 갓모드 켜져 있으면 데미지 0
+        if (godMod && damage > 0)
+            damage = 0;
+
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 
