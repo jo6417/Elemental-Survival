@@ -31,8 +31,8 @@ public class CastMagic : MonoBehaviour
     }
     #endregion
 
-    List<GameObject> passiveMagics = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
-    List<int> nowCastMagicIDs = new List<int>(); //현재 사용중인 마법
+    public List<GameObject> passiveMagics = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
+    public List<MagicInfo> nowCastMagics = new List<MagicInfo>(); //현재 사용중인 마법
     public List<int> defaultMagic = new List<int>(); //기본 마법
     public bool testAllMagic; //! 모든 마법 테스트
     public bool noMagic; //! 마법 없이 테스트
@@ -86,93 +86,113 @@ public class CastMagic : MonoBehaviour
         transform.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
     }
 
-    public void CastAllMagics()
+    public void CastCheck()
     {
-        //플레이어 보유중인 모든 마법 ID
-        List<int> hasMagicIDs = new List<int>();
-        foreach (var magic in PlayerManager.Instance.hasStackMagics)
+        // Merge 마법에서 레벨 합산해서 리스트 만들기
+        List<MagicInfo> castList = new List<MagicInfo>();
+        foreach (MagicInfo magic in PlayerManager.Instance.hasMergeMagics)
         {
-            //active 타입 마법만 사용
-            // if (magic.castType == "active")
-            hasMagicIDs.Add(magic.id);
+            //마법이 null이면 넘기기
+            if (magic == null)
+                continue;
+
+            print(magic.magicName + " : " + magic.magicLevel);
+
+            MagicInfo tempMagic = null;
+            tempMagic = castList.Find(x => x.id == magic.id);
+            // ID가 같은 마법이 없으면
+            if (tempMagic == null)
+            {
+                //해당 마법 리스트에 추가
+                castList.Add(magic);
+            }
+            // 이미 ID 같은 마법이 들어있으면
+            else
+            {
+                //해당 마법 레벨 더하기
+                tempMagic.magicLevel += magic.magicLevel;
+            }
         }
 
-        // hasMagicIDs 중에 nowCastMagic에 없는 마법 찾기
-        List<int> notCastMagic = hasMagicIDs.Except(nowCastMagicIDs).ToList();
-        if (notCastMagic.Count != 0 && MagicDB.Instance.loadDone)
+        // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
+        foreach (MagicInfo magic in castList)
         {
-            foreach (var magicID in notCastMagic)
+            //ID 같은 마법 찾기
+            MagicInfo tempMagic = null;
+            tempMagic = nowCastMagics.Find(x => x.id == magic.id);
+
+            // 마법이 nowCastMagics에 없으면
+            if (tempMagic == null)
             {
-                MagicInfo magic = MagicDB.Instance.GetMagicByID(magicID);
-
-                //0등급은 원소젬이므로 캐스팅 안함
-                if (magic.grade == 0)
-                    continue;
-
-                // 마법 프리팹 없으면 넘기기
-                var magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
-                // MagicDB.Instance.magicPrefab.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Prefab");
-                if (magicPrefab == null)
-                {
-                    // print("프리팹 없음");
-                    continue;
-                }
-
-                // ultimate 마법일때
-                if (magic.castType == "ultimate")
-                    continue;
-
-                // passive 마법일때
+                // 패시브 마법일때
                 if (magic.castType == "passive")
                 {
                     //이미 소환되지 않았을때
                     if (!magic.exist)
                     {
-                        // print("magic Summon : " + magic.magicName);
-                        magic.exist = true;
-
-                        // 플레이어 위치에 마법 생성
-                        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
-
-                        //마법 정보 넣기
-                        magicObj.GetComponentInChildren<MagicHolder>().magic = magic;
-
-                        //passive 마법 오브젝트 리스트에 넣기
-                        passiveMagics.Add(magicObj);
+                        //패시브 마법 시전
+                        PassiveCast(magic);
                     }
-
-                    continue;
                 }
 
-                //마법 오브젝트 소환, 반복
-                StartCoroutine(SummonMagic(magicPrefab, magic));
+                if (magic.castType == "auto")
+                {
+                    // 액티브 마법 시전
+                    StartCoroutine(ActiveCast(magic));
+                }
 
-                //현재 사용중 마법 리스트에 추가
-                nowCastMagicIDs.Add(magicID);
+                continue;
+            }
+
+            //현재 실행중인 마법 레벨이 다르면
+            if (tempMagic.magicLevel != magic.magicLevel)
+            {
+                //최근 갱신된 레벨 넣어주기
+                tempMagic.magicLevel = magic.magicLevel;
+            }
+        }
+
+        print(passiveMagics.Count + " : " + nowCastMagics.Count);
+
+        // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 마법 찾아서 중단시키기
+        for (int i = 0; i < nowCastMagics.Count; i++)
+        {
+            //ID 같은 마법 찾기
+            MagicInfo tempMagic = null;
+            tempMagic = castList.Find(x => x.id == nowCastMagics[i].id);
+
+            // 시전 중인 마법을 castList에서 못찾으면 해당 마법 제거
+            if (tempMagic == null)
+            {
+                // 패시브 마법이면 컴포넌트 찾아서 디스폰
+                if (nowCastMagics[i].castType == "passive")
+                {
+                    // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
+                    GameObject passiveMagic = passiveMagics.Find(x => x.GetComponent<MagicHolder>().magic.id == nowCastMagics[i].id);
+
+                    // 찾은 오브젝트 디스폰
+                    LeanPool.Despawn(passiveMagic);
+
+                    // 패시브 리스트에서 제거
+                    passiveMagics.Remove(passiveMagic);
+                }
+
+                // nowCastMagics에서 제거
+                nowCastMagics.Remove(nowCastMagics[i]);
             }
         }
     }
 
-    public void ReCastMagics()
+    //액티브 마법 소환
+    public IEnumerator ActiveCast(MagicInfo magic)
     {
-        StopAllCoroutines();
+        //마법 프리팹 찾기
+        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
 
-        //현재 사용중인 마법 리스트 비우기
-        nowCastMagicIDs.Clear();
-        //현재 보유 마법 재조사해서 실행하기
-        CastAllMagics();
+        //프리팹 없으면 넘기기
+        if (magicPrefab == null)
+            yield break;
 
-        foreach (var magic in passiveMagics)
-        {
-            // print(magic.name);
-            magic.SetActive(false);
-            magic.SetActive(true);
-        }
-    }
-
-    //마법 소환
-    IEnumerator SummonMagic(GameObject magicPrefab, MagicInfo magic)
-    {
         // 랜덤 적 찾기, 투사체 수 이하로
         List<Vector2> enemyPos = MarkEnemyPos(magic);
 
@@ -212,8 +232,44 @@ public class CastMagic : MonoBehaviour
         //쿨타임 만큼 대기
         // yield return new WaitUntil(() => cooltimeCount <= 0);
 
-        //코루틴 재실행
-        StartCoroutine(SummonMagic(magicPrefab, magic));
+        // Merge 목록에 마법 있는지 검사
+        if (System.Array.Exists(PlayerManager.Instance.hasMergeMagics, x => x != null && x.id == magic.id))
+        {
+            //코루틴 재실행
+            StartCoroutine(ActiveCast(magic));
+        }
+        // 사용하던 마법이 사라졌으면
+        else
+        {
+            // 더이상 재실행 하지않고, 현재 사용중 목록에서 제거
+            nowCastMagics.Remove(magic);
+        }
+
+    }
+
+    void PassiveCast(MagicInfo magic)
+    {
+        // print("magic Summon : " + magic.magicName);
+        magic.exist = true;
+
+        //프리팹 찾기
+        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
+
+        //프리팹 없으면 넘기기
+        if (magicPrefab == null)
+            return;
+
+        // 플레이어 위치에 마법 생성
+        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+        //마법 정보 넣기
+        magicObj.GetComponentInChildren<MagicHolder>().magic = magic;
+
+        //passive 마법 오브젝트 리스트에 넣기
+        passiveMagics.Add(magicObj);
+
+        //nowCastMagics에 해당 마법 추가
+        nowCastMagics.Add(magic);
     }
 
     List<Vector2> MarkEnemyPos(MagicInfo magic)

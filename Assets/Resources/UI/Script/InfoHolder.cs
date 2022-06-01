@@ -23,13 +23,14 @@ public class InfoHolder : MonoBehaviour
         //마법 구매 버튼일때
         else if (holderType == HolderType.magicHolder)
         {
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(id); //마법 찾기
+            // 마법 찾아서 인스턴스화
+            MagicInfo magic = new MagicInfo(MagicDB.Instance.GetMagicByID(id));
 
             // 마법 획득 및 언락
             PlayerManager.Instance.GetMagic(magic);
         }
 
-        if(PopupQuit)
-        UIManager.Instance.PopupUI(popupMenu);
+        if (PopupQuit)
+            UIManager.Instance.PopupUI(popupMenu);
     }
 }

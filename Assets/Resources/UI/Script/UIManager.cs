@@ -59,6 +59,7 @@ public class UIManager : MonoBehaviour
     public GameObject bossHp;
     public GameObject arrowPrefab; //적 방향 가리킬 화살표 UI
     public GameObject iconArrowPrefab; //오브젝트 방향 기리킬 아이콘 화살표 UI
+    public Image phoneScreen; //스마트폰 알람 UI
 
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
@@ -139,11 +140,15 @@ public class UIManager : MonoBehaviour
         //스마트폰 메뉴 토글
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (mergeMagicPanel.activeSelf)
+            // 스마트폰 스케일이 커졌을때, 로딩 패널 꺼져있을때
+            if (CastMagic.Instance.transform.localScale == Vector3.one
+            && !MergeMenu.Instance.loadingPanel.activeSelf)
             {
                 MergeMenu.Instance.BackBtnAction();
             }
-            else
+
+            // 머지 패널 꺼져 있을땐 켜기
+            if (!mergeMagicPanel.activeSelf)
             {
                 PopupUI(mergeMagicPanel);
             }
@@ -747,6 +752,51 @@ public class UIManager : MonoBehaviour
         stats[15].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.lightning_atk * 100).ToString() + " %";
         stats[16].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.water_atk * 100).ToString() + " %";
         stats[17].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.wind_atk * 100).ToString() + " %";
+    }
+
+    public void PhoneNotice()
+    {
+        Image notice = UIManager.Instance.phoneScreen.transform.Find("Notice").GetComponent<Image>();
+        TextMeshProUGUI stackNum = notice.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+
+        //TODO 스택 0개일때
+        if (PlayerManager.Instance.hasStackMagics.Count == 0)
+        {
+            //화면 켜져있을때 끄기
+            if (UIManager.Instance.phoneScreen.color.a > 0f)
+            {
+                //이미 반짝이는 트윈 중이면 트윈 킬
+                if (DOTween.IsTweening(UIManager.Instance.phoneScreen))
+                {
+                    UIManager.Instance.phoneScreen.DOKill();
+                }
+
+                //화면 밝기 0으로
+                UIManager.Instance.phoneScreen.DOColor(new Color(1, 1, 1, 0), 0.5f);
+            }
+
+            //알림 아이콘 끄기
+            notice.gameObject.SetActive(false);
+        }
+        //TODO 스택 1개 이상일때
+        else
+        {
+            //이미 반짝이는 트윈 중이면 트윈 킬
+            if (DOTween.IsTweening(UIManager.Instance.phoneScreen))
+            {
+                UIManager.Instance.phoneScreen.DOKill();
+            }
+
+            //스마트폰 UI 화면 밝히기
+            UIManager.Instance.phoneScreen.color = Color.white; //색 초기화
+            UIManager.Instance.phoneScreen.DOColor(new Color(1, 1, 1, 0), 1f)
+            .SetLoops(-1, LoopType.Yoyo);
+
+            //알림 아이콘 켜기
+            notice.gameObject.SetActive(true);
+            //스택 개수 넣기
+            stackNum.text = PlayerManager.Instance.hasStackMagics.Count.ToString();
+        }
     }
 
     public void PopupUI(GameObject popup)

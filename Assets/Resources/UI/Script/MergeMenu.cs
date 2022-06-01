@@ -103,23 +103,6 @@ public class MergeMenu : MonoBehaviour
         //시간 멈추기
         Time.timeScale = 0f;
 
-        // merge 슬롯 모두 켜기
-        foreach (Button mergeSlot in mergeList)
-        {
-            mergeSlot.interactable = true;
-        }
-        //스택 가운데 버튼 켜기
-        selectedSlot.interactable = true;
-        //스택 좌,우 버튼 켜기
-        leftScrollBtn.interactable = true;
-        rightScrollBtn.interactable = true;
-        //레시피 버튼 켜기
-        recipeBtn.interactable = true;
-        //뒤로 버튼 켜기
-        backBtn.interactable = true;
-        //홈 버튼 켜기
-        homeBtn.interactable = true;
-
         // 휴대폰 로딩 화면으로 가리기
         loadingPanel.SetActive(true);
         loadDone = false;
@@ -144,6 +127,27 @@ public class MergeMenu : MonoBehaviour
         .SetUpdate(true);
         transform.localPosition = Vector3.zero;
 
+        // 스마트폰 움직이는 트랜지션 끝날때까지 대기
+        yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
+
+        // merge 슬롯 모두 켜기
+        foreach (Button mergeSlot in mergeList)
+        {
+            mergeSlot.interactable = true;
+        }
+        //스택 가운데 버튼 켜기
+        selectedSlot.interactable = true;
+        //스택 좌,우 버튼 켜기
+        leftScrollBtn.interactable = true;
+        rightScrollBtn.interactable = true;
+        //레시피 버튼 켜기
+        recipeBtn.interactable = true;
+        //뒤로 버튼 켜기
+        backBtn.interactable = true;
+        //홈 버튼 켜기
+        homeBtn.interactable = true;
+
+        //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //머지 보드 세팅
@@ -428,35 +432,35 @@ public class MergeMenu : MonoBehaviour
     void SetIcon(int objIndex, int num, int magicIndex)
     {
         //프레임 찾기
-        Transform frame = stackList[objIndex].transform.Find("Frame");
+        Image frame = stackList[objIndex].transform.Find("Frame").GetComponent<Image>();
         //아이콘 찾기
-        Transform icon = stackList[objIndex].transform.Find("Icon");
+        Image icon = stackList[objIndex].transform.Find("Icon").GetComponent<Image>();
         //레벨 찾기
-        Transform level = icon.transform.Find("Level");
+        TextMeshProUGUI level = icon.transform.Find("Level").GetComponent<TextMeshProUGUI>();
 
         // hasStackMagics의 보유 마법이 num 보다 많을때
         if (PlayerManager.Instance.hasStackMagics.Count >= num)
         {
             //프레임 색 넣기
-            frame.GetComponent<Image>().color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasStackMagics[magicIndex].grade];
+            frame.color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasStackMagics[magicIndex].grade];
 
             //아이콘 스프라이트 찾기
             Sprite sprite = MagicDB.Instance.GetMagicIcon(PlayerManager.Instance.hasStackMagics[magicIndex].id);
             //아이콘 넣기
-            icon.gameObject.SetActive(true);
-            icon.GetComponent<Image>().sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
+            icon.enabled = true;
+            icon.sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
 
             //레벨 넣기
-            level.gameObject.SetActive(true);
-            level.GetComponent<TextMeshProUGUI>().text = "Lv. " + PlayerManager.Instance.hasStackMagics[magicIndex].magicLevel;
+            level.enabled = true;
+            level.text = "Lv. " + PlayerManager.Instance.hasStackMagics[magicIndex].magicLevel;
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else
         {
             // 프레임, 아이콘, 레벨 숨기기
-            frame.GetComponent<Image>().color = Color.white;
-            icon.gameObject.SetActive(false);
-            level.gameObject.SetActive(false);
+            frame.color = Color.white;
+            icon.enabled = false;
+            level.enabled = false;
         }
     }
 
@@ -576,6 +580,16 @@ public class MergeMenu : MonoBehaviour
             //홈 버튼 끄기
             homeBtn.interactable = false;
 
+            // UI 커서 끄기
+            UIManager.Instance.UI_Cursor.SetActive(false);
+
+            //마우스로 아이콘 들고 있으면 복귀시키기
+            if (selectedIcon.enabled)
+                ToggleStackSlot();
+
+            // Merge 리스트에서 확인해서 필요한 마법 시전하기
+            CastMagic.Instance.CastCheck();
+
             DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
             .SetUpdate(true);
 
@@ -599,6 +613,5 @@ public class MergeMenu : MonoBehaviour
                 gameObject.SetActive(false);
             });
         }
-
     }
 }

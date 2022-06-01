@@ -8,6 +8,9 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class BabyArrow : MonoBehaviour
 {
+    public MagicHolder magicHolder;
+    public MagicInfo magic;
+
     public enum State { Ready, Attack };
     public State state = State.Ready; //화살의 상태
 
@@ -19,7 +22,6 @@ public class BabyArrow : MonoBehaviour
     Rigidbody2D rigidArrow;
     Collider2D col;
     SpriteRenderer sprite;
-    public MagicInfo magic;
     Vector3 slowFollowPlayer;
     Vector3 spinOffset;
     GameObject spinObj = null;
@@ -28,22 +30,25 @@ public class BabyArrow : MonoBehaviour
     private void Awake()
     {
         tail = GetComponentInChildren<TrailRenderer>();
-    }
-
-    private void OnEnable()
-    {
-        //비활성화 되고 다시 스폰 될때는 Enable에서 공격 실행
-        if (magic != null)
-            StartCoroutine(shotArrow());
-    }
-
-    void Start()
-    {
         marker = new List<GameObject>();
         rigidArrow = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
-        magic = GetComponent<MagicHolder>().magic;
+
+        magicHolder = GetComponent<MagicHolder>();
+    }
+
+    private void OnEnable()
+    {
+        //초기화
+        StartCoroutine(Initial());
+    }
+
+    IEnumerator Initial()
+    {
+        // magic 정보 들어올때까지 대기
+        yield return new WaitUntil(() => magicHolder.magic != null);
+        magic = magicHolder.magic;
 
         //플레이어 주변을 도는 마커
         spinObj = Instantiate(atkMark, transform.position, Quaternion.identity);
@@ -52,28 +57,12 @@ public class BabyArrow : MonoBehaviour
         spinObj.transform.position = slowFollowPlayer + Vector3.up * 3;
         spinOffset = spinObj.transform.position - slowFollowPlayer;
 
-        //처음 스폰 될때는 Start에서 공격 실행
-        if (magic != null)
-            StartCoroutine(shotArrow());
+        //화살 발사
+        StartCoroutine(shotArrow());
     }
 
     void Update()
     {
-        // if (VarManager.Instance.playerTimeScale == 0)
-        // {
-        //     tail.time = Mathf.Infinity;
-        //     return;
-        // }
-        // else
-        // {
-        //     if (tail.time == Mathf.Infinity)
-        //     {
-        //         //서서히 낮추기
-        //         tail.time = 1000f;
-        //         DOTween.To(() => tail.time, x => tail.time = x, 1f, 0.5f);
-        //     }
-        // }
-
         // 공격 할때만 콜라이더 활성화
         if (state == State.Attack)
             col.enabled = true;

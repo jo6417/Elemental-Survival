@@ -142,7 +142,7 @@ public class PlayerManager : MonoBehaviour
         //카메라 따라오기
         foreach (var cam in SystemManager.Instance.camList)
         {
-            cam.transform.position = transform.position + new Vector3(0, 0, -10);
+            cam.transform.position = transform.position + new Vector3(0, 0, -50);
         }
 
         //몬스터 스포너 따라오기
@@ -591,42 +591,34 @@ public class PlayerManager : MonoBehaviour
 
     public void GetMagic(MagicInfo getMagic, bool magicReCast = true)
     {
+        // MagicInfo 인스턴스 생성
+        MagicInfo magic = new MagicInfo(getMagic);
+
+        //마법의 레벨 초기화
+        magic.magicLevel = 1;
+
         // touchedMagics에 해당 마법 id가 존재하지 않으면
-        if (!MagicDB.Instance.touchedMagics.Exists(x => x == getMagic.id))
+        if (!MagicDB.Instance.touchedMagics.Exists(x => x == magic.id))
         {
             // 보유했던 마법 리스트에 추가
-            MagicDB.Instance.touchedMagics.Add(getMagic.id);
+            MagicDB.Instance.touchedMagics.Add(magic.id);
         }
 
-        //보유하지 않은 마법일때
-        if (!hasStackMagics.Exists(x => x.id == getMagic.id))
-        {
-            // 플레이어 보유 마법에 해당 마법 추가하기
-            hasStackMagics.Add(getMagic);
-        }
+        // 플레이어 보유 마법에 해당 마법 추가하기
+        hasStackMagics.Add(magic);
 
         // 0등급 마법이면 원소젬이므로 스킵
-        if (getMagic.grade == 0)
+        if (magic.grade == 0)
             return;
 
-        //보유한 마법의 레벨 올리기
-        hasStackMagics.Find(x => x.id == getMagic.id).magicLevel++;
-
         //TODO 적이 죽으면 발동되는 마법일때 콜백에 함수포함시키기
-        if (getMagic.magicName == "Life Seed")
+        if (magic.magicName == "Life Seed")
         {
-            SystemManager.Instance.AddDropSeedEvent(getMagic);
+            SystemManager.Instance.AddDropSeedEvent(magic);
         }
 
-        // 보유한 모든 마법 아이콘 갱신
-        // UIManager.Instance.UpdateMagics();
-
-        // 마법 아이콘 UI 추가
-        UIManager.Instance.AddMagicUI(getMagic);
-
-        // 마법 캐스팅 다시 시작
-        if (magicReCast)
-            CastMagic.Instance.ReCastMagics();
+        //메인 UI에 스마트폰 알림 갱신
+        UIManager.Instance.PhoneNotice();
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();
@@ -672,7 +664,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 캐릭터 기본 마법 추가
-        foreach (var magicID in magics)
+        foreach (int magicID in magics)
         {
             // //보유하지 않은 마법일때
             // if (!hasMagics.Exists(x => x.id == magicID))
@@ -692,7 +684,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         //플레이어 마법 시작
-        CastMagic.Instance.CastAllMagics();
+        // CastMagic.Instance.CastAllMagics();
 
         // 보유한 모든 마법 아이콘 갱신
         // UIManager.Instance.UpdateMagics();

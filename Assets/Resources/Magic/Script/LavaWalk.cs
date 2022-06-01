@@ -37,9 +37,12 @@ public class LavaWalk : MonoBehaviour
 
         //스프라이트 사이즈 얻기위해 렌더러 참조
         footSprite = footprint.GetComponent<SpriteRenderer>();
-        
+
         //프리팹 스케일 미리 설정해놓기
         footprint.GetComponent<Transform>().localScale = Vector2.one * range;
+
+        //마지막 발자국 위치 초기화
+        lastFootPos = PlayerManager.Instance.transform.position;
     }
 
     private void Update()

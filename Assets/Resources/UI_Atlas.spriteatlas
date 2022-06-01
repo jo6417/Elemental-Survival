@@ -83,6 +83,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 49f9d2c7be1425d42b709552bb07d2cb, type: 3}
   - {fileID: 21300000, guid: c3287508b9bfe6048a768f66fcfb011f, type: 3}
   - {fileID: 21300000, guid: 543aa02877c45ee4db30e28c61ea0167, type: 3}
+  - {fileID: 21300000, guid: f998ef2870e63ba4c998d82a5835c182, type: 3}
   - {fileID: 21300000, guid: dd36bc68b5f886b4f95330ca9b853deb, type: 3}
   - {fileID: 21300000, guid: 8d475a787a61b424fab5bc2cb7fd2a0b, type: 3}
   - {fileID: 21300000, guid: 52e83dd81a88d7d4bab3ece01579bbb7, type: 3}
@@ -169,6 +170,7 @@ SpriteAtlas:
   - CircleFill
   - HexItemBack
   - Glass
+  - SpeechBubble2
   - FrameCursor
   - ProgressBar2
   - _ManaGemUI
