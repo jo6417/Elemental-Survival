@@ -8,6 +8,7 @@ public class GridLayoutUI : MonoBehaviour
 {
     int childNum = -1;
     private int PosY = 0;
+    public bool isChanged = false; //자식 수정 여부
 
     Vector3[] corners = new Vector3[4];
     Vector3[] childCorners = new Vector3[4];
@@ -30,14 +31,27 @@ public class GridLayoutUI : MonoBehaviour
             childNum = transform.childCount;
         }
 
-        //자식 개수 바뀌면 함수 실행
-        if (childNum != transform.childCount)
+        // 자식 개수 바뀌면 함수 실행
+        if (childNum != transform.childCount && !isChanged)
         {
             //그리드 아이템 위치 업데이트
-            if(transform.childCount > 0)
-            GridUpdate();
+            if (transform.childCount > 0)
+                GridUpdate();
 
             childNum = transform.childCount;
+        }
+    }
+
+    private void Update()
+    {
+        //변경 명령 있으면 변경하기
+        if (isChanged)
+        {
+            //그리드 아이템 위치 업데이트
+            if (transform.childCount > 0)
+                GridUpdate();
+
+            isChanged = false;
         }
     }
 
@@ -146,14 +160,14 @@ public class GridLayoutUI : MonoBehaviour
             rect.pivot = Vector2.one * 0.5f;
 
             //저장해둔 위치로부터 피벗 반대방향으로 절반만큼 옮기기
-            if(startConer == StartConer.UpLeft)
-            rect.anchoredPosition = savePos + new Vector2(cellSize.x/2, -cellSize.y/2);
-            if(startConer == StartConer.UpRight)
-            rect.anchoredPosition = savePos + new Vector2(-cellSize.x/2, -cellSize.y/2);
-            if(startConer == StartConer.DownLeft)
-            rect.anchoredPosition = savePos + new Vector2(cellSize.x/2, cellSize.y/2);
-            if(startConer == StartConer.DownRight)
-            rect.anchoredPosition = savePos + new Vector2(-cellSize.x/2, cellSize.y/2);
+            if (startConer == StartConer.UpLeft)
+                rect.anchoredPosition = savePos + new Vector2(cellSize.x / 2, -cellSize.y / 2);
+            if (startConer == StartConer.UpRight)
+                rect.anchoredPosition = savePos + new Vector2(-cellSize.x / 2, -cellSize.y / 2);
+            if (startConer == StartConer.DownLeft)
+                rect.anchoredPosition = savePos + new Vector2(cellSize.x / 2, cellSize.y / 2);
+            if (startConer == StartConer.DownRight)
+                rect.anchoredPosition = savePos + new Vector2(-cellSize.x / 2, cellSize.y / 2);
         }
     }
 

@@ -38,10 +38,14 @@ public class HasStuffToolTip : MonoBehaviour
     public ItemInfo item;
     float halfCanvasWidth;
     private RectTransform rect;
-    
-    private void Awake() {
+
+    private void Awake()
+    {
         halfCanvasWidth = GetComponentInParent<CanvasScaler>().referenceResolution.x * 0.5f;
         rect = GetComponent<RectTransform>();
+
+        //처음엔 끄기
+        gameObject.SetActive(false);
     }
 
     void Update()
@@ -53,15 +57,16 @@ public class HasStuffToolTip : MonoBehaviour
     void FollowMouse()
     {
         // 패널이 화면밖으로 안나가게 피벗 수정
-        if(rect == null)
-        return;
+        if (rect == null)
+            return;
 
-        if(rect.anchoredPosition.x + rect.sizeDelta.x > halfCanvasWidth)
+        if (rect.anchoredPosition.x + rect.sizeDelta.x > halfCanvasWidth)
         {
-            rect.pivot = new Vector2(1,0);
+            rect.pivot = new Vector2(1, 0);
         }
-        else{
-            rect.pivot = new Vector2(0,0);
+        else
+        {
+            rect.pivot = new Vector2(0, 0);
         }
 
         // Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

@@ -59,6 +59,9 @@ public class ProductToolTip : MonoBehaviour
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
+
+        //처음엔 끄기
+        gameObject.SetActive(false);
     }
 
     void Update()
@@ -205,7 +208,7 @@ public class ProductToolTip : MonoBehaviour
     bool SetItemInfo()
     {
         recipeObj.SetActive(false);
-        
+
         // 아이템 이름, 설명 넣기
         productName.text = item.itemName;
         productDescript.text = item.description;

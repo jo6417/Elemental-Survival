@@ -8,14 +8,18 @@ using DG.Tweening;
 using System.Linq;
 using System;
 
-public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmitHandler, IPointerEnterHandler, IPointerClickHandler
+public class MergeSlot : MonoBehaviour,
+ISelectHandler, IDeselectHandler, ISubmitHandler,
+IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     int slotIndex; //해당 슬롯의 인덱스
     Image frame;
     Image icon;
     TextMeshProUGUI level;
     Button button; //해당 슬롯의 버튼 컴포넌트
-    public bool isStackSlot = false; //스택 슬롯인지 여부
+    // public bool isStackSlot = false; //스택 슬롯인지 여부
+    ToolTipTrigger tooltip;
+    bool isMouseSelect = false; //마우스로 해당 슬롯 select 했는지
 
     private void Awake()
     {
@@ -23,8 +27,8 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         button = transform.GetComponent<Button>();
 
         //스택 슬롯이면 리턴
-        if (isStackSlot)
-            return;
+        // if (isStackSlot)
+        //     return;
 
         //해당 슬롯의 인덱스 찾기
         slotIndex = transform.GetSiblingIndex();
@@ -35,18 +39,51 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         icon = transform.Find("Icon").GetComponentInChildren<Image>(true);
         // 마법 레벨 컴포넌트 찾기
         level = icon.transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
+        // 툴팁 트리거 찾기
+        tooltip = transform.GetComponent<ToolTipTrigger>();
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(Initial());
+    }
+
+    IEnumerator Initial()
+    {
+        //버튼 상호작용 풀릴때까지 대기
+        yield return new WaitUntil(() => button.interactable);
+
+        if (PlayerManager.Instance.hasMergeMagics[slotIndex] == null)
+        {
+            //마법정보 없을땐 툴팁 트리거 끄기
+            tooltip.enabled = false;
+        }
+        else
+        {
+            //마법정보 있으면 툴팁 트리거 켜기
+            tooltip.enabled = true;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        //마우스로 해당 슬롯 선택함
+        isMouseSelect = true;
+
         //해당 버튼 선택
         button.Select();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // 마우스 나가면 Deselect 하기
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         //마법 넣기
-        PutMagic();
+        StartCoroutine(ClickSlot());
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -62,24 +99,27 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
     public void OnSubmit(BaseEventData eventData)
     {
         //마법 넣기
-        PutMagic();
+        StartCoroutine(ClickSlot());
     }
 
-    public void OnSelectSlot(bool isMouseSelect = false)
+    public void OnSelectSlot()
     {
         // print(slotIndex + " : OnSelect");
 
         MergeMenu.Instance.nowSelectSlot = this;
 
         // 스택 슬롯이면 리턴
-        if (isStackSlot)
-            return;
+        // if (isStackSlot)
+        //     return;
         // 슬롯의 마법이 null 아니면 리턴
         if (PlayerManager.Instance.hasMergeMagics[slotIndex] != null)
             return;
         // 마우스로 컨트롤 중인데 커서에 선택된 아이콘이 꺼져있으면 리턴
-        if (!MergeMenu.Instance.selectedIcon.enabled && UIManager.Instance.isMouseMove)
+        if (!MergeMenu.Instance.selectedIcon.enabled && isMouseSelect)
             return;
+
+        // 마우스로 선택 여부 초기화
+        isMouseSelect = false;
 
         // 프레임 색 넣기
         frame.color = MagicDB.Instance.gradeColor[MergeMenu.Instance.selectedMagic.grade];
@@ -133,18 +173,29 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
                     //현재 Select 슬롯 주변의 null이 아닌 마법
                     MagicInfo closeMagic = PlayerManager.Instance.hasMergeMagics[MergeMenu.Instance.closeSlots[i]];
 
-                    //두 재료 모두 갖고 있는 마법 찾기
                     //변수 초기화
                     MagicInfo mixedMagic = null;
-                    mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == selectMagic.magicName && x.element_B == closeMagic.magicName);
-                    // null이면 재료 순서 바꿔서 재검사
-                    if (mixedMagic == null)
+
+                    // 서로 다른 마법일때
+                    if (selectMagic.id != closeMagic.id)
                     {
-                        mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == closeMagic.magicName && x.element_B == selectMagic.magicName);
+                        //두 재료 모두 갖고 있는 마법 찾기
+                        mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == selectMagic.magicName && x.element_B == closeMagic.magicName);
+
+                        // null이면 재료 순서 바꿔서 재검사
+                        if (mixedMagic == null)
+                        {
+                            mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == closeMagic.magicName && x.element_B == selectMagic.magicName);
+                        }
+                    }
+                    else
+                    {
+                        //같은 마법 넣어주기
+                        mixedMagic = selectMagic;
                     }
 
-                    // 해당 방향에 조합 가능 마법 있으면
-                    if (mixedMagic != null)
+                    // 같은 마법이거나 해당 마법과 조합 가능할때
+                    if (selectMagic.id == closeMagic.id || mixedMagic != null)
                     {
                         // print(selectMagic.magicName + " + " + closeMagic.magicName + " = " + mixedMagic.magicName);
 
@@ -181,7 +232,7 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         MergeMenu.Instance.mergeSignal.gameObject.SetActive(true);
     }
 
-    public void OnDeSelectSlot(bool isMouseSelect = false)
+    public void OnDeSelectSlot()
     {
         // Merge 인디케이터 끄기
         MergeMenu.Instance.mergeSignal.gameObject.SetActive(false);
@@ -189,8 +240,8 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         // print(slotIndex + " : OnDeSelect");
 
         // 스택 슬롯이면 리턴
-        if (isStackSlot)
-            return;
+        // if (isStackSlot)
+        //     return;
         // 슬롯의 마법이 null 아니면 리턴
         if (PlayerManager.Instance.hasMergeMagics[slotIndex] != null)
             return;
@@ -211,11 +262,13 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         }
     }
 
-    public void PutMagic(bool isMouseSelect = false)
+    public IEnumerator ClickSlot()
     {
+        // print(slotIndex + " : OnClick");
+
         //버튼 상호작용 불가면 리턴
         if (!button.interactable)
-            return;
+            yield break;
 
         // 머지 선택모드 켜져있을때 눌렀으면
         if (MergeMenu.Instance.mergeChooseMode)
@@ -239,19 +292,17 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
             PlayerManager.Instance.hasStackMagics.RemoveAt(0);
             // 스택 리스트 갱신
             MergeMenu.Instance.ScrollSlots(false);
+
+            yield break;
         }
 
-        // print(slotIndex + " : OnClick");
-
         // 스택 슬롯이면 리턴
-        if (isStackSlot)
-            return;
-        // 슬롯의 마법이 null 아니면 리턴
-        if (PlayerManager.Instance.hasMergeMagics[slotIndex] != null)
-            return;
+        // if (isStackSlot)
+        //     return;
+
         //마우스 커서에 선택된 아이콘 꺼져있으면 리턴
         if (!MergeMenu.Instance.selectedIcon.enabled)
-            return;
+            yield break;
 
         // 모든 주변 아이콘 무브 트윈 멈추기
         MergeMenu.Instance.IconMoveStop();
@@ -259,16 +310,20 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         // 마우스 커서에 선택된 아이콘 비활성화
         MergeMenu.Instance.selectedIcon.enabled = false;
         // 선택했던 스택 슬롯 Image 초기화
-        Image targetImage = MergeMenu.Instance.stackList[3].transform.Find("Icon").GetComponent<Image>();
-        targetImage.enabled = true;
+        // Image targetImage = MergeMenu.Instance.stackList[3].transform.Find("Icon").GetComponent<Image>();
+        // targetImage.enabled = true;
 
-        // 선택된 Merge 슬롯에 아이콘은 이미 들어가 있으므로 스킵
+        // 선택된 Merge 슬롯에 프레임, 아이콘은 이미 적용됨
         // 선택된 Merge 슬롯에 레벨 넣기
         level.enabled = true;
         level.text = "Lv. " + MergeMenu.Instance.selectedMagic.magicLevel.ToString();
 
         // 선택된 Merge 슬롯에 마법 정보 넣기
         PlayerManager.Instance.hasMergeMagics[slotIndex] = MergeMenu.Instance.selectedMagic;
+
+        // 툴팁 트리거에 마법 정보 넣기
+        tooltip.magic = MergeMenu.Instance.selectedMagic;
+        tooltip.enabled = true;
 
         int ableDirIndex = -1; //합성 가능한 방향 인덱스
         int ableNum = 0; //합성 가능한 개수
@@ -290,6 +345,9 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         // closeSlots 배열에서 합성 가능성 하나면 - 가능성 슬롯 마법 삭제, 합성된 마법 이 슬롯에 배치
         if (ableNum == 1)
         {
+            // 플레이어 조작 못하게 막기
+            MergeMenu.Instance.loadingPanel.SetActive(true);
+
             // 실제 마법 합성하기
             StartCoroutine(MergeMagic(ableDirIndex, slotIndex));
         }
@@ -303,11 +361,14 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
             // 주변의 합성 가능한 슬롯 중 선택하기
             MergeMenu.Instance.ChooseModeToggle();
 
-            return;
+            yield break;
         }
 
         // Merge 인디케이터 끄기
         MergeMenu.Instance.mergeSignal.gameObject.SetActive(false);
+
+        //마법 합성 로딩 끝날때까지 대기
+        yield return new WaitUntil(() => !MergeMenu.Instance.loadingPanel.activeSelf);
 
         // 선택된 마법을 스택에서 삭제
         PlayerManager.Instance.hasStackMagics.RemoveAt(0);
@@ -316,6 +377,8 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
 
         //메인 UI에 스마트폰 알림 갱신
         UIManager.Instance.PhoneNotice();
+
+        //TODO 슬롯 빛나는 이펙트 발생
     }
 
     public IEnumerator MergeMagic(int ableDirIndex, int selectedIndex)
@@ -351,29 +414,45 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         //아이콘 찾기
         Transform closeIcon = closeSlot.Find("Icon");
 
-        // 합성 가능한 아이콘이 날아가서 합쳐지는 트윈
-        closeIcon.DOMove(selectedSlot.transform.position, 0.5f)
+        // 이동할 아이콘에 스프라이트 넣기
+        MergeMenu.Instance.mergeIcon.GetComponent<Image>().sprite = closeIcon.GetComponent<Image>().sprite;
+        // mergeIcon 슬롯에 위치 시키기
+        MergeMenu.Instance.mergeIcon.position = closeIcon.position;
+        // mergeIcon이 날아가서 합쳐지는 트윈
+        MergeMenu.Instance.mergeIcon.DOMove(selectedSlot.transform.position, 0.5f)
+        .OnStart(() =>
+        {
+            //시작할때 활성화
+            MergeMenu.Instance.mergeIcon.gameObject.SetActive(true);
+        })
         .SetEase(Ease.InBack)
-        .SetUpdate(true);
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            //끝나면 비활성화
+            MergeMenu.Instance.mergeIcon.gameObject.SetActive(false);
+        });
 
-        //아이콘 이동 끝날때까지 대기
-        yield return new WaitUntil(() => closeIcon.position == selectedSlot.transform.position);
-
-        // 날아간 뒤 원래 슬롯 자리 초기화
+        // 원래 슬롯 자리 초기화
         closeFrame.GetComponent<Image>().color = Color.white; //프레임 색 초기화
         closeIcon.GetComponent<Image>().enabled = false; //아이콘 비활성화
         closeIcon.Find("Level").GetComponent<TextMeshProUGUI>().enabled = false; //레벨 비활성화
+        closeSlot.GetComponent<ToolTipTrigger>().enabled = false; //툴팁 트리거 끄기
+
+        //아이콘 이동 끝날때까지 대기
+        yield return new WaitUntil(() => MergeMenu.Instance.mergeIcon.position == selectedSlot.transform.position);
 
         // 원래 자리로 돌아오기
-        closeIcon.localPosition = Vector2.zero;
+        // closeIcon.localPosition = Vector2.zero;
 
-        // 이 슬롯에 합성된 마법 데이터 넣기
+        // 이 슬롯에 합성된 마법 데이터 새로 인스턴스 생성해서 넣기
         PlayerManager.Instance.hasMergeMagics[selectedIndex]
-        = MagicDB.Instance.GetMagicByID(MergeMenu.Instance.mergeResultMagics[ableDirIndex]);
+        = new MagicInfo(MagicDB.Instance.GetMagicByID(MergeMenu.Instance.mergeResultMagics[ableDirIndex]));
         // 재료 레벨 합산해서 넣기
         PlayerManager.Instance.hasMergeMagics[selectedIndex].magicLevel
         = MergeMenu.Instance.selectedMagic.magicLevel + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicLevel;
 
+        //! 디버그용
         print(MergeMenu.Instance.selectedMagic.magicName
         + " + " + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicName +
         " = " + PlayerManager.Instance.hasMergeMagics[selectedIndex].magicName);
@@ -387,6 +466,10 @@ public class MergeSlot : MonoBehaviour, ISelectHandler, IDeselectHandler, ISubmi
         : MagicDB.Instance.GetMagicIcon(MergeMenu.Instance.mergeResultMagics[ableDirIndex]);
         // 슬롯에 합성된 마법 레벨 넣기
         selectedSlot.level.text = "Lv. " + PlayerManager.Instance.hasMergeMagics[selectedIndex].magicLevel.ToString();
+        // 슬롯에 툴팁 넣기
+        ToolTipTrigger tooltip = selectedSlot.GetComponent<ToolTipTrigger>();
+        tooltip.enabled = true;
+        tooltip.magic = PlayerManager.Instance.hasMergeMagics[selectedIndex];
 
         // 합성 후 이펙트 발생
         GameObject effect = selectedSlot.transform.Find("ShinyMask").gameObject;

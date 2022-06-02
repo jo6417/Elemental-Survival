@@ -96,6 +96,7 @@ public class Nimbus : MonoBehaviour
         //쿨타임 입력
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
         magic.coolCount = coolTime;
-        // print("coolTime : " + coolTime);
+
+        // print(magic.magicName + " : " + coolTime);
     }
 }

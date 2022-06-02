@@ -90,29 +90,34 @@ public class CastMagic : MonoBehaviour
     {
         // Merge 마법에서 레벨 합산해서 리스트 만들기
         List<MagicInfo> castList = new List<MagicInfo>();
+        castList.Clear(); //리스트 비우기
         foreach (MagicInfo magic in PlayerManager.Instance.hasMergeMagics)
         {
             //마법이 null이면 넘기기
             if (magic == null)
                 continue;
+            // print(magic.magicName + " : " + magic.magicLevel);
 
-            print(magic.magicName + " : " + magic.magicLevel);
+            // MagicDB에서 해당 마법과 같은 마법 찾기 (마법마다 같은 인스턴스를 써야 쿨타임 및 레벨 공유 가능)
+            MagicInfo referMagic = MagicDB.Instance.GetMagicByID(magic.id);
 
-            MagicInfo tempMagic = null;
-            tempMagic = castList.Find(x => x.id == magic.id);
             // ID가 같은 마법이 없으면
-            if (tempMagic == null)
+            if (!castList.Exists(x => x.id == magic.id))
             {
                 //해당 마법 리스트에 추가
-                castList.Add(magic);
+                castList.Add(referMagic);
+                //마법 레벨 초기화
+                referMagic.magicLevel = 0;
             }
-            // 이미 ID 같은 마법이 들어있으면
-            else
-            {
-                //해당 마법 레벨 더하기
-                tempMagic.magicLevel += magic.magicLevel;
-            }
+
+            // print(referMagic.magicLevel + " : " + magic.magicLevel);
+
+            // 기존 마법에 레벨 더하기
+            referMagic.magicLevel += magic.magicLevel;
         }
+
+        //TODO 해당 마법 리스트 인게임화만 하단에 아이콘 나열하기
+        UIManager.Instance.UpdateMagics(castList);
 
         // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
         foreach (MagicInfo magic in castList)
@@ -137,6 +142,9 @@ public class CastMagic : MonoBehaviour
 
                 if (magic.castType == "auto")
                 {
+                    //nowCastMagics에 해당 마법 추가
+                    nowCastMagics.Add(magic);
+
                     // 액티브 마법 시전
                     StartCoroutine(ActiveCast(magic));
                 }
@@ -151,8 +159,6 @@ public class CastMagic : MonoBehaviour
                 tempMagic.magicLevel = magic.magicLevel;
             }
         }
-
-        print(passiveMagics.Count + " : " + nowCastMagics.Count);
 
         // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 마법 찾아서 중단시키기
         for (int i = 0; i < nowCastMagics.Count; i++)
@@ -181,6 +187,8 @@ public class CastMagic : MonoBehaviour
                 nowCastMagics.Remove(nowCastMagics[i]);
             }
         }
+
+
     }
 
     //액티브 마법 소환
@@ -198,6 +206,8 @@ public class CastMagic : MonoBehaviour
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+
+        // print(magic.magicName + " : " + coolTime);
 
         for (int i = 0; i < enemyPos.Count; i++)
         {
@@ -350,14 +360,13 @@ public class CastMagic : MonoBehaviour
             yield break;
         }
 
+        //프리팹 찾기
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
-        float cooltime = MagicDB.Instance.MagicCoolTime(magic);
+        //해당 마법 쿨타임 불러오기
+        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
 
         // 랜덤 적 찾기, 투사체 수 이하로
         List<Vector2> enemyPos = MarkEnemyPos(magic);
-
-        //해당 마법 쿨타임 불러오기
-        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
 
         for (int i = 0; i < enemyPos.Count; i++)
         {
@@ -378,6 +387,6 @@ public class CastMagic : MonoBehaviour
         }
 
         //해당 마법 쿨타임 카운트 시작
-        PlayerManager.Instance.ultimateCoolCount = cooltime;
+        PlayerManager.Instance.ultimateCoolCount = coolTime;
     }
 }

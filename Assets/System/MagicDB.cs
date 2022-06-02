@@ -7,6 +7,8 @@ using UnityEngine.Networking;
 
 public class MagicInfo
 {
+    //수정 가능한 변수들
+    [Header("Configurable")]
     public int magicLevel = 0; //현재 마법 레벨
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
@@ -85,6 +87,7 @@ public class MagicInfo
     public MagicInfo(MagicInfo magic)
     {
         this.id = magic.id;
+        this.magicLevel = magic.magicLevel;
         this.grade = magic.grade;
         this.magicName = magic.magicName;
         this.element_A = magic.element_A;

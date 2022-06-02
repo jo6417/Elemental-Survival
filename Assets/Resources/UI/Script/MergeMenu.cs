@@ -33,14 +33,12 @@ public class MergeMenu : MonoBehaviour
     }
     #endregion
 
-    public bool loadDone = false;//초기 화면 로딩 여부
-
     public Button recipeBtn;
     public Button backBtn;
     public Button homeBtn;
 
     [Header("Effect")]
-    public GameObject loadingPanel; //상호작용 막을 오브젝트
+    public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
     public Vector3 phonePosition; //핸드폰일때 위치 기억
     public Vector3 phoneRotation; //핸드폰일때 회전값 기억
     public Vector3 phoneScale; //핸드폰일때 고정된 스케일
@@ -56,6 +54,7 @@ public class MergeMenu : MonoBehaviour
     public int[] closeSlots = new int[4]; //선택된 슬롯 주변의 인덱스
     public int[] mergeResultMagics = new int[4]; //합성 가능한 마법 id
     public Transform mergeSignal;
+    public Transform mergeIcon; //Merge domove 할때 대신 날아갈 아이콘 (슬롯간 레이어 문제로 사용)
     public bool mergeChooseMode = false; //마법 놓았을때 합성 가능성이 여러개일때, 선택모드 켜기
 
     [Header("Stack List")]
@@ -105,7 +104,17 @@ public class MergeMenu : MonoBehaviour
 
         // 휴대폰 로딩 화면으로 가리기
         loadingPanel.SetActive(true);
-        loadDone = false;
+
+        //마법 DB 로딩 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        //머지 보드 세팅
+        MergeSet();
+
+        // 스택 슬롯 세팅
+        SetSlots();
+        // 스택 슬롯 사이즈 및 위치 정렬
+        ScrollSlots(true);
 
         // 선택 아이콘 끄기
         selectedIcon.enabled = false;
@@ -147,17 +156,6 @@ public class MergeMenu : MonoBehaviour
         //홈 버튼 켜기
         homeBtn.interactable = true;
 
-        //마법 DB 로딩 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
-
-        //머지 보드 세팅
-        MergeSet();
-
-        // 스택 슬롯 세팅
-        SetSlots();
-        // 스택 슬롯 사이즈 및 위치 정렬
-        ScrollSlots(true);
-
         // 첫번째 머지 슬롯 선택하기
         UIManager.Instance.lastSelected = mergeList[0];
         UIManager.Instance.lastOriginColor = mergeList[0].GetComponent<Image>().color;
@@ -174,14 +172,15 @@ public class MergeMenu : MonoBehaviour
         //모든 슬롯 shiny 효과 순차적으로 켜기
         for (int i = 0; i < mergeSlots.childCount; i++)
         {
-            mergeList[i].transform.Find("ShinyMask").gameObject.SetActive(true);
+            GameObject shinyObj = mergeList[i].transform.Find("ShinyMask").gameObject;
+            shinyObj.SetActive(false);
+            shinyObj.SetActive(true);
 
-            yield return new WaitForSecondsRealtime(0.05f);
+            yield return new WaitForSecondsRealtime(0.01f);
         }
 
         // 휴대폰 로딩 화면 끄기
         loadingPanel.SetActive(false);
-        loadDone = true;
 
         // TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
         // TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
@@ -352,7 +351,7 @@ public class MergeMenu : MonoBehaviour
         int endSlotIndex = -1;
 
         // 처음 로딩이 아닐때는 슬롯 인덱스 이동
-        if (loadDone)
+        if (!loadingPanel.activeSelf)
         {
             //슬롯 오브젝트 리스트 인덱스 계산
             startSlotIndex = isLeft ? stackList.Count - 1 : 0;

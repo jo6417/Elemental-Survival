@@ -91,7 +91,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI pauseScrollAmt; //일시정지 메뉴 스크롤 개수 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
-    public Transform hasMagicsUI; //플레이어 현재 소지한 모든 마법 UI
+    public GridLayoutUI hasMagicGrid; //플레이어 현재 소지한 모든 마법 UI
     public Transform ultimateMagicIcon; //궁극기 마법 슬롯 UI
     public Image ultimateIndicator; //궁극기 슬롯 인디케이터 이미지
 
@@ -324,13 +324,13 @@ public class UIManager : MonoBehaviour
         UI_Cursor.SetActive(true); //UI 커서 활성화
 
         //원래 트윈 있으면 죽이기
-        if (DOTween.IsTweening(image))
+        if (image != null && DOTween.IsTweening(image))
             image.DOKill();
 
-        if (DOTween.IsTweening(UI_Cursor.transform))
+        if (UI_Cursor.transform != null && DOTween.IsTweening(UI_Cursor.transform))
             UI_Cursor.transform.DOKill();
 
-        if (DOTween.IsTweening(cursorRect))
+        if (cursorRect != null && DOTween.IsTweening(cursorRect))
             cursorRect.DOKill();
 
         if (cursorSeq.IsActive())
@@ -600,15 +600,16 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateMagics()
+    public void UpdateMagics(List<MagicInfo> magicList)
     {
         //모든 자식 오브젝트 비활성화
-        for (int j = 0; j < hasMagicsUI.childCount; j++)
+        int childNum = hasMagicGrid.transform.childCount;
+        for (int i = 0; i < childNum; i++)
         {
-            LeanPool.Despawn(hasMagicsUI.GetChild(j).gameObject);
+            LeanPool.Despawn(hasMagicGrid.transform.GetChild(0).gameObject);
         }
 
-        foreach (var magic in PlayerManager.Instance.hasStackMagics)
+        foreach (MagicInfo magic in magicList)
         {
             //0등급은 원소젬이므로 표시 안함
             if (magic.grade == 0)
@@ -619,22 +620,25 @@ public class UIManager : MonoBehaviour
                 continue;
 
             //마법 아이콘 오브젝트 생성
-            GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
+            GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicGrid.transform.position, Quaternion.identity, hasMagicGrid.transform);
 
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
             toolTipTrigger.magic = magic;
 
-            //스프라이트 넣기
+            //아이콘 넣기
             magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
             // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
-            //마법 개수 넣기, 2개 이상부터 표시
+            //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
             amount.text = "Lev." + magic.magicLevel.ToString();
         }
+
+        //그리드 업데이트 명령하기
+        hasMagicGrid.isChanged = true;
     }
 
     public void AddMagicUI(MagicInfo magic)
@@ -642,12 +646,12 @@ public class UIManager : MonoBehaviour
         Transform matchIcon = null;
 
         //모든 자식 오브젝트 비활성화
-        for (int j = 0; j < hasMagicsUI.childCount; j++)
+        for (int j = 0; j < hasMagicGrid.transform.childCount; j++)
         {
             // TooltipTrigger의 magic이 같은 아이콘 찾기
-            if (hasMagicsUI.GetChild(j).GetComponent<ToolTipTrigger>().magic == magic)
+            if (hasMagicGrid.transform.GetChild(j).GetComponent<ToolTipTrigger>().magic == magic)
             {
-                matchIcon = hasMagicsUI.GetChild(j);
+                matchIcon = hasMagicGrid.transform.GetChild(j);
                 break;
             }
         }
@@ -664,7 +668,7 @@ public class UIManager : MonoBehaviour
                 return;
 
             //마법 아이콘 오브젝트 생성
-            GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicsUI.position, Quaternion.identity, hasMagicsUI);
+            GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicGrid.transform.position, Quaternion.identity, hasMagicGrid.transform);
 
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();

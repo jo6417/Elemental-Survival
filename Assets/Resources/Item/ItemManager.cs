@@ -14,6 +14,7 @@ public class ItemManager : MonoBehaviour
     public bool isBundle; //합쳐진 아이템인지
     [HideInInspector]
     public int gemTypeIndex = -1;
+    public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
 
     public string itemName;
     Collider2D coll;
@@ -27,6 +28,9 @@ public class ItemManager : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
         velocity = rigid.velocity;
+
+        //아이템 정보 없을때 충돌 끄기
+        coll.enabled = false;
     }
 
     private void OnEnable()
@@ -37,9 +41,6 @@ public class ItemManager : MonoBehaviour
 
     IEnumerator Initial()
     {
-        //아이템 정보 없을때 충돌 끄기
-        coll.enabled = false;
-
         //아이템DB 로드 완료까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
@@ -151,30 +152,35 @@ public class ItemManager : MonoBehaviour
         Vector2 dir = Getter.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
-        if (rigid)
-            rigid.DOMove((Vector2)Getter.position - dir.normalized * 5f, 0.3f);
+        rigid.DOMove((Vector2)Getter.position - dir.normalized * 5f, 0.3f);
 
         yield return new WaitForSeconds(0.3f);
 
-        float itemSpeed = 0.5f;
+        //플레이어 이동 속도 계수
+        float accelSpeed = 0.8f;
 
         // 플레이어 방향으로 날아가기, 아이템 사라질때까지 방향 갱신하며 반복
         while (!isGet || gameObject.activeSelf)
         {
-            itemSpeed -= Time.deltaTime;
-            itemSpeed = Mathf.Clamp(itemSpeed, 0.01f, 1f);
+            accelSpeed += 0.05f;
 
-            if (gameObject.activeSelf && rigid)
-                rigid.DOMove(Getter.position, itemSpeed);
+            //방향 벡터 갱신
+            dir = Getter.position - transform.position;
 
-            //거리가 0.5f 이하일때 획득
-            if (Vector2.Distance(Getter.position, transform.position) <= 0.5f)
+            // 벡터 거리가 0.5f 이하일때 획득
+            if (dir.magnitude <= 0.5f)
             {
                 GainItem();
                 break;
             }
 
-            yield return new WaitForSeconds(0.1f);
+            //플레이어 속도 반영
+            dir = dir.normalized * PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed * accelSpeed;
+
+            //해당 방향으로 날아가기
+            rigid.velocity = dir;
+
+            yield return new WaitForSeconds(0.05f);
         }
     }
 
