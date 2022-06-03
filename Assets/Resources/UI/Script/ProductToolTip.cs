@@ -42,9 +42,11 @@ public class ProductToolTip : MonoBehaviour
     RectTransform rect;
     // bool isFollow = false; //마우스 따라가기 여부
     bool SetDone = false; //모든 정보 표시 완료 여부
+    public bool offCall = false; //툴팁 끄라는 명령
 
     [Header("Magic")]
     public MagicInfo magic;
+    public string magicName;
     List<int> stats = new List<int>();
     public UIPolygon magicStatGraph;
     public GameObject recipeObj;
@@ -93,13 +95,8 @@ public class ProductToolTip : MonoBehaviour
     }
 
     //툴팁 켜기
-    public IEnumerator OpenTooltip(MagicInfo magic = null, ItemInfo item = null, ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown, Vector2 position = default(Vector2))
+    public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null, ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown, Vector2 position = default(Vector2))
     {
-        //툴팁 켜져있으면 끄기
-        // gameObject.SetActive(false);
-
-        // isFollow = false;
-
         //툴팁 고정 위치 들어왔으면 이동
         if (position != default(Vector2))
         {
@@ -112,6 +109,9 @@ public class ProductToolTip : MonoBehaviour
             mousePos.z = 0;
             transform.position = mousePos;
         }
+
+        //툴팁 켜기
+        gameObject.SetActive(true);
 
         if (!rect)
             rect = GetComponent<RectTransform>();
@@ -146,11 +146,6 @@ public class ProductToolTip : MonoBehaviour
         {
             SetDone = SetItemInfo();
         }
-
-        yield return new WaitUntil(() => SetDone);
-
-        //툴팁 켜기
-        gameObject.SetActive(true);
     }
 
     //툴팁 끄기

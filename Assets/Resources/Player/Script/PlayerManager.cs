@@ -67,6 +67,7 @@ public class PlayerManager : MonoBehaviour
 
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
     public bool godMod = true; //! 플레이어 갓모드
+    public float camFollowSpeed = 10f;
 
     [Header("<Refer>")]
     public GameObject mobSpawner;
@@ -86,7 +87,7 @@ public class PlayerManager : MonoBehaviour
 
     [Header("<State>")]
     public float poisonDuration; //독 도트뎀 남은시간
-    public float hitDelayTime = 0.5f; //피격 무적시간
+    public float hitDelayTime = 0.2f; //피격 무적시간
     float hitCount = 0f;
     public bool isDash; //현재 대쉬중 여부
     public bool isParalysis; //깔려서 납작해졌을때
@@ -142,7 +143,10 @@ public class PlayerManager : MonoBehaviour
         //카메라 따라오기
         foreach (var cam in SystemManager.Instance.camList)
         {
-            cam.transform.position = transform.position + new Vector3(0, 0, -50);
+            // cam.transform.position = transform.position + new Vector3(0, 0, -50);
+
+            //플레이어 부드럽게 따라오기
+            cam.transform.position = Vector3.Lerp(cam.transform.position, transform.position + new Vector3(0, 0, -50), Time.deltaTime * camFollowSpeed);
         }
 
         //몬스터 스포너 따라오기
@@ -666,28 +670,12 @@ public class PlayerManager : MonoBehaviour
         // 캐릭터 기본 마법 추가
         foreach (int magicID in magics)
         {
-            // //보유하지 않은 마법일때
-            // if (!hasMagics.Exists(x => x.id == magicID))
-            // {
-            //     // 플레이어 보유 마법에 해당 마법 추가하기
-            //     hasMagics.Add(MagicDB.Instance.GetMagicByID(magicID));
-            // }
-
-            // //보유한 마법의 레벨 올리기
-            // hasMagics.Find(x => x.id == magicID).magicLevel++;
-
             // 마법 찾기
             MagicInfo magic = MagicDB.Instance.GetMagicByID(magicID);
 
             //마법 획득
             GetMagic(magic, false);
         }
-
-        //플레이어 마법 시작
-        // CastMagic.Instance.CastAllMagics();
-
-        // 보유한 모든 마법 아이콘 갱신
-        // UIManager.Instance.UpdateMagics();
 
         // 보유한 궁극기 마법 아이콘 갱신
         UIManager.Instance.UpdateUltimateIcon();

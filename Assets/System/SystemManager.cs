@@ -54,10 +54,13 @@ public class SystemManager : MonoBehaviour
     MagicInfo lifeSeedMagic;
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public Sprite gateIcon; //포탈게이트 아이콘
-    public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Sprite questionMark; //물음표 스프라이트
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
+
+    [Header("Prefab")]
+    public GameObject dmgTxtPrefab; //데미지 텍스트 UI
+    public GameObject ghostPrefab; // 잔상 효과 프리팹
 
     [Header("Material")]
     public Material spriteMat; //일반 스프라이트 머터리얼

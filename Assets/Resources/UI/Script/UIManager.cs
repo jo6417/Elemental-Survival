@@ -140,12 +140,12 @@ public class UIManager : MonoBehaviour
         //스마트폰 메뉴 토글
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            // 스마트폰 스케일이 커졌을때, 로딩 패널 꺼져있을때
-            if (CastMagic.Instance.transform.localScale == Vector3.one
-            && !MergeMenu.Instance.loadingPanel.activeSelf)
-            {
-                MergeMenu.Instance.BackBtnAction();
-            }
+            // // 스마트폰 스케일이 커졌을때, 로딩 패널 꺼져있을때
+            // if (CastMagic.Instance.transform.localScale == Vector3.one
+            // && !MergeMenu.Instance.loadingPanel.activeSelf)
+            // {
+            //     MergeMenu.Instance.BackBtnAction();
+            // }
 
             // 머지 패널 꺼져 있을땐 켜기
             if (!mergeMagicPanel.activeSelf)

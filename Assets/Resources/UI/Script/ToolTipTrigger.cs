@@ -26,7 +26,8 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 상품 구매 버튼일때
         if (toolTipType == ToolTipType.ProductTip)
         {
-            StartCoroutine(ProductToolTip.Instance.OpenTooltip(magic, item));
+            // StartCoroutine(ProductToolTip.Instance.OpenTooltip(magic, item));
+            ProductToolTip.Instance.OpenTooltip(magic, item);
         }
 
         // 소지품 아이콘일때
@@ -39,8 +40,8 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerExit(PointerEventData eventData)
     {
         //마우스 잠겨있지 않으면
-        if(Cursor.lockState == CursorLockMode.None)
-        QuitTooltip();
+        if (Cursor.lockState == CursorLockMode.None)
+            QuitTooltip();
     }
 
     public void OnPointerDown(PointerEventData eventData)
