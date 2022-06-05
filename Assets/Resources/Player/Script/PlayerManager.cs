@@ -65,32 +65,36 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
-    Sequence damageTextSeq; //데미지 텍스트 시퀀스
     public bool godMod = true; //! 플레이어 갓모드
+    public NewInput playerInput;
+    Sequence damageTextSeq; //데미지 텍스트 시퀀스
     public float camFollowSpeed = 10f;
+
+    [Header("<Input>")]
+    Vector2 nowMoveDir;
+    public bool isDash; //현재 대쉬중 여부
+    public bool isParalysis; //깔려서 납작해졌을때
+    public float dashSpeed; //대쉬 버프 속도
+    [HideInInspector]
+    public float speedDebuff = 1f; //이동속도 디버프
+    public Vector3 lastDir; //마지막 바라봤던 방향
 
     [Header("<Refer>")]
     public GameObject mobSpawner;
     private Animator anim;
     public SpriteRenderer sprite;
     public Rigidbody2D rigid;
-    public Vector3 lastDir; //마지막 바라봤던 방향
     public Light2D playerLight;
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Origin; //초기 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
-    public float dashSpeed; //대쉬 버프 속도
-    [HideInInspector]
-    public float speedDebuff = 1f; //이동속도 디버프
 
     [Header("<State>")]
     public float poisonDuration; //독 도트뎀 남은시간
     public float hitDelayTime = 0.2f; //피격 무적시간
     float hitCount = 0f;
-    public bool isDash; //현재 대쉬중 여부
-    public bool isParalysis; //깔려서 납작해졌을때
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;
@@ -110,6 +114,65 @@ public class PlayerManager : MonoBehaviour
 
         //플레이어 초기 스탯 저장
         PlayerStat_Origin = PlayerStat_Now;
+
+        // 입력값 초기화
+        InputInitial();
+    }
+
+    void InputInitial()
+    {
+        playerInput = new NewInput();
+
+        // 방향키 버튼 매핑
+        playerInput.Player.Move.performed += val =>
+        {
+            //현재 이동방향 입력
+            nowMoveDir = val.ReadValue<Vector2>();
+
+            //대쉬 중 아닐때만
+            if (!isDash)
+                Move();
+        };
+
+        // 방향키 안누를때
+        playerInput.Player.Move.canceled += val =>
+        {
+            //현재 이동방향 입력
+            nowMoveDir = val.ReadValue<Vector2>();
+
+            //대쉬 중 아닐때만
+            if (!isDash)
+                Move();
+        };
+
+        // 대쉬 버튼 매핑
+        playerInput.Player.Dash.performed += val =>
+        {
+            if (!isDash && nowMoveDir != Vector2.zero)
+                DashToggle();
+        };
+
+        // 궁극기 버튼 매핑
+        playerInput.Player.Ultimate.performed += val =>
+        {
+            // 쿨타임 가능할때
+            if (PlayerManager.Instance.ultimateCoolCount <= 0)
+            {
+                // print("ultimate use");
+
+                StartCoroutine(CastMagic.Instance.UseUltimateMagic());
+            }
+        };
+    }
+
+    private void OnEnable()
+    {
+        playerInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
     }
 
     void Start()
@@ -164,6 +227,11 @@ public class PlayerManager : MonoBehaviour
         //히트 카운트 감소
         if (hitCount > 0)
             hitCount -= Time.deltaTime;
+    }
+
+    void Move()
+    {
+        // print(nowMoveDir);
 
         // 깔렸을때 조작불가
         if (isParalysis)
@@ -186,37 +254,18 @@ public class PlayerManager : MonoBehaviour
             anim.speed = 1;
         }
 
-        // 대쉬중 조작 불가
-        if (isDash)
-            return;
-
-        // 쿨타임 가능하고 스페이스바 눌렀을때
-        if (Input.GetKeyDown(KeyCode.Space) && PlayerManager.Instance.ultimateCoolCount <= 0)
-        {
-            // print("ultimate use");
-
-            StartCoroutine(CastMagic.Instance.UseUltimateMagic());
-        }
-
-        //이동
-        Move();
-    }
-
-    void Move()
-    {
         //애니메이터 스피드 초기화
         anim.speed = 1;
 
         //이동 입력값 받기
-        Vector2 dir = Vector2.zero;
-        float horizonInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
-        dashSpeed = 1;
+        float horizonInput = nowMoveDir.x;
+        float verticalInput = nowMoveDir.y;
+        dashSpeed = 1f;
 
         // x축 이동
         if (horizonInput != 0)
         {
-            dir.x = horizonInput;
+            nowMoveDir.x = horizonInput;
 
             //방향 따라 캐릭터 회전
             if (horizonInput > 0)
@@ -232,7 +281,7 @@ public class PlayerManager : MonoBehaviour
         // y축 이동
         if (verticalInput != 0)
         {
-            dir.y = verticalInput;
+            nowMoveDir.y = verticalInput;
         }
 
         // 방향키 입력에 따라 애니메이터 걷기 변수 입력
@@ -242,32 +291,35 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                DashToggle();
-                dashSpeed = 2f;
-            }
-            else
-            {
-                anim.SetBool("isWalk", true);
-            }
+            anim.SetBool("isWalk", true);
         }
 
-        dir.Normalize();
-        rigid.velocity = PlayerStat_Now.moveSpeed * dir * dashSpeed * speedDebuff;
+        //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
+        if (isDash)
+        {
+            dashSpeed = 2f;
+        }
+
+        // 실제 오브젝트 이동해주기
+        nowMoveDir.Normalize();
+        rigid.velocity = PlayerStat_Now.moveSpeed * nowMoveDir * dashSpeed * speedDebuff;
 
         // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
         //마지막 방향 기억
-        if (dir != Vector2.zero)
-            lastDir = dir;
+        if (nowMoveDir != Vector2.zero)
+            lastDir = nowMoveDir;
     }
 
     public void DashToggle()
     {
         isDash = !isDash;
         anim.SetBool("isDash", isDash);
+
+        //대쉬 끝날때 이동 입력확인
+        Move();
+
+        // print("Dash : " + isDash);
     }
 
     private void OnCollisionStay2D(Collision2D other)

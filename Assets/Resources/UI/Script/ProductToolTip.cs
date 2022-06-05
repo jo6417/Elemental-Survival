@@ -60,6 +60,14 @@ public class ProductToolTip : MonoBehaviour
 
     private void Awake()
     {
+        //마우스 클릭 입력
+        UIManager.Instance.UI_Input.UI.Click.performed += val =>
+        {
+            QuitTooltip();
+        };
+        //마우스 위치 입력
+        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => FollowMouse(val.ReadValue<Vector2>());
+
         rect = GetComponent<RectTransform>();
 
         //처음엔 끄기
@@ -68,27 +76,27 @@ public class ProductToolTip : MonoBehaviour
 
     void Update()
     {
-        FollowMouse();
+        // FollowMouse();
     }
 
-    void FollowMouse()
+    void FollowMouse(Vector3 nowMousePos)
     {
         // if (!SetDone)
         //     return;
 
         //마우스 클릭하면 툴팁 끄기
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        {
-            QuitTooltip();
-        }
+        // if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        // {
+        //     QuitTooltip();
+        // }
 
         //마우스 숨김 상태면 안따라감
         if (Cursor.lockState == CursorLockMode.Locked)
             return;
 
-        if (transform.position != Input.mousePosition)
+        if (transform.position != nowMousePos)
         {
-            Vector3 mousePos = Input.mousePosition;
+            Vector3 mousePos = nowMousePos;
             mousePos.z = 0;
             transform.position = mousePos;
         }
@@ -105,7 +113,7 @@ public class ProductToolTip : MonoBehaviour
         }
         else
         {
-            Vector3 mousePos = Input.mousePosition;
+            Vector3 mousePos = UIManager.Instance.nowMousePos;
             mousePos.z = 0;
             transform.position = mousePos;
         }

@@ -476,7 +476,7 @@ public class VendMachine : MonoBehaviour
                 outputFrame.sprite = itemFrame; //아이템이면 아이템 프레임
 
             outputObj.transform.localScale = Vector2.one;
-            
+
             outputSeq = DOTween.Sequence();
             outputSeq
             .Append(

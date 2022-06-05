@@ -94,11 +94,11 @@ public class EnemySpawn : MonoBehaviour
         }
 
         //! 테스트용 수동 스폰, 쿨타임 무시, 몬스터 총 전투력 무시
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //랜덤 몬스터 스폰
-            StartCoroutine(SpawnMob(true));
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     //랜덤 몬스터 스폰
+        //     StartCoroutine(SpawnMob(true));
+        // }
     }
 
     IEnumerator SpawnMob(bool ForceSpawn = false)

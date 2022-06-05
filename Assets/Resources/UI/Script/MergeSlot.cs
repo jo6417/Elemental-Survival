@@ -80,6 +80,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        // 마우스로 선택 여부 초기화
+        isMouseSelect = false;
+
         // 마우스 나가면 Deselect 하기
         EventSystem.current.SetSelectedGameObject(null);
     }
@@ -114,6 +117,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (PlayerManager.Instance.hasStackMagics.Count > 0)
             MergeMenu.Instance.selectedMagic = PlayerManager.Instance.hasStackMagics[0];
 
+        // 현재 선택된 슬롯 입력
         MergeMenu.Instance.nowSelectSlot = this;
 
         // 스택 슬롯이면 리턴
@@ -125,9 +129,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 마우스로 컨트롤 중이고, 마우스에 아이콘이 꺼져있으면 리턴
         if (isMouseSelect && !MergeMenu.Instance.selectedIcon.enabled)
             return;
-
-        // 마우스로 선택 여부 초기화
-        isMouseSelect = false;
 
         // 프레임 색 넣기
         frame.color = MagicDB.Instance.gradeColor[MergeMenu.Instance.selectedMagic.grade];
@@ -206,10 +207,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                         mixedMagic = selectMagic;
                     }
 
+                    //! 조합 가능성 출력
                     if (mixedMagic != null)
-                        print(selectMagic.magicName + " + " + closeMagic.magicName + " = " + mixedMagic.magicName);
-                    else
-                        print(selectMagic.magicName + " + " + closeMagic.magicName + " = null");
+                        print(i + " Slot : " + selectMagic.magicName + " + " + closeMagic.magicName + " = " + mixedMagic.magicName);
 
                     // 같은 마법이거나 해당 마법과 조합 가능할때
                     if (selectMagic.id == closeMagic.id || mixedMagic != null)

@@ -38,7 +38,12 @@ public class UIManager : MonoBehaviour
 
     public bool enemyPointSwitch = false; //화면 밖의 적 방향 표시 여부
 
+    [Header("<Input>")]
+    public NewInput UI_Input; // UI 인풋 받기
+    public Vector2 nowMousePos; // 마우스 마지막 위치 기억
+
     [Header("PopupUI")]
+    public GameObject nowOpenPopup; //현재 열려있는 팝업 UI
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
     public GameObject mixMagicPanel;
@@ -60,6 +65,7 @@ public class UIManager : MonoBehaviour
     public GameObject arrowPrefab; //적 방향 가리킬 화살표 UI
     public GameObject iconArrowPrefab; //오브젝트 방향 기리킬 아이콘 화살표 UI
     public Image phoneScreen; //스마트폰 알람 UI
+    public bool phoneLoading; //스마트폰 로딩중 여부
 
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
@@ -73,9 +79,7 @@ public class UIManager : MonoBehaviour
     bool isFlicking = false; //커서 깜빡임 여부
     bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
-    Vector2 lastMousePos; //마지막 마우스 위치
     RectTransform cursorRect;
-    public bool isMouseMove = true; //현재 마우스 움직이고 있는지
 
     [Header("PlayerUI")]
     public SlicedFilledImage playerHp;
@@ -94,6 +98,101 @@ public class UIManager : MonoBehaviour
     public GridLayoutUI hasMagicGrid; //플레이어 현재 소지한 모든 마법 UI
     public Transform ultimateMagicIcon; //궁극기 마법 슬롯 UI
     public Image ultimateIndicator; //궁극기 슬롯 인디케이터 이미지
+
+    private void Awake()
+    {
+        //입력 초기화
+        InputInitial();
+    }
+
+    void InputInitial()
+    {
+        UI_Input = new NewInput();
+
+        // 방향키 입력
+        UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
+        // 마우스 위치 입력
+        UI_Input.UI.MousePosition.performed += val => MousePos(val.ReadValue<Vector2>());
+        // 확인 입력
+        UI_Input.UI.Accept.performed += val => Accept();
+        // 취소 입력
+        UI_Input.UI.Cancel.performed += val => Cancel();
+        // 스마트폰 버튼 입력
+        UI_Input.UI.PhoneMenu.performed += val => PhoneOpen();
+    }
+
+    private void OnEnable()
+    {
+        UI_Input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        UI_Input.Disable();
+    }
+
+    // 방향키 입력되면 실행
+    void NavControl(Vector2 arrowDir)
+    {
+        // print(arrowDir);
+
+        //마우스 잠겨있지않을때
+        if (Cursor.lockState == CursorLockMode.None)
+        {
+            //모든 툴팁 끄기
+            HasStuffToolTip.Instance.QuitTooltip();
+            ProductToolTip.Instance.QuitTooltip();
+
+            //마우스 숨기기
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+
+        // UI 커서 컨트롤
+        // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
+        if (!UI_Cursor.activeSelf && lastSelected)
+            lastSelected.Select();
+    }
+
+    // 마우스 위치 입력되면 실행
+    void MousePos(Vector2 mousePos)
+    {
+        // print(mousePos);
+        //마지막 마우스 위치 기억
+        nowMousePos = mousePos;
+
+        // 마우스 고정인데 툴팁 떠있으면 끄기
+        // if (Cursor.lockState == CursorLockMode.Locked)
+        // {
+        //     HasStuffToolTip.Instance.QuitTooltip();
+        //     ProductToolTip.Instance.QuitTooltip();
+        //     //마우스 고정해제
+        //     Cursor.lockState = CursorLockMode.None;
+
+        //     // UI 커서 끄기
+        //     // UI_Cursor.SetActive(false);
+        //     UICursorToggle();
+        // }
+    }
+
+    // 확인 입력
+    void Accept()
+    {
+
+    }
+
+    // 취소 입력
+    void Cancel()
+    {
+        //일시정지 패널 켜기
+        Resume();
+    }
+
+    void PhoneOpen()
+    {
+        //스마트폰 패널 꺼져있을때
+        if (!mergeMagicPanel.activeSelf)
+            PopupUI(mergeMagicPanel);
+    }
 
     private void Start()
     {
@@ -131,74 +230,14 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        // 일시정지 메뉴 토글
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Resume();
-        }
-
-        //스마트폰 메뉴 토글
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            // // 스마트폰 스케일이 커졌을때, 로딩 패널 꺼져있을때
-            // if (CastMagic.Instance.transform.localScale == Vector3.one
-            // && !MergeMenu.Instance.loadingPanel.activeSelf)
-            // {
-            //     MergeMenu.Instance.BackBtnAction();
-            // }
-
-            // 머지 패널 꺼져 있을땐 켜기
-            if (!mergeMagicPanel.activeSelf)
-            {
-                PopupUI(mergeMagicPanel);
-            }
-        }
-
         //게임시간 타이머 업데이트
         if (SystemManager.Instance.playerTimeScale != 0)
             UpdateTimer();
         else
             ResumeTimer();
 
-        //마우스 숨기기 토글
-        HideToggleMouseCursor();
-
         //선택된 UI 따라다니기
         FollowUICursor();
-    }
-
-    void HideToggleMouseCursor()
-    {
-        // 방향키 누르면
-        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-        {
-            if (Cursor.lockState == CursorLockMode.None)
-            {
-                HasStuffToolTip.Instance.QuitTooltip();
-                ProductToolTip.Instance.QuitTooltip();
-                //마우스 숨기기
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-
-            //마지막 마우스 위치 기억
-            lastMousePos = Input.mousePosition;
-        }
-
-        // 마우스 움직이면
-        if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
-        {
-            // 마우스 고정인데 툴팁 떠있으면 끄기
-            if (Cursor.lockState == CursorLockMode.Locked)
-            {
-                HasStuffToolTip.Instance.QuitTooltip();
-                ProductToolTip.Instance.QuitTooltip();
-                //마우스 고정해제
-                Cursor.lockState = CursorLockMode.None;
-
-                // UI 커서 끄기
-                UI_Cursor.SetActive(false);
-            }
-        }
     }
 
     void FollowUICursor()
@@ -257,25 +296,31 @@ public class UIManager : MonoBehaviour
             if (!isMove)
                 UI_Cursor.transform.position = lastSelected.transform.position;
         }
-
-        //방향키 입력 들어왔을때
-        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-        {
-            // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
-            if (!UI_Cursor.activeSelf && lastSelected)
-                lastSelected.Select();
-        }
     }
 
-    void HideUICursor()
+    public void UICursorToggle(bool setToggle)
     {
-        //UI커서 비활성화
-        UI_Cursor.SetActive(false);
+        // 커서 켜져있을때
+        if (!setToggle && UI_Cursor.activeSelf)
+        {
+            //UI커서 비활성화
+            UI_Cursor.SetActive(false);
+        }
 
-        //UI커서 크기 및 위치 초기화
-        // print(new Vector2(Screen.width, Screen.height));
-        // UI_Cursor.transform.localScale = new Vector2(1920f, 1080f);
-        // UI_Cursor.transform.position = transform.position;
+        // 커서 꺼져있을때
+        if (setToggle && !UI_Cursor.activeSelf)
+        {
+            //UI커서 크기 및 위치 초기화
+            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+            cursorRect.sizeDelta = cursorCanvasRect.sizeDelta;
+            print("cursorCanvasRect.sizeDelta : " + cursorCanvasRect.sizeDelta);
+
+            cursorRect.position = Vector2.zero;
+
+            //UI커서 활성화
+            UI_Cursor.SetActive(true);
+        }
+
     }
 
     void CursorAnim()
@@ -321,7 +366,9 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        UI_Cursor.SetActive(true); //UI 커서 활성화
+        //UI 커서 활성화
+        UICursorToggle(true);
+        // UI_Cursor.SetActive(true);
 
         //원래 트윈 있으면 죽이기
         if (image != null && DOTween.IsTweening(image))
@@ -805,44 +852,64 @@ public class UIManager : MonoBehaviour
 
     public void PopupUI(GameObject popup)
     {
+        // 이미 다른 팝업 열려있는데 팝업 키려고하면 리턴
+        if (!popup.activeSelf && nowOpenPopup != null)
+        {
+            print("리턴");
+            return;
+        }
+
         // 팝업 UI 토글
         popup.SetActive(!popup.activeSelf);
 
-        // 시간 정지 토글
-        Time.timeScale = popup.activeSelf ? 0 : 1;
-
-        if (!popup.activeSelf)
-        {
-            // 팝업 꺼질때 UI 커서 끄기
-            UI_Cursor.SetActive(false);
-            //UI커서 크기 및 위치 초기화
-            cursorRect.sizeDelta = UIRect.sizeDelta;
-            UI_Cursor.transform.position = transform.position;
-
-            //null 선택하기
-            EventSystem.current.SetSelectedGameObject(null);
-        }
-
+        //팝업 세팅
+        PopupSet(popup);
     }
 
     public void PopupUI(GameObject popup, bool forceSwitch = true)
     {
+        // 이미 다른 팝업 열려있는데 팝업 키려고하면 리턴
+        if (!popup.activeSelf && nowOpenPopup != null)
+        {
+            print("리턴");
+            return;
+        }
+
         // 팝업 UI 토글
         popup.SetActive(forceSwitch);
 
+        //팝업 세팅
+        PopupSet(popup);
+    }
+
+    void PopupSet(GameObject popup)
+    {
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
 
+        //팝업 off
         if (!popup.activeSelf)
         {
             // 팝업 꺼질때 UI 커서 끄기
-            UI_Cursor.SetActive(false);
-            //UI커서 크기 및 위치 초기화
-            cursorRect.sizeDelta = UIRect.sizeDelta;
-            UI_Cursor.transform.position = transform.position;
+            UICursorToggle(false);
 
             //null 선택하기
             EventSystem.current.SetSelectedGameObject(null);
+
+            //플레이어 입력 켜기
+            PlayerManager.Instance.playerInput.Enable();
+
+            //현재 열려있는 팝업 비우기
+            nowOpenPopup = null;
+        }
+        //팝업 on
+        else
+        {
+            //플레이어 입력 끄기
+            PlayerManager.Instance.playerInput.Disable();
+
+            //현재 열려있는 팝업 갱신
+            nowOpenPopup = popup;
         }
     }
 

@@ -32,14 +32,14 @@ public class UltimateList : MonoBehaviour
     private void Update()
     {
         //TODO 좌,우 방향키로 궁극기 스크롤하기
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            ScrollSlots(false);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            ScrollSlots(true);
-        }
+        // if (Input.GetKeyDown(KeyCode.A))
+        // {
+        //     ScrollSlots(false);
+        // }
+        // if (Input.GetKeyDown(KeyCode.D))
+        // {
+        //     ScrollSlots(true);
+        // }
     }
 
     IEnumerator Initial()

@@ -89,6 +89,77 @@ public class MergeMenu : MonoBehaviour
         }
 
         selectedIconRect = selectedIcon.GetComponent<RectTransform>();
+
+        // 스마트폰 켜져있을때
+        if (gameObject.activeSelf)
+            // 키 입력 정리
+            InputInitial();
+    }
+
+    void InputInitial()
+    {
+        //플레이어 인풋 끄기
+        PlayerManager.Instance.playerInput.Disable();
+
+        // 방향키 입력
+        UIManager.Instance.UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
+        // 마우스 위치 입력
+        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => MousePos(val.ReadValue<Vector2>());
+
+        // 스마트폰 버튼 입력
+        UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
+        {
+            // 로딩 패널 꺼져있을때, 머지 선택 모드 아닐때
+            if (!loadingPanel.activeSelf && !mergeChooseMode)
+            {
+                //백 버튼 액션 실행
+                BackBtnAction();
+            }
+        };
+    }
+
+    // 방향키 입력되면 실행
+    void NavControl(Vector2 arrowDir)
+    {
+        //마우스에 아이콘 들고 있을때
+        if (selectedIcon.enabled)
+        {
+            //커서 및 빈 스택 슬롯 초기화 하기
+            ToggleStackSlot();
+        }
+
+        //쿨타임 가능할때, 스택 슬롯 Select 됬을때
+        if (scrollCoolCount <= 0f && nowSelectSlot != null && UIManager.Instance.lastSelected.gameObject == selectedSlot.gameObject)
+        {
+            // 왼쪽으로 스크롤하기
+            if (arrowDir.x < 0)
+            {
+                ScrollSlots(false);
+                scrollCoolCount = scrollCoolTime;
+            }
+
+            // 오른쪽으로 스크롤하기
+            if (arrowDir.x > 0)
+            {
+                ScrollSlots(true);
+                scrollCoolCount = scrollCoolTime;
+            }
+        }
+    }
+
+    // 마우스 위치 입력되면 실행
+    void MousePos(Vector2 mousePosInput)
+    {
+        // print(mousePosInput);
+
+        if (selectedIcon.enabled)
+        {
+            //선택된 마법 아이콘 마우스 따라다니기
+            Vector3 mousePos = mousePosInput;
+            mousePos.z = 0;
+
+            selectedIconRect.anchoredPosition = mousePos;
+        }
     }
 
     private void OnEnable()
@@ -102,8 +173,11 @@ public class MergeMenu : MonoBehaviour
         //시간 멈추기
         Time.timeScale = 0f;
 
+        //팝업 UI 열림 표시
+        // UIManager.Instance.popupUIOpened = true;
+
         // 휴대폰 로딩 화면으로 가리기
-        loadingPanel.SetActive(true);
+        LoadingToggle(true);
 
         //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -180,10 +254,17 @@ public class MergeMenu : MonoBehaviour
         }
 
         // 휴대폰 로딩 화면 끄기
-        loadingPanel.SetActive(false);
+        LoadingToggle(false);
 
         // TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
         // TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
+    }
+
+    void LoadingToggle(bool isLoading)
+    {
+        UIManager.Instance.phoneLoading = isLoading;
+
+        loadingPanel.SetActive(isLoading);
     }
 
     void MergeSet()
@@ -239,16 +320,6 @@ public class MergeMenu : MonoBehaviour
 
     private void Update()
     {
-        //스마트폰 메뉴 토글
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            // 로딩 패널 꺼져있을때
-            if (!loadingPanel.activeSelf)
-            {
-                BackBtnAction();
-            }
-        }
-
         //뒤로가기 시간 카운트
         if (backBtnCount > 0)
             backBtnCount -= Time.unscaledDeltaTime;
@@ -258,73 +329,19 @@ public class MergeMenu : MonoBehaviour
             .SetUpdate(true);
         }
 
-        // 좌,우 방향키로 스택 리스트 스크롤하기
-        ScrollListener();
-
-        //선택된 마법 아이콘 마우스 따라가기
-        FollowMouse();
-    }
-
-    void FollowMouse()
-    {
-        //방향키 눌렀을때
-        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-        {
-            //마우스에 아이콘 들고 있을때
-            if (selectedIcon.enabled)
-            {
-                //커서 및 빈 스택 슬롯 초기화 하기
-                ToggleStackSlot();
-            }
-        }
-
-        // 마우스 움직이면, 마우스 커서에 마법 있으면
-        if ((Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
-        && selectedIcon.enabled)
-        {
-            //현재 마우스로 조작중
-            UIManager.Instance.isMouseMove = true;
-
-            //선택된 마법 아이콘 마우스 따라다니기
-            Vector3 mousePos = Input.mousePosition;
-            mousePos.z = 0;
-
-            selectedIconRect.anchoredPosition = mousePos;
-        }
-        else
-        {
-            //현재 키보드로 조작중
-            UIManager.Instance.isMouseMove = false;
-        }
-
-    }
-
-    void ScrollListener()
-    {
-        //쿨타임 가능할때, 스택 슬롯 Select 됬을때
-        if (scrollCoolCount <= 0f && nowSelectSlot != null && nowSelectSlot.gameObject == selectedSlot.gameObject)
-        {
-            if (Input.GetKey(KeyCode.A))
-            {
-                ScrollSlots(false);
-                scrollCoolCount = scrollCoolTime;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                ScrollSlots(true);
-                scrollCoolCount = scrollCoolTime;
-            }
-        }
-        else
-        {
+        //스택 스크롤 시간 카운트
+        if (scrollCoolCount > 0)
             scrollCoolCount -= Time.unscaledDeltaTime;
-        }
     }
 
     public void ToggleStackSlot()
     {
         //빈 슬롯이면 리턴
         if (PlayerManager.Instance.hasStackMagics.Count == 0)
+            return;
+
+        //마우스 꺼져있으면 리턴
+        if (Cursor.lockState == CursorLockMode.Locked)
             return;
 
         Image targetImage = stackList[3].transform.Find("Icon").GetComponent<Image>();
@@ -336,7 +353,7 @@ public class MergeMenu : MonoBehaviour
         selectedIcon.enabled = !targetImage.enabled;
 
         //선택된 마법 아이콘 마우스 위치로 이동
-        Vector3 mousePos = Input.mousePosition;
+        Vector3 mousePos = UIManager.Instance.nowMousePos;
         mousePos.z = 0;
         selectedIconRect.anchoredPosition = mousePos;
     }
@@ -528,22 +545,30 @@ public class MergeMenu : MonoBehaviour
                         }
                     }
                 }
-
-                // 뒤로 버튼 반짝이기
-                Image backBtnImg = backBtn.GetComponent<Image>();
-                Color originBackColor = backBtnImg.color;
-                backBtnImg.DOColor(new Color(originBackColor.r, originBackColor.g * 2f, originBackColor.b * 2f, originBackColor.a), 0.5f)
-                .SetUpdate(true)
-                .SetLoops(-1, LoopType.Yoyo)
-                .SetEase(Ease.InOutBack)
-                .OnKill(() =>
-                {
-                    backBtnImg.color = originBackColor;
-                });
             }
+            // 뒤로 버튼 반짝이기
+            // Image backBtnImg = backBtn.GetComponent<Image>();
+            // Color originBackColor = backBtnImg.color;
+            // backBtnImg.DOColor(new Color(originBackColor.r, originBackColor.g * 2f, originBackColor.b * 2f, originBackColor.a), 0.5f)
+            // .SetUpdate(true)
+            // .SetLoops(-1, LoopType.Yoyo)
+            // .SetEase(Ease.InOutBack)
+            // .OnKill(() =>
+            // {
+            //     backBtnImg.color = originBackColor;
+            // });
 
-            //스택 가운데 버튼 상호작용 끄기
+            // 백 버튼 상호작용 끄기
+            backBtn.interactable = false;
+            // 레시피 버튼 상호작용 끄기
+            recipeBtn.interactable = false;
+            // 홈 버튼 상호작용 끄기
+            homeBtn.interactable = false;
+            // 스택 가운데 버튼 상호작용 끄기
             selectedSlot.interactable = false;
+            // 스택 좌우 스크롤 버튼 상호작용 끄기
+            leftScrollBtn.interactable = false;
+            rightScrollBtn.interactable = false;
         }
         // 선택모드 취소
         else
@@ -554,8 +579,17 @@ public class MergeMenu : MonoBehaviour
                 slot.GetComponent<Button>().interactable = true;
             }
 
+            // 백 버튼 상호작용 켜기
+            backBtn.interactable = true;
+            // 레시피 버튼 상호작용 켜기
+            recipeBtn.interactable = true;
+            // 홈 버튼 상호작용 켜기
+            homeBtn.interactable = true;
             //스택 가운데 버튼 상호작용 켜기
             selectedSlot.interactable = true;
+            // 스택 좌우 스크롤 버튼 상호작용 끄기
+            leftScrollBtn.interactable = true;
+            rightScrollBtn.interactable = true;
 
             // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
             foreach (int index in closeSlots)
@@ -579,8 +613,8 @@ public class MergeMenu : MonoBehaviour
             ToggleStackSlot();
 
             //백 버튼 깜빡임 종료
-            Image backBtnImg = backBtn.GetComponent<Image>();
-            backBtnImg.DOKill();
+            // Image backBtnImg = backBtn.GetComponent<Image>();
+            // backBtnImg.DOKill();
         }
     }
 
@@ -606,19 +640,19 @@ public class MergeMenu : MonoBehaviour
         //TODO 메인화면으로 전환
 
         // MergeChoose 모드일때
-        if (mergeChooseMode)
-        {
-            // 선택했던 Merge 슬롯 비우기
-            mergeWaitSlot.frame.color = Color.white;
-            mergeWaitSlot.icon.enabled = false;
-            mergeWaitSlot.level.enabled = false;
-            mergeWaitSlot.tooltip.enabled = false;
-            PlayerManager.Instance.hasMergeMagics[mergeWaitSlot.transform.GetSiblingIndex()] = null;
+        // if (mergeChooseMode)
+        // {
+        //     // 선택했던 Merge 슬롯 비우기
+        //     mergeWaitSlot.frame.color = Color.white;
+        //     mergeWaitSlot.icon.enabled = false;
+        //     mergeWaitSlot.level.enabled = false;
+        //     mergeWaitSlot.tooltip.enabled = false;
+        //     PlayerManager.Instance.hasMergeMagics[mergeWaitSlot.transform.GetSiblingIndex()] = null;
 
-            // 선택 모드 취소하기
-            ChooseModeToggle();
-            return;
-        }
+        //     // 선택 모드 취소하기
+        //     ChooseModeToggle();
+        //     return;
+        // }
 
         // 메인 Merge 화면일때
         if (backBtnCount <= 0)
@@ -651,12 +685,12 @@ public class MergeMenu : MonoBehaviour
             //홈 버튼 끄기
             homeBtn.interactable = false;
 
-            // UI 커서 끄기
-            UIManager.Instance.UI_Cursor.SetActive(false);
-
             //마우스로 아이콘 들고 있으면 복귀시키기
             if (selectedIcon.enabled)
                 ToggleStackSlot();
+
+            // UI 커서 미리 끄기
+            UIManager.Instance.UICursorToggle(false);
 
             // Merge 리스트에서 확인해서 필요한 마법 시전하기
             CastMagic.Instance.CastCheck();
@@ -680,8 +714,8 @@ public class MergeMenu : MonoBehaviour
                 // 끝나면 시간 복구하기
                 Time.timeScale = 1f;
 
-                //메뉴 종료하기
-                gameObject.SetActive(false);
+                //스마트폰 패널 종료
+                UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
             });
         }
     }
