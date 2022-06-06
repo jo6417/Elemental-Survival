@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5043130184713845663}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.34, y: 0.12, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -48,7 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
   knockbackForce: 10
+  isStop: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
@@ -67,12 +70,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPos: {x: 10, y: 10}
-  sprite: {fileID: 0}
-  originColScale: {x: 0, y: 0}
-  isAutoDespawn: 1
-  magicDuration: 3
-  magicSpeed: 0
 --- !u!212 &8858579763765985367
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -111,7 +108,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 5391045662930292274, guid: 79e50b1e253f6554aaef902046c31c23,
     type: 3}

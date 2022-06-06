@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
     public GameObject UI_Cursor; //선택된 UI 따라다니는 UI커서
     public Canvas UI_CursorCanvas; //UI커서 전용 캔버스
     public Selectable lastSelected; //마지막 선택된 오브젝트
-    public Color lastOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
+    public Color targetOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
     public float UI_CursorPadding; //UI 커서 여백
     bool isFlicking = false; //커서 깜빡임 여부
     bool isMove = false; //커서 이동중 여부
@@ -157,21 +157,22 @@ public class UIManager : MonoBehaviour
     void MousePos(Vector2 mousePos)
     {
         // print(mousePos);
+
         //마지막 마우스 위치 기억
         nowMousePos = mousePos;
 
-        // 마우스 고정인데 툴팁 떠있으면 끄기
-        // if (Cursor.lockState == CursorLockMode.Locked)
-        // {
-        //     HasStuffToolTip.Instance.QuitTooltip();
-        //     ProductToolTip.Instance.QuitTooltip();
-        //     //마우스 고정해제
-        //     Cursor.lockState = CursorLockMode.None;
+        // 마우스 잠겨있을때
+        if (Cursor.lockState == CursorLockMode.Locked)
+        {
+            // 마우스 고정인데 툴팁 떠있으면 끄기
+            HasStuffToolTip.Instance.QuitTooltip();
+            ProductToolTip.Instance.QuitTooltip();
+            //마우스 고정해제
+            Cursor.lockState = CursorLockMode.None;
 
-        //     // UI 커서 끄기
-        //     // UI_Cursor.SetActive(false);
-        //     UICursorToggle();
-        // }
+            // UI 커서 끄기
+            UICursorToggle(false);
+        }
     }
 
     // 확인 입력
@@ -260,7 +261,7 @@ public class UIManager : MonoBehaviour
 
                 //기억하고 있는 버튼 있으면 색 복구하기
                 if (lastSelected)
-                    lastSelected.targetGraphic.color = lastOriginColor;
+                    lastSelected.targetGraphic.color = targetOriginColor;
 
                 //커서 애니메이션 끝
                 isFlicking = false;
@@ -273,7 +274,7 @@ public class UIManager : MonoBehaviour
                 lastSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
 
                 //원본 컬러 기억하기
-                lastOriginColor = lastSelected.targetGraphic.color;
+                targetOriginColor = lastSelected.targetGraphic.color;
             }
         }
         //선택된 버튼이 바뀌었을때
@@ -289,10 +290,10 @@ public class UIManager : MonoBehaviour
                 isMove = true;
 
                 //커서 애니메이션 시작
-                CursorAnim();
+                StartCoroutine(NewCursorAnim());
             }
 
-            //ui커서 따라가기
+            // domove 끝났으면 타겟 위치 따라가기
             if (!isMove)
                 UI_Cursor.transform.position = lastSelected.transform.position;
         }
@@ -323,6 +324,134 @@ public class UIManager : MonoBehaviour
 
     }
 
+    IEnumerator NewCursorAnim()
+    {
+        // 선택된 타겟 이미지
+        Image image = lastSelected.targetGraphic.GetComponent<Image>();
+        // 선택된 이미지 Rect
+        RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
+
+        //깜빡일 시간
+        float flickTime = 0.3f;
+        //깜빡일 컬러 강조 비율
+        float colorRate = 1.4f;
+        //깜빡일 컬러
+        Color flickColor = new Color(targetOriginColor.r * colorRate, targetOriginColor.g * colorRate, targetOriginColor.b * colorRate, 1f);
+        //이동할 버튼 위치
+        Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
+
+        //커서 사이즈 + 여백 추가
+        Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
+
+        //마지막 선택된 버튼의 캔버스
+        Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
+
+        // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
+        if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
+        {
+            //렌더 모드 일치 시키기
+            UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
+
+            // 바뀐 렌더모드에 따라 커서 스케일 정의
+            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+            if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                cursorCanvasRect.localScale = Vector2.one;
+            }
+            else
+            {
+                cursorCanvasRect.localScale = Vector2.one / 64f;
+
+                //캔버스 z축을 선택된 캔버스에 맞추기
+                Vector3 canvasPos = cursorCanvasRect.position;
+                canvasPos.z = selectedCanvas.transform.position.z;
+                cursorCanvasRect.position = canvasPos;
+            }
+        }
+
+        //UI 커서 활성화
+        UICursorToggle(true);
+        // UI_Cursor.SetActive(true);
+
+        //원래 트윈 있으면 죽이기
+        if (image != null && DOTween.IsTweening(image))
+            image.DOKill();
+
+        if (UI_Cursor.transform != null && DOTween.IsTweening(UI_Cursor.transform))
+            UI_Cursor.transform.DOKill();
+
+        if (cursorRect != null && DOTween.IsTweening(cursorRect))
+            cursorRect.DOKill();
+
+        if (cursorSeq.IsActive())
+            cursorSeq.Kill();
+
+        //TODO 타겟 위치로 이동
+        UI_Cursor.transform.DOMove(btnPos, flickTime)
+        .SetUpdate(true);
+
+        //TODO 타겟과 사이즈 맞추기
+        cursorRect.DOSizeDelta(size, flickTime)
+        .SetUpdate(true);
+
+        //이동 시간 카운트
+        float moveCount = flickTime;
+        while (isMove && EventSystem.current.currentSelectedGameObject != null)
+        {
+            //남은 이동 시간 차감
+            moveCount -= Time.deltaTime;
+
+            //타겟 위치 변경되면
+            //이동 중 버튼 위치가 바뀌면
+            if (btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
+            {
+                //버튼 위치 갱신
+                btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
+
+                //원래 트윈 죽이기
+                UI_Cursor.transform.DOKill();
+
+                // 새롭게 이동 트윈
+                UI_Cursor.transform.DOMove(btnPos, moveCount)
+                .SetUpdate(true);
+            }
+
+            yield return new WaitForSeconds(Time.unscaledDeltaTime);
+        }
+
+        //이동 시간 대기
+        yield return new WaitForSecondsRealtime(flickTime);
+
+        //이동 끝
+        isMove = false;
+        //깜빡임 시작
+        isFlicking = true;
+
+        //사이즈 초기화
+        cursorRect.sizeDelta = size;
+        // 사이즈 커졌다 작아졌다 무한 반복
+        cursorRect.DOSizeDelta(size + size * 0.1f, flickTime)
+        .SetLoops(-1, LoopType.Yoyo)
+        .SetUpdate(true)
+        .OnKill(() =>
+        {
+            //사이즈 초기화
+            cursorRect.sizeDelta = size;
+        });
+
+        // 컬러 초기화
+        image.color = targetOriginColor;
+        // 컬러 깜빡이기 무한 반복
+        image.DOColor(flickColor, flickTime)
+        .SetLoops(-1, LoopType.Yoyo)
+        .SetUpdate(true)
+        .OnKill(() =>
+        {
+            // 컬러 초기화
+            image.color = targetOriginColor;
+        });
+    }
+
     void CursorAnim()
     {
         Image image = lastSelected.targetGraphic.GetComponent<Image>();
@@ -333,7 +462,7 @@ public class UIManager : MonoBehaviour
         //깜빡일 컬러 강조 비율
         float colorRate = 1.4f;
         //깜빡일 컬러
-        Color flickColor = new Color(lastOriginColor.r * colorRate, lastOriginColor.g * colorRate, lastOriginColor.b * colorRate, 1f);
+        Color flickColor = new Color(targetOriginColor.r * colorRate, targetOriginColor.g * colorRate, targetOriginColor.b * colorRate, 1f);
         //이동할 버튼 위치
         Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
 
@@ -436,7 +565,7 @@ public class UIManager : MonoBehaviour
                 image.DOColor(flickColor, flickTime)
                 .OnKill(() =>
                 {
-                    image.color = lastOriginColor;
+                    image.color = targetOriginColor;
                 })
             )
             .Join(
@@ -444,10 +573,10 @@ public class UIManager : MonoBehaviour
             )
             // 원본 색깔로 복구, 해당 버튼 사이즈 원본 사이즈 복구
             .Append(
-                image.DOColor(lastOriginColor, flickTime)
+                image.DOColor(targetOriginColor, flickTime)
                 .OnKill(() =>
                 {
-                    image.color = lastOriginColor;
+                    image.color = targetOriginColor;
                 })
             )
             .Join(
@@ -458,7 +587,7 @@ public class UIManager : MonoBehaviour
                 image.DOKill();
                 UI_Cursor.transform.DOKill();
                 cursorRect.DOKill();
-                image.color = lastOriginColor;
+                image.color = targetOriginColor;
             })
             .SetUpdate(true);
         });
@@ -745,7 +874,9 @@ public class UIManager : MonoBehaviour
     public void UpdateUltimateIcon()
     {
         //현재 보유중인 궁극기 마법 불러오기
-        MagicInfo ultimateMagic = PlayerManager.Instance.ultimateMagic;
+        MagicInfo ultimateMagic = null;
+        if (PlayerManager.Instance.ultimateList.Count > 0)
+            ultimateMagic = PlayerManager.Instance.ultimateList[0];
 
         Image frame = ultimateMagicIcon.Find("Frame").GetComponent<Image>();
         Image icon = ultimateMagicIcon.Find("Icon").GetComponent<Image>();
@@ -766,12 +897,25 @@ public class UIManager : MonoBehaviour
 
     public void UltimateCooltime()
     {
-        float coolTimeRate
-        = PlayerManager.Instance.ultimateMagic != null
-        ? PlayerManager.Instance.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(PlayerManager.Instance.ultimateMagic)
-        : 0;
+        // 남은 쿨타임
+        float coolTimeRate = 0f;
 
-        ultimateMagicIcon.Find("CoolTime").GetComponent<Image>().fillAmount = coolTimeRate;
+        // 쿨타임 이미지 불러오기
+        Image coolTimeImg = ultimateMagicIcon.Find("CoolTime").GetComponent<Image>();
+
+        // 마법이 없으면 쿨타임 이미지 비우기
+        if (PlayerManager.Instance.ultimateList.Count <= 0)
+            coolTimeImg.fillAmount = 0;
+        //마법이 있으면 쿨타임만큼 채우기
+        else
+        {
+            coolTimeRate
+            = PlayerManager.Instance.ultimateList[0] != null
+            ? PlayerManager.Instance.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(PlayerManager.Instance.ultimateList[0])
+            : 0;
+
+            coolTimeImg.fillAmount = coolTimeRate;
+        }
     }
 
     public void UpdateStat()
@@ -855,7 +999,6 @@ public class UIManager : MonoBehaviour
         // 이미 다른 팝업 열려있는데 팝업 키려고하면 리턴
         if (!popup.activeSelf && nowOpenPopup != null)
         {
-            print("리턴");
             return;
         }
 
@@ -871,7 +1014,6 @@ public class UIManager : MonoBehaviour
         // 이미 다른 팝업 열려있는데 팝업 키려고하면 리턴
         if (!popup.activeSelf && nowOpenPopup != null)
         {
-            print("리턴");
             return;
         }
 

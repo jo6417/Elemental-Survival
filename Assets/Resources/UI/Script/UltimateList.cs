@@ -6,11 +6,12 @@ using UnityEngine.UI;
 
 public class UltimateList : MonoBehaviour
 {
-    List<MagicInfo> ultimateList = new List<MagicInfo>(); //궁극기 마법 리스트
+    public List<MagicInfo> ultimateList; //궁극기 마법 리스트
 
     public GameObject slotsParent;
     List<GameObject> ultimateSlots = new List<GameObject>(); //각각 슬롯 오브젝트
     Vector2[] slotPos = new Vector2[5]; //각각 슬롯의 초기 위치
+    public NewInput UI_Input;
 
     private void Awake()
     {
@@ -22,46 +23,56 @@ public class UltimateList : MonoBehaviour
             slotPos[i] = ultimateSlots[i].GetComponent<RectTransform>().anchoredPosition;
             // print(slotPos[i]);
         }
+
+        //키 입력 초기화
+        UI_Input = new NewInput();
+        //TODO 좌,우로 궁극기 스크롤하기
+        UI_Input.UI.NavControl.performed += val => ScrollListener(val.ReadValue<Vector2>().x);
     }
 
     private void OnEnable()
     {
         StartCoroutine(Initial());
+
+        UI_Input.Enable();
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        //TODO 좌,우 방향키로 궁극기 스크롤하기
-        // if (Input.GetKeyDown(KeyCode.A))
-        // {
-        //     ScrollSlots(false);
-        // }
-        // if (Input.GetKeyDown(KeyCode.D))
-        // {
-        //     ScrollSlots(true);
-        // }
+        UI_Input.Disable();
+    }
+
+    void ScrollListener(float dir)
+    {
+        //왼쪽 입력
+        if (dir < 0)
+        {
+            ScrollSlots(false);
+        }
+
+        //오른쪽 입력
+        if (dir > 0)
+        {
+            ScrollSlots(true);
+        }
     }
 
     IEnumerator Initial()
     {
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        //! 테스트, 마법 넣기
-        // if(ultimateList.Count == 0)
-        // for (int i = 0; i < 4; i++)
-        // {
-        //     PlayerManager.Instance.GetMagic(MagicDB.Instance.GetMagicByID(i + 46));
-        // }
+        //TODO 플레이어 궁극기 리스트 참조
+        ultimateList = PlayerManager.Instance.ultimateList;
 
         // 보유한 마법 중 궁극기 마법 모두 불러오기
-        ultimateList.Clear();
-        ultimateList = PlayerManager.Instance.hasStackMagics.FindAll(x => x.castType == "ultimate");
+        // ultimateList.Clear();
+        // ultimateList = PlayerManager.Instance.hasStackMagics.FindAll(x => x.castType == "ultimate");
 
         //궁극기 마법이 1개이상 있을때
-        if (ultimateList.Count > 0 && PlayerManager.Instance.ultimateMagic != null)
+        if (ultimateList.Count > 0 && PlayerManager.Instance.ultimateList[0] != null)
         {
             // 현재 착용중인 마법이 0번에 올때까지 정렬 반복
-            while (ultimateList[0] != PlayerManager.Instance.ultimateMagic)
+            while (ultimateList[0] != PlayerManager.Instance.ultimateList[0])
             {
                 MagicInfo targetMagic = ultimateList[0]; //첫번째 마법 얻기
                 ultimateList.RemoveAt(0); //첫번째 마법 삭제
@@ -73,9 +84,9 @@ public class UltimateList : MonoBehaviour
         SetSlots();
 
         //! 테스트
-        if (ultimateList.Count > 0 && PlayerManager.Instance.ultimateMagic == null)
-            //사용할 궁극기 마법 교체하기
-            PlayerManager.Instance.GetUltimateMagic(ultimateList[0]);
+        if (ultimateList.Count > 0 && PlayerManager.Instance.ultimateList[0] == null)
+            //궁극기 장착
+            PlayerManager.Instance.EquipUltimate();
     }
 
     void SetSlots()
@@ -173,7 +184,7 @@ public class UltimateList : MonoBehaviour
         // 모든 아이콘 다시 넣기
         SetSlots();
 
-        //사용할 궁극기 마법 교체하기
-        PlayerManager.Instance.GetUltimateMagic(ultimateList[0]);
+        //궁극기 장착
+        PlayerManager.Instance.EquipUltimate();
     }
 }

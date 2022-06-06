@@ -152,9 +152,9 @@ public class KingSlimeAI : MonoBehaviour
         }
 
         //전역 타임스케일이 0 일때
-        if (SystemManager.Instance.timeScale == 0)
+        if (SystemManager.Instance.globalTimeScale == 0)
         {
-            enemyManager.state = EnemyManager.State.SystemStop;
+            enemyManager.state = EnemyManager.State.MagicStop;
 
             if (enemyManager.anim != null)
                 enemyManager.anim.speed = 0f;
@@ -177,7 +177,7 @@ public class KingSlimeAI : MonoBehaviour
             enemyManager.sprite.color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
             transform.DOPause();
 
-            enemyManager.stopCount -= Time.deltaTime * SystemManager.Instance.timeScale;
+            enemyManager.stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
             return false;
         }
 
@@ -192,7 +192,7 @@ public class KingSlimeAI : MonoBehaviour
             enemyManager.sprite.material = SystemManager.Instance.hitMat;
             enemyManager.sprite.color = SystemManager.Instance.hitColor;
 
-            enemyManager.hitCount -= Time.deltaTime * SystemManager.Instance.timeScale;
+            enemyManager.hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
             return false;
         }
 
@@ -211,7 +211,7 @@ public class KingSlimeAI : MonoBehaviour
                     shadow.localPosition = Vector2.zero;
             }
 
-            enemyManager.oppositeCount -= Time.deltaTime * SystemManager.Instance.timeScale;
+            enemyManager.oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
             return false;
         }
 
@@ -237,7 +237,7 @@ public class KingSlimeAI : MonoBehaviour
             if (jumpSeq.IsActive())
             {
                 //전역 타임스케일 적용
-                jumpSeq.timeScale = SystemManager.Instance.timeScale;
+                jumpSeq.timeScale = SystemManager.Instance.globalTimeScale;
 
                 // 점프 일시정지였으면 시퀀스 재생
                 if (!jumpSeq.IsPlaying())
@@ -392,7 +392,7 @@ public class KingSlimeAI : MonoBehaviour
         .OnUpdate(() =>
         {
             //전역 타임스케일 적용
-            jumpSeq.timeScale = SystemManager.Instance.timeScale;
+            jumpSeq.timeScale = SystemManager.Instance.globalTimeScale;
 
             //시간 정지 디버프 중일때
             if (enemyManager.stopCount > 0)

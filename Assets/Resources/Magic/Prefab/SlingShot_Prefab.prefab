@@ -49,6 +49,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
+  knockbackForce: 0
+  isStop: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  bleedTime: 0
+  electricTime: 0
+  freezeTime: 0
 --- !u!114 &4491430653635440420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,11 +71,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPos: {x: 1, y: 1}
-  originColScale: {x: 0, y: 0}
-  isAutoDespawn: 1
-  magicDuration: 3
-  magicSpeed: 1
 --- !u!212 &6515710719660619820
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -104,7 +109,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 65bab1993ed34d74986bf2b0564a2347, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4862,7 +4867,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_SortMode: 0

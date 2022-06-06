@@ -4777,7 +4777,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 7
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -4877,6 +4877,7 @@ MonoBehaviour:
   MaxTime: 0
   bubbleDelay: 2
   reduceDelay: 1
+  effectObjs: []
   bubblePrefab: {fileID: 2757375179279071964, guid: b1ffcd765545eee43bb87a17296eb87b,
     type: 3}
   pulsePrefab: {fileID: 5703874530627898632, guid: 99e6eb844b1bb8c4fbd38cdc4fe917b5,

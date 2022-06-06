@@ -102,7 +102,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7540521824293115843}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.0614195, y: 0.9754474, z: -3.0455687}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7540521824940693137}
@@ -146,6 +146,7 @@ MonoBehaviour:
   magicHolder: {fileID: 0}
   fogCircle: {fileID: 7540521823902576213}
   fogCanvas: {fileID: 7540521824940693142}
+  ghostStartColor: {r: 0.9686107, g: 0.30980396, b: 1, a: 0.5882353}
 --- !u!1 &7540521824940693138
 GameObject:
   m_ObjectHideFlags: 0

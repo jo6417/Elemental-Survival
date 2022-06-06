@@ -51,6 +51,11 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: d344f0d04e7eebd47965c137a10168fb, type: 3}
+  - {fileID: 4473736118278887703, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
+  - {fileID: 2683761747022187116, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
+  - {fileID: -8192709538577403702, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
+  - {fileID: -3961697549884085189, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
+  - {fileID: -682485773742888383, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
   - {fileID: 21300000, guid: e64fc031565ffcd4cbd28f6e3f922da9, type: 3}
   - {fileID: 5770734358756913666, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: -4604887560701781518, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
@@ -110,6 +115,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 747f05bf566f9984480f347151bfaf09, type: 3}
   m_PackedSpriteNamesToIndex:
   - KingSlime_Icon
+  - EarthSlime-Sheet_4
+  - EarthSlime-Sheet_0
+  - EarthSlime-Sheet_1
+  - EarthSlime-Sheet_2
+  - EarthSlime-Sheet_3
   - StoneGolem_Icon
   - Golem-Sheet_2
   - Golem-Sheet_3
@@ -121,7 +131,7 @@ SpriteAtlas:
   - Golem-Sheet_5
   - KingSlime_Skin
   - A-800_Icon
-  - Slime_Icon
+  - WaterSlime_Icon
   - BloodEffect_Light_2
   - BloodEffect_Light_3
   - BloodEffect_Light_0

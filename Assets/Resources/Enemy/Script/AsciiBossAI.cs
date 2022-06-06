@@ -205,13 +205,13 @@ public class AsciiBossAI : MonoBehaviour
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
 
         //해당 방향으로 가속
-        rigid.velocity = dir.normalized * speed * SystemManager.Instance.timeScale;
+        rigid.velocity = dir.normalized * speed * SystemManager.Instance.globalTimeScale;
 
         //움직일 방향에따라 회전
         if (dir.x > 0)
         {
             //내부 텍스트 오브젝트들 좌우반전
-            if(transform.rotation == Quaternion.Euler(0, 0, 0))
+            if (transform.rotation == Quaternion.Euler(0, 0, 0))
             {
                 canvasChildren.rotation = Quaternion.Euler(0, 180, 0);
             }
@@ -221,7 +221,7 @@ public class AsciiBossAI : MonoBehaviour
         else
         {
             //내부 텍스트 오브젝트들 좌우반전
-            if(transform.rotation == Quaternion.Euler(0, 180, 0))
+            if (transform.rotation == Quaternion.Euler(0, 180, 0))
             {
                 canvasChildren.rotation = Quaternion.Euler(0, 0, 0);
             }

@@ -116,40 +116,60 @@ public class CastMagic : MonoBehaviour
             referMagic.magicLevel += magic.magicLevel;
         }
 
-        //TODO 해당 마법 리스트 인게임화만 하단에 아이콘 나열하기
-        UIManager.Instance.UpdateMagics(castList);
-
         // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
         foreach (MagicInfo magic in castList)
         {
-            //ID 같은 마법 찾기
             MagicInfo tempMagic = null;
-            tempMagic = nowCastMagics.Find(x => x.id == magic.id);
 
-            // 마법이 nowCastMagics에 없으면
-            if (tempMagic == null)
+            // 궁극기 마법일때
+            if (magic.castType == "ultimate")
             {
-                // 패시브 마법일때
-                if (magic.castType == "passive")
-                {
-                    //이미 소환되지 않았을때
-                    if (!magic.exist)
-                    {
-                        //패시브 마법 시전
-                        PassiveCast(magic);
-                    }
-                }
+                //ID 같은 궁극기 마법 찾기
+                tempMagic = PlayerManager.Instance.ultimateList.Find(x => x.id == magic.id);
 
-                if (magic.castType == "auto")
+                // 궁극기가 nowCastMagics에 없으면
+                if (tempMagic == null)
                 {
-                    //nowCastMagics에 해당 마법 추가
-                    nowCastMagics.Add(magic);
-
-                    // 액티브 마법 시전
-                    StartCoroutine(ActiveCast(magic));
+                    //TODO 궁극기 리스트에 추가
+                    PlayerManager.Instance.ultimateList.Add(magic);
                 }
 
                 continue;
+            }
+
+            // 일반 마법일때
+            if (magic.castType == "passive"
+            || magic.castType == "auto")
+            {
+                //ID 같은 일반 마법 찾기
+                tempMagic = nowCastMagics.Find(x => x.id == magic.id);
+
+                // 마법이 nowCastMagics에 없으면
+                if (tempMagic == null)
+                {
+                    // 패시브 마법일때
+                    if (magic.castType == "passive")
+                    {
+                        //이미 소환되지 않았을때
+                        if (!magic.exist)
+                        {
+                            //패시브 마법 시전
+                            PassiveCast(magic);
+                        }
+                    }
+
+                    // 자동 시전 마법일때
+                    if (magic.castType == "auto")
+                    {
+                        //nowCastMagics에 해당 마법 추가
+                        nowCastMagics.Add(magic);
+
+                        // 액티브 마법 시전
+                        StartCoroutine(ActiveCast(magic));
+                    }
+
+                    continue;
+                }
             }
 
             //현재 실행중인 마법 레벨이 다르면
@@ -160,7 +180,22 @@ public class CastMagic : MonoBehaviour
             }
         }
 
-        // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 마법 찾아서 중단시키기
+        // 사라진 궁극기 마법 리스트에서 없에기
+        foreach (MagicInfo magic in PlayerManager.Instance.ultimateList)
+        {
+            //ID 같은 마법 찾기
+            MagicInfo tempMagic = null;
+            tempMagic = castList.Find(x => x.id == magic.id);
+
+            // castList에서 같은 마법을 못찾으면
+            if (tempMagic == null)
+            {
+                // ultimateList에서 해당 마법 제거
+                PlayerManager.Instance.ultimateList.Remove(magic);
+            }
+        }
+
+        // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 일반 마법 찾아서 중단시키기
         for (int i = 0; i < nowCastMagics.Count; i++)
         {
             //ID 같은 마법 찾기
@@ -183,12 +218,16 @@ public class CastMagic : MonoBehaviour
                     passiveMagics.Remove(passiveMagic);
                 }
 
-                // nowCastMagics에서 제거
+                // nowCastMagics에서 제거, Active 마법은 자동 중단됨
                 nowCastMagics.Remove(nowCastMagics[i]);
             }
         }
 
+        //궁극기 장착
+        PlayerManager.Instance.EquipUltimate();
 
+        // 인게임 화면 하단에 사용중인 마법 아이콘 나열하기
+        UIManager.Instance.UpdateMagics(castList);
     }
 
     //액티브 마법 소환
@@ -325,7 +364,10 @@ public class CastMagic : MonoBehaviour
 
     public IEnumerator UseUltimateMagic()
     {
-        MagicInfo magic = PlayerManager.Instance.ultimateMagic;
+        //마법 참조
+        MagicInfo magic = null;
+        if (PlayerManager.Instance.ultimateList.Count > 0)
+            magic = PlayerManager.Instance.ultimateList[0];
 
         //! Test
         // magic = MagicDB.Instance.GetMagicByID(48);
@@ -333,8 +375,6 @@ public class CastMagic : MonoBehaviour
         //궁극기 없을때, 쿨타임중일때
         if (magic == null || PlayerManager.Instance.ultimateCoolCount > 0)
         {
-            print("궁극기 실패");
-
             UIManager.Instance.ultimateIndicator.DOKill();
 
             //궁극기 아이콘 인디케이터
@@ -360,10 +400,11 @@ public class CastMagic : MonoBehaviour
             yield break;
         }
 
+        //해당 마법 쿨타임 카운트 시작
+        PlayerManager.Instance.ultimateCoolCount = PlayerManager.Instance.ultimateCoolTime;
+
         //프리팹 찾기
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
-        //해당 마법 쿨타임 불러오기
-        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
 
         // 랜덤 적 찾기, 투사체 수 이하로
         List<Vector2> enemyPos = MarkEnemyPos(magic);
@@ -385,8 +426,5 @@ public class CastMagic : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
-
-        //해당 마법 쿨타임 카운트 시작
-        PlayerManager.Instance.ultimateCoolCount = coolTime;
     }
 }

@@ -95,6 +95,7 @@ public class PlayerManager : MonoBehaviour
     public float poisonDuration; //독 도트뎀 남은시간
     public float hitDelayTime = 0.2f; //피격 무적시간
     float hitCount = 0f;
+    public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;
@@ -103,7 +104,8 @@ public class PlayerManager : MonoBehaviour
     [Header("<Pocket>")]
     public MagicInfo[] hasMergeMagics = new MagicInfo[20]; // merge 보드에 올려진 플레이어 보유 마법
     public List<MagicInfo> hasStackMagics = new List<MagicInfo>(); // 스택에 있는 플레이어 보유 마법
-    public MagicInfo ultimateMagic; //궁극기 마법
+    public List<MagicInfo> ultimateList = new List<MagicInfo>(); //궁극기 마법 리스트
+    // public MagicInfo ultimateMagic; //궁극기 마법
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
 
@@ -155,13 +157,7 @@ public class PlayerManager : MonoBehaviour
         // 궁극기 버튼 매핑
         playerInput.Player.Ultimate.performed += val =>
         {
-            // 쿨타임 가능할때
-            if (PlayerManager.Instance.ultimateCoolCount <= 0)
-            {
-                // print("ultimate use");
-
-                StartCoroutine(CastMagic.Instance.UseUltimateMagic());
-            }
+            StartCoroutine(CastMagic.Instance.UseUltimateMagic());
         };
     }
 
@@ -229,7 +225,7 @@ public class PlayerManager : MonoBehaviour
             hitCount -= Time.deltaTime;
     }
 
-    void Move()
+    public void Move()
     {
         // print(nowMoveDir);
 
@@ -302,7 +298,7 @@ public class PlayerManager : MonoBehaviour
 
         // 실제 오브젝트 이동해주기
         nowMoveDir.Normalize();
-        rigid.velocity = PlayerStat_Now.moveSpeed * nowMoveDir * dashSpeed * speedDebuff;
+        rigid.velocity = PlayerStat_Now.moveSpeed * nowMoveDir * dashSpeed * speedDebuff * SystemManager.Instance.playerTimeScale;
 
         // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
@@ -680,14 +676,23 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now.playerPower = GetPlayerPower();
     }
 
-    public void GetUltimateMagic(MagicInfo magic)
+    public void EquipUltimate()
     {
+        // 궁극기 없으면 리턴
+        if (ultimateList.Count <= 0)
+            return;
+
         //해당 마법을 장착
-        ultimateMagic = magic;
+        MagicInfo ultimateMagic = ultimateList[0];
         print("ultimate : " + ultimateMagic.magicName);
 
-        //해당 마법 쿨타임 카운트 초기화
-        ultimateCoolCount = MagicDB.Instance.MagicCoolTime(ultimateMagic);
+        // 해당 궁극기 쿨타임 저장
+        ultimateCoolTime = MagicDB.Instance.MagicCoolTime(ultimateMagic);
+
+        // 해당 마법 쿨타임 카운트 초기화
+        ultimateCoolCount = ultimateCoolTime;
+
+        //쿨타임 이미지 갱신
         UIManager.Instance.UltimateCooltime();
 
         // 궁극기 UI 업데이트

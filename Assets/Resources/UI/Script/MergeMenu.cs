@@ -90,10 +90,8 @@ public class MergeMenu : MonoBehaviour
 
         selectedIconRect = selectedIcon.GetComponent<RectTransform>();
 
-        // 스마트폰 켜져있을때
-        if (gameObject.activeSelf)
-            // 키 입력 정리
-            InputInitial();
+        // 키 입력 정리
+        InputInitial();
     }
 
     void InputInitial()
@@ -121,6 +119,10 @@ public class MergeMenu : MonoBehaviour
     // 방향키 입력되면 실행
     void NavControl(Vector2 arrowDir)
     {
+        // 머지 패널 꺼져있으면 리턴
+        if (!gameObject.activeSelf)
+            return;
+
         //마우스에 아이콘 들고 있을때
         if (selectedIcon.enabled)
         {
@@ -150,6 +152,10 @@ public class MergeMenu : MonoBehaviour
     // 마우스 위치 입력되면 실행
     void MousePos(Vector2 mousePosInput)
     {
+        // 머지 패널 꺼져있으면 리턴
+        if (!gameObject.activeSelf)
+            return;
+
         // print(mousePosInput);
 
         if (selectedIcon.enabled)
@@ -232,7 +238,7 @@ public class MergeMenu : MonoBehaviour
 
         // 첫번째 머지 슬롯 선택하기
         UIManager.Instance.lastSelected = mergeList[0];
-        UIManager.Instance.lastOriginColor = mergeList[0].GetComponent<Image>().color;
+        UIManager.Instance.targetOriginColor = mergeList[0].GetComponent<Image>().color;
         // mergeList[0].GetComponent<Button>().Select();
 
         //선택된 슬롯 네비 설정
@@ -636,6 +642,10 @@ public class MergeMenu : MonoBehaviour
     // Back 버튼 누르면
     public void BackBtnAction()
     {
+        // 머지 패널 꺼져있으면 리턴
+        if (!gameObject.activeSelf)
+            return;
+
         //TODO 레시피 화면일때
         //TODO 메인화면으로 전환
 

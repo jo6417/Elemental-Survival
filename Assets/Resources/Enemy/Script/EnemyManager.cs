@@ -27,7 +27,7 @@ public class EnemyManager : MonoBehaviour
 
     [Header("State")]
     public State state; //현재 상태
-    public enum State { Idle, Hit, Dead, TimeStop, SystemStop }
+    public enum State { Idle, Hit, Dead, TimeStop, MagicStop }
     public Action nowAction = Action.Idle; //현재 행동
     public Action nextAction = Action.Idle; //다음에 할 행동 예약
     public enum Action { Idle, Walk, Jump, Attack }
@@ -509,7 +509,7 @@ public class EnemyManager : MonoBehaviour
         }
 
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
-        yield return new WaitUntil(() => SystemManager.Instance.timeScale > 0);
+        yield return new WaitUntil(() => SystemManager.Instance.globalTimeScale > 0);
 
         //폭발 몬스터면 폭발 시키기
         if (selfExplosion)
@@ -543,7 +543,6 @@ public class EnemyManager : MonoBehaviour
 
         // 트윈 및 시퀀스 끝내기
         transform.DOKill();
-        enemyAI.jumpSeq.Kill();
 
         // 몬스터 비활성화
         LeanPool.Despawn(gameObject);

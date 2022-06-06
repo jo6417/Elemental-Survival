@@ -344,10 +344,6 @@ public class EnemySpawn : MonoBehaviour
             if (manager.isDead)
                 return;
 
-            //점프 몬스터는 점프 시퀀스 초기화
-            if (manager.moveType == EnemyManager.MoveType.Jump)
-                enemyAI.jumpSeq.Pause();
-
             //이동 대기 카운트 초기화
             manager.oppositeCount = 0.5f;
 

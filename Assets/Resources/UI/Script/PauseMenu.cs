@@ -14,6 +14,6 @@ public class PauseMenu : MonoBehaviour
         firstBtn.Select();
 
         //마우스 고정해제
-        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.None;
     }
 }

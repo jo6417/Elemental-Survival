@@ -62,7 +62,7 @@ public class UltimateMagic : MonoBehaviour
         //magic 정보 들어올때까지 대기
         yield return new WaitUntil(() => newMagic != null);
 
-        MagicInfo oldMagic = PlayerManager.Instance.ultimateMagic;
+        MagicInfo oldMagic = PlayerManager.Instance.ultimateList[0];
 
         // 마법 정보창에 모든 정보 넣기
         Transform magicIcon = magicPanel.transform.Find("NewMagic");
@@ -143,8 +143,8 @@ public class UltimateMagic : MonoBehaviour
         //마법 합성 팝업 닫기
         UIManager.Instance.PopupUI(UIManager.Instance.mixMagicPanel, false);
 
-        // 해당 마법 장착
-        PlayerManager.Instance.GetUltimateMagic(newMagic);
+        // 궁극기 장착
+        PlayerManager.Instance.EquipUltimate();
 
         //선택 정보 삭제
         EventSystem.current.SetSelectedGameObject(null);

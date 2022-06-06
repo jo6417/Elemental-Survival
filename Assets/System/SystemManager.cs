@@ -38,7 +38,7 @@ public class SystemManager : MonoBehaviour
     #endregion
 
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
-    public float timeScale = 1f; //전역으로 사용하는 타임스케일
+    public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
     public float portalRange = 100f; //포탈게이트 생성될 범위
     public float time_start; //시작 시간
     public float time_current; // 현재 스테이지 플레이 타임
@@ -52,13 +52,13 @@ public class SystemManager : MonoBehaviour
     public Transform effectPool;
     public List<Camera> camList = new List<Camera>();
     MagicInfo lifeSeedMagic;
-    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
 
     [Header("Prefab")]
+    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public GameObject ghostPrefab; // 잔상 효과 프리팹
 
@@ -125,7 +125,7 @@ public class SystemManager : MonoBehaviour
     public void AllTimeScale(float scale)
     {
         playerTimeScale = scale;
-        timeScale = scale;
+        globalTimeScale = scale;
     }
 
     public void TimeStopToggle()
