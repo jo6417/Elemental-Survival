@@ -7,11 +7,11 @@ public class EnemyAtkTrigger : MonoBehaviour
     public GameObject explosionPrefab;
     public SpriteRenderer atkRangeSprite;
     public EnemyManager enemyManager;
-    
+
     public bool atkTrigger; //범위내 플레이어 들어왔는지 여부
 
     private void Awake()
-    {        
+    {
         //공격 범위 인디케이터 스프라이트 찾기
         atkRangeSprite = GetComponent<SpriteRenderer>();
     }
@@ -33,7 +33,8 @@ public class EnemyAtkTrigger : MonoBehaviour
         {
             atkTrigger = true;
 
-            if (enemyManager && !enemyManager.isDead && enemyManager.selfExplosion)
+            // 자폭형 몬스터일때
+            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
             {
                 // 자폭하기
                 StartCoroutine(enemyManager.Dead());

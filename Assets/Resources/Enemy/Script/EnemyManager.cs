@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Lean.Pool;
 using DG.Tweening;
 using TMPro;
+using System.Linq;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class EnemyManager : MonoBehaviour
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
     public SpriteRenderer sprite;
-    public Animator anim;
+    public List<Animator> animList = new List<Animator>();
     public Rigidbody2D rigid;
     public Collider2D coll;
     EnemyAI enemyAI;
@@ -76,9 +77,10 @@ public class EnemyManager : MonoBehaviour
     {
         spriteObj = spriteObj == null ? transform : spriteObj;
         sprite = sprite == null ? spriteObj.GetComponentInChildren<SpriteRenderer>(true) : sprite;
-        anim = anim == null ? spriteObj.GetComponentInChildren<Animator>(true) : anim;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
+        // anim = anim == null ? spriteObj.GetComponentInChildren<Animator>(true) : anim;
+        animList = GetComponentsInChildren<Animator>().ToList();
 
         enemyAI = GetComponent<EnemyAI>();
 

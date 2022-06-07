@@ -32,8 +32,13 @@ public class EnemyAI : MonoBehaviour
         yield return new WaitUntil(() => enemyManager.enemy != null);
 
         //애니메이션 스피드 초기화
-        if (enemyManager.anim != null)
-            enemyManager.anim.speed = 1f;
+        if (enemyManager.animList != null)
+        {
+            foreach (Animator anim in enemyManager.animList)
+            {
+                anim.speed = 1f;
+            }
+        }
 
         //속도 초기화
         enemyManager.rigid.velocity = Vector2.zero;
@@ -66,8 +71,13 @@ public class EnemyAI : MonoBehaviour
             enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
             enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
 
-            if (enemyManager.anim != null)
-                enemyManager.anim.speed = 0f;
+            if (enemyManager.animList.Count > 0)
+            {
+                foreach (Animator anim in enemyManager.animList)
+                {
+                    anim.speed = 0f;
+                }
+            }
 
             transform.DOPause();
 
@@ -80,8 +90,13 @@ public class EnemyAI : MonoBehaviour
             enemyManager.state = EnemyManager.State.MagicStop;
 
             // 애니메이션 멈추기
-            if (enemyManager.anim != null)
-                enemyManager.anim.speed = 0f;
+            if (enemyManager.animList.Count > 0)
+            {
+                foreach (Animator anim in enemyManager.animList)
+                {
+                    anim.speed = 0f;
+                }
+            }
 
             // 이동 멈추기
             enemyManager.rigid.velocity = Vector2.zero;
@@ -90,14 +105,21 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        //시간 정지 디버프일때
+        // 멈춤 디버프일때
         if (enemyManager.stopCount > 0)
         {
             enemyManager.state = EnemyManager.State.TimeStop;
 
             enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
             enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-            enemyManager.anim.speed = 0f;
+            // 애니메이션 멈추기
+            if (enemyManager.animList.Count > 0)
+            {
+                foreach (Animator anim in enemyManager.animList)
+                {
+                    anim.speed = 0f;
+                }
+            }
 
             enemyManager.sprite.material = enemyManager.originMat;
             enemyManager.sprite.color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
@@ -140,8 +162,14 @@ public class EnemyAI : MonoBehaviour
         enemyManager.sprite.material = enemyManager.originMat;
         enemyManager.sprite.color = enemyManager.originColor;
         transform.DOPlay();
-        if (enemyManager.anim != null)
-            enemyManager.anim.speed = 1f; //애니메이션 속도 초기화
+        // 애니메이션 속도 초기화
+        if (enemyManager.animList.Count > 0)
+        {
+            foreach (Animator anim in enemyManager.animList)
+            {
+                anim.speed = 1f;
+            }
+        }
     }
 
     void ManageAction()
@@ -165,7 +193,7 @@ public class EnemyAI : MonoBehaviour
         {
             // 점프중 아니고 일정 거리 내 들어오면 점프
             if (jumpCoolCount <= 0)
-                NewJump();
+                JumpStart();
             else
             {
                 // 점프 쿨타임 차감
@@ -181,9 +209,14 @@ public class EnemyAI : MonoBehaviour
     {
         enemyManager.nowAction = EnemyManager.Action.Walk;
 
-        //애니메이터 켜기
-        if (enemyManager.anim != null && !enemyManager.anim.enabled)
-            enemyManager.anim.enabled = true;
+        // 애니메이터 켜기
+        if (enemyManager.animList.Count > 0)
+        {
+            foreach (Animator anim in enemyManager.animList)
+            {
+                anim.enabled = true;
+            }
+        }
 
         //움직일 방향
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
@@ -204,13 +237,13 @@ public class EnemyAI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
-    void NewJump()
+    void JumpStart()
     {
         // 현재 행동 점프로 전환
         enemyManager.nowAction = EnemyManager.Action.Jump;
 
         // 점프 애니메이션으로 전환
-        enemyManager.anim.SetBool("Jump", true);
+        enemyManager.animList[0].SetBool("Jump", true);
 
         // 점프 쿨타임 갱신
         jumpCoolCount = jumpCooltime;
@@ -243,7 +276,7 @@ public class EnemyAI : MonoBehaviour
     public void JumpEnd()
     {
         // IDLE 애니메이션 전환
-        enemyManager.anim.SetBool("Jump", false);
+        enemyManager.animList[0].SetBool("Jump", false);
 
         // 현재 행동 끝내기
         enemyManager.nowAction = EnemyManager.Action.Idle;

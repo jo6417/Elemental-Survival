@@ -9696,8 +9696,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 784766006034917722}
-  - component: {fileID: 784766006034917723}
   - component: {fileID: 8017973813565166100}
+  - component: {fileID: 784766006034917723}
   - component: {fileID: 5312835077595385824}
   - component: {fileID: 3111188553755185085}
   - component: {fileID: 8443360763871844120}
@@ -9727,34 +9727,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &784766006034917723
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 784766006034917726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42f9561d0b3c63d47a7589c861cd20ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isInside: 0
-  poisonAtkRange: 20
-  atkRatio: 50
-  crownObj: {fileID: 3939066445554554373}
-  slimePrefab: {fileID: 8153751317921983363, guid: f38322a01d9b7f84d9914275f0eff236,
-    type: 3}
-  babyTrigger: {fileID: 7799214659974095521}
-  poisonAtkParticle: {fileID: 4298389743847986898}
-  spriteFill: {fileID: 4482655199273524325}
-  jumpHeight: 4
-  jumpUptime: 1
-  jumpCollisionOff: 0
-  landEffect: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
-    type: 3}
-  shadow: {fileID: 2971103906492268269}
-  jumpLandPos: {x: 0, y: 0}
 --- !u!114 &8017973813565166100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9786,7 +9758,7 @@ MonoBehaviour:
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 7073894444999465860}
   sprite: {fileID: 7073894444999465979}
-  anim: {fileID: 5312835077595385824}
+  animList: []
   rigid: {fileID: 8443360763871844120}
   coll: {fileID: 3111188553755185085}
   originMat: {fileID: 0}
@@ -9802,6 +9774,36 @@ MonoBehaviour:
   knockBackDebuff: 0
   enemyName: 
   enemyType: 
+--- !u!114 &784766006034917723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784766006034917726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42f9561d0b3c63d47a7589c861cd20ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isInside: 0
+  poisonAtkRange: 20
+  atkRatio: 50
+  crownObj: {fileID: 3939066445554554373}
+  slimePrefab: {fileID: 8153751317921983363, guid: f38322a01d9b7f84d9914275f0eff236,
+    type: 3}
+  babyTrigger: {fileID: 7799214659974095521}
+  poisonAtkParticle: {fileID: 4298389743847986898}
+  spriteFill: {fileID: 4482655199273524325}
+  jumpCoolCount: 0
+  jumpCooltime: 0.5
+  landEffect: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
+    type: 3}
+  jumpHeight: 4
+  jumpUptime: 1
+  jumpCollisionOff: 0
+  shadow: {fileID: 2971103906492268269}
+  jumpLandPos: {x: 0, y: 0}
 --- !u!95 &5312835077595385824
 Animator:
   serializedVersion: 3
@@ -9834,8 +9836,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 2.5}
-  m_Size: {x: 9.5, y: 7.2}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 9, y: 3}
   m_Direction: 1
 --- !u!50 &8443360763871844120
 Rigidbody2D:
@@ -9928,7 +9930,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 12
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -9939,7 +9941,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &5260277266502753681
 GameObject:
   m_ObjectHideFlags: 0
@@ -9965,8 +9967,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5260277266502753681}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.09, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 0.725, z: 1}
   m_Children: []
   m_Father: {fileID: 5702749140188695707}
   m_RootOrder: 0
@@ -10010,9 +10012,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 12
-  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7,
-    type: 3}
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   m_Color: {r: 0.7139659, g: 0, b: 1, a: 0.5647059}
   m_FlipX: 0
   m_FlipY: 0
@@ -10022,7 +10023,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &5837628268431711885
 GameObject:
   m_ObjectHideFlags: 0
@@ -10177,7 +10178,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 11
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
   m_FlipX: 0
@@ -10188,7 +10189,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &7090014403110922668
 GameObject:
   m_ObjectHideFlags: 0
@@ -15132,7 +15133,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 12
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -15143,7 +15144,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &8776520837824111525
 GameObject:
   m_ObjectHideFlags: 0

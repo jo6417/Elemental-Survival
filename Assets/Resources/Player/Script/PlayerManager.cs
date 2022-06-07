@@ -321,11 +321,11 @@ public class PlayerManager : MonoBehaviour
     private void OnCollisionStay2D(Collision2D other)
     {
         //적에게 충돌
-        if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
+        if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {
             // print("적 충돌");
 
-            EnemyInfo enemy = other.gameObject.GetComponent<EnemyManager>().enemy;
+            EnemyInfo enemy = other.gameObject.GetComponent<EnemyAtk>().enemyManager.enemy;
 
             //피격 딜레이 무적
             IEnumerator hitDelay = HitDelay();
@@ -337,9 +337,9 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Enemy") && hitCount <= 0 && !isDash)
+        if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {
-            EnemyManager enemyManager = other.GetComponent<EnemyManager>();
+            EnemyManager enemyManager = other.GetComponent<EnemyAtk>().enemyManager;
             MagicHolder magicHolder = other.GetComponent<MagicHolder>();
 
             //적에게 충돌

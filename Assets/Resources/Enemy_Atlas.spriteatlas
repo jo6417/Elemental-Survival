@@ -65,8 +65,11 @@ SpriteAtlas:
   - {fileID: 410387071126374719, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802, type: 3}
+  - {fileID: 21300000, guid: ce887cd5410bca540b8cee733684af69, type: 3}
   - {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
+  - {fileID: 21300000, guid: 8b6375079bf0d9142af6635db7bd3799, type: 3}
   - {fileID: 21300000, guid: 5a0c9a38efcb7a14cbfae9eeb2e37617, type: 3}
   - {fileID: -640876303977768716, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 1724419166579631514, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
@@ -83,6 +86,7 @@ SpriteAtlas:
   - {fileID: 6662618489849775281, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 1727079075786078967, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 4854717294251204818, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+  - {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   - {fileID: 21300000, guid: c1cb3f0de7340df48944eae11705b06c, type: 3}
   - {fileID: 4250153402159111836, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -8609229472539899035, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
@@ -95,6 +99,8 @@ SpriteAtlas:
   - {fileID: 7228631525748936017, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: -8875189012816492520, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: -1734320689928235968, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
+  - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
+  - {fileID: 21300000, guid: 711ba67ea8f58d547bbf0f15a2fa3afa, type: 3}
   - {fileID: -6404539822265595652, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -6511475048532732289, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -7901897369145345293, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
@@ -129,8 +135,11 @@ SpriteAtlas:
   - Golem-Sheet_7
   - Golem-Sheet_4
   - Golem-Sheet_5
+  - Vacuum
+  - VacuumFin
   - KingSlime_Skin
   - A-800_Icon
+  - Slime_Skin
   - WaterSlime_Icon
   - BloodEffect_Light_2
   - BloodEffect_Light_3
@@ -147,6 +156,7 @@ SpriteAtlas:
   - Screen_Walk-Sheet_3
   - Screen_Walk-Sheet_0
   - Screen_Walk-Sheet_1
+  - KingSlimeFill
   - Vacumm_Icon
   - Vacuum-Sheet_1
   - Vacuum-Sheet_0
@@ -159,6 +169,8 @@ SpriteAtlas:
   - BloodEffect_2
   - BloodEffect_1
   - BloodEffect_0
+  - Slime_Light
+  - B-800
   - Screen_Fall-Sheet_2
   - Screen_Fall-Sheet_3
   - Screen_Fall-Sheet_0

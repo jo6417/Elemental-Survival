@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 5097144648422318720}
   - component: {fileID: 8103560175905507847}
   - component: {fileID: 4206692473337556097}
-  - component: {fileID: 7293772425758083186}
   - component: {fileID: 4498973164959321897}
+  - component: {fileID: 400382383}
   m_Layer: 7
   m_Name: StoneGolem_Prefab
   m_TagString: Enemy
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasItemId: ffffffff
+  defaultHasItem: 
   referEnemyManager: {fileID: 0}
   portalSize: 1.2
   isElite: 0
@@ -59,6 +59,13 @@ MonoBehaviour:
   stopCount: 0
   hitCount: 0
   oppositeCount: 0
+  isAbsorb: 0
+  selfExplosion: 0
+  state: 0
+  nowAction: 0
+  nextAction: 0
+  moveType: 0
+  explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 0}
   sprite: {fileID: 0}
   anim: {fileID: 0}
@@ -69,12 +76,14 @@ MonoBehaviour:
   originColor: {r: 0, g: 0, b: 0, a: 0}
   hpMax: 0
   HpNow: 1
+  power: 0
   speed: 0
   range: 0
+  friendlyFire: 0
   flatDebuff: 0
+  knockBackDebuff: 0
   enemyName: 
   enemyType: 
-  power: 0
 --- !u!114 &5097144648422318720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,17 +96,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
-  moveType: 0
   enemyManager: {fileID: 0}
-  jumpHeight: 4
-  jumpUptime: 2
-  jumpCoolTime: 1
+  attackTrigger_A: {fileID: 0}
   jumpCoolCount: 0
-  jumpCollisionOff: 0
-  landEffect: {fileID: 0}
-  shadow: {fileID: 0}
-  jumpLandPos: {x: 0, y: 0}
+  jumpCooltime: 0.5
+  dustEffect: {fileID: 0}
 --- !u!212 &8103560175905507847
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -136,7 +139,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 6171194522531915682, guid: 1fceaa62b5d10fd43bf9bccedeca8c86,
     type: 3}
@@ -169,32 +172,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!61 &7293772425758083186
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5563108377816857757}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1.1}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.16}
-    oldSize: {x: 4, y: 4}
-    newSize: {x: 1.4375, y: 1.1875}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.6, y: 2.5}
-  m_EdgeRadius: 0
 --- !u!50 &4498973164959321897
 Rigidbody2D:
   serializedVersion: 4
@@ -216,6 +193,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!70 &400382383
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5563108377816857757}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 5, y: 1.5}
+  m_Direction: 1
 --- !u!1001 &5169681537720885197
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -236,12 +229,12 @@ PrefabInstance:
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 2.9
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}

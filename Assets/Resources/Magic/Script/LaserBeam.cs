@@ -74,7 +74,7 @@ public class LaserBeam : MonoBehaviour
             //적이 쏠때는 더 빠르게 조준
             aimTime = 0.5f;
             //조준선 색깔 변경
-            aimColor = Color.blue;
+            aimColor = Color.red;
             //레이저 색깔 변경
             laserColor = Color.cyan;
         }

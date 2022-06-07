@@ -9,6 +9,7 @@ TagManager:
   - Arrow
   - Item
   - Object
+  - EnemyAttack
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Magic
   - MagicEffect
   - Item
-  - FloatingEnemy
+  - EnemyAttack
   - Object
   - PostProcessing
   - UIParticle

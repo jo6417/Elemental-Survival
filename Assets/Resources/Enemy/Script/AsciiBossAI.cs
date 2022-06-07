@@ -23,12 +23,12 @@ public class AsciiBossAI : MonoBehaviour
     Collider2D coll;
     Animator anim;
     Rigidbody2D rigid;
-    SpriteRenderer fallSprite;
+    SpriteRenderer fallRange;
     // Collider2D fallColl;
     public GameObject LaserPrefab; //발사할 레이저 마법 프리팹
     public GameObject pulseEffect; //laser stop 할때 펄스 이펙트
     MagicInfo laserMagic = null; //발사할 레이저 마법 데이터
-    SpriteRenderer laserSprite;
+    SpriteRenderer laserRange;
 
     EnemyInfo enemy;
     float speed;
@@ -47,8 +47,8 @@ public class AsciiBossAI : MonoBehaviour
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
 
-        fallSprite = fallRangeTrigger.GetComponent<SpriteRenderer>();
-        laserSprite = LaserRangeTrigger.GetComponent<SpriteRenderer>();
+        fallRange = fallRangeTrigger.GetComponent<SpriteRenderer>();
+        laserRange = LaserRangeTrigger.GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
@@ -89,8 +89,8 @@ public class AsciiBossAI : MonoBehaviour
         coll.isTrigger = false;
 
         //공격범위 오브젝트 초기화
-        fallSprite.enabled = false;
-        laserSprite.enabled = false;
+        fallRange.enabled = false;
+        laserRange.enabled = false;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -272,15 +272,15 @@ public class AsciiBossAI : MonoBehaviour
         // fallRangeObj.SetActive(true);
 
         // 엎어질 범위 활성화 및 반짝거리기
-        fallSprite.enabled = true;
-        Color originColor = new Color(1, 0, 0, 0.3f);
-        fallSprite.color = originColor;
+        fallRange.enabled = true;
+        Color originColor = new Color(1, 0, 0, 0.2f);
+        fallRange.color = originColor;
 
-        fallSprite.DOColor(new Color(1, 1, 1, 0.5f), 1f)
+        fallRange.DOColor(new Color(1, 0, 0, 0f), 1f)
         .SetEase(Ease.InOutFlash, 5, 0)
         .OnComplete(() =>
         {
-            fallSprite.color = originColor;
+            fallRange.color = originColor;
 
             //넘어질때 표정
             faceText.text = "> ︿ <";
@@ -343,15 +343,15 @@ public class AsciiBossAI : MonoBehaviour
 
         // 동시에 공격 범위 표시
         // 엎어질 범위 활성화 및 반짝거리기
-        laserSprite.enabled = true;
-        Color originColor = new Color(1, 0, 0, 0.3f);
-        laserSprite.color = originColor;
+        laserRange.enabled = true;
+        Color originColor = new Color(1, 0, 0, 0.2f);
+        laserRange.color = originColor;
 
-        laserSprite.DOColor(new Color(1, 1, 1, 0.5f), 1f)
+        laserRange.DOColor(new Color(1, 0, 0, 0f), 1f)
         .SetEase(Ease.InOutFlash, 5, 0)
         .OnComplete(() =>
         {
-            laserSprite.color = originColor;
+            laserRange.color = originColor;
         });
 
         //게이지 모두 차오르면 
@@ -380,12 +380,13 @@ public class AsciiBossAI : MonoBehaviour
 
         //몬스터 스폰 멈추기
         EnemySpawn.Instance.spawnSwitch = false;
-        // 모든 몬스터 멈추기, time stop 함수 적용
-        List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
-        foreach (var enemy in enemys)
-        {
-            enemy.stopCount = 3f;
-        }
+        // 모든 몬스터 멈추기
+        SystemManager.Instance.globalTimeScale = 0f;
+        // List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
+        // foreach (var enemy in enemys)
+        // {
+        //     enemy.stopCount = 3f;
+        // }
 
         //감시 시간
         float watchTime = Time.time;
@@ -439,6 +440,8 @@ public class AsciiBossAI : MonoBehaviour
 
         //몬스터 스폰 재개
         EnemySpawn.Instance.spawnSwitch = true;
+        // 모든 몬스터 움직임 재개
+        SystemManager.Instance.globalTimeScale = 1f;
 
         //휴식 시작
         StartCoroutine(RestAnim(3f));
