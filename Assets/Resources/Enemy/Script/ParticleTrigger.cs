@@ -5,7 +5,7 @@ using UnityEngine;
 public class ParticleTrigger : MonoBehaviour
 {
     [SerializeField]
-    KingSlimeAI kingSlimeAI;
+    KingSlime_AI kingSlimeAI;
     ParticleSystem ps;
     List<ParticleSystem.Particle> insideList = new List<ParticleSystem.Particle>(); // 플레이어 콜라이더에 inside한 파티클 목록
     public int numInside; // 플레이어 콜라이더에 inside 한 파티클 총 개수
@@ -15,7 +15,8 @@ public class ParticleTrigger : MonoBehaviour
         ps = GetComponent<ParticleSystem>();
     }
 
-    private void Update() {
+    private void Update()
+    {
         // 플레이어와 충돌한 독 파티클이 있을때, 쿨타임중 아닐때, 플레이어 독 도트 피해 중 아닐때
         if (numInside > 0 && PlayerManager.Instance.poisonDuration <= 0)
         {

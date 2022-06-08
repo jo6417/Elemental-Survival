@@ -121,8 +121,11 @@ public class EnemyAI : MonoBehaviour
                 }
             }
 
-            enemyManager.sprite.material = enemyManager.originMat;
-            enemyManager.sprite.color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
+            foreach (SpriteRenderer sprite in enemyManager.spriteList)
+            {
+                sprite.material = enemyManager.originMat;
+                sprite.color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
+            }
             transform.DOPause();
 
             enemyManager.stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
@@ -137,8 +140,11 @@ public class EnemyAI : MonoBehaviour
             enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
 
             // 머터리얼 및 색 변경
-            enemyManager.sprite.material = SystemManager.Instance.hitMat;
-            enemyManager.sprite.color = SystemManager.Instance.hitColor;
+            foreach (SpriteRenderer sprite in enemyManager.spriteList)
+            {
+                sprite.material = SystemManager.Instance.hitMat;
+                sprite.color = SystemManager.Instance.hitColor;
+            }
 
             enemyManager.hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
             return;
@@ -157,11 +163,13 @@ public class EnemyAI : MonoBehaviour
         enemyManager.state = EnemyManager.State.Idle;
 
         // rigid, sprite, 트윈, 애니메이션 상태 초기화
-        // enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-        // enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation; // 위치 고정 해제
-        enemyManager.sprite.material = enemyManager.originMat;
-        enemyManager.sprite.color = enemyManager.originColor;
+        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        {
+            sprite.material = enemyManager.originMat;
+            sprite.color = enemyManager.originColor;
+        }
         transform.DOPlay();
+
         // 애니메이션 속도 초기화
         if (enemyManager.animList.Count > 0)
         {

@@ -320,6 +320,9 @@ public class PlayerManager : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
+        //무언가 충돌되면 움직이는 방향 수정
+        Move();
+
         //적에게 충돌
         if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {

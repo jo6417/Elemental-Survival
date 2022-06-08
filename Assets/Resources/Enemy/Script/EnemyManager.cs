@@ -45,7 +45,7 @@ public class EnemyManager : MonoBehaviour
     [Header("Refer")]
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
-    public SpriteRenderer sprite;
+    public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
     public List<Animator> animList = new List<Animator>();
     public Rigidbody2D rigid;
     public Collider2D coll;
@@ -76,23 +76,31 @@ public class EnemyManager : MonoBehaviour
     void Awake()
     {
         spriteObj = spriteObj == null ? transform : spriteObj;
-        sprite = sprite == null ? spriteObj.GetComponentInChildren<SpriteRenderer>(true) : sprite;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
-        // anim = anim == null ? spriteObj.GetComponentInChildren<Animator>(true) : anim;
-        animList = GetComponentsInChildren<Animator>().ToList();
+        animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
+
+        // spriteList = spriteList.Count == 0 ? GetComponentsInChildren<SpriteRenderer>().ToList() : spriteList;
+        //리스트에 아무것도 없으면 스프라이트렌더러 1개 찾아 넣기
+        if (spriteList.Count == 0)
+        {
+            spriteList.Add(GetComponentInChildren<SpriteRenderer>());
+        }
 
         enemyAI = GetComponent<EnemyAI>();
 
-        if (sprite != null)
+        if (spriteList != null)
         {
-            //머터리얼 정보 저장
-            originMat = sprite.material;
-            //색상 정보 저장
-            originColor = sprite.color;
-            //아웃라인이면 머터리얼 색상 저장
-            if (sprite.material == SystemManager.Instance.outLineMat)
-                originMatColor = sprite.material.color;
+            foreach (SpriteRenderer sprite in spriteList)
+            {
+                //머터리얼 정보 저장
+                originMat = sprite.material;
+                //색상 정보 저장
+                originColor = sprite.color;
+                //아웃라인이면 머터리얼 색상 저장
+                if (sprite.material == SystemManager.Instance.outLineMat)
+                    originMatColor = sprite.material.color;
+            }
         }
     }
 
@@ -104,7 +112,8 @@ public class EnemyManager : MonoBehaviour
     IEnumerator Initial()
     {
         //콜라이더 끄기
-        coll.enabled = false;
+        if (coll != null)
+            coll.enabled = false;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
@@ -162,7 +171,8 @@ public class EnemyManager : MonoBehaviour
         isDead = false;
 
         //콜라이더 켜기
-        coll.enabled = true;
+        if (coll != null)
+            coll.enabled = true;
 
         //! 테스트 확인용
         enemyName = enemy.enemyName;
@@ -472,7 +482,8 @@ public class EnemyManager : MonoBehaviour
         isDead = true;
 
         //콜라이더 끄기
-        coll.enabled = false;
+        if (coll != null)
+            coll.enabled = false;
 
         //몬스터 총 전투력 빼기
         EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
@@ -481,15 +492,18 @@ public class EnemyManager : MonoBehaviour
         SystemManager.Instance.killCount++;
         UIManager.Instance.UpdateKillCount();
 
-        if (sprite != null)
+        if (spriteList != null)
         {
-            // 머터리얼 및 색 변경
-            sprite.material = SystemManager.Instance.hitMat;
-            sprite.color = SystemManager.Instance.hitColor;
+            foreach (SpriteRenderer sprite in spriteList)
+            {
+                // 머터리얼 및 색 변경
+                sprite.material = SystemManager.Instance.hitMat;
+                sprite.color = SystemManager.Instance.hitColor;
 
-            // 색깔 점점 흰색으로
-            sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
-            .SetEase(Ease.OutQuad);
+                // 색깔 점점 흰색으로
+                sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
+                .SetEase(Ease.OutQuad);
+            }
 
             // 폭발 반경 표시
             if (selfExplosion)
@@ -507,7 +521,7 @@ public class EnemyManager : MonoBehaviour
             }
 
             //색 변경 완료 될때까지 대기
-            yield return new WaitUntil(() => sprite.color == SystemManager.Instance.DeadColor);
+            yield return new WaitUntil(() => spriteList[0].color == SystemManager.Instance.DeadColor);
         }
 
         //전역 시간 속도가 멈춰있다면 복구될때까지 대기
