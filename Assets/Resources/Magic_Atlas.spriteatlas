@@ -79,6 +79,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d2b459d32a648f24d8c9e125b65874d0, type: 3}
   - {fileID: 21300000, guid: 98b8b4143e8dc4b40847213d626ae78f, type: 3}
   - {fileID: 21300000, guid: c4360e1490be5834ba86ef4d5c7885db, type: 3}
+  - {fileID: -6973035357185448733, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
+  - {fileID: 4052886725512566304, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
+  - {fileID: -2435822838769587993, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
+  - {fileID: -4898178295380021446, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: 21300000, guid: f23731a414aaf034caf50232c22b79e1, type: 3}
   - {fileID: 5746233912124084476, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 3778720162359076472, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
@@ -238,6 +242,10 @@ SpriteAtlas:
   - SnowCrystal
   - Blizzard_Icon
   - particleGradation3
+  - SlingShot-Sheet_1
+  - SlingShot-Sheet_0
+  - SlingShot-Sheet_3
+  - SlingShot-Sheet_2
   - LightningGem_
   - StompDust_Sheet_5
   - StompDust_Sheet_4

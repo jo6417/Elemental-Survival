@@ -139,7 +139,7 @@ public class CastMagic : MonoBehaviour
 
             // 일반 마법일때
             if (magic.castType == "passive"
-            || magic.castType == "auto")
+            || magic.castType == "active")
             {
                 //ID 같은 일반 마법 찾기
                 tempMagic = nowCastMagics.Find(x => x.id == magic.id);
@@ -159,7 +159,7 @@ public class CastMagic : MonoBehaviour
                     }
 
                     // 자동 시전 마법일때
-                    if (magic.castType == "auto")
+                    if (magic.castType == "active")
                     {
                         //nowCastMagics에 해당 마법 추가
                         nowCastMagics.Add(magic);

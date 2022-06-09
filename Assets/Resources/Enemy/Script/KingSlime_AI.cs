@@ -15,9 +15,9 @@ public class KingSlime_AI : MonoBehaviour
     public bool nowAbsorb; //슬라임 내부에 플레이어 있는지
     public float poisonAtkRange = 20f; //독 뿜기 공격 가능 범위
     public float atkRatio = 0.5f; //이동 멈추고 공격할 확률
-    EnemyManager enemyManager;
 
     [Header("Refer")]
+    EnemyManager enemyManager;
     public Transform crownObj;
     public GameObject slimePrefab; //새끼 슬라임 프리팹
     public EnemyAtkTrigger babyTrigger; //새끼 슬라임 소환 범위

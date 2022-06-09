@@ -326,15 +326,7 @@ public class PlayerManager : MonoBehaviour
         //적에게 충돌
         if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {
-            // print("적 충돌");
-
-            EnemyInfo enemy = other.gameObject.GetComponent<EnemyAtk>().enemyManager.enemy;
-
-            //피격 딜레이 무적
-            IEnumerator hitDelay = HitDelay();
-            StartCoroutine(hitDelay);
-
-            Damage(enemy.power);
+            Hit(other.transform);
         }
     }
 
@@ -342,8 +334,17 @@ public class PlayerManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {
-            EnemyManager enemyManager = other.GetComponent<EnemyAtk>().enemyManager;
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+            Hit(other.transform);
+        }
+    }
+
+    void Hit(Transform other)
+    {
+        // 몬스터 정보 찾기
+        EnemyManager enemyManager = null;
+        if (other.TryGetComponent(out EnemyAtk enemyAtk))
+        {
+            enemyManager = enemyAtk.enemyManager;
 
             //적에게 충돌
             if (enemyManager != null && enemyManager.enabled)
@@ -356,7 +357,11 @@ public class PlayerManager : MonoBehaviour
 
                 Damage(enemy.power);
             }
+        }
 
+        //마법 정보 찾기
+        if (other.TryGetComponent(out MagicHolder magicHolder))
+        {
             //적의 마법에 충돌
             if (magicHolder != null && magicHolder.enabled)
             {

@@ -50,6 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
+  target: 0
   knockbackForce: 10
   isStop: 0
   slowTime: 0
@@ -70,6 +71,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lookDir: 1
+  hitEffect: {fileID: 0}
 --- !u!212 &8858579763765985367
 SpriteRenderer:
   m_ObjectHideFlags: 0
