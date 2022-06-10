@@ -51,133 +51,16 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        // 몬스터 정보 없으면 리턴
         if (enemyManager.enemy == null)
             return;
 
-        //상태 관리
-        ManageState();
+        // 상태 이상 있으면 리턴
+        if (!enemyManager.ManageState())
+            return;
 
         //행동 관리
         ManageAction();
-    }
-
-    void ManageState()
-    {
-        //죽음 애니메이션 중일때
-        if (enemyManager.isDead)
-        {
-            enemyManager.state = EnemyManager.State.Dead;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-            enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-
-            if (enemyManager.animList.Count > 0)
-            {
-                foreach (Animator anim in enemyManager.animList)
-                {
-                    anim.speed = 0f;
-                }
-            }
-
-            transform.DOPause();
-
-            return;
-        }
-
-        //전역 타임스케일이 0 일때
-        if (SystemManager.Instance.globalTimeScale == 0)
-        {
-            enemyManager.state = EnemyManager.State.MagicStop;
-
-            // 애니메이션 멈추기
-            if (enemyManager.animList.Count > 0)
-            {
-                foreach (Animator anim in enemyManager.animList)
-                {
-                    anim.speed = 0f;
-                }
-            }
-
-            // 이동 멈추기
-            enemyManager.rigid.velocity = Vector2.zero;
-
-            transform.DOPause();
-            return;
-        }
-
-        // 멈춤 디버프일때
-        if (enemyManager.stopCount > 0)
-        {
-            enemyManager.state = EnemyManager.State.TimeStop;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-            enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-            // 애니메이션 멈추기
-            if (enemyManager.animList.Count > 0)
-            {
-                foreach (Animator anim in enemyManager.animList)
-                {
-                    anim.speed = 0f;
-                }
-            }
-
-            foreach (SpriteRenderer sprite in enemyManager.spriteList)
-            {
-                sprite.material = enemyManager.originMat;
-                sprite.color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
-            }
-            transform.DOPause();
-
-            enemyManager.stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-            return;
-        }
-
-        //맞고 경직일때
-        if (enemyManager.hitCount > 0)
-        {
-            enemyManager.state = EnemyManager.State.Hit;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-
-            // 머터리얼 및 색 변경
-            foreach (SpriteRenderer sprite in enemyManager.spriteList)
-            {
-                sprite.material = SystemManager.Instance.hitMat;
-                sprite.color = SystemManager.Instance.hitColor;
-            }
-
-            enemyManager.hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-            return;
-        }
-
-        //스폰 콜라이더에 닿아 반대편으로 보내질때 잠시대기
-        if (enemyManager.oppositeCount > 0)
-        {
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-
-            enemyManager.oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-            return;
-        }
-
-        //모든 문제 없으면 idle 상태로 전환
-        enemyManager.state = EnemyManager.State.Idle;
-
-        // rigid, sprite, 트윈, 애니메이션 상태 초기화
-        foreach (SpriteRenderer sprite in enemyManager.spriteList)
-        {
-            sprite.material = enemyManager.originMat;
-            sprite.color = enemyManager.originColor;
-        }
-        transform.DOPlay();
-
-        // 애니메이션 속도 초기화
-        if (enemyManager.animList.Count > 0)
-        {
-            foreach (Animator anim in enemyManager.animList)
-            {
-                anim.speed = 1f;
-            }
-        }
     }
 
     void ManageAction()

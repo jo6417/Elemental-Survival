@@ -31,7 +31,7 @@ public class ParticleManager : MonoBehaviour
         {
             coll.enabled = true;
 
-            // collOverTime 0이 아닐때
+            // 콜라이더 대기시간 0 이상일때
             if (collOverTime > 0)
             {
                 // collOverTime 만큼 대기후 콜라이더 끄기

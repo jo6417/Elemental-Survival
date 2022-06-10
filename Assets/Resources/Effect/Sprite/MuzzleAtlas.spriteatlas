@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MuzzleAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 04f0ba98574c04043b60a1a7b0644e1f, type: 3}
+    - {fileID: 21300000, guid: 04f0ba98574c04043b60a1a7b0644e1f, type: 3}
+    - {fileID: 2800000, guid: d62ae18050b5ad340858fd3d3586240f, type: 3}
+    - {fileID: 21300000, guid: d62ae18050b5ad340858fd3d3586240f, type: 3}
+    - {fileID: 2800000, guid: 90c7ba81bea81ad4eace9fbd66762937, type: 3}
+    - {fileID: 21300000, guid: 90c7ba81bea81ad4eace9fbd66762937, type: 3}
+    - {fileID: 2800000, guid: 497449d81c6ad2640b4114e5c89ee1f3, type: 3}
+    - {fileID: 21300000, guid: 497449d81c6ad2640b4114e5c89ee1f3, type: 3}
+    - {fileID: 2800000, guid: c8e10ab09b9a46b44874f4c7d103756b, type: 3}
+    - {fileID: 21300000, guid: c8e10ab09b9a46b44874f4c7d103756b, type: 3}
+    - {fileID: 21300000, guid: 06e0ff98863e63446a916cf9bd8f3c8f, type: 3}
+    - {fileID: 2800000, guid: 06e0ff98863e63446a916cf9bd8f3c8f, type: 3}
+    - {fileID: 2800000, guid: 113e863bea9f2f848839bd9ae6dadeda, type: 3}
+    - {fileID: 21300000, guid: 113e863bea9f2f848839bd9ae6dadeda, type: 3}
+    - {fileID: 2800000, guid: 1380cd71b92dab24abc3f4976e045a1c, type: 3}
+    - {fileID: 21300000, guid: 1380cd71b92dab24abc3f4976e045a1c, type: 3}
+    - {fileID: 2800000, guid: a3194f66cc791924fabf6ebfb701390b, type: 3}
+    - {fileID: 21300000, guid: a3194f66cc791924fabf6ebfb701390b, type: 3}
+    - {fileID: 2800000, guid: d6e474529ea1f924e9694ca3928cc9ef, type: 3}
+    - {fileID: 21300000, guid: d6e474529ea1f924e9694ca3928cc9ef, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: d62ae18050b5ad340858fd3d3586240f, type: 3}
+  - {fileID: 21300000, guid: c8e10ab09b9a46b44874f4c7d103756b, type: 3}
+  - {fileID: 21300000, guid: 1380cd71b92dab24abc3f4976e045a1c, type: 3}
+  - {fileID: 21300000, guid: 90c7ba81bea81ad4eace9fbd66762937, type: 3}
+  - {fileID: 21300000, guid: d6e474529ea1f924e9694ca3928cc9ef, type: 3}
+  - {fileID: 21300000, guid: a3194f66cc791924fabf6ebfb701390b, type: 3}
+  - {fileID: 21300000, guid: 04f0ba98574c04043b60a1a7b0644e1f, type: 3}
+  - {fileID: 21300000, guid: 06e0ff98863e63446a916cf9bd8f3c8f, type: 3}
+  - {fileID: 21300000, guid: 497449d81c6ad2640b4114e5c89ee1f3, type: 3}
+  - {fileID: 21300000, guid: 113e863bea9f2f848839bd9ae6dadeda, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - muzzle_01_rotated
+  - muzzle_03
+  - muzzle_04_rotated
+  - muzzle_02
+  - muzzle_05_rotated
+  - muzzle_05
+  - muzzle_01
+  - muzzle_03_rotated
+  - muzzle_02_rotated
+  - muzzle_04
+  m_RenderDataMap: {}
+  m_Tag: MuzzleAtlas
+  m_IsVariant: 0

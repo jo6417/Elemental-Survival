@@ -73,12 +73,12 @@ public class KingSlime_AI : MonoBehaviour
         if (enemyManager.enemy == null)
             return;
 
-        // state 확인
-        if (ManageState())
-        {
-            // State에 아무 이상 없으면 행동 시작
-            ManageAction();
-        }
+        // 상태 이상 있으면 리턴
+        if (!enemyManager.ManageState())
+            return;
+
+        // 행동 관리
+        ManageAction();
 
         // 플레이어 흡수중일때
         if (nowAbsorb)
@@ -111,102 +111,6 @@ public class KingSlime_AI : MonoBehaviour
             PlayerManager.Instance.speedDebuff = 1f;
         }
     }
-
-    bool ManageState()
-    {
-        //죽음 애니메이션 중일때
-        if (enemyManager.isDead)
-        {
-            enemyManager.state = EnemyManager.State.Dead;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-            enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-
-            if (enemyManager.animList != null)
-                enemyManager.animList[0].speed = 0f;
-
-            transform.DOPause();
-
-            return false;
-        }
-
-        //전역 타임스케일이 0 일때
-        if (SystemManager.Instance.globalTimeScale == 0)
-        {
-            enemyManager.state = EnemyManager.State.MagicStop;
-
-            if (enemyManager.animList != null)
-                enemyManager.animList[0].speed = 0f;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-            transform.DOPause();
-            return false;
-        }
-
-        //시간 정지 디버프일때
-        if (enemyManager.stopCount > 0)
-        {
-            enemyManager.state = EnemyManager.State.TimeStop;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-            enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-            enemyManager.animList[0].speed = 0f;
-
-            enemyManager.spriteList[0].material = enemyManager.originMat;
-            enemyManager.spriteList[0].color = SystemManager.Instance.stopColor; //시간 멈춤 색깔
-            transform.DOPause();
-
-            enemyManager.stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-            return false;
-        }
-
-        //맞고 경직일때
-        if (enemyManager.hitCount > 0)
-        {
-            enemyManager.state = EnemyManager.State.Hit;
-
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-
-            // 머터리얼 및 색 변경
-            enemyManager.spriteList[0].material = SystemManager.Instance.hitMat;
-            enemyManager.spriteList[0].color = SystemManager.Instance.hitColor;
-
-            enemyManager.hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-            return false;
-        }
-
-        //스폰 콜라이더에 닿아 반대편으로 보내질때 잠시대기
-        if (enemyManager.oppositeCount > 0)
-        {
-            enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-
-            // //점프시퀀스 초기화
-            // if (enemyManager.nowAction == EnemyManager.Action.Jump && jumpSeq.IsActive())
-            // {
-            //     jumpSeq.Pause();
-
-            //     //그림자 위치 초기화
-            //     if (shadow)
-            //         shadow.localPosition = Vector2.zero;
-            // }
-
-            enemyManager.oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-            return false;
-        }
-
-        enemyManager.state = EnemyManager.State.Idle;
-
-        // enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
-        enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation; // 위치 고정 해제
-        enemyManager.spriteList[0].material = enemyManager.originMat;
-        enemyManager.spriteList[0].color = enemyManager.originColor;
-        transform.DOPlay();
-        if (enemyManager.animList != null)
-            enemyManager.animList[0].speed = 1f; //애니메이션 속도 초기화
-
-        return true;
-    }
-
     void ManageAction()
     {
         // Idle 아니면 리턴

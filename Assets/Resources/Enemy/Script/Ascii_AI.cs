@@ -111,6 +111,16 @@ public class Ascii_AI : MonoBehaviour
         if (enemy == null || laserMagic == null)
             return;
 
+        // 상태 이상 있으면 리턴
+        if (!enemyManager.ManageState())
+            return;
+
+        // 행동 관리
+        ManageAction();
+    }
+
+    void ManageAction()
+    {
         // fall 콜라이더에 플레이어 있으면 리스트에 fall 공격패턴 담기
         if (fallRangeTrigger.atkTrigger)
         {

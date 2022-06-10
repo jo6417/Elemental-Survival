@@ -14,17 +14,6 @@ public class EnemyManager : MonoBehaviour
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
     public EnemyManager referEnemyManager = null;
     public EnemyInfo enemy;
-    public float portalSize = 1f; //포탈 사이즈 지정값
-    public bool isElite; //엘리트 몬스터 여부
-    public int eliteClass; //엘리트 클래스 종류
-    public bool isDead; //죽음 코루틴 진행중 여부
-    public float particleHitCount = 0;
-    public float stopCount = 0;
-    public float hitCount = 0;
-    public float oppositeCount = 0;
-    Sequence damageTextSeq;
-    public bool isAbsorb; //해당 몬스터가 젬 흡수 하는지 여부
-    public bool selfExplosion = false; //죽을때 자폭 여부
 
     [Header("State")]
     public State state; //현재 상태
@@ -42,18 +31,29 @@ public class EnemyManager : MonoBehaviour
         Follow // 플레이어와 일정거리 고정하며 따라다님
     };
 
+    public float portalSize = 1f; //포탈 사이즈 지정값
+    public bool isElite; //엘리트 몬스터 여부
+    public int eliteClass; //엘리트 클래스 종류
+    public bool isDead; //죽음 코루틴 진행중 여부
+    public float particleHitCount = 0;
+    public float stopCount = 0;
+    public float hitCount = 0;
+    public float oppositeCount = 0;
+    Sequence damageTextSeq;
+    public bool selfExplosion = false; //죽을때 자폭 여부
+    public bool statusEffect = false; //상태이상으로 색 변형 했는지 여부
+
     [Header("Refer")]
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
+    public List<Material> originMatList = new List<Material>(); //변형 전 머터리얼
+    public List<Color> originMatColorList = new List<Color>(); //변형 전 머터리얼 색
+    public List<Color> originColorList = new List<Color>(); // 변형 전 스프라이트 색
     public List<Animator> animList = new List<Animator>();
     public Rigidbody2D rigid;
     public Collider2D coll;
     EnemyAI enemyAI;
-
-    public Material originMat;
-    public Color originMatColor; //해당 몬스터 머터리얼 원래 색
-    public Color originColor; //해당 몬스터 원래 색
 
     [Header("Stat")]
     public float hpMax;
@@ -80,28 +80,21 @@ public class EnemyManager : MonoBehaviour
         coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
 
-        // spriteList = spriteList.Count == 0 ? GetComponentsInChildren<SpriteRenderer>().ToList() : spriteList;
-        //리스트에 아무것도 없으면 스프라이트렌더러 1개 찾아 넣기
+        // 리스트에 아무것도 없으면 스프라이트렌더러 1개 찾아 넣기
         if (spriteList.Count == 0)
         {
-            spriteList.Add(GetComponentInChildren<SpriteRenderer>());
+            SpriteRenderer sprite = GetComponentInChildren<SpriteRenderer>();
+
+            if (sprite != null)
+            {
+                spriteList.Add(sprite);
+                originColorList.Add(sprite.color);
+                originMatList.Add(sprite.material);
+                originMatColorList.Add(sprite.material.color);
+            }
         }
 
         enemyAI = GetComponent<EnemyAI>();
-
-        if (spriteList != null)
-        {
-            foreach (SpriteRenderer sprite in spriteList)
-            {
-                //머터리얼 정보 저장
-                originMat = sprite.material;
-                //색상 정보 저장
-                originColor = sprite.color;
-                //아웃라인이면 머터리얼 색상 저장
-                if (sprite.material == SystemManager.Instance.outLineMat)
-                    originMatColor = sprite.material.color;
-            }
-        }
     }
 
     private void OnEnable()
@@ -189,6 +182,157 @@ public class EnemyManager : MonoBehaviour
         {
             particleHitCount -= Time.deltaTime;
         }
+    }
+
+    public bool ManageState()
+    {
+        // 몬스터 정보 없으면 리턴
+        if (enemy == null)
+            return false;
+
+        //죽음 애니메이션 중일때
+        if (isDead)
+        {
+            // 상태이상 변수 true
+            statusEffect = true;
+
+            state = State.Dead;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
+            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+
+            if (animList.Count > 0)
+            {
+                foreach (Animator anim in animList)
+                {
+                    anim.speed = 0f;
+                }
+            }
+
+            transform.DOPause();
+
+            return false;
+        }
+
+        //전역 타임스케일이 0 일때
+        if (SystemManager.Instance.globalTimeScale == 0)
+        {
+            // 상태이상 변수 true
+            statusEffect = true;
+
+            state = State.MagicStop;
+
+            // 애니메이션 멈추기
+            if (animList.Count > 0)
+            {
+                foreach (Animator anim in animList)
+                {
+                    anim.speed = 0f;
+                }
+            }
+
+            // 이동 멈추기
+            rigid.velocity = Vector2.zero;
+
+            transform.DOPause();
+
+            return false;
+        }
+
+        // 멈춤 디버프일때
+        if (stopCount > 0)
+        {
+            // 상태이상 변수 true
+            statusEffect = true;
+
+            state = State.TimeStop;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
+            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            // 애니메이션 멈추기
+            if (animList.Count > 0)
+            {
+                foreach (Animator anim in animList)
+                {
+                    anim.speed = 0f;
+                }
+            }
+
+            //시간 멈춤 머터리얼 및 색으로 바꾸기
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                spriteList[i].material = originMatList[i];
+                spriteList[i].color = SystemManager.Instance.stopColor;
+            }
+
+            transform.DOPause();
+
+            stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+
+            return false;
+        }
+
+        //맞고 경직일때
+        if (hitCount > 0)
+        {
+            // 상태이상 변수 true
+            statusEffect = true;
+
+            state = State.Hit;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
+
+            // 머터리얼 및 색 변경
+            foreach (SpriteRenderer sprite in spriteList)
+            {
+                sprite.material = SystemManager.Instance.hitMat;
+                sprite.color = SystemManager.Instance.hitColor;
+            }
+
+            hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+
+            return false;
+        }
+
+        //스폰 콜라이더에 닿아 반대편으로 보내질때 잠시대기
+        if (oppositeCount > 0)
+        {
+            rigid.velocity = Vector2.zero; //이동 초기화
+
+            oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+
+            return false;
+        }
+
+        //모든 문제 없으면 idle 상태로 전환
+        state = State.Idle;
+
+        // 상태이상 걸렸으면
+        if (statusEffect)
+        {
+            //상태이상 해제됨
+            statusEffect = false;
+
+            // rigid, sprite, 트윈, 애니메이션 상태 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                spriteList[i].material = originMatList[i];
+                spriteList[i].color = originColorList[i];
+            }
+
+            transform.DOPlay();
+
+            // 애니메이션 속도 초기화
+            if (animList.Count > 0)
+            {
+                foreach (Animator anim in animList)
+                {
+                    anim.speed = 1f;
+                }
+            }
+        }
+
+        return true;
     }
 
     private void OnParticleCollision(GameObject other)
@@ -531,7 +675,7 @@ public class EnemyManager : MonoBehaviour
         if (selfExplosion)
         {
             // 폭발 이펙트 스폰
-            GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity);
+            GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             // enemy 데이터 넣어주기
             effect.GetComponent<EnemyManager>().enemy = enemy;
