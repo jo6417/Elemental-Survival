@@ -10,49 +10,60 @@ public class Bawi_AI : MonoBehaviour
     [Header("State")]
     float coolCount; //쿨타임 카운트
     public float stoneThrowCoolTime;
-    public float scatterCoolTime;
-    public float drillChaseCoolTime;
-    public float dashCoolTime;
+    // public float scatterCoolTime;
+    // public float drillChaseCoolTime;
+    // public float dashCoolTime;
     public float farDistance = 10f;
-    public float closeDistance = 5f;
-    public Vector2 fistDefaultPos; //손의 기본 위치
-    public Vector2 drillDefaultPos; //드릴의 기본 위치
-    Vector2 playerDir;
-    public bool isFloating = true; //부유 상태 여부
+    // public float closeDistance = 5f;
+    public Vector2 fistParentDefaultPos = new Vector2(5, 0); // fistParent 초기 위치
+    public Vector2 drillParentDefaultPos = new Vector2(-5, 0); // drillParent 초기 위치
+    public Vector2 fistPartDefaultPos = new Vector2(0, 5); // fistPart의 초기 위치
+    public Vector2 drillPartDefaultPos = new Vector2(0, 5); // drillPart 초기 위치
+    Vector3 playerDir;
+    bool isFloating = true; //부유 상태 여부
+    public float drillAimCount = 1f; //드릴 조준 시간
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
     public EnemyManager enemyManager;
-    public ParticleSystem elementSymbolEffect; //원소 문장 이펙트
+    public GameObject smallLandDust; //착지할때 손 먼지 파티클
 
     [Header("Head")]
     public Transform headPart;
-    public ParticleSystem headParticle; // 머리 부유 파티클
-    public GameObject dustParticle; //착지할때 먼지 파티클
+    public Collider2D headShadowColl; // 머리 충돌용 콜라이더
+    public ParticleSystem headParticle; // 머리 부유 이펙트
+    public GameObject bigLandDust; //착지할때 헤드 먼지 파티클
+    public GameObject headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
     [Header("Fist")]
-    public Transform fistParent; // 그림자까지 포함한 부모 오브젝트
+    // public Transform fistParent; // 그림자까지 포함한 부모 오브젝트
     public SpriteRenderer fistPart;
-    public SpriteRenderer fistShadow; // 주먹 그림자
+    // public SpriteRenderer fistShadow; // 주먹 그림자
     public ParticleSystem fistParticle; // 주먹 부유 파티클
-    public Sprite emptyHandSprite;
-    public Sprite openHandSprite;
-    public Sprite grabHandSprite;
+    public GameObject fistDust; //돌 부술때 먼지 파티클
+    public Sprite emptyFistSprite;
+    public Sprite openFistSprite;
+    public Sprite grabFistSprite;
     public GameObject stonePrefab; // 공격시 던질 돌 프리팹
+    public GameObject fistDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
     [Header("Drill")]
     public Transform drillParent; // 그림자까지 포함한 부모
     public Transform drillPart; // 드릴 고스트 및 부유 이펙트 포함한 부모
-    public SpriteRenderer drillSprite; // 드릴 스프라이트 자체
+    public SpriteRenderer mainDrillSprite; // 드릴 스프라이트 자체
+    public SpriteRenderer ghostDrillSprite; // 드릴 고스트 스프라이트
     public SpriteRenderer drillShadow; // 드릴 그림자
     public ParticleSystem drillParticle; // 드릴 부유 파티클
     public Animator mainDrillAnim; // 메인 드릴 회전 애니메이터
     public Animator ghostDrillAnim; // 고스트 드릴 회전 애니메이터
     public Collider2D drillGhostColl; // 고스트 드릴 콜라이더
+    public ParticleSystem chargeGathering; // 드릴차지 기모으는 이펙트
+    public ParticleSystem chargePulse; // 드릴차지 펄스 이펙트
+    public GameObject drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
     private void Awake()
     {
-        enemyManager = GetComponent<EnemyManager>();
+        // enemyManager = GetComponent<EnemyManager>();
 
         // 초기 위치 저장
         // fistDefaultPos = fistPart.transform.localPosition;
@@ -90,7 +101,7 @@ public class Bawi_AI : MonoBehaviour
         isFloating = true;
 
         // 각각 드릴 스프라이트 참조
-        SpriteRenderer ghostDrill = drillSprite.transform.Find("DrillGhost").GetComponent<SpriteRenderer>();
+        SpriteRenderer ghostDrill = mainDrillSprite.transform.Find("DrillGhost").GetComponent<SpriteRenderer>();
 
         // 고스트 드릴 오브젝트 비활성화
         ghostDrill.gameObject.SetActive(true);
@@ -100,8 +111,11 @@ public class Bawi_AI : MonoBehaviour
         ghostDrill.transform.localPosition = Vector2.zero;
 
         // 각각 드릴 색 초기화
-        drillSprite.color = Color.white;
+        mainDrillSprite.color = Color.white;
         ghostDrill.color = Color.clear;
+
+        // 차지 파티클 끄기
+        // chargeGathering.gameObject.SetActive(false);
     }
 
     void Update()
@@ -187,20 +201,10 @@ public class Bawi_AI : MonoBehaviour
 
         // 가려는 방향으로 양쪽 손이 회전
         fistPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
-        drillPart.rotation = Quaternion.Euler(0, 0, rotation);
+        drillPart.rotation = Quaternion.Euler(0, 0, rotation - 90f);
 
         //해당 방향으로 가속
         enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
-
-        // 움직일 방향에따라 머리만 Y축 회전
-        // if (dir.x > 0)
-        // {
-        //     headPart.rotation = Quaternion.Euler(0, 0, 0);
-        // }
-        // else
-        // {
-        //     headPart.rotation = Quaternion.Euler(0, 180, 0);
-        // }
 
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
@@ -210,6 +214,9 @@ public class Bawi_AI : MonoBehaviour
         // 착지 상태일때 
         if (!isFloating)
         {
+            // 충돌 콜라이더 끄기
+            headShadowColl.enabled = false;
+
             // 부유 상태로 전환
             isFloating = true;
 
@@ -225,11 +232,22 @@ public class Bawi_AI : MonoBehaviour
         // 부유 상태일때
         if (isFloating)
         {
+            // 충돌 콜라이더 켜기
+            headShadowColl.enabled = true;
+
             // 착지 상태로 전환
             isFloating = false;
 
-            //먼지 파티클 생성
-            LeanPool.Spawn(dustParticle, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            // 머리 먼지 파티클 생성
+            LeanPool.Spawn(bigLandDust, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            if (enemyManager.animList[0].GetBool("UseDrill"))
+                // 드릴 먼지 파티클 생성
+                LeanPool.Spawn(smallLandDust, drillParent.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            if (enemyManager.animList[0].GetBool("UseHand"))
+                // 주먹 먼지 파티클 생성
+                LeanPool.Spawn(smallLandDust, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         }
 
         //애니메이터 끄기
@@ -247,7 +265,7 @@ public class Bawi_AI : MonoBehaviour
         // print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        randomNum = 3;
+        randomNum = 2;
 
         switch (randomNum)
         {
@@ -256,13 +274,14 @@ public class Bawi_AI : MonoBehaviour
                 break;
             case 1:
                 // 큰 바위 던지기 패턴
-                StartCoroutine(StoneThrow());
+                StartCoroutine(StoneThrow(false));
                 break;
             case 2:
-                //TODO 작은 돌 샷건 패턴
+                // 작은 돌 샷건 패턴
+                StartCoroutine(StoneThrow(true));
                 break;
             case 3:
-                //TODO 드릴 돌진 패턴, 1~3단계 랜덤 차지, 차지 레벨 높을수록 빠름
+                // 드릴 돌진 패턴
                 StartCoroutine(DrillDash());
                 break;
             case 4:
@@ -271,7 +290,7 @@ public class Bawi_AI : MonoBehaviour
         }
     }
 
-    IEnumerator StoneThrow()
+    IEnumerator StoneThrow(bool isSmallStone = false)
     {
         // 머리 및 드릴 부유 이펙트 끄기
         headParticle.Stop();
@@ -302,7 +321,7 @@ public class Bawi_AI : MonoBehaviour
         .AppendCallback(() =>
         {
             // 손바닥으로 변경
-            fistPart.sprite = openHandSprite;
+            fistPart.sprite = openFistSprite;
         })
         .Append(
             // 바위 위치로 손이 이동
@@ -319,7 +338,7 @@ public class Bawi_AI : MonoBehaviour
         .AppendCallback(() =>
         {
             // 바위 집은 손으로 변경
-            fistPart.sprite = grabHandSprite;
+            fistPart.sprite = grabFistSprite;
         })
         // 잠시 대기
         .AppendInterval(0.5f)
@@ -358,6 +377,18 @@ public class Bawi_AI : MonoBehaviour
             yield return new WaitForSeconds(Time.deltaTime);
         }
 
+        // 작은 돌이면 돌 부수는 트랜지션
+        if (isSmallStone)
+        {
+            // 주먹 위치 떨림
+            fistPart.transform.DOPunchPosition(Vector3.up, 0.5f, 50, 1);
+
+            // 주먹에서 먼지 파티클 발생
+            LeanPool.Spawn(fistDust, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            yield return new WaitForSeconds(0.5f);
+        }
+
         // 돌 발사 위치
         Vector2 throwPos = fistPart.transform.position + Quaternion.AngleAxis(playerAngle, Vector3.forward) * Vector3.right * 7f;
 
@@ -385,10 +416,6 @@ public class Bawi_AI : MonoBehaviour
             endAngle = playerAngle + 89f;
         }
 
-        // LeanPool.Spawn(SystemManager.Instance.pointPrefab, startPos, Quaternion.identity);
-        // LeanPool.Spawn(SystemManager.Instance.pointPrefab, throwPos, Quaternion.identity);
-        // LeanPool.Spawn(SystemManager.Instance.pointPrefab, endPos, Quaternion.identity);
-
         //포물선 벡터
         Vector3[] parabola = { startPos, throwPos, endPos };
 
@@ -408,7 +435,7 @@ public class Bawi_AI : MonoBehaviour
         .AppendCallback(() =>
         {
             //돌 날리기
-            StartCoroutine(ShotStone());
+            StartCoroutine(ShotStone(isSmallStone));
         })
         .Join(
             //포물선 그리며 손 휘두르기
@@ -424,40 +451,90 @@ public class Bawi_AI : MonoBehaviour
         yield return new WaitUntil(() => !throwSeq.active);
 
         // 손 위치 기본 위치로 이동
-        fistPart.transform.parent.DOLocalMove(fistDefaultPos, 0.5f)
+        fistPart.transform.parent.DOLocalMove(fistPartDefaultPos, 0.5f)
         .OnComplete(() =>
         {
             // Idle 액션으로 전환
             enemyManager.nowAction = EnemyManager.Action.Idle;
+
+            // 일반 주먹으로 변경
+            fistPart.sprite = emptyFistSprite;
         });
     }
 
-    IEnumerator ShotStone()
+    IEnumerator ShotStone(bool isSmallStone)
     {
         // 손을 절반 휘두르는 만큼 대기
         yield return new WaitForSeconds(0.1f);
 
-        //중간에 돌 던지기
-        GameObject stone = LeanPool.Spawn(stonePrefab, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        //플레이어 위치
+        Vector3 playerPos = PlayerManager.Instance.transform.position;
 
-        // 타겟 및 타겟위치 설정하기
-        MagicHolder magicHolder = stone.GetComponent<MagicHolder>();
-        magicHolder.SetTarget(MagicHolder.Target.Player);
-        magicHolder.targetPos = PlayerManager.Instance.transform.position;
+        //던질 돌 개수
+        int stoneNum = 1;
+        // 돌 사이즈
+        Vector3 stoneScale = Vector3.one;
 
-        // 플레이어 방향 다시 계산
-        playerDir = PlayerManager.Instance.transform.position - fistPart.transform.position;
+        // 작은돌 트리거면
+        if (isSmallStone)
+        {
+            // 작은 돌 5개 던지기
+            stoneNum = 5;
+            // 돌 사이즈 작게
+            stoneScale = Vector3.one * 0.5f;
+        }
+        else
+        {
+            // 큰돌 1개 던지기
+            stoneNum = 1;
+            // 돌 사이즈 크게
+            stoneScale = Vector3.one;
+        }
 
-        // print("playerDir : " + playerDir);
+        for (int i = 0; i < stoneNum; i++)
+        {
+            //중간에 돌 던지기
+            GameObject stone = LeanPool.Spawn(stonePrefab, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
-        Rigidbody2D stoneRigid = stone.GetComponent<Rigidbody2D>();
-        // 돌 회전시키기
-        stoneRigid.angularVelocity = Random.value * -playerDir.x * 20f;
-        //돌 날리기
-        // stoneRigid.velocity = playerDir.normalized * 20f;
+            //돌 스케일 설정
+            stone.transform.localScale = stoneScale;
+
+            // 타겟 및 타겟위치 설정하기
+            MagicHolder magicHolder = stone.GetComponent<MagicHolder>();
+            magicHolder.SetTarget(MagicHolder.Target.Player);
+
+            // 마법 랜덤 유지시간 추가
+            magicHolder.addDuration = Random.Range(0.5f, 1f);
+
+            // 작은 돌일때
+            if (isSmallStone)
+                //플레이어 주변에 던지기
+                magicHolder.targetPos = playerPos + (Vector3)Random.insideUnitCircle * 10f;
+            // 큰 돌일때
+            else
+                //플레이어 정확하게 조준하고 던지기
+                magicHolder.targetPos = playerPos;
+
+            // 플레이어 방향 다시 계산
+            playerDir = PlayerManager.Instance.transform.position - fistPart.transform.position;
+
+            Rigidbody2D stoneRigid = stone.GetComponent<Rigidbody2D>();
+            // 돌 회전시키기
+            stoneRigid.angularVelocity = Random.value * -playerDir.x * 20f;
+
+            // 작은 돌일때
+            if (isSmallStone)
+            {
+                //랜덤 대기시간
+                float delay = Random.Range(0.01f, 0.05f);
+
+                //일정 시간 대기
+                yield return new WaitForSeconds(delay);
+            }
+        }
 
         // 손바닥으로 변경
-        fistPart.sprite = openHandSprite;
+        fistPart.sprite = openFistSprite;
     }
 
     IEnumerator DrillDash()
@@ -473,13 +550,18 @@ public class Bawi_AI : MonoBehaviour
         mainDrillAnim.SetBool("Spin", true);
         ghostDrillAnim.SetBool("Spin", true);
 
+        //착지 할때까지 대기
+        yield return new WaitUntil(() => !isFloating);
+
+        // 차지 이펙트 켜기
+        chargeGathering.gameObject.SetActive(true);
+        chargeGathering.Play();
+
         // 랜덤 차지 횟수 정하기
         int chargeNum = Random.Range(1, 4);
-        //! 차지횟수 고정
-        chargeNum = 3;
 
         // 드릴 머리보다 높게 들기
-        Tween upTween = drillPart.DOLocalMove(drillDefaultPos + Vector2.up * 5f, 2f)
+        Tween upTween = drillPart.DOLocalMove(drillPartDefaultPos + Vector2.up * 5f, 2f)
         .SetEase(Ease.InOutQuart);
 
         // 트윈 끝날때까지 대기
@@ -488,42 +570,119 @@ public class Bawi_AI : MonoBehaviour
         // 차지 횟수만큼 차지 반복
         for (int i = 0; i < chargeNum; i++)
         {
-            yield return StartCoroutine(DrillCharge());
+            yield return StartCoroutine(DrillCharge(i, chargeNum - 1));
         }
 
-        print("차지 끝, 돌진 시작");
+        // 차지 이펙트 끄기
+        StartCoroutine(chargeGathering.GetComponent<ParticleManager>().SmoothDisable());
 
-        // 플레이어 방향
-        playerDir = PlayerManager.Instance.transform.position - fistPart.transform.position;
+        //조준 시간 갱신
+        drillAimCount = 2f;
 
-        //TODO 잠깐동안 플레이어 조준, 보스 주위 고정된 거리로 원 그리면서
-        //TODO 보스 자체가 플레이어쪽으로 빠르게 이동 Ease.InBack
+        // 보스 위치 떨림
+        transform.DOShakePosition(drillAimCount, 0.3f, 50, 90f, false, false);
 
-        //TODO 드릴 고스트 투명해지다 사라지고 스케일 초기화
-        //TODO 기존 드릴 색깔 복구
-        //TODO 드릴 위치 및 각도 초기화
+        // 드릴 높이 낮추기
+        drillPart.DOLocalMove(Vector3.zero, 0.5f);
 
-        //TODO Idle 애니메이션 재생
-        //TODO Idle 상태로 전환
+        // 드릴 타겟팅 지연시간
+        float aimRate = 0.1f;
+
+        // 조준 시간동안 플레이어 조준하기
+        while (drillAimCount > 0)
+        {
+            //드릴이 공중에 떠있을때
+            if (drillPart.localPosition.y > 0)
+                aimRate = 0.5f;
+            else
+                aimRate = 0.1f;
+
+            // 보스에서 플레이어까지 방향
+            playerDir = PlayerManager.Instance.transform.position - transform.position;
+
+            //드릴 위치
+            Vector3 drillPos = transform.position + playerDir.normalized * 7f + Vector3.up * 2f;
+
+            // 플레이어 방향으로 드릴 위치 이동
+            drillParent.DOMove(drillPos, aimRate);
+
+            // 플레이어 방향의 각도
+            float rotation = Mathf.Atan2(playerDir.y, playerDir.x) * Mathf.Rad2Deg - 90f;
+
+            // 드릴이 플레이어 바라보기
+            // drillPart.rotation = Quaternion.Euler(Vector3.forward * rotation);
+            drillPart.DORotate(Vector3.forward * rotation, aimRate);
+
+            //시간 차감
+            stateText.text = "AimCount : " + drillAimCount;
+            drillAimCount -= aimRate;
+            yield return new WaitForSeconds(aimRate);
+        }
+
+        // 대쉬 위치
+        Vector2 dashPos = transform.position + (PlayerManager.Instance.transform.position - transform.position).normalized * 30f;
+
+        // 대쉬 선딜 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 대쉬 먼지 파티클 켜기
+        headDashDust.SetActive(true);
+        fistDashDust.SetActive(true);
+        // drillDashDust.SetActive(true);
+
+        // 플레이어 방향으로 돌진
+        transform.DOMove(dashPos, 2f)
+        .SetEase(Ease.OutExpo)
+        .OnComplete(() =>
+        {
+            // 드릴 콜라이더 끄기
+            drillGhostColl.enabled = false;
+
+            // 대쉬 먼지 파티클 끄기
+            headDashDust.SetActive(false);
+            fistDashDust.SetActive(false);
+            // drillDashDust.SetActive(false);
+        });
+
+        //돌진하는 동안 대기
+        yield return new WaitForSeconds(2f);
+
+        //초기화 시간
+        float resetTime = 1f;
+
+        // 메인 드릴 색깔 복구
+        mainDrillSprite.DOColor(Color.white, resetTime);
+        // 드릴 고스트 투명해지다 사라지고 스케일 초기화
+        ghostDrillSprite.DOColor(new Color(1, 1, 1, 0f), resetTime)
+        .OnComplete(() =>
+        {
+            // 고스트 드릴 스케일 초기화
+            ghostDrillSprite.transform.localScale = Vector3.one;
+        });
+
+        // 드릴 위치 및 각도 초기화
+        drillParent.DOLocalMove(drillParentDefaultPos, resetTime);
+        drillPart.DOLocalMove(drillPartDefaultPos, resetTime);
+        drillPart.DORotate(Vector3.zero, resetTime);
+
+        // 초기화 시간 대기
+        yield return new WaitForSeconds(resetTime);
+
+        // Idle 애니메이션 재생
+        enemyManager.animList[0].SetBool("UseDrill", false);
+        // Idle 상태로 전환
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
-    IEnumerator DrillCharge()
+    IEnumerator DrillCharge(int nowCharge, int maxCharge)
     {
-        // 각각 드릴 스프라이트 참조
-        SpriteRenderer mainDrill = drillSprite;
-        SpriteRenderer ghostDrill = drillSprite.transform.Find("DrillGhost").GetComponent<SpriteRenderer>();
-
         // 현재 드릴 스케일 구하기
-        Vector3 nowGhostScale = ghostDrill.transform.localScale;
+        Vector3 nowGhostScale = ghostDrillSprite.transform.localScale;
         //다음 드릴 스케일 지정
         Vector3 upGhostScale = new Vector3(nowGhostScale.x + 1, nowGhostScale.y + 1, 1);
 
-        print(nowGhostScale + " : " + upGhostScale);
-
         //드릴 차지 시간
-        float chargeTime = 0.5f;
-
-        //TODO 기 모으는 이펙트
+        float reboundUpTime = 1f;
 
         // 드릴 차지 시퀀스 (1 ~ 3번 랜덤 차지)
         Sequence chargeSeq = DOTween.Sequence();
@@ -531,50 +690,70 @@ public class Bawi_AI : MonoBehaviour
         .AppendCallback(() =>
         {
             // 고스트 드릴 오브젝트 활성화
-            ghostDrill.gameObject.SetActive(true);
+            ghostDrillSprite.gameObject.SetActive(true);
 
             // 드릴 콜라이더 켜기
             drillGhostColl.enabled = true;
         })
         .Append(
             // 반동에 의해 살짝 내려감
-            drillPart.DOLocalMove(drillDefaultPos + Vector2.up * 4.5f, 0.2f)
+            drillPart.DOLocalMove(drillPartDefaultPos + Vector2.up * 4.5f, 0.2f)
             .SetEase(Ease.OutBack)
         )
         .AppendCallback(() =>
         {
-            // 원소 문장 이펙트 발생
-            LeanPool.Spawn(elementSymbolEffect, drillSprite.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            if (nowCharge == maxCharge)
+            {
+                //차지 이펙트 끄기
+                chargeGathering.Stop();
+            }
 
-            //TODO 고스트 드릴 자체에서 이펙트 발생
-
+            // 차지 펄스 이펙트 발생
+            LeanPool.Spawn(chargePulse, mainDrillSprite.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         })
         .Append(
             //원래 높이로 복구
-            drillPart.DOLocalMove(drillDefaultPos + Vector2.up * 5f, chargeTime)
+            drillPart.DOLocalMove(drillPartDefaultPos + Vector2.up * 5f, reboundUpTime)
         )
         .Join(
             // 메인 드릴 반투명하게
-            mainDrill.DOColor(new Color(1, 1, 1, 0.5f), chargeTime)
+            mainDrillSprite.DOColor(new Color(1, 1, 1, 0.5f), reboundUpTime)
         )
         .Join(
             // 고스트 드릴 매우 밝게 나타내기
-            ghostDrill.DOColor(new Color(1, 1, 1, 1f), chargeTime)
+            ghostDrillSprite.DOColor(new Color(1, 1, 1, 1f), reboundUpTime)
         )
         .Join(
             // 고스트 드릴 스케일 키우기
-            ghostDrill.transform.DOScale(upGhostScale, chargeTime)
+            ghostDrillSprite.transform.DOScale(upGhostScale, reboundUpTime)
         )
         .Join(
             // 그림자 크기 키우기
-            drillShadow.transform.DOScale(new Vector3(3f, 1f, 0), chargeTime)
+            drillShadow.transform.DOScale(new Vector3(3f, 1f, 0), reboundUpTime)
         )
         .Join(
             // 고스트 드릴 색 안정화
-            ghostDrill.DOColor(new Color(1, 1, 1, 0.5f), chargeTime)
-        );
+            ghostDrillSprite.DOColor(new Color(1, 1, 1, 0.5f), reboundUpTime)
+        )
+        // 차지 후 딜레이
+        // .AppendInterval(1f)
+        ;
 
         // 시퀀스 끝날때까지 대기
         yield return new WaitUntil(() => !chargeSeq.active);
+    }
+
+    void FistDrop()
+    {
+        //TODO 주먹 공격 애니메이션 켜기
+        //TODO 주먹이 플레이어 위치 부드럽게 따라가기
+        //TODO 랜덤 레벨로 주먹 커지기
+
+        //TODO 주먹 로컬 위치 내리기
+        //TODO 카메라 흔들기
+        //TODO 착지 먼지 발생
+
+        //TODO 주먹 단계별로 줄어들어 크기 초기화
+        //TODO 주먹 위치 초기화
     }
 }

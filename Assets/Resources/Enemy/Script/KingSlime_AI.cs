@@ -22,6 +22,7 @@ public class KingSlime_AI : MonoBehaviour
     public GameObject slimePrefab; //새끼 슬라임 프리팹
     public EnemyAtkTrigger babyTrigger; //새끼 슬라임 소환 범위
     public ParticleSystem poisonAtkParticle; //독 뿜기 파티클
+    public ParticleSystem poisonPoolParticle; //독 웅덩이 파티클
     public SpriteRenderer spriteFill; // 독 뿜기 기모을때 차오르는 스프라이트
 
     [Header("Jump")]
@@ -66,6 +67,9 @@ public class KingSlime_AI : MonoBehaviour
         enemyManager.spriteList[0].material.SetColor("_Color", outLineColor);
         //독 기모으기 스프라이트 초기화
         spriteFill.material.SetFloat("_FillRate", 0);
+
+        //독 웅덩이 트리거 오브젝트로 플레이어 그림자 넣기
+        poisonPoolParticle.trigger.AddCollider(PlayerManager.Instance.shadow);
     }
 
     private void Update()

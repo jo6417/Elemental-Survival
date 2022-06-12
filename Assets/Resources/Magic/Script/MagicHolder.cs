@@ -9,6 +9,7 @@ public class MagicHolder : MonoBehaviour
     public Vector3 targetPos = default(Vector3); //목표 위치
     public enum Target { None, Enemy, Player };
     public Target target; //마법의 목표 타겟
+    public float addDuration = 0f; // 마법 추가 유지 시간
 
     public float knockbackForce = 0; //넉백 파워
     public bool isStop; //정지 여부

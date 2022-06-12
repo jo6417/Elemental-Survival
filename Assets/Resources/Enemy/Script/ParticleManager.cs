@@ -7,6 +7,7 @@ public class ParticleManager : MonoBehaviour
 {
     ParticleSystem particle;
     Collider2D coll;
+    public bool autoDespawn = true; //자동 디스폰 여부
     public float collOverTime = 0.2f;
 
     private void Awake()
@@ -41,10 +42,38 @@ public class ParticleManager : MonoBehaviour
             }
         }
 
-        //파티클 끝날때까지 대기
-        yield return new WaitUntil(() => particle.isStopped);
+        //자동 디스폰이면
+        if (autoDespawn)
+        {
+            //파티클 끝날때까지 대기
+            yield return new WaitUntil(() => particle.isStopped);
 
-        //파티클 끝나면 디스폰
+            //파티클 끝나면 디스폰
+            LeanPool.Despawn(transform);
+        }
+    }
+
+    public IEnumerator SmoothDespawn()
+    {
+        //파티클 재생 정지
+        particle.Stop();
+
+        // 남은 파티클 전부 사라질때까지 대기
+        yield return new WaitForSeconds(particle.main.duration);
+
+        // 디스폰
         LeanPool.Despawn(transform);
+    }
+
+    public IEnumerator SmoothDisable()
+    {
+        //파티클 재생 정지
+        particle.Stop();
+
+        // 남은 파티클 전부 사라질때까지 대기
+        yield return new WaitForSeconds(particle.main.duration);
+
+        // 비활성화
+        gameObject.SetActive(false);
     }
 }

@@ -13,17 +13,17 @@ public class Ascii_AI : MonoBehaviour
     public enum NowState { Idle, Walk, Attack, Rest, Hit, Dead, TimeStop, SystemStop }
 
     [Header("Refer")]
+    public EnemyManager enemyManager;
     public Image angryGauge; //분노 게이지 이미지
     public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
     public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
     public TextMeshProUGUI laserText;
     public Transform canvasChildren;
-    EnemyManager enemyManager;
-    Collider2D coll;
-    Animator anim;
-    Rigidbody2D rigid;
-    SpriteRenderer fallRange;
+    // public Collider2D coll;
+    public Animator anim;
+    public Rigidbody2D rigid;
+    public SpriteRenderer fallRange;
     // Collider2D fallColl;
     public GameObject LaserPrefab; //발사할 레이저 마법 프리팹
     public GameObject pulseEffect; //laser stop 할때 펄스 이펙트
@@ -42,8 +42,6 @@ public class Ascii_AI : MonoBehaviour
 
     private void Awake()
     {
-        enemyManager = GetComponent<EnemyManager>();
-        coll = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
 
@@ -84,9 +82,6 @@ public class Ascii_AI : MonoBehaviour
 
         //스피드 초기화
         speed = enemy.speed;
-
-        // 콜라이더 충돌 초기화
-        coll.isTrigger = false;
 
         //공격범위 오브젝트 초기화
         fallRange.enabled = false;

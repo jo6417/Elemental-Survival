@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 494078575}
   - component: {fileID: 494078573}
   - component: {fileID: 494078574}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: PoisonBubble
-  m_TagString: Enemy
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4817,9 +4817,9 @@ GameObject:
   - component: {fileID: 1334731344}
   - component: {fileID: 1334731341}
   - component: {fileID: 1334731343}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: PoisonPool
-  m_TagString: Enemy
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6174,7 +6174,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
   ColorModule:
-    enabled: 0
+    enabled: 1
     gradient:
       serializedVersion: 2
       minMaxState: 1
@@ -6183,24 +6183,24 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0}
+        key1: {r: 0, g: 0, b: 0, a: 1}
+        key2: {r: 1, g: 1, b: 1, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 65535
-        ctime2: 0
+        ctime1: 64957
+        ctime2: 65535
         ctime3: 0
         ctime4: 0
         ctime5: 0
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 65535
-        atime2: 0
+        atime1: 37008
+        atime2: 65535
         atime3: 0
         atime4: 0
         atime5: 0
@@ -6208,7 +6208,7 @@ ParticleSystem:
         atime7: 0
         m_Mode: 0
         m_NumColorKeys: 2
-        m_NumAlphaKeys: 2
+        m_NumAlphaKeys: 3
       minGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9741,6 +9741,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultHasItem: 
   referEnemyManager: {fileID: 0}
+  state: 0
+  nowAction: 0
+  nextAction: 0
+  moveType: 0
   portalSize: 2
   isElite: 0
   eliteClass: 0
@@ -9749,21 +9753,17 @@ MonoBehaviour:
   stopCount: 0
   hitCount: 0
   oppositeCount: 0
-  isAbsorb: 0
   selfExplosion: 0
-  state: 0
-  nowAction: 0
-  nextAction: 0
-  moveType: 0
+  statusEffect: 0
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 7073894444999465860}
-  sprite: {fileID: 7073894444999465979}
+  spriteList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
   animList: []
   rigid: {fileID: 8443360763871844120}
   coll: {fileID: 3111188553755185085}
-  originMat: {fileID: 0}
-  originMatColor: {r: 0, g: 0, b: 0, a: 0}
-  originColor: {r: 0, g: 0, b: 0, a: 0}
   hpMax: 0
   HpNow: 1
   power: 0
@@ -9786,23 +9786,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f9561d0b3c63d47a7589c861cd20ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isInside: 0
+  coolCount: 0
+  absorbCoolCount: 0
+  jumpCoolTime: 0
+  babyAtkCoolTime: 0
+  poisonAtkCoolTime: 0
+  nowAbsorb: 0
   poisonAtkRange: 20
   atkRatio: 50
   crownObj: {fileID: 3939066445554554373}
-  slimePrefab: {fileID: 8153751317921983363, guid: f38322a01d9b7f84d9914275f0eff236,
+  slimePrefab: {fileID: 5485836661786715591, guid: f38322a01d9b7f84d9914275f0eff236,
     type: 3}
   babyTrigger: {fileID: 7799214659974095521}
   poisonAtkParticle: {fileID: 4298389743847986898}
+  poisonPoolParticle: {fileID: 1334731341}
   spriteFill: {fileID: 4482655199273524325}
-  jumpCoolCount: 0
-  jumpCooltime: 0.5
   landEffect: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
     type: 3}
-  jumpHeight: 4
-  jumpUptime: 1
-  jumpCollisionOff: 0
-  shadow: {fileID: 2971103906492268269}
   jumpLandPos: {x: 0, y: 0}
 --- !u!95 &5312835077595385824
 Animator:
@@ -9847,7 +9847,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 784766006034917726}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -9967,7 +9967,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5260277266502753681}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 0.725, z: 1}
   m_Children: []
   m_Father: {fileID: 5702749140188695707}
@@ -10201,9 +10201,9 @@ GameObject:
   - component: {fileID: 112229462823292618}
   - component: {fileID: 4298389743847986898}
   - component: {fileID: 4574745277729636196}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: PoisonSplatter
-  m_TagString: Enemy
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

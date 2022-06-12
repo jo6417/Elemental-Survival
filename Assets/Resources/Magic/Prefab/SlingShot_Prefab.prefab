@@ -421,6 +421,7 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   target: 2
+  addDuration: 0
   knockbackForce: 5
   isStop: 0
   slowTime: 0
@@ -448,7 +449,7 @@ MonoBehaviour:
   - {fileID: 289528900}
   - {fileID: 1217664159}
   - {fileID: 395029428}
-  hitEffect: {fileID: 1994870664517383061, guid: bc54517fb2df17248b06dc8e1e51333c,
+  hitEffect: {fileID: 1994870664517383061, guid: 9f2d6315a7af63841baea7c567eff226,
     type: 3}
 --- !u!212 &7344502147705067009
 SpriteRenderer:
@@ -1319,7 +1320,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.0001
+      value: 1
       mode: 0
       spread: 0
       speed:

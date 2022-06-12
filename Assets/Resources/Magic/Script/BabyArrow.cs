@@ -63,6 +63,9 @@ public class BabyArrow : MonoBehaviour
 
     void Update()
     {
+        if (magic == null)
+            return;
+
         // 공격 할때만 콜라이더 활성화
         if (state == State.Attack)
             col.enabled = true;
@@ -77,10 +80,11 @@ public class BabyArrow : MonoBehaviour
             //플레이어 주변 회전하며 따라가기
             float followSpeed = MagicDB.Instance.MagicSpeed(magic, true);
             transform.position = Vector3.Lerp(transform.position, spinObj.transform.position, Time.deltaTime * followSpeed);
-            // transform.position = spinObj.transform.position;
 
             //따라가는 방향으로 회전
-            transform.rotation = Quaternion.Euler(spinObj.transform.rotation.eulerAngles - Vector3.forward * 90f);
+            Vector3 returnDir = spinObj.transform.position - transform.position;
+            float rotation = Mathf.Atan2(returnDir.y, returnDir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(Vector3.forward * (rotation - 90f));
         }
     }
 

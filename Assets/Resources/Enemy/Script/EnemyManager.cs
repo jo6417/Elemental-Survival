@@ -80,21 +80,21 @@ public class EnemyManager : MonoBehaviour
         coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
 
-        // 리스트에 아무것도 없으면 스프라이트렌더러 1개 찾아 넣기
+        enemyAI = GetComponent<EnemyAI>();
+
+        // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
         if (spriteList.Count == 0)
         {
-            SpriteRenderer sprite = GetComponentInChildren<SpriteRenderer>();
-
-            if (sprite != null)
-            {
-                spriteList.Add(sprite);
-                originColorList.Add(sprite.color);
-                originMatList.Add(sprite.material);
-                originMatColorList.Add(sprite.material.color);
-            }
+            spriteList = spriteObj.GetComponentsInChildren<SpriteRenderer>().ToList();
         }
 
-        enemyAI = GetComponent<EnemyAI>();
+        // 초기 스프라이트 정보 수집
+        foreach (SpriteRenderer sprite in spriteList)
+        {
+            originColorList.Add(sprite.color);
+            originMatList.Add(sprite.material);
+            originMatColorList.Add(sprite.material.color);
+        }
     }
 
     private void OnEnable()

@@ -83,6 +83,7 @@ public class PlayerManager : MonoBehaviour
     public GameObject mobSpawner;
     private Animator anim;
     public SpriteRenderer sprite;
+    public SpriteRenderer shadow;
     public Rigidbody2D rigid;
     public Light2D playerLight;
     public GameObject bloodPrefab; //플레이어 혈흔 파티클

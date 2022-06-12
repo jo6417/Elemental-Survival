@@ -124,6 +124,7 @@ SpriteAtlas:
   - {fileID: 760358477480235000, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
   - {fileID: 21300000, guid: b9d516ca36a07284d920b5b7a3b6c73e, type: 3}
   - {fileID: 21300000, guid: e096cbca07e631d46bcce9364fba2a1e, type: 3}
+  - {fileID: 21300000, guid: 097c3fda0ff66c44ab36e8ba09b4f7ba, type: 3}
   - {fileID: 21300000, guid: e9d11bfb5ef63314993f4059eb5757e6, type: 3}
   - {fileID: 3077425217977446100, guid: a82d651c696b02f4c96e3b70eeb29b04, type: 3}
   - {fileID: -50720779055665232, guid: a82d651c696b02f4c96e3b70eeb29b04, type: 3}
@@ -272,6 +273,7 @@ SpriteAtlas:
   - Portal_Sheet_8
   - Thunderbolt_Icon
   - LifeSeed_Icon
+  - BabyArrow
   - FireGem_Icon
   - TimeStop_Sheet_10
   - TimeStop_Sheet_11

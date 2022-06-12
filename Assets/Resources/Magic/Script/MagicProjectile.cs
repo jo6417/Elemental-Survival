@@ -92,8 +92,8 @@ public class MagicProjectile : MonoBehaviour
         //관통 횟수 초기화 
         pierceNum = MagicDB.Instance.MagicPierce(magic);
 
-        // 마법 지속시간
-        float duration = MagicDB.Instance.MagicDuration(magic);
+        // 마법 지속시간 + 추가 지속시간
+        float duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.addDuration;
 
         // 스프라이트 활성화
         if (sprite != null)
@@ -175,7 +175,7 @@ public class MagicProjectile : MonoBehaviour
         }
 
         //파괴 이펙트 있으면 남기기
-        if (hitEffect && delay == 0)
+        if (hitEffect)
         {
             LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         }
@@ -230,6 +230,9 @@ public class MagicProjectile : MonoBehaviour
                 shatter.transform.rotation = Quaternion.identity;
             }
         }
+
+        // 추가시간 초기화
+        magicHolder.addDuration = 0f;
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)
