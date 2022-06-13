@@ -52,7 +52,8 @@ public class EnemyManager : MonoBehaviour
     public List<Color> originColorList = new List<Color>(); // 변형 전 스프라이트 색
     public List<Animator> animList = new List<Animator>();
     public Rigidbody2D rigid;
-    public Collider2D coll;
+    public Collider2D physicsColl; // 물리용 콜라이더
+    public Collider2D hitColl; // 히트박스용 콜라이더
     EnemyAI enemyAI;
 
     [Header("Stat")]
@@ -77,7 +78,7 @@ public class EnemyManager : MonoBehaviour
     {
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
-        coll = coll == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : coll;
+        hitColl = hitColl == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : hitColl;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
 
         enemyAI = GetComponent<EnemyAI>();
@@ -105,8 +106,8 @@ public class EnemyManager : MonoBehaviour
     IEnumerator Initial()
     {
         //콜라이더 끄기
-        if (coll != null)
-            coll.enabled = false;
+        if (hitColl != null)
+            hitColl.enabled = false;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
@@ -164,8 +165,8 @@ public class EnemyManager : MonoBehaviour
         isDead = false;
 
         //콜라이더 켜기
-        if (coll != null)
-            coll.enabled = true;
+        if (hitColl != null)
+            hitColl.enabled = true;
 
         //! 테스트 확인용
         enemyName = enemy.enemyName;
@@ -626,8 +627,8 @@ public class EnemyManager : MonoBehaviour
         isDead = true;
 
         //콜라이더 끄기
-        if (coll != null)
-            coll.enabled = false;
+        if (hitColl != null)
+            hitColl.enabled = false;
 
         //몬스터 총 전투력 빼기
         EnemySpawn.Instance.NowEnemyPower -= enemy.grade;

@@ -9,7 +9,8 @@ public class MagicHolder : MonoBehaviour
     public Vector3 targetPos = default(Vector3); //목표 위치
     public enum Target { None, Enemy, Player };
     public Target target; //마법의 목표 타겟
-    public float addDuration = 0f; // 마법 추가 유지 시간
+    public float addDuration = 0f; // 추가 유지 시간
+    public float multipleSpeed = 0f; // 추가 스피드
 
     public float knockbackForce = 0; //넉백 파워
     public bool isStop; //정지 여부
@@ -33,6 +34,8 @@ public class MagicHolder : MonoBehaviour
         //프리팹 이름으로 마법 정보 찾아 넣기
         if (magic == null)
             magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
+
+        //! 마법 이름 확인
         magicName = magic.magicName;
     }
 

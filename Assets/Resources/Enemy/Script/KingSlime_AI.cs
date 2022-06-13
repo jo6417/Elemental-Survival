@@ -44,8 +44,8 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator Initial()
     {
         // 콜라이더 충돌 초기화
-        enemyManager.coll.enabled = false;
-        enemyManager.coll.isTrigger = false;
+        enemyManager.hitColl.enabled = false;
+        enemyManager.hitColl.isTrigger = false;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => enemyManager.enemy != null);
@@ -181,9 +181,9 @@ public class KingSlime_AI : MonoBehaviour
         jumpLandPos = transform.position + dir.normalized * distance + Vector3.up;
 
         // 콜라이더 끄기
-        enemyManager.coll.enabled = false;
+        enemyManager.hitColl.enabled = false;
         // 콜라이더 trigger로 전환
-        enemyManager.coll.isTrigger = true;
+        enemyManager.hitColl.isTrigger = true;
     }
 
     public void LandStart()
@@ -192,7 +192,7 @@ public class KingSlime_AI : MonoBehaviour
         absorbAtkTrigger = true;
 
         //콜라이더 켜기
-        enemyManager.coll.enabled = true;
+        enemyManager.hitColl.enabled = true;
     }
 
     public void Landing()
@@ -209,7 +209,7 @@ public class KingSlime_AI : MonoBehaviour
     {
         // 플레이어 흡수 못했으면 콜라이더 충돌로 전환
         if (!nowAbsorb)
-            enemyManager.coll.isTrigger = false;
+            enemyManager.hitColl.isTrigger = false;
 
         // IDLE 애니메이션 전환
         enemyManager.animList[0].SetBool("Jump", false);
@@ -307,7 +307,7 @@ public class KingSlime_AI : MonoBehaviour
             EnemyAI babyEnemyAI = babySlime.GetComponent<EnemyAI>();
 
             // 콜라이더 끄기
-            babyEnemyManager.coll.enabled = false;
+            babyEnemyManager.hitColl.enabled = false;
             // AI 끄기
             babyEnemyAI.enabled = false;
 
@@ -319,7 +319,7 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 //컴포넌트 활성화
-                babyEnemyManager.coll.enabled = true;
+                babyEnemyManager.hitColl.enabled = true;
                 babyEnemyAI.enabled = true;
             });
 
@@ -476,7 +476,7 @@ public class KingSlime_AI : MonoBehaviour
             transform.localScale = Vector2.one;
 
             // 콜라이더 trigger 비활성화
-            enemyManager.coll.isTrigger = false;
+            enemyManager.hitColl.isTrigger = false;
 
             //현재 행동 초기화
             enemyManager.nowAction = EnemyManager.Action.Idle;

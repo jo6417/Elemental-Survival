@@ -60,7 +60,7 @@ public class MagicProjectile : MonoBehaviour
         //속도 0 이상일때
         if (magic.speed != 0)
             // 해당 방향으로 마법 속도만큼 날리기 (벡터 기본값 5 * 스피드 스탯 * 10 / 100)
-            rigid.velocity = dir.normalized * MagicDB.Instance.MagicSpeed(magic, true);
+            rigid.velocity = dir.normalized * MagicDB.Instance.MagicSpeed(magic, true) * magicHolder.multipleSpeed;
 
         //타겟 위치 초기화
         targetPos = Vector2.zero;
@@ -231,8 +231,9 @@ public class MagicProjectile : MonoBehaviour
             }
         }
 
-        // 추가시간 초기화
+        // 마법 추가 스탯 초기화
         magicHolder.addDuration = 0f;
+        magicHolder.multipleSpeed = 1f;
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)

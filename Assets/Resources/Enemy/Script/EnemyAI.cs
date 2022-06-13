@@ -46,7 +46,7 @@ public class EnemyAI : MonoBehaviour
         enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 콜라이더 충돌 초기화
-        enemyManager.coll.isTrigger = false;
+        enemyManager.hitColl.isTrigger = false;
     }
 
     void Update()
