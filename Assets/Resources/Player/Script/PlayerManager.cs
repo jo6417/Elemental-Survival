@@ -73,7 +73,7 @@ public class PlayerManager : MonoBehaviour
     [Header("<Input>")]
     Vector2 nowMoveDir;
     public bool isDash; //현재 대쉬중 여부
-    public bool isParalysis; //깔려서 납작해졌을때
+    public bool isFlat; //깔려서 납작해졌을때
     public float dashSpeed; //대쉬 버프 속도
     [HideInInspector]
     public float speedDebuff = 1f; //이동속도 디버프
@@ -81,7 +81,7 @@ public class PlayerManager : MonoBehaviour
 
     [Header("<Refer>")]
     public GameObject mobSpawner;
-    private Animator anim;
+    public Animator anim;
     public SpriteRenderer sprite;
     public SpriteRenderer shadow;
     public Rigidbody2D rigid;
@@ -98,6 +98,8 @@ public class PlayerManager : MonoBehaviour
     float hitCount = 0f;
     public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
+    public Vector2 knockbackDir; //넉백 벡터
+
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;
     // public float ShakeIntensity;
@@ -112,6 +114,10 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
+        anim = anim == null ? GetComponent<Animator>() : anim;
+        sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
+
         //플레이어 스탯 인스턴스 생성
         PlayerStat_Now = new PlayerStat();
 
@@ -174,10 +180,6 @@ public class PlayerManager : MonoBehaviour
 
     void Start()
     {
-        rigid = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        sprite = GetComponent<SpriteRenderer>();
-
         // 원소젬 UI 업데이트
         for (int i = 0; i < 6; i++)
         {
@@ -231,7 +233,7 @@ public class PlayerManager : MonoBehaviour
         // print(nowMoveDir);
 
         // 깔렸을때 조작불가
-        if (isParalysis)
+        if (isFlat)
         {
             //대쉬 중이었으면 취소
             isDash = false;
@@ -267,11 +269,11 @@ public class PlayerManager : MonoBehaviour
             //방향 따라 캐릭터 회전
             if (horizonInput > 0)
             {
-                transform.rotation = Quaternion.Euler(0, 0, 0);
+                sprite.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
             else
             {
-                transform.rotation = Quaternion.Euler(0, 180, 0);
+                sprite.transform.rotation = Quaternion.Euler(0, 180, 0);
             }
         }
 
@@ -298,8 +300,15 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 실제 오브젝트 이동해주기
-        nowMoveDir.Normalize();
-        rigid.velocity = PlayerStat_Now.moveSpeed * nowMoveDir * dashSpeed * speedDebuff * SystemManager.Instance.playerTimeScale;
+        // nowMoveDir.Normalize();
+        rigid.velocity =
+        PlayerStat_Now.moveSpeed //플레이어 이동속도
+        * nowMoveDir //움직일 방향
+        * dashSpeed //대쉬할때 속도 증가
+        * speedDebuff //상태이상 걸렸을때 속도 디버프
+        * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
+        + knockbackDir //넉백 벡터 추가
+        ;
 
         // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
@@ -324,7 +333,7 @@ public class PlayerManager : MonoBehaviour
         //무언가 충돌되면 움직이는 방향 수정
         Move();
 
-        //적에게 충돌
+        //적에게 콜라이더 충돌
         if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {
             Hit(other.transform);
@@ -333,30 +342,74 @@ public class PlayerManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // print("OnTriggerEnter2D : " + other.name);
+
+        // 적에게 트리거 충돌
         if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
         {
             Hit(other.transform);
         }
     }
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        // print("OnTriggerStay2D : " + other.name);
+
+        // 적에게 트리거 충돌
+        if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
+        {
+            Hit(other.transform);
+        }
+    }
+
+    // private void OnTriggerExit2D(Collider2D other)
+    // {
+    //     print("OnTriggerExit2D : " + other.name);
+
+    // }
+
     void Hit(Transform other)
     {
-        // 몬스터 정보 찾기
-        EnemyManager enemyManager = null;
-        if (other.TryGetComponent(out EnemyAtk enemyAtk))
+        // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
+        if (other.TryGetComponent(out EnemyAtk enemyAtk) && enemyAtk.enabled)
         {
-            enemyManager = enemyAtk.enemyManager;
+            EnemyManager enemyManager = enemyAtk.enemyManager;
 
             //적에게 충돌
-            if (enemyManager != null && enemyManager.enabled)
+            if (enemyManager != null)
             {
                 EnemyInfo enemy = enemyManager.enemy;
+
+                // hitCount 갱신되었으면 리턴, 중복 피격 방지
+                if (hitCount > 0)
+                    return;
 
                 //피격 딜레이 무적
                 IEnumerator hitDelay = HitDelay();
                 StartCoroutine(hitDelay);
 
                 Damage(enemy.power);
+
+                // 넉백 디버프 있을때
+                if (enemyAtk.knockBackDebuff)
+                {
+                    // print("player knockback");
+
+                    //넉백 방향 벡터 계산
+                    Vector2 dir = (transform.position - other.position).normalized * enemy.power;
+
+                    //넉백 디버프 실행
+                    StartCoroutine(Knockback(dir));
+                }
+
+                // flat 디버프 있을때, 마비 상태 아닐때
+                if (enemyAtk.flatDebuff && !isFlat)
+                {
+                    // print("player flat");
+
+                    // 납작해지고 행동불능
+                    StartCoroutine(FlatDebuff());
+                }
             }
         }
 
@@ -529,19 +582,48 @@ public class PlayerManager : MonoBehaviour
         });
     }
 
+    IEnumerator Knockback(Vector2 dir)
+    {
+        // 넉백 벡터 수정
+        knockbackDir = dir;
+
+        // 넉백 벡터 반영하기
+        Move();
+
+        yield return new WaitForSeconds(0.5f);
+
+        //넉백 버프 빼기
+        knockbackDir = Vector2.zero;
+
+        // 넉백 벡터 반영하기
+        Move();
+    }
+
     public IEnumerator FlatDebuff()
     {
         //마비됨
-        isParalysis = true;
+        isFlat = true;
         //플레이어 스프라이트 납작해짐
         transform.localScale = new Vector2(1f, 0.5f);
+
+        //위치 얼리기
+        rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+
+        //플레이어 멈추기
+        Move();
 
         yield return new WaitForSeconds(2f);
 
         //마비 해제
-        isParalysis = false;
+        isFlat = false;
         //플레이어 스프라이트 복구
         transform.localScale = Vector2.one;
+
+        //위치 얼리기 해제
+        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // 플레이어 움직임 다시 재생
+        Move();
     }
 
     void Dead()
@@ -599,56 +681,6 @@ public class PlayerManager : MonoBehaviour
             buffUpdate();
         }
     }
-
-    // public IEnumerator GetHeal(int amount)
-    // {
-    //     //플레이어 체력 회복하기
-    //     PlayerStat_Now.hpNow += amount;
-
-    //     //초과 회복 방지
-    //     if (PlayerStat_Now.hpNow > PlayerStat_Now.hpMax)
-    //         PlayerStat_Now.hpNow = PlayerStat_Now.hpMax;
-
-    //     //UI 업데이트
-    //     UIManager.Instance.UpdateHp();
-
-    //     Vector2 startPos = transform.position;
-    //     Vector2 endPos = (Vector2)transform.position + Vector2.up * 1f;
-
-    //     // 회복 텍스트 띄우기
-    //     GameObject healUI = LeanPool.Spawn(txtPrefab, startPos, Quaternion.identity, SystemManager.Instance.overlayPool);
-    //     TextMeshProUGUI healTxt = healUI.GetComponent<TextMeshProUGUI>();
-    //     healTxt.color = Color.green;
-    //     healTxt.text = "+ " + amount.ToString();
-
-    //     // 회복량 UI 애니메이션
-    //     Sequence txtSeq = DOTween.Sequence();
-    //     txtSeq
-    //     .PrependCallback(() =>
-    //     {
-    //         //제로 사이즈로 시작
-    //         healUI.transform.localScale = Vector3.zero;
-    //     })
-    //     .Append(
-    //         //위로 살짝 올리기
-    //         healUI.transform.DOMove(endPos, 1f)
-    //     )
-    //     .Join(
-    //         //원래 크기로 늘리기
-    //         healUI.transform.DOScale(Vector3.one, 0.5f)
-    //     )
-    //     .Append(
-    //         //줄어들어 사라지기
-    //         healUI.transform.DOScale(Vector3.zero, 0.5f)
-    //         .SetEase(Ease.InBack)
-    //     )
-    //     .OnComplete(() =>
-    //     {
-    //         LeanPool.Despawn(healUI);
-    //     });
-
-    //     yield return null;
-    // }
 
     public void GetMagic(MagicInfo getMagic, bool magicReCast = true)
     {

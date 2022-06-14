@@ -39,12 +39,14 @@ public class Bawi_AI : MonoBehaviour
     public GameObject headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
     [Header("Fist")]
+    public Collider2D fistCrushColl; //주먹 으깨기 콜라이더
     public Transform fistParent; // 그림자까지 포함한 부모 오브젝트
     public Transform fistPart; // 주먹 스프라이트 부모 오브젝트
     public SpriteRenderer fistSprite; // 주먹 스프라이트
     public SpriteRenderer fistGhost; // 주먹 고스트 스프라이트
     public ParticleSystem fistHoverEffect; // 주먹 부유 파티클
-    public GameObject fistDust; //돌 부술때 먼지 파티클
+    public GameObject fistGrabDust; //돌 부술때 먼지 파티클
+    public GameObject fistLandDust; //주먹 내리찍을때 먼지 파티클
     public Sprite emptyFistSprite;
     public Sprite openFistSprite;
     public Sprite grabFistSprite;
@@ -53,6 +55,7 @@ public class Bawi_AI : MonoBehaviour
     public ParticleSystem fistChargeGathering; // 주먹 차지 기모으는 이펙트
 
     [Header("Drill")]
+    public Collider2D drillGhostColl; // 고스트 드릴 콜라이더
     public Transform drillParent; // 그림자까지 포함한 부모
     public Transform drillPart; // 드릴 스프라이트 부모 오브젝트
     public GameObject drillMask; // 드릴 땅속 들어가는 마스크
@@ -62,7 +65,6 @@ public class Bawi_AI : MonoBehaviour
     public ParticleSystem drillHoverEffect; // 드릴 부유 파티클
     public Animator mainDrillAnim; // 메인 드릴 회전 애니메이터
     public Animator ghostDrillAnim; // 고스트 드릴 회전 애니메이터
-    public Collider2D drillGhostColl; // 고스트 드릴 콜라이더
     public ParticleSystem drillChargeGathering; // 드릴차지 기모으는 이펙트
     public GameObject drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
@@ -111,6 +113,18 @@ public class Bawi_AI : MonoBehaviour
 
         // 차지 파티클 끄기
         // chargeGathering.gameObject.SetActive(false);
+
+        //파티클 초기화
+        digDirtParticle.gameObject.SetActive(false);
+        BurrowTrail.gameObject.SetActive(false);
+        headDashDust.gameObject.SetActive(false);
+        fistDashDust.gameObject.SetActive(false);
+        fistChargeGathering.gameObject.SetActive(false);
+
+        //콜라이더 초기화
+        enemyManager.physicsColl.enabled = false;
+        drillGhostColl.enabled = false;
+        fistCrushColl.enabled = false;
     }
 
     void Update()
@@ -209,11 +223,11 @@ public class Bawi_AI : MonoBehaviour
         // 착지 상태일때 
         if (!isFloating)
         {
-            // 물리 콜라이더 끄기
-            enemyManager.physicsColl.enabled = false;
-
             // 부유 상태로 전환
             isFloating = true;
+
+            // 물리 콜라이더 끄기
+            enemyManager.physicsColl.enabled = false;
 
             // 부유 파티클 모두 켜기
             headHoverEffect.Play();
@@ -227,11 +241,11 @@ public class Bawi_AI : MonoBehaviour
         // 부유 상태일때
         if (isFloating)
         {
-            // 물리 콜라이더 켜기
-            enemyManager.physicsColl.enabled = true;
-
             // 착지 상태로 전환
             isFloating = false;
+
+            // 물리 콜라이더 켜기
+            enemyManager.physicsColl.enabled = true;
 
             // 머리 먼지 파티클 생성
             LeanPool.Spawn(bigLandDust, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
@@ -260,7 +274,7 @@ public class Bawi_AI : MonoBehaviour
         // print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        // randomNum = 3;
+        randomNum = 0;
 
         switch (randomNum)
         {
@@ -381,7 +395,7 @@ public class Bawi_AI : MonoBehaviour
             fistPart.transform.DOPunchPosition(Vector3.up, 0.5f, 50, 1);
 
             // 주먹에서 먼지 파티클 발생
-            LeanPool.Spawn(fistDust, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(fistGrabDust, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             yield return new WaitForSeconds(0.5f);
         }
@@ -721,9 +735,6 @@ public class Bawi_AI : MonoBehaviour
             {
                 // 고스트 무기 오브젝트 활성화
                 ghostObj.gameObject.SetActive(true);
-
-                // 무기 콜라이더 켜기
-                ghostObj.GetComponent<Collider2D>().enabled = true;
             })
             .Append(
                 // 반동에 의해 살짝 내려감
@@ -810,6 +821,9 @@ public class Bawi_AI : MonoBehaviour
         // 조준시간 입력
         aimCount = 3f;
 
+        //콜라이더 끄기
+        fistCrushColl.enabled = false;
+
         // 플레이어 위치 부드럽게 따라가기
         while (aimCount > 0)
         {
@@ -825,24 +839,32 @@ public class Bawi_AI : MonoBehaviour
 
         // 주먹 멈춰서 진동
         fistPart.transform.DOShakePosition(0.2f, 0.3f, 50, 90f, false, false);
-
         yield return new WaitForSeconds(0.2f);
 
         // 주먹 떨어뜨리기
-        fistPart.transform.DOLocalMove(new Vector3(0, 3f * (chargeNum + 1), 0), 1f)
+        fistPart.transform.DOLocalMove(new Vector3(0, 1.5f + 3f * chargeNum, 0), 1f)
         .SetEase(Ease.InBack)
         .OnComplete(() =>
         {
             // 착지 먼지 이펙트 생성
-            LeanPool.Spawn(smallLandDust, fistParent.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject landDust = LeanPool.Spawn(smallLandDust, fistParent.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            // 먼지 이펙트 사이즈 설정
+            landDust.transform.localScale = Vector3.one * (chargeNum + 1);
+
+            // 카메라 흔들기
+            Camera.main.transform.DOShakePosition(0.2f, 0.3f, 50, 90f, false, false);
+
+            // 콜라이더 켜기
+            fistCrushColl.enabled = true;
         });
 
-        yield return new WaitForSeconds(1f);
+        // 주먹 떨어지는데 1초, 0.5초 대기
+        yield return new WaitForSeconds(1.2f);
 
-        // 카메라 흔들기
-        Camera.main.transform.DOShakePosition(0.2f, 0.3f, 50, 90f, false, false);
+        // 주먹 콜라이더 끄기
+        fistCrushColl.enabled = false;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
 
         //초기화 시간
         float resetTime = 1f;
@@ -857,7 +879,10 @@ public class Bawi_AI : MonoBehaviour
         fistGhost.transform.DOScale(Vector3.one, resetTime);
         // 그림자 스케일 초기화
         fistPart.parent.Find("Shadow").DOScale(new Vector3(3f, 1f), resetTime);
-
+        // 주먹 색 초기화
+        fistSprite.DOColor(Color.white, resetTime);
+        // 주먹 고스트 색 초기화
+        fistGhost.DOColor(Color.clear, resetTime);
 
         yield return new WaitForSeconds(1f);
 

@@ -15,8 +15,9 @@ public class Ascii_AI : MonoBehaviour
     [Header("Refer")]
     public EnemyManager enemyManager;
     public Image angryGauge; //분노 게이지 이미지
-    public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 들어왔는지 보는 트리거
-    public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 들어왔는지 보는 트리거
+    public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
+    public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 플레이어가 들어왔는지 보는 트리거
+    public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 플레이어가 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
     public TextMeshProUGUI laserText;
     public Transform canvasChildren;
@@ -68,8 +69,8 @@ public class Ascii_AI : MonoBehaviour
         if (enemy == null)
             enemy = enemyManager.enemy;
 
-        //fall어택 콜라이더에 enemy 정보 넣어주기
-        fallRangeTrigger.GetComponent<EnemyManager>().enemy = enemy;
+        // fallAtk 공격 비활성화
+        fallAtkColl.enabled = false;
 
         transform.DOKill();
 
@@ -116,29 +117,16 @@ public class Ascii_AI : MonoBehaviour
 
     void ManageAction()
     {
+        //공격 리스트 비우기
+        atkList.Clear();
+
         // fall 콜라이더에 플레이어 있으면 리스트에 fall 공격패턴 담기
         if (fallRangeTrigger.atkTrigger)
-        {
             atkList.Add(0);
-            fallAtkAble = true;
-        }
-        else
-        {
-            atkList.Remove(0);
-            fallAtkAble = false;
-        }
 
         // Laser 콜라이더에 플레이어 있으면 리스트에 Laser 공격패턴 담기
-        if (LaserRangeTrigger.atkTrigger)
-        {
-            atkList.Add(1);
-            laserAtkAble = true;
-        }
-        else
-        {
-            atkList.Remove(1);
-            laserAtkAble = false;
-        }
+        // if (LaserRangeTrigger.atkTrigger)
+        //     atkList.Add(1);
 
         // 공격 가능한 패턴 없을때 플레이어 따라가기
         if (atkList.Count == 0)
@@ -273,9 +261,6 @@ public class Ascii_AI : MonoBehaviour
         // 엎어질 준비 애니메이션 시작
         anim.SetTrigger("FallReady");
 
-        //공격 범위 오브젝트 활성화
-        // fallRangeObj.SetActive(true);
-
         // 엎어질 범위 활성화 및 반짝거리기
         fallRange.enabled = true;
         Color originColor = new Color(1, 0, 0, 0.2f);
@@ -295,27 +280,19 @@ public class Ascii_AI : MonoBehaviour
         });
     }
 
-    void FallAtkCollider()
+    void FallAtkEnable()
     {
-        // 콜라이더 내에 플레이어 아직 있으면 멈추기, 데미지 입히기
-        if (fallRangeTrigger.atkTrigger)
-        {
-            //피격 딜레이 무적
-            IEnumerator hitDelay = PlayerManager.Instance.HitDelay();
-            StartCoroutine(hitDelay);
-
-            bool isDead = PlayerManager.Instance.Damage(enemy.power);
-
-            //죽었으면 리턴
-            // if(isDead)
-            // return;
-
-            // 플레이어 멈추고 납작해지기
-            StartCoroutine(PlayerManager.Instance.FlatDebuff());
-        }
+        // fallAtk 공격 활성화
+        fallAtkColl.enabled = true;
 
         //일어서기, 휴식 애니메이션 재생
         StartCoroutine(GetUpAnim());
+    }
+
+    void FallAtkDisable()
+    {
+        // fallAtk 공격 비활성화
+        fallAtkColl.enabled = false;
     }
 
     IEnumerator GetUpAnim()

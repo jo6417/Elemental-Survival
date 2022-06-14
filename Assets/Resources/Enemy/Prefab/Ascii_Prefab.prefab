@@ -439,6 +439,103 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &3842413677672851734
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5273690957148452561}
+  - component: {fileID: 6774181602686036681}
+  - component: {fileID: 9097308635735847014}
+  - component: {fileID: 7402702887672922418}
+  m_Layer: 11
+  m_Name: FallAtkRange
+  m_TagString: EnemyAttack
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5273690957148452561
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3842413677672851734}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6014433321399679247}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6774181602686036681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3842413677672851734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyManager: {fileID: 1381580525358131358}
+  enemyName: 
+  friendlyFire: 1
+  flatDebuff: 1
+  knockBackDebuff: 0
+--- !u!61 &9097308635735847014
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3842413677672851734}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.15, y: -6.2}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.6272, y: 0.548}
+    oldSize: {x: 30, y: 30}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 17.8, y: 12}
+  m_EdgeRadius: 0
+--- !u!50 &7402702887672922418
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3842413677672851734}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
 --- !u!1 &5381293341819539663
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,6 +609,7 @@ Transform:
   - {fileID: 1758499503481986150}
   - {fileID: 9177898891022014109}
   - {fileID: 9177898890322600234}
+  - {fileID: 5273690957148452561}
   - {fileID: 1658102579596688017}
   - {fileID: 4958593465809026628}
   m_Father: {fileID: 0}
@@ -532,6 +630,7 @@ MonoBehaviour:
   nowState: 0
   enemyManager: {fileID: 1381580525358131358}
   angryGauge: {fileID: 2351475482846720640}
+  fallAtkColl: {fileID: 9097308635735847014}
   fallRangeTrigger: {fileID: 6909717035306626906}
   LaserRangeTrigger: {fileID: 6565642443619852420}
   faceText: {fileID: 9177898891211505695}
@@ -595,7 +694,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!95 &6014433321399679246
 Animator:
   serializedVersion: 3
@@ -667,7 +766,7 @@ GameObject:
   - component: {fileID: 1652829400746558040}
   m_Layer: 11
   m_Name: LaserRange
-  m_TagString: Enemy
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -686,7 +785,7 @@ Transform:
   - {fileID: 3336559007332029093}
   - {fileID: 8059589048476012864}
   m_Father: {fileID: 6014433321399679247}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6565642443619852420
 MonoBehaviour:
@@ -702,7 +801,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
   atkRangeSprite: {fileID: 0}
-  enemyManager: {fileID: 0}
+  enemyManager: {fileID: 1381580525358131358}
   atkTrigger: 0
 --- !u!212 &2028642404204801092
 SpriteRenderer:
@@ -1063,15 +1162,13 @@ MonoBehaviour:
   originColorList: []
   animList: []
   rigid: {fileID: 6014433321399679245}
-  coll: {fileID: 0}
+  physicsColl: {fileID: 0}
+  hitColl: {fileID: 0}
   hpMax: 0
   HpNow: 1
   power: 0
   speed: 0
   range: 0
-  friendlyFire: 0
-  flatDebuff: 0
-  knockBackDebuff: 0
   enemyName: 
   enemyType: 
 --- !u!61 &1040393321775288662
@@ -1139,13 +1236,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9177898890322600234}
-  - component: {fileID: 9177898890322600237}
   - component: {fileID: 6909717035306626906}
   - component: {fileID: 9177898890322600236}
   - component: {fileID: 9177898890322600235}
   - component: {fileID: 8793836477010977265}
-  m_Layer: 11
-  m_Name: FallRange
+  m_Layer: 7
+  m_Name: FallAtkCheck
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1165,53 +1261,6 @@ Transform:
   m_Father: {fileID: 6014433321399679247}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9177898890322600237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9177898890322600233}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
-  state: 0
-  nowAction: 0
-  nextAction: 0
-  moveType: 0
-  portalSize: 2
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
-  statusEffect: 0
-  explosionTrigger: {fileID: 0}
-  spriteObj: {fileID: 0}
-  spriteList: []
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
-  animList: []
-  rigid: {fileID: 0}
-  coll: {fileID: 0}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
-  friendlyFire: 0
-  flatDebuff: 1
-  knockBackDebuff: 0
-  enemyName: 
-  enemyType: 
 --- !u!114 &6909717035306626906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,7 +1275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
   atkRangeSprite: {fileID: 0}
-  enemyManager: {fileID: 0}
+  enemyManager: {fileID: 1381580525358131358}
   atkTrigger: 0
 --- !u!212 &9177898890322600236
 SpriteRenderer:
@@ -1385,7 +1434,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -1861760285
-  m_SortingOrder: 6
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &9177898891022014111
 MonoBehaviour:
@@ -1582,7 +1631,7 @@ PrefabInstance:
     - target: {fileID: 6906024197699431771, guid: 0c56d9e1ec2686f4e82384715391d76a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6906024197699431771, guid: 0c56d9e1ec2686f4e82384715391d76a,
         type: 3}

@@ -63,10 +63,10 @@ public class EnemyManager : MonoBehaviour
     public float speed;
     public float range;
 
-    [Header("Attack Effect")]
-    public bool friendlyFire = false; // 충돌시 아군 피해 여부
-    public bool flatDebuff = false; //납작해지는 디버프
-    public bool knockBackDebuff = false; //넉백 디버프
+    // [Header("Attack Effect")]
+    // public bool friendlyFire = false; // 충돌시 아군 피해 여부
+    // public bool flatDebuff = false; //납작해지는 디버프
+    // public bool knockBackDebuff = false; //넉백 디버프
 
     [Header("Debug")]
     [SerializeField]
@@ -349,7 +349,7 @@ public class EnemyManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Magic"))
+        if (other.CompareTag("Magic") && hitCount <= 0)
         {
             HitMagic(other.gameObject);
         }
@@ -370,14 +370,24 @@ public class EnemyManager : MonoBehaviour
         }
 
         //적에게 맞았을때
-        if (other.transform.CompareTag("Enemy"))
+        if (other.transform.CompareTag("EnemyAttack") && hitCount <= 0)
         {
-            if (other.gameObject.TryGetComponent<EnemyManager>(out EnemyManager hitEnemy))
+            // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
+            if (other.gameObject.TryGetComponent<EnemyAtk>(out EnemyAtk enemyAtk) && enemyAtk.enabled)
             {
+                EnemyManager hitEnemy = enemyAtk.enemyManager;
+
+                // other가 본인일때 리턴
+                if (hitEnemy == this || hitEnemy == referEnemyManager)
+                {
+                    // print("본인 타격");
+                    return;
+                }
+
                 if (hitEnemy.enabled)
                 {
                     // 아군 피해 줄때
-                    if (hitEnemy.friendlyFire)
+                    if (enemyAtk.friendlyFire)
                     {
                         // print("enemy damage");
 
@@ -386,7 +396,7 @@ public class EnemyManager : MonoBehaviour
                     }
 
                     // 넉백 디버프 있을때
-                    if (hitEnemy.knockBackDebuff)
+                    if (enemyAtk.knockBackDebuff)
                     {
                         // print("enemy knock");
 
@@ -395,7 +405,7 @@ public class EnemyManager : MonoBehaviour
                     }
 
                     // flat 디버프 있을때, stop 카운트 중 아닐때
-                    if (hitEnemy.flatDebuff && stopCount <= 0)
+                    if (enemyAtk.flatDebuff && stopCount <= 0)
                     {
                         // print("enemy flat");
 
@@ -415,11 +425,17 @@ public class EnemyManager : MonoBehaviour
         //스케일 납작하게
         transform.localScale = new Vector2(1f, 0.5f);
 
+        //위치 얼리기
+        rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+
         //2초간 깔린채로 대기
         yield return new WaitForSeconds(2f);
 
         //스케일 복구
         transform.localScale = Vector2.one;
+
+        //위치 얼리기
+        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
     void HitMagic(GameObject other)
