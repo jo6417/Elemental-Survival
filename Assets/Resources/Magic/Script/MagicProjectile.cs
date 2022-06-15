@@ -28,15 +28,42 @@ public class MagicProjectile : MonoBehaviour
         coll = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
         particle = particle == null ? GetComponent<ParticleSystem>() : particle;
-
-        //초기화
-        StartCoroutine(Initial());
     }
 
     private void OnEnable()
     {
         //초기화
         StartCoroutine(Initial());
+    }
+
+    IEnumerator Initial()
+    {
+        //콜라이더 켜기
+        coll.enabled = true;
+
+        //magic이 null이 아닐때까지 대기
+        yield return new WaitUntil(() => magicHolder.magic != null);
+        magic = magicHolder.magic;
+
+        //관통 횟수 초기화 
+        pierceNum = MagicDB.Instance.MagicPierce(magic);
+
+        // 마법 지속시간 + 추가 지속시간
+        float duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.addDuration;
+
+        // 스프라이트 활성화
+        if (sprite != null)
+            sprite.enabled = true;
+
+        // 파티클 활성화
+        if (particle != null)
+            particle.Play();
+
+        //콜라이더 활성화
+        coll.enabled = true;
+
+        //마법 자동 디스폰
+        StartCoroutine(DespawnMagic(duration));
 
         //마법 날리기
         StartCoroutine(FlyingMagic());
@@ -78,36 +105,6 @@ public class MagicProjectile : MonoBehaviour
     void OffCollider()
     {
         coll.enabled = false;
-    }
-
-    IEnumerator Initial()
-    {
-        //콜라이더 켜기
-        coll.enabled = true;
-
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-
-        //관통 횟수 초기화 
-        pierceNum = MagicDB.Instance.MagicPierce(magic);
-
-        // 마법 지속시간 + 추가 지속시간
-        float duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.addDuration;
-
-        // 스프라이트 활성화
-        if (sprite != null)
-            sprite.enabled = true;
-
-        // 파티클 활성화
-        if (particle != null)
-            particle.Play();
-
-        //콜라이더 활성화
-        coll.enabled = true;
-
-        //마법 자동 디스폰
-        StartCoroutine(DespawnMagic(duration));
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -167,17 +164,16 @@ public class MagicProjectile : MonoBehaviour
 
     IEnumerator DespawnMagic(float delay = 0)
     {
-        while (delay > 0)
-        {
-            delay -= Time.deltaTime;
-
-            yield return null;
-        }
+        //딜레이 만큼 대기
+        yield return new WaitForSeconds(delay);
 
         //파괴 이펙트 있으면 남기기
         if (hitEffect)
         {
-            LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject effect = LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            //마법 정보 넘겨주기
+            effect.GetComponent<MagicHolder>().magic = magic;
         }
 
         //파편 있으면 비산 시키기

@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6825291212296317601}
   - component: {fileID: 6825291212296317600}
-  - component: {fileID: 6825291212296317603}
+  - component: {fileID: -1879772048387154458}
   - component: {fileID: 6825291212296317602}
   - component: {fileID: 6825291212296317605}
   m_Layer: 7
-  m_Name: EnemyExplosion
+  m_Name: Explosion_Big
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6825291212296317603
+  autoDespawn: 1
+  collOverTime: 0.2
+--- !u!114 &-1879772048387154458
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,44 +60,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 6825291212296317604}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  isAbsorb: 0
-  selfExplosion: 0
-  state: 0
-  nowAction: 0
-  nextAction: 0
-  moveType: 0
-  explosionTrigger: {fileID: 0}
-  spriteObj: {fileID: 0}
-  sprite: {fileID: 0}
-  anim: {fileID: 0}
-  rigid: {fileID: 0}
-  coll: {fileID: 0}
-  originMat: {fileID: 0}
-  originMatColor: {r: 0, g: 0, b: 0, a: 0}
-  originColor: {r: 0, g: 0, b: 0, a: 0}
-  hpMax: 0
-  HpNow: 2
-  power: 0
-  speed: 0
-  range: 0
-  friendlyFire: 0
-  flatDebuff: 0
-  knockBackDebuff: 1
-  enemyName: 
-  enemyType: 
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
+  target: 0
+  addDuration: 0
+  multipleSpeed: 0
+  knockbackForce: 0
+  isStop: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  bleedTime: 0
+  electricTime: 0
+  freezeTime: 0
 --- !u!58 &6825291212296317602
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -936,7 +916,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     arc:
-      value: 360
+      value: 180
       mode: 0
       spread: 0
       speed:
@@ -5800,7 +5780,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     arc:
-      value: 360
+      value: 180
       mode: 0
       spread: 0
       speed:
@@ -9834,7 +9814,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
   m_SortingLayer: 4
-  m_SortingOrder: -1
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -10663,7 +10643,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     arc:
-      value: 360
+      value: 180
       mode: 0
       spread: 0
       speed:

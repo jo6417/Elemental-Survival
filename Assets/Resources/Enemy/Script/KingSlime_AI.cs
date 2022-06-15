@@ -17,7 +17,7 @@ public class KingSlime_AI : MonoBehaviour
     public float atkRatio = 0.5f; //이동 멈추고 공격할 확률
 
     [Header("Refer")]
-    EnemyManager enemyManager;
+    public EnemyManager enemyManager;
     public Transform crownObj;
     public GameObject slimePrefab; //새끼 슬라임 프리팹
     public EnemyAtkTrigger babyTrigger; //새끼 슬라임 소환 범위
@@ -31,10 +31,10 @@ public class KingSlime_AI : MonoBehaviour
     public Vector2 jumpLandPos; //점프 착지 위치
     bool absorbAtkTrigger = false; //내리찍기 공격 트리거
 
-    private void Awake()
-    {
-        enemyManager = GetComponentInChildren<EnemyManager>();
-    }
+    // private void Awake()
+    // {
+    //     enemyManager = GetComponentInChildren<EnemyManager>();
+    // }
 
     private void OnEnable()
     {

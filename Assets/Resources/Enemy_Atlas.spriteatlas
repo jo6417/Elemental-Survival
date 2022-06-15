@@ -57,6 +57,7 @@ SpriteAtlas:
   - {fileID: -3961697549884085189, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
   - {fileID: -682485773742888383, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
   - {fileID: 21300000, guid: e64fc031565ffcd4cbd28f6e3f922da9, type: 3}
+  - {fileID: 21300000, guid: f1280ac1b0abf434cbd3500bfc79eec1, type: 3}
   - {fileID: 5770734358756913666, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: -4604887560701781518, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 6171194522531915682, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
@@ -69,7 +70,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ce887cd5410bca540b8cee733684af69, type: 3}
   - {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
+  - {fileID: 21300000, guid: 44896786367228440b7f236064f0c38b, type: 3}
+  - {fileID: 21300000, guid: fd2ec896f18588247a5a07a6063bbf21, type: 3}
   - {fileID: 21300000, guid: 8b6375079bf0d9142af6635db7bd3799, type: 3}
+  - {fileID: 21300000, guid: 61d316d755212b74c898ae16e1640c8f, type: 3}
   - {fileID: 21300000, guid: 5a0c9a38efcb7a14cbfae9eeb2e37617, type: 3}
   - {fileID: -640876303977768716, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 1724419166579631514, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
@@ -132,6 +136,7 @@ SpriteAtlas:
   - {fileID: -597171090907663275, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: -6807713283490877021, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: 21300000, guid: 747f05bf566f9984480f347151bfaf09, type: 3}
+  - {fileID: 21300000, guid: 0e8a94ef4fef6d748be2165e80c8dd25, type: 3}
   m_PackedSpriteNamesToIndex:
   - KingSlime_Icon
   - EarthSlime-Sheet_4
@@ -140,6 +145,7 @@ SpriteAtlas:
   - EarthSlime-Sheet_2
   - EarthSlime-Sheet_3
   - StoneGolem_Icon
+  - Bawi_Icon
   - Golem-Sheet_2
   - Golem-Sheet_3
   - Golem-Sheet_0
@@ -151,8 +157,11 @@ SpriteAtlas:
   - Vacuum
   - VacuumFin
   - KingSlime_Skin
-  - A-800_Icon
+  - B-800_Icon
+  - WaterSlime_Icon
+  - Ascii_Idle
   - Slime_Skin
+  - A-800_Icon
   - WaterSlime_Icon
   - BloodEffect_Light_2
   - BloodEffect_Light_3
@@ -215,6 +224,7 @@ SpriteAtlas:
   - A-800_Sheet_8
   - A-800_Sheet_9
   - Ascii_Idle
+  - EarthSlime_Icon
   m_RenderDataMap: {}
   m_Tag: Enemy_Atlas
   m_IsVariant: 0

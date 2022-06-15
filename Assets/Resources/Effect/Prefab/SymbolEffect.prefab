@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8025849157034317759}
   - component: {fileID: 8025849157034317756}
   m_Layer: 0
-  m_Name: ElementalSymbolEffect
+  m_Name: SymbolEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
