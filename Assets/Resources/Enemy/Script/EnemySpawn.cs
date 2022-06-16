@@ -212,7 +212,7 @@ public class EnemySpawn : MonoBehaviour
         //EnemyInfo 인스턴스 생성
         EnemyInfo enemyInfo = new EnemyInfo(enemy);
 
-        EnemyManager enemyManager = enemyObj.GetComponent<EnemyManager>();
+        EnemyManager enemyManager = enemyObj.GetComponentInChildren<EnemyManager>();
 
         // 몬스터 랜덤 스킬 뽑기
         if (isElite)

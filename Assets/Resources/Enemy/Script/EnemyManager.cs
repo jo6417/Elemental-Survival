@@ -19,7 +19,6 @@ public class EnemyManager : MonoBehaviour
     public State state; //현재 상태
     public enum State { Idle, Hit, Dead, TimeStop, MagicStop }
     public Action nowAction = Action.Idle; //현재 행동
-    public Action nextAction = Action.Idle; //다음에 할 행동 예약
     public enum Action { Idle, Walk, Jump, Attack }
     public MoveType moveType;
     public enum MoveType
@@ -54,11 +53,11 @@ public class EnemyManager : MonoBehaviour
     public Rigidbody2D rigid;
     public Collider2D physicsColl; // 물리용 콜라이더
     public Collider2D hitColl; // 히트박스용 콜라이더
-    EnemyAI enemyAI;
+    public EnemyAI enemyAI;
 
     [Header("Stat")]
-    public float hpMax;
-    public float HpNow = 2;
+    public float hpMax = 0;
+    public float HpNow = 0;
     public float power;
     public float speed;
     public float range;
@@ -80,8 +79,7 @@ public class EnemyManager : MonoBehaviour
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         hitColl = hitColl == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : hitColl;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
-
-        enemyAI = GetComponent<EnemyAI>();
+        enemyAI = enemyAI == null ? transform.parent.GetComponent<EnemyAI>() : enemyAI;
 
         // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
         if (spriteList.Count == 0)
@@ -128,12 +126,6 @@ public class EnemyManager : MonoBehaviour
         // if (enemy == null)
         //     yield break;
 
-        //보스면 체력 UI 띄우기
-        if (enemy.enemyType == "boss")
-        {
-            UIManager.Instance.UpdateBossHp(HpNow, hpMax, enemyName);
-        }
-
         //ItemDB 로드 될때까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
@@ -175,6 +167,12 @@ public class EnemyManager : MonoBehaviour
         power = enemy.power;
         speed = enemy.speed;
         range = enemy.range;
+
+        //보스면 체력 UI 띄우기
+        if (enemy.enemyType == "boss")
+        {
+            StartCoroutine(UIManager.Instance.UpdateBossHp(this));
+        }
     }
 
     private void Update()
@@ -189,6 +187,10 @@ public class EnemyManager : MonoBehaviour
     {
         // 몬스터 정보 없으면 리턴
         if (enemy == null)
+            return false;
+
+        // 비활성화 되었으면 리턴
+        if (!gameObject.activeSelf)
             return false;
 
         //죽음 애니메이션 중일때
@@ -338,6 +340,7 @@ public class EnemyManager : MonoBehaviour
 
     private void OnParticleCollision(GameObject other)
     {
+        // 마법 파티클 충돌했을때
         if (other.transform.CompareTag("Magic") && !isDead && particleHitCount <= 0)
         {
             HitMagic(other.gameObject);
@@ -349,6 +352,7 @@ public class EnemyManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // 마법 트리거 충돌 했을때
         if (other.CompareTag("Magic") && hitCount <= 0)
         {
             HitMagic(other.gameObject);
@@ -357,7 +361,7 @@ public class EnemyManager : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        // 계속 마법 콜라이더 안에 있을때
+        // 계속 마법 트리거 콜라이더 안에 있을때
         if (other.transform.CompareTag("Magic") && hitCount <= 0)
         {
             // 마법 정보 찾기
@@ -447,7 +451,7 @@ public class EnemyManager : MonoBehaviour
         MagicHolder magicHolder = other.GetComponent<MagicHolder>();
         MagicInfo magic = magicHolder.magic;
 
-        // print(transform.name + " : " + magic.magicName);
+        print(transform.name + " : " + magic.magicName);
 
         // 체력 감소
         if (magic.power > 0)
@@ -543,7 +547,7 @@ public class EnemyManager : MonoBehaviour
         //보스면 체력 UI 띄우기
         if (enemy.enemyType == "boss")
         {
-            UIManager.Instance.UpdateBossHp(HpNow, hpMax, enemyName);
+            StartCoroutine(UIManager.Instance.UpdateBossHp(this));
         }
 
         // print(HpNow + " / " + enemy.HpMax);
@@ -695,7 +699,11 @@ public class EnemyManager : MonoBehaviour
             GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             // enemy 데이터 넣어주기
-            effect.GetComponent<EnemyManager>().enemy = enemy;
+            // effect.GetComponent<EnemyManager>().enemy = enemy;
+
+            // 태그 몬스터 공격으로 바꾸기
+            effect.tag = "EnemyAttack";
+            effect.layer = LayerMask.NameToLayer("EnemyAttack");
         }
 
         // 먼지 이펙트 생성
@@ -722,7 +730,7 @@ public class EnemyManager : MonoBehaviour
         transform.DOKill();
 
         // 몬스터 비활성화
-        LeanPool.Despawn(gameObject);
+        LeanPool.Despawn(enemyAI.gameObject);
 
         yield return null;
     }

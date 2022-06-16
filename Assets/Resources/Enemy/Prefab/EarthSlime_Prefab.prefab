@@ -9,10 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3190824626787221340}
+  - component: {fileID: 1483495440361202616}
   - component: {fileID: 3190824626787221341}
+  - component: {fileID: 187195633}
   m_Layer: 7
-  m_Name: Sprite
-  m_TagString: Untagged
+  m_Name: EarthSlime_Sprite
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31,6 +33,52 @@ Transform:
   m_Father: {fileID: 3190824627126303488}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1483495440361202616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3190824626787221343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHasItem: 
+  referEnemyManager: {fileID: 0}
+  state: 0
+  nowAction: 0
+  moveType: 1
+  portalSize: 1
+  isElite: 0
+  eliteClass: 0
+  isDead: 0
+  particleHitCount: 0
+  stopCount: 0
+  hitCount: 0
+  oppositeCount: 0
+  selfExplosion: 0
+  statusEffect: 0
+  explosionTrigger: {fileID: 0}
+  spriteObj: {fileID: 3190824626787221340}
+  spriteList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  animList:
+  - {fileID: 3190824627126303490}
+  rigid: {fileID: 3190824627126303489}
+  physicsColl: {fileID: 8756922079018869723}
+  hitColl: {fileID: 187195633}
+  enemyAI: {fileID: 3190824627126303519}
+  hpMax: 0
+  HpNow: 1
+  power: 0
+  speed: 0
+  range: 0
+  enemyName: 
+  enemyType: 
 --- !u!212 &3190824626787221341
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -83,6 +131,32 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!61 &187195633
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3190824626787221343}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 1.2}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.22}
+    oldSize: {x: 4, y: 4}
+    newSize: {x: 2, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 2, y: 2.3}
+  m_EdgeRadius: 0
 --- !u!1 &3190824627126303493
 GameObject:
   m_ObjectHideFlags: 0
@@ -92,14 +166,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3190824627126303488}
-  - component: {fileID: 3190824627126303516}
   - component: {fileID: 3190824627126303519}
   - component: {fileID: 3190824627126303490}
   - component: {fileID: 8756922079018869723}
   - component: {fileID: 3190824627126303489}
   m_Layer: 7
   m_Name: EarthSlime_Prefab
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -120,53 +193,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3190824627126303516
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3190824627126303493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  isAbsorb: 0
-  selfExplosion: 0
-  state: 0
-  nowAction: 0
-  nextAction: 0
-  moveType: 1
-  explosionTrigger: {fileID: 0}
-  spriteObj: {fileID: 0}
-  sprite: {fileID: 0}
-  anim: {fileID: 0}
-  rigid: {fileID: 0}
-  coll: {fileID: 0}
-  originMat: {fileID: 0}
-  originMatColor: {r: 0, g: 0, b: 0, a: 0}
-  originColor: {r: 0, g: 0, b: 0, a: 0}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
-  friendlyFire: 0
-  flatDebuff: 0
-  knockBackDebuff: 0
-  enemyName: 
-  enemyType: 
 --- !u!114 &3190824627126303519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,8 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 0}
-  attackTrigger_A: {fileID: 0}
+  enemyManager: {fileID: 1483495440361202616}
   jumpCoolCount: 0
   jumpCooltime: 0.5
   dustEffect: {fileID: 3222180882172883121, guid: 857e027e861f7f241bc702a0ea89ef2a,

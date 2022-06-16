@@ -12,7 +12,6 @@ public class MagicProjectile : MonoBehaviour
     Collider2D coll;
     SpriteRenderer sprite;
     public ParticleSystem particle;
-    float pierceNum = 0; //관통 횟수
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
     public float spreadForce = 10f; // 파편 날아가는 강도
@@ -21,10 +20,17 @@ public class MagicProjectile : MonoBehaviour
     public GameObject[] shatters; //파편들
     public GameObject hitEffect; //타겟에 적중했을때 이펙트
 
+    [Header("Status")]
+    float speed = 0;
+    float duration = 0;
+    float pierceNum = 0; //관통 횟수
+    Vector2 velocity;
+
     private void Awake()
     {
         magicHolder = GetComponent<MagicHolder>();
         rigid = GetComponent<Rigidbody2D>();
+        velocity = rigid.velocity;
         coll = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
         particle = particle == null ? GetComponent<ParticleSystem>() : particle;
@@ -48,8 +54,11 @@ public class MagicProjectile : MonoBehaviour
         //관통 횟수 초기화 
         pierceNum = MagicDB.Instance.MagicPierce(magic);
 
-        // 마법 지속시간 + 추가 지속시간
-        float duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.addDuration;
+        // 마법 스피드 계산 + 추가 스피드 곱하기
+        speed = MagicDB.Instance.MagicSpeed(magic, true) * magicHolder.MultipleSpeed;
+
+        // 마법 지속시간 계산 + 추가 지속시간
+        duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.AddDuration;
 
         // 스프라이트 활성화
         if (sprite != null)
@@ -61,9 +70,6 @@ public class MagicProjectile : MonoBehaviour
 
         //콜라이더 활성화
         coll.enabled = true;
-
-        //마법 자동 디스폰
-        StartCoroutine(DespawnMagic(duration));
 
         //마법 날리기
         StartCoroutine(FlyingMagic());
@@ -84,13 +90,14 @@ public class MagicProjectile : MonoBehaviour
         //투사체 날릴 방향
         Vector2 dir = targetPos - (Vector2)transform.position;
 
-        //속도 0 이상일때
-        if (magic.speed != 0)
-            // 해당 방향으로 마법 속도만큼 날리기 (벡터 기본값 5 * 스피드 스탯 * 10 / 100)
-            rigid.velocity = dir.normalized * MagicDB.Instance.MagicSpeed(magic, true) * magicHolder.multipleSpeed;
+        // 해당 방향으로 날리기
+        rigid.velocity = dir.normalized * speed;
 
         //타겟 위치 초기화
         targetPos = Vector2.zero;
+
+        //마법 자동 디스폰
+        StartCoroutine(DespawnMagic(duration));
     }
 
     private void Update()
@@ -228,8 +235,8 @@ public class MagicProjectile : MonoBehaviour
         }
 
         // 마법 추가 스탯 초기화
-        magicHolder.addDuration = 0f;
-        magicHolder.multipleSpeed = 1f;
+        magicHolder.AddDuration = 0f;
+        magicHolder.MultipleSpeed = 1f;
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)

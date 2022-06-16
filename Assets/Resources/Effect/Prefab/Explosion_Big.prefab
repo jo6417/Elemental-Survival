@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: -1879772048387154458}
   - component: {fileID: 6825291212296317602}
   - component: {fileID: 6825291212296317605}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Explosion_Big
-  m_TagString: Enemy
+  m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -66,8 +66,6 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   target: 0
-  addDuration: 0
-  multipleSpeed: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -124,7 +122,7 @@ GameObject:
   - component: {fileID: 6825291212345015946}
   - component: {fileID: 6825291212345015944}
   - component: {fileID: 6825291212345015947}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Spark
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4988,7 +4986,7 @@ GameObject:
   - component: {fileID: 6825291213376618700}
   - component: {fileID: 6825291213376618698}
   - component: {fileID: 6825291213376618701}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Flame
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -9851,7 +9849,7 @@ GameObject:
   - component: {fileID: 6825291213708550417}
   - component: {fileID: 6825291213708550447}
   - component: {fileID: 6825291213708550446}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Ash
   m_TagString: Magic
   m_Icon: {fileID: 0}

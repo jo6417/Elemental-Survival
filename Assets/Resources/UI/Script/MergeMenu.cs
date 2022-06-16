@@ -702,9 +702,6 @@ public class MergeMenu : MonoBehaviour
             // UI 커서 미리 끄기
             UIManager.Instance.UICursorToggle(false);
 
-            // Merge 리스트에서 확인해서 필요한 마법 시전하기
-            CastMagic.Instance.CastCheck();
-
             DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
             .SetUpdate(true);
 
@@ -726,6 +723,9 @@ public class MergeMenu : MonoBehaviour
 
                 //스마트폰 패널 종료
                 UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
+
+                // Merge 리스트에서 확인해서 필요한 마법 시전하기
+                CastMagic.Instance.CastCheck();
             });
         }
     }

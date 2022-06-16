@@ -253,6 +253,10 @@ public class CastMagic : MonoBehaviour
             // 마법 오브젝트 생성
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
+            // 태그 및 레이어 마법으로 바꾸기
+            magicObj.tag = "Magic";
+            magicObj.layer = LayerMask.NameToLayer("Magic");
+
             //매직 홀더 찾기
             MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
 

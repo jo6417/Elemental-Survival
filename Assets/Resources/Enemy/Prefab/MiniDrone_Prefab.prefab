@@ -9,10 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7235316671713338324}
+  - component: {fileID: 7566975837768346946}
   - component: {fileID: 2790978120402739609}
+  - component: {fileID: 4201272999759543317}
   m_Layer: 7
-  m_Name: Sprite
-  m_TagString: Untagged
+  m_Name: MiniDrone_Sprite
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25,12 +27,59 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 707947926515513313}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7752522856865055191}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7566975837768346946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707947926515513313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHasItem: 
+  referEnemyManager: {fileID: 0}
+  state: 0
+  nowAction: 0
+  moveType: 0
+  portalSize: 1
+  isElite: 0
+  eliteClass: 0
+  isDead: 0
+  particleHitCount: 0
+  stopCount: 0
+  hitCount: 0
+  oppositeCount: 0
+  selfExplosion: 1
+  statusEffect: 0
+  explosionTrigger: {fileID: 8096507129767913019}
+  spriteObj: {fileID: 7235316671713338324}
+  spriteList:
+  - {fileID: 2790978120402739609}
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  animList:
+  - {fileID: 7476364165769180974}
+  rigid: {fileID: 5294624000008441115}
+  physicsColl: {fileID: 6399995120407093454}
+  hitColl: {fileID: 4201272999759543317}
+  enemyAI: {fileID: -5451379877862882109}
+  hpMax: 0
+  HpNow: 1
+  power: 0
+  speed: 0
+  range: 0
+  enemyName: 
+  enemyType: 
 --- !u!212 &2790978120402739609
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -82,6 +131,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!70 &4201272999759543317
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707947926515513313}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.5}
+  m_Size: {x: 1.5, y: 2.5}
+  m_Direction: 0
 --- !u!1 &3329544533871759512
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,7 +161,7 @@ GameObject:
   - component: {fileID: 8096507129767913019}
   m_Layer: 7
   m_Name: ExplosionRange
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -197,7 +262,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,
     type: 3}
   atkRangeSprite: {fileID: 0}
-  enemyManager: {fileID: 2479297510186365566}
+  enemyManager: {fileID: 7566975837768346946}
   atkTrigger: 0
 --- !u!1 &7752522856865055188
 GameObject:
@@ -208,14 +273,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7752522856865055191}
-  - component: {fileID: 2479297510186365566}
   - component: {fileID: -5451379877862882109}
   - component: {fileID: 7476364165769180974}
   - component: {fileID: 6399995120407093454}
   - component: {fileID: 5294624000008441115}
   m_Layer: 7
   m_Name: MiniDrone_Prefab
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -237,53 +301,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2479297510186365566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7752522856865055188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  isAbsorb: 0
-  selfExplosion: 1
-  state: 0
-  nowAction: 0
-  nextAction: 0
-  moveType: 0
-  explosionTrigger: {fileID: 8096507129767913019}
-  spriteObj: {fileID: 7235316671713338324}
-  sprite: {fileID: 0}
-  anim: {fileID: 7476364165769180974}
-  rigid: {fileID: 5294624000008441115}
-  coll: {fileID: 6399995120407093454}
-  originMat: {fileID: 0}
-  originMatColor: {r: 0, g: 0, b: 0, a: 0}
-  originColor: {r: 0, g: 0, b: 0, a: 0}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
-  friendlyFire: 0
-  flatDebuff: 0
-  knockBackDebuff: 0
-  enemyName: 
-  enemyType: 
 --- !u!114 &-5451379877862882109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,7 +314,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 0}
-  attackTrigger_A: {fileID: 0}
   jumpCoolCount: 0
   jumpCooltime: 0.5
   dustEffect: {fileID: 0}

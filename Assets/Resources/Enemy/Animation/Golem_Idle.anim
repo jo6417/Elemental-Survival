@@ -44,7 +44,7 @@ AnimationClip:
       value: {fileID: 410387071126374719, guid: 1fceaa62b5d10fd43bf9bccedeca8c86,
         type: 3}
     attribute: m_Sprite
-    path: 
+    path: StoneGolem_Sprite
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -55,7 +55,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 3739322143
       attribute: 0
       script: {fileID: 0}
       typeID: 212

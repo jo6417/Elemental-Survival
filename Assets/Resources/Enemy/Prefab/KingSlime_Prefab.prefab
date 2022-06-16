@@ -2069,7 +2069,7 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    inWorldSpace: 0
+    inWorldSpace: 1
   InheritVelocityModule:
     enabled: 0
     m_Mode: 0
@@ -9745,7 +9745,7 @@ MonoBehaviour:
   poisonAtkCoolTime: 0
   nowAbsorb: 0
   poisonAtkRange: 20
-  atkRatio: 50
+  atkRatio: 0
   enemyManager: {fileID: 7827004847596775519}
   crownObj: {fileID: 3939066445554554373}
   slimePrefab: {fileID: 5485836661786715591, guid: f38322a01d9b7f84d9914275f0eff236,
@@ -9838,7 +9838,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3519795534993718771}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -4.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 784766006034917722}
@@ -9883,7 +9883,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -9920,7 +9920,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5260277266502753681}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.725, z: 1}
   m_Children: []
   m_Father: {fileID: 5702749140188695707}
@@ -10086,7 +10086,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7073894444999465978}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5702749140188695707}
@@ -10110,7 +10110,6 @@ MonoBehaviour:
   referEnemyManager: {fileID: 0}
   state: 0
   nowAction: 0
-  nextAction: 0
   moveType: 0
   portalSize: 2
   isElite: 0
@@ -10124,14 +10123,20 @@ MonoBehaviour:
   statusEffect: 0
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 7073894444999465860}
-  spriteList: []
+  spriteList:
+  - {fileID: 7073894444999465979}
+  - {fileID: 4482655199273524325}
+  - {fileID: 4193126610140012053}
+  - {fileID: 2289239915984475261}
   originMatList: []
   originMatColorList: []
   originColorList: []
-  animList: []
+  animList:
+  - {fileID: 5312835077595385824}
   rigid: {fileID: 8443360763871844120}
   physicsColl: {fileID: 3111188553755185085}
   hitColl: {fileID: 969631763059637302}
+  enemyAI: {fileID: 0}
   hpMax: 0
   HpNow: 1
   power: 0
@@ -10200,10 +10205,10 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 2.5}
+  m_Offset: {x: 0, y: 3.5}
   m_Size: {x: 9.5, y: 7.3}
   m_Direction: 1
 --- !u!1 &7090014403110922668
@@ -15174,9 +15179,9 @@ GameObject:
   - component: {fileID: 7799214659974095521}
   - component: {fileID: 1136543484236284355}
   - component: {fileID: 8357300834832526370}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: BabyRange
-  m_TagString: Enemy
+  m_TagString: EnemyAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

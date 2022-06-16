@@ -44,8 +44,8 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator Initial()
     {
         // 콜라이더 충돌 초기화
-        enemyManager.hitColl.enabled = false;
-        enemyManager.hitColl.isTrigger = false;
+        enemyManager.physicsColl.enabled = false;
+        enemyManager.physicsColl.isTrigger = false;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => enemyManager.enemy != null);
@@ -77,19 +77,22 @@ public class KingSlime_AI : MonoBehaviour
         if (enemyManager.enemy == null)
             return;
 
+        // 플레이어 체력 흡수
+        AbsorbPlayer();
+
         // 상태 이상 있으면 리턴
         if (!enemyManager.ManageState())
             return;
 
         // 행동 관리
         ManageAction();
+    }
 
+    void AbsorbPlayer()
+    {
         // 플레이어 흡수중일때
         if (nowAbsorb)
         {
-            // 플레이어 이동속도 디버프
-            PlayerManager.Instance.speedDebuff = 0.1f;
-
             // 흡수 쿨타임 됬을때
             if (absorbCoolCount <= 0f)
             {
@@ -109,12 +112,8 @@ public class KingSlime_AI : MonoBehaviour
             // 체력 흡수 패턴 쿨타임 차감
             absorbCoolCount -= Time.deltaTime;
         }
-        else
-        {
-            // 플레이어 이동속도 디버프 해제
-            PlayerManager.Instance.speedDebuff = 1f;
-        }
     }
+
     void ManageAction()
     {
         // Idle 아니면 리턴
@@ -128,19 +127,13 @@ public class KingSlime_AI : MonoBehaviour
             return;
         }
 
-        // 다음 행동이 Attack 이면
-        if (enemyManager.nextAction == EnemyManager.Action.Attack)
+        // 랜덤 숫자가 atkRatio 보다 적으면 공격
+        if (Random.value < atkRatio)
         {
-            // 현재 행동 공격으로 전환
-            enemyManager.nowAction = EnemyManager.Action.Attack;
-
-            // 다음 행동 초기화
-            enemyManager.nextAction = EnemyManager.Action.Idle;
-
             //공격 패턴 선택
             ChooseAttack();
         }
-        // 다음 행동이 Idle 이면
+        // 랜덤 숫자가 atkRatio 보다 많으면 점프
         else
         {
             // 점프 실행
@@ -150,6 +143,8 @@ public class KingSlime_AI : MonoBehaviour
 
     void JumpStart()
     {
+        // print("점프 시작");
+
         // 현재 행동 점프로 전환
         enemyManager.nowAction = EnemyManager.Action.Jump;
 
@@ -158,6 +153,12 @@ public class KingSlime_AI : MonoBehaviour
 
         // 점프 쿨타임 갱신
         coolCount = jumpCoolTime;
+
+        // 스프라이트 레이어 레벨 높이기
+        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        {
+            sprite.sortingOrder = 1;
+        }
     }
 
     public void JumpMove()
@@ -174,63 +175,59 @@ public class KingSlime_AI : MonoBehaviour
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
         float distance = dir.magnitude > enemyManager.range ? enemyManager.range : dir.magnitude;
 
-        //플레이어 위치까지 doMove
-        transform.DOMove(transform.position + dir.normalized * distance, 1f);
-
         //착지 위치 변수에 저장
-        jumpLandPos = transform.position + dir.normalized * distance + Vector3.up;
+        jumpLandPos = transform.position + dir.normalized * distance;
+
+        //플레이어 위치까지 doMove
+        transform.DOMove(jumpLandPos, 1f);
 
         // 콜라이더 끄기
-        enemyManager.hitColl.enabled = false;
+        enemyManager.physicsColl.enabled = false;
         // 콜라이더 trigger로 전환
-        enemyManager.hitColl.isTrigger = true;
+        enemyManager.physicsColl.isTrigger = true;
     }
 
-    public void LandStart()
+    public void Landing()
     {
         //플레이어 흡수 트리거 켜기
         absorbAtkTrigger = true;
 
         //콜라이더 켜기
-        enemyManager.hitColl.enabled = true;
-    }
-
-    public void Landing()
-    {
-        //플레이어 흡수 트리거 끄기
-        absorbAtkTrigger = false;
+        enemyManager.physicsColl.enabled = true;
 
         // 착지 이펙트 생성
         if (landEffect != null)
             LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 스프라이트 레이어 레벨 초기화
+        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        {
+            sprite.sortingOrder = 0;
+        }
     }
 
     public void JumpEnd()
     {
-        // 플레이어 흡수 못했으면 콜라이더 충돌로 전환
-        if (!nowAbsorb)
-            enemyManager.hitColl.isTrigger = false;
+        //플레이어 흡수 트리거 끄기
+        absorbAtkTrigger = false;
 
         // IDLE 애니메이션 전환
         enemyManager.animList[0].SetBool("Jump", false);
 
-        // 현재 행동 끝내기
-        enemyManager.nowAction = EnemyManager.Action.Idle;
-
-        // 랜덤 숫자가 atkRatio 보다 적으면
-        if (Random.value < atkRatio)
+        // 플레이어 흡수 못했으면 콜라이더 충돌로 전환
+        if (!nowAbsorb)
         {
-            // 다음 행동 Attack 으로 예약
-            enemyManager.nextAction = EnemyManager.Action.Attack;
-        }
+            enemyManager.physicsColl.isTrigger = false;
 
-        //현재 행동 초기화
-        if (enemyManager.nowAction != EnemyManager.Action.Attack)
+            // 현재 행동 끝내기
             enemyManager.nowAction = EnemyManager.Action.Idle;
+        }
     }
     void ChooseAttack()
     {
         // print("공격 패턴 선택");
+        // 현재 행동 공격으로 전환
+        enemyManager.nowAction = EnemyManager.Action.Attack;
 
         // 패턴 쿨타임 중일때 리턴
         if (coolCount > 0)
@@ -270,9 +267,6 @@ public class KingSlime_AI : MonoBehaviour
 
         // 현재 행동 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;
-
-        // // 다음 행동 초기화
-        // enemyManager.nextAction = EnemyManager.Action.Idle;
     }
 
     IEnumerator BabySlimeSummon()
@@ -306,9 +300,9 @@ public class KingSlime_AI : MonoBehaviour
             EnemyManager babyEnemyManager = babySlime.GetComponent<EnemyManager>();
             EnemyAI babyEnemyAI = babySlime.GetComponent<EnemyAI>();
 
-            // 콜라이더 끄기
+            // 소환수 콜라이더 끄기
             babyEnemyManager.hitColl.enabled = false;
-            // AI 끄기
+            // 소환수 AI 끄기
             babyEnemyAI.enabled = false;
 
             //소환 위치
@@ -318,8 +312,9 @@ public class KingSlime_AI : MonoBehaviour
             babySlime.transform.DOJump(summonPos, 5f, 1, 1f)
             .OnComplete(() =>
             {
-                //컴포넌트 활성화
+                // 소환수 콜라이더 활성화
                 babyEnemyManager.hitColl.enabled = true;
+                // 소환수 AI 활성화
                 babyEnemyAI.enabled = true;
             });
 
@@ -429,31 +424,39 @@ public class KingSlime_AI : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 플레이어가 충돌하고, 플레이어 대쉬 아닐때, 보스 점프 중일때, landAtkTrigger 켜져있을때
-        if (other.gameObject.CompareTag("Player")
-        && absorbAtkTrigger)
+        if (other.gameObject.CompareTag("Player") // 플레이어가 충돌했을때
+        && !PlayerManager.Instance.isDash // 플레이어 대쉬 아닐때
+        && absorbAtkTrigger // 흡수 트리거 켜졌을때
+        && !nowAbsorb) // 현재 흡수중 아닐때
         {
-            print("흡수 시작");
+            // print("흡수 시작");
+            //플레이어 체력 흡수중이면 true
+            nowAbsorb = true;
+
             //현재 행동 공격으로 전환
             enemyManager.nowAction = EnemyManager.Action.Attack;
 
+            // IDLE 애니메이션 전환
+            enemyManager.animList[0].SetBool("Jump", false);
             // 바운스 애니메이션 시작
-            enemyManager.animList[0].speed = 1f;
             enemyManager.animList[0].SetBool("isBounce", true);
 
-            // 플레이어 이동 막기
+            // 플레이어 위치 이동하는 동안 이동 금지
             PlayerManager.Instance.speedDebuff = 0;
+            // 이동 속도 반영
             PlayerManager.Instance.Move();
+            // 플레이어 조작 차단
             PlayerManager.Instance.playerInput.Disable();
 
             // 플레이어를 슬라임 가운데로 이동 시키기
             PlayerManager.Instance.transform.DOMove(jumpLandPos, 0.5f)
             .OnComplete(() =>
             {
-                //플레이어가 슬라임 안에 있으면 true
-                nowAbsorb = true;
-
-                //플레이어 인풋 활성화
+                // 이동 속도 디버프 걸기
+                PlayerManager.Instance.speedDebuff = 0.2f;
+                // 이동 속도 반영
+                PlayerManager.Instance.Move();
+                // 플레이어 조작 활성화
                 PlayerManager.Instance.playerInput.Enable();
             });
         }
@@ -461,13 +464,22 @@ public class KingSlime_AI : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // 슬라임 안에 플레이어 있을때 나가면
+        // 흡수 중일때 플레이어 나가면
         if (other.gameObject.CompareTag("Player")
         && nowAbsorb)
         {
-            print("흡수 끝");
-            //플레이어 흡수 정지
+            // print("흡수 끝");
+
+            // 플레이어 흡수 정지
             nowAbsorb = false;
+
+            // 점프 끝날때 초기화 함수 실행
+            JumpEnd();
+
+            // 이동 속도 디버프 해제
+            PlayerManager.Instance.speedDebuff = 1f;
+            // 이동 속도 반영
+            PlayerManager.Instance.Move();
 
             // 바운스 애니메이션 끝
             enemyManager.animList[0].SetBool("isBounce", false);
@@ -475,8 +487,8 @@ public class KingSlime_AI : MonoBehaviour
             // 스케일 복구
             transform.localScale = Vector2.one;
 
-            // 콜라이더 trigger 비활성화
-            enemyManager.hitColl.isTrigger = false;
+            // 충돌 콜라이더 trigger 비활성화
+            enemyManager.physicsColl.isTrigger = false;
 
             //현재 행동 초기화
             enemyManager.nowAction = EnemyManager.Action.Idle;

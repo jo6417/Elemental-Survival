@@ -671,8 +671,14 @@ public class UIManager : MonoBehaviour
         playerLev.text = "Lev. " + PlayerManager.Instance.PlayerStat_Now.Level.ToString();
     }
 
-    public void UpdateBossHp(float bossHpNow, float bossHpMax, string bossName)
+    public IEnumerator UpdateBossHp(EnemyManager bossManager)
     {
+        //보스 몬스터 정보 들어올때까지 대기
+        yield return new WaitUntil(() => bossManager.enemy != null);
+
+        float bossHpNow = bossManager.HpNow;
+        float bossHpMax = bossManager.hpMax;
+
         //보스 체력 UI 활성화
         bossHp.SetActive(true);
 
@@ -686,7 +692,7 @@ public class UIManager : MonoBehaviour
 
         //보스 이름 갱신, 체력 0이하면 공백
         bossHp.transform.Find("BossName").GetComponent<TextMeshProUGUI>().text
-        = bossHpNow <= 0 ? "" : bossName;
+        = bossHpNow <= 0 ? "" : bossManager.enemy.enemyName;
 
         //체력 0 이하면 체력 UI 끄기
         if (bossHpNow <= 0)

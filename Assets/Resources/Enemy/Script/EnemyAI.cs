@@ -8,7 +8,6 @@ public class EnemyAI : MonoBehaviour
 {
     [Header("Refer")]
     public EnemyManager enemyManager;
-    public EnemyAtkTrigger attackTrigger_A;
 
     [Header("Jump")]
     public float jumpCoolCount;
@@ -18,7 +17,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponent<EnemyManager>() : enemyManager;
+        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
     }
 
     private void OnEnable()
@@ -46,7 +45,7 @@ public class EnemyAI : MonoBehaviour
         enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 콜라이더 충돌 초기화
-        enemyManager.hitColl.isTrigger = false;
+        enemyManager.physicsColl.isTrigger = false;
     }
 
     void Update()
@@ -56,7 +55,7 @@ public class EnemyAI : MonoBehaviour
             return;
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (enemyManager && !enemyManager.ManageState())
             return;
 
         //행동 관리

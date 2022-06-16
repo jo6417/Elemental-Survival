@@ -23,7 +23,7 @@ AnimationClip:
       value: {fileID: 2683761747022187116, guid: 98d073f0946b28d4e8e8497b0debd728,
         type: 3}
     attribute: m_Sprite
-    path: Sprite
+    path: EarthSlime_Sprite
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -34,7 +34,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 850496168
+      path: 2715280195
       attribute: 0
       script: {fileID: 0}
       typeID: 212

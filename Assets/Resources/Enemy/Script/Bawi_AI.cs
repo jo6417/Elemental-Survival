@@ -519,10 +519,10 @@ public class Bawi_AI : MonoBehaviour
             magicHolder.magic = new MagicInfo(MagicDB.Instance.GetMagicByName("SlingShot"));
 
             // 마법 랜덤 유지시간 추가
-            magicHolder.addDuration = Random.Range(0.5f, 1f) - 1f;
+            magicHolder.AddDuration = Random.Range(0.5f, 1f) - 1f;
 
             // 마법 속도 배율 넣기
-            magicHolder.multipleSpeed = isSmallStone ? Random.Range(1.5f, 2f) : 1f;
+            magicHolder.MultipleSpeed = isSmallStone ? Random.Range(1.5f, 2f) : 1f;
 
             // 작은 돌일때
             if (isSmallStone)

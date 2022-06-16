@@ -74,7 +74,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fd2ec896f18588247a5a07a6063bbf21, type: 3}
   - {fileID: 21300000, guid: 8b6375079bf0d9142af6635db7bd3799, type: 3}
   - {fileID: 21300000, guid: 61d316d755212b74c898ae16e1640c8f, type: 3}
-  - {fileID: 21300000, guid: 5a0c9a38efcb7a14cbfae9eeb2e37617, type: 3}
   - {fileID: -640876303977768716, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 1724419166579631514, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: -6202357459649817224, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
@@ -162,7 +161,6 @@ SpriteAtlas:
   - Ascii_Idle
   - Slime_Skin
   - A-800_Icon
-  - WaterSlime_Icon
   - BloodEffect_Light_2
   - BloodEffect_Light_3
   - BloodEffect_Light_0
