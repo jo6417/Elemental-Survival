@@ -704,11 +704,11 @@ public class PlayerManager : MonoBehaviour
         if (magic.grade == 0)
             return;
 
-        //TODO 적이 죽으면 발동되는 마법일때 콜백에 함수포함시키기
-        if (magic.magicName == "Life Seed")
-        {
-            SystemManager.Instance.AddDropSeedEvent(magic);
-        }
+        // //TODO 적이 죽으면 발동되는 마법일때 콜백에 함수포함시키기
+        // if (magic.magicName == "Life Mushroom")
+        // {
+        //     SystemManager.Instance.AddDropSeedEvent(magic);
+        // }
 
         //메인 UI에 스마트폰 알림 갱신
         UIManager.Instance.PhoneNotice();

@@ -338,90 +338,9 @@ public class EnemyManager : MonoBehaviour
         return true;
     }
 
-    private void OnParticleCollision(GameObject other)
-    {
-        // 마법 파티클 충돌했을때
-        if (other.transform.CompareTag("Magic") && !isDead && particleHitCount <= 0)
-        {
-            HitMagic(other.gameObject);
 
-            //파티클 피격 딜레이 시작
-            particleHitCount = 0.2f;
-        }
-    }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // 마법 트리거 충돌 했을때
-        if (other.CompareTag("Magic") && hitCount <= 0)
-        {
-            HitMagic(other.gameObject);
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        // 계속 마법 트리거 콜라이더 안에 있을때
-        if (other.transform.CompareTag("Magic") && hitCount <= 0)
-        {
-            // 마법 정보 찾기
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-            MagicInfo magic = magicHolder.magic;
-
-            // 다단히트 마법일때만
-            if (magic.multiHit)
-                HitMagic(other.gameObject);
-        }
-
-        //적에게 맞았을때
-        if (other.transform.CompareTag("EnemyAttack") && hitCount <= 0)
-        {
-            // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
-            if (other.gameObject.TryGetComponent<EnemyAtk>(out EnemyAtk enemyAtk) && enemyAtk.enabled)
-            {
-                EnemyManager hitEnemy = enemyAtk.enemyManager;
-
-                // other가 본인일때 리턴
-                if (hitEnemy == this || hitEnemy == referEnemyManager)
-                {
-                    // print("본인 타격");
-                    return;
-                }
-
-                if (hitEnemy.enabled)
-                {
-                    // 아군 피해 줄때
-                    if (enemyAtk.friendlyFire)
-                    {
-                        // print("enemy damage");
-
-                        // 데미지 입기
-                        Damage(hitEnemy.enemy.power, false);
-                    }
-
-                    // 넉백 디버프 있을때
-                    if (enemyAtk.knockBackDebuff)
-                    {
-                        // print("enemy knock");
-
-                        // 넉백
-                        StartCoroutine(Knockback(hitEnemy.enemy.power));
-                    }
-
-                    // flat 디버프 있을때, stop 카운트 중 아닐때
-                    if (enemyAtk.flatDebuff && stopCount <= 0)
-                    {
-                        // print("enemy flat");
-
-                        // 납작해지고 행동불능
-                        StartCoroutine(FlatDebuff());
-                    }
-                }
-            }
-        }
-    }
-
-    IEnumerator FlatDebuff()
+    public IEnumerator FlatDebuff()
     {
         //정지 시간 추가
         stopCount = 2f;
@@ -442,7 +361,7 @@ public class EnemyManager : MonoBehaviour
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
-    void HitMagic(GameObject other)
+    public void HitMagic(GameObject other)
     {
         if (isDead)
             return;
@@ -451,7 +370,7 @@ public class EnemyManager : MonoBehaviour
         MagicHolder magicHolder = other.GetComponent<MagicHolder>();
         MagicInfo magic = magicHolder.magic;
 
-        print(transform.name + " : " + magic.magicName);
+        // print(transform.name + " : " + magic.magicName);
 
         // 체력 감소
         if (magic.power > 0)
@@ -717,11 +636,12 @@ public class EnemyManager : MonoBehaviour
         // 10초후 디스폰
         // LeanPool.Despawn(blood, 10f);
 
-        if (enemy.dropRate >= Random.Range(0, 1) && nowHasItem.Count > 0)
-        {
-            //아이템 드랍
-            DropItem();
-        }
+        //아이템 드랍
+        DropItem();
+
+        //몬스터 죽을때 함수 호출, ex) 체력 씨앗 드랍
+        if (SystemManager.Instance.enemyDeadCallback != null)
+            SystemManager.Instance.enemyDeadCallback(transform.position);
 
         // 몬스터 리스트에서 몬스터 본인 빼기
         EnemySpawn.Instance.spawnEnemyList.Remove(gameObject);
@@ -730,7 +650,7 @@ public class EnemyManager : MonoBehaviour
         transform.DOKill();
 
         // 몬스터 비활성화
-        LeanPool.Despawn(enemyAI.gameObject);
+        LeanPool.Despawn(gameObject);
 
         yield return null;
     }
@@ -738,10 +658,19 @@ public class EnemyManager : MonoBehaviour
     // 갖고있는 아이템 드랍
     void DropItem()
     {
-        //보유한 모든 아이템 드랍
-        foreach (var item in nowHasItem)
+        //아이템 없으면 원소젬 1개 추가, 최소 젬 1개라도 떨구게
+        if (nowHasItem.Count <= 0)
         {
-            print(item.itemName + " : " + item.amount);
+            // 랜덤 원소젬 정보 넣기
+            ItemInfo gem = ItemDB.Instance.GetItemByID(Random.Range(0, 6));
+            gem.amount = 1;
+            nowHasItem.Add(gem);
+        }
+
+        //보유한 모든 아이템 드랍
+        foreach (ItemInfo item in nowHasItem)
+        {
+            // print(item.itemName + " : " + item.amount);
             //해당 아이템의 amount 만큼 드랍
             for (int i = 0; i < item.amount; i++)
             {
@@ -753,15 +682,15 @@ public class EnemyManager : MonoBehaviour
                 //아이템 정보 넣기
                 itemObj.GetComponent<ItemManager>().item = item;
 
+                //아이템 리지드 찾기
+                Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
+
                 // 랜덤 방향으로 아이템 날리기
-                Vector2 pos = (Vector2)transform.position + new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 3f;
-                itemObj.transform.DOMove(pos, 1f)
-                .SetEase(Ease.OutExpo);
+                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+
+                // 아이템 랜덤 회전 시키기
+                itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;
             }
         }
-
-        //몬스터 죽을때 함수 호출, 체력 씨앗 드랍
-        if (SystemManager.Instance.enemyDeadCallback != null)
-            SystemManager.Instance.enemyDeadCallback(transform.position);
     }
 }

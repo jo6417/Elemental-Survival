@@ -277,8 +277,8 @@ public class VendMachine : MonoBehaviour
             // 툴팁에 상품 정보 넣기
             ToolTipTrigger tooltip = product.GetComponent<ToolTipTrigger>();
             tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-            tooltip.magic = magic;
-            tooltip.item = item;
+            tooltip.Magic = magic;
+            tooltip.Item = item;
         }
     }
 

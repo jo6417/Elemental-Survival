@@ -64,6 +64,7 @@ public class MergeMenu : MonoBehaviour
     float scrollCoolCount; //스크롤 쿨타임 카운트
     float scrollCoolTime = 0.1f; //스크롤 쿨타임
     public Button selectedSlot;
+    public ToolTipTrigger selectedTooltip;
     public Button leftScrollBtn;
     public Button rightScrollBtn;
     public MagicInfo selectedMagic; //현재 선택된 마법
@@ -428,14 +429,17 @@ public class MergeMenu : MonoBehaviour
             int endIndex = isLeft ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
 
             // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
-            MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 얻기
-            PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 삭제
-            PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 넣기
+            MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 참조
+            PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 정보 삭제
+            PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 정보 넣기
 
             // 선택된 마법 입력
             selectedMagic = PlayerManager.Instance.hasStackMagics[0];
             // 선택된 마법 아이콘 이미지 넣기
             selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(selectedMagic.id);
+
+            // 선택된 슬롯에 툴팁 넣어주기
+            selectedTooltip.Magic = PlayerManager.Instance.hasStackMagics[0];
         }
 
         // 모든 아이콘 다시 넣기
@@ -472,23 +476,25 @@ public class MergeMenu : MonoBehaviour
         // hasStackMagics의 보유 마법이 num 보다 많을때
         if (PlayerManager.Instance.hasStackMagics.Count >= num)
         {
+            MagicInfo magic = PlayerManager.Instance.hasStackMagics[magicIndex];
+
             //프레임 색 넣기
-            frame.color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasStackMagics[magicIndex].grade];
+            frame.color = MagicDB.Instance.gradeColor[magic.grade];
 
             //아이콘 스프라이트 찾기
-            Sprite sprite = MagicDB.Instance.GetMagicIcon(PlayerManager.Instance.hasStackMagics[magicIndex].id);
+            Sprite sprite = MagicDB.Instance.GetMagicIcon(magic.id);
             //아이콘 넣기
             icon.enabled = true;
             icon.sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
 
             //레벨 넣기
             level.enabled = true;
-            level.text = "Lv. " + PlayerManager.Instance.hasStackMagics[magicIndex].magicLevel;
+            level.text = "Lv. " + magic.magicLevel;
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else
         {
-            // 프레임, 아이콘, 레벨 숨기기
+            // 프레임, 아이콘, 레벨, 툴팁 끄기
             frame.color = Color.white;
             icon.enabled = false;
             level.enabled = false;

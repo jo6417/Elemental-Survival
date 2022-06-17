@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7235316671713338324}
-  - component: {fileID: 7566975837768346946}
+  - component: {fileID: 8464280121346625073}
   - component: {fileID: 2790978120402739609}
   - component: {fileID: 4201272999759543317}
   m_Layer: 7
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 7752522856865055191}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7566975837768346946
+--- !u!114 &8464280121346625073
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,44 +42,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 707947926515513313}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
-  state: 0
-  nowAction: 0
-  moveType: 0
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 1
-  statusEffect: 0
-  explosionTrigger: {fileID: 8096507129767913019}
-  spriteObj: {fileID: 7235316671713338324}
-  spriteList:
-  - {fileID: 2790978120402739609}
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
-  animList:
-  - {fileID: 7476364165769180974}
-  rigid: {fileID: 5294624000008441115}
-  physicsColl: {fileID: 6399995120407093454}
-  hitColl: {fileID: 4201272999759543317}
-  enemyAI: {fileID: -5451379877862882109}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
-  enemyName: 
-  enemyType: 
+  enemyManager: {fileID: 8701247743618535938}
 --- !u!212 &2790978120402739609
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -262,7 +228,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,
     type: 3}
   atkRangeSprite: {fileID: 0}
-  enemyManager: {fileID: 7566975837768346946}
+  enemyManager: {fileID: 0}
   atkTrigger: 0
 --- !u!1 &7752522856865055188
 GameObject:
@@ -273,6 +239,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7752522856865055191}
+  - component: {fileID: 8701247743618535938}
   - component: {fileID: -5451379877862882109}
   - component: {fileID: 7476364165769180974}
   - component: {fileID: 6399995120407093454}
@@ -301,6 +268,53 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8701247743618535938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7752522856865055188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHasItem: 
+  referEnemyManager: {fileID: 0}
+  state: 0
+  nowAction: 0
+  moveType: 0
+  portalSize: 1
+  isElite: 0
+  eliteClass: 0
+  isDead: 0
+  particleHitCount: 0
+  stopCount: 0
+  hitCount: 0
+  oppositeCount: 0
+  selfExplosion: 1
+  statusEffect: 0
+  explosionTrigger: {fileID: 8096507129767913019}
+  spriteObj: {fileID: 7235316671713338324}
+  spriteList:
+  - {fileID: 2790978120402739609}
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  animList:
+  - {fileID: 7476364165769180974}
+  rigid: {fileID: 5294624000008441115}
+  physicsColl: {fileID: 6399995120407093454}
+  hitColl: {fileID: 4201272999759543317}
+  enemyAI: {fileID: -5451379877862882109}
+  hpMax: 0
+  HpNow: 1
+  power: 0
+  speed: 0
+  range: 0
+  enemyName: 
+  enemyType: 
 --- !u!114 &-5451379877862882109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,7 +327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 0}
+  enemyManager: {fileID: 8701247743618535938}
   jumpCoolCount: 0
   jumpCooltime: 0.5
   dustEffect: {fileID: 0}

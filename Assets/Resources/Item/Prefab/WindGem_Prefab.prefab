@@ -46,11 +46,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ccb3a946fc21b4b9bf703f552b66a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGot: 0
+  isCollision: 0
   amount: 1
   isBundle: 0
   gemTypeIndex: -1
+  moveSpeed: 1
+  autoDespawnTime: 0
   itemName: 
+  sprite: {fileID: 0}
+  despawnEffect: {fileID: 8136139136538463727, guid: 64c63ea60fcd8f8419c2ee5c45103df5,
+    type: 3}
 --- !u!212 &3694098022795033563
 SpriteRenderer:
   m_ObjectHideFlags: 0

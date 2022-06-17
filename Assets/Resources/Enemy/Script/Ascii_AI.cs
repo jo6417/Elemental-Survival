@@ -15,21 +15,25 @@ public class Ascii_AI : MonoBehaviour
     [Header("Refer")]
     public EnemyManager enemyManager;
     public Image angryGauge; //분노 게이지 이미지
-    public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
-    public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 플레이어가 들어왔는지 보는 트리거
-    public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 플레이어가 들어왔는지 보는 트리거
     public TextMeshProUGUI faceText;
-    public TextMeshProUGUI laserText;
     public Transform canvasChildren;
-    // public Collider2D coll;
     public Animator anim;
     public Rigidbody2D rigid;
+    public SpriteRenderer shadow;
+
+    [Header("FallAtk")]
+    public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
+    public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 플레이어가 들어왔는지 보는 트리거
     public SpriteRenderer fallRange;
-    // Collider2D fallColl;
+    public ParticleSystem fallDustEffect; //엎어질때 발생할 먼지 이펙트
+
+    [Header("LaserAtk")]
     public GameObject LaserPrefab; //발사할 레이저 마법 프리팹
     public GameObject pulseEffect; //laser stop 할때 펄스 이펙트
     MagicInfo laserMagic = null; //발사할 레이저 마법 데이터
     SpriteRenderer laserRange;
+    public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 플레이어가 들어왔는지 보는 트리거
+    public TextMeshProUGUI laserText;
 
     EnemyInfo enemy;
     float speed;
@@ -88,6 +92,9 @@ public class Ascii_AI : MonoBehaviour
         fallRange.enabled = false;
         laserRange.enabled = false;
 
+        //그림자 초기화
+        shadow.gameObject.SetActive(true);
+
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
@@ -95,7 +102,7 @@ public class Ascii_AI : MonoBehaviour
         if (laserMagic == null)
         {
             //찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
-            laserMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Laser Beam"));
+            laserMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Explosion"));
 
             // 강력한 데미지로 고정
             laserMagic.power = 20f;
@@ -125,8 +132,8 @@ public class Ascii_AI : MonoBehaviour
             atkList.Add(0);
 
         // Laser 콜라이더에 플레이어 있으면 리스트에 Laser 공격패턴 담기
-        // if (LaserRangeTrigger.atkTrigger)
-        //     atkList.Add(1);
+        if (LaserRangeTrigger.atkTrigger)
+            atkList.Add(1);
 
         // 공격 가능한 패턴 없을때 플레이어 따라가기
         if (atkList.Count == 0)
@@ -285,6 +292,9 @@ public class Ascii_AI : MonoBehaviour
         // fallAtk 공격 활성화
         fallAtkColl.enabled = true;
 
+        // 먼지 파티클 활성화
+        fallDustEffect.gameObject.SetActive(true);
+
         //일어서기, 휴식 애니메이션 재생
         StartCoroutine(GetUpAnim());
     }
@@ -363,12 +373,13 @@ public class Ascii_AI : MonoBehaviour
         //몬스터 스폰 멈추기
         EnemySpawn.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
-        SystemManager.Instance.globalTimeScale = 0f;
-        // List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
-        // foreach (var enemy in enemys)
-        // {
-        //     enemy.stopCount = 3f;
-        // }
+        List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
+        foreach (EnemyManager enemy in enemys)
+        {
+            // 보스 본인이 아닐때
+            if (enemy != enemyManager)
+                enemy.stopCount = 3f;
+        }
 
         //감시 시간
         float watchTime = Time.time;

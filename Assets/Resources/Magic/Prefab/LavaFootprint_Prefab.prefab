@@ -48,7 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicName: 
+  coll: {fileID: 0}
   targetPos: {x: 10, y: 10, z: 0}
+  target: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 2
@@ -112,7 +114,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1869315837
   m_SortingLayer: 1
-  m_SortingOrder: 5
+  m_SortingOrder: 0
   m_Sprite: {fileID: 8954982405313846772, guid: 310c99627639f2b42936f2def20e62c2,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

@@ -336,10 +336,10 @@ public class CastMagic : MonoBehaviour
         enemyColList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("Enemy")).ToList();
 
         // 투사체 개수 (마법 및 플레이어 투사체 버프 합산)
-        int magicProjectile = MagicDB.Instance.MagicProjectile(magic);
+        int atkNum = MagicDB.Instance.MagicProjectile(magic);
 
         // 적 위치 리스트에 넣기
-        for (int i = 0; i < magicProjectile; i++)
+        for (int i = 0; i < atkNum; i++)
         {
             // 플레이어 주변 범위내 랜덤 위치 벡터 생성
             Vector2 pos =

@@ -169,35 +169,43 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public void AddDropSeedEvent(MagicInfo magic)
-    {
-        //적이 죽을때 함수를 호출하도록 델리게이트에 넣기
-        enemyDeadCallback += DropLifeSeed;
+    // public void AddDropSeedEvent(MagicInfo magic)
+    // {
+    //     //적이 죽을때 함수를 호출하도록 델리게이트에 넣기
+    //     enemyDeadCallback += DropLifeSeed;
 
-        // Heal Seed 마법 찾기
-        lifeSeedMagic = magic;
-    }
+    //     // Heal Seed 마법 찾기
+    //     lifeSeedMagic = magic;
+    // }
 
-    // Life Seed 드랍하기
-    public void DropLifeSeed(Vector2 dropPos)
-    {
-        // print(MagicDB.Instance.MagicCritical(magic));
+    // // Life Seed 드랍하기
+    // public void DropLifeSeed(Vector2 dropPos)
+    // {
+    //     // print(MagicDB.Instance.MagicCritical(magic));
 
-        // 크리티컬 확률 = 드랍 확률
-        bool isDrop = MagicDB.Instance.MagicCritical(lifeSeedMagic);
+    //     // 크리티컬 확률 = 드랍 확률
+    //     bool isDrop = MagicDB.Instance.MagicCritical(lifeSeedMagic);
 
-        //크리티컬 데미지 = 회복량
-        int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(lifeSeedMagic));
-        healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
+    //     //크리티컬 데미지 = 회복량
+    //     int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(lifeSeedMagic));
+    //     healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
 
-        // HealSeed 마법 크리티컬 확률에 따라 드랍
-        if (isDrop)
-        {
-            Transform itemPool = ObjectPool.Instance.transform.Find("ItemPool");
-            GameObject healSeed = LeanPool.Spawn(ItemDB.Instance.heartSeed, dropPos, Quaternion.identity, itemPool);
+    //     // HealSeed 마법 크리티컬 확률에 따라 드랍
+    //     if (isDrop)
+    //     {
+    //         GameObject mushroom = LeanPool.Spawn(ItemDB.Instance.lifeMushroom, dropPos, Quaternion.identity, itemPool);
 
-            // 아이템에 체력 회복량 넣기
-            healSeed.GetComponent<ItemManager>().amount = healAmount;
-        }
-    }
+    //         // 아이템에 체력 회복량 넣기
+    //         mushroom.GetComponent<ItemManager>().amount = healAmount;
+
+    //         //아이템 리지드 찾기
+    //         Rigidbody2D itemRigid = mushroom.GetComponent<Rigidbody2D>();
+
+    //         // 랜덤 방향으로 아이템 날리기
+    //         itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+
+    //         // 아이템 랜덤 회전 시키기
+    //         itemRigid.angularVelocity = Random.value < 0.5f ? 360f : -360f;
+    //     }
+    // }
 }

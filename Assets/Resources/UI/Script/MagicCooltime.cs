@@ -9,24 +9,27 @@ public class MagicCooltime : MonoBehaviour
     MagicInfo magic;
     Image cooltimeImg;
 
-    private void Awake() {
+    private void Awake()
+    {
         toolTipTrigger = GetComponent<ToolTipTrigger>();
         cooltimeImg = transform.Find("Cooltime").GetComponent<Image>();
     }
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
         StartCoroutine(Initial());
     }
 
     IEnumerator Initial()
     {
-        yield return new WaitUntil(() => toolTipTrigger.magic != null);
-        magic = toolTipTrigger.magic;
+        yield return new WaitUntil(() => toolTipTrigger.Magic != null);
+        magic = toolTipTrigger.Magic;
     }
 
-    private void Update() {
-        if(magic == null)
-        return;
+    private void Update()
+    {
+        if (magic == null)
+            return;
 
         // print(magic.magicName + " : " + magic.coolCount);
 

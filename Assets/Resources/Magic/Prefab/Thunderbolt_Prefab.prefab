@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8422792374676327874}
   - component: {fileID: -6408893773845245946}
-  - component: {fileID: 8422792374676327872}
+  - component: {fileID: 1242365829472939443}
   - component: {fileID: 8422792374676327901}
   - component: {fileID: 8422792374676327900}
   - component: {fileID: 8422792374676327875}
@@ -48,7 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicName: 
+  coll: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
+  target: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -57,7 +59,7 @@ MonoBehaviour:
   bleedTime: 0
   electricTime: 0
   freezeTime: 0
---- !u!114 &8422792374676327872
+--- !u!114 &1242365829472939443
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -66,18 +68,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8422792374676327903}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 236e5e372587ea54383ce7d2ff512d0a, type: 3}
+  m_Script: {fileID: 11500000, guid: b970c0d0ab4c42446b2750ed73938537, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  atkStartEffect: {fileID: 198435890141970726, guid: 8333d50130027574ca8b4e0268fdd047,
+    type: 3}
+  despawnEffect: {fileID: 0}
   anim: {fileID: 0}
-  magicName: 
-  col: {fileID: 8422792374676327875}
-  fallEase: 26
-  startPos: {x: 0, y: 2}
-  isExpand: 0
-  isFade: 0
-  particle: {fileID: 0}
-  magicEffect: {fileID: 0}
 --- !u!212 &8422792374676327901
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -156,7 +153,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8422792374676327903}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1

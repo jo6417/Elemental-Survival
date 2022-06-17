@@ -86,7 +86,7 @@ public class SlotMachine : MonoBehaviour
                 //툴팁 정보 넣기
                 ToolTipTrigger tipTrigger = items[i].GetComponent<ToolTipTrigger>();
                 tipTrigger.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                tipTrigger.item = item;
+                tipTrigger.Item = item;
 
                 //아이템 정보 넣기
                 InfoHolder infoHolder = items[i].GetComponent<InfoHolder>();

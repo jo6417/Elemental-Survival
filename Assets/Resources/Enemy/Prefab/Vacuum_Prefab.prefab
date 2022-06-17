@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 7362198746382547428}
+  enemyManager: {fileID: 367713317556661536}
   enemyName: 
   friendlyFire: 0
   flatDebuff: 0
@@ -237,7 +237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 7362198746382547428}
+  enemyManager: {fileID: 367713317556661536}
   enemyName: 
   friendlyFire: 0
   flatDebuff: 0
@@ -358,6 +358,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2282559697499699900}
+  - component: {fileID: 367713317556661536}
   - component: {fileID: 3988004795875851619}
   - component: {fileID: 5731709546891530442}
   - component: {fileID: 1921554375}
@@ -384,9 +385,58 @@ Transform:
   - {fileID: 8494887417607790291}
   - {fileID: 579125533}
   - {fileID: 1117852760}
+  - {fileID: 5011259354138595292}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &367713317556661536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4382194502455059326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHasItem: ffffffff
+  referEnemyManager: {fileID: 0}
+  state: 0
+  nowAction: 0
+  moveType: 0
+  portalSize: 1.2
+  isElite: 0
+  eliteClass: 0
+  isDead: 0
+  particleHitCount: 0
+  stopCount: 0
+  hitCount: 0
+  oppositeCount: 0
+  selfExplosion: 0
+  statusEffect: 0
+  explosionTrigger: {fileID: 0}
+  spriteObj: {fileID: 6348597076793159104}
+  spriteList:
+  - {fileID: 2142261907023557570}
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  animList:
+  - {fileID: 1169140569}
+  - {fileID: 1117852761}
+  rigid: {fileID: 5731709546891530442}
+  physicsColl: {fileID: 1921554375}
+  hitColl: {fileID: 1432527454566577374}
+  enemyAI: {fileID: 3988004795875851619}
+  hpMax: 0
+  HpNow: 1
+  power: 0
+  speed: 0
+  range: 0
+  enemyName: 
+  enemyType: 
 --- !u!114 &3988004795875851619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,7 +449,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 0}
+  enemyManager: {fileID: 367713317556661536}
   jumpCoolCount: 0
   jumpCooltime: 0.5
   dustEffect: {fileID: 0}
@@ -500,7 +550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69960b9ac86e5d2458a321676d0af906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 0}
+  enemyManager: {fileID: 367713317556661536}
   absorbSpeed: 500
   getRange: 1
 --- !u!1 &8748952000842087165
@@ -512,7 +562,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6348597076793159104}
-  - component: {fileID: 7362198746382547428}
+  - component: {fileID: 6289770353513247436}
   - component: {fileID: 1432527454566577374}
   - component: {fileID: 2142261907023557570}
   m_Layer: 7
@@ -536,7 +586,7 @@ Transform:
   m_Father: {fileID: 2282559697499699900}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7362198746382547428
+--- !u!114 &6289770353513247436
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -545,45 +595,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8748952000842087165}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: ffffffff
-  referEnemyManager: {fileID: 0}
-  state: 0
-  nowAction: 0
-  moveType: 0
-  portalSize: 1.2
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
-  statusEffect: 0
-  explosionTrigger: {fileID: 0}
-  spriteObj: {fileID: 6348597076793159104}
-  spriteList:
-  - {fileID: 2142261907023557570}
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
-  animList:
-  - {fileID: 1169140569}
-  - {fileID: 1117852761}
-  rigid: {fileID: 5731709546891530442}
-  physicsColl: {fileID: 1921554375}
-  hitColl: {fileID: 1432527454566577374}
-  enemyAI: {fileID: 3988004795875851619}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
-  enemyName: 
-  enemyType: 
+  enemyManager: {fileID: 367713317556661536}
 --- !u!70 &1432527454566577374
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -651,6 +666,81 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &3356240006824066606
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2282559697499699900}
+    m_Modifications:
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717009590255825395, guid: ebb00f86665729d4d9447e195aaf6079,
+        type: 3}
+      propertyPath: m_Name
+      value: DustEffect
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ebb00f86665729d4d9447e195aaf6079, type: 3}
+--- !u!4 &5011259354138595292 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7717009590255825394, guid: ebb00f86665729d4d9447e195aaf6079,
+    type: 3}
+  m_PrefabInstance: {fileID: 3356240006824066606}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4391171326095702058
 PrefabInstance:
   m_ObjectHideFlags: 0

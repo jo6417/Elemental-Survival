@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3190824626787221340}
-  - component: {fileID: 1483495440361202616}
+  - component: {fileID: 5897930928292206590}
   - component: {fileID: 3190824626787221341}
   - component: {fileID: 187195633}
   m_Layer: 7
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 3190824627126303488}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1483495440361202616
+--- !u!114 &5897930928292206590
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,43 +42,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3190824626787221343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
-  state: 0
-  nowAction: 0
-  moveType: 1
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
-  statusEffect: 0
-  explosionTrigger: {fileID: 0}
-  spriteObj: {fileID: 3190824626787221340}
-  spriteList: []
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
-  animList:
-  - {fileID: 3190824627126303490}
-  rigid: {fileID: 3190824627126303489}
-  physicsColl: {fileID: 8756922079018869723}
-  hitColl: {fileID: 187195633}
-  enemyAI: {fileID: 3190824627126303519}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
-  enemyName: 
-  enemyType: 
+  enemyManager: {fileID: 7247921042507206276}
 --- !u!212 &3190824626787221341
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -166,6 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3190824627126303488}
+  - component: {fileID: 7247921042507206276}
   - component: {fileID: 3190824627126303519}
   - component: {fileID: 3190824627126303490}
   - component: {fileID: 8756922079018869723}
@@ -193,6 +161,52 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7247921042507206276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3190824627126303493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHasItem: 
+  referEnemyManager: {fileID: 0}
+  state: 0
+  nowAction: 0
+  moveType: 1
+  portalSize: 1
+  isElite: 0
+  eliteClass: 0
+  isDead: 0
+  particleHitCount: 0
+  stopCount: 0
+  hitCount: 0
+  oppositeCount: 0
+  selfExplosion: 0
+  statusEffect: 0
+  explosionTrigger: {fileID: 0}
+  spriteObj: {fileID: 3190824626787221340}
+  spriteList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  animList:
+  - {fileID: 3190824627126303490}
+  rigid: {fileID: 3190824627126303489}
+  physicsColl: {fileID: 8756922079018869723}
+  hitColl: {fileID: 187195633}
+  enemyAI: {fileID: 3190824627126303519}
+  hpMax: 0
+  HpNow: 1
+  power: 0
+  speed: 0
+  range: 0
+  enemyName: 
+  enemyType: 
 --- !u!114 &3190824627126303519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,7 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 1483495440361202616}
+  enemyManager: {fileID: 7247921042507206276}
   jumpCoolCount: 0
   jumpCooltime: 0.5
   dustEffect: {fileID: 3222180882172883121, guid: 857e027e861f7f241bc702a0ea89ef2a,

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
+using DG.Tweening;
 
 public class GemAbsorb : MonoBehaviour
 {
@@ -19,7 +20,10 @@ public class GemAbsorb : MonoBehaviour
             ItemManager itemManager = other.GetComponent<ItemManager>();
 
             //해당 아이템 획득 여부 갱신, 중복 획득 방지
-            itemManager.isGot = true;
+            itemManager.isCollision = true;
+
+            // 자동 디스폰 중지, 색깔 초기화
+            itemManager.sprite.DOKill();
 
             // 너무 가까우면 흡수해서 소지 아이템에 포함
             if (Vector2.Distance(transform.position, other.transform.position) <= getRange)

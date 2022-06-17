@@ -49,7 +49,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicName: 
+  coll: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
+  target: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -70,10 +72,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74ea310edd7710a49a26ce1765bdf752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   magicHolder: {fileID: 7103772506411635268}
   anim: {fileID: 7103772506411635384}
-  magicCol: {fileID: 7046983277784329218}
-  followSpeed: 5
+  magicColl: {fileID: 7046983277784329218}
+  hitbox: {fileID: 7103772506791767061}
+  atkMark: {fileID: 7984764804097638933, guid: 67cc1c359101f084992a55b1ae8df2d7, type: 3}
 --- !u!212 &7103772506411635385
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -185,13 +189,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7103772506791767050}
-  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 2, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7103772506411635386}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7103772506791767061
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -229,12 +233,12 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 918817935
-  m_SortingLayer: 5
+  m_SortingLayerID: -1869315837
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
     type: 3}
-  m_Color: {r: 1, g: 0.98773, b: 0, a: 0.19607843}
+  m_Color: {r: 1, g: 1, b: 0, a: 0.3137255}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

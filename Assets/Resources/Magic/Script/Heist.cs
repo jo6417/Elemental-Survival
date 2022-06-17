@@ -40,11 +40,9 @@ public class Heist : MonoBehaviour
         //속도에 따라 사이즈 변화
         transform.localScale = Vector3.one * speed;
 
-        //플레이어 위치로 이동
-        transform.position = PlayerManager.Instance.transform.position;
-
-        // 플레이어를 부모로 지정
-        transform.parent = PlayerManager.Instance.transform;
+        //플레이어 자식으로 들어가기
+        transform.SetParent(PlayerManager.Instance.transform);
+        transform.localPosition = Vector3.zero;
     }
 
     private void Update()

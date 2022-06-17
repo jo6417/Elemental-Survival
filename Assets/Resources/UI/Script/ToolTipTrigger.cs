@@ -8,18 +8,46 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public enum ToolTipType { ProductTip, HasStuffTip };
     public ToolTipType toolTipType;
     public MagicInfo magic;
+    public MagicInfo Magic
+    {
+        get { return magic; }
+        set
+        {
+            magic = value;
+
+            magicName = Magic.magicName;
+        }
+    }
     public ItemInfo item;
+    public ItemInfo Item
+    {
+        get { return item; }
+        set
+        {
+            item = value;
+
+            itemName = Item.itemName;
+        }
+    }
     public string magicName;
     public string itemName;
 
-    private void Start()
-    {
-        if (magic != null)
-            magicName = magic.magicName;
+    // private void OnEnable()
+    // {
+    //     StartCoroutine(Initial());
+    // }
 
-        if (item != null)
-            itemName = item.itemName;
-    }
+    // IEnumerator Initial()
+    // {
+    //     // 마법,아이템 정보 들어올때까지 대기
+    //     yield return new WaitUntil(() => Magic != null || Item != null);
+
+    //     if (Magic != null)
+    //         magicName = Magic.magicName;
+
+    //     if (Item != null)
+    //         itemName = Item.itemName;
+    // }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -27,13 +55,13 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (toolTipType == ToolTipType.ProductTip)
         {
             // StartCoroutine(ProductToolTip.Instance.OpenTooltip(magic, item));
-            ProductToolTip.Instance.OpenTooltip(magic, item);
+            ProductToolTip.Instance.OpenTooltip(Magic, Item);
         }
 
         // 소지품 아이콘일때
         if (toolTipType == ToolTipType.HasStuffTip)
         {
-            HasStuffToolTip.Instance.OpenTooltip(magic, item);
+            HasStuffToolTip.Instance.OpenTooltip(Magic, Item);
         }
     }
 

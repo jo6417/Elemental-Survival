@@ -762,7 +762,7 @@ public class UIManager : MonoBehaviour
             // 오브젝트에 아이템 정보 저장
             ToolTipTrigger toolTipTrigger = itemIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.item = item;
+            toolTipTrigger.Item = item;
 
             //스프라이트 넣기
             itemIcon.GetComponent<Image>().sprite =
@@ -807,7 +807,7 @@ public class UIManager : MonoBehaviour
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.magic = magic;
+            toolTipTrigger.Magic = magic;
 
             //아이콘 넣기
             magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
@@ -831,7 +831,7 @@ public class UIManager : MonoBehaviour
         for (int j = 0; j < hasMagicGrid.transform.childCount; j++)
         {
             // TooltipTrigger의 magic이 같은 아이콘 찾기
-            if (hasMagicGrid.transform.GetChild(j).GetComponent<ToolTipTrigger>().magic == magic)
+            if (hasMagicGrid.transform.GetChild(j).GetComponent<ToolTipTrigger>().Magic == magic)
             {
                 matchIcon = hasMagicGrid.transform.GetChild(j);
                 break;
@@ -855,7 +855,7 @@ public class UIManager : MonoBehaviour
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.magic = magic;
+            toolTipTrigger.Magic = magic;
 
             //스프라이트 넣기
             magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);

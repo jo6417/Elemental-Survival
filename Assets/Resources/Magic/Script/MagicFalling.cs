@@ -32,6 +32,8 @@ public class MagicFalling : MonoBehaviour
         // 오브젝트 기본 사이즈 저장
         originScale = transform.localScale;
 
+        magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
+
         //애니메이터 찾기
         sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
         coll = coll == null ? GetComponent<Collider2D>() : coll;
@@ -189,18 +191,6 @@ public class MagicFalling : MonoBehaviour
             if (effectAnim)
                 effectAnim.enabled = false;
         }
-    }
-
-    void OnCollider()
-    {
-        coll.enabled = true;
-    }
-
-    //애니메이션 끝날때 이벤트 함수
-    public void AnimEndDespawn()
-    {
-        if (gameObject.activeSelf)
-            StartCoroutine(AutoDespawn());
     }
 
     IEnumerator AutoDespawn(float delay = 0)

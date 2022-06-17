@@ -51,7 +51,7 @@ public class BabyArrow : MonoBehaviour
         magic = magicHolder.magic;
 
         //플레이어 주변을 도는 마커
-        spinObj = Instantiate(atkMark, transform.position, Quaternion.identity);
+        spinObj = LeanPool.Spawn(atkMark, transform.position, Quaternion.identity);
 
         //플레이어와의 거리 보정
         spinObj.transform.position = slowFollowPlayer + Vector3.up * 3;

@@ -6,9 +6,11 @@ using UnityEngine;
 
 public class LavaWalk : MonoBehaviour
 {
+    MagicHolder magicHolder;
+    private MagicInfo magic;
+
     public GameObject footprint; //발자국 오브젝트
     public Transform parentPool; // 오브젝트풀
-    private MagicInfo magic;
     private Vector2 lastFootPos; //마지막 발자국 위치
     // private float cooltimeCounter;
     private bool isRightFoot; //좌, 우 어느 발인지 여부
@@ -16,6 +18,11 @@ public class LavaWalk : MonoBehaviour
     SpriteRenderer footSprite;
     float distance;
     float range;
+
+    private void Awake()
+    {
+        magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
+    }
 
     private void OnEnable()
     {
@@ -27,10 +34,12 @@ public class LavaWalk : MonoBehaviour
     IEnumerator Initial()
     {
         //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => TryGetComponent(out MagicHolder holder));
+        yield return new WaitUntil(() => magicHolder.magic != null);
+        magic = magicHolder.magic;
 
-        //magic 불러오기
-        magic = GetComponent<MagicHolder>().magic;
+        //플레이어 자식으로 들어가기
+        transform.SetParent(PlayerManager.Instance.transform);
+        transform.localPosition = Vector3.zero;
 
         // 마법 범위
         range = MagicDB.Instance.MagicRange(magic);

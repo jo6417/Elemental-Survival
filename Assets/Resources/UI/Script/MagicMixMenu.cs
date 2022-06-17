@@ -99,10 +99,10 @@ public class MagicMixMenu : MonoBehaviour
         ToggleExitBtn(true);
 
         // 페이지 로딩 끝날때까지 대기
-        yield return new WaitUntil(() => 
-        SetPage(true) && 
-        SetPage(false) && 
-        SetRecipe() && 
+        yield return new WaitUntil(() =>
+        SetPage(true) &&
+        SetPage(false) &&
+        SetRecipe() &&
         leftSelected != null);
 
         //그리드 레이아웃 업데이트
@@ -247,7 +247,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip = magicIcon.GetComponent<ToolTipTrigger>();
                     tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                    tooltip.magic = magic;
+                    tooltip.Magic = magic;
 
                     // 아이콘 마우스 클릭할때 이벤트
                     Button btn = magicIcon.GetComponent<Button>();
@@ -354,7 +354,7 @@ public class MagicMixMenu : MonoBehaviour
                         }
                     });
                 }
-                
+
             }
         }
 
@@ -462,7 +462,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip_A = element_A.GetComponent<ToolTipTrigger>();
                     tooltip_A.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                    tooltip_A.magic = MagicDB.Instance.GetMagicByName(magic.element_A);
+                    tooltip_A.Magic = MagicDB.Instance.GetMagicByName(magic.element_A);
 
                     //마법 재료 B 아이콘
                     Transform element_B = recipe.transform.Find("Element_B");
@@ -476,7 +476,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip_B = element_B.GetComponent<ToolTipTrigger>();
                     tooltip_B.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                    tooltip_B.magic = MagicDB.Instance.GetMagicByName(magic.element_B);
+                    tooltip_B.Magic = MagicDB.Instance.GetMagicByName(magic.element_B);
 
                     // 아이콘 눌렀을때 일어날 이벤트 넣기
                     Button btn = recipe.GetComponent<Button>();
@@ -902,7 +902,7 @@ public class MagicMixMenu : MonoBehaviour
 
         //뒤로 버튼 트윈 강제로 끝내기
         exitBtn.DOComplete();
-        
+
         float endX = isActive ? -40f : -240f;
 
         //켤때, 끌때 다른 Ease

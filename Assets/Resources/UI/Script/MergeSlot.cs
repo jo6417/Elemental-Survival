@@ -339,7 +339,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             PlayerManager.Instance.hasMergeMagics[slotIndex] = MergeMenu.Instance.selectedMagic;
 
             // 툴팁 트리거에 마법 정보 넣기
-            tooltip.magic = MergeMenu.Instance.selectedMagic;
+            tooltip.Magic = MergeMenu.Instance.selectedMagic;
             tooltip.enabled = true;
         }
 
@@ -510,7 +510,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 슬롯에 툴팁 넣기
         ToolTipTrigger tooltip = mergedSlot.GetComponent<ToolTipTrigger>();
         tooltip.enabled = true;
-        tooltip.magic = mergedMagic;
+        tooltip.Magic = mergedMagic;
 
         // 합성 후 이펙트 발생
         GameObject effect = mergedSlot.transform.Find("ShinyMask").gameObject;

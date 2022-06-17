@@ -50,6 +50,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: b3ac05c01bab9464f85d3db99d6df526, type: 3}
   - {fileID: 21300000, guid: d344f0d04e7eebd47965c137a10168fb, type: 3}
   - {fileID: 4473736118278887703, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
   - {fileID: 2683761747022187116, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
@@ -98,7 +99,6 @@ SpriteAtlas:
   - {fileID: -8164322943603081415, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
   - {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   - {fileID: 21300000, guid: 5c3aac0d2222d6349938891de574401a, type: 3}
-  - {fileID: 21300000, guid: c1cb3f0de7340df48944eae11705b06c, type: 3}
   - {fileID: 4250153402159111836, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -8609229472539899035, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -3411505516414708846, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
@@ -137,6 +137,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 747f05bf566f9984480f347151bfaf09, type: 3}
   - {fileID: 21300000, guid: 0e8a94ef4fef6d748be2165e80c8dd25, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Vacuum_Icon
   - KingSlime_Icon
   - EarthSlime-Sheet_4
   - EarthSlime-Sheet_0
@@ -185,7 +186,6 @@ SpriteAtlas:
   - Bawi_Parts_1
   - KingSlimeFill
   - Bawi_Head
-  - Vacumm_Icon
   - Vacuum-Sheet_1
   - Vacuum-Sheet_0
   - Vacuum-Sheet_2

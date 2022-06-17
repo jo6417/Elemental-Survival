@@ -281,7 +281,7 @@ public class EnemySpawn : MonoBehaviour
         //아이콘 시작위치로 이동 및 활성화
         iconObj.transform.position = spawnStartPos;
         // 떠오를 스프라이트에 몬스터 아이콘 넣기
-        iconObj.GetComponent<SpriteRenderer>().sprite = enemySprite.sprite;
+        iconObj.GetComponent<SpriteRenderer>().sprite = EnemyDB.Instance.GetIcon(enemy.id);
         iconObj.SetActive(false);
 
         //포탈 사이즈 줄이기

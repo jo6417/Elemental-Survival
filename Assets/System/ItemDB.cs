@@ -126,7 +126,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
-    public GameObject heartSeed; //회복 씨앗
+    public GameObject lifeMushroom; // 회복 버섯
     public List<ItemInfo> itemDB = null; //마법 정보 DB
     public List<Sprite> itemIcon = null; //마법 아이콘 리스트
     public List<GameObject> itemPrefab = null; //마법 프리팹 리스트
@@ -293,6 +293,6 @@ public class ItemDB : MonoBehaviour
         GameObject prefab = null;
 
         prefab = itemPrefab.Find(x => x.name == itemName);
-            return prefab;
+        return prefab;
     }
 }

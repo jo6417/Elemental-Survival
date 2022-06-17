@@ -487,8 +487,8 @@ public class MagicDB : MonoBehaviour
         if (rand <= critical)
             isCritical = true;
 
-        // if(magic.magicName == "Time Stop")
-        // print(rand + " : " + critical);
+        if (magic.magicName == "Life Mushroom")
+            print(magic.magicName + " : " + critical);
 
         //크리티컬 성공여부 리턴
         return isCritical;
@@ -523,7 +523,7 @@ public class MagicDB : MonoBehaviour
     {
         int projectile = 0;
 
-        //마법 범위 및 레벨당 증가량 계산
+        //마법 투사체 개수 및 레벨당 증가량 계산
         projectile =
         magic.projectile +
         Mathf.FloorToInt(magic.projectilePerLev * (magic.magicLevel - 1)) +

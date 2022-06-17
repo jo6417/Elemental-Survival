@@ -42,7 +42,7 @@ public class ParticleManager : MonoBehaviour
             }
         }
 
-        //자동 디스폰이면
+        //자동 디스폰일때
         if (autoDespawn)
         {
             //파티클 끝날때까지 대기

@@ -47,7 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicName: 
+  coll: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
+  target: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -70,6 +72,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 5657517877285718283}
   ghostStartColor: {r: 0.30980393, g: 1, b: 0.9607843, a: 0.5882353}
+  ghostFrequency: 0.001
+  ghostDuration: 0.1
 --- !u!212 &5657517877285718389
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -107,9 +111,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 9
+  m_SortingLayerID: -1869315837
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_Sprite: {fileID: -8471716954120399937, guid: 3d621d39365d5fc4a9fe136e157c0b10,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

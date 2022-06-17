@@ -6,8 +6,8 @@ using DG.Tweening;
 
 public class ItemManager : MonoBehaviour
 {
-    public bool isGot = false; //획득 됬는지 여부
-    public ItemInfo item;
+    public bool isCollision = false; // 충돌되어서 획득중이면 true
+    bool isGet = false; //플레이어가 획득했는지
     [HideInInspector]
     public int amount = 1; //아이템 개수
     [HideInInspector]
@@ -15,16 +15,21 @@ public class ItemManager : MonoBehaviour
     [HideInInspector]
     public int gemTypeIndex = -1;
     public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
+    private float radius = 5;
+    public float autoDespawnTime = 0; //자동 디스폰 시간
 
+    [Header("Refer")]
+    public ItemInfo item;
     public string itemName;
+    public SpriteRenderer sprite;
+    public GameObject despawnEffect; //사라질때 이펙트
     Collider2D coll;
     Rigidbody2D rigid;
     Vector3 velocity;
-    bool isGet = false; //플레이어가 획득했는지
-    private float radius = 5;
 
     private void Awake()
     {
+        sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
         rigid = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
         velocity = rigid.velocity;
@@ -71,7 +76,11 @@ public class ItemManager : MonoBehaviour
         coll.enabled = true;
 
         // 획득 여부 초기화
-        isGot = false;
+        isCollision = false;
+
+        // 자동 디스폰 실행
+        if (autoDespawnTime > 0)
+            AutoDespawn();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -96,7 +105,10 @@ public class ItemManager : MonoBehaviour
             coll.enabled = false;
 
             // 획득 여부 갱신, 중복 획득 방지
-            isGot = true;
+            isCollision = true;
+
+            // 자동 디스폰 중지
+            sprite.DOKill();
 
             // 플레이어에게 날아가기
             StartCoroutine(GetMove(PlayerManager.Instance.transform));
@@ -180,6 +192,9 @@ public class ItemManager : MonoBehaviour
             //해당 방향으로 날아가기
             rigid.velocity = dir;
 
+            // x방향으로 회전 시키기
+            rigid.angularVelocity = dir.x * 10f;
+
             yield return new WaitForSeconds(0.05f);
         }
     }
@@ -211,7 +226,34 @@ public class ItemManager : MonoBehaviour
             rigid.DOKill();
         rigid.velocity = Vector2.zero;
 
+        //디스폰 이펙트 있으면 생성
+        if (despawnEffect)
+            LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
         //아이템 비활성화
         LeanPool.Despawn(transform);
+    }
+
+    void AutoDespawn()
+    {
+        // 점점 검은색으로 변하기
+        sprite.DOColor(Color.black, autoDespawnTime)
+        .OnStart(() =>
+        {
+            sprite.color = Color.white;
+        })
+        .OnComplete(() =>
+        {
+            //디스폰 이펙트 있으면 생성
+            if (despawnEffect)
+                LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            // 아이템 디스폰
+            LeanPool.Despawn(transform);
+        })
+        .OnKill(() =>
+        {
+            sprite.color = Color.white;
+        });
     }
 }

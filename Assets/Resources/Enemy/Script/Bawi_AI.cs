@@ -70,7 +70,7 @@ public class Bawi_AI : MonoBehaviour
 
     private void Awake()
     {
-
+        enemyManager = enemyManager == null ? GetComponent<EnemyManager>() : enemyManager;
     }
 
     private void OnEnable()
