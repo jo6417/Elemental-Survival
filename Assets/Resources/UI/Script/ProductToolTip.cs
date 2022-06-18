@@ -36,20 +36,22 @@ public class ProductToolTip : MonoBehaviour
     #endregion
 
     public enum ToolTipCorner { LeftUp, LeftDown, RightUp, RightDown };
-    // public ToolTipCorner toolTipCorner;
-    public TextMeshProUGUI productName;
-    public TextMeshProUGUI productDescript;
-    RectTransform rect;
     // bool isFollow = false; //마우스 따라가기 여부
     bool SetDone = false; //모든 정보 표시 완료 여부
     public bool offCall = false; //툴팁 끄라는 명령
 
+    [Header("Refer")]
+    public TextMeshProUGUI productType;
+    public TextMeshProUGUI productName;
+    public TextMeshProUGUI productDescript;
+    RectTransform rect;
+
     [Header("Magic")]
     public MagicInfo magic;
-    public string magicName;
     List<int> stats = new List<int>();
     public UIPolygon magicStatGraph;
     public GameObject recipeObj;
+    public Image GradeFrame;
     public Image elementIcon_A;
     public Image elementIcon_B;
     public Image elementGrade_A;
@@ -57,6 +59,9 @@ public class ProductToolTip : MonoBehaviour
 
     [Header("Item")]
     public ItemInfo item;
+
+    [Header("Debug")]
+    public string magicName;
 
     private void Awake()
     {
@@ -81,17 +86,12 @@ public class ProductToolTip : MonoBehaviour
 
     void FollowMouse(Vector3 nowMousePos)
     {
-        // if (!SetDone)
-        //     return;
-
-        //마우스 클릭하면 툴팁 끄기
-        // if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        // {
-        //     QuitTooltip();
-        // }
-
         //마우스 숨김 상태면 안따라감
         if (Cursor.lockState == CursorLockMode.Locked)
+            return;
+
+        // 툴팁 비활성화면 안따라감
+        if (!gameObject.activeSelf)
             return;
 
         if (transform.position != nowMousePos)
@@ -103,7 +103,11 @@ public class ProductToolTip : MonoBehaviour
     }
 
     //툴팁 켜기
-    public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null, ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown, Vector2 position = default(Vector2))
+    public void OpenTooltip(
+        MagicInfo magic = null,
+        ItemInfo item = null,
+        ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown,
+        Vector2 position = default(Vector2))
     {
         //툴팁 고정 위치 들어왔으면 이동
         if (position != default(Vector2))
@@ -176,6 +180,28 @@ public class ProductToolTip : MonoBehaviour
             return false;
         }
 
+        //마법 등급 프레임에 넣기
+        GradeFrame.gameObject.SetActive(true);
+        GradeFrame.color = MagicDB.Instance.gradeColor[magic.grade];
+
+        // 마법 타입 표시
+        productType.text = magic.castType;
+        // 마법 타입에 따라 색 바꾸기
+        switch (magic.castType)
+        {
+            case "passive":
+                productType.color = Color.cyan;
+                break;
+
+            case "active":
+                productType.color = Color.red;
+                break;
+
+            case "ultimate":
+                productType.color = Color.magenta;
+                break;
+        }
+
         //마법 이름, 설명 넣기
         productName.text = magic.magicName;
         productDescript.text = magic.description;
@@ -210,7 +236,13 @@ public class ProductToolTip : MonoBehaviour
 
     bool SetItemInfo()
     {
+        // 마법 재료 오브젝트 끄기
         recipeObj.SetActive(false);
+        //마법 등급 프레임 끄기
+        GradeFrame.gameObject.SetActive(false);
+
+        // 아이템 타입 표시
+        productType.text = item.itemType;
 
         // 아이템 이름, 설명 넣기
         productName.text = item.itemName;

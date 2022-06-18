@@ -439,6 +439,7 @@ public class MergeMenu : MonoBehaviour
             selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(selectedMagic.id);
 
             // 선택된 슬롯에 툴팁 넣어주기
+            selectedTooltip.enabled = true;
             selectedTooltip.Magic = PlayerManager.Instance.hasStackMagics[0];
         }
 

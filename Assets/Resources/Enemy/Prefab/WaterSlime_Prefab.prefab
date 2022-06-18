@@ -108,7 +108,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.5}
@@ -207,6 +207,7 @@ GameObject:
   - component: {fileID: 5485836661786715577}
   - component: {fileID: 5086723795068245898}
   - component: {fileID: 240281183651144037}
+  - component: {fileID: 5062321180141016091}
   - component: {fileID: 5485836661786715578}
   - component: {fileID: 5485836661786715579}
   - component: {fileID: 5485836661786715589}
@@ -230,6 +231,7 @@ Transform:
   m_Children:
   - {fileID: 6956078262379011496}
   - {fileID: 3123776815425145665}
+  - {fileID: 3806616901694159076}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -260,6 +262,9 @@ MonoBehaviour:
   oppositeCount: 0
   selfExplosion: 0
   statusEffect: 0
+  attackRange: 0
+  enemyAI: {fileID: 240281183651144037}
+  enemyAttack: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 0}
   spriteList:
@@ -272,7 +277,6 @@ MonoBehaviour:
   rigid: {fileID: 5485836661786715579}
   physicsColl: {fileID: 5485836661786715578}
   hitColl: {fileID: 2799996672073366058}
-  enemyAI: {fileID: 240281183651144037}
   hpMax: 0
   HpNow: 1
   power: 0
@@ -292,10 +296,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 5086723795068245898}
   jumpCoolCount: 0
   jumpCooltime: 0.5
-  dustEffect: {fileID: 0}
+  landEffect: {fileID: 0}
+--- !u!114 &5062321180141016091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485836661786715591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bae7f78f34d62a47a540df4e9034add, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 0
+  activeAngleOffset: 0
+  enemyManager: {fileID: 5086723795068245898}
+  enemyName: 
+  bubblePrefab: {fileID: 3134926774543136183}
 --- !u!70 &5485836661786715578
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -352,6 +374,102 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1001 &2352623313905026789
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5485836661786715577}
+    m_Modifications:
+    - target: {fileID: 282524132445539001, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: enemyManager
+      value: 
+      objectReference: {fileID: 5086723795068245898}
+    - target: {fileID: 803695973403308882, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_Name
+      value: BubbleAttack
+      objectReference: {fileID: 0}
+    - target: {fileID: 803695973403308882, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5541955764380924877, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+        type: 3}
+      propertyPath: VelocityModule.x.scalar
+      value: 5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5739fd3d877bb5e498dcd928d192ab9c, type: 3}
+--- !u!1 &3134926774543136183 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 803695973403308882, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2352623313905026789}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3806616901694159076 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1474334691500162561, guid: 5739fd3d877bb5e498dcd928d192ab9c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2352623313905026789}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6330362824975770673
 PrefabInstance:
   m_ObjectHideFlags: 0

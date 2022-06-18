@@ -17,6 +17,7 @@ public class EnemyInfo
     public float power;
     public float speed;
     public float range;
+    public float cooltime;
     public float dropRate;
     public float hitDelay;
     public float hpMax;
@@ -31,9 +32,9 @@ public class EnemyInfo
     public float water;
     public float wind;
 
-    public EnemyInfo(){}
+    public EnemyInfo() { }
 
-    public EnemyInfo(int id, int grade, string enemyName, string enemyType, string description, float power, float speed, float range, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
+    public EnemyInfo(int id, int grade, string enemyName, string enemyType, string description, float power, float speed, float range, float cooltime, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
         this.grade = grade;
@@ -43,6 +44,7 @@ public class EnemyInfo
         this.power = power;
         this.speed = speed;
         this.range = range;
+        this.cooltime = cooltime;
         this.dropRate = dropRate;
         this.hitDelay = hitDelay;
         this.hpMax = hpMax;
@@ -66,6 +68,7 @@ public class EnemyInfo
         this.power = enemy.power;
         this.speed = enemy.speed;
         this.range = enemy.range;
+        this.cooltime = enemy.cooltime;
         this.dropRate = enemy.dropRate;
         this.hitDelay = enemy.hitDelay;
         this.hpMax = enemy.hpMax;
@@ -161,12 +164,12 @@ public class EnemyDB : MonoBehaviour
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기
                 enemyDB[enemy["id"]] = new EnemyInfo
-                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["description"], 
-                enemy["power"], enemy["speed"], enemy["range"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"], 
+                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["description"],
+                enemy["power"], enemy["speed"], enemy["range"], enemy["cooltime"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"],
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
                 );
             }
-            
+
         }
 
         loadDone = true;
@@ -177,10 +180,10 @@ public class EnemyDB : MonoBehaviour
 
     public EnemyInfo GetEnemyByID(int id)
     {
-        if(enemyDB.TryGetValue(id, out EnemyInfo value))
-        return value;
+        if (enemyDB.TryGetValue(id, out EnemyInfo value))
+            return value;
         else
-        return null;
+            return null;
     }
 
     public EnemyInfo GetEnemyByName(string enemyName)
@@ -200,10 +203,10 @@ public class EnemyDB : MonoBehaviour
 
     public string GetNameByID(int id)
     {
-        if(enemyDB.TryGetValue(id, out EnemyInfo value))
-        return value.enemyName;
+        if (enemyDB.TryGetValue(id, out EnemyInfo value))
+            return value.enemyName;
         else
-        return null;
+            return null;
     }
 
     public Sprite GetIcon(int id)
@@ -211,10 +214,10 @@ public class EnemyDB : MonoBehaviour
         //아이콘의 이름
         string enemyName = GetEnemyByID(id).enemyName.Replace(" ", "") + "_Icon";
 
-        if(enemyIcon.TryGetValue(enemyName, out Sprite icon))
-        return icon;
+        if (enemyIcon.TryGetValue(enemyName, out Sprite icon))
+            return icon;
         else
-        return null;
+            return null;
     }
 
     public GameObject GetPrefab(int id)
@@ -223,10 +226,10 @@ public class EnemyDB : MonoBehaviour
         EnemyInfo enemy = GetEnemyByID(id);
         string enemyName = enemy.enemyName.Replace(" ", "") + "_Prefab";
 
-        if(enemyPrefab.TryGetValue(enemyName, out GameObject prefab))
-        return prefab;
+        if (enemyPrefab.TryGetValue(enemyName, out GameObject prefab))
+            return prefab;
         else
-        return null;
+            return null;
     }
 
     public int RandomEnemy(int maxGrade)
@@ -248,8 +251,8 @@ public class EnemyDB : MonoBehaviour
 
         //임시리스트에서 랜덤 인덱스로 뽑기
         int id = -1;
-        if(tempList.Count != 0)
-        id = tempList[Random.Range(0, tempList.Count)];
+        if (tempList.Count != 0)
+            id = tempList[Random.Range(0, tempList.Count)];
 
         return id;
     }

@@ -68,6 +68,11 @@ SpriteAtlas:
   - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802, type: 3}
+  - {fileID: -8450179102024045516, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
+  - {fileID: -1632396277479673420, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
+  - {fileID: -3639187444971196714, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
+  - {fileID: -5451797702997615088, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
+  - {fileID: -1663401755257356396, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
   - {fileID: 21300000, guid: ce887cd5410bca540b8cee733684af69, type: 3}
   - {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
@@ -85,6 +90,14 @@ SpriteAtlas:
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
   - {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
+  - {fileID: 65732626766748736, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: -208958182950929353, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: -7606660565201719112, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: -4149014200367394785, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: -3288986314419894455, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: 5814310003336108927, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: 3511357318558972208, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
+  - {fileID: 7844632677255592645, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
   - {fileID: -3570135257023498171, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 6662618489849775281, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
@@ -116,7 +129,6 @@ SpriteAtlas:
   - {fileID: 7374904569357234349, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
   - {fileID: -4034562165591099319, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
-  - {fileID: 21300000, guid: 711ba67ea8f58d547bbf0f15a2fa3afa, type: 3}
   - {fileID: -6404539822265595652, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -6511475048532732289, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -7901897369145345293, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
@@ -124,16 +136,16 @@ SpriteAtlas:
   - {fileID: -6808187854587747357, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -8221661799491774684, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -1992862642441321592, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
-  - {fileID: 4556296039571860405, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: -8476369765895928004, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: 7270431731576066618, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: -4773936229681920190, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: 8076927630804008667, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: 7102094908536297023, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: -2267127461113334299, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: -4924971180576566181, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: -597171090907663275, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
-  - {fileID: -6807713283490877021, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 8005027228808558837, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 3400582685010864788, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -8017327783547284791, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 7562091750159672905, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 146760587749943567, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -2092842372281703271, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -8798313182331831173, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -279734216560931712, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: 9005937714963060666, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
+  - {fileID: -5737790829880599774, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: 21300000, guid: 747f05bf566f9984480f347151bfaf09, type: 3}
   - {fileID: 21300000, guid: 0e8a94ef4fef6d748be2165e80c8dd25, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -155,6 +167,11 @@ SpriteAtlas:
   - Golem-Sheet_4
   - Golem-Sheet_5
   - Vacuum
+  - A-800_Attack_Sheet_3
+  - A-800_Attack_Sheet_2
+  - A-800_Attack_Sheet_1
+  - A-800_Attack_Sheet_0
+  - A-800_Attack_Sheet_4
   - VacuumFin
   - KingSlime_Skin
   - B-800_Icon
@@ -172,6 +189,14 @@ SpriteAtlas:
   - BloodEffect_Light_5
   - MiniDrone_Icon
   - KingSlime_Bubble
+  - A-800_Walk-Sheet_6
+  - A-800_Walk-Sheet_7
+  - A-800_Walk-Sheet_4
+  - A-800_Walk-Sheet_5
+  - A-800_Walk-Sheet_2
+  - A-800_Walk-Sheet_3
+  - A-800_Walk-Sheet_0
+  - A-800_Walk-Sheet_1
   - KingSlime_Crown
   - Screen_Walk-Sheet_2
   - Screen_Walk-Sheet_3
@@ -203,7 +228,6 @@ SpriteAtlas:
   - Bawi_Drill-Sheet_2
   - Bawi_Drill-Sheet_4
   - Slime_Light
-  - B-800
   - Screen_Fall-Sheet_2
   - Screen_Fall-Sheet_3
   - Screen_Fall-Sheet_0
@@ -211,16 +235,16 @@ SpriteAtlas:
   - Screen_Fall-Sheet_6
   - Screen_Fall-Sheet_4
   - Screen_Fall-Sheet_5
-  - A-800_Sheet_6
-  - A-800_Sheet_7
-  - A-800_Sheet_4
-  - A-800_Sheet_5
-  - A-800_Sheet_2
-  - A-800_Sheet_3
-  - A-800_Sheet_0
-  - A-800_Sheet_1
-  - A-800_Sheet_8
-  - A-800_Sheet_9
+  - B-800_Sheet_7
+  - B-800_Sheet_6
+  - B-800_Sheet_1
+  - B-800_Sheet_0
+  - B-800_Sheet_3
+  - B-800_Sheet_2
+  - B-800_Sheet_9
+  - B-800_Sheet_8
+  - B-800_Sheet_5
+  - B-800_Sheet_4
   - Ascii_Idle
   - EarthSlime_Icon
   m_RenderDataMap: {}

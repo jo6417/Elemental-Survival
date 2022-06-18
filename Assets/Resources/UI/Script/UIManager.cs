@@ -314,7 +314,7 @@ public class UIManager : MonoBehaviour
             //UI커서 크기 및 위치 초기화
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
             cursorRect.sizeDelta = cursorCanvasRect.sizeDelta;
-            print("cursorCanvasRect.sizeDelta : " + cursorCanvasRect.sizeDelta);
+            // print("cursorCanvasRect.sizeDelta : " + cursorCanvasRect.sizeDelta);
 
             cursorRect.position = Vector2.zero;
 

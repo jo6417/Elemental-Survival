@@ -93,9 +93,9 @@ public class PlayerManager : MonoBehaviour
     public PlayerStat PlayerStat_Now; //현재 스탯
 
     [Header("<State>")]
-    public float poisonDuration; //독 도트뎀 남은시간
-    public float hitDelayTime = 0.2f; //피격 무적시간
-    float hitCount = 0f;
+    public float poisonCoolCount; //독 도트뎀 남은시간
+    float hitDelayTime = 0.2f; //피격 무적시간
+    public float hitCoolCount = 0f;
     public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     public Vector2 knockbackDir; //넉백 벡터
@@ -224,8 +224,8 @@ public class PlayerManager : MonoBehaviour
         }
 
         //히트 카운트 감소
-        if (hitCount > 0)
-            hitCount -= Time.deltaTime;
+        if (hitCoolCount > 0)
+            hitCoolCount -= Time.deltaTime;
     }
 
     public void Move()
@@ -334,7 +334,7 @@ public class PlayerManager : MonoBehaviour
         Move();
 
         //적에게 콜라이더 충돌
-        if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
+        if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
         {
             Hit(other.transform);
         }
@@ -345,22 +345,22 @@ public class PlayerManager : MonoBehaviour
         // print("OnTriggerEnter2D : " + other.name);
 
         // 적에게 트리거 충돌
-        if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
+        if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
         {
             Hit(other.transform);
         }
     }
 
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        // print("OnTriggerStay2D : " + other.name);
+    // private void OnTriggerStay2D(Collider2D other)
+    // {
+    //     // print("OnTriggerStay2D : " + other.name);
 
-        // 적에게 트리거 충돌
-        if (other.gameObject.CompareTag("EnemyAttack") && hitCount <= 0 && !isDash)
-        {
-            Hit(other.transform);
-        }
-    }
+    //     // 적에게 트리거 충돌
+    //     if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
+    //     {
+    //         Hit(other.transform);
+    //     }
+    // }
 
     // private void OnTriggerExit2D(Collider2D other)
     // {
@@ -371,7 +371,7 @@ public class PlayerManager : MonoBehaviour
     void Hit(Transform other)
     {
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
-        if (other.TryGetComponent(out EnemyAtk enemyAtk) && enemyAtk.enabled)
+        if (other.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             EnemyManager enemyManager = enemyAtk.enemyManager;
 
@@ -381,12 +381,11 @@ public class PlayerManager : MonoBehaviour
                 EnemyInfo enemy = enemyManager.enemy;
 
                 // hitCount 갱신되었으면 리턴, 중복 피격 방지
-                if (hitCount > 0)
+                if (hitCoolCount > 0)
                     return;
 
                 //피격 딜레이 무적
-                IEnumerator hitDelay = HitDelay();
-                StartCoroutine(hitDelay);
+                StartCoroutine(HitDelay());
 
                 Damage(enemy.power);
 
@@ -422,8 +421,7 @@ public class PlayerManager : MonoBehaviour
                 MagicInfo magic = magicHolder.magic;
 
                 //피격 딜레이 무적
-                IEnumerator hitDelay = HitDelay();
-                StartCoroutine(hitDelay);
+                StartCoroutine(HitDelay());
 
                 //데미지 계산
                 float damage = MagicDB.Instance.MagicPower(magic);
@@ -438,7 +436,7 @@ public class PlayerManager : MonoBehaviour
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
     public IEnumerator HitDelay()
     {
-        hitCount = hitDelayTime;
+        hitCoolCount = hitDelayTime;
 
         //머터리얼 변환
         sprite.material = SystemManager.Instance.hitMat;
@@ -446,7 +444,7 @@ public class PlayerManager : MonoBehaviour
         //스프라이트 색 변환
         sprite.color = SystemManager.Instance.hitColor;
 
-        yield return new WaitUntil(() => hitCount <= 0);
+        yield return new WaitUntil(() => hitCoolCount <= 0);
 
         //머터리얼 복구
         sprite.material = SystemManager.Instance.spriteMat;
@@ -458,7 +456,7 @@ public class PlayerManager : MonoBehaviour
     public IEnumerator PoisonDotHit(float tickDamage, float duration)
     {
         //독 데미지 지속시간 넣기
-        poisonDuration = duration;
+        poisonCoolCount = duration;
 
         // 포이즌 머터리얼로 변환
         sprite.material = SystemManager.Instance.outLineMat;
@@ -467,7 +465,7 @@ public class PlayerManager : MonoBehaviour
         sprite.color = SystemManager.Instance.poisonColor;
 
         // 독 데미지 지속시간 남았을때 진행
-        while (poisonDuration > 0)
+        while (poisonCoolCount > 0)
         {
             // 독 데미지 입히기
             Damage(tickDamage);
@@ -476,7 +474,7 @@ public class PlayerManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
 
             // 독 데미지 지속시간에서 한틱 차감
-            poisonDuration -= 1f;
+            poisonCoolCount -= 1f;
         }
 
         //원래 머터리얼로 복구

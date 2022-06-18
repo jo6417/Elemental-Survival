@@ -25,7 +25,7 @@ public class EnemyManager : MonoBehaviour
     {
         Walk, // 걸어서 등속도이동
         Jump, // 시간마다 점프
-        Dash, // 시간마다 대쉬
+        Dash, // 범위안에 들어오면 대쉬
         Teleport, // 시간마다 플레이어 주변 위치로 텔레포트
         Follow // 플레이어와 일정거리 고정하며 따라다님
     };
@@ -41,8 +41,11 @@ public class EnemyManager : MonoBehaviour
     Sequence damageTextSeq;
     public bool selfExplosion = false; //죽을때 자폭 여부
     public bool statusEffect = false; //상태이상으로 색 변형 했는지 여부
+    public float attackRange; // 공격범위
 
     [Header("Refer")]
+    public EnemyAI enemyAI;
+    public EnemyAttack enemyAttack;
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
@@ -53,7 +56,6 @@ public class EnemyManager : MonoBehaviour
     public Rigidbody2D rigid;
     public Collider2D physicsColl; // 물리용 콜라이더
     public Collider2D hitColl; // 히트박스용 콜라이더
-    public EnemyAI enemyAI;
 
     [Header("Stat")]
     public float hpMax = 0;
@@ -75,11 +77,13 @@ public class EnemyManager : MonoBehaviour
 
     void Awake()
     {
+        enemyAI = enemyAI == null ? transform.parent.GetComponent<EnemyAI>() : enemyAI;
+        enemyAttack = enemyAttack == null ? GetComponentInChildren<EnemyAttack>() : enemyAttack;
+
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         hitColl = hitColl == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : hitColl;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
-        enemyAI = enemyAI == null ? transform.parent.GetComponent<EnemyAI>() : enemyAI;
 
         // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
         if (spriteList.Count == 0)

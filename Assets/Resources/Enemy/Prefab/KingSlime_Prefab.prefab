@@ -5564,7 +5564,7 @@ MonoBehaviour:
   poisonAtkCoolTime: 0
   nowAbsorb: 0
   poisonAtkRange: 20
-  atkRatio: 0
+  atkRatio: 0.5
   enemyManager: {fileID: 5018633298159146536}
   crownObj: {fileID: 5663970052114893258}
   slimePrefab: {fileID: 5485836661786715591, guid: f38322a01d9b7f84d9914275f0eff236,
@@ -10485,6 +10485,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kingSlimeAI: {fileID: 8274267318279845524}
   numInside: 0
+  attack: 1
 --- !u!198 &8660447163773140354
 ParticleSystem:
   m_ObjectHideFlags: 0

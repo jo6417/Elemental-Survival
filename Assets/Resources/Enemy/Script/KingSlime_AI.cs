@@ -31,10 +31,10 @@ public class KingSlime_AI : MonoBehaviour
     public Vector2 jumpLandPos; //점프 착지 위치
     bool absorbAtkTrigger = false; //내리찍기 공격 트리거
 
-    // private void Awake()
-    // {
-    //     enemyManager = GetComponentInChildren<EnemyManager>();
-    // }
+    private void Awake()
+    {
+        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+    }
 
     private void OnEnable()
     {
@@ -67,9 +67,6 @@ public class KingSlime_AI : MonoBehaviour
         enemyManager.spriteList[0].material.SetColor("_Color", outLineColor);
         //독 기모으기 스프라이트 초기화
         spriteFill.material.SetFloat("_FillRate", 0);
-
-        //독 웅덩이 트리거 오브젝트로 플레이어 그림자 넣기
-        poisonPoolParticle.trigger.AddCollider(PlayerManager.Instance.shadow);
     }
 
     private void Update()

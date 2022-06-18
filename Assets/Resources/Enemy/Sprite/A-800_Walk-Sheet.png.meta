@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 002c9a7f3722782448ae9f06ce83dede
+guid: 044ebf59e4d142244a7d652a46d495c8
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -27,11 +27,29 @@ TextureImporter:
       213: -8476369765895928004
     second: A-800_Sheet_7
   - first:
-      213: -597171090907663275
-    second: A-800_Sheet_8
+      213: 3511357318558972208
+    second: A-800_Walk-Sheet_0
   - first:
-      213: -6807713283490877021
-    second: A-800_Sheet_9
+      213: 7844632677255592645
+    second: A-800_Walk-Sheet_1
+  - first:
+      213: -3288986314419894455
+    second: A-800_Walk-Sheet_2
+  - first:
+      213: 5814310003336108927
+    second: A-800_Walk-Sheet_3
+  - first:
+      213: -7606660565201719112
+    second: A-800_Walk-Sheet_4
+  - first:
+      213: -4149014200367394785
+    second: A-800_Walk-Sheet_5
+  - first:
+      213: 65732626766748736
+    second: A-800_Walk-Sheet_6
+  - first:
+      213: -208958182950929353
+    second: A-800_Walk-Sheet_7
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -121,211 +139,169 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: A-800_Sheet_0
+      name: A-800_Walk-Sheet_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 9
-      pivot: {x: 0.5, y: 0.1}
+      pivot: {x: 0.5, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e57ecbf59b8980e0800000000000000
-      internalID: -2267127461113334299
+      spriteID: 039fc2490e8dab030800000000000000
+      internalID: 3511357318558972208
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: A-800_Sheet_1
+      name: A-800_Walk-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.03}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cabd397bdbbddc60800000000000000
+      internalID: 7844632677255592645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-800_Walk-Sheet_2
       rect:
         serializedVersion: 2
         x: 64
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 9
-      pivot: {x: 0.5, y: 0.1}
+      pivot: {x: 0.5, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b5492bc0eccf6abb0800000000000000
-      internalID: -4924971180576566181
+      spriteID: 94781e17f5c2b52d0800000000000000
+      internalID: -3288986314419894455
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: A-800_Sheet_2
+      name: A-800_Walk-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.03}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7b59da742490b050800000000000000
+      internalID: 5814310003336108927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-800_Walk-Sheet_4
       rect:
         serializedVersion: 2
         x: 128
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 9
-      pivot: {x: 0.5, y: 0.1}
+      pivot: {x: 0.5, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bde3c9603e2071070800000000000000
-      internalID: 8076927630804008667
+      spriteID: 8b0fd2c8486bf6690800000000000000
+      internalID: -7606660565201719112
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: A-800_Sheet_3
+      name: A-800_Walk-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 32
+      alignment: 9
+      pivot: {x: 0.5, y: 0.03}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f10dc03319dbb66c0800000000000000
+      internalID: -4149014200367394785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: A-800_Walk-Sheet_6
       rect:
         serializedVersion: 2
         x: 192
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 9
-      pivot: {x: 0.5, y: 0.1}
+      pivot: {x: 0.5, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f369a68d0b5bf8260800000000000000
-      internalID: 7102094908536297023
+      spriteID: 04cd59cc97789e000800000000000000
+      internalID: 65732626766748736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: A-800_Sheet_4
+      name: A-800_Walk-Sheet_7
       rect:
         serializedVersion: 2
-        x: 256
+        x: 224
         y: 0
-        width: 64
-        height: 64
+        width: 32
+        height: 32
       alignment: 9
-      pivot: {x: 0.5, y: 0.1}
+      pivot: {x: 0.5, y: 0.03}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a32d154b323c5e460800000000000000
-      internalID: 7270431731576066618
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: A-800_Sheet_5
-      rect:
-        serializedVersion: 2
-        x: 320
-        y: 0
-        width: 64
-        height: 64
-      alignment: 9
-      pivot: {x: 0.5, y: 0.1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2470171ea429fbdb0800000000000000
-      internalID: -4773936229681920190
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: A-800_Sheet_6
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 0
-        width: 64
-        height: 64
-      alignment: 9
-      pivot: {x: 0.5, y: 0.1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5bb23329b173b3f30800000000000000
-      internalID: 4556296039571860405
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: A-800_Sheet_7
-      rect:
-        serializedVersion: 2
-        x: 448
-        y: 0
-        width: 64
-        height: 64
-      alignment: 9
-      pivot: {x: 0.5, y: 0.1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c3789ee8b92ed5a80800000000000000
-      internalID: -8476369765895928004
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: A-800_Sheet_8
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 64
-        height: 64
-      alignment: 9
-      pivot: {x: 0.5, y: 0.1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 554f0588e0c66b7f0800000000000000
-      internalID: -597171090907663275
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: A-800_Sheet_9
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 64
-        height: 64
-      alignment: 9
-      pivot: {x: 0.5, y: 0.1}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3a171d466d42681a0800000000000000
-      internalID: -6807713283490877021
+      spriteID: 73c7c44c3a1a91df0800000000000000
+      internalID: -208958182950929353
       vertices: []
       indices: 
       edges: []

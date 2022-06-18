@@ -6,6 +6,9 @@ using Lean.Pool;
 
 public class EnemyAI : MonoBehaviour
 {
+    [Header("State")]
+    public Vector3 playerDir; //플레이어 방향
+
     [Header("Refer")]
     public EnemyManager enemyManager;
 
@@ -13,7 +16,10 @@ public class EnemyAI : MonoBehaviour
     public float jumpCoolCount;
     [SerializeField]
     private float jumpCooltime = 0.5f;
-    public GameObject dustEffect;
+    public GameObject landEffect;
+
+    // [Header("Attack")]
+    // public float attackRange;
 
     private void Awake()
     {
@@ -48,7 +54,7 @@ public class EnemyAI : MonoBehaviour
         enemyManager.physicsColl.isTrigger = false;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         // 몬스터 정보 없으면 리턴
         if (enemyManager.enemy == null)
@@ -72,6 +78,9 @@ public class EnemyAI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
+        //플레이어 방향 계산
+        playerDir = PlayerManager.Instance.transform.position - transform.position;
+
         //걷는 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Walk)
         {
@@ -81,8 +90,8 @@ public class EnemyAI : MonoBehaviour
         //점프 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Jump)
         {
-            // 점프중 아니고 일정 거리 내 들어오면 점프
-            if (jumpCoolCount <= 0)
+            // 점프 쿨타임 아닐때, 플레이어가 공격 범위보다 멀때
+            if (jumpCoolCount <= 0 && playerDir.magnitude > enemyManager.attackRange)
                 JumpStart();
             else
             {
@@ -109,13 +118,13 @@ public class EnemyAI : MonoBehaviour
         }
 
         //움직일 방향
-        Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
+        // Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = playerDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
 
         //움직일 방향에따라 회전
-        if (dir.x > 0)
+        if (playerDir.x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
@@ -141,20 +150,20 @@ public class EnemyAI : MonoBehaviour
 
     public void JumpMove()
     {
-        //움직일 방향
-        Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
+        //움직일 방향 다시 계산
+        playerDir = PlayerManager.Instance.transform.position - transform.position;
 
         //움직일 방향에따라 좌우반전
-        if (dir.x > 0)
+        if (playerDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = dir.magnitude > enemyManager.range ? enemyManager.range : dir.magnitude;
+        float distance = playerDir.magnitude > enemyManager.range ? enemyManager.range : playerDir.magnitude;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = dir.normalized * distance * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = playerDir.normalized * distance * SystemManager.Instance.globalTimeScale;
     }
 
     public void JumpMoveStop()
@@ -172,7 +181,7 @@ public class EnemyAI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
 
         // 착지 이펙트 생성
-        if (dustEffect != null)
-            LeanPool.Spawn(dustEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        if (landEffect != null)
+            LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 }

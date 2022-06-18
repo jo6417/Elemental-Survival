@@ -45,7 +45,7 @@ public class EnemyHitBox : MonoBehaviour
         if (other.transform.CompareTag("EnemyAttack") && enemyManager.hitCount <= 0)
         {
             // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
-            if (other.gameObject.TryGetComponent<EnemyAtk>(out EnemyAtk enemyAtk) && enemyAtk.enabled)
+            if (other.gameObject.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
             {
                 EnemyManager hitEnemy = enemyAtk.enemyManager;
 

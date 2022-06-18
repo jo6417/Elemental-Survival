@@ -47,6 +47,7 @@ public class Ascii_AI : MonoBehaviour
 
     private void Awake()
     {
+        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
 
