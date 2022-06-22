@@ -15,11 +15,11 @@ C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-24738
+1036
 Successfully changed project path to: C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
 C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 111.97 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 113.92 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.3.25f1 (9b9180224418)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Resources/UnitySubsystems
@@ -35,89 +35,89 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56064
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56700
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.003467 seconds.
+Registered in 0.003363 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 109.43 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 116.90 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  0.737 seconds
+- Completed reload, in  0.778 seconds
 Domain Reload Profiling:
-	ReloadAssembly (738ms)
-		BeginReloadAssembly (73ms)
+	ReloadAssembly (779ms)
+		BeginReloadAssembly (80ms)
 			ExecutionOrderSort (0ms)
 			DisableScriptedObjects (0ms)
 			BackupInstance (0ms)
 			ReleaseScriptingObjects (0ms)
 			CreateAndSetChildDomain (1ms)
-		EndReloadAssembly (576ms)
-			LoadAssemblies (69ms)
+		EndReloadAssembly (603ms)
+			LoadAssemblies (76ms)
 			RebuildTransferFunctionScriptingTraits (0ms)
-			SetupTypeCache (158ms)
+			SetupTypeCache (167ms)
 			ReleaseScriptCaches (0ms)
 			RebuildScriptCaches (39ms)
-			SetupLoadedEditorAssemblies (255ms)
+			SetupLoadedEditorAssemblies (272ms)
 				LogAssemblyErrors (0ms)
-				InitializePlatformSupportModulesInManaged (6ms)
+				InitializePlatformSupportModulesInManaged (5ms)
 				SetLoadedEditorAssemblies (0ms)
-				RefreshPlugins (110ms)
-				BeforeProcessingInitializeOnLoad (16ms)
-				ProcessInitializeOnLoadAttributes (93ms)
-				ProcessInitializeOnLoadMethodAttributes (31ms)
+				RefreshPlugins (117ms)
+				BeforeProcessingInitializeOnLoad (15ms)
+				ProcessInitializeOnLoadAttributes (99ms)
+				ProcessInitializeOnLoadMethodAttributes (35ms)
 				AfterProcessingInitializeOnLoad (0ms)
 				EditorAssembliesLoaded (0ms)
 			ExecutionOrderSort2 (0ms)
 			AwakeInstancesAfterBackupRestoration (0ms)
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.013043 seconds.
+Registered in 0.014348 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 109.70 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 109.22 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.736 seconds
+- Completed reload, in  1.695 seconds
 Domain Reload Profiling:
-	ReloadAssembly (1737ms)
-		BeginReloadAssembly (177ms)
+	ReloadAssembly (1696ms)
+		BeginReloadAssembly (180ms)
 			ExecutionOrderSort (0ms)
 			DisableScriptedObjects (6ms)
 			BackupInstance (0ms)
 			ReleaseScriptingObjects (0ms)
-			CreateAndSetChildDomain (20ms)
-		EndReloadAssembly (1468ms)
-			LoadAssemblies (157ms)
+			CreateAndSetChildDomain (21ms)
+		EndReloadAssembly (1434ms)
+			LoadAssemblies (144ms)
 			RebuildTransferFunctionScriptingTraits (0ms)
-			SetupTypeCache (436ms)
+			SetupTypeCache (418ms)
 			ReleaseScriptCaches (1ms)
-			RebuildScriptCaches (102ms)
-			SetupLoadedEditorAssemblies (630ms)
+			RebuildScriptCaches (99ms)
+			SetupLoadedEditorAssemblies (625ms)
 				LogAssemblyErrors (0ms)
-				InitializePlatformSupportModulesInManaged (5ms)
+				InitializePlatformSupportModulesInManaged (4ms)
 				SetLoadedEditorAssemblies (0ms)
-				RefreshPlugins (110ms)
-				BeforeProcessingInitializeOnLoad (159ms)
-				ProcessInitializeOnLoadAttributes (322ms)
-				ProcessInitializeOnLoadMethodAttributes (20ms)
-				AfterProcessingInitializeOnLoad (12ms)
+				RefreshPlugins (109ms)
+				BeforeProcessingInitializeOnLoad (160ms)
+				ProcessInitializeOnLoadAttributes (315ms)
+				ProcessInitializeOnLoadMethodAttributes (23ms)
+				AfterProcessingInitializeOnLoad (13ms)
 				EditorAssembliesLoaded (0ms)
 			ExecutionOrderSort2 (0ms)
-			AwakeInstancesAfterBackupRestoration (7ms)
+			AwakeInstancesAfterBackupRestoration (8ms)
 Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.08 seconds
-Refreshing native plugins compatible for Editor in 0.94 ms, found 3 plugins.
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.07 seconds
+Refreshing native plugins compatible for Editor in 1.05 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 4478 Unused Serialized files (Serialized files now loaded: 0)
 System memory in use before: 285.7 MB.
 System memory in use after: 285.9 MB.
 
 Unloading 36 unused Assets to reduce memory usage. Loaded Objects now: 4945.
-Total: 5.329600 ms (FindLiveObjects: 0.486000 ms CreateObjectMapping: 0.180500 ms MarkObjects: 4.624000 ms  DeleteObjects: 0.037800 ms)
+Total: 4.231400 ms (FindLiveObjects: 0.399100 ms CreateObjectMapping: 0.120100 ms MarkObjects: 3.680500 ms  DeleteObjects: 0.030300 ms)
 
 AssetImportParameters requested are different than current active one (requested -> active):
   custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
@@ -132,233 +132,193 @@ AssetImportParameters requested are different than current active one (requested
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
 ========================================================================
 Received Import Request.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fac8b53c09f264aeb4a2536d11754d19') in 0.369102 seconds 
-  Import took 0.375900 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 396.008339 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '949d18fb473541400fa59eaa1dff1c0c') in 0.128968 seconds 
-  Import took 0.137262 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 220.579665 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7516c50f35de26ea51cde7dd4da4cfda') in 0.102967 seconds 
-  Import took 0.110002 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 51.850347 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0650a5156ad0052351e6438b910d1fe2') in 0.118978 seconds 
-  Import took 0.126578 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 210.147225 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6d408222a0713c4f63ed99c62bf6c9a8') in 0.132403 seconds 
-  Import took 0.139823 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 20.107230 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0801707916cd5bfa1598433fecc459b8') in 0.130577 seconds 
-  Import took 0.137232 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 26.842796 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'efc7386050eba68817ef84dbfcfd7d40') in 0.120910 seconds 
-  Import took 0.128067 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 10.262132 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b61bac309df5988cfd4837dd429aed8c') in 0.104095 seconds 
-  Import took 0.111425 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 379.000833 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '21750a36be09bf43330deba8ad5bbf49') in 0.201183 seconds 
-  Import took 0.215823 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 32.834629 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd288f6f5f7e85f522faa5a0b37eb4479') in 0.104320 seconds 
-  Import took 0.111223 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 403.478687 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7f9c4896681735923a21be75d8b294e3') in 0.144901 seconds 
-  Import took 0.152325 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 202.324917 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a59bb7ce87a026effdf64bc52da814f') in 0.118029 seconds 
-  Import took 0.125185 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 94.053529 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f7d5fb4e152adddede8a2b8d3b3993b8') in 0.121954 seconds 
-  Import took 0.128990 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 276.088545 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '54540346c4ec64ca22947dc30cbb966a') in 0.137986 seconds 
-  Import took 0.145415 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 44.675210 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '64eed24b040a156c787c5bc90f6e01de') in 0.109011 seconds 
-  Import took 0.115966 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 246.342308 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '961460e4a166ae6902b7d3630e0e0740') in 0.147516 seconds 
-  Import took 0.154579 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 231.121703 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '432eb3494ca25f2ec85cac63d284ac73') in 0.135715 seconds 
-  Import took 0.143568 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 31.929038 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f76c11ab20b5fc5e221b32da20647224') in 0.183876 seconds 
-  Import took 0.190926 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 273.192228 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ac633aa4b3c30c355a407a301c7c0de6') in 0.113425 seconds 
-  Import took 0.120903 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 95.602007 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2a1672e67b694fb33fee4b5ad42332cf') in 0.130575 seconds 
-  Import took 0.138266 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 153.018705 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog.psb
-  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a9ff71b1893c9cae8ea743efdd779bd8') in 0.182135 seconds 
-  Import took 0.189422 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 1218.682171 seconds.
-  path: Assets/Resources/Enemy/Sprite/HotDog Variant.prefab
-  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog Variant.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ad330321dff772714a6bf4be14b746b9') in 0.035713 seconds 
-  Import took 0.043392 seconds .
-
-========================================================================
-Received Import Request.
-  Time since last request: 26.067774 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
   artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9544f00b0a5601ed249875c0f824d34d') in 0.022015 seconds 
-  Import took 0.029282 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4f155283511c9d5d6b2a1fd95c2f7880') in 0.271901 seconds 
+  Import took 0.279376 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 1517.554553 seconds.
+  Time since last request: 98.892699 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog.psb
   artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '77125bf5605fe072cb0db6d17327e611') in 0.098815 seconds 
-  Import took 0.106301 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2d1798b0e1a5ee9edbd3b40a142c26b9') in 0.218021 seconds 
+  Import took 0.226426 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 0.000262 seconds.
+  Time since last request: 0.000305 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
   artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0ec715d0a444379e5a591550d7a6460a') in 0.014499 seconds 
-  Import took 0.021446 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f415c4e8dafdf4dd1cd2a41b15ec21bd') in 0.016492 seconds 
+  Import took 0.024143 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 14.313518 seconds.
+  Time since last request: 45.694725 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c4a8197de531c107f924fe2ddce36279') in 0.016723 seconds 
+  Import took 0.024305 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 33.707739 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog.psb
   artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '77b2049dd28df4d206a47ff56823f594') in 0.140529 seconds 
-  Import took 0.147377 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'dae451d5b0d6a7f49a0e8274e78f86df') in 0.098040 seconds 
+  Import took 0.104777 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 0.000267 seconds.
+  Time since last request: 0.000333 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
   artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd49e5c3683ef1f5d096d0c81ce1be77f') in 0.015431 seconds 
-  Import took 0.022225 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '302b8f05be089aace33d2e02e6168c3e') in 0.015458 seconds 
+  Import took 0.022245 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 596.303679 seconds.
+  Time since last request: 89.557288 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog.psb
   artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '85a531c2b288d152fa3b0de85ecb97ed') in 0.101872 seconds 
-  Import took 0.109042 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '438bb052a1447203ad631ba1411bb69d') in 0.177850 seconds 
+  Import took 0.185511 seconds .
 
 ========================================================================
 Received Import Request.
-  Time since last request: 0.000259 seconds.
+  Time since last request: 0.000322 seconds.
   path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
   artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9234e43508e932641278250ba2c46cae') in 0.019068 seconds 
-  Import took 0.025598 seconds .
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a707f91e548b9fc18985914cdc265bd') in 0.017694 seconds 
+  Import took 0.025788 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 30.248567 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '013c78d407c9ceb27f975e89834e2d9b') in 0.138651 seconds 
+  Import took 0.145225 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000315 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b8c91a0a98ae8afa55cfc7d2461c4a01') in 0.017279 seconds 
+  Import took 0.024014 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 320.947236 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '515b07249a8ea9dfaa8388ba808eb5c4') in 0.134135 seconds 
+  Import took 0.141368 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000321 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e084f06ba3925bd98e7e8314ff606704') in 0.020310 seconds 
+  Import took 0.027474 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 163.856345 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'add3ea1ddaf368b0bd9cd3c45f4b52b4') in 0.085725 seconds 
+  Import took 0.092748 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000279 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f3e57d9cfba9574098bc4064c16ee646') in 0.009189 seconds 
+  Import took 0.016728 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.502739 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e231b7073f35baf0397fc7f1917a3a7b') in 0.131945 seconds 
+  Import took 0.139227 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000671 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '638a3aa57b33ea5aee46fe3d02ccdaad') in 0.016413 seconds 
+  Import took 0.023333 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 3.200742 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b6fec5046d1d088c8eb2e53fdfe9c9be') in 0.186057 seconds 
+  Import took 0.192895 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000251 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '488158fd6a8341c2c34bf78c3838ad62') in 0.017586 seconds 
+  Import took 0.024560 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.417625 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '26a74cd0ddcbf1feb44dc9ebb1cfa2f5') in 0.116343 seconds 
+  Import took 0.123645 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000265 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1ed446695d2a536689a07bef12ab7a75') in 0.014984 seconds 
+  Import took 0.021751 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 10.606748 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8b3ad73b5489bf042e005e1cb63101e6') in 0.106912 seconds 
+  Import took 0.113841 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000275 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c98a07e4a74419610c54ff2a23653734') in 0.014950 seconds 
+  Import took 0.021836 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 11.196552 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog.psb
+  artifactKey: Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog.psb using Guid(52a7672b5ccf8dd4eb6229d7748e6aad) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e26252063d1b6b969d8ff6c9cd718925') in 0.116029 seconds 
+  Import took 0.122942 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000253 seconds.
+  path: Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab
+  artifactKey: Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Enemy/Sprite/HotDog_Prefab.prefab using Guid(a70fece9f639d8b48910e70ca5080613) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7bbcd20b8abddd0643ebffb1eae1c826') in 0.019003 seconds 
+  Import took 0.026063 seconds .
 
 AssetImportWorkerClient::OnTransportError - code=2 error=End of file
