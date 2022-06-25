@@ -449,7 +449,7 @@ public class MagicDB : MonoBehaviour
         //플레이어 자체 마법 범위 증가량 계산
         range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
         //값 제한하기
-        range = Mathf.Clamp(range, 0.1f, 10f);
+        range = Mathf.Clamp(range, 0.1f, 1000f);
 
         return range;
     }

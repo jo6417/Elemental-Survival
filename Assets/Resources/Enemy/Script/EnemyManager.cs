@@ -77,7 +77,7 @@ public class EnemyManager : MonoBehaviour
 
     void Awake()
     {
-        enemyAI = enemyAI == null ? transform.parent.GetComponent<EnemyAI>() : enemyAI;
+        enemyAI = enemyAI == null ? transform.GetComponent<EnemyAI>() : enemyAI;
         enemyAttack = enemyAttack == null ? GetComponentInChildren<EnemyAttack>() : enemyAttack;
 
         spriteObj = spriteObj == null ? transform : spriteObj;

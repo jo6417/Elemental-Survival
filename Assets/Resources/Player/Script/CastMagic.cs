@@ -344,7 +344,7 @@ public class CastMagic : MonoBehaviour
             // 플레이어 주변 범위내 랜덤 위치 벡터 생성
             Vector2 pos =
             (Vector2)PlayerManager.Instance.transform.position
-            + Random.insideUnitCircle.normalized * range;
+            + Random.insideUnitCircle * range;
 
             // 플레이어 주변 범위내 랜덤한 적의 위치
             if (enemyColList.Count > 0)

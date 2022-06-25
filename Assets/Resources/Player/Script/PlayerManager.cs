@@ -202,14 +202,8 @@ public class PlayerManager : MonoBehaviour
         if (Time.timeScale == 0f)
             return;
 
-        //카메라 따라오기
-        foreach (var cam in SystemManager.Instance.camList)
-        {
-            // cam.transform.position = transform.position + new Vector3(0, 0, -50);
-
-            //플레이어 부드럽게 따라오기
-            cam.transform.position = Vector3.Lerp(cam.transform.position, transform.position + new Vector3(0, 0, -50), Time.deltaTime * camFollowSpeed);
-        }
+        // 카메라 플레이어 부드럽게 따라오기
+        SystemManager.Instance.camParent.position = Vector3.Lerp(SystemManager.Instance.camParent.position, transform.position + new Vector3(0, 0, -50), Time.deltaTime * camFollowSpeed);
 
         //몬스터 스포너 따라오기
         if (mobSpawner.activeSelf)

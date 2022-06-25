@@ -122,6 +122,7 @@ SpriteAtlas:
   - {fileID: -6458934717084691080, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
   - {fileID: 2792871908818862210, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
   - {fileID: 760358477480235000, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
+  - {fileID: 21300000, guid: 3a1fd4e9a64de804b9a45cbcaf3afe45, type: 3}
   - {fileID: 21300000, guid: b9d516ca36a07284d920b5b7a3b6c73e, type: 3}
   - {fileID: 21300000, guid: e096cbca07e631d46bcce9364fba2a1e, type: 3}
   - {fileID: 21300000, guid: 097c3fda0ff66c44ab36e8ba09b4f7ba, type: 3}
@@ -271,6 +272,7 @@ SpriteAtlas:
   - Portal_Sheet_6
   - Portal_Sheet_7
   - Portal_Sheet_8
+  - Meteor
   - Thunderbolt_Icon
   - LifeMushroom_Icon
   - BabyArrow

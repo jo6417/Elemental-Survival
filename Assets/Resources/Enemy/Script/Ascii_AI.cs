@@ -14,6 +14,7 @@ public class Ascii_AI : MonoBehaviour
 
     [Header("Refer")]
     public EnemyManager enemyManager;
+    EnemyInfo enemy;
     public Image angryGauge; //분노 게이지 이미지
     public TextMeshProUGUI faceText;
     public Transform canvasChildren;
@@ -35,7 +36,6 @@ public class Ascii_AI : MonoBehaviour
     public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 플레이어가 들어왔는지 보는 트리거
     public TextMeshProUGUI laserText;
 
-    EnemyInfo enemy;
     float speed;
     float coolCount;
     List<int> atkList = new List<int>(); //공격 패턴 담을 변수

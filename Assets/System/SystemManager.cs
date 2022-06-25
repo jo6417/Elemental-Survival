@@ -50,7 +50,7 @@ public class SystemManager : MonoBehaviour
     public Transform overlayPool;
     public Transform magicPool;
     public Transform effectPool;
-    public List<Camera> camList = new List<Camera>();
+    public Transform camParent;
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
