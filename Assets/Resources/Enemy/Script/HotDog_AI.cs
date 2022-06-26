@@ -8,6 +8,8 @@ public class HotDog_AI : MonoBehaviour
     [Header("Refer")]
     public EnemyManager enemyManager;
     EnemyInfo enemy;
+    public ParticleSystem breathEffect; //숨쉴때 입에서 나오는 불꽃
+    public ParticleSystem smokeEffect; // 안개 생성시 입에서 나오는 연기
 
     [Header("Meteor")]
     public float meteorCoolTime;
