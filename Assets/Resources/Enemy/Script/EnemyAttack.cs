@@ -91,7 +91,7 @@ public class EnemyAttack : MonoBehaviour
         enemyManager.rigid.velocity = Vector3.zero;
 
         // 점프중이라면
-        if (enemyManager.enemyAI.jumpCoolCount > 0)
+        if (enemyManager.enemyAI && enemyManager.enemyAI.jumpCoolCount > 0)
         {
             //공격 준비로 전환
             attackReady = true;

@@ -6,6 +6,7 @@ using Lean.Pool;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class SystemManager : MonoBehaviour
 {
@@ -43,8 +44,10 @@ public class SystemManager : MonoBehaviour
     public float time_start; //시작 시간
     public float time_current; // 현재 스테이지 플레이 타임
     public int killCount; //몬스터 킬 수
+    public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
 
     [Header("Refer")]
+    public Light2D globalLight;
     public Transform enemyPool;
     public Transform itemPool;
     public Transform overlayPool;

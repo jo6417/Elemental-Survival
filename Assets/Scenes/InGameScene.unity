@@ -23714,7 +23714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   passiveMagics: []
-  defaultMagic: 2f000000
+  defaultMagic: 2f00000018000000
   testAllMagic: 0
   noMagic: 0
   spinSpeed: 3
@@ -87267,6 +87267,8 @@ MonoBehaviour:
   time_start: 0
   time_current: 0
   killCount: 0
+  globalLightDefault: 0.9
+  globalLight: {fileID: 397343255}
   enemyPool: {fileID: 1021783382}
   itemPool: {fileID: 1419753065}
   overlayPool: {fileID: 954366556}
@@ -153780,6 +153782,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 539939586900707643, guid: 3a87e56f832ff96439ce49b991f645ab,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 1137751501}
     - target: {fileID: 3746880840705113283, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}
       propertyPath: m_Name
@@ -153793,12 +153800,12 @@ PrefabInstance:
     - target: {fileID: 5471369762297914884, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.9
+      value: 20.06
       objectReference: {fileID: 0}
     - target: {fileID: 5471369762297914884, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5471369762297914884, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}

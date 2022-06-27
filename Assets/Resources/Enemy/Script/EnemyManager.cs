@@ -45,7 +45,6 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Refer")]
     public EnemyAI enemyAI;
-    public EnemyAttack enemyAttack;
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
@@ -55,7 +54,7 @@ public class EnemyManager : MonoBehaviour
     public List<Animator> animList = new List<Animator>();
     public Rigidbody2D rigid;
     public Collider2D physicsColl; // 물리용 콜라이더
-    public Collider2D hitColl; // 히트박스용 콜라이더
+    public List<Collider2D> hitCollList; // 히트박스용 콜라이더
 
     [Header("Stat")]
     public float hpMax = 0;
@@ -78,12 +77,17 @@ public class EnemyManager : MonoBehaviour
     void Awake()
     {
         enemyAI = enemyAI == null ? transform.GetComponent<EnemyAI>() : enemyAI;
-        enemyAttack = enemyAttack == null ? GetComponentInChildren<EnemyAttack>() : enemyAttack;
 
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
-        hitColl = hitColl == null ? spriteObj.GetComponentInChildren<Collider2D>(true) : hitColl;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
+
+        //히트 콜라이더 없으면 EnemyHitBox로 찾아 넣기
+        if (hitCollList.Count == 0)
+            foreach (EnemyHitBox hitBox in GetComponentsInChildren<EnemyHitBox>())
+            {
+                hitCollList.Add(hitBox.GetComponent<Collider2D>());
+            }
 
         // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
         if (spriteList.Count == 0)
@@ -108,8 +112,11 @@ public class EnemyManager : MonoBehaviour
     IEnumerator Initial()
     {
         //콜라이더 끄기
-        if (hitColl != null)
-            hitColl.enabled = false;
+        if (hitCollList.Count > 0)
+            foreach (Collider2D coll in hitCollList)
+            {
+                coll.enabled = false;
+            }
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
@@ -161,8 +168,11 @@ public class EnemyManager : MonoBehaviour
         isDead = false;
 
         //콜라이더 켜기
-        if (hitColl != null)
-            hitColl.enabled = true;
+        if (hitCollList.Count > 0)
+            foreach (Collider2D coll in hitCollList)
+            {
+                coll.enabled = true;
+            }
 
         //! 테스트 확인용
         enemyName = enemy.enemyName;
@@ -570,8 +580,11 @@ public class EnemyManager : MonoBehaviour
         isDead = true;
 
         //콜라이더 끄기
-        if (hitColl != null)
-            hitColl.enabled = false;
+        if (hitCollList.Count > 0)
+            foreach (Collider2D coll in hitCollList)
+            {
+                coll.enabled = false;
+            }
 
         //몬스터 총 전투력 빼기
         EnemySpawn.Instance.NowEnemyPower -= enemy.grade;

@@ -139,6 +139,7 @@ public class Bawi_AI : MonoBehaviour
         //행동 관리
         ManageAction();
     }
+
     void ManageAction()
     {
         // 시간 멈추면 리턴

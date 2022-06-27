@@ -298,7 +298,11 @@ public class KingSlime_AI : MonoBehaviour
             EnemyAI babyEnemyAI = babySlime.GetComponent<EnemyAI>();
 
             // 소환수 콜라이더 끄기
-            babyEnemyManager.hitColl.enabled = false;
+            foreach (Collider2D coll in babyEnemyManager.hitCollList)
+            {
+                coll.enabled = false;
+            }
+
             // 소환수 AI 끄기
             babyEnemyAI.enabled = false;
 
@@ -310,7 +314,10 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 소환수 콜라이더 활성화
-                babyEnemyManager.hitColl.enabled = true;
+                foreach (Collider2D coll in babyEnemyManager.hitCollList)
+                {
+                    coll.enabled = true;
+                }
                 // 소환수 AI 활성화
                 babyEnemyAI.enabled = true;
             });
