@@ -56,6 +56,9 @@ TagManager:
   - name: Character&Object
     uniqueID: 2433207011
     locked: 0
+  - name: Player
+    uniqueID: 3310079417
+    locked: 0
   - name: MagicEffect
     uniqueID: 945064743
     locked: 0

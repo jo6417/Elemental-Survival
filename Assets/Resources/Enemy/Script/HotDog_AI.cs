@@ -15,6 +15,13 @@ public class HotDog_AI : MonoBehaviour
     public EnemyManager enemyManager;
     EnemyInfo enemy;
     public ParticleSystem breathEffect; //숨쉴때 입에서 나오는 불꽃
+    public ParticleSystem handDust;
+    public ParticleSystem footDust;
+
+    [Header("Stealth Atk")]
+    public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
+    public ParticleSystem groundSmoke; // 스텔스 할때 바닥에서 피어오르는 연기 이펙트
+    public ParticleSystem eyeFlash; //눈이 번쩍하는 이펙트
     public ParticleSystem smokeEffect; // 안개 생성시 입에서 나오는 연기
     public EnemyAttack dashAtk;
     public SpriteRenderer shadowSprite; //그림자 스프라이트
@@ -43,6 +50,14 @@ public class HotDog_AI : MonoBehaviour
         breathEffect.gameObject.SetActive(true);
         // 스모크 이펙트 끄기
         smokeEffect.gameObject.SetActive(false);
+        // 바닥 연기 이펙트 끄기
+        groundSmoke.gameObject.SetActive(false);
+        // 눈 번쩍하는 이펙트 끄기
+        eyeFlash.gameObject.SetActive(false);
+
+        // 발 먼지 이펙트 끄기
+        handDust.Stop();
+        footDust.Stop();
 
         //대쉬 어택 콜라이더 끄기
         dashAtk.enabled = false;
@@ -56,6 +71,9 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isHawl.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
+
+        // 상태값 Idle로 초기화
+        enemyManager.nowAction = EnemyManager.Action.Idle;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -75,6 +93,9 @@ public class HotDog_AI : MonoBehaviour
             // 메테오 프리팹 찾기
             meteorPrefab = MagicDB.Instance.GetMagicPrefab(meteorMagic.id);
         }
+
+        //죽을때 델리게이트에 함수 추가
+        enemyManager.enemyDeadCallback += Dead;
     }
 
     void Update()
@@ -179,6 +200,10 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
+        // 발 먼지 이펙트 끄기
+        handDust.Stop();
+        footDust.Stop();
+
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 5);
 
@@ -204,7 +229,7 @@ public class HotDog_AI : MonoBehaviour
                 StartCoroutine(Meteor());
                 break;
             case 3:
-                //TODO 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
+                // 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
                 StartCoroutine(StealthAtk());
                 break;
         }
@@ -241,8 +266,8 @@ public class HotDog_AI : MonoBehaviour
         // 짖기 애니메이션 트리거 끄기
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
-        // 돌진 횟수 계산 1~4회
-        int atkNum = Random.Range(1, 5);
+        // 돌진 횟수 계산 2~5회
+        int atkNum = Random.Range(2, 6);
 
         //돌진 시작 방향 (좌 or 우)
         bool rightStart = true;
@@ -277,9 +302,8 @@ public class HotDog_AI : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, 0, 0);
             }
 
-            //TODO 눈이 빛나는 인디케이터 이펙트 보여주기
-
-            //TODO 눈 아키라 트레일 켜기
+            // 눈이 빛나는 인디케이터 이펙트 보여주기
+            eyeFlash.gameObject.SetActive(true);
 
             // 스프라이트 색 초기화
             foreach (SpriteRenderer sprite in enemyManager.spriteList)
@@ -301,35 +325,52 @@ public class HotDog_AI : MonoBehaviour
             // 인디케이터 시간 대기
             yield return new WaitForSeconds(0.5f);
 
-            // 달리기 애니메이션 재생
+            // 눈 위치에 아키라 트레일 생성
+            GameObject eyeTrail = LeanPool.Spawn(eyeTrailPrefab, eyeFlash.transform.position, Quaternion.identity, eyeFlash.transform.parent);
+
+            // Run 애니메이션 재생
             enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
             // 엔드 포지션으로 트윈
-            transform.DOMove(dashEndPos, 1f);
+            transform.DOMove(dashEndPos, 1f)
+            .OnComplete(() =>
+            {
+                // 아이 트레일 부모 바꾸기
+                eyeTrail.transform.SetParent(SystemManager.Instance.effectPool);
+
+                // 아이 아키라 트레일 1초후 디스폰
+                LeanPool.Despawn(eyeTrail, 1f);
+            });
 
             // 돌진시간 대기
             yield return new WaitForSeconds(0.8f);
 
-            // 다음 돌진이 또 있을때
-            if (i < atkNum - 1)
+            // 돌진 끝나면 스프라이트 다시 투명해지기
+            foreach (SpriteRenderer sprite in enemyManager.spriteList)
             {
-                // 돌진 끝나면 스프라이트 다시 투명해지기
-                foreach (SpriteRenderer sprite in enemyManager.spriteList)
-                {
-                    sprite.DOColor(Color.clear, 0.2f);
-                }
-                //그림자 투명하게
-                shadowSprite.DOColor(Color.clear, 0.2f);
-
-                //출발 방향 반대로 돌리기
-                rightStart = !rightStart;
-
-                // 돌진 후딜레이 대기
-                yield return new WaitForSeconds(0.5f);
+                sprite.DOColor(Color.clear, 0.2f);
             }
+            //그림자 투명하게
+            shadowSprite.DOColor(Color.clear, 0.2f);
+
+            //출발 방향 반대로 돌리기
+            rightStart = !rightStart;
+
+            // 애니메이션 idle
+            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+
+            // 돌진 후딜레이 대기
+            yield return new WaitForSeconds(0.5f);
         }
 
-        //TODO 후딜레이 휴식 후 초기화
+        // 플레이어 주변 랜덤 위치로 이동
+        transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * 20f;
+
+        // 보스를 부모로 지정
+        groundSmoke.transform.SetParent(transform);
+        // 바닥 연기 이펙트 끄기
+        groundSmoke.gameObject.SetActive(false);
+
         // 대쉬 어택 콜라이더 끄기
         dashAtk.enabled = false;
         // 충돌 콜라이더 켜기
@@ -340,10 +381,24 @@ public class HotDog_AI : MonoBehaviour
         {
             coll.enabled = true;
         }
-        // 글로벌 라이트 초기화
-        SystemManager.Instance.globalLight.intensity = SystemManager.Instance.globalLightDefault;
+
         // 애니메이션 idle
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+
+        // 글로벌 라이트 초기화
+        DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, SystemManager.Instance.globalLightDefault, 0.5f);
+
+        // 스프라이트 색 초기화
+        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        {
+            sprite.DOColor(Color.white, 0.5f);
+        }
+
+        //그림자 색 초기화
+        shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.5f);
+
+        // 초기화 트윈 끝날때까지 대기
+        yield return new WaitForSeconds(0.5f);
 
         // 상태값 Idle로 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;
@@ -362,6 +417,12 @@ public class HotDog_AI : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        // 플레이어를 부모로 지정
+        groundSmoke.transform.SetParent(PlayerManager.Instance.transform);
+        groundSmoke.transform.localPosition = Vector3.zero;
+        // 바닥 연기 이펙트 켜기
+        groundSmoke.gameObject.SetActive(true);
+
         //충돌 콜라이더 끄기
         enemyManager.physicsColl.enabled = false;
 
@@ -372,7 +433,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 글로벌 라이트 어둡게
-        DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, 0.3f, 1f);
+        DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, 0.1f, 1f);
 
         // 스프라이트 투명해지며 사라지기
         foreach (SpriteRenderer sprite in enemyManager.spriteList)
@@ -422,5 +483,56 @@ public class HotDog_AI : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    #region FootDust
+    void HandDustPlay()
+    {
+        if (enemyManager.nowAction == EnemyManager.Action.Walk)
+            handDust.Play();
+    }
+
+    void HandDustStop()
+    {
+        handDust.Stop();
+    }
+
+    void FootDustPlay()
+    {
+        if (enemyManager.nowAction == EnemyManager.Action.Walk)
+            footDust.Play();
+    }
+
+    void FootDustStop()
+    {
+        footDust.Stop();
+    }
+    #endregion
+
+    void Dead()
+    {
+        // 글로벌 라이트 초기화
+        SystemManager.Instance.globalLight.intensity = SystemManager.Instance.globalLight.intensity;
+
+        // 그림자 색 초기화
+        shadowSprite.color = new Color(0, 0, 0, 0.5f);
+
+        // 보스를 부모로 지정
+        groundSmoke.transform.SetParent(transform);
+        // 바닥 연기 이펙트 끄기
+        groundSmoke.gameObject.SetActive(false);
+
+        // 호흡 이펙트 켜기
+        breathEffect.gameObject.SetActive(true);
+        // 스모크 이펙트 끄기
+        smokeEffect.gameObject.SetActive(false);
+        // 바닥 연기 이펙트 끄기
+        groundSmoke.gameObject.SetActive(false);
+        // 눈 번쩍하는 이펙트 끄기
+        eyeFlash.gameObject.SetActive(false);
+
+        // 발 먼지 이펙트 끄기
+        handDust.Stop();
+        footDust.Stop();
     }
 }

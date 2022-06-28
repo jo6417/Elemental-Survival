@@ -11,8 +11,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class SystemManager : MonoBehaviour
 {
     public delegate void EnemyDeadCallback(Vector2 deadPos);
-    public EnemyDeadCallback enemyDeadCallback;
-    // public static event EnemyDeadCallback EnemyDeadEvent;
+    public EnemyDeadCallback globalEnemyDeadCallback;
 
     #region Singleton
     private static SystemManager instance;

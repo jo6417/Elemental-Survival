@@ -19,7 +19,7 @@ public class LifeMushroom : MonoBehaviour
         magic = magicHolder.magic;
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
-        SystemManager.Instance.enemyDeadCallback += DropLifeSeed;
+        SystemManager.Instance.globalEnemyDeadCallback += DropLifeSeed;
 
         //플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
@@ -34,11 +34,11 @@ public class LifeMushroom : MonoBehaviour
     private void OnDisable()
     {
         // 해당 마법 장착 해제되면 델리게이트에서 함수 빼기
-        SystemManager.Instance.enemyDeadCallback -= DropLifeSeed;
+        SystemManager.Instance.globalEnemyDeadCallback -= DropLifeSeed;
     }
 
     // Life Seed 드랍하기
-    public void DropLifeSeed(Vector2 dropPos)
+    public void DropLifeSeed(Vector2 eventPos)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -52,7 +52,7 @@ public class LifeMushroom : MonoBehaviour
         // HealSeed 마법 크리티컬 확률에 따라 드랍
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(ItemDB.Instance.lifeMushroom, dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject mushroom = LeanPool.Spawn(ItemDB.Instance.lifeMushroom, eventPos, Quaternion.identity, SystemManager.Instance.itemPool);
 
             // 아이템에 체력 회복량 넣기
             mushroom.GetComponent<ItemManager>().amount = healAmount;

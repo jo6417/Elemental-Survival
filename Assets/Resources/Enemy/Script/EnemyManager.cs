@@ -9,6 +9,9 @@ using System.Linq;
 
 public class EnemyManager : MonoBehaviour
 {
+    public delegate void EnemyDeadCallback();
+    public EnemyDeadCallback enemyDeadCallback;
+
     [SerializeField]
     private List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
@@ -634,9 +637,6 @@ public class EnemyManager : MonoBehaviour
             // 폭발 이펙트 스폰
             GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-            // enemy 데이터 넣어주기
-            // effect.GetComponent<EnemyManager>().enemy = enemy;
-
             // 태그 몬스터 공격으로 바꾸기
             effect.tag = "EnemyAttack";
             effect.layer = LayerMask.NameToLayer("EnemyAttack");
@@ -645,20 +645,20 @@ public class EnemyManager : MonoBehaviour
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         dust.tag = "Enemy";
-        // 2초후 디스폰
-        // LeanPool.Despawn(dust, 2f);
 
         //혈흔 이펙트 생성
         GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-        // 10초후 디스폰
-        // LeanPool.Despawn(blood, 10f);
 
         //아이템 드랍
         DropItem();
 
-        //몬스터 죽을때 함수 호출, ex) 체력 씨앗 드랍
-        if (SystemManager.Instance.enemyDeadCallback != null)
-            SystemManager.Instance.enemyDeadCallback(transform.position);
+        // 몬스터 죽을때 함수 호출 (해당 몬스터만)
+        if (enemyDeadCallback != null)
+            enemyDeadCallback();
+
+        // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
+        if (SystemManager.Instance.globalEnemyDeadCallback != null)
+            SystemManager.Instance.globalEnemyDeadCallback(transform.position);
 
         // 몬스터 리스트에서 몬스터 본인 빼기
         EnemySpawn.Instance.spawnEnemyList.Remove(gameObject);
