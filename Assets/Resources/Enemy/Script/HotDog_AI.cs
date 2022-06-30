@@ -11,12 +11,13 @@ public class HotDog_AI : MonoBehaviour
 
     [Header("Refer")]
     AnimState animState;
-    enum AnimState { isWalk, isRun, isHawl, isBark };
+    enum AnimState { isWalk, isRun, isHawl, isBark, Bite };
     public EnemyManager enemyManager;
     EnemyInfo enemy;
     public ParticleSystem breathEffect; //숨쉴때 입에서 나오는 불꽃
     public ParticleSystem handDust;
     public ParticleSystem footDust;
+    public EnemyAtkTrigger biteTrigger;
 
     [Header("Stealth Atk")]
     public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
@@ -137,6 +138,19 @@ public class HotDog_AI : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
+        // 물기 콜라이더에 플레이어 닿으면 bite 패턴
+        if (biteTrigger.atkTrigger)
+        {
+            // 현재 액션 변경
+            enemyManager.nowAction = EnemyManager.Action.Attack;
+
+            // 호흡 이펙트 끄기
+            StartCoroutine(breathEffect.GetComponent<ParticleManager>().SmoothDisable());
+
+            // 물기 패턴 실행
+            StartCoroutine(Bite());
+            return;
+        }
 
         // 먼 거리일때
         if (distance > farDistance)
@@ -188,7 +202,8 @@ public class HotDog_AI : MonoBehaviour
         //해당 방향으로 가속
         enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale * runSpeed;
 
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        // 상태값 Idle로 초기화
+        SetIdle(0f);
     }
 
     void ChooseAttack()
@@ -204,31 +219,28 @@ public class HotDog_AI : MonoBehaviour
         handDust.Stop();
         footDust.Stop();
 
+        // 호흡 이펙트 끄기
+        StartCoroutine(breathEffect.GetComponent<ParticleManager>().SmoothDisable());
+
         // 랜덤 패턴 결정
-        int randomNum = Random.Range(0, 5);
+        int randomNum = Random.Range(0, 3);
 
         print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        randomNum = 3;
+        // randomNum = 2;
 
         switch (randomNum)
         {
-            //TODO idle 상태일때 서서 숨쉬는 애니메이션 진행, 입에서 불꽃 및 연기 파티클 on/off
-
             case 0:
-                //TODO 근거리 좌,우 콜라이더에 플레이어 닿으면 해당 방향으로 bite 패턴
-                StartCoroutine(Bite());
-                break;
-            case 1:
                 //TODO 근거리 및 중거리 헬파이어 패턴
                 StartCoroutine(Hellfire());
                 break;
-            case 2:
+            case 1:
                 // 원거리 메테오 쿨타임 아닐때 meteor 패턴 코루틴
                 StartCoroutine(Meteor());
                 break;
-            case 3:
+            case 2:
                 // 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
                 StartCoroutine(StealthAtk());
                 break;
@@ -237,6 +249,29 @@ public class HotDog_AI : MonoBehaviour
     IEnumerator Bite()
     {
         yield return null;
+
+        // Run 애니메이션 끄기
+        enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+
+        // 물기 애니메이션 재생
+        enemyManager.animList[0].SetTrigger(AnimState.Bite.ToString());
+    }
+
+    void BiteEnd()
+    {
+        // 행동 초기화
+        SetIdle(1f);
+    }
+
+    IEnumerator SetIdle(float endDelay)
+    {
+        // 호흡 이펙트 켜기
+        breathEffect.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(endDelay);
+
+        // 상태값 Idle로 초기화
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
     IEnumerator Hellfire()
@@ -244,6 +279,7 @@ public class HotDog_AI : MonoBehaviour
         yield return null;
     }
 
+    #region Meteor
     IEnumerator Meteor()
     {
         yield return null;
@@ -252,11 +288,50 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.animList[0].SetBool(AnimState.isHawl.ToString(), true);
     }
 
+    // meteor 애니메이션 끝날때쯤 meteor 소환 함수
+    public void CastMeteor()
+    {
+        StartCoroutine(SummonMeteor());
+    }
+
+    IEnumerator SummonMeteor()
+    {
+        //메테오 개수만큼 반복
+        for (int i = 0; i < meteorNum; i++)
+        {
+            // 메테오 떨어질 위치
+            Vector2 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * 20f;
+
+            // 메테오 생성
+            GameObject magicObj = LeanPool.Spawn(meteorPrefab, targetPos, Quaternion.identity, SystemManager.Instance.magicPool);
+
+            // 메테오 스프라이트 빨갛게
+            // magicObj.GetComponent<SpriteRenderer>().color = Color.red;
+
+            MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+            // magic 데이터 넣기
+            magicHolder.magic = meteorMagic;
+
+            // 타겟을 플레이어로 전환
+            magicHolder.SetTarget(MagicHolder.Target.Player);
+
+            // 메테오 목표지점 targetPos 넣기
+            magicHolder.targetPos = targetPos;
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // Idle 애니메이션 재생
+        enemyManager.animList[0].SetBool(AnimState.isHawl.ToString(), false);
+
+        // 상태값 Idle로 초기화
+        SetIdle(1f);
+    }
+    #endregion
+
+    #region StealthAttack
     IEnumerator StealthAtk()
     {
-        // 호흡 이펙트 끄기
-        StartCoroutine(breathEffect.GetComponent<ParticleManager>().SmoothDisable());
-
         // 짖기 애니메이션 재생
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), true);
 
@@ -397,11 +472,8 @@ public class HotDog_AI : MonoBehaviour
         //그림자 색 초기화
         shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.5f);
 
-        // 초기화 트윈 끝날때까지 대기
-        yield return new WaitForSeconds(0.5f);
-
         // 상태값 Idle로 초기화
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        SetIdle(0.5f);
     }
 
     public void MakeFog()
@@ -450,40 +522,7 @@ public class HotDog_AI : MonoBehaviour
         // 스모크 이펙트 끄기
         StartCoroutine(smokeEffect.GetComponent<ParticleManager>().SmoothDisable());
     }
-
-    // meteor 애니메이션 끝날때쯤 meteor 소환 함수
-    public void CastMeteor()
-    {
-        StartCoroutine(SummonMeteor());
-    }
-
-    IEnumerator SummonMeteor()
-    {
-        //메테오 개수만큼 반복
-        for (int i = 0; i < meteorNum; i++)
-        {
-            // 메테오 떨어질 위치
-            Vector2 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * 20f;
-
-            // 메테오 생성
-            GameObject magicObj = LeanPool.Spawn(meteorPrefab, targetPos, Quaternion.identity, SystemManager.Instance.magicPool);
-
-            // 메테오 스프라이트 빨갛게
-            // magicObj.GetComponent<SpriteRenderer>().color = Color.red;
-
-            MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
-            // magic 데이터 넣기
-            magicHolder.magic = meteorMagic;
-
-            // 타겟을 플레이어로 전환
-            magicHolder.SetTarget(MagicHolder.Target.Player);
-
-            // 메테오 목표지점 targetPos 넣기
-            magicHolder.targetPos = targetPos;
-
-            yield return new WaitForSeconds(0.1f);
-        }
-    }
+    #endregion
 
     #region FootDust
     void HandDustPlay()

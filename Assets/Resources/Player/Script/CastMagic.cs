@@ -318,6 +318,12 @@ public class CastMagic : MonoBehaviour
         //마법 정보 넣기
         magicObj.GetComponentInChildren<MagicHolder>().magic = magic;
 
+        //매직 홀더 찾기
+        MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+        //타겟 정보 넣기
+        magicHolder.SetTarget(MagicHolder.Target.Enemy);
+
         //passive 마법 오브젝트 리스트에 넣기
         passiveMagics.Add(magicObj);
 
@@ -419,7 +425,10 @@ public class CastMagic : MonoBehaviour
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
             //매직 홀더 찾기
-            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();
+            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+            //타겟 정보 넣기
+            magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
             //마법 정보 넣기
             if (magicHolder.magic == null)

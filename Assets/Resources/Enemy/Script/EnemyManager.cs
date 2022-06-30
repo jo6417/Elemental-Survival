@@ -355,8 +355,6 @@ public class EnemyManager : MonoBehaviour
         return true;
     }
 
-
-
     public IEnumerator FlatDebuff()
     {
         //정지 시간 추가
@@ -386,6 +384,14 @@ public class EnemyManager : MonoBehaviour
         // 마법 정보 찾기
         MagicHolder magicHolder = other.GetComponent<MagicHolder>();
         MagicInfo magic = magicHolder.magic;
+
+        // 마법 정보 없으면 리턴
+        if (magicHolder == null || magic == null)
+            return;
+
+        // 목표가 몬스터가 아니면 리턴
+        if (magicHolder.target != MagicHolder.Target.Enemy)
+            return;
 
         // print(transform.name + " : " + magic.magicName);
 

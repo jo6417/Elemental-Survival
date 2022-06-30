@@ -64,6 +64,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: aaf16a113a450c74dbf82c8b71e04eae, type: 3}
   - {fileID: 21300000, guid: b0394341af26a2c4b877ac242b33cedd, type: 3}
   - {fileID: 21300000, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
+  - {fileID: -4410874474111847179, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: -2366728947610843007, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: 2313115952658954009, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: -2784494518819777029, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: 5054158684240531576, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: 4296841467722118704, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: 7172787789769408317, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
   - {fileID: -8112224202027827953, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 8954982405313846772, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 21300000, guid: 63524fa2c4b4ba045abd287ded7bb51b, type: 3}
@@ -107,6 +114,7 @@ SpriteAtlas:
   - {fileID: 1254494850885041662, guid: db45f1196c110914792e7a8a22ca650e, type: 3}
   - {fileID: 726276756119451487, guid: db45f1196c110914792e7a8a22ca650e, type: 3}
   - {fileID: 6964627243507474846, guid: db45f1196c110914792e7a8a22ca650e, type: 3}
+  - {fileID: 21300000, guid: 2b089229fff5a3940859b4f427daf7dd, type: 3}
   - {fileID: -2782545112699233976, guid: 71652839d0c5c8d48adc11c8864e4674, type: 3}
   - {fileID: -3007600717714129487, guid: 71652839d0c5c8d48adc11c8864e4674, type: 3}
   - {fileID: 7045322567115125678, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
@@ -156,6 +164,7 @@ SpriteAtlas:
   - {fileID: 4866485357111499113, guid: c4f007ccd80da8147aa55cede9124f50, type: 3}
   - {fileID: 8416947398471986722, guid: c4f007ccd80da8147aa55cede9124f50, type: 3}
   - {fileID: 7261676426368271964, guid: c4f007ccd80da8147aa55cede9124f50, type: 3}
+  - {fileID: 21300000, guid: 0a46d10d458bb44439ab3c73d2a62039, type: 3}
   - {fileID: 21300000, guid: cf10bf9dca6ac8948bc33cfe365e9601, type: 3}
   - {fileID: -2736924212763453901, guid: 22ccebbd89fa70f48abd520471ee130b, type: 3}
   - {fileID: 8433743615449474768, guid: 22ccebbd89fa70f48abd520471ee130b, type: 3}
@@ -214,6 +223,13 @@ SpriteAtlas:
   - LifeGem_Icon
   - AppleBomb_Icon
   - Bubble
+  - Hellfire_Crack-Sheet_2
+  - Hellfire_Crack-Sheet_3
+  - Hellfire_Crack-Sheet_0
+  - Hellfire_Crack-Sheet_1
+  - Hellfire_Crack-Sheet_6
+  - Hellfire_Crack-Sheet_4
+  - Hellfire_Crack-Sheet_5
   - LavaWalk_Sheet_1
   - LavaWalk_Sheet_0
   - Nimbus_Icon
@@ -257,6 +273,7 @@ SpriteAtlas:
   - Wave_Sheet_7
   - Wave_Sheet_6
   - Wave_Sheet_8
+  - Hellfire_Mask
   - DirtyPuddle_0
   - DirtyPuddle_1
   - Heist_Sheet_2
@@ -306,6 +323,7 @@ SpriteAtlas:
   - Thunderbolt_Sheet_0
   - Thunderbolt_Sheet_9
   - Thunderbolt_Sheet_8
+  - Hellfire_skull
   - BabyArrow_Icon
   - HealingSpa_Sheet_2
   - HealingSpa_Sheet_3

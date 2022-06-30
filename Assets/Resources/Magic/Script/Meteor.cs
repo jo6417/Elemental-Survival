@@ -10,7 +10,7 @@ public class Meteor : MonoBehaviour
     public Vector2 startOffset; //시작할 위치
 
     [Header("Refer")]
-    public SpriteRenderer rockSprite; //운석 스프라이트
+    // public SpriteRenderer rockSprite; //운석 스프라이트
     public ParticleSystem fireTrail;
     // public ParticleSystem mainParticle;
     // public Collider2D coll;
@@ -48,15 +48,6 @@ public class Meteor : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
-        // 색깔 초기화
-        if (magicHolder.target == MagicHolder.Target.Player)
-            // 플레이어가 타겟이면 빨갛게
-            rockSprite.color = Color.red;
-
-        if (magicHolder.target == MagicHolder.Target.Enemy)
-            // 몬스터가 타겟이면 원래 색깔
-            rockSprite.color = Color.white;
-
         //마법 떨어뜨리기
         StartCoroutine(FallMagic());
     }
@@ -71,6 +62,16 @@ public class Meteor : MonoBehaviour
 
         //떨어질 자리에 인디케이터 표시
         GameObject shadow = LeanPool.Spawn(indicator, magicHolder.targetPos, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 인디케이터 색깔 초기화
+        SpriteRenderer shadowSprite = shadow.GetComponent<SpriteRenderer>();
+        if (magicHolder.target == MagicHolder.Target.Player)
+            // 플레이어가 타겟이면 빨간색
+            shadowSprite.color = new Color(1, 0, 0, 100f / 255f);
+
+        if (magicHolder.target == MagicHolder.Target.Enemy)
+            // 몬스터가 타겟이면 흰색
+            shadowSprite.color = new Color(1, 1, 1, 100f / 255f);
 
         //인디케이터 사이즈 0,0으로 초기화
         shadow.transform.localScale = Vector3.zero;
