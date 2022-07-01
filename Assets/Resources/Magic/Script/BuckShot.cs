@@ -7,7 +7,6 @@ public class BuckShot : MonoBehaviour
 {
     MagicHolder magicHolder;
     MagicInfo magic;
-    Vector2 targetPos;
     ParticleSystem particle;
     public float particleSpeed;
 
@@ -27,7 +26,6 @@ public class BuckShot : MonoBehaviour
         yield return new WaitUntil(() => TryGetComponent(out MagicHolder holder));
         magicHolder = GetComponent<MagicHolder>();
         magic = magicHolder.magic;
-        targetPos = magicHolder.targetPos;
 
         //플레이어가 마지막 바라본 방향의 각도
         float rotation = Mathf.Atan2(PlayerManager.Instance.lastDir.y, PlayerManager.Instance.lastDir.x) * Mathf.Rad2Deg;

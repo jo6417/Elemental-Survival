@@ -45,6 +45,7 @@ public class MagicHolder : MonoBehaviour
 
     IEnumerator Initial()
     {
+        // 마법 정보 알기 전까지 콜라이더 끄기
         if (coll != null)
             coll.enabled = false;
 
@@ -54,6 +55,7 @@ public class MagicHolder : MonoBehaviour
         if (magic == null)
             magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
 
+        // 마법 정보 찾은 뒤 콜라이더 활성화
         if (coll != null)
             coll.enabled = true;
 

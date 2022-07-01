@@ -11,7 +11,7 @@ public class HotDog_AI : MonoBehaviour
 
     [Header("Refer")]
     AnimState animState;
-    enum AnimState { isWalk, isRun, isHawl, isBark, Bite };
+    enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch };
     public EnemyManager enemyManager;
     EnemyInfo enemy;
     public ParticleSystem breathEffect; //숨쉴때 입에서 나오는 불꽃
@@ -32,6 +32,7 @@ public class HotDog_AI : MonoBehaviour
     public float meteorCoolTime;
     public float meteorRange;
     public int meteorNum;
+    public ParticleManager chargeEffect;
     MagicInfo meteorMagic;
     GameObject meteorPrefab;
 
@@ -70,7 +71,7 @@ public class HotDog_AI : MonoBehaviour
 
         //애니메이션 초기화
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
-        enemyManager.animList[0].SetBool(AnimState.isHawl.ToString(), false);
+        // enemyManager.animList[0].SetBool(AnimState.Charge.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
         // 상태값 Idle로 초기화
@@ -203,7 +204,7 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale * runSpeed;
 
         // 상태값 Idle로 초기화
-        SetIdle(0f);
+        StartCoroutine(SetIdle(0f));
     }
 
     void ChooseAttack()
@@ -228,7 +229,7 @@ public class HotDog_AI : MonoBehaviour
         print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        // randomNum = 2;
+        randomNum = 0;
 
         switch (randomNum)
         {
@@ -260,7 +261,7 @@ public class HotDog_AI : MonoBehaviour
     void BiteEnd()
     {
         // 행동 초기화
-        SetIdle(1f);
+        StartCoroutine(SetIdle(1f));
     }
 
     IEnumerator SetIdle(float endDelay)
@@ -276,7 +277,37 @@ public class HotDog_AI : MonoBehaviour
 
     IEnumerator Hellfire()
     {
-        yield return null;
+        //TODO 차지 애니메이션 재생
+        enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
+        //TODO 차지 끝나면 에너지볼 먹는 애니메이션 재생
+        enemyManager.animList[0].SetTrigger(AnimState.Eat.ToString());
+
+        //TODO 에너지볼 먹는 애니메이션 끝날때까지 대기
+        yield return new WaitUntil(() =>
+            enemyManager.animList[0].GetAnimatorTransitionInfo(0).IsName("HotDog_EatBall")
+            && enemyManager.animList[0].GetAnimatorTransitionInfo(0).normalizedTime >= 1.0f
+        );
+
+        //TODO 3연속 점프
+        for (int i = 0; i < 3; i++)
+        {
+            // 점프 애니메이션 재생
+            enemyManager.animList[0].SetTrigger(AnimState.Jump.ToString());
+
+            // 점프 애니메이션 끝날때까지 대기
+            // yield return new WaitUntil(() => );
+
+            // 점프 후딜레이
+            yield return new WaitForSeconds(1f);
+        }
+
+        // Idle 액션으로 전환
+        StartCoroutine(SetIdle(1f));
+    }
+
+    void SummonHellfire()
+    {
+        //TODO 점프 착지마다 원형으로 헬파이어 소환, 점점 더 큰 반경
     }
 
     #region Meteor
@@ -284,8 +315,10 @@ public class HotDog_AI : MonoBehaviour
     {
         yield return null;
 
-        // 하울링 애니메이션 재생
-        enemyManager.animList[0].SetBool(AnimState.isHawl.ToString(), true);
+        // 차지 애니메이션 재생
+        enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
+        // 에너지볼 발사 애니메이션 재생
+        enemyManager.animList[0].SetTrigger(AnimState.Launch.ToString());
     }
 
     // meteor 애니메이션 끝날때쯤 meteor 소환 함수
@@ -322,10 +355,10 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // Idle 애니메이션 재생
-        enemyManager.animList[0].SetBool(AnimState.isHawl.ToString(), false);
+        // enemyManager.animList[0].SetBool(AnimState.Charge.ToString(), false);
 
         // 상태값 Idle로 초기화
-        SetIdle(1f);
+        StartCoroutine(SetIdle(1f));
     }
     #endregion
 
@@ -473,7 +506,7 @@ public class HotDog_AI : MonoBehaviour
         shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.5f);
 
         // 상태값 Idle로 초기화
-        SetIdle(0.5f);
+        StartCoroutine(SetIdle(0.5f));
     }
 
     public void MakeFog()
