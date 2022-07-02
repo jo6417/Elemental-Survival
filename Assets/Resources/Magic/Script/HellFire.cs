@@ -10,6 +10,7 @@ public class HellFire : MonoBehaviour
     public ParticleManager fireEffect;
     public ParticleSystem explosionEffect;
     public Animator anim;
+    public SpriteRenderer skullSprite;
 
     private void Awake()
     {
@@ -30,8 +31,17 @@ public class HellFire : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
+        // 타겟에 따라 해골 색 바꾸기
+        if (magicHolder.target == MagicHolder.Target.Player)
+            // 플레이어가 타겟이면 빨간색
+            skullSprite.color = new Color(1, 0, 0, 1);
+
+        if (magicHolder.target == MagicHolder.Target.Enemy)
+            // 몬스터가 타겟이면 흰색
+            skullSprite.color = new Color(1, 1, 1, 1);
+
         // 타겟 위치를 바라보기
-        if (PlayerManager.Instance.transform.position.x > magicHolder.targetPos.x)
+        if (transform.position.x > magicHolder.targetPos.x)
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);
         }

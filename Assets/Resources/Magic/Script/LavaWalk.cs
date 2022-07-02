@@ -89,8 +89,13 @@ public class LavaWalk : MonoBehaviour
         //마법 오브젝트 생성
         GameObject magicObj = LeanPool.Spawn(footprint, playerPos, Quaternion.Euler(playerDir), parentPool);
 
+        MagicHolder _magicHolder = magicObj.GetComponent<MagicHolder>();
+
         //마법 정보 넣기
-        magicObj.GetComponent<MagicHolder>().magic = magic;
+        _magicHolder.magic = magic;
+
+        //마법 타겟 지정
+        _magicHolder.SetTarget(magicHolder.target);
 
         //마지막 발자국 위치 갱신
         lastFootPos = magicObj.transform.position;

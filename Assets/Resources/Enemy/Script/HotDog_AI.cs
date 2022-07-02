@@ -10,11 +10,12 @@ public class HotDog_AI : MonoBehaviour
     public float farDistance = 10f;
 
     [Header("Refer")]
+    bool initialDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch };
     public EnemyManager enemyManager;
     EnemyInfo enemy;
-    public ParticleSystem breathEffect; //숨쉴때 입에서 나오는 불꽃
+    public ParticleManager breathEffect; //숨쉴때 입에서 나오는 불꽃
     public ParticleSystem handDust;
     public ParticleSystem footDust;
     public EnemyAtkTrigger biteTrigger;
@@ -26,6 +27,15 @@ public class HotDog_AI : MonoBehaviour
     public ParticleSystem smokeEffect; // 안개 생성시 입에서 나오는 연기
     public EnemyAttack dashAtk;
     public SpriteRenderer shadowSprite; //그림자 스프라이트
+
+    [Header("HellFire")]
+    public ParticleSystem leakFireEffect; //차지 후 불꽃 새는 이펙트
+    int jumpCount = -1;
+    MagicInfo hellFireMagic;
+    GameObject hellFirePrefab;
+    [SerializeField]
+    int hellfire_defaultNum = 10;
+    int hellfire_Increment = 10;
 
     [Header("Meteor")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
@@ -48,8 +58,8 @@ public class HotDog_AI : MonoBehaviour
 
     IEnumerator Initial()
     {
-        // 호흡 이펙트 켜기
-        breathEffect.gameObject.SetActive(true);
+        // 호흡 이펙트 끄기
+        breathEffect.gameObject.SetActive(false);
         // 스모크 이펙트 끄기
         smokeEffect.gameObject.SetActive(false);
         // 바닥 연기 이펙트 끄기
@@ -80,10 +90,23 @@ public class HotDog_AI : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
+        // 헬파이어 마법 데이터 찾기
+        if (hellFireMagic == null)
+        {
+            // 찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
+            hellFireMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("HellFire"));
+
+            // 강력한 데미지로 고정
+            hellFireMagic.power = 10f;
+
+            // 메테오 프리팹 찾기
+            hellFirePrefab = MagicDB.Instance.GetMagicPrefab(hellFireMagic.id);
+        }
+
         // 메테오 마법 데이터 찾기
         if (meteorMagic == null)
         {
-            //찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
+            // 찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
             meteorMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Meteor"));
 
             // 강력한 데미지로 고정
@@ -98,6 +121,9 @@ public class HotDog_AI : MonoBehaviour
 
         //죽을때 델리게이트에 함수 추가
         enemyManager.enemyDeadCallback += Dead;
+
+        // 초기화 완료
+        initialDone = true;
     }
 
     void Update()
@@ -107,6 +133,10 @@ public class HotDog_AI : MonoBehaviour
 
         // 상태 이상 있으면 리턴
         if (!enemyManager.ManageState())
+            return;
+
+        // 초기화 완료 안됬으면 리턴
+        if (!initialDone)
             return;
 
         //행동 관리
@@ -146,7 +176,7 @@ public class HotDog_AI : MonoBehaviour
             enemyManager.nowAction = EnemyManager.Action.Attack;
 
             // 호흡 이펙트 끄기
-            StartCoroutine(breathEffect.GetComponent<ParticleManager>().SmoothDisable());
+            StartCoroutine(breathEffect.SmoothDisable());
 
             // 물기 패턴 실행
             StartCoroutine(Bite());
@@ -171,6 +201,9 @@ public class HotDog_AI : MonoBehaviour
             // 속도 초기화
             enemyManager.rigid.velocity = Vector3.zero;
 
+            // 현재 액션 변경
+            enemyManager.nowAction = EnemyManager.Action.Attack;
+
             //공격 패턴 결정하기
             ChooseAttack();
         }
@@ -179,6 +212,9 @@ public class HotDog_AI : MonoBehaviour
     void Walk()
     {
         enemyManager.nowAction = EnemyManager.Action.Walk;
+
+        // 호흡 이펙트 켜기
+        breathEffect.gameObject.SetActive(true);
 
         //애니메이터 켜기
         enemyManager.animList[0].enabled = true;
@@ -202,9 +238,10 @@ public class HotDog_AI : MonoBehaviour
 
         //해당 방향으로 가속
         enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale * runSpeed;
+        // print(enemyManager.rigid.velocity);
 
         // 상태값 Idle로 초기화
-        StartCoroutine(SetIdle(0f));
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
     void ChooseAttack()
@@ -221,11 +258,10 @@ public class HotDog_AI : MonoBehaviour
         footDust.Stop();
 
         // 호흡 이펙트 끄기
-        StartCoroutine(breathEffect.GetComponent<ParticleManager>().SmoothDisable());
+        StartCoroutine(breathEffect.SmoothDisable());
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 3);
-
         print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
@@ -247,6 +283,7 @@ public class HotDog_AI : MonoBehaviour
                 break;
         }
     }
+
     IEnumerator Bite()
     {
         yield return null;
@@ -275,40 +312,86 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
+    #region HellFire
+
     IEnumerator Hellfire()
     {
-        //TODO 차지 애니메이션 재생
+        // 차지 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
-        //TODO 차지 끝나면 에너지볼 먹는 애니메이션 재생
+        // 차지 끝나면 에너지볼 먹는 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Eat.ToString());
 
-        //TODO 에너지볼 먹는 애니메이션 끝날때까지 대기
-        yield return new WaitUntil(() =>
-            enemyManager.animList[0].GetAnimatorTransitionInfo(0).IsName("HotDog_EatBall")
-            && enemyManager.animList[0].GetAnimatorTransitionInfo(0).normalizedTime >= 1.0f
-        );
-
-        //TODO 3연속 점프
+        // 3연속 점프
         for (int i = 0; i < 3; i++)
         {
+            jumpCount = i;
+
             // 점프 애니메이션 재생
             enemyManager.animList[0].SetTrigger(AnimState.Jump.ToString());
 
             // 점프 애니메이션 끝날때까지 대기
-            // yield return new WaitUntil(() => );
+            yield return new WaitUntil(() => jumpCount == -1);
 
-            // 점프 후딜레이
-            yield return new WaitForSeconds(1f);
+            // 점프 후딜레이 대기
+            yield return new WaitForSeconds(0.5f);
         }
 
         // Idle 액션으로 전환
         StartCoroutine(SetIdle(1f));
     }
 
+    void JumpEnd()
+    {
+        // 점프 카운트 -1로 초기화
+        jumpCount = -1;
+    }
+
+    void LeakFire()
+    {
+        // 관절에서 불꽃 새는 이펙트 켜기
+        leakFireEffect.gameObject.SetActive(true);
+
+        // 불꽃 호흡 이펙트 켜기
+        breathEffect.gameObject.SetActive(true);
+    }
+
     void SummonHellfire()
     {
-        //TODO 점프 착지마다 원형으로 헬파이어 소환, 점점 더 큰 반경
+        // 헬파이어 소환 개수
+        int summonNum = hellfire_defaultNum + hellfire_Increment * jumpCount;
+
+        // 헬파이어 개수만큼 반복
+        for (int i = 0; i < summonNum; i++)
+        {
+            // 소환할 각도를 벡터로 바꾸기
+            float angle = 360f * i / summonNum;
+            Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
+            // print(angle + " : " + summonDir);
+
+            // 헬파이어 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
+            Vector3 targetPos = transform.position + summonDir * (5f + 5f * jumpCount);
+
+            // 헬파이어 생성
+            GameObject magicObj = LeanPool.Spawn(hellFirePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+            // 매직홀더 찾기
+            MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+            // magic 데이터 넣기
+            magicHolder.magic = hellFireMagic;
+
+            // 타겟을 플레이어로 전환
+            magicHolder.SetTarget(MagicHolder.Target.Player);
+
+            // 헬파이어 목표지점 넣기
+            magicHolder.targetPos = targetPos;
+        }
+
+        //TODO 8방향 직선으로 퍼지며 일정 거리마다 헬파이어 소환
+        //TODO 점점 큰 원형으로 5번 생성
+        //TODO 8방향 직선으로 일정시간 퍼지다가 다시 일정시간 플레이어 실시간 추적
     }
+
+    #endregion
 
     #region Meteor
     IEnumerator Meteor()

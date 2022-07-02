@@ -9767,7 +9767,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8500939954073941842}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 7, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8500023204262458840}
@@ -9812,9 +9812,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 918817935
-  m_SortingLayer: 6
-  m_SortingOrder: 2
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 0a46d10d458bb44439ab3c73d2a62039, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -9918,6 +9918,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8500939955285953714}
   - component: {fileID: 8500939955285953713}
+  - component: {fileID: 3327068179478164566}
   m_Layer: 8
   m_Name: GroundMask
   m_TagString: Untagged
@@ -9933,7 +9934,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8500939955285953715}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.875, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8500939954073941841}
@@ -9989,7 +9990,18 @@ SpriteMask:
   m_FrontSortingOrder: 0
   m_BackSortingOrder: 0
   m_IsCustomRangeActive: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
+--- !u!210 &3327068179478164566
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8500939955285953715}
+  m_Enabled: 1
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1 &8500939955424935691
 GameObject:
   m_ObjectHideFlags: 0
@@ -10066,6 +10078,7 @@ MonoBehaviour:
   fireEffect: {fileID: 5642212436027588650}
   explosionEffect: {fileID: 8148357747059866256}
   anim: {fileID: 8500939955424935690}
+  skullSprite: {fileID: 8500939954073941840}
 --- !u!212 &8500939955424935689
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14977,7 +14990,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -15633,15 +15646,15 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 8593936611402769842, guid: d9de1b6b57ddf424f9164127d9476914, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d9de1b6b57ddf424f9164127d9476914, type: 3}
---- !u!4 &8347957143063220876 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 441494685302836944, guid: d9de1b6b57ddf424f9164127d9476914,
-    type: 3}
-  m_PrefabInstance: {fileID: 8500939955219274844}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &8148357747059866256 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 355133372026791628, guid: d9de1b6b57ddf424f9164127d9476914,
+    type: 3}
+  m_PrefabInstance: {fileID: 8500939955219274844}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8347957143063220876 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 441494685302836944, guid: d9de1b6b57ddf424f9164127d9476914,
     type: 3}
   m_PrefabInstance: {fileID: 8500939955219274844}
   m_PrefabAsset: {fileID: 0}

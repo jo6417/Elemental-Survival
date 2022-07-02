@@ -74,6 +74,8 @@ public class PlayerManager : MonoBehaviour
     Vector2 nowMoveDir;
     public bool isDash; //현재 대쉬중 여부
     public bool isFlat; //깔려서 납작해졌을때
+    public float defaultDashSpeed = 1.5f; // 대쉬 속도 기본값
+    [HideInInspector]
     public float dashSpeed; //대쉬 버프 속도
     [HideInInspector]
     public float speedDebuff = 1f; //이동속도 디버프
@@ -290,7 +292,7 @@ public class PlayerManager : MonoBehaviour
         //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
         if (isDash)
         {
-            dashSpeed = 2f;
+            dashSpeed = defaultDashSpeed;
         }
 
         // 실제 오브젝트 이동해주기
