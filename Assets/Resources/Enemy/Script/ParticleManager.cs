@@ -53,7 +53,12 @@ public class ParticleManager : MonoBehaviour
         }
     }
 
-    public IEnumerator SmoothDespawn()
+    public void SmoothDespawn()
+    {
+        StartCoroutine(SmoothDespawnCoroutine());
+    }
+
+    IEnumerator SmoothDespawnCoroutine()
     {
         //파티클 재생 정지
         particle.Stop();
@@ -65,7 +70,12 @@ public class ParticleManager : MonoBehaviour
         LeanPool.Despawn(transform);
     }
 
-    public IEnumerator SmoothDisable()
+    public void SmoothDisable()
+    {
+        StartCoroutine(SmoothDisableCoroutine());
+    }
+
+    IEnumerator SmoothDisableCoroutine()
     {
         //파티클 재생 정지
         particle.Stop();

@@ -48,6 +48,9 @@ public class Meteor : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
+        // 콜라이더 끄기
+        magicHolder.coll.enabled = false;
+
         //마법 떨어뜨리기
         StartCoroutine(FallMagic());
     }
@@ -103,8 +106,15 @@ public class Meteor : MonoBehaviour
         Tween fallTween = transform.DOMove(endPos, speed)
         .SetEase(Ease.Linear);
 
-        // 땅에 떨어질때까지 대기
-        yield return new WaitForSeconds(speed);
+        // 땅에 떨어지기 직전(0.1초전)까지 대기
+        yield return new WaitForSeconds(speed - 0.1f);
+
+        // 콜라이더 켜기
+        magicHolder.coll.enabled = true;
+        // 콜라이더 충돌 시간 대기
+        yield return new WaitForSeconds(0.1f);
+        // 콜라이더 끄기
+        magicHolder.coll.enabled = false;
 
         //인디케이터 디스폰
         LeanPool.Despawn(shadow);

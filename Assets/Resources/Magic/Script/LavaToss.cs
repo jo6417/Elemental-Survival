@@ -39,7 +39,7 @@ public class LavaToss : MonoBehaviour
         .SetDelay(2f)
         .OnComplete(() =>
         {
-                //디스폰
+            //디스폰
             StartCoroutine(AutoDespawn());
         });
     }

@@ -63,10 +63,11 @@ public class SystemManager : MonoBehaviour
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public GameObject ghostPrefab; // 잔상 효과 프리팹
-    public GameObject pointPrefab; // 위치 디버깅용 프리팹
+    public GameObject markPrefab; //! 위치 체크용 마크 프리팹
 
     [Header("Material")]
-    public Material spriteMat; //일반 스프라이트 머터리얼
+    public Material spriteLitMat; //일반 스프라이트 Lit 머터리얼
+    public Material spriteUnLitMat; //일반 스프라이트 unLit 머터리얼
     public Material outLineMat; //아웃라인 머터리얼
     public Material hitMat; //맞았을때 단색 머터리얼
     public Material ghostHDRMat; //고스팅 마법 HDR 머터리얼

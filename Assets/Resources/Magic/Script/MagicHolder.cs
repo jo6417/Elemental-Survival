@@ -7,6 +7,7 @@ public class MagicHolder : MonoBehaviour
     public MagicInfo magic; //보유한 마법 데이터
     public string magicName; //마법 이름 확인
     public Collider2D coll;
+    public GameObject targetObj = null; //목표 오브젝트
     public Vector3 targetPos = default(Vector3); //목표 위치
     public enum Target { None, Enemy, Player };
     public Target target; //마법의 목표 타겟

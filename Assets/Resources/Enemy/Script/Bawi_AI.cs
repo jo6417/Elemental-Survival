@@ -784,9 +784,9 @@ public class Bawi_AI : MonoBehaviour
 
         // 차지 이펙트 끄기
         if (partObj == fistPart)
-            StartCoroutine(fistChargeGathering.GetComponent<ParticleManager>().SmoothDisable());
+            fistChargeGathering.GetComponent<ParticleManager>().SmoothDisable();
         else
-            StartCoroutine(drillChargeGathering.GetComponent<ParticleManager>().SmoothDisable());
+            drillChargeGathering.GetComponent<ParticleManager>().SmoothDisable();
     }
 
     IEnumerator FistDrop()
@@ -993,9 +993,9 @@ public class Bawi_AI : MonoBehaviour
         drillGhostColl.enabled = true;
 
         // 땅파기 파티클 끄기
-        StartCoroutine(digDirtParticle.GetComponent<ParticleManager>().SmoothDisable());
+        digDirtParticle.GetComponent<ParticleManager>().SmoothDisable();
         // 흙무더기 파티클 끄기
-        StartCoroutine(BurrowTrail.GetComponent<ParticleManager>().SmoothDisable());
+        BurrowTrail.GetComponent<ParticleManager>().SmoothDisable();
 
         // 땅에서 나올때 튀는 흙 파티클
         LeanPool.Spawn(DirtExplosion, drillParent.position, Quaternion.identity, SystemManager.Instance.effectPool);

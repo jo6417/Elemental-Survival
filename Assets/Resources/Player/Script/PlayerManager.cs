@@ -443,7 +443,7 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitUntil(() => hitCoolCount <= 0);
 
         //머터리얼 복구
-        sprite.material = SystemManager.Instance.spriteMat;
+        sprite.material = SystemManager.Instance.spriteUnLitMat;
 
         //원래 색으로 복구
         sprite.color = Color.white;
@@ -474,7 +474,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         //원래 머터리얼로 복구
-        sprite.material = SystemManager.Instance.spriteMat;
+        sprite.material = SystemManager.Instance.spriteLitMat;
 
         //원래 색으로 복구
         sprite.color = Color.white;

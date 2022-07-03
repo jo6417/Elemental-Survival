@@ -259,7 +259,7 @@ public class EnemySpawn : MonoBehaviour
         else
         {
             //일반 스프라이트 머터리얼
-            enemySprite.material = SystemManager.Instance.spriteMat;
+            enemySprite.material = SystemManager.Instance.spriteLitMat;
             enemyManager.isElite = false;
         }
 

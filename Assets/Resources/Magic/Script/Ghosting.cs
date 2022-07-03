@@ -100,7 +100,7 @@ public class Ghosting : MonoBehaviour
             PlayerManager.Instance.playerLight.enabled = false;
 
             // 플레이어 색깔 및 머터리얼 초기화
-            PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteMat;
+            PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteLitMat;
 
             //플레이어 및 전역 시간 속도 초기화
             SystemManager.Instance.globalTimeScale = 1f;

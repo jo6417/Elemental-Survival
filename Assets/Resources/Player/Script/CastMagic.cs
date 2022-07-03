@@ -241,14 +241,14 @@ public class CastMagic : MonoBehaviour
             yield break;
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<Vector2> enemyPos = MarkEnemyPos(magic);
+        List<GameObject> enemyObj = MarkEnemy(magic);
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
 
         // print(magic.magicName + " : " + coolTime);
 
-        for (int i = 0; i < enemyPos.Count; i++)
+        for (int i = 0; i < enemyObj.Count; i++)
         {
             // 마법 오브젝트 생성
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
@@ -268,7 +268,9 @@ public class CastMagic : MonoBehaviour
                 magicHolder.magic = magic;
 
             //적 위치 넣기, 있어도 새로 갱신
-            magicHolder.targetPos = enemyPos[i];
+            magicHolder.targetObj = enemyObj[i];
+            //적 오브젝트 넣기, (유도 기능 등에 사용)
+            magicHolder.targetPos = enemyObj[i].transform.position;
 
             yield return new WaitForSeconds(0.1f);
         }
@@ -331,9 +333,9 @@ public class CastMagic : MonoBehaviour
         nowCastMagics.Add(magic);
     }
 
-    List<Vector2> MarkEnemyPos(MagicInfo magic)
+    List<GameObject> MarkEnemy(MagicInfo magic)
     {
-        List<Vector2> enemyPos = new List<Vector2>();
+        List<GameObject> enemyObj = new List<GameObject>();
 
         //캐릭터 주변의 적들
         List<Collider2D> enemyColList = new List<Collider2D>();
@@ -348,15 +350,15 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < atkNum; i++)
         {
             // 플레이어 주변 범위내 랜덤 위치 벡터 생성
-            Vector2 pos =
-            (Vector2)PlayerManager.Instance.transform.position
-            + Random.insideUnitCircle * range;
+            GameObject Obj = null;
+            // (Vector2)PlayerManager.Instance.transform.position
+            // + Random.insideUnitCircle * range;
 
             // 플레이어 주변 범위내 랜덤한 적의 위치
             if (enemyColList.Count > 0)
             {
                 Collider2D col = enemyColList[Random.Range(0, enemyColList.Count)];
-                pos = col.transform.position;
+                Obj = col.gameObject;
 
                 //임시 리스트에서 지우기
                 enemyColList.Remove(col);
@@ -365,11 +367,11 @@ public class CastMagic : MonoBehaviour
             }
 
             // 범위내에 적이 있으면 적위치, 없으면 무작위 위치 넣기
-            enemyPos.Add(pos);
+            enemyObj.Add(Obj);
         }
 
         //적의 위치 리스트 리턴
-        return enemyPos;
+        return enemyObj;
     }
 
     public IEnumerator UseUltimateMagic()
@@ -417,9 +419,9 @@ public class CastMagic : MonoBehaviour
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<Vector2> enemyPos = MarkEnemyPos(magic);
+        List<GameObject> enemyObj = MarkEnemy(magic);
 
-        for (int i = 0; i < enemyPos.Count; i++)
+        for (int i = 0; i < enemyObj.Count; i++)
         {
             // 마법 오브젝트 생성
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
@@ -435,7 +437,9 @@ public class CastMagic : MonoBehaviour
                 magicHolder.magic = magic;
 
             //적 위치 넣기, 있어도 새로 갱신
-            magicHolder.targetPos = enemyPos[i];
+            magicHolder.targetObj = enemyObj[i];
+            //적 오브젝트 넣기, (유도 기능 등에 사용)
+            magicHolder.targetPos = enemyObj[i].transform.position;
 
             yield return new WaitForSeconds(0.1f);
         }

@@ -87357,9 +87357,10 @@ MonoBehaviour:
     type: 3}
   ghostPrefab: {fileID: 6164809114435850960, guid: fd1936ed9e7a3a94c8e7440f1159e955,
     type: 3}
-  pointPrefab: {fileID: 7984764804097638933, guid: 67cc1c359101f084992a55b1ae8df2d7,
+  markPrefab: {fileID: 4171339516480167943, guid: 3195d798284a42b418f9f4df9923f55e,
     type: 3}
-  spriteMat: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  spriteLitMat: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  spriteUnLitMat: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   outLineMat: {fileID: 2100000, guid: 40506420e55a4a34f8d4928dfd7d2778, type: 2}
   hitMat: {fileID: 2100000, guid: 78d6ca38b5e8fb348ba206d913ebda1e, type: 2}
   ghostHDRMat: {fileID: 2100000, guid: 013fb1c0122a48741bec8025f44bf2e5, type: 2}
@@ -96008,7 +96009,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh27868
+  m_Name: pb_Mesh27862
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -153819,11 +153820,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 1137751501}
-    - target: {fileID: 2948559716295491235, guid: 3a87e56f832ff96439ce49b991f645ab,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3746880840705113283, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}
       propertyPath: m_Name
@@ -153837,12 +153833,12 @@ PrefabInstance:
     - target: {fileID: 5471369762297914884, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.08
       objectReference: {fileID: 0}
     - target: {fileID: 5471369762297914884, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5
+      value: 3.04
       objectReference: {fileID: 0}
     - target: {fileID: 5471369762297914884, guid: 3a87e56f832ff96439ce49b991f645ab,
         type: 3}

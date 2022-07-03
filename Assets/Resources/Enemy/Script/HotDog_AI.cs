@@ -7,18 +7,26 @@ using UnityEngine;
 
 public class HotDog_AI : MonoBehaviour
 {
-    public float farDistance = 10f;
-
     [Header("Refer")]
     bool initialDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch };
     public EnemyManager enemyManager;
     EnemyInfo enemy;
+    public EnemyAtkTrigger biteTrigger;
+    public ParticleManager chargeEffect;
+    public ParticleManager tailEffect; //꼬리 화염 파티클
+    public SpriteRenderer eyeGlow; // 빛나는 눈 오브젝트
+    public List<GameObject> glowObj = new List<GameObject>(); // 빛나는 오브젝트들
+
+    [Header("Move")]
+    public float farDistance = 15f;
+    public float closeDistance = 8f;
     public ParticleManager breathEffect; //숨쉴때 입에서 나오는 불꽃
     public ParticleSystem handDust;
     public ParticleSystem footDust;
-    public EnemyAtkTrigger biteTrigger;
+    public Vector2 moveToPos; // 목표 위치
+    public float moveResetCount; // 목표위치 갱신 시간 카운트
 
     [Header("Stealth Atk")]
     public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
@@ -39,12 +47,17 @@ public class HotDog_AI : MonoBehaviour
 
     [Header("Meteor")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
-    public float meteorCoolTime;
     public float meteorRange;
     public int meteorNum;
-    public ParticleManager chargeEffect;
     MagicInfo meteorMagic;
     GameObject meteorPrefab;
+
+    [Header("Cooltime")]
+    public float coolCount;
+    public float biteCooltime = 1f;
+    public float stealthCooltime = 3f;
+    public float meteorCooltime = 5f;
+    public float hellfireCooltime = 8f;
 
     private void Awake()
     {
@@ -67,6 +80,12 @@ public class HotDog_AI : MonoBehaviour
         // 눈 번쩍하는 이펙트 끄기
         eyeFlash.gameObject.SetActive(false);
 
+        // 몸에서 HDR 빛나는 오브젝트 모두 켜기
+        foreach (GameObject glow in glowObj)
+        {
+            glow.SetActive(true);
+        }
+
         // 발 먼지 이펙트 끄기
         handDust.Stop();
         footDust.Stop();
@@ -80,8 +99,8 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.rigid.velocity = Vector2.zero; //속도 초기화
 
         //애니메이션 초기화
+        enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
-        // enemyManager.animList[0].SetBool(AnimState.Charge.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
         // 상태값 Idle로 초기화
@@ -145,29 +164,19 @@ public class HotDog_AI : MonoBehaviour
 
     void ManageAction()
     {
+        // Idle 아니면 리턴
+        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+            return;
+
         // 시간 멈추면 리턴
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
         // 플레이어 방향
-        Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
+        Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
 
         // 플레이어와의 거리
-        float distance = dir.magnitude;
-
-        // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
-            return;
-
-        // 플레이어 방향 쳐다보기
-        if (dir.x > 0)
-        {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
-        else
-        {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
+        float playerDistance = playerDir.magnitude;
 
         // 물기 콜라이더에 플레이어 닿으면 bite 패턴
         if (biteTrigger.atkTrigger)
@@ -176,27 +185,22 @@ public class HotDog_AI : MonoBehaviour
             enemyManager.nowAction = EnemyManager.Action.Attack;
 
             // 호흡 이펙트 끄기
-            StartCoroutine(breathEffect.SmoothDisable());
+            breathEffect.SmoothDisable();
 
             // 물기 패턴 실행
             StartCoroutine(Bite());
+
+            // 쿨타임 갱신
+            coolCount = biteCooltime;
+
             return;
         }
 
-        // 먼 거리일때
-        if (distance > farDistance)
+        // 공격 범위내에 있고 공격 쿨타임 됬을때
+        if (playerDistance <= farDistance && playerDistance >= closeDistance && coolCount <= 0)
         {
             //! 거리 확인용
-            stateText.text = "Far : " + distance;
-
-            // 플레이어 따라가기
-            Walk();
-        }
-        // 가까울때
-        else
-        {
-            //! 거리 확인용
-            stateText.text = "Close : " + distance;
+            stateText.text = "Attack : " + playerDistance;
 
             // 속도 초기화
             enemyManager.rigid.velocity = Vector3.zero;
@@ -207,11 +211,23 @@ public class HotDog_AI : MonoBehaviour
             //공격 패턴 결정하기
             ChooseAttack();
         }
+        else
+        {
+            //! 거리 확인용
+            stateText.text = "Move : " + playerDistance;
+
+            // 공격 범위 내 위치로 이동
+            Move();
+        }
     }
 
-    void Walk()
+    void Move()
     {
         enemyManager.nowAction = EnemyManager.Action.Walk;
+
+        // 움직이는 동안 공격 쿨타임 차감
+        if (coolCount >= 0)
+            coolCount -= Time.deltaTime;
 
         // 호흡 이펙트 켜기
         breathEffect.gameObject.SetActive(true);
@@ -219,26 +235,75 @@ public class HotDog_AI : MonoBehaviour
         //애니메이터 켜기
         enemyManager.animList[0].enabled = true;
 
-        // 거리가 멀면 Run 애니메이션으로 전환
-        enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
+        // 플레이어까지 방향 벡터
+        Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
+        // 플레이어까지 거리
+        float playerDistance = playerDir.magnitude;
 
-        //TODO 거리가 가까우면 Walk 애니메이션으로 전환
-        // enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), true);
-
-        //움직일 방향
-        Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
-
-        // 움직일 방향 2D 각도
-        float rotation = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
+        // 속도 초기화
         float runSpeed = 1f;
 
-        //TODO 거리가 멀면 추가 속도 1.5배
-        // runSpeed = 1.5f;
+        // 플레이어 가까이 있을때
+        if (playerDistance <= farDistance)
+        {
+            // Walk 애니메이션으로 전환
+            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), true);
+        }
+        // 플레이어가 멀리 있을때
+        else
+        {
+            // Run 애니메이션으로 전환
+            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
-        //해당 방향으로 가속
-        enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale * runSpeed;
-        // print(enemyManager.rigid.velocity);
+            // 속도 빠르게
+            runSpeed = 1.5f;
+        }
+
+        // 목표 위치 갱신 시간 됬을때
+        if (moveResetCount < Time.time)
+        {
+            moveResetCount = Time.time + 3f;
+
+            // 방향에 거리 곱해서 목표 위치 벡터 갱신
+            moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(10, 20);
+
+            // LeanPool.Spawn(SystemManager.Instance.markPrefab, moveToPos, Quaternion.identity);
+            // print(moveToPos);
+        }
+
+        //움직일 방향, moveToPos를 목표로 움직이기
+        Vector2 moveDir = moveToPos - (Vector2)transform.position;
+        // 목표 위치까지 거리
+        float moveDistance = moveDir.magnitude;
+
+        // 목표 위치에 근접했을때
+        if (moveDistance < 1f)
+        {
+            // 이동 멈추기
+            enemyManager.rigid.velocity = Vector3.zero;
+
+            // Idle 애니메이션 진행
+            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+        }
+        else
+        {
+            // 이동 방향 쪽으로 쳐다보기
+            if (moveDir.x > 0)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+
+            //해당 방향으로 가속
+            enemyManager.rigid.velocity = moveDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale * runSpeed;
+            // print(enemyManager.rigid.velocity);
+        }
 
         // 상태값 Idle로 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;
@@ -258,47 +323,33 @@ public class HotDog_AI : MonoBehaviour
         footDust.Stop();
 
         // 호흡 이펙트 끄기
-        StartCoroutine(breathEffect.SmoothDisable());
+        breathEffect.SmoothDisable();
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 3);
         print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        randomNum = 0;
+        randomNum = 2;
 
         switch (randomNum)
         {
             case 0:
-                //TODO 근거리 및 중거리 헬파이어 패턴
-                StartCoroutine(Hellfire());
+                // 근거리 및 중거리 헬파이어 패턴
+                StartCoroutine(HellfireAtk());
+                coolCount = hellfireCooltime;
                 break;
             case 1:
                 // 원거리 메테오 쿨타임 아닐때 meteor 패턴 코루틴
-                StartCoroutine(Meteor());
+                StartCoroutine(MeteorAtk());
+                coolCount = meteorCooltime;
                 break;
             case 2:
                 // 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
                 StartCoroutine(StealthAtk());
+                coolCount = stealthCooltime;
                 break;
         }
-    }
-
-    IEnumerator Bite()
-    {
-        yield return null;
-
-        // Run 애니메이션 끄기
-        enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
-
-        // 물기 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.Bite.ToString());
-    }
-
-    void BiteEnd()
-    {
-        // 행동 초기화
-        StartCoroutine(SetIdle(1f));
     }
 
     IEnumerator SetIdle(float endDelay)
@@ -312,9 +363,33 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
+    void StartChargeEffect()
+    {
+        chargeEffect.gameObject.SetActive(true);
+    }
+
+    #region BiteAtk
+    IEnumerator Bite()
+    {
+        yield return null;
+
+        // 걷기 애니메이션 끄기
+        enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+
+        // 물기 애니메이션 재생
+        enemyManager.animList[0].SetTrigger(AnimState.Bite.ToString());
+    }
+
+    void BiteEnd()
+    {
+        // 행동 초기화
+        StartCoroutine(SetIdle(1f));
+    }
+    #endregion
+
     #region HellFire
 
-    IEnumerator Hellfire()
+    IEnumerator HellfireAtk()
     {
         // 차지 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
@@ -340,12 +415,6 @@ public class HotDog_AI : MonoBehaviour
         StartCoroutine(SetIdle(1f));
     }
 
-    void JumpEnd()
-    {
-        // 점프 카운트 -1로 초기화
-        jumpCount = -1;
-    }
-
     void LeakFire()
     {
         // 관절에서 불꽃 새는 이펙트 켜기
@@ -357,44 +426,93 @@ public class HotDog_AI : MonoBehaviour
 
     void SummonHellfire()
     {
-        // 헬파이어 소환 개수
-        int summonNum = hellfire_defaultNum + hellfire_Increment * jumpCount;
-
-        // 헬파이어 개수만큼 반복
-        for (int i = 0; i < summonNum; i++)
+        switch (jumpCount)
         {
-            // 소환할 각도를 벡터로 바꾸기
-            float angle = 360f * i / summonNum;
-            Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
-            // print(angle + " : " + summonDir);
+            case 0:
+                // 8방향 직선 연속 헬파이어 전개
+                StartCoroutine(CastHellfire(jumpCount, 8, 10));
+                break;
+            case 1:
+                // 원형 연속 헬파이어 전개
+                StartCoroutine(CastHellfire(jumpCount, 16, 10));
+                break;
+            case 2:
+                // 8방향 직선 및 유도 헬파이어 전개
+                StartCoroutine(CastHellfire(jumpCount, 4, 50));
+                break;
+        }
+    }
 
-            // 헬파이어 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
-            Vector3 targetPos = transform.position + summonDir * (5f + 5f * jumpCount);
+    IEnumerator CastHellfire(int _jumpCount, int summonNum, int loopNum)
+    {
+        // 각 헬파이어 위치 저장할 배열
+        Vector3[] lastPos = new Vector3[summonNum];
 
-            // 헬파이어 생성
-            GameObject magicObj = LeanPool.Spawn(hellFirePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        // 루프 개수만큼 반복
+        for (int j = 0; j < loopNum; j++)
+        {
+            // 헬파이어 개수만큼 반복
+            for (int i = 0; i < summonNum; i++)
+            {
+                // 유도 헬파이어일때, 5회차 이상이면 유도로 전환
+                if (_jumpCount == 2 && j > 4)
+                {
+                    // 플레이어까지 방향 벡터 계산
+                    Vector3 moveDir = PlayerManager.Instance.transform.position - lastPos[i];
 
-            // 매직홀더 찾기
-            MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
-            // magic 데이터 넣기
-            magicHolder.magic = hellFireMagic;
+                    // 플레이어 방향으로 0~5만큼 이동된 벡터 계산, 점점 거리 늘어남
+                    moveDir = moveDir.normalized * 5f * (float)j / (float)loopNum;
 
-            // 타겟을 플레이어로 전환
-            magicHolder.SetTarget(MagicHolder.Target.Player);
+                    // 5 보다 플레이어까지 거리가 가까울때 벡터 거리 제한
+                    moveDir = Vector3.ClampMagnitude(moveDir, moveDir.magnitude);
 
-            // 헬파이어 목표지점 넣기
-            magicHolder.targetPos = targetPos;
+                    // 마지막 저장된 위치에서 플레이어 위치까지 보정된 위치 저장
+                    lastPos[i] = lastPos[i] + moveDir;
+                }
+                else
+                {
+                    // 소환할 각도를 벡터로 바꾸기
+                    float angle = 360f * i / summonNum;
+                    Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
+                    // print(angle + " : " + summonDir);
+
+                    // 헬파이어 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
+                    Vector3 targetPos = transform.position + summonDir * (5f + 3f * j);
+
+                    // 각 헬파이어의 소환 위치 저장
+                    lastPos[i] = targetPos;
+                }
+
+                // 헬파이어 생성
+                GameObject magicObj = LeanPool.Spawn(hellFirePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+                // 매직홀더 찾기
+                MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+                // magic 데이터 넣기
+                magicHolder.magic = hellFireMagic;
+
+                // 타겟을 플레이어로 전환
+                magicHolder.SetTarget(MagicHolder.Target.Player);
+
+                // 헬파이어 목표지점 넣기
+                magicHolder.targetPos = lastPos[i];
+
+                // 타겟 오브젝트 넣기
+                magicHolder.targetObj = PlayerManager.Instance.gameObject;
+            }
+
+            // 다음 사이즈 전개까지 대기
+            yield return new WaitForSeconds(0.1f);
         }
 
-        //TODO 8방향 직선으로 퍼지며 일정 거리마다 헬파이어 소환
-        //TODO 점점 큰 원형으로 5번 생성
-        //TODO 8방향 직선으로 일정시간 퍼지다가 다시 일정시간 플레이어 실시간 추적
+        // 점프 카운트 초기화, 다음 점프 진행
+        jumpCount = -1;
     }
 
     #endregion
 
     #region Meteor
-    IEnumerator Meteor()
+    IEnumerator MeteorAtk()
     {
         yield return null;
 
@@ -493,9 +611,6 @@ public class HotDog_AI : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, 0, 0);
             }
 
-            // 눈이 빛나는 인디케이터 이펙트 보여주기
-            eyeFlash.gameObject.SetActive(true);
-
             // 스프라이트 색 초기화
             foreach (SpriteRenderer sprite in enemyManager.spriteList)
             {
@@ -504,12 +619,18 @@ public class HotDog_AI : MonoBehaviour
             //그림자 색 초기화
             shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.2f);
 
+            // 눈이 빛나는 인디케이터 이펙트 보여주기
+            eyeFlash.gameObject.SetActive(true);
+
+            // 눈빛 켜기
+            eyeGlow.gameObject.SetActive(true);
+            eyeGlow.DOColor(Color.white, 0.2f);
+
             // 피격 콜라이더 켜기
             foreach (Collider2D coll in enemyManager.hitCollList)
             {
                 coll.enabled = true;
             }
-
             // 대쉬 어택 콜라이더 켜기
             dashAtk.enabled = true;
 
@@ -536,13 +657,24 @@ public class HotDog_AI : MonoBehaviour
             // 돌진시간 대기
             yield return new WaitForSeconds(0.8f);
 
-            // 돌진 끝나면 스프라이트 다시 투명해지기
+            // 스프라이트 색 초기화
             foreach (SpriteRenderer sprite in enemyManager.spriteList)
             {
                 sprite.DOColor(Color.clear, 0.2f);
             }
-            //그림자 투명하게
+            //그림자 색 초기화
             shadowSprite.DOColor(Color.clear, 0.2f);
+
+            // 눈빛 끄기
+            eyeGlow.DOColor(Color.clear, 0.2f);
+
+            // 피격 콜라이더 끄기
+            foreach (Collider2D coll in enemyManager.hitCollList)
+            {
+                coll.enabled = false;
+            }
+            // 대쉬 어택 콜라이더 끄기
+            dashAtk.enabled = false;
 
             //출발 방향 반대로 돌리기
             rightStart = !rightStart;
@@ -562,6 +694,9 @@ public class HotDog_AI : MonoBehaviour
         // 바닥 연기 이펙트 끄기
         groundSmoke.gameObject.SetActive(false);
 
+        // 꼬리 이펙트 켜기
+        tailEffect.gameObject.SetActive(true);
+
         // 대쉬 어택 콜라이더 끄기
         dashAtk.enabled = false;
         // 충돌 콜라이더 켜기
@@ -579,12 +714,17 @@ public class HotDog_AI : MonoBehaviour
         // 글로벌 라이트 초기화
         DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, SystemManager.Instance.globalLightDefault, 0.5f);
 
+        // 몸에서 HDR 빛나는 오브젝트 모두 켜기
+        foreach (GameObject glow in glowObj)
+        {
+            glow.SetActive(true);
+        }
+
         // 스프라이트 색 초기화
         foreach (SpriteRenderer sprite in enemyManager.spriteList)
         {
             sprite.DOColor(Color.white, 0.5f);
         }
-
         //그림자 색 초기화
         shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.5f);
 
@@ -602,6 +742,9 @@ public class HotDog_AI : MonoBehaviour
     {
         // 스모크 이펙트 켜기
         smokeEffect.gameObject.SetActive(true);
+
+        // 꼬리 이펙트 끄기
+        tailEffect.SmoothDisable();
 
         yield return new WaitForSeconds(1f);
 
@@ -626,7 +769,15 @@ public class HotDog_AI : MonoBehaviour
         // 스프라이트 투명해지며 사라지기
         foreach (SpriteRenderer sprite in enemyManager.spriteList)
         {
-            sprite.DOColor(Color.clear, 1f);
+            sprite.DOColor(Color.clear, 1f)
+            .OnComplete(() =>
+            {
+                // 몸에서 HDR 빛나는 오브젝트 모두 끄기
+                foreach (GameObject glow in glowObj)
+                {
+                    glow.SetActive(false);
+                }
+            });
         }
 
         // 그림자도 투명하게
@@ -636,7 +787,7 @@ public class HotDog_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 스모크 이펙트 끄기
-        StartCoroutine(smokeEffect.GetComponent<ParticleManager>().SmoothDisable());
+        smokeEffect.GetComponent<ParticleManager>().SmoothDisable();
     }
     #endregion
 

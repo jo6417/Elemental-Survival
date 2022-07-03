@@ -40,16 +40,6 @@ public class HellFire : MonoBehaviour
             // 몬스터가 타겟이면 흰색
             skullSprite.color = new Color(1, 1, 1, 1);
 
-        // 타겟 위치를 바라보기
-        if (transform.position.x > magicHolder.targetPos.x)
-        {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
-        else
-        {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
-
         // 타겟 위치로 이동
         transform.position = magicHolder.targetPos;
 
@@ -60,9 +50,25 @@ public class HellFire : MonoBehaviour
         anim.speed = 1f;
     }
 
+    void SkullPopup()
+    {
+        // 타겟 위치를 바라보기
+        // 타겟이 X좌표 왼쪽에 있을때
+        if (transform.position.x > magicHolder.targetObj.transform.position.x)
+        {
+            // X 반전
+            skullSprite.flipX = true;
+        }
+        else
+        {
+            // X 반전 초기화
+            skullSprite.flipX = false;
+        }
+    }
+
     void FireStop()
     {
-        StartCoroutine(fireEffect.SmoothDisable());
+        fireEffect.SmoothDisable();
     }
 
     IEnumerator ParticleWait()
