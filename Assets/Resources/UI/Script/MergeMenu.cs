@@ -208,8 +208,12 @@ public class MergeMenu : MonoBehaviour
         //회전값 기억하기
         phoneRotation = CastMagic.Instance.transform.rotation.eulerAngles;
 
+        //카메라 위치
+        Vector3 camPos = SystemManager.Instance.camParent.position;
+        camPos.z = 0;
+
         // 팝업UI 위치,회전,스케일로 복구하기
-        CastMagic.Instance.transform.DOMove(PlayerManager.Instance.transform.position + UIPosition, 1f)
+        CastMagic.Instance.transform.DOMove(camPos + UIPosition, 1f)
         .SetUpdate(true);
         CastMagic.Instance.transform.DOScale(Vector3.one, 1f)
         .SetUpdate(true);

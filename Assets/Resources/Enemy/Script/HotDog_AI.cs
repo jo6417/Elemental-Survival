@@ -7,17 +7,26 @@ using UnityEngine;
 
 public class HotDog_AI : MonoBehaviour
 {
-    [Header("Refer")]
+    [Header("State")]
     bool initialDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch };
     public EnemyManager enemyManager;
-    EnemyInfo enemy;
     public EnemyAtkTrigger biteTrigger;
+    public int nowPhase = 1;
+    float damageMultiple = 1;
+    float speedMultiple = 1;
+    float projectileMultiple = 1;
+
+    [Header("Effect Control")]
     public ParticleManager chargeEffect;
     public ParticleManager tailEffect; //꼬리 화염 파티클
     public SpriteRenderer eyeGlow; // 빛나는 눈 오브젝트
-    public List<GameObject> glowObj = new List<GameObject>(); // 빛나는 오브젝트들
+    public List<SpriteRenderer> glowObj = new List<SpriteRenderer>(); // 빛나는 오브젝트들
+    public Material glowMat; //몸에서 빛나는 부분들 머터리얼
+    Color hdrRed = new Color(191, 0, 0, 0) * 10f;
+    Color hdrYellow = new Color(191, 20, 0, 0) * 10f;
+    Color hdrBlue = new Color(0, 8, 191, 0) * 10f;
 
     [Header("Move")]
     public float farDistance = 15f;
@@ -41,9 +50,6 @@ public class HotDog_AI : MonoBehaviour
     int jumpCount = -1;
     MagicInfo hellFireMagic;
     GameObject hellFirePrefab;
-    [SerializeField]
-    int hellfire_defaultNum = 10;
-    int hellfire_Increment = 10;
 
     [Header("Meteor")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
@@ -80,11 +86,8 @@ public class HotDog_AI : MonoBehaviour
         // 눈 번쩍하는 이펙트 끄기
         eyeFlash.gameObject.SetActive(false);
 
-        // 몸에서 HDR 빛나는 오브젝트 모두 켜기
-        foreach (GameObject glow in glowObj)
-        {
-            glow.SetActive(true);
-        }
+        // 페이즈1 색으로 빨간 HDR 넣기
+        glowMat.color = hdrRed;
 
         // 발 먼지 이펙트 끄기
         handDust.Stop();
@@ -138,11 +141,83 @@ public class HotDog_AI : MonoBehaviour
             meteorPrefab = MagicDB.Instance.GetMagicPrefab(meteorMagic.id);
         }
 
-        //죽을때 델리게이트에 함수 추가
-        enemyManager.enemyDeadCallback += Dead;
+        // 맞을때마다 Hit 함수 실행
+        enemyManager.enemyHitCallback += Hit;
 
         // 초기화 완료
         initialDone = true;
+    }
+
+    void PhaseChange(int phase)
+    {
+        print(nowPhase + " -> " + phase);
+        // 페이즈 숫자 올리기
+        nowPhase = phase;
+
+        Color changeColor = default;
+
+        // 페이즈별로 머터리얼의 색 바꾸기
+        switch (phase)
+        {
+            case 1:
+                // 빨간 HDR 넣기
+                changeColor = hdrRed;
+
+                // 데미지 배율, 이속 배율, 투사체 개수 배율 적용
+                damageMultiple = 1f;
+                speedMultiple = 1f;
+                projectileMultiple = 1f;
+
+                break;
+            case 2:
+                // 노란 HDR 넣기
+                changeColor = hdrYellow;
+
+                // 데미지 배율, 이속 배율, 투사체 개수 배율 적용
+                damageMultiple = 1.2f;
+                speedMultiple = 1.2f;
+                projectileMultiple = 1.2f;
+
+                break;
+            case 3:
+                // 파란 HDR 넣기
+                changeColor = hdrBlue;
+
+                // 데미지 배율, 이속 배율, 투사체 개수 배율 적용
+                damageMultiple = 1.5f;
+                speedMultiple = 1.5f;
+                projectileMultiple = 1.5f;
+
+                break;
+        }
+
+        // 몬스터의 기본 정보값
+        EnemyInfo originEnemy = EnemyDB.Instance.GetEnemyByID(enemyManager.enemy.id);
+
+        // 데미지 갱신
+        enemyManager.enemy.power = originEnemy.power * damageMultiple;
+
+        // 모든 glow 오브젝트에 glow 머터리얼 다시 넣기
+        foreach (SpriteRenderer glow in glowObj)
+        {
+            // 머터리얼 넣기
+            glow.material = glowMat;
+        }
+
+        // HDR 색으로 변화
+        glowMat.DOColor(changeColor, 1f)
+        .OnUpdate(() =>
+        {
+            // OriginMat 에서 HDR 머터리얼 컬러 전부 교체해주기
+            for (int i = 0; i < enemyManager.originMatList.Count; i++)
+            {
+                // glowMat 과 이름 같은 머터리얼 찾으면
+                if (enemyManager.originMatList[i].name.Contains(glowMat.name))
+                {
+                    enemyManager.originMatList[i] = glowMat;
+                }
+            }
+        });
     }
 
     void Update()
@@ -179,16 +254,23 @@ public class HotDog_AI : MonoBehaviour
         float playerDistance = playerDir.magnitude;
 
         // 물기 콜라이더에 플레이어 닿으면 bite 패턴
-        if (biteTrigger.atkTrigger)
+        if (biteTrigger.atkTrigger && coolCount <= 0)
         {
+            //! 거리 확인용
+            stateText.text = "Bite : " + playerDistance;
+
             // 현재 액션 변경
             enemyManager.nowAction = EnemyManager.Action.Attack;
+
+            // 이동 애니메이션 종료
+            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
             // 호흡 이펙트 끄기
             breathEffect.SmoothDisable();
 
             // 물기 패턴 실행
-            StartCoroutine(Bite());
+            Bite();
 
             // 쿨타임 갱신
             coolCount = biteCooltime;
@@ -267,7 +349,7 @@ public class HotDog_AI : MonoBehaviour
             moveResetCount = Time.time + 3f;
 
             // 방향에 거리 곱해서 목표 위치 벡터 갱신
-            moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(10, 20);
+            moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(closeDistance, farDistance);
 
             // LeanPool.Spawn(SystemManager.Instance.markPrefab, moveToPos, Quaternion.identity);
             // print(moveToPos);
@@ -301,7 +383,13 @@ public class HotDog_AI : MonoBehaviour
             }
 
             //해당 방향으로 가속
-            enemyManager.rigid.velocity = moveDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale * runSpeed;
+            enemyManager.rigid.velocity =
+            moveDir.normalized // 이동 방향
+            * enemyManager.speed //몬스터 정보 속도
+            * SystemManager.Instance.globalTimeScale //시간 비율 계산
+            * runSpeed //달리기 속도 배율
+            * speedMultiple; // 페이즈별로 속도 배율
+
             // print(enemyManager.rigid.velocity);
         }
 
@@ -314,7 +402,7 @@ public class HotDog_AI : MonoBehaviour
         // 현재 액션 변경
         enemyManager.nowAction = EnemyManager.Action.Attack;
 
-        // Idle 애니메이션 재생
+        // 이동 애니메이션 종료
         enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
@@ -369,19 +457,23 @@ public class HotDog_AI : MonoBehaviour
     }
 
     #region BiteAtk
-    IEnumerator Bite()
+    void Bite()
     {
-        yield return null;
-
         // 걷기 애니메이션 끄기
         enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
 
         // 물기 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Bite.ToString());
+
+        // 페이즈별로 물기 모션 속도 적용
+        enemyManager.animList[0].speed = speedMultiple;
     }
 
     void BiteEnd()
     {
+        // 애니메이터 속도 초기화
+        enemyManager.animList[0].speed = 1f;
+
         // 행동 초기화
         StartCoroutine(SetIdle(1f));
     }
@@ -429,22 +521,26 @@ public class HotDog_AI : MonoBehaviour
         switch (jumpCount)
         {
             case 0:
-                // 8방향 직선 연속 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 8, 10));
+                // 직선 연속 헬파이어 전개
+                StartCoroutine(CastHellfire(jumpCount, 6, 10));
                 break;
             case 1:
                 // 원형 연속 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 16, 10));
+                StartCoroutine(CastHellfire(jumpCount, 10, 10));
                 break;
             case 2:
-                // 8방향 직선 및 유도 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 4, 50));
+                // 직선 및 유도 헬파이어 전개
+                StartCoroutine(CastHellfire(jumpCount, 4, 30));
                 break;
         }
     }
 
     IEnumerator CastHellfire(int _jumpCount, int summonNum, int loopNum)
     {
+        // 페이즈 배율 적용
+        summonNum = (int)(summonNum * projectileMultiple);
+        loopNum = (int)(loopNum * projectileMultiple);
+
         // 각 헬파이어 위치 저장할 배열
         Vector3[] lastPos = new Vector3[summonNum];
 
@@ -531,16 +627,13 @@ public class HotDog_AI : MonoBehaviour
     IEnumerator SummonMeteor()
     {
         //메테오 개수만큼 반복
-        for (int i = 0; i < meteorNum; i++)
+        for (int i = 0; i < meteorNum * projectileMultiple; i++)
         {
             // 메테오 떨어질 위치
-            Vector2 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * 20f;
+            Vector2 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * meteorRange * projectileMultiple;
 
             // 메테오 생성
             GameObject magicObj = LeanPool.Spawn(meteorPrefab, targetPos, Quaternion.identity, SystemManager.Instance.magicPool);
-
-            // 메테오 스프라이트 빨갛게
-            // magicObj.GetComponent<SpriteRenderer>().color = Color.red;
 
             MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
             // magic 데이터 넣기
@@ -554,9 +647,6 @@ public class HotDog_AI : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
-
-        // Idle 애니메이션 재생
-        // enemyManager.animList[0].SetBool(AnimState.Charge.ToString(), false);
 
         // 상태값 Idle로 초기화
         StartCoroutine(SetIdle(1f));
@@ -575,8 +665,10 @@ public class HotDog_AI : MonoBehaviour
         // 짖기 애니메이션 트리거 끄기
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
-        // 돌진 횟수 계산 2~5회
-        int atkNum = Random.Range(2, 6);
+        // 돌진 횟수 계산 (2 ~ 4회)
+        int atkNum = Random.Range(2, 5);
+        // 투사체 배율 추가 계산 (2~4회) ~ (3~6회)
+        atkNum = (int)(atkNum * projectileMultiple);
 
         //돌진 시작 방향 (좌 or 우)
         bool rightStart = true;
@@ -643,19 +735,22 @@ public class HotDog_AI : MonoBehaviour
             // Run 애니메이션 재생
             enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
+            // 돌진 시간 계산
+            float moveSpeed = 1.5f / speedMultiple;
+
             // 엔드 포지션으로 트윈
-            transform.DOMove(dashEndPos, 1f)
+            transform.DOMove(dashEndPos, moveSpeed)
             .OnComplete(() =>
             {
                 // 아이 트레일 부모 바꾸기
                 eyeTrail.transform.SetParent(SystemManager.Instance.effectPool);
 
                 // 아이 아키라 트레일 1초후 디스폰
-                LeanPool.Despawn(eyeTrail, 1f);
+                LeanPool.Despawn(eyeTrail, moveSpeed + 0.1f);
             });
 
             // 돌진시간 대기
-            yield return new WaitForSeconds(0.8f);
+            yield return new WaitForSeconds(moveSpeed - 0.5f);
 
             // 스프라이트 색 초기화
             foreach (SpriteRenderer sprite in enemyManager.spriteList)
@@ -715,9 +810,9 @@ public class HotDog_AI : MonoBehaviour
         DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, SystemManager.Instance.globalLightDefault, 0.5f);
 
         // 몸에서 HDR 빛나는 오브젝트 모두 켜기
-        foreach (GameObject glow in glowObj)
+        foreach (SpriteRenderer glow in glowObj)
         {
-            glow.SetActive(true);
+            glow.gameObject.SetActive(true);
         }
 
         // 스프라이트 색 초기화
@@ -773,9 +868,9 @@ public class HotDog_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 몸에서 HDR 빛나는 오브젝트 모두 끄기
-                foreach (GameObject glow in glowObj)
+                foreach (SpriteRenderer glow in glowObj)
                 {
-                    glow.SetActive(false);
+                    glow.gameObject.SetActive(false);
                 }
             });
         }
@@ -815,30 +910,52 @@ public class HotDog_AI : MonoBehaviour
     }
     #endregion
 
-    void Dead()
+    void Hit()
     {
-        // 글로벌 라이트 초기화
-        SystemManager.Instance.globalLight.intensity = SystemManager.Instance.globalLight.intensity;
+        // 체력이 2/3 ~ 3/3 사이일때 1페이즈
 
-        // 그림자 색 초기화
-        shadowSprite.color = new Color(0, 0, 0, 0.5f);
+        // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
+        if (nowPhase == 1 && enemyManager.HpNow / enemyManager.hpMax <= 2f / 3f)
+        {
+            // 페이즈2 색으로 노란색 HDR 넣기
+            if (glowMat.color != hdrYellow)
+                PhaseChange(2);
+        }
 
-        // 보스를 부모로 지정
-        groundSmoke.transform.SetParent(transform);
-        // 바닥 연기 이펙트 끄기
-        groundSmoke.gameObject.SetActive(false);
+        // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
+        if (nowPhase == 2 && enemyManager.HpNow / enemyManager.hpMax <= 1f / 3f)
+        {
+            // 페이즈3 색으로 파란색 HDR 넣기
+            if (glowMat.color != hdrBlue)
+                PhaseChange(3);
+        }
 
-        // 호흡 이펙트 켜기
-        breathEffect.gameObject.SetActive(true);
-        // 스모크 이펙트 끄기
-        smokeEffect.gameObject.SetActive(false);
-        // 바닥 연기 이펙트 끄기
-        groundSmoke.gameObject.SetActive(false);
-        // 눈 번쩍하는 이펙트 끄기
-        eyeFlash.gameObject.SetActive(false);
+        // 체력이 0 이하일때, 죽었을때
+        if (enemyManager.HpNow <= 0)
+        {
+            // 글로벌 라이트 초기화
+            SystemManager.Instance.globalLight.intensity = SystemManager.Instance.globalLight.intensity;
 
-        // 발 먼지 이펙트 끄기
-        handDust.Stop();
-        footDust.Stop();
+            // 그림자 색 초기화
+            shadowSprite.color = new Color(0, 0, 0, 0.5f);
+
+            // 보스를 부모로 지정
+            groundSmoke.transform.SetParent(transform);
+            // 바닥 연기 이펙트 끄기
+            groundSmoke.gameObject.SetActive(false);
+
+            // 호흡 이펙트 켜기
+            breathEffect.gameObject.SetActive(true);
+            // 스모크 이펙트 끄기
+            smokeEffect.gameObject.SetActive(false);
+            // 바닥 연기 이펙트 끄기
+            groundSmoke.gameObject.SetActive(false);
+            // 눈 번쩍하는 이펙트 끄기
+            eyeFlash.gameObject.SetActive(false);
+
+            // 발 먼지 이펙트 끄기
+            handDust.Stop();
+            footDust.Stop();
+        }
     }
 }

@@ -16,7 +16,7 @@ public class EnemyAttack : MonoBehaviour
     public GameObject dashEffect;
     public GameObject activeObj; //공격시 활성화할 오브젝트
 
-    [Header("Attack Debuff")]
+    [Header("Attack State")]
     public bool friendlyFire = false; // 충돌시 아군 피해 여부
     public bool flatDebuff = false; //납작해지는 디버프
     public bool knockBackDebuff = false; //넉백 디버프

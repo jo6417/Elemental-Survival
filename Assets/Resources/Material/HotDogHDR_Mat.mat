@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HDR_10_White_Mat
+  m_Name: HotDogHDR_Mat
   m_Shader: {fileID: -6465566751694194690, guid: a458971ae0fb57343886d687b343357b,
     type: 3}
   m_ShaderKeywords: 
@@ -42,5 +42,5 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats: []
     m_Colors:
-    - _Color: {r: 2549.9995, g: 2549.9995, b: 2549.9995, a: 0}
+    - _Color: {r: 1910, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

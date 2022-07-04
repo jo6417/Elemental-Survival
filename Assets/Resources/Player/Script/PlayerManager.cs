@@ -380,7 +380,7 @@ public class PlayerManager : MonoBehaviour
                 if (hitCoolCount > 0)
                     return;
 
-                //피격 딜레이 무적
+                //피격 딜레이 무적시간 시작
                 StartCoroutine(HitDelay());
 
                 Damage(enemy.power);
@@ -719,7 +719,7 @@ public class PlayerManager : MonoBehaviour
 
         //해당 마법을 장착
         MagicInfo ultimateMagic = ultimateList[0];
-        print("ultimate : " + ultimateMagic.magicName);
+        // print("ultimate : " + ultimateMagic.magicName);
 
         // 해당 궁극기 쿨타임 저장
         ultimateCoolTime = MagicDB.Instance.MagicCoolTime(ultimateMagic);

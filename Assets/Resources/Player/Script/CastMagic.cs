@@ -269,8 +269,13 @@ public class CastMagic : MonoBehaviour
 
             //적 위치 넣기, 있어도 새로 갱신
             magicHolder.targetObj = enemyObj[i];
+
             //적 오브젝트 넣기, (유도 기능 등에 사용)
-            magicHolder.targetPos = enemyObj[i].transform.position;
+            if (enemyObj[i] != null)
+                magicHolder.targetPos = enemyObj[i].transform.position;
+            else
+                magicHolder.targetPos =
+                (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magic);
 
             yield return new WaitForSeconds(0.1f);
         }
@@ -438,8 +443,13 @@ public class CastMagic : MonoBehaviour
 
             //적 위치 넣기, 있어도 새로 갱신
             magicHolder.targetObj = enemyObj[i];
+
             //적 오브젝트 넣기, (유도 기능 등에 사용)
-            magicHolder.targetPos = enemyObj[i].transform.position;
+            if (enemyObj[i] != null)
+                magicHolder.targetPos = enemyObj[i].transform.position;
+            else
+                magicHolder.targetPos =
+                (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magic);
 
             yield return new WaitForSeconds(0.1f);
         }

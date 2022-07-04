@@ -55,7 +55,8 @@ public class ParticleManager : MonoBehaviour
 
     public void SmoothDespawn()
     {
-        StartCoroutine(SmoothDespawnCoroutine());
+        if (gameObject.activeSelf)
+            StartCoroutine(SmoothDespawnCoroutine());
     }
 
     IEnumerator SmoothDespawnCoroutine()
@@ -72,7 +73,8 @@ public class ParticleManager : MonoBehaviour
 
     public void SmoothDisable()
     {
-        StartCoroutine(SmoothDisableCoroutine());
+        if (gameObject.activeSelf)
+            StartCoroutine(SmoothDisableCoroutine());
     }
 
     IEnumerator SmoothDisableCoroutine()

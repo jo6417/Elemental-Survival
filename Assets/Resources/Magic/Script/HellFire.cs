@@ -52,7 +52,10 @@ public class HellFire : MonoBehaviour
 
     void SkullPopup()
     {
-        // 타겟 위치를 바라보기
+        // 타겟 오브젝트 변수 들어왔는지 검사
+        if (magicHolder.targetObj == null)
+            return;
+
         // 타겟이 X좌표 왼쪽에 있을때
         if (transform.position.x > magicHolder.targetObj.transform.position.x)
         {

@@ -140,6 +140,15 @@ SpriteAtlas:
   - {fileID: -6615783630180790865, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
   - {fileID: 7374904569357234349, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
   - {fileID: -4034562165591099319, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
+  - {fileID: 4407818653772729075, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 6889375382349201494, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: -4809397253275508708, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 5874529900182286882, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: -4216462766369670028, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 906156364446910941, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: -2878197938310053564, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 5396712418122877333, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 2321343539104585878, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
@@ -262,6 +271,15 @@ SpriteAtlas:
   - Bawi_Drill-Sheet_3
   - Bawi_Drill-Sheet_2
   - Bawi_Drill-Sheet_4
+  - Tail
+  - Neck
+  - Front_Arm
+  - Back_Arm
+  - Front_Leg
+  - Jaw_Up
+  - Back_Leg
+  - Jaw_Down
+  - Body
   - Slime_Light
   - HotDog
   - HotDog_emission

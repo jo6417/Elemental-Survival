@@ -9,8 +9,8 @@ using System.Linq;
 
 public class EnemyManager : MonoBehaviour
 {
-    public delegate void EnemyDeadCallback();
-    public EnemyDeadCallback enemyDeadCallback;
+    public delegate void EnemyHitCallback();
+    public EnemyHitCallback enemyHitCallback;
 
     [SerializeField]
     private List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
@@ -129,7 +129,7 @@ public class EnemyManager : MonoBehaviour
             //적 정보 찾기
             enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
 
-        //적 정보 인스턴싱
+        //적 정보 인스턴싱, 적 오브젝트마다 따로 EnemyInfo 갖기
         if (enemy != null)
             enemy = new EnemyInfo(enemy);
 
@@ -492,6 +492,10 @@ public class EnemyManager : MonoBehaviour
             StartCoroutine(UIManager.Instance.UpdateBossHp(this));
         }
 
+        // 몬스터 맞았을때 함수 호출 (해당 몬스터만)
+        if (enemyHitCallback != null)
+            enemyHitCallback();
+
         // print(HpNow + " / " + enemy.HpMax);
         // 체력 0 이하면 죽음
         if (HpNow <= 0)
@@ -657,10 +661,6 @@ public class EnemyManager : MonoBehaviour
 
         //아이템 드랍
         DropItem();
-
-        // 몬스터 죽을때 함수 호출 (해당 몬스터만)
-        if (enemyDeadCallback != null)
-            enemyDeadCallback();
 
         // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
         if (SystemManager.Instance.globalEnemyDeadCallback != null)
