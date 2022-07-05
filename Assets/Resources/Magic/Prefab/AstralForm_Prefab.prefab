@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 7540521824293115841}
   - component: {fileID: 7540521824293115842}
   m_Layer: 8
-  m_Name: Ghosting_Prefab
+  m_Name: AstralForm_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,7 +122,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicName: 
+  coll: {fileID: 0}
+  targetObj: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
+  target: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -146,6 +149,8 @@ MonoBehaviour:
   magicHolder: {fileID: 0}
   fogCircle: {fileID: 7540521823902576213}
   fogCanvas: {fileID: 7540521824940693142}
+  ghostFrequency: 0.005
+  ghostDuration: 0.5
   ghostStartColor: {r: 0.9686107, g: 0.30980396, b: 1, a: 0.5882353}
 --- !u!1 &7540521824940693138
 GameObject:

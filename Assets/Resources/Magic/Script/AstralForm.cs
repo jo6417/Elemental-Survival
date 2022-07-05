@@ -5,7 +5,7 @@ using DG.Tweening;
 using System.Linq;
 using Lean.Pool;
 
-public class Ghosting : MonoBehaviour
+public class AstralForm : MonoBehaviour
 {
     public MagicHolder magicHolder;
     public MagicInfo magic;
