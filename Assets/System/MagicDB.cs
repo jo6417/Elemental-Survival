@@ -48,6 +48,39 @@ public class MagicInfo
     public float projectilePerLev;
     public float coolTimePerLev;
 
+    public MagicInfo(MagicInfo magic)
+    {
+        this.id = magic.id;
+        this.magicLevel = magic.magicLevel;
+        this.grade = magic.grade;
+        this.magicName = magic.magicName;
+        this.element_A = magic.element_A;
+        this.element_B = magic.element_B;
+        this.castType = magic.castType;
+        this.description = magic.description;
+        this.priceType = magic.priceType;
+        this.multiHit = magic.multiHit;
+        this.price = magic.price;
+        this.power = magic.power;
+        this.speed = magic.speed;
+        this.range = magic.range;
+        this.duration = magic.duration;
+        this.critical = magic.critical;
+        this.criticalPower = magic.criticalPower;
+        this.pierce = magic.pierce;
+        this.projectile = magic.projectile;
+        this.coolTime = magic.coolTime;
+        this.powerPerLev = magic.powerPerLev;
+        this.speedPerLev = magic.speedPerLev;
+        this.rangePerLev = magic.rangePerLev;
+        this.durationPerLev = magic.durationPerLev;
+        this.criticalPerLev = magic.criticalPerLev;
+        this.criticalPowerPerLev = magic.criticalPowerPerLev;
+        this.piercePerLev = magic.piercePerLev;
+        this.projectilePerLev = magic.projectilePerLev;
+        this.coolTimePerLev = magic.coolTimePerLev;
+    }
+
     public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price,
     float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime,
     float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
@@ -82,39 +115,6 @@ public class MagicInfo
         this.piercePerLev = piercePerLev;
         this.projectilePerLev = projectilePerLev;
         this.coolTimePerLev = coolTimePerLev;
-    }
-
-    public MagicInfo(MagicInfo magic)
-    {
-        this.id = magic.id;
-        this.magicLevel = magic.magicLevel;
-        this.grade = magic.grade;
-        this.magicName = magic.magicName;
-        this.element_A = magic.element_A;
-        this.element_B = magic.element_B;
-        this.castType = magic.castType;
-        this.description = magic.description;
-        this.priceType = magic.priceType;
-        this.multiHit = magic.multiHit;
-        this.price = magic.price;
-        this.power = magic.power;
-        this.speed = magic.speed;
-        this.range = magic.range;
-        this.duration = magic.duration;
-        this.critical = magic.critical;
-        this.criticalPower = magic.criticalPower;
-        this.pierce = magic.pierce;
-        this.projectile = magic.projectile;
-        this.coolTime = magic.coolTime;
-        this.powerPerLev = magic.powerPerLev;
-        this.speedPerLev = magic.speedPerLev;
-        this.rangePerLev = magic.rangePerLev;
-        this.durationPerLev = magic.durationPerLev;
-        this.criticalPerLev = magic.criticalPerLev;
-        this.criticalPowerPerLev = magic.criticalPowerPerLev;
-        this.piercePerLev = magic.piercePerLev;
-        this.projectilePerLev = magic.projectilePerLev;
-        this.coolTimePerLev = magic.coolTimePerLev;
     }
 }
 

@@ -9,14 +9,29 @@ using System.Linq;
 
 public class EnemyManager : MonoBehaviour
 {
+    [Header("Initial")]
+    public bool initialStart = false;
+    public EnemyHitCallback enemyHitCallback; //해당 몬스터 죽을때 실행될 함수들
     public delegate void EnemyHitCallback();
-    public EnemyHitCallback enemyHitCallback;
 
     [SerializeField]
     private List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
     public EnemyManager referEnemyManager = null;
     public EnemyInfo enemy;
+    private GameObject target; // 공격 목표
+    public GameObject Target
+    {
+        get
+        {
+            // 타겟이 없거나 비활성화 되어있으면
+            if (target == null || !target.activeSelf)
+                // 새로운 타겟 찾기
+                return SearchTarget();
+            else
+                return target;
+        }
+    }
 
     [Header("State")]
     public State state; //현재 상태
@@ -105,6 +120,9 @@ public class EnemyManager : MonoBehaviour
             originMatList.Add(sprite.material);
             originMatColorList.Add(sprite.material.color);
         }
+
+        //초기 타겟은 플레이어
+        target = PlayerManager.Instance.gameObject;
     }
 
     private void OnEnable()
@@ -114,12 +132,29 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator Initial()
     {
+        // 초기화 스위치 켜질때까지 대기
+        yield return new WaitUntil(() => initialStart);
+
+        // 플레이어가 타겟일때
+        if (target == PlayerManager.Instance.gameObject)
+            // 모든 스프라이트 색깔,머터리얼 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                spriteList[i].color = originColorList[i];
+                spriteList[i].material = originMatList[i];
+                // spriteList[i].material.color = originMatColorList[i];
+            }
+
         //콜라이더 끄기
         if (hitCollList.Count > 0)
             foreach (Collider2D coll in hitCollList)
             {
                 coll.enabled = false;
             }
+
+        // rigid 초기화
+        rigid.velocity = Vector3.zero;
+        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
@@ -165,10 +200,18 @@ public class EnemyManager : MonoBehaviour
         hitCount = 0; //데미지 카운트 초기화
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
-        HpNow = enemy.hpMax; //체력 초기화
+
+        // 플레이어가 타겟이 아니면 체력 절반으로 초기화
+        if (target != PlayerManager.Instance.gameObject)
+            HpNow = enemy.hpMax / 2f; //체력 절반으로 초기화
+        else
+            HpNow = enemy.hpMax; //체력 초기화
 
         //죽음 여부 초기화
         isDead = false;
+
+        // idle 상태로 전환
+        state = State.Idle;
 
         //콜라이더 켜기
         if (hitCollList.Count > 0)
@@ -190,6 +233,52 @@ public class EnemyManager : MonoBehaviour
         {
             StartCoroutine(UIManager.Instance.UpdateBossHp(this));
         }
+
+        // 초기화 완료되면 초기화 스위치 끄기
+        initialStart = false;
+    }
+
+    public void ChangeTarget(GameObject newTarget)
+    {
+        // 타겟 변경하기
+        target = newTarget;
+
+        // 타겟이 없으면 주변 몬스터 검색
+        if (target == null)
+        {
+            SearchTarget();
+        }
+    }
+
+    GameObject SearchTarget()
+    {
+        //캐릭터 주변의 적들
+        List<Collider2D> enemyCollList = new List<Collider2D>();
+        enemyCollList = Physics2D.OverlapCircleAll(transform.position, range, 1 << LayerMask.NameToLayer("Enemy")).ToList();
+
+        // 몬스터 본인 콜라이더는 빼기
+        enemyCollList.Remove(physicsColl);
+        foreach (Collider2D coll in hitCollList)
+        {
+            enemyCollList.Remove(coll);
+        }
+
+        // 가장 가까운 적과의 거리
+        float closeRange = float.PositiveInfinity;
+        GameObject closeEnemy = null;
+
+        // 가까운 적 산출하기
+        foreach (Collider2D enemyObj in enemyCollList)
+        {
+            // 해당 적이 이전 거리보다 짧으면
+            if (Vector2.Distance(transform.position, enemyObj.transform.position) < closeRange)
+            {
+                // 해당 적을 타겟으로 바꾸기
+                closeEnemy = enemyObj.gameObject;
+            }
+        }
+
+        return closeEnemy;
     }
 
     private void Update()
@@ -337,7 +426,12 @@ public class EnemyManager : MonoBehaviour
             for (int i = 0; i < spriteList.Count; i++)
             {
                 spriteList[i].material = originMatList[i];
-                spriteList[i].color = originColorList[i];
+
+                // 타겟에 따라 복구색 바꾸기
+                if (target == PlayerManager.Instance.gameObject)
+                    spriteList[i].color = originColorList[i];
+                else
+                    spriteList[i].color = new Color(0, 1, 1, 0.5f);
             }
 
             transform.DOPlay();
@@ -350,6 +444,10 @@ public class EnemyManager : MonoBehaviour
                     anim.speed = 1f;
                 }
             }
+
+            // rigid 초기화
+            rigid.velocity = Vector3.zero;
+            rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
         return true;
@@ -389,8 +487,15 @@ public class EnemyManager : MonoBehaviour
         if (magicHolder == null || magic == null)
             return;
 
+        // 목표가 미설정 되었을때
+        if (magicHolder.targetType == MagicHolder.Target.None)
+        {
+            print("타겟 미설정");
+            return;
+        }
+
         // 목표가 몬스터가 아니면 리턴
-        if (magicHolder.target != MagicHolder.Target.Enemy)
+        if (magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
             return;
 
         // print(transform.name + " : " + magic.magicName);
@@ -427,7 +532,7 @@ public class EnemyManager : MonoBehaviour
         {
             if (nowAction != Action.Jump && nowAction != Action.Attack)
             {
-                StartCoroutine(Knockback(magicHolder.knockbackForce));
+                StartCoroutine(Knockback(other, magicHolder.knockbackForce));
             }
         }
 
@@ -566,10 +671,10 @@ public class EnemyManager : MonoBehaviour
         });
     }
 
-    public IEnumerator Knockback(float knockbackForce)
+    public IEnumerator Knockback(GameObject attacker, float knockbackForce)
     {
         // 반대 방향 및 넉백파워
-        Vector2 knockbackDir = transform.position - PlayerManager.Instance.transform.position;
+        Vector2 knockbackDir = transform.position - attacker.transform.position;
         Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.PlayerStat_Now.knockbackForce - 1));
         knockbackDir = knockbackDir.normalized + knockbackBuff;
 
@@ -647,9 +752,25 @@ public class EnemyManager : MonoBehaviour
             // 폭발 이펙트 스폰
             GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
+            // 일단 비활성화
+            effect.SetActive(false);
+
             // 태그 몬스터 공격으로 바꾸기
-            effect.tag = "EnemyAttack";
-            effect.layer = LayerMask.NameToLayer("EnemyAttack");
+            // effect.tag = "EnemyAttack";
+            // effect.layer = LayerMask.NameToLayer("EnemyAttack");
+
+            // Explosion 마법 인스턴스 생성
+            MagicInfo magic = new MagicInfo(MagicDB.Instance.GetMagicByName("Explosion"));
+            // 마법 데미지에 해당 몬스터 데미지 넣기
+            magic.power = enemy.power;
+
+            //폭발에 마법 정보 넣기
+            MagicHolder effectHolder = effect.GetComponent<MagicHolder>();
+            effectHolder.magic = magic;
+            effectHolder.targetType = MagicHolder.Target.Both;
+
+            // 폭발 활성화
+            effect.SetActive(true);
         }
 
         // 먼지 이펙트 생성
@@ -671,6 +792,9 @@ public class EnemyManager : MonoBehaviour
 
         // 트윈 및 시퀀스 끝내기
         transform.DOKill();
+
+        // 공격 타겟 플레이어로 초기화
+        ChangeTarget(PlayerManager.Instance.gameObject);
 
         // 몬스터 비활성화
         LeanPool.Despawn(gameObject);
@@ -715,5 +839,12 @@ public class EnemyManager : MonoBehaviour
                 itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;
             }
         }
+    }
+
+    public void Ghosting()
+    {
+        //todo 보스 아니면 포탈에서 유령 몬스터 소환
+        if (enemy.enemyType != "boss")
+            EnemySpawn.Instance.PortalSpawn(enemy, false, transform.position);
     }
 }

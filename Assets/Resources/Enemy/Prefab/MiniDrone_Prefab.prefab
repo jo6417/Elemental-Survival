@@ -227,8 +227,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,
     type: 3}
-  atkRangeSprite: {fileID: 0}
-  enemyManager: {fileID: 0}
+  atkRangeSprite: {fileID: 7189318774427322981}
+  enemyManager: {fileID: 8701247743618535938}
   atkTrigger: 0
 --- !u!1 &7752522856865055188
 GameObject:
@@ -280,6 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialStart: 0
   defaultHasItem: 
   referEnemyManager: {fileID: 0}
   state: 0
@@ -295,6 +296,8 @@ MonoBehaviour:
   oppositeCount: 0
   selfExplosion: 1
   statusEffect: 0
+  attackRange: 0
+  enemyAI: {fileID: -5451379877862882109}
   explosionTrigger: {fileID: 8096507129767913019}
   spriteObj: {fileID: 7235316671713338324}
   spriteList:
@@ -306,8 +309,7 @@ MonoBehaviour:
   - {fileID: 7476364165769180974}
   rigid: {fileID: 5294624000008441115}
   physicsColl: {fileID: 6399995120407093454}
-  hitColl: {fileID: 4201272999759543317}
-  enemyAI: {fileID: -5451379877862882109}
+  hitCollList: []
   hpMax: 0
   HpNow: 1
   power: 0
@@ -327,10 +329,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 8701247743618535938}
   jumpCoolCount: 0
   jumpCooltime: 0.5
-  dustEffect: {fileID: 0}
+  landEffect: {fileID: 0}
 --- !u!95 &7476364165769180974
 Animator:
   serializedVersion: 3

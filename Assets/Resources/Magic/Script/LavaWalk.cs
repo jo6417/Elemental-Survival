@@ -95,7 +95,7 @@ public class LavaWalk : MonoBehaviour
         _magicHolder.magic = magic;
 
         //마법 타겟 지정
-        _magicHolder.SetTarget(magicHolder.target);
+        _magicHolder.SetTarget(magicHolder.targetType);
 
         //마지막 발자국 위치 갱신
         lastFootPos = magicObj.transform.position;

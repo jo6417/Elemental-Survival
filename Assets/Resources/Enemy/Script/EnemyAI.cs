@@ -7,7 +7,7 @@ using Lean.Pool;
 public class EnemyAI : MonoBehaviour
 {
     [Header("State")]
-    public Vector3 playerDir; //플레이어 방향
+    public Vector3 targetDir; //플레이어 방향
 
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -79,10 +79,10 @@ public class EnemyAI : MonoBehaviour
             return;
 
         //플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.Target.transform.position - transform.position;
 
         //걷는 타입일때
-        if (enemyManager.moveType == EnemyManager.MoveType.Walk)
+        if (enemyManager.moveType == EnemyManager.MoveType.Walk || enemyManager.moveType == EnemyManager.MoveType.Dash)
         {
             Walk();
         }
@@ -91,7 +91,7 @@ public class EnemyAI : MonoBehaviour
         if (enemyManager.moveType == EnemyManager.MoveType.Jump)
         {
             // 점프 쿨타임 아닐때, 플레이어가 공격 범위보다 멀때
-            if (jumpCoolCount <= 0 && playerDir.magnitude > enemyManager.attackRange)
+            if (jumpCoolCount <= 0 && targetDir.magnitude > enemyManager.attackRange)
                 JumpStart();
             else
             {
@@ -121,10 +121,10 @@ public class EnemyAI : MonoBehaviour
         // Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = playerDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
 
         //움직일 방향에따라 회전
-        if (playerDir.x > 0)
+        if (targetDir.x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
@@ -151,19 +151,19 @@ public class EnemyAI : MonoBehaviour
     public void JumpMove()
     {
         //움직일 방향 다시 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.Target.transform.position - transform.position;
 
         //움직일 방향에따라 좌우반전
-        if (playerDir.x > 0)
+        if (targetDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = playerDir.magnitude > enemyManager.range ? enemyManager.range : playerDir.magnitude;
+        float distance = targetDir.magnitude > enemyManager.range ? enemyManager.range : targetDir.magnitude;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = playerDir.normalized * distance * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = targetDir.normalized * distance * SystemManager.Instance.globalTimeScale;
     }
 
     public void JumpMoveStop()

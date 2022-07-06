@@ -179,7 +179,7 @@ public class EnemySpawn : MonoBehaviour
         // print(enemy.enemyName + " : 스폰");
     }
 
-    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)
+    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null, bool isGhost = false)
     {
         //스폰 스위치 꺼졌으면 스폰 멈추기
         if (!spawnSwitch)
@@ -212,6 +212,7 @@ public class EnemySpawn : MonoBehaviour
         //EnemyInfo 인스턴스 생성
         EnemyInfo enemyInfo = new EnemyInfo(enemy);
 
+        // 매니저 찾기
         EnemyManager enemyManager = enemyObj.GetComponentInChildren<EnemyManager>();
 
         // 몬스터 랜덤 스킬 뽑기
@@ -276,6 +277,31 @@ public class EnemySpawn : MonoBehaviour
         // 몬스터 발밑에서 포탈생성
         GameObject portal = LeanPool.Spawn(mobPortal, portalPos, Quaternion.identity, SystemManager.Instance.enemyPool);
 
+        // 포탈 스프라이트 켜기
+        portal.GetComponent<SpriteRenderer>().enabled = true;
+
+        // 포탈에서 몬스터 올라오는 속도
+        float portalUpSpeed = 1f;
+
+        // 유령으로 소환이면
+        if (isGhost)
+        {
+            //todo 초기화 하기전에 유령 공격 타겟 변경
+            enemyManager.ChangeTarget(null);
+
+            //todo 모든 스프라이트 유령색으로
+            foreach (SpriteRenderer sprite in enemyManager.spriteList)
+            {
+                sprite.color = new Color(0, 1, 1, 0.5f);
+            }
+
+            // 포탈 스프라이트 끄기
+            portal.GetComponent<SpriteRenderer>().enabled = false;
+
+            // 유령 올라오는 속도 변경
+            portalUpSpeed = 0.5f;
+        }
+
         //아이콘 찾기
         GameObject iconObj = portal.transform.Find("PortalMask").Find("EnemyIcon").gameObject;
         //아이콘 시작위치로 이동 및 활성화
@@ -303,7 +329,7 @@ public class EnemySpawn : MonoBehaviour
         )
         .Append(
             // 소환 완료 위치로 domove
-            iconObj.transform.DOMove(spawnEndPos, 1f)
+            iconObj.transform.DOMove(spawnEndPos, portalUpSpeed)
         )
         .AppendCallback(() =>
         {
@@ -311,6 +337,9 @@ public class EnemySpawn : MonoBehaviour
             iconObj.SetActive(false);
             // 몬스터 프리팹 활성화
             enemyObj.SetActive(true);
+
+            // 소환된 몬스터 초기화 시작
+            enemyManager.initialStart = true;
 
             // 몬스터 위치 가리킬 화살표 UI 소환
             StartCoroutine(PointEnemyDir(enemyObj));

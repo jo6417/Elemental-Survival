@@ -73,7 +73,7 @@ public class EnemyHitBox : MonoBehaviour
                         // print("enemy knock");
 
                         // 넉백
-                        StartCoroutine(enemyManager.Knockback(hitEnemy.enemy.power));
+                        StartCoroutine(enemyManager.Knockback(other.gameObject, hitEnemy.enemy.power));
                     }
 
                     // flat 디버프 있을때, stop 카운트 중 아닐때

@@ -75,6 +75,10 @@ SpriteAtlas:
   - {fileID: 8954982405313846772, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 21300000, guid: 63524fa2c4b4ba045abd287ded7bb51b, type: 3}
   - {fileID: 21300000, guid: d517c663e7a7bb148be8c6c70e34247f, type: 3}
+  - {fileID: 4117335768061151153, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
+  - {fileID: 769383347276963491, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
+  - {fileID: -4392649398402108704, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
+  - {fileID: -306817205731461640, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: 21300000, guid: a9bc5f63511fbfa46979731382d12fb8, type: 3}
   - {fileID: -2956701104251912436, guid: c34c339337b25c449a0d0ccbd6858f73, type: 3}
   - {fileID: 7755241913717077643, guid: c34c339337b25c449a0d0ccbd6858f73, type: 3}
@@ -206,6 +210,7 @@ SpriteAtlas:
   - {fileID: -5242435963758582417, guid: e85f17ce4b091494383db0293ab73b4d, type: 3}
   - {fileID: -2722819298173475279, guid: e85f17ce4b091494383db0293ab73b4d, type: 3}
   - {fileID: 21300000, guid: f1fcefce2c26cde42ac56f63110deb3d, type: 3}
+  - {fileID: 21300000, guid: d2abbaee8b1de824a9bd7e9bea586797, type: 3}
   - {fileID: 21300000, guid: 31b0367f8da80be479dd56f1245191dd, type: 3}
   - {fileID: 21300000, guid: e2ef8ecf2e08b4743a22185d1b6d1bbb, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -234,6 +239,10 @@ SpriteAtlas:
   - LavaWalk_Sheet_0
   - Nimbus_Icon
   - WaterGem_
+  - RuneLine_0
+  - RuneLine_1
+  - RuneLine_2
+  - RuneLine_3
   - LavaToss_Icon
   - Lava_Sheet_0
   - Lava_Sheet_1
@@ -334,7 +343,7 @@ SpriteAtlas:
   - HealingSpa_Sheet_4
   - HealingSpa_Sheet_5
   - Wave_Icon
-  - Ghosting_Icon
+  - AstralForm_Icon
   - WindBlast_Sheet_4
   - WindBlast_Sheet_5
   - WindBlast_Sheet_6
@@ -365,6 +374,7 @@ SpriteAtlas:
   - Bubble_Sheet_1
   - Bubble_Sheet_2
   - WaterGem_Icon
+  - DeathMine
   - WindGem_Icon
   - Icicle_Icon
   m_RenderDataMap: {}

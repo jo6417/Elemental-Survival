@@ -33,7 +33,7 @@ public class EnemyAttack : MonoBehaviour
 
     IEnumerator Initial()
     {
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => enemyManager != null && enemyManager.enemy != null);
 
         // 대쉬 범위 초기화
         enemyManager.attackRange = enemyManager.enemy.range;
@@ -48,6 +48,9 @@ public class EnemyAttack : MonoBehaviour
         // 공격 오브젝트 있으면 끄기
         if (activeObj != null)
             activeObj.SetActive(false);
+
+        //공격 준비 해제
+        attackReady = false;
     }
 
     private void FixedUpdate()
@@ -76,7 +79,12 @@ public class EnemyAttack : MonoBehaviour
 
         // 공격 범위 안에 들어오면 공격 시작
         if (playerDir.magnitude <= enemyManager.attackRange && enemyManager.attackRange > 0)
+        {
+            //공격 준비로 전환
+            attackReady = true;
+
             StartCoroutine(ChooseAttack());
+        }
     }
 
     IEnumerator ChooseAttack()
@@ -93,14 +101,8 @@ public class EnemyAttack : MonoBehaviour
         // 점프중이라면
         if (enemyManager.enemyAI && enemyManager.enemyAI.jumpCoolCount > 0)
         {
-            //공격 준비로 전환
-            attackReady = true;
-
             // Idle 상태 될때까지 대기
             yield return new WaitUntil(() => enemyManager.nowAction == EnemyManager.Action.Idle);
-
-            //공격 준비 끝
-            attackReady = false;
         }
 
         // 액티브 공격 오브젝트 있으면 해당 공격 함수 실행
@@ -135,7 +137,7 @@ public class EnemyAttack : MonoBehaviour
 
         // 뒤로 살짝 이동
         transform.DOMove(transform.position - playerDir.normalized, 1f);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
 
         // 플레이어 방향으로 돌진
         transform.DOMove(transform.position + playerDir.normalized * 5f, 0.5f);
@@ -147,6 +149,9 @@ public class EnemyAttack : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
         // rigid 타입 전환
         enemyManager.rigid.bodyType = RigidbodyType2D.Dynamic;
+
+        //공격 준비 해제
+        attackReady = false;
     }
 
     public IEnumerator ActiveAttack()
@@ -177,5 +182,8 @@ public class EnemyAttack : MonoBehaviour
         yield return new WaitForSeconds(enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
+
+        //공격 준비 해제
+        attackReady = false;
     }
 }

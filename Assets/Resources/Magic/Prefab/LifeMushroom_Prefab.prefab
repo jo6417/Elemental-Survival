@@ -27,7 +27,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6525715075430717942}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicName: 
   coll: {fileID: 0}
+  targetObj: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
   target: 0
   knockbackForce: 0
@@ -70,6 +71,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59910b98e23cfb34eb1fc3e90ac095e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lifeMushroom: {fileID: 2906334075574307096, guid: 5fcb19676ccf7404b839f9eca62561c6,
+    type: 3}
 --- !u!198 &6787892045459812978
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4815,7 +4818,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0

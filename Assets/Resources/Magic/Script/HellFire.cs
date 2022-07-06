@@ -32,11 +32,11 @@ public class HellFire : MonoBehaviour
         magic = magicHolder.magic;
 
         // 타겟에 따라 해골 색 바꾸기
-        if (magicHolder.target == MagicHolder.Target.Player)
+        if (magicHolder.targetType == MagicHolder.Target.Player)
             // 플레이어가 타겟이면 빨간색
             skullSprite.color = new Color(1, 0, 0, 1);
 
-        if (magicHolder.target == MagicHolder.Target.Enemy)
+        if (magicHolder.targetType == MagicHolder.Target.Enemy)
             // 몬스터가 타겟이면 흰색
             skullSprite.color = new Color(1, 1, 1, 1);
 

@@ -50,8 +50,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicName: 
   coll: {fileID: 0}
+  targetObj: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
-  target: 0
+  targetType: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -76,7 +77,7 @@ MonoBehaviour:
   startOffset: {x: 0, y: 30}
   fireTrail: {fileID: 6720872240345002128}
   magicHolder: {fileID: 2712818590590919898}
-  explosionPrefab: {fileID: 8973283870101710976, guid: 2087cc0754adafc44ab4d70a979eceda,
+  explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,
     type: 3}
   dirtPrefab: {fileID: 444469309744675838, guid: d9de1b6b57ddf424f9164127d9476914,
     type: 3}

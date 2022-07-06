@@ -7,6 +7,7 @@ public class LifeMushroom : MonoBehaviour
 {
     MagicHolder magicHolder;
     MagicInfo magic;
+    public GameObject lifeMushroom; // 회복 버섯
 
     private void Awake()
     {
@@ -52,7 +53,7 @@ public class LifeMushroom : MonoBehaviour
         // HealSeed 마법 크리티컬 확률에 따라 드랍
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(ItemDB.Instance.lifeMushroom, eventPos, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject mushroom = LeanPool.Spawn(lifeMushroom, eventPos, Quaternion.identity, SystemManager.Instance.itemPool);
 
             // 아이템에 체력 회복량 넣기
             mushroom.GetComponent<ItemManager>().amount = healAmount;

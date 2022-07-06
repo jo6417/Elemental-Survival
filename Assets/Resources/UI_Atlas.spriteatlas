@@ -73,6 +73,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 08889cf305a467443baf104bf4f996b9, type: 3}
   - {fileID: 21300000, guid: 27c4a944c417c414cb1e1e610b6f7ff3, type: 3}
   - {fileID: 21300000, guid: 03b6e5745ae1e0c4594024f79588c420, type: 3}
+  - {fileID: 21300000, guid: 80b72ad4eff6b054a87ff4ec29d2c532, type: 3}
   - {fileID: 21300000, guid: c4f8c2358ac84944b811a7edb0ac6f71, type: 3}
   - {fileID: 21300000, guid: 4621d275f5f58f848909c898d8727704, type: 3}
   - {fileID: 21300000, guid: 94ffaad5af4619d4bbb99f70d166fb1c, type: 3}
@@ -160,6 +161,7 @@ SpriteAtlas:
   - CutOffImg
   - VendMachine
   - PhoneScreen
+  - InitialLanguage
   - BlueGradientOutline
   - HexStatFrame
   - PhoneUI

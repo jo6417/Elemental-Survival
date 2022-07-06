@@ -9,8 +9,8 @@ public class MagicHolder : MonoBehaviour
     public Collider2D coll;
     public GameObject targetObj = null; //목표 오브젝트
     public Vector3 targetPos = default(Vector3); //목표 위치
-    public enum Target { None, Enemy, Player };
-    public Target target; //마법의 목표 타겟
+    public enum Target { None, Enemy, Player, Both };
+    public Target targetType; //마법의 목표 타겟
     private float addDuration; // 추가 유지 시간
     public float AddDuration // 추가 유지 시간
     {
@@ -73,7 +73,7 @@ public class MagicHolder : MonoBehaviour
 
     public Target GetTarget()
     {
-        return target;
+        return targetType;
     }
 
     public void SetTarget(Target changeTarget)
@@ -90,9 +90,14 @@ public class MagicHolder : MonoBehaviour
                 transform.tag = "EnemyAttack";
                 gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
                 break;
+
+            case Target.Both:
+                transform.tag = "Magic";
+                gameObject.layer = LayerMask.NameToLayer("Magic");
+                break;
         }
 
         //해당 마법의 타겟 변경
-        target = changeTarget;
+        targetType = changeTarget;
     }
 }
