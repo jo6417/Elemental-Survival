@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
-    Vector3 playerDir;
+    Vector3 targetDir;
     public float activeAngleOffset; // 액티브 공격 오브젝트 방향 오프셋
     bool attackReady; //공격 준비중
 
@@ -75,10 +75,10 @@ public class EnemyAttack : MonoBehaviour
             return;
 
         //플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
-        if (playerDir.magnitude <= enemyManager.attackRange && enemyManager.attackRange > 0)
+        if (targetDir.magnitude <= enemyManager.attackRange && enemyManager.attackRange > 0)
         {
             //공격 준비로 전환
             attackReady = true;
@@ -90,7 +90,7 @@ public class EnemyAttack : MonoBehaviour
     IEnumerator ChooseAttack()
     {
         //움직일 방향에따라 회전
-        if (playerDir.x > 0)
+        if (targetDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -125,9 +125,9 @@ public class EnemyAttack : MonoBehaviour
         enemyManager.rigid.bodyType = RigidbodyType2D.Kinematic;
 
         //플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.targetObj.transform.position - transform.position;
 
-        if (playerDir.x > 0)
+        if (targetDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -136,11 +136,11 @@ public class EnemyAttack : MonoBehaviour
         dashEffect.SetActive(true);
 
         // 뒤로 살짝 이동
-        transform.DOMove(transform.position - playerDir.normalized, 1f);
+        transform.DOMove(transform.position - targetDir.normalized, 1f);
         yield return new WaitForSeconds(1f);
 
         // 플레이어 방향으로 돌진
-        transform.DOMove(transform.position + playerDir.normalized * 5f, 0.5f);
+        transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
         yield return new WaitForSeconds(0.5f);
 
         // 쿨타임만큼 대기후 초기화
@@ -162,10 +162,10 @@ public class EnemyAttack : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Attack;
 
         // 플레이어 방향 계산
-        // playerDir = PlayerManager.Instance.transform.position - transform.position;
+        // targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         // 공격 오브젝트 각도 계산
-        // float angle = Mathf.Atan2(playerDir.y, playerDir.x) * Mathf.Rad2Deg;
+        // float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
         // 공격 오브젝트 생성
         // LeanPool.Spawn(activeObj, activeObj.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);

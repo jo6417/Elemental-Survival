@@ -39,7 +39,7 @@ public class LifeMushroom : MonoBehaviour
     }
 
     // Life Seed 드랍하기
-    public void DropLifeSeed(Vector2 eventPos)
+    public void DropLifeSeed(EnemyManager enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -53,7 +53,7 @@ public class LifeMushroom : MonoBehaviour
         // HealSeed 마법 크리티컬 확률에 따라 드랍
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(lifeMushroom, eventPos, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject mushroom = LeanPool.Spawn(lifeMushroom, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
             // 아이템에 체력 회복량 넣기
             mushroom.GetComponent<ItemManager>().amount = healAmount;

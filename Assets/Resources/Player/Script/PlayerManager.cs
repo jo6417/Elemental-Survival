@@ -371,8 +371,8 @@ public class PlayerManager : MonoBehaviour
         {
             EnemyManager enemyManager = enemyAtk.enemyManager;
 
-            //적에게 충돌
-            if (enemyManager != null)
+            // 적 매니저 있고, 아군 고스트 아닐때
+            if (enemyManager != null && !enemyManager.isGhost)
             {
                 EnemyInfo enemy = enemyManager.enemy;
 

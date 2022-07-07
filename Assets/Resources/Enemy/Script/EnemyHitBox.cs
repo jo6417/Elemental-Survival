@@ -47,43 +47,48 @@ public class EnemyHitBox : MonoBehaviour
             // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
             if (other.gameObject.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
             {
-                EnemyManager hitEnemy = enemyAtk.enemyManager;
+                EnemyManager hitEnemyManager = enemyAtk.enemyManager;
 
                 // other가 본인일때 리턴
-                if (hitEnemy == enemyManager || hitEnemy == enemyManager.referEnemyManager)
+                if (hitEnemyManager == enemyManager || hitEnemyManager == enemyManager.referEnemyManager)
                 {
                     // print("본인 타격");
                     return;
                 }
 
-                if (hitEnemy.enabled)
+                // 타격한 적이 비활성화 되었으면 리턴
+                if (!hitEnemyManager.enabled)
+                    return;
+
+                // 타격 대상과 피격 대상 본인 둘다 고스트일때 리턴
+                if (hitEnemyManager.isGhost && enemyManager.isGhost)
+                    return;
+
+                // 아군 피해 옵션 켜져있을때, 타격 대상이 고스트일때
+                if (enemyAtk.friendlyFire || hitEnemyManager.isGhost)
                 {
-                    // 아군 피해 줄때
-                    if (enemyAtk.friendlyFire)
-                    {
-                        // print("enemy damage");
+                    // print("enemy damage");
 
-                        // 데미지 입기
-                        enemyManager.Damage(hitEnemy.enemy.power, false);
-                    }
+                    // 데미지 입기
+                    enemyManager.Damage(hitEnemyManager.enemy.power, false);
+                }
 
-                    // 넉백 디버프 있을때
-                    if (enemyAtk.knockBackDebuff)
-                    {
-                        // print("enemy knock");
+                // 넉백 디버프 있을때
+                if (enemyAtk.knockBackDebuff)
+                {
+                    // print("enemy knock");
 
-                        // 넉백
-                        StartCoroutine(enemyManager.Knockback(other.gameObject, hitEnemy.enemy.power));
-                    }
+                    // 넉백
+                    StartCoroutine(enemyManager.Knockback(other.gameObject, hitEnemyManager.enemy.power));
+                }
 
-                    // flat 디버프 있을때, stop 카운트 중 아닐때
-                    if (enemyAtk.flatDebuff && enemyManager.stopCount <= 0)
-                    {
-                        // print("enemy flat");
+                // flat 디버프 있을때, stop 카운트 중 아닐때
+                if (enemyAtk.flatDebuff && enemyManager.stopCount <= 0)
+                {
+                    // print("enemy flat");
 
-                        // 납작해지고 행동불능
-                        StartCoroutine(enemyManager.FlatDebuff());
-                    }
+                    // 납작해지고 행동불능
+                    StartCoroutine(enemyManager.FlatDebuff());
                 }
             }
         }

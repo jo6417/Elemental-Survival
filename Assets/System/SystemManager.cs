@@ -10,7 +10,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class SystemManager : MonoBehaviour
 {
-    public delegate void EnemyDeadCallback(Vector2 deadPos);
+    public delegate void EnemyDeadCallback(EnemyManager enemyManager);
     public EnemyDeadCallback globalEnemyDeadCallback;
 
     #region Singleton
@@ -45,13 +45,16 @@ public class SystemManager : MonoBehaviour
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
 
-    [Header("Refer")]
-    public Light2D globalLight;
+    [Header("Pool")]
     public Transform enemyPool;
     public Transform itemPool;
     public Transform overlayPool;
     public Transform magicPool;
     public Transform effectPool;
+    public Transform objectPool;
+
+    [Header("Refer")]
+    public Light2D globalLight;
     public Transform camParent;
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
@@ -116,7 +119,7 @@ public class SystemManager : MonoBehaviour
         Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * portalRange;
 
         //포탈 게이트 생성
-        GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity);
+        GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity, objectPool);
     }
 
     public Color HexToRGBA(string hex)

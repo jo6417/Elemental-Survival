@@ -28,8 +28,17 @@ public class EnemyAtkTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //플레이어가 범위 내에 들어왔을때
-        if (other.CompareTag("Player"))
+        // 자폭 트리거가 되는 태그
+        string triggerObj = "Player";
+
+        // 고스트 여부에 따라 자폭 트리거 태그 바꾸기
+        if (enemyManager.isGhost)
+            triggerObj = "Enemy";
+        else
+            triggerObj = "Player";
+
+        // 목표 대상이 범위 내에 들어왔을때
+        if (other.CompareTag(triggerObj))
         {
             atkTrigger = true;
 

@@ -39,7 +39,7 @@ public class DeathMineSpawner : MonoBehaviour
     }
 
     // 지뢰 드랍하기
-    public void DropMine(Vector2 eventPos)
+    public void DropMine(EnemyManager enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -53,7 +53,7 @@ public class DeathMineSpawner : MonoBehaviour
         // 마법 크리티컬 확률에 따라 지뢰 생성
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(minePrefab, eventPos, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject mushroom = LeanPool.Spawn(minePrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
         }
     }
 }

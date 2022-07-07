@@ -19,17 +19,21 @@ public class EnemyManager : MonoBehaviour
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
     public EnemyManager referEnemyManager = null;
     public EnemyInfo enemy;
-    private GameObject target; // 공격 목표
-    public GameObject Target
+    public float targetResetTime = 3f; //타겟 재설정 시간
+    public float targetResetCount = 0; //타겟 재설정 시간 카운트
+    public GameObject targetObj; // 공격 목표
+    public GameObject TargetObj
     {
         get
         {
             // 타겟이 없거나 비활성화 되어있으면
-            if (target == null || !target.activeSelf)
+            if (targetObj == null || !targetObj.activeSelf)
+            {
                 // 새로운 타겟 찾기
-                return SearchTarget();
-            else
-                return target;
+                targetObj = SearchTarget();
+            }
+
+            return targetObj;
         }
     }
 
@@ -60,6 +64,7 @@ public class EnemyManager : MonoBehaviour
     public bool selfExplosion = false; //죽을때 자폭 여부
     public bool statusEffect = false; //상태이상으로 색 변형 했는지 여부
     public float attackRange; // 공격범위
+    public bool isGhost = false; // 마법으로 소환된 고스트 몬스터인지 여부
 
     [Header("Refer")]
     public EnemyAI enemyAI;
@@ -122,7 +127,7 @@ public class EnemyManager : MonoBehaviour
         }
 
         //초기 타겟은 플레이어
-        target = PlayerManager.Instance.gameObject;
+        targetObj = PlayerManager.Instance.gameObject;
     }
 
     private void OnEnable()
@@ -135,15 +140,13 @@ public class EnemyManager : MonoBehaviour
         // 초기화 스위치 켜질때까지 대기
         yield return new WaitUntil(() => initialStart);
 
-        // 플레이어가 타겟일때
-        if (target == PlayerManager.Instance.gameObject)
-            // 모든 스프라이트 색깔,머터리얼 초기화
-            for (int i = 0; i < spriteList.Count; i++)
-            {
-                spriteList[i].color = originColorList[i];
-                spriteList[i].material = originMatList[i];
-                // spriteList[i].material.color = originMatColorList[i];
-            }
+        // 모든 스프라이트 색깔,머터리얼 초기화
+        for (int i = 0; i < spriteList.Count; i++)
+        {
+            spriteList[i].color = originColorList[i];
+            spriteList[i].material = originMatList[i];
+            // spriteList[i].material.color = originMatColorList[i];
+        }
 
         //콜라이더 끄기
         if (hitCollList.Count > 0)
@@ -201,8 +204,8 @@ public class EnemyManager : MonoBehaviour
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
 
-        // 플레이어가 타겟이 아니면 체력 절반으로 초기화
-        if (target != PlayerManager.Instance.gameObject)
+        // 고스트일때 체력 절반으로 초기화
+        if (isGhost)
             HpNow = enemy.hpMax / 2f; //체력 절반으로 초기화
         else
             HpNow = enemy.hpMax; //체력 초기화
@@ -234,47 +237,75 @@ public class EnemyManager : MonoBehaviour
             StartCoroutine(UIManager.Instance.UpdateBossHp(this));
         }
 
+        // 고스트일때
+        if (isGhost)
+        {
+            //todo 모든 스프라이트 유령색으로
+            foreach (SpriteRenderer sprite in spriteList)
+            {
+                sprite.color = new Color(0, 1, 1, 0.5f);
+            }
+
+            // 타겟 null로 초기화
+            ChangeTarget(null);
+        }
+
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;
     }
 
     public void ChangeTarget(GameObject newTarget)
     {
-        // 타겟 변경하기
-        target = newTarget;
+        // 타겟 리셋 타임 재설정
+        targetResetCount = targetResetTime;
 
-        // 타겟이 없으면 주변 몬스터 검색
-        if (target == null)
-        {
-            SearchTarget();
-        }
+        // 타겟 변경하기
+        targetObj = newTarget;
+
+        // 지정 타겟이 null이면 주변 몬스터 타겟 찾아 넣기
+        if (targetObj == null)
+            targetObj = SearchTarget();
     }
 
     GameObject SearchTarget()
     {
-        //캐릭터 주변의 적들
-        List<Collider2D> enemyCollList = new List<Collider2D>();
-        enemyCollList = Physics2D.OverlapCircleAll(transform.position, range, 1 << LayerMask.NameToLayer("Enemy")).ToList();
+        // 가장 가까운 적과의 거리
+        float closeRange = float.PositiveInfinity;
+        GameObject closeEnemy = null;
 
-        // 몬스터 본인 콜라이더는 빼기
-        enemyCollList.Remove(physicsColl);
+        //캐릭터 주변의 적들
+        List<Collider2D> enemyCollList = Physics2D.OverlapCircleAll(transform.position, 50f, 1 << LayerMask.NameToLayer("Enemy")).ToList();
+
+        // 주변에 아무도 없으면 리턴 
+        if (enemyCollList.Count == 0)
+            return null;
+
+        // 몬스터 본인 콜라이더는 전부 빼기
+        // enemyCollList.Remove(physicsColl);
         foreach (Collider2D coll in hitCollList)
         {
             enemyCollList.Remove(coll);
         }
 
-        // 가장 가까운 적과의 거리
-        float closeRange = float.PositiveInfinity;
-        GameObject closeEnemy = null;
-
-        // 가까운 적 산출하기
-        foreach (Collider2D enemyObj in enemyCollList)
+        for (int i = 0; i < enemyCollList.Count; i++)
         {
+            // 히트박스 컴포넌트가 있을때
+            if (enemyCollList[i].TryGetComponent(out EnemyHitBox hitBox))
+            {
+                // 찾은 몬스터도 고스트일때
+                if (hitBox.enemyManager.isGhost)
+                    // 다음으로 진행
+                    continue;
+            }
+            else
+                // 히트박스 컴포넌트가 없을때
+                continue;
+
             // 해당 적이 이전 거리보다 짧으면
-            if (Vector2.Distance(transform.position, enemyObj.transform.position) < closeRange)
+            if (Vector2.Distance(transform.position, enemyCollList[i].transform.position) < closeRange)
             {
                 // 해당 적을 타겟으로 바꾸기
-                closeEnemy = enemyObj.gameObject;
+                closeEnemy = enemyCollList[i].gameObject;
             }
         }
 
@@ -283,10 +314,15 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
+        // 파티클 히트 딜레이 차감
         if (particleHitCount > 0)
         {
             particleHitCount -= Time.deltaTime;
         }
+
+        // 고스트일때 타겟이 비활성화되거나 리셋타임이 되면 타겟 재설정
+        if (isGhost && (targetResetCount <= 0 || targetObj == null))
+            ChangeTarget(null);
     }
 
     public bool ManageState()
@@ -427,11 +463,11 @@ public class EnemyManager : MonoBehaviour
             {
                 spriteList[i].material = originMatList[i];
 
-                // 타겟에 따라 복구색 바꾸기
-                if (target == PlayerManager.Instance.gameObject)
-                    spriteList[i].color = originColorList[i];
-                else
+                // 고스트 여부에 따라 복구색 바꾸기
+                if (isGhost)
                     spriteList[i].color = new Color(0, 1, 1, 0.5f);
+                else
+                    spriteList[i].color = originColorList[i];
             }
 
             transform.DOPlay();
@@ -704,13 +740,6 @@ public class EnemyManager : MonoBehaviour
                 coll.enabled = false;
             }
 
-        //몬스터 총 전투력 빼기
-        EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
-
-        //몬스터 킬 카운트 올리기
-        SystemManager.Instance.killCount++;
-        UIManager.Instance.UpdateKillCount();
-
         if (spriteList != null)
         {
             foreach (SpriteRenderer sprite in spriteList)
@@ -724,12 +753,14 @@ public class EnemyManager : MonoBehaviour
                 .SetEase(Ease.OutQuad);
             }
 
-            // 폭발 반경 표시
+            // 자폭 몬스터일때
             if (selfExplosion)
             {
+                // 폭발 반경 표시
                 explosionTrigger.atkRangeSprite.enabled = true;
                 explosionTrigger.atkRangeSprite.color = new Color(1, 1, 1, 80f / 255f);
 
+                // 폭발 반경 깜빡이기
                 explosionTrigger.atkRangeSprite.DOColor(new Color(1, 0, 0, 80f / 255f), 1f)
                 .SetEase(Ease.Flash, 3, 0)
                 .OnComplete(() =>
@@ -755,6 +786,8 @@ public class EnemyManager : MonoBehaviour
             // 일단 비활성화
             effect.SetActive(false);
 
+            //todo 태그 바꾸기?
+
             // 태그 몬스터 공격으로 바꾸기
             // effect.tag = "EnemyAttack";
             // effect.layer = LayerMask.NameToLayer("EnemyAttack");
@@ -773,22 +806,34 @@ public class EnemyManager : MonoBehaviour
             effect.SetActive(true);
         }
 
+        // 고스트가 아닐때
+        if (!isGhost)
+        {
+            //몬스터 총 전투력 빼기
+            EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
+
+            //몬스터 킬 카운트 올리기
+            SystemManager.Instance.killCount++;
+            UIManager.Instance.UpdateKillCount();
+
+            //혈흔 이펙트 생성
+            GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            //아이템 드랍
+            DropItem();
+
+            // 몬스터 리스트에서 몬스터 본인 빼기
+            EnemySpawn.Instance.EnemyDespawn(this);
+        }
+        else
+        {
+            // 고스트 여부 초기화
+            isGhost = false;
+        }
+
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-        dust.tag = "Enemy";
-
-        //혈흔 이펙트 생성
-        GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-
-        //아이템 드랍
-        DropItem();
-
-        // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
-        if (SystemManager.Instance.globalEnemyDeadCallback != null)
-            SystemManager.Instance.globalEnemyDeadCallback(transform.position);
-
-        // 몬스터 리스트에서 몬스터 본인 빼기
-        EnemySpawn.Instance.spawnEnemyList.Remove(gameObject);
+        // dust.tag = "Enemy";
 
         // 트윈 및 시퀀스 끝내기
         transform.DOKill();
@@ -839,12 +884,5 @@ public class EnemyManager : MonoBehaviour
                 itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;
             }
         }
-    }
-
-    public void Ghosting()
-    {
-        //todo 보스 아니면 포탈에서 유령 몬스터 소환
-        if (enemy.enemyType != "boss")
-            EnemySpawn.Instance.PortalSpawn(enemy, false, transform.position);
     }
 }

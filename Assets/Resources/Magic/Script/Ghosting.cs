@@ -35,11 +35,12 @@ public class Ghosting : MonoBehaviour
     private void OnDisable()
     {
         // 해당 마법 장착 해제되면 델리게이트에서 함수 빼기
-        SystemManager.Instance.globalEnemyDeadCallback -= SummonGhost;
+        if (SystemManager.Instance != null)
+            SystemManager.Instance.globalEnemyDeadCallback -= SummonGhost;
     }
 
     // 몬스터 유령 생성하기
-    public void SummonGhost(Vector2 eventPos)
+    public void SummonGhost(EnemyManager enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -49,29 +50,9 @@ public class Ghosting : MonoBehaviour
         //크리티컬 데미지 = 소환 몬스터 체력 추가
         int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
 
-        //todo 이 함수를 실행하는 몬스터의 enemyManager에서 포탈을 생성해야함, enemy 정보가 필요
-
-        // 마법 크리티컬 확률에 따라 유령 소환
-        // if (isDrop)
-        // {
-        //     //todo 유령 포탈에서 소환
-        //     //todo 포탈 스프라이트는 끄기
-        //     GameObject ghost = LeanPool.Spawn(ghostPrefab, eventPos, Quaternion.identity, SystemManager.Instance.itemPool);
-
-        //     // 매니저 찾기
-        //     EnemyManager enemyManager = ghost.GetComponent<EnemyManager>();
-
-        //     //todo 모든 스프라이트 유령색으로
-        //     foreach (SpriteRenderer sprite in enemyManager.spriteList)
-        //     {
-        //         sprite.color = new Color(0, 1, 1, 0.5f);
-        //     }
-
-        //     //todo 초기화 하기전에 유령 공격 타겟 변경
-        //     enemyManager.ChangeTarget(null);
-
-        //     // 몬스터 초기화 시작
-        //     enemyManager.initialStart = true;
-        // }
+        // 이미 유령 아닐때, 보스 아닐때
+        if (!enemyManager.isGhost && enemyManager.enemy.enemyType != "boss")
+            // 포탈에서 몬스터 유령 소환
+            StartCoroutine(EnemySpawn.Instance.PortalSpawn(enemyManager.enemy, false, enemyManager.transform.position, null, true));
     }
 }

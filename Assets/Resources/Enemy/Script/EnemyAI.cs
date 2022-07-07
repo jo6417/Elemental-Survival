@@ -78,8 +78,13 @@ public class EnemyAI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
-        //플레이어 방향 계산
-        targetDir = enemyManager.Target.transform.position - transform.position;
+        // 타겟 null 체크
+        if (enemyManager.TargetObj != null)
+            // 타겟 방향 계산
+            targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        else
+            // 타겟이 null 이면 멈추기
+            enemyManager.rigid.velocity = Vector2.zero;
 
         //걷는 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Walk || enemyManager.moveType == EnemyManager.MoveType.Dash)
@@ -150,8 +155,13 @@ public class EnemyAI : MonoBehaviour
 
     public void JumpMove()
     {
-        //움직일 방향 다시 계산
-        targetDir = enemyManager.Target.transform.position - transform.position;
+        // 타겟 null 체크
+        if (enemyManager.TargetObj != null)
+            // 타겟 방향 계산
+            targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        else
+            // 타겟이 null 이면 멈추기
+            enemyManager.rigid.velocity = Vector2.zero;
 
         //움직일 방향에따라 좌우반전
         if (targetDir.x > 0)

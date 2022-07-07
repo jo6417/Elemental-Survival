@@ -34,21 +34,28 @@ public class EnemySpawn : MonoBehaviour
     public bool spawnSwitch; //몬스터 스폰 ON/OFF
     public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
     public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
-    Collider2D col;
-    public int MaxEnemyPower; //최대 몬스터 수
-    public int NowEnemyPower; //현재 몬스터 수
+    Collider2D fenceColl; // 스포너 테두리 콜라이더
+    public int MaxEnemyPower; //최대 몬스터 전투력
+    public int NowEnemyPower; //현재 몬스터 전투력
     public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
     public float spawnCoolCount; //몬스터 스폰 쿨타임 카운트
-    public List<GameObject> spawnEnemyList = new List<GameObject>(); //현재 스폰된 몬스터 리스트
+    public List<EnemyManager> spawnAbleList = new List<EnemyManager>(); // 현재 맵에서 스폰 가능한 몹 리스트
+    public List<EnemyManager> spawnEnemyList = new List<EnemyManager>(); //현재 스폰된 몬스터 리스트
 
     [Header("Refer")]
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
 
+    private void Awake()
+    {
+        // 현재 스폰 몬스터 리스트 비우기
+        spawnEnemyList.Clear();
+    }
+
     void Start()
     {
-        col = GetComponent<BoxCollider2D>();
+        fenceColl = GetComponent<BoxCollider2D>();
     }
 
     void Update()
@@ -128,7 +135,7 @@ public class EnemySpawn : MonoBehaviour
         maxGrade = Mathf.Clamp(maxGrade, 1, 6); //최대 6까지
 
         //랜덤 스폰일때
-        if (randomSpawn || spawnEnemyList.Count == 0)
+        if (randomSpawn || spawnAbleList.Count == 0)
         {
             // 스폰 가능한 몬스터 찾을때까지 반복
             while (enemy == null || enemyObj == null)
@@ -151,11 +158,11 @@ public class EnemySpawn : MonoBehaviour
                 yield return null;
             }
         }
-        //랜덤 스폰 아닐때, spawnEnemyList 에서 뽑아서 랜덤 스폰
+        //랜덤 스폰 아닐때, spawnAbleList 에서 뽑아서 랜덤 스폰
         else
         {
             //프리팹 오브젝트 찾기
-            enemyObj = spawnEnemyList[Random.Range(0, spawnEnemyList.Count)];
+            enemyObj = spawnAbleList[Random.Range(0, spawnAbleList.Count)].gameObject;
 
             //몬스터 정보 찾기
             enemy = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(enemyObj.name.Split('_')[0]));
@@ -181,7 +188,7 @@ public class EnemySpawn : MonoBehaviour
 
     public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null, bool isGhost = false)
     {
-        //스폰 스위치 꺼졌으면 스폰 멈추기
+        //스폰 스위치 꺼졌으면 스폰 취소
         if (!spawnSwitch)
             yield break;
 
@@ -201,9 +208,6 @@ public class EnemySpawn : MonoBehaviour
             // 몬스터 프리팹 소환 및 비활성화
             enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, SystemManager.Instance.enemyPool);
             enemyObj.SetActive(false);
-
-            //몬스터 리스트에 넣기
-            spawnEnemyList.Add(enemyObj);
         }
 
         //프리팹에서 스프라이트 컴포넌트 찾기
@@ -214,6 +218,9 @@ public class EnemySpawn : MonoBehaviour
 
         // 매니저 찾기
         EnemyManager enemyManager = enemyObj.GetComponentInChildren<EnemyManager>();
+
+        //몬스터 리스트에 넣기
+        spawnEnemyList.Add(enemyManager);
 
         // 몬스터 랜덤 스킬 뽑기
         if (isElite)
@@ -286,28 +293,38 @@ public class EnemySpawn : MonoBehaviour
         // 유령으로 소환이면
         if (isGhost)
         {
-            //todo 초기화 하기전에 유령 공격 타겟 변경
-            enemyManager.ChangeTarget(null);
-
-            //todo 모든 스프라이트 유령색으로
-            foreach (SpriteRenderer sprite in enemyManager.spriteList)
-            {
-                sprite.color = new Color(0, 1, 1, 0.5f);
-            }
+            // 해당 유령은 고스트로 지정
+            enemyManager.isGhost = true;
 
             // 포탈 스프라이트 끄기
             portal.GetComponent<SpriteRenderer>().enabled = false;
 
-            // 유령 올라오는 속도 변경
+            // 더 빨리 올라오기
             portalUpSpeed = 0.5f;
+
+            //todo 타격 대상 변경
+            //todo 피격 대상 태그 변경
         }
 
         //아이콘 찾기
         GameObject iconObj = portal.transform.Find("PortalMask").Find("EnemyIcon").gameObject;
+
         //아이콘 시작위치로 이동 및 활성화
         iconObj.transform.position = spawnStartPos;
+
+        // 아이콘 스프라이트 찾기
+        SpriteRenderer iconSprite = iconObj.GetComponent<SpriteRenderer>();
+
         // 떠오를 스프라이트에 몬스터 아이콘 넣기
-        iconObj.GetComponent<SpriteRenderer>().sprite = EnemyDB.Instance.GetIcon(enemy.id);
+        iconSprite.sprite = EnemyDB.Instance.GetIcon(enemy.id);
+
+        // 고스트 여부에 따라 아이콘 스프라이트 색 변경
+        if (isGhost)
+            iconSprite.color = new Color(0, 1, 1, 0.5f);
+        else
+            iconSprite.color = Color.white;
+
+        //아이콘 비활성화
         iconObj.SetActive(false);
 
         //포탈 사이즈 줄이기
@@ -358,6 +375,16 @@ public class EnemySpawn : MonoBehaviour
         yield return null;
     }
 
+    public void EnemyDespawn(EnemyManager enemyManager)
+    {
+        // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
+        if (SystemManager.Instance.globalEnemyDeadCallback != null)
+            SystemManager.Instance.globalEnemyDeadCallback(enemyManager);
+
+        // 죽은 적을 리스트에서 제거
+        spawnEnemyList.Remove(enemyManager);
+    }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기
@@ -391,8 +418,8 @@ public class EnemySpawn : MonoBehaviour
     Vector2 InnerRandPos()
     {
         // 콜라이더 내 랜덤 위치
-        float spawnPosX = Random.Range(col.bounds.min.x, col.bounds.max.x);
-        float spawnPosY = Random.Range(col.bounds.min.y, col.bounds.max.y);
+        float spawnPosX = Random.Range(fenceColl.bounds.min.x, fenceColl.bounds.max.x);
+        float spawnPosY = Random.Range(fenceColl.bounds.min.y, fenceColl.bounds.max.y);
 
         return new Vector2(spawnPosX, spawnPosY);
     }
@@ -400,27 +427,27 @@ public class EnemySpawn : MonoBehaviour
     //콜라이더 테두리 랜덤 위치
     Vector2 BorderRandPos()
     {
-        float spawnPosX = Random.Range(col.bounds.min.x, col.bounds.max.x);
-        float spawnPosY = Random.Range(col.bounds.min.y, col.bounds.max.y);
+        float spawnPosX = Random.Range(fenceColl.bounds.min.x, fenceColl.bounds.max.x);
+        float spawnPosY = Random.Range(fenceColl.bounds.min.y, fenceColl.bounds.max.y);
         int spawnSide = Random.Range(0, 4);
 
         // 스폰될 모서리 방향
         switch (spawnSide)
         {
             case 0:
-                spawnPosY = col.bounds.max.y;
+                spawnPosY = fenceColl.bounds.max.y;
                 break;
 
             case 1:
-                spawnPosX = col.bounds.max.x;
+                spawnPosX = fenceColl.bounds.max.x;
                 break;
 
             case 2:
-                spawnPosY = col.bounds.min.y;
+                spawnPosY = fenceColl.bounds.min.y;
                 break;
 
             case 3:
-                spawnPosX = col.bounds.min.x;
+                spawnPosX = fenceColl.bounds.min.x;
                 break;
         }
 
