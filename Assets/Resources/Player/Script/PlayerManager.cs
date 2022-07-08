@@ -332,7 +332,7 @@ public class PlayerManager : MonoBehaviour
         //적에게 콜라이더 충돌
         if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
         {
-            Hit(other.transform);
+            StartCoroutine(Hit(other.transform));
         }
     }
 
@@ -343,7 +343,7 @@ public class PlayerManager : MonoBehaviour
         // 적에게 트리거 충돌
         if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
         {
-            Hit(other.transform);
+            StartCoroutine(Hit(other.transform));
         }
     }
 
@@ -364,24 +364,25 @@ public class PlayerManager : MonoBehaviour
 
     // }
 
-    void Hit(Transform other)
+    IEnumerator Hit(Transform other)
     {
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
         if (other.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             EnemyManager enemyManager = enemyAtk.enemyManager;
 
-            // 적 매니저 있고, 아군 고스트 아닐때
-            if (enemyManager != null && !enemyManager.isGhost)
+            // 적 매니저 있고, 아군 고스트의 공격이 아닐때
+            if (enemyManager != null && !enemyManager.IsGhost)
             {
-                EnemyInfo enemy = enemyManager.enemy;
-
                 // hitCount 갱신되었으면 리턴, 중복 피격 방지
                 if (hitCoolCount > 0)
-                    return;
+                    yield break;
 
                 //피격 딜레이 무적시간 시작
                 StartCoroutine(HitDelay());
+
+                yield return new WaitUntil(() => enemyAtk.enemy != null);
+                EnemyInfo enemy = enemyAtk.enemy;
 
                 Damage(enemy.power);
 

@@ -26,20 +26,39 @@ public class EnemyAtkTrigger : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        // 자폭 트리거가 되는 태그
-        string triggerObj = "Player";
-
-        // 고스트 여부에 따라 자폭 트리거 태그 바꾸기
-        if (enemyManager.isGhost)
-            triggerObj = "Enemy";
-        else
-            triggerObj = "Player";
-
-        // 목표 대상이 범위 내에 들어왔을때
-        if (other.CompareTag(triggerObj))
+        //  고스트 아닐때, 플레이어가 충돌하면
+        if (other.CompareTag("Player") && !enemyManager.IsGhost)
         {
+            atkTrigger = true;
+
+            // 자폭형 몬스터일때
+            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+            {
+                // 자폭하기
+                StartCoroutine(enemyManager.Dead());
+            }
+        }
+
+        // 고스트일때, 몬스터가 충돌하면
+        if (other.CompareTag("Enemy") && enemyManager.IsGhost)
+        {
+            // 몬스터가 충돌했을때 히트박스 있을때
+            if (other.TryGetComponent(out EnemyHitBox hitBox))
+            {
+                // 충돌 대상이 본인이면 리턴
+                if (hitBox.enemyManager == enemyManager)
+                    return;
+
+                // 충돌 몬스터도 고스트일때 리턴
+                if (hitBox.enemyManager.IsGhost)
+                    return;
+            }
+            // 콜라이더가 히트박스를 갖고 있지 않을때 리턴
+            else
+                return;
+
             atkTrigger = true;
 
             // 자폭형 몬스터일때

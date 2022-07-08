@@ -23744,7 +23744,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   passiveMagics: []
-  defaultMagic: 2b000000300000002d000000
+  defaultMagic: 2b000000300000002d00000018000000
   testAllMagic: 0
   noMagic: 0
   spinSpeed: 3
@@ -85210,7 +85210,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1137751502}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
   m_Name: 
@@ -96052,7 +96052,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh27874
+  m_Name: pb_Mesh27878
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -154580,12 +154580,12 @@ PrefabInstance:
     - target: {fileID: 5854197480635141088, guid: e36e66e04d5746b4a8cb56dc52712595,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 2.62
       objectReference: {fileID: 0}
     - target: {fileID: 5854197480635141088, guid: e36e66e04d5746b4a8cb56dc52712595,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -7.38
       objectReference: {fileID: 0}
     - target: {fileID: 5854197480635141088, guid: e36e66e04d5746b4a8cb56dc52712595,
         type: 3}

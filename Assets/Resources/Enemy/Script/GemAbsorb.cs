@@ -13,6 +13,10 @@ public class GemAbsorb : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
+        // 고스트면 아이템 흡수 하지않음
+        if (enemyManager.IsGhost)
+            return;
+
         //아이템과 충돌 했을때
         if (other.CompareTag("Item"))
         {

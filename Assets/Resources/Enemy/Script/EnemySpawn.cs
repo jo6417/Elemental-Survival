@@ -74,7 +74,7 @@ public class EnemySpawn : MonoBehaviour
             // 1~5초 사이 랜덤 쿨타임, 쿨타임 최대치는 플레이어 전투력마다 0.05초씩 줄어듬, 100레벨시 1초
             float maxCoolTime = 5 - PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
             //1~5초 사이 값으로 범위 제한
-            maxCoolTime = Mathf.Clamp(maxCoolTime, 1f, maxCoolTime * 2);
+            maxCoolTime = Mathf.Clamp(maxCoolTime, 0.5f, maxCoolTime);
             // 플레이어 전투력에 따라 줄어드는 쿨타임 계산
             spawnCoolTime = Random.Range(1, maxCoolTime);
 
@@ -88,6 +88,9 @@ public class EnemySpawn : MonoBehaviour
 
             int spawnNum = Random.Range(1, (int)maxSpawnNum); //1~3번 중 랜덤으로 반복
             // print(spawnCoolTime + " / " + spawnNum + " 번 스폰");
+
+            //! 테스트를 위해 하나씩소환
+            spawnNum = 1;
 
             for (int i = 0; i < spawnNum; i++)
             {
@@ -294,7 +297,7 @@ public class EnemySpawn : MonoBehaviour
         if (isGhost)
         {
             // 해당 유령은 고스트로 지정
-            enemyManager.isGhost = true;
+            enemyManager.changeGhost = true;
 
             // 포탈 스프라이트 끄기
             portal.GetComponent<SpriteRenderer>().enabled = false;

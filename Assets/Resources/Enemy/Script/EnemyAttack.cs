@@ -12,6 +12,7 @@ public class EnemyAttack : MonoBehaviour
 
     [Header("Refer")]
     public EnemyManager enemyManager;
+    public EnemyInfo enemy;
     public string enemyName;
     public GameObject dashEffect;
     public GameObject activeObj; //공격시 활성화할 오브젝트
@@ -34,6 +35,8 @@ public class EnemyAttack : MonoBehaviour
     IEnumerator Initial()
     {
         yield return new WaitUntil(() => enemyManager != null && enemyManager.enemy != null);
+
+        enemy = enemyManager.enemy;
 
         // 대쉬 범위 초기화
         enemyManager.attackRange = enemyManager.enemy.range;
@@ -66,8 +69,8 @@ public class EnemyAttack : MonoBehaviour
 
     private void Update()
     {
-        // 몬스터 정보 없으면 리턴
-        if (enemyManager.enemy == null)
+        // 상태 이상 있으면 리턴
+        if (!enemyManager.ManageState())
             return;
 
         // 공격 준비중이면 리턴
@@ -86,6 +89,12 @@ public class EnemyAttack : MonoBehaviour
             StartCoroutine(ChooseAttack());
         }
     }
+
+    // private void OnDisable()
+    // {
+    //     //공격 역할을 다 하고 꺼졌을때 초기화
+    //     enemyManager.isGhost = false;
+    // }
 
     IEnumerator ChooseAttack()
     {
