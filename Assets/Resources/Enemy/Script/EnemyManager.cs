@@ -77,6 +77,7 @@ public class EnemyManager : MonoBehaviour
     public EnemyAI enemyAI;
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
+    public SpriteRenderer shadow; // 해당 몬스터 그림자
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
     public List<Material> originMatList = new List<Material>(); //변형 전 머터리얼
     public List<Color> originMatColorList = new List<Color>(); //변형 전 머터리얼 색
@@ -144,11 +145,14 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator Initial()
     {
-        // 초기화 스위치 켜질때까지 대기
-        yield return new WaitUntil(() => initialStart);
-
-        // 고스트 여부 초기화
-        isGhost = changeGhost;
+        // 물리 콜라이더 끄기
+        physicsColl.enabled = false;
+        // 피격 콜라이더 끄기
+        if (hitCollList.Count > 0)
+            foreach (Collider2D coll in hitCollList)
+            {
+                coll.enabled = false;
+            }
 
         // 모든 스프라이트 색깔,머터리얼 초기화
         for (int i = 0; i < spriteList.Count; i++)
@@ -156,23 +160,17 @@ public class EnemyManager : MonoBehaviour
             // 머터리얼 초기화
             spriteList[i].material = originMatList[i];
             // spriteList[i].material.color = originMatColorList[i];
-
-            // 고스트가 아닐때
-            if (!IsGhost)
-                // 색깔 초기화
-                spriteList[i].color = originColorList[i];
         }
-
-        //콜라이더 끄기
-        if (hitCollList.Count > 0)
-            foreach (Collider2D coll in hitCollList)
-            {
-                coll.enabled = false;
-            }
 
         // rigid 초기화
         rigid.velocity = Vector3.zero;
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // 초기화 스위치 켜질때까지 대기
+        yield return new WaitUntil(() => initialStart);
+
+        // 고스트 여부 초기화
+        isGhost = changeGhost;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
@@ -189,10 +187,6 @@ public class EnemyManager : MonoBehaviour
         // enemy 정보 들어올때까지 대기
         yield return new WaitUntil(() => enemy != null);
 
-        // //enemy 못찾으면 코루틴 종료
-        // if (enemy == null)
-        //     yield break;
-
         //ItemDB 로드 될때까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
@@ -205,7 +199,7 @@ public class EnemyManager : MonoBehaviour
 
             // -1이면 랜덤 원소젬 뽑기
             if (id == -1)
-                id = Random.Range(0, 5);
+                id = Random.Range(0, 6);
 
             // item 인스턴스 생성 및 amount 초기화
             ItemInfo item = new ItemInfo(ItemDB.Instance.GetItemByID(id));
@@ -219,11 +213,34 @@ public class EnemyManager : MonoBehaviour
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
 
-        // 고스트일때 체력 절반으로 초기화
+        // 고스트일때
         if (IsGhost)
-            HpNow = enemy.hpMax / 2f; //체력 절반으로 초기화
+        {
+            //체력 절반으로 초기화
+            HpNow = enemy.hpMax / 2f;
+
+            // 그림자 더 투명하게
+            shadow.color = new Color(0, 0, 0, 0.25f);
+        }
         else
-            HpNow = enemy.hpMax; //체력 초기화
+        {
+            // 맥스 체력으로 초기화
+            HpNow = enemy.hpMax;
+
+            // 물리 콜라이더 켜기
+            physicsColl.enabled = true;
+
+            // 그림자 색 초기화
+            if (shadow)
+                shadow.color = new Color(0, 0, 0, 0.5f);
+
+            // 모든 스프라이트 색깔,머터리얼 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                // 색깔 초기화
+                spriteList[i].color = originColorList[i];
+            }
+        }
 
         //죽음 여부 초기화
         isDead = false;
@@ -550,7 +567,7 @@ public class EnemyManager : MonoBehaviour
         // 목표가 미설정 되었을때
         if (magicHolder.targetType == MagicHolder.Target.None)
         {
-            print("타겟 미설정");
+            // print("타겟 미설정");
             return;
         }
 
@@ -870,7 +887,7 @@ public class EnemyManager : MonoBehaviour
     void DropItem()
     {
         //아이템 없으면 원소젬 1개 추가, 최소 젬 1개라도 떨구게
-        if (nowHasItem.Count <= 0)
+        if (nowHasItem.Count == 0)
         {
             // 랜덤 원소젬 정보 넣기
             ItemInfo gem = ItemDB.Instance.GetItemByID(Random.Range(0, 6));
@@ -887,6 +904,10 @@ public class EnemyManager : MonoBehaviour
             {
                 //아이템 프리팹 찾기
                 GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
+
+                if (prefab == null)
+                    print(item.itemName + " : not found");
+
                 //아이템 오브젝트 소환
                 GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 

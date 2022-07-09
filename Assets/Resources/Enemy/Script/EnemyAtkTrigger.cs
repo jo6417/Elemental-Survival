@@ -72,10 +72,12 @@ public class EnemyAtkTrigger : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        //플레이어가 범위 밖으로 나갔을때
-        if (other.CompareTag("Player"))
-        {
+        //  고스트 아닐때, 플레이어가 나가면
+        if (other.CompareTag("Player") && !enemyManager.IsGhost)
             atkTrigger = false;
-        }
+
+        // 고스트일때, 몬스터가 나가면
+        if (other.CompareTag("Enemy") && enemyManager.IsGhost)
+            atkTrigger = false;
     }
 }

@@ -128,7 +128,7 @@ public class BabyArrow : MonoBehaviour
             sequence
             .Prepend(
                 //날아갈 방향으로 회전
-                transform.DORotate(Vector3.forward * endRotation, 0.1f)
+                transform.DORotate(Vector3.forward * endRotation, 0.01f)
                 .SetEase(Ease.OutCirc)
             )
             .Append(

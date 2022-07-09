@@ -119,8 +119,14 @@ public class Meteor : MonoBehaviour
         //인디케이터 디스폰
         LeanPool.Despawn(shadow);
 
-        // 이펙트 오브젝트 생성
-        LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        // 폭발 이펙트 오브젝트 생성
+        GameObject explosionEffect = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 폭발 이펙트에도 타겟 정보 물려주기
+        if (explosionEffect.TryGetComponent(out MagicHolder explosionHolder))
+        {
+            explosionHolder.SetTarget(magicHolder.GetTarget());
+        }
 
         // 흙 튀는 파티클 생성
         LeanPool.Spawn(dirtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);

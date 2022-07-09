@@ -296,7 +296,7 @@ public class EnemySpawn : MonoBehaviour
         // 유령으로 소환이면
         if (isGhost)
         {
-            // 해당 유령은 고스트로 지정
+            // 해당 유령은 고스트로 지정 예약
             enemyManager.changeGhost = true;
 
             // 포탈 스프라이트 끄기
@@ -304,9 +304,6 @@ public class EnemySpawn : MonoBehaviour
 
             // 더 빨리 올라오기
             portalUpSpeed = 0.5f;
-
-            //todo 타격 대상 변경
-            //todo 피격 대상 태그 변경
         }
 
         //아이콘 찾기

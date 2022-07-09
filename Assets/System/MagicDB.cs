@@ -9,7 +9,20 @@ public class MagicInfo
 {
     //수정 가능한 변수들
     [Header("Configurable")]
-    public int magicLevel = 0; //현재 마법 레벨
+    private int magicLevel = 0; //현재 마법 레벨
+    public int MagicLevel
+    {
+        get
+        {
+            // 최대최소값 보장
+            return Mathf.Clamp(magicLevel, 1, 99);
+        }
+        set
+        {
+            // 최대최소값 보장
+            magicLevel = Mathf.Clamp(value, 1, 99);
+        }
+    }
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
@@ -292,7 +305,7 @@ public class MagicDB : MonoBehaviour
     {
         foreach (KeyValuePair<int, MagicInfo> magic in magicDB)
         {
-            magic.Value.magicLevel = 0;
+            magic.Value.MagicLevel = 0;
         }
     }
 
@@ -413,7 +426,7 @@ public class MagicDB : MonoBehaviour
         float power = 0;
 
         //마법 파워 및 레벨당 증가량 계산
-        power = magic.power + magic.powerPerLev * (magic.magicLevel - 1);
+        power = magic.power + magic.powerPerLev * (magic.MagicLevel - 1);
         //플레이어 자체 파워 증가량 계산
         power = power + power * (PlayerManager.Instance.PlayerStat_Now.power - 1);
 
@@ -426,8 +439,8 @@ public class MagicDB : MonoBehaviour
 
         //마법 속도 및 레벨당 증가량 계산
         speed = bigNumFast
-        ? magic.speed + magic.speedPerLev * (magic.magicLevel - 1)
-        : magic.speed - magic.speedPerLev * (magic.magicLevel - 1);
+        ? magic.speed + magic.speedPerLev * (magic.MagicLevel - 1)
+        : magic.speed - magic.speedPerLev * (magic.MagicLevel - 1);
 
         //플레이어 speed 스탯 곱하기
         speed = bigNumFast
@@ -445,7 +458,7 @@ public class MagicDB : MonoBehaviour
         float range = 0;
 
         //마법 범위 및 레벨당 증가량 계산
-        range = magic.range + magic.rangePerLev * (magic.magicLevel - 1);
+        range = magic.range + magic.rangePerLev * (magic.MagicLevel - 1);
         //플레이어 자체 마법 범위 증가량 계산
         range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
         //값 제한하기
@@ -459,7 +472,7 @@ public class MagicDB : MonoBehaviour
         float duration = 0;
 
         //마법 지속시간 및 레벨당 증가량 계산
-        duration = magic.duration + magic.durationPerLev * (magic.magicLevel - 1);
+        duration = magic.duration + magic.durationPerLev * (magic.MagicLevel - 1);
         //플레이어 자체 마법 지속시간 증가량 계산
         duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
         //값 제한하기
@@ -474,7 +487,7 @@ public class MagicDB : MonoBehaviour
         bool isCritical = false;
 
         //마법 크리티컬 확률 및 레벨당 증가량 계산
-        float critical = magic.critical + magic.criticalPerLev * (magic.magicLevel - 1);
+        float critical = magic.critical + magic.criticalPerLev * (magic.MagicLevel - 1);
         //플레이어 자체 마법 크리티컬 확률 증가량 계산
         critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
         //값 제한하기 0% ~ 100%
@@ -487,8 +500,8 @@ public class MagicDB : MonoBehaviour
         if (rand <= critical)
             isCritical = true;
 
-        if (magic.magicName == "Life Mushroom")
-            print(magic.magicName + " : " + critical);
+        // if (magic.magicName == "Life Mushroom")
+        //     print(magic.magicName + " : " + critical);
 
         //크리티컬 성공여부 리턴
         return isCritical;
@@ -499,7 +512,7 @@ public class MagicDB : MonoBehaviour
         float criticalPower = 0;
 
         //마법 크리티컬 데미지 및 레벨당 증가량 계산
-        criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.magicLevel - 1);
+        criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.MagicLevel - 1);
         //플레이어 자체 마법 크리티컬 데미지 증가량 계산
         criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
 
@@ -513,7 +526,7 @@ public class MagicDB : MonoBehaviour
         //마법 범위 및 레벨당 증가량 계산
         pierce =
         magic.pierce +
-        Mathf.FloorToInt(magic.piercePerLev * (magic.magicLevel - 1)) +
+        Mathf.FloorToInt(magic.piercePerLev * (magic.MagicLevel - 1)) +
         PlayerManager.Instance.PlayerStat_Now.pierce;
 
         return pierce;
@@ -526,7 +539,7 @@ public class MagicDB : MonoBehaviour
         //마법 투사체 개수 및 레벨당 증가량 계산
         projectile =
         magic.projectile +
-        Mathf.FloorToInt(magic.projectilePerLev * (magic.magicLevel - 1)) +
+        Mathf.FloorToInt(magic.projectilePerLev * (magic.MagicLevel - 1)) +
         PlayerManager.Instance.PlayerStat_Now.projectileNum;
 
         //최소값 1 제한
@@ -540,7 +553,7 @@ public class MagicDB : MonoBehaviour
         float coolTime = 0;
 
         //마법 쿨타임 및 레벨당 증가량 계산
-        coolTime = magic.coolTime - magic.coolTimePerLev * (magic.magicLevel - 1);
+        coolTime = magic.coolTime - magic.coolTimePerLev * (magic.MagicLevel - 1);
         //플레이어 자체 쿨타임 증가량 계산
         coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
         //값 제한하기

@@ -35,7 +35,7 @@ public class CastMagic : MonoBehaviour
     public List<MagicInfo> nowCastMagics = new List<MagicInfo>(); //현재 사용중인 마법
     public List<int> defaultMagic = new List<int>(); //기본 마법
     public bool testAllMagic; //! 모든 마법 테스트
-    public bool noMagic; //! 마법 없이 테스트
+    // public bool noMagic; //! 마법 없이 테스트
 
     [Header("Phone Spin")]
     public float spinSpeed = 1f; // 자전하는 속도
@@ -107,13 +107,13 @@ public class CastMagic : MonoBehaviour
                 //해당 마법 리스트에 추가
                 castList.Add(referMagic);
                 //마법 레벨 초기화
-                referMagic.magicLevel = 0;
+                referMagic.MagicLevel = 0;
             }
 
             // print(referMagic.magicLevel + " : " + magic.magicLevel);
 
             // 기존 마법에 레벨 더하기
-            referMagic.magicLevel += magic.magicLevel;
+            referMagic.MagicLevel += magic.MagicLevel;
         }
 
         // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
@@ -173,10 +173,10 @@ public class CastMagic : MonoBehaviour
             }
 
             //현재 실행중인 마법 레벨이 다르면
-            if (tempMagic.magicLevel != magic.magicLevel)
+            if (tempMagic.MagicLevel != magic.MagicLevel)
             {
                 //최근 갱신된 레벨 넣어주기
-                tempMagic.magicLevel = magic.magicLevel;
+                tempMagic.MagicLevel = magic.MagicLevel;
             }
         }
 

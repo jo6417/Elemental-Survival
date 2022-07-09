@@ -97,7 +97,8 @@ public class PlayerManager : MonoBehaviour
     [Header("<State>")]
     public float poisonCoolCount; //독 도트뎀 남은시간
     float hitDelayTime = 0.2f; //피격 무적시간
-    public float hitCoolCount = 0f;
+    public float hitCoolCount = 0f; // 피격 무적시간 카운트
+    IEnumerator hitDelayCoroutine;
     public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
     public Vector2 knockbackDir; //넉백 벡터
@@ -378,8 +379,13 @@ public class PlayerManager : MonoBehaviour
                 if (hitCoolCount > 0)
                     yield break;
 
+                // 이미 피격 딜레이 코루틴 중이었으면 취소
+                if (hitDelayCoroutine != null)
+                    StopCoroutine(hitDelayCoroutine);
+
                 //피격 딜레이 무적시간 시작
-                StartCoroutine(HitDelay());
+                hitDelayCoroutine = HitDelay();
+                StartCoroutine(hitDelayCoroutine);
 
                 yield return new WaitUntil(() => enemyAtk.enemy != null);
                 EnemyInfo enemy = enemyAtk.enemy;
@@ -417,8 +423,13 @@ public class PlayerManager : MonoBehaviour
             {
                 MagicInfo magic = magicHolder.magic;
 
+                // 이미 피격 딜레이 코루틴 중이었으면 취소
+                if (hitDelayCoroutine != null)
+                    StopCoroutine(hitDelayCoroutine);
+
                 //피격 딜레이 무적
-                StartCoroutine(HitDelay());
+                hitDelayCoroutine = HitDelay();
+                StartCoroutine(hitDelayCoroutine);
 
                 //데미지 계산
                 float damage = MagicDB.Instance.MagicPower(magic);
@@ -448,6 +459,9 @@ public class PlayerManager : MonoBehaviour
 
         //원래 색으로 복구
         sprite.color = Color.white;
+
+        // 코루틴 변수 초기화
+        hitDelayCoroutine = null;
     }
 
     public IEnumerator PoisonDotHit(float tickDamage, float duration)
@@ -683,7 +697,7 @@ public class PlayerManager : MonoBehaviour
         MagicInfo magic = new MagicInfo(getMagic);
 
         //마법의 레벨 초기화
-        magic.magicLevel = 1;
+        magic.MagicLevel = 1;
 
         // touchedMagics에 해당 마법 id가 존재하지 않으면
         if (!MagicDB.Instance.touchedMagics.Exists(x => x == magic.id))
@@ -741,27 +755,29 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //TODO 캐릭터에 따라 defaultMagic 기본마법 넣고 시작
-        List<int> magics = new List<int>();
+        List<int> defaultStacks = new List<int>();
 
         //! 마법 없이 테스트
-        if (CastMagic.Instance.noMagic)
-            yield break;
+        // if (CastMagic.Instance.noMagic)
+        //     yield break;
 
         //! 모든 마법 테스트
         if (CastMagic.Instance.testAllMagic)
         {
             foreach (var value in MagicDB.Instance.magicDB.Values)
             {
-                magics.Add(value.id);
+                // 프리팹 있는 마법들만 스택에 넣기
+                if (MagicDB.Instance.GetMagicPrefab(value.id))
+                    defaultStacks.Add(value.id);
             }
         }
         else
         {
-            magics = CastMagic.Instance.defaultMagic;
+            defaultStacks = CastMagic.Instance.defaultMagic;
         }
 
         // 캐릭터 기본 마법 추가
-        foreach (int magicID in magics)
+        foreach (int magicID in defaultStacks)
         {
             // 마법 찾기
             MagicInfo magic = MagicDB.Instance.GetMagicByID(magicID);
@@ -883,7 +899,7 @@ public class PlayerManager : MonoBehaviour
         foreach (var magic in hasStackMagics)
         {
             //총전투력에 해당 마법의 등급*레벨 더하기
-            magicPower += magic.grade * magic.magicLevel;
+            magicPower += magic.grade * magic.MagicLevel;
 
             // print(magicPower + " : " + magic.grade + " * " + magic.magicLevel);
         }

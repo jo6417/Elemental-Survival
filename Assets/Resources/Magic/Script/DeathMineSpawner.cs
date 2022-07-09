@@ -5,19 +5,19 @@ using UnityEngine;
 
 public class DeathMineSpawner : MonoBehaviour
 {
-    MagicHolder magicHolder;
+    MagicHolder mineMagicHolder;
     MagicInfo magic;
     public GameObject minePrefab; //지뢰 프리팹
 
     private void Awake()
     {
-        magicHolder = GetComponent<MagicHolder>();
+        mineMagicHolder = GetComponent<MagicHolder>();
     }
 
     IEnumerator Initial()
     {
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        yield return new WaitUntil(() => mineMagicHolder.magic != null);
+        magic = mineMagicHolder.magic;
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += DropMine;
@@ -53,7 +53,13 @@ public class DeathMineSpawner : MonoBehaviour
         // 마법 크리티컬 확률에 따라 지뢰 생성
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(minePrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject deathMine = LeanPool.Spawn(minePrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+
+            // 매직홀더 찾기
+            MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>();
+
+            // 마법 타겟 정해주기
+            mineMagicHolder.SetTarget(MagicHolder.Target.Enemy);
         }
     }
 }

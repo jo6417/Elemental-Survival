@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6855670957354640548}
   - component: {fileID: 2106653043044473815}
   - component: {fileID: 2799996672073366058}
+  - component: {fileID: 6280039386942769038}
   m_Layer: 7
   m_Name: WaterSlime_Sprite
   m_TagString: Enemy
@@ -114,6 +115,17 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.5}
   m_Size: {x: 2, y: 1.7}
   m_Direction: 1
+--- !u!210 &6280039386942769038
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2701051376868852343}
+  m_Enabled: 1
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1 &4073908105187955573
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,8 +259,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
+  initialStart: 0
+  defaultHasItem: ffffffff
+  targetResetTime: 3
+  targetResetCount: 0
+  targetObj: {fileID: 0}
   state: 0
   nowAction: 0
   moveType: 1
@@ -263,10 +278,11 @@ MonoBehaviour:
   selfExplosion: 0
   statusEffect: 0
   attackRange: 0
+  changeGhost: 0
   enemyAI: {fileID: 240281183651144037}
-  enemyAttack: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 0}
+  shadow: {fileID: 6263737295829454142}
   spriteList:
   - {fileID: 2106653043044473815}
   originMatList: []
@@ -276,7 +292,7 @@ MonoBehaviour:
   - {fileID: 5485836661786715589}
   rigid: {fileID: 5485836661786715579}
   physicsColl: {fileID: 5485836661786715578}
-  hitColl: {fileID: 2799996672073366058}
+  hitCollList: []
   hpMax: 0
   HpNow: 1
   power: 0
@@ -296,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerDir: {x: 0, y: 0, z: 0}
+  targetDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 5086723795068245898}
   jumpCoolCount: 0
   jumpCooltime: 0.5
@@ -547,6 +563,12 @@ PrefabInstance:
 --- !u!4 &3123776815425145665 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 6330362824975770673}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6263737295829454142 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
   m_PrefabInstance: {fileID: 6330362824975770673}
   m_PrefabAsset: {fileID: 0}

@@ -333,7 +333,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 선택된 Merge 슬롯에 프레임, 아이콘은 이미 적용됨
             // 선택된 Merge 슬롯에 레벨 넣기
             level.enabled = true;
-            level.text = "Lv. " + MergeMenu.Instance.selectedMagic.magicLevel.ToString();
+            level.text = "Lv. " + MergeMenu.Instance.selectedMagic.MagicLevel.ToString();
 
             // 선택된 Merge 슬롯에 마법 정보 넣기
             PlayerManager.Instance.hasMergeMagics[slotIndex] = MergeMenu.Instance.selectedMagic;
@@ -482,7 +482,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         MagicInfo mergedMagic = new MagicInfo(MagicDB.Instance.GetMagicByID(MergeMenu.Instance.mergeResultMagics[ableDirIndex]));
 
         // 합치기 전에 미리 레벨 합산해놓기
-        int totalLevel = PlayerManager.Instance.hasMergeMagics[mergeIndex].magicLevel + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicLevel;
+        int totalLevel = PlayerManager.Instance.hasMergeMagics[mergeIndex].MagicLevel + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].MagicLevel;
 
         //! 디버그 확인용
         print(PlayerManager.Instance.hasMergeMagics[mergeIndex].magicName
@@ -493,7 +493,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         PlayerManager.Instance.hasMergeMagics[mergeIndex] = mergedMagic;
 
         // 신규 데이터에 합산된 레벨 넣기
-        PlayerManager.Instance.hasMergeMagics[mergeIndex].magicLevel = totalLevel;
+        PlayerManager.Instance.hasMergeMagics[mergeIndex].MagicLevel = totalLevel;
 
         // 다 사용한 변수 초기화
         MergeMenu.Instance.selectedMagic = null;
@@ -506,7 +506,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         ? SystemManager.Instance.questionMark
         : MagicDB.Instance.GetMagicIcon(mergedMagic.id);
         // 슬롯에 합성된 마법 레벨 넣기
-        mergedSlot.level.text = "Lv. " + mergedMagic.magicLevel.ToString();
+        mergedSlot.level.text = "Lv. " + mergedMagic.MagicLevel.ToString();
         // 슬롯에 툴팁 넣기
         ToolTipTrigger tooltip = mergedSlot.GetComponent<ToolTipTrigger>();
         tooltip.enabled = true;

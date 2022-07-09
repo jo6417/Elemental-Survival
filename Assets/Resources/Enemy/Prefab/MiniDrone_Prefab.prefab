@@ -5156,7 +5156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 0
-  defaultHasItem: 
+  defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
   targetObj: {fileID: 0}
@@ -5178,6 +5178,7 @@ MonoBehaviour:
   enemyAI: {fileID: -5451379877862882109}
   explosionTrigger: {fileID: 8096507129767913019}
   spriteObj: {fileID: 7235316671713338324}
+  shadow: {fileID: 7195645699224406153}
   spriteList:
   - {fileID: 2790978120402739609}
   originMatList: []
@@ -5340,6 +5341,12 @@ PrefabInstance:
 --- !u!4 &2191194970907807478 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 7127128048668090758}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &7195645699224406153 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
   m_PrefabInstance: {fileID: 7127128048668090758}
   m_PrefabAsset: {fileID: 0}

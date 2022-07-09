@@ -49,8 +49,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialStart: 0
   defaultHasItem: ffffffff
-  referEnemyManager: {fileID: 0}
+  targetResetTime: 3
+  targetResetCount: 0
+  targetObj: {fileID: 0}
   state: 0
   nowAction: 0
   moveType: 0
@@ -64,8 +67,12 @@ MonoBehaviour:
   oppositeCount: 0
   selfExplosion: 0
   statusEffect: 0
+  attackRange: 0
+  changeGhost: 0
+  enemyAI: {fileID: 5097144648422318720}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 6879378120547341611}
+  shadow: {fileID: 5083105368544687810}
   spriteList:
   - {fileID: 3842212087741206078}
   originMatList: []
@@ -75,8 +82,7 @@ MonoBehaviour:
   - {fileID: 4206692473337556097}
   rigid: {fileID: 4498973164959321897}
   physicsColl: {fileID: 400382383}
-  hitColl: {fileID: 6529484679147050744}
-  enemyAI: {fileID: 5097144648422318720}
+  hitCollList: []
   hpMax: 0
   HpNow: 1
   power: 0
@@ -96,10 +102,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 4959071736242128182}
   jumpCoolCount: 0
   jumpCooltime: 0.5
-  dustEffect: {fileID: 0}
+  landEffect: {fileID: 0}
 --- !u!95 &4206692473337556097
 Animator:
   serializedVersion: 3
@@ -362,6 +369,12 @@ PrefabInstance:
 --- !u!4 &4268973683134902461 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 5169681537720885197}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &5083105368544687810 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
   m_PrefabInstance: {fileID: 5169681537720885197}
   m_PrefabAsset: {fileID: 0}

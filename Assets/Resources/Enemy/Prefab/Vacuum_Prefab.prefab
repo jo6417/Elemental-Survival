@@ -78,9 +78,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeAngleOffset: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   dashEffect: {fileID: 0}
+  activeObj: {fileID: 0}
   friendlyFire: 0
   flatDebuff: 0
   knockBackDebuff: 0
@@ -238,9 +240,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeAngleOffset: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   dashEffect: {fileID: 0}
+  activeObj: {fileID: 0}
   friendlyFire: 0
   flatDebuff: 0
   knockBackDebuff: 0
@@ -397,7 +401,7 @@ ParticleSystem:
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -5209,11 +5213,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialStart: 0
   defaultHasItem: ffffffff
-  referEnemyManager: {fileID: 0}
+  targetResetTime: 3
+  targetResetCount: 0
+  targetObj: {fileID: 0}
   state: 0
   nowAction: 0
-  moveType: 2
+  moveType: 0
   portalSize: 1.2
   isElite: 0
   eliteClass: 0
@@ -5224,8 +5231,12 @@ MonoBehaviour:
   oppositeCount: 0
   selfExplosion: 0
   statusEffect: 0
+  attackRange: 0
+  changeGhost: 0
+  enemyAI: {fileID: 3988004795875851619}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 6348597076793159104}
+  shadow: {fileID: 4450725897239236901}
   spriteList:
   - {fileID: 2142261907023557570}
   originMatList: []
@@ -5236,8 +5247,7 @@ MonoBehaviour:
   - {fileID: 1117852761}
   rigid: {fileID: 5731709546891530442}
   physicsColl: {fileID: 1921554375}
-  hitColl: {fileID: 1432527454566577374}
-  enemyAI: {fileID: 3988004795875851619}
+  hitCollList: []
   hpMax: 0
   HpNow: 1
   power: 0
@@ -5257,12 +5267,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerDir: {x: 0, y: 0, z: 0}
+  targetDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 367713317556661536}
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}
-  dashRange: 0
 --- !u!114 &8396954481058112524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5275,9 +5284,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeAngleOffset: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   dashEffect: {fileID: 2245917149986370186}
+  activeObj: {fileID: 0}
   friendlyFire: 0
   flatDebuff: 0
   knockBackDebuff: 1
@@ -5658,6 +5669,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8e275b3d1cec7444b70a83ff748d47d, type: 3}
+--- !u!212 &4450725897239236901 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4391171326095702058}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4643358600655279962 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,

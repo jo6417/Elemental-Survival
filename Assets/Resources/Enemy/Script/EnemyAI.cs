@@ -187,11 +187,11 @@ public class EnemyAI : MonoBehaviour
         // IDLE 애니메이션 전환
         enemyManager.animList[0].SetBool("Jump", false);
 
-        // 현재 행동 끝내기
-        enemyManager.nowAction = EnemyManager.Action.Idle;
-
         // 착지 이펙트 생성
         if (landEffect != null)
             LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 현재 행동 끝내기
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 }

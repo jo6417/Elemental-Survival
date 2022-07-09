@@ -180,7 +180,10 @@ public class MagicProjectile : MonoBehaviour
             GameObject effect = LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             //마법 정보 넘겨주기
-            effect.GetComponent<MagicHolder>().magic = magic;
+            if (effect.TryGetComponent(out MagicHolder magicholder))
+            {
+                magicholder.magic = magic;
+            }
         }
 
         //파편 있으면 비산 시키기

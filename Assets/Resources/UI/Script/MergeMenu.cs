@@ -323,7 +323,7 @@ public class MergeMenu : MonoBehaviour
             //아이콘 넣기
             icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(magic.id);
             //레벨 넣기
-            level.text = "Lv. " + magic.magicLevel.ToString();
+            level.text = "Lv. " + magic.MagicLevel.ToString();
             //TODO 슬롯에 툴팁 정보 넣기
             // tooltip.magic = magic;
         }
@@ -494,7 +494,7 @@ public class MergeMenu : MonoBehaviour
 
             //레벨 넣기
             level.enabled = true;
-            level.text = "Lv. " + magic.magicLevel;
+            level.text = "Lv. " + magic.MagicLevel;
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else

@@ -7,7 +7,7 @@ using DG.Tweening;
 public class WaterSlimeAtk : MonoBehaviour
 {
     public float attackRange;
-    Vector3 playerDir;
+    Vector3 targetDir;
     public float activeAngleOffset; // 액티브 공격 오브젝트 방향 오프셋
     bool attackReady; //공격 준비중
 
@@ -60,17 +60,17 @@ public class WaterSlimeAtk : MonoBehaviour
             return;
 
         //플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
-        if (playerDir.magnitude <= attackRange && attackRange > 0)
+        if (targetDir.magnitude <= attackRange && attackRange > 0)
             StartCoroutine(ChooseAttack());
     }
 
     IEnumerator ChooseAttack()
     {
         //움직일 방향에따라 회전
-        if (playerDir.x > 0)
+        if (targetDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -124,13 +124,22 @@ public class WaterSlimeAtk : MonoBehaviour
         });
 
         // 플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         // 공격 오브젝트 각도 계산
-        float angle = Mathf.Atan2(playerDir.y, playerDir.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
         // 공격 오브젝트 생성
-        LeanPool.Spawn(bubblePrefab, bubblePrefab.transform.position, Quaternion.AngleAxis(angle + activeAngleOffset, Vector3.forward), SystemManager.Instance.magicPool);
+        GameObject bubble = LeanPool.Spawn(bubblePrefab, bubblePrefab.transform.position, Quaternion.AngleAxis(angle + activeAngleOffset, Vector3.forward), SystemManager.Instance.magicPool);
+
+        // 마법 정보 찾기
+        MagicHolder bubbleMagic = bubble.GetComponent<MagicHolder>();
+
+        // 타겟 설정
+        if (enemyManager.IsGhost)
+            bubbleMagic.SetTarget(MagicHolder.Target.Enemy);
+        else
+            bubbleMagic.SetTarget(MagicHolder.Target.Player);
 
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(enemyManager.enemy.cooltime);

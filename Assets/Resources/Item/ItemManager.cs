@@ -164,7 +164,7 @@ public class ItemManager : MonoBehaviour
         Vector2 dir = Getter.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
-        rigid.DOMove((Vector2)Getter.position - dir.normalized * 5f, 0.3f);
+        rigid.DOMove((Vector2)transform.position - dir.normalized * 5f, 0.3f);
 
         yield return new WaitForSeconds(0.3f);
 

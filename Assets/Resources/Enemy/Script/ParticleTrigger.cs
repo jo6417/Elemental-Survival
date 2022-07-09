@@ -26,8 +26,8 @@ public class ParticleTrigger : MonoBehaviour
         if (attack == ParticleAttack.Poison)
             PoisonTrigger();
 
-        if (attack == ParticleAttack.Damage)
-            DamageTrigger();
+        // if (attack == ParticleAttack.Damage)
+        //     DamageTrigger();
     }
 
     private void OnParticleTrigger()

@@ -49,7 +49,7 @@ public class DeathMine : MonoBehaviour
         atkAble = true;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         // 공격 가능할때, 플레이어가 접근하면
         if (atkAble && other.CompareTag("Player"))

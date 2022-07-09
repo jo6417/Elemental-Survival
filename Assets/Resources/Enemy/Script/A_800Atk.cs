@@ -5,11 +5,12 @@ using UnityEngine;
 public class A_800Atk : MonoBehaviour
 {
     public float attackRange;
-    Vector3 playerDir;
+    Vector3 targetDir;
 
     [Header("Refer")]
     public EnemyManager enemyManager;
     public string enemyName;
+    public EnemyAtkTrigger meleeAtkTrigger; // 해당 트리거에 타겟 들어오면 공격
     public Collider2D meleeColl; // 공격 이펙트
 
     private void Awake()
@@ -28,6 +29,9 @@ public class A_800Atk : MonoBehaviour
 
         // 공격 범위 초기화
         attackRange = enemyManager.enemy.range;
+
+        // 근접 공격 범위에 반영
+        meleeAtkTrigger.transform.localScale = Vector2.one * attackRange;
 
         // 적 정보 들어오면 이름 표시
         enemyName = enemyManager.enemy.enemyName;
@@ -51,10 +55,10 @@ public class A_800Atk : MonoBehaviour
         }
 
         //플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.targetObj.transform.position - transform.position;
 
-        // 공격 범위 안에 들어오면 공격 시작
-        if (playerDir.magnitude <= attackRange && attackRange > 0)
+        // 공격 트리거 켜지면 공격 시작
+        if (meleeAtkTrigger.atkTrigger)
             StartCoroutine(MeleeAttack());
     }
 
@@ -66,7 +70,7 @@ public class A_800Atk : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Attack;
 
         //움직일 방향에따라 회전
-        if (playerDir.x > 0)
+        if (targetDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -83,6 +87,9 @@ public class A_800Atk : MonoBehaviour
         // Idle 애니메이션으로 초기화
         enemyManager.animList[0].SetBool("isAttack", false);
 
+        // 공격 트리거 끄기
+        meleeAtkTrigger.atkTrigger = false;
+
         // Idle 상태로 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
@@ -93,10 +100,10 @@ public class A_800Atk : MonoBehaviour
         meleeColl.gameObject.SetActive(true);
 
         //플레이어 방향 계산
-        playerDir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         //플레이어 방향으로 회전
-        float rotation = Mathf.Atan2(playerDir.y, playerDir.x) * Mathf.Rad2Deg;
+        float rotation = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
         meleeColl.transform.rotation = Quaternion.Euler(Vector3.forward * (rotation - 90f));
     }
 }
