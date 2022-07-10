@@ -109,57 +109,82 @@ public class EnemyDB : MonoBehaviour
     }
     #endregion
 
-    public Dictionary<int, EnemyInfo> enemyDB = new Dictionary<int, EnemyInfo>(); //마법 정보 DB
-    public Dictionary<string, Sprite> enemyIcon = new Dictionary<string, Sprite>(); //마법 아이콘 리스트
-    public Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
+    public Dictionary<int, EnemyInfo> enemyDB = new Dictionary<int, EnemyInfo>(); //몬스터 정보 DB
+    public Dictionary<string, Sprite> enemyIcon = new Dictionary<string, Sprite>(); //몬스터 아이콘 리스트
+    public Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>(); //몬스터 프리팹 리스트
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
 
     void Awake()
     {
         //게임 시작과 함께 아이템DB 정보 로드하기
-        // 아이템 DB, 아이콘, 프리팹 불러오기
-        StartCoroutine(GetEnemyData());
+        // StartCoroutine(GetEnemyData());
+
+        // 몬스터 아이콘, 프리팹 불러오기
+        GetEnemyResources();
     }
 
-    //구글 스프레드 시트에서 Apps Script로 가공된 형태로 json 데이터 받아오기
-    IEnumerator GetEnemyData()
+    void GetEnemyResources()
     {
-        //적 아이콘 모두 가져오기
+        // 몬스터 아이콘 모두 가져오기
         Sprite[] _enemyIcon = Resources.LoadAll<Sprite>("Enemy/Icon");
         foreach (var icon in _enemyIcon)
         {
             enemyIcon[icon.name] = icon;
         }
 
-        //적 프리팹 모두 가져오기
+        // 몬스터 프리팹 모두 가져오기
         GameObject[] _enemyPrefab = Resources.LoadAll<GameObject>("Enemy/Prefab");
         foreach (var prefab in _enemyPrefab)
         {
             enemyPrefab[prefab.name] = prefab;
         }
+    }
 
-        //Apps Script에서 가공된 json 데이터 문서 주소
-        UnityWebRequest www = UnityWebRequest.Get("https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp");
-        // 해당 주소에 요청
-        yield return www.SendWebRequest();
+    public void EnemyDBSynchronize()
+    {
+        // 몬스터 DB 동기화 (웹 데이터 로컬에 저장 및 불러와서 DB에 넣기)
+        StartCoroutine(EnemyDBSync());
+    }
 
-        //에러 뜰 경우 에러 표시
-        if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
+    IEnumerator EnemyDBSync()
+    {
+        // 버튼 동기화 아이콘 애니메이션 켜기
+        Animator btnAnim = SystemManager.Instance.enemyDBSyncBtn.GetComponentInChildren<Animator>();
+        btnAnim.enabled = true;
+
+        // 로컬 DB 데이터에 웹에서 가져온 DB 데이터를 덮어쓰기
+        SaveManager.Instance.localSaveData.enemyDBJson = SaveManager.Instance.webSaveData.enemyDBJson;
+
+        // DB 수정된 로컬 데이터를 저장, 완료시까지 대기
+        yield return StartCoroutine(SaveManager.Instance.Save());
+
+        // 로컬 데이터에서 파싱해서 DB에 넣기, 완료시까지 대기
+        yield return StartCoroutine(GetEnemyDB());
+
+        // 동기화 여부 다시 검사
+        yield return StartCoroutine(
+            SaveManager.Instance.DBSyncCheck(
+                SystemManager.DBType.Enemy,
+                SystemManager.Instance.enemyDBSyncBtn,
+                "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
+            ));
+
+        // 아이콘 애니메이션 끄기
+        btnAnim.enabled = false;
+    }
+
+    //구글 스프레드 시트에서 Apps Script로 가공된 형태로 json 데이터 받아오기
+    public IEnumerator GetEnemyDB()
+    {
+        // 웹에서 불러온 json string이 비어있지 않으면
+        if (SaveManager.Instance.localSaveData.enemyDBJson != "")
         {
-            Debug.Log("Error : " + www.error);
-        }
-        else
-        {
-            //! 실제 퍼블리싱에서는 json 텍스트 문서로 대체 할것
-            //사이트의 문서에서 json 텍스트 받아오기
-            string jsonData = www.downloadHandler.text;
-
-            var jsonObj = JSON.Parse(jsonData);
+            var jsonObj = JSON.Parse(SaveManager.Instance.localSaveData.enemyDBJson);
 
             foreach (var row in jsonObj["enemyData"])
             {
-                //마법 한줄씩 데이터 파싱
+                //몬스터 한줄씩 데이터 파싱
                 var enemy = JSON.Parse(row.ToString())[0];
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기

@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 2355806661
+CRC: 307920866
 Hashes:
   AssetFileHash:
     serializedVersion: 2
@@ -23,6 +23,6 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: Unity.2D.Animation.Runtime
   ClassName: UnityEngine.Experimental.U2D.Animation.SpriteLibCategory
 Assets:
-- Assets/Samples/2D Animation/5.0.10/Samples/5 SpriteSwap/Sprite Library/Rikr Rage.asset
-- Assets/Samples/2D Animation/5.0.10/Samples/5 SpriteSwap/Sprites/Rikr Rage.png
+- Assets/MyAssets/2D Animation/5.0.10/Samples/5 SpriteSwap/Sprite Library/Rikr Rage.asset
+- Assets/MyAssets/2D Animation/5.0.10/Samples/5 SpriteSwap/Sprites/Rikr Rage.png
 Dependencies: []

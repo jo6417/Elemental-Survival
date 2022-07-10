@@ -79,7 +79,7 @@ public class MagicMixMenu : MonoBehaviour
 
         // 보유하지 않은 마법만 DB에서 파싱
         notHasMagic.Clear();
-        notHasMagic = MagicDB.Instance.magicDB.Values.ToList().FindAll(x => x.MagicLevel == 0);
+        notHasMagic = MagicDB.Instance.magicDB.Values.ToList().FindAll(x => x.magicLevel == 0);
 
         //Vertical 레이아웃 켜기
         leftContainer.GetComponent<VerticalLayoutGroup>().enabled = true;

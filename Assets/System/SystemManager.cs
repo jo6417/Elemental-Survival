@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
+using System.IO;
+using Newtonsoft.Json;
 
 public class SystemManager : MonoBehaviour
 {
@@ -62,6 +64,14 @@ public class SystemManager : MonoBehaviour
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
 
+    [Header("DataBase")]
+    public DBType dBType;
+    public enum DBType { Magic, Enemy, Item };
+    //! DB 동기화 버튼
+    public Button magicDBSyncBtn;
+    public Button enemyDBSyncBtn;
+    public Button itemDBSyncBtn;
+
     [Header("Prefab")]
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
@@ -86,20 +96,30 @@ public class SystemManager : MonoBehaviour
     private void Awake()
     {
         //초기화
-        // StartCoroutine(Initial());
+        StartCoroutine(Initial());
     }
 
     IEnumerator Initial()
     {
+        yield return null;
+
         Time.timeScale = 0f;
 
         //TODO 로딩 UI 띄우기
         print("로딩 시작");
 
-        //모두 로드 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
-        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+        // 로컬 세이브 불러오기
+        yield return StartCoroutine(SaveManager.Instance.LoadData());
+
+        // 마법, 몬스터, 아이템 로컬DB 모두 불러오기
+        StartCoroutine(MagicDB.Instance.GetMagicDB());
+        StartCoroutine(EnemyDB.Instance.GetEnemyDB());
+        StartCoroutine(ItemDB.Instance.GetItemDB());
+
+        // 모든 DB 동기화 여부 확인
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Magic, magicDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, enemyDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, itemDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
@@ -175,44 +195,4 @@ public class SystemManager : MonoBehaviour
             godModTxt.text = "GodMod Off";
         }
     }
-
-    // public void AddDropSeedEvent(MagicInfo magic)
-    // {
-    //     //적이 죽을때 함수를 호출하도록 델리게이트에 넣기
-    //     enemyDeadCallback += DropLifeSeed;
-
-    //     // Heal Seed 마법 찾기
-    //     lifeSeedMagic = magic;
-    // }
-
-    // // Life Seed 드랍하기
-    // public void DropLifeSeed(Vector2 dropPos)
-    // {
-    //     // print(MagicDB.Instance.MagicCritical(magic));
-
-    //     // 크리티컬 확률 = 드랍 확률
-    //     bool isDrop = MagicDB.Instance.MagicCritical(lifeSeedMagic);
-
-    //     //크리티컬 데미지 = 회복량
-    //     int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(lifeSeedMagic));
-    //     healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
-
-    //     // HealSeed 마법 크리티컬 확률에 따라 드랍
-    //     if (isDrop)
-    //     {
-    //         GameObject mushroom = LeanPool.Spawn(ItemDB.Instance.lifeMushroom, dropPos, Quaternion.identity, itemPool);
-
-    //         // 아이템에 체력 회복량 넣기
-    //         mushroom.GetComponent<ItemManager>().amount = healAmount;
-
-    //         //아이템 리지드 찾기
-    //         Rigidbody2D itemRigid = mushroom.GetComponent<Rigidbody2D>();
-
-    //         // 랜덤 방향으로 아이템 날리기
-    //         itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
-
-    //         // 아이템 랜덤 회전 시키기
-    //         itemRigid.angularVelocity = Random.value < 0.5f ? 360f : -360f;
-    //     }
-    // }
 }

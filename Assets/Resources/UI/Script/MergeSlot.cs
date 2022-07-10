@@ -208,8 +208,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     }
 
                     //! 조합 가능성 출력
-                    if (mixedMagic != null)
-                        print(i + " Slot : " + selectMagic.magicName + " + " + closeMagic.magicName + " = " + mixedMagic.magicName);
+                    // if (mixedMagic != null)
+                    //     print(i + " Slot : " + selectMagic.magicName + " + " + closeMagic.magicName + " = " + mixedMagic.magicName);
 
                     // 같은 마법이거나 해당 마법과 조합 가능할때
                     if (selectMagic.id == closeMagic.id || mixedMagic != null)
@@ -291,6 +291,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (!button.interactable)
             yield break;
 
+        // 슬롯의 마법이 null 아니면 리턴
+        if (PlayerManager.Instance.hasMergeMagics[slotIndex] != null)
+            yield break;
+
         // 머지 선택모드 켜져있을때 눌렀으면
         if (MergeMenu.Instance.mergeChooseMode)
         {
@@ -333,7 +337,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 선택된 Merge 슬롯에 프레임, 아이콘은 이미 적용됨
             // 선택된 Merge 슬롯에 레벨 넣기
             level.enabled = true;
-            level.text = "Lv. " + MergeMenu.Instance.selectedMagic.MagicLevel.ToString();
+            level.text = "Lv. " + MergeMenu.Instance.selectedMagic.magicLevel.ToString();
 
             // 선택된 Merge 슬롯에 마법 정보 넣기
             PlayerManager.Instance.hasMergeMagics[slotIndex] = MergeMenu.Instance.selectedMagic;
@@ -482,18 +486,18 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         MagicInfo mergedMagic = new MagicInfo(MagicDB.Instance.GetMagicByID(MergeMenu.Instance.mergeResultMagics[ableDirIndex]));
 
         // 합치기 전에 미리 레벨 합산해놓기
-        int totalLevel = PlayerManager.Instance.hasMergeMagics[mergeIndex].MagicLevel + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].MagicLevel;
+        int totalLevel = PlayerManager.Instance.hasMergeMagics[mergeIndex].magicLevel + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicLevel;
 
         //! 디버그 확인용
-        print(PlayerManager.Instance.hasMergeMagics[mergeIndex].magicName
-        + " + " + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicName +
-        " = " + mergedMagic.magicName + " Lv. " + totalLevel);
+        // print(PlayerManager.Instance.hasMergeMagics[mergeIndex].magicName
+        // + " + " + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicName +
+        // " = " + mergedMagic.magicName + " Lv. " + totalLevel);
 
         // 슬롯에 합성된 마법 데이터 넣기
         PlayerManager.Instance.hasMergeMagics[mergeIndex] = mergedMagic;
 
         // 신규 데이터에 합산된 레벨 넣기
-        PlayerManager.Instance.hasMergeMagics[mergeIndex].MagicLevel = totalLevel;
+        PlayerManager.Instance.hasMergeMagics[mergeIndex].magicLevel = totalLevel;
 
         // 다 사용한 변수 초기화
         MergeMenu.Instance.selectedMagic = null;
@@ -506,7 +510,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         ? SystemManager.Instance.questionMark
         : MagicDB.Instance.GetMagicIcon(mergedMagic.id);
         // 슬롯에 합성된 마법 레벨 넣기
-        mergedSlot.level.text = "Lv. " + mergedMagic.MagicLevel.ToString();
+        mergedSlot.level.text = "Lv. " + mergedMagic.magicLevel.ToString();
         // 슬롯에 툴팁 넣기
         ToolTipTrigger tooltip = mergedSlot.GetComponent<ToolTipTrigger>();
         tooltip.enabled = true;

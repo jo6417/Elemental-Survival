@@ -9,20 +9,7 @@ public class MagicInfo
 {
     //수정 가능한 변수들
     [Header("Configurable")]
-    private int magicLevel = 0; //현재 마법 레벨
-    public int MagicLevel
-    {
-        get
-        {
-            // 최대최소값 보장
-            return Mathf.Clamp(magicLevel, 1, 99);
-        }
-        set
-        {
-            // 최대최소값 보장
-            magicLevel = Mathf.Clamp(value, 1, 99);
-        }
-    }
+    public int magicLevel = 0; //현재 마법 레벨
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
@@ -188,48 +175,71 @@ public class MagicDB : MonoBehaviour
         string[] name = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
         elementNames = name;
 
-        //게임 시작과 함께 마법DB 정보 로드하기
-        // 마법 DB, 아이콘, 프리팹 불러오기
-        StartCoroutine(GetMagicData());
+        // 아이콘, 프리팹 불러오기
+        GetMagicResources();
+        // StartCoroutine(GetMagicData());
 
         //TODO 저장된 세이브 정보 불러오기
-        SaveManager.Instance.Load();
+        SaveManager.Instance.LoadSet();
     }
 
-    //구글 스프레드 시트에서 Apps Script로 가공된 형태로 json 데이터 받아오기
-    IEnumerator GetMagicData()
+    void GetMagicResources()
     {
-        //마법 아이콘 가져오기
+        //마법 아이콘 전부 가져오기
         Sprite[] _magicIcon = Resources.LoadAll<Sprite>("Magic/Icon");
         foreach (var icon in _magicIcon)
         {
             magicIcon[icon.name] = icon;
         }
 
-        //마법 프리팹 가져오기
+        //마법 프리팹 전부 가져오기
         GameObject[] _magicPrefab = Resources.LoadAll<GameObject>("Magic/Prefab");
         foreach (var prefab in _magicPrefab)
         {
             magicPrefab[prefab.name] = prefab;
         }
+    }
 
-        //Apps Script에서 가공된 json 데이터 문서 주소
-        UnityWebRequest www = UnityWebRequest.Get("https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp");
-        // 해당 주소에 요청
-        yield return www.SendWebRequest();
+    public void MagicDBSynchronize()
+    {
+        // 마법 DB 동기화 (웹 데이터 로컬에 저장 및 불러와서 magicDB에 넣기)
+        StartCoroutine(MagicDBSync());
+    }
 
-        //에러 뜰 경우 에러 표시
-        if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
+    IEnumerator MagicDBSync()
+    {
+        // 버튼 동기화 아이콘 애니메이션 켜기
+        Animator btnAnim = SystemManager.Instance.magicDBSyncBtn.GetComponentInChildren<Animator>();
+        btnAnim.enabled = true;
+
+        // 로컬 마법DB 데이터에 웹에서 가져온 마법DB 데이터를 덮어쓰기
+        SaveManager.Instance.localSaveData.magicDBJson = SaveManager.Instance.webSaveData.magicDBJson;
+
+        // 마법DB 수정된 로컬 데이터를 저장, 완료시까지 대기
+        yield return StartCoroutine(SaveManager.Instance.Save());
+
+        // 로컬 데이터에서 파싱해서 마법DB에 넣기, 완료시까지 대기
+        yield return StartCoroutine(GetMagicDB());
+
+        // 동기화 여부 다시 검사
+        yield return StartCoroutine(
+            SaveManager.Instance.DBSyncCheck(
+                SystemManager.DBType.Magic,
+                SystemManager.Instance.magicDBSyncBtn,
+                "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
+            ));
+
+        // 아이콘 애니메이션 끄기
+        btnAnim.enabled = false;
+    }
+
+    //구글 스프레드 시트에서 Apps Script로 가공된 형태로 json 데이터 받아오기
+    public IEnumerator GetMagicDB()
+    {
+        // 웹에서 불러온 json string이 비어있지 않으면
+        if (SaveManager.Instance.localSaveData.magicDBJson != "")
         {
-            Debug.Log("Error : " + www.error);
-        }
-        else
-        {
-            //! 실제 퍼블리싱에서는 json 텍스트 문서로 대체 할것
-            //사이트의 문서에서 json 텍스트 받아오기
-            string jsonData = www.downloadHandler.text;
-
-            var jsonObj = JSON.Parse(jsonData);
+            var jsonObj = JSON.Parse(SaveManager.Instance.localSaveData.magicDBJson);
 
             foreach (var row in jsonObj["magicData"])
             {
@@ -305,7 +315,7 @@ public class MagicDB : MonoBehaviour
     {
         foreach (KeyValuePair<int, MagicInfo> magic in magicDB)
         {
-            magic.Value.MagicLevel = 0;
+            magic.Value.magicLevel = 0;
         }
     }
 
@@ -336,7 +346,7 @@ public class MagicDB : MonoBehaviour
     public bool isBasicElement(string element)
     {
         //기본 원소 이름과 일치하는 요소가 있는지 확인
-        bool isExist = System.Array.Exists(MagicDB.Instance.elementNames, x => x == element);
+        bool isExist = System.Array.Exists(elementNames, x => x == element);
 
         return isExist;
     }
@@ -426,7 +436,7 @@ public class MagicDB : MonoBehaviour
         float power = 0;
 
         //마법 파워 및 레벨당 증가량 계산
-        power = magic.power + magic.powerPerLev * (magic.MagicLevel - 1);
+        power = magic.power + magic.powerPerLev * (magic.magicLevel - 1);
         //플레이어 자체 파워 증가량 계산
         power = power + power * (PlayerManager.Instance.PlayerStat_Now.power - 1);
 
@@ -439,8 +449,8 @@ public class MagicDB : MonoBehaviour
 
         //마법 속도 및 레벨당 증가량 계산
         speed = bigNumFast
-        ? magic.speed + magic.speedPerLev * (magic.MagicLevel - 1)
-        : magic.speed - magic.speedPerLev * (magic.MagicLevel - 1);
+        ? magic.speed + magic.speedPerLev * (magic.magicLevel - 1)
+        : magic.speed - magic.speedPerLev * (magic.magicLevel - 1);
 
         //플레이어 speed 스탯 곱하기
         speed = bigNumFast
@@ -458,7 +468,7 @@ public class MagicDB : MonoBehaviour
         float range = 0;
 
         //마법 범위 및 레벨당 증가량 계산
-        range = magic.range + magic.rangePerLev * (magic.MagicLevel - 1);
+        range = magic.range + magic.rangePerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 범위 증가량 계산
         range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
         //값 제한하기
@@ -472,7 +482,7 @@ public class MagicDB : MonoBehaviour
         float duration = 0;
 
         //마법 지속시간 및 레벨당 증가량 계산
-        duration = magic.duration + magic.durationPerLev * (magic.MagicLevel - 1);
+        duration = magic.duration + magic.durationPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 지속시간 증가량 계산
         duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
         //값 제한하기
@@ -487,7 +497,7 @@ public class MagicDB : MonoBehaviour
         bool isCritical = false;
 
         //마법 크리티컬 확률 및 레벨당 증가량 계산
-        float critical = magic.critical + magic.criticalPerLev * (magic.MagicLevel - 1);
+        float critical = magic.critical + magic.criticalPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 크리티컬 확률 증가량 계산
         critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
         //값 제한하기 0% ~ 100%
@@ -512,7 +522,7 @@ public class MagicDB : MonoBehaviour
         float criticalPower = 0;
 
         //마법 크리티컬 데미지 및 레벨당 증가량 계산
-        criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.MagicLevel - 1);
+        criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (magic.magicLevel - 1);
         //플레이어 자체 마법 크리티컬 데미지 증가량 계산
         criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
 
@@ -526,7 +536,7 @@ public class MagicDB : MonoBehaviour
         //마법 범위 및 레벨당 증가량 계산
         pierce =
         magic.pierce +
-        Mathf.FloorToInt(magic.piercePerLev * (magic.MagicLevel - 1)) +
+        Mathf.FloorToInt(magic.piercePerLev * (magic.magicLevel - 1)) +
         PlayerManager.Instance.PlayerStat_Now.pierce;
 
         return pierce;
@@ -539,7 +549,7 @@ public class MagicDB : MonoBehaviour
         //마법 투사체 개수 및 레벨당 증가량 계산
         projectile =
         magic.projectile +
-        Mathf.FloorToInt(magic.projectilePerLev * (magic.MagicLevel - 1)) +
+        Mathf.FloorToInt(magic.projectilePerLev * (magic.magicLevel - 1)) +
         PlayerManager.Instance.PlayerStat_Now.projectileNum;
 
         //최소값 1 제한
@@ -553,7 +563,7 @@ public class MagicDB : MonoBehaviour
         float coolTime = 0;
 
         //마법 쿨타임 및 레벨당 증가량 계산
-        coolTime = magic.coolTime - magic.coolTimePerLev * (magic.MagicLevel - 1);
+        coolTime = magic.coolTime - magic.coolTimePerLev * (magic.magicLevel - 1);
         //플레이어 자체 쿨타임 증가량 계산
         coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
         //값 제한하기

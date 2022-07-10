@@ -816,7 +816,7 @@ public class UIManager : MonoBehaviour
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.MagicLevel.ToString();
+            amount.text = "Lev." + magic.magicLevel.ToString();
         }
 
         //그리드 업데이트 명령하기
@@ -864,7 +864,7 @@ public class UIManager : MonoBehaviour
             //마법 개수 넣기, 2개 이상부터 표시
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.MagicLevel.ToString();
+            amount.text = "Lev." + magic.magicLevel.ToString();
         }
         // 찾으면 해당 아이콘에 레벨 텍스트 갱신
         else
@@ -872,7 +872,7 @@ public class UIManager : MonoBehaviour
             //마법 개수 넣기, 2개 이상부터 표시
             TextMeshProUGUI amount = matchIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.MagicLevel.ToString();
+            amount.text = "Lev." + magic.magicLevel.ToString();
         }
 
     }
@@ -1185,7 +1185,7 @@ public class UIManager : MonoBehaviour
             //아이콘 넣기
             slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
             //레벨 넣기
-            slot.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + magic.MagicLevel.ToString();
+            slot.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
         }
     }
 }

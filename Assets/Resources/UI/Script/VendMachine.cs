@@ -156,7 +156,7 @@ public class VendMachine : MonoBehaviour
                 sortedMagics.RemoveAt(0);
 
                 //신규 여부
-                isNew = magic.MagicLevel > 0 ? false : true;
+                isNew = magic.magicLevel > 0 ? false : true;
 
                 // 마법 아이콘 찾기
                 productSprite = MagicDB.Instance.GetMagicIcon(magic.id);

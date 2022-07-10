@@ -697,7 +697,7 @@ public class PlayerManager : MonoBehaviour
         MagicInfo magic = new MagicInfo(getMagic);
 
         //마법의 레벨 초기화
-        magic.MagicLevel = 1;
+        magic.magicLevel = 1;
 
         // touchedMagics에 해당 마법 id가 존재하지 않으면
         if (!MagicDB.Instance.touchedMagics.Exists(x => x == magic.id))
@@ -899,7 +899,7 @@ public class PlayerManager : MonoBehaviour
         foreach (var magic in hasStackMagics)
         {
             //총전투력에 해당 마법의 등급*레벨 더하기
-            magicPower += magic.grade * magic.MagicLevel;
+            magicPower += magic.grade * magic.magicLevel;
 
             // print(magicPower + " : " + magic.grade + " * " + magic.magicLevel);
         }

@@ -101,19 +101,19 @@ public class CastMagic : MonoBehaviour
             // MagicDB에서 해당 마법과 같은 마법 찾기 (마법마다 같은 인스턴스를 써야 쿨타임 및 레벨 공유 가능)
             MagicInfo referMagic = MagicDB.Instance.GetMagicByID(magic.id);
 
-            // ID가 같은 마법이 없으면
+            // ID가 같은 마법이 없으면 (처음 들어가는 마법이면)
             if (!castList.Exists(x => x.id == magic.id))
             {
                 //해당 마법 리스트에 추가
                 castList.Add(referMagic);
                 //마법 레벨 초기화
-                referMagic.MagicLevel = 0;
+                referMagic.magicLevel = 0;
             }
 
             // print(referMagic.magicLevel + " : " + magic.magicLevel);
 
             // 기존 마법에 레벨 더하기
-            referMagic.MagicLevel += magic.MagicLevel;
+            referMagic.magicLevel += magic.magicLevel;
         }
 
         // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
@@ -173,10 +173,10 @@ public class CastMagic : MonoBehaviour
             }
 
             //현재 실행중인 마법 레벨이 다르면
-            if (tempMagic.MagicLevel != magic.MagicLevel)
+            if (tempMagic.magicLevel != magic.magicLevel)
             {
                 //최근 갱신된 레벨 넣어주기
-                tempMagic.MagicLevel = magic.MagicLevel;
+                tempMagic.magicLevel = magic.magicLevel;
             }
         }
 
