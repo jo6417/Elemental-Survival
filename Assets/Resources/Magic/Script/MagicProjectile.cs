@@ -5,20 +5,19 @@ using UnityEngine;
 
 public class MagicProjectile : MonoBehaviour
 {
-    public MagicInfo magic;
-    MagicHolder magicHolder;
-
-    Rigidbody2D rigid;
-    Collider2D coll;
-    SpriteRenderer sprite;
-    public ParticleSystem particle;
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
     public float spreadForce = 10f; // 파편 날아가는 강도
 
     [Header("Refer")]
+    public MagicInfo magic;
+    MagicHolder magicHolder;
+    public ParticleManager particleManager;
     public GameObject[] shatters; //파편들
     public GameObject hitEffect; //타겟에 적중했을때 이펙트
+    Rigidbody2D rigid;
+    Collider2D coll;
+    SpriteRenderer sprite;
 
     [Header("Status")]
     float speed = 0;
@@ -33,7 +32,8 @@ public class MagicProjectile : MonoBehaviour
         velocity = rigid.velocity;
         coll = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
-        particle = particle == null ? GetComponent<ParticleSystem>() : particle;
+
+        particleManager = particleManager == null ? GetComponentInChildren<ParticleManager>() : particleManager;
     }
 
     private void OnEnable()
@@ -44,8 +44,8 @@ public class MagicProjectile : MonoBehaviour
 
     IEnumerator Initial()
     {
-        //콜라이더 켜기
-        coll.enabled = true;
+        //콜라이더 끄기
+        coll.enabled = false;
 
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
@@ -65,10 +65,10 @@ public class MagicProjectile : MonoBehaviour
             sprite.enabled = true;
 
         // 파티클 활성화
-        if (particle != null)
-            particle.Play();
+        if (particleManager != null)
+            particleManager.particle.Play();
 
-        //콜라이더 활성화
+        //콜라이더 켜기
         coll.enabled = true;
 
         //마법 날리기
@@ -109,16 +109,15 @@ public class MagicProjectile : MonoBehaviour
         }
     }
 
-    void OffCollider()
-    {
-        coll.enabled = false;
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         //적에게 충돌
         if (other.CompareTag("Enemy") && magicHolder.targetType == MagicHolder.Target.Enemy)
         {
+            // 히트박스 없으면 리턴
+            if (!other.TryGetComponent(out EnemyHitBox enemyHitBox))
+                return;
+
             //남은 관통횟수 0 일때 디스폰
             // print(gameObject.name + " : " + pierceNum);
             if (pierceNum <= 0)
@@ -174,6 +173,18 @@ public class MagicProjectile : MonoBehaviour
         //딜레이 만큼 대기
         yield return new WaitForSeconds(delay);
 
+        //속도 초기화
+        rigid.velocity = Vector3.zero;
+        //각속도 초기화
+        rigid.angularVelocity = 0f;
+
+        // 콜라이더 끄기
+        coll.enabled = false;
+
+        // 스프라이트 있으면 끄기
+        if (sprite)
+            sprite.enabled = false;
+
         //파괴 이펙트 있으면 남기기
         if (hitEffect)
         {
@@ -204,17 +215,6 @@ public class MagicProjectile : MonoBehaviour
                 rigid.angularVelocity = dir.x * 20f * spreadForce;
             }
 
-            //스프라이트 비활성화
-            if (sprite != null)
-                sprite.enabled = false;
-
-            // 파티클 비활성화
-            if (particle != null)
-                particle.Stop();
-
-            //콜라이더 비활성화
-            coll.enabled = false;
-
             //파편 비산되는동안 대기
             yield return new WaitForSeconds(1f);
 
@@ -241,8 +241,15 @@ public class MagicProjectile : MonoBehaviour
         magicHolder.AddDuration = 0f;
         magicHolder.MultipleSpeed = 1f;
 
-        // 오브젝트 디스폰하기
-        if (gameObject.activeSelf)
-            LeanPool.Despawn(transform);
+        // 파티클 매니저 있으면
+        if (particleManager)
+            // 파티클 사라진후 디스폰
+            particleManager.SmoothDespawn();
+        else
+        {
+            // 오브젝트 디스폰하기
+            if (gameObject.activeSelf)
+                LeanPool.Despawn(transform);
+        }
     }
 }

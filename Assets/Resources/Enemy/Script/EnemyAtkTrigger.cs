@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyAtkTrigger : MonoBehaviour
 {
     public GameObject explosionPrefab;
-    public SpriteRenderer atkRangeSprite;
+    public SpriteRenderer atkRangeBackground;
+    public SpriteRenderer atkRangeFill;
     public EnemyManager enemyManager;
 
     public bool atkTrigger; //범위내 플레이어 들어왔는지 여부
@@ -13,11 +14,14 @@ public class EnemyAtkTrigger : MonoBehaviour
     private void Awake()
     {
         //공격 범위 인디케이터 스프라이트 찾기
-        atkRangeSprite = GetComponent<SpriteRenderer>();
+        // atkRangeBackground = GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
     {
+        atkRangeBackground.enabled = false;
+        atkRangeFill.enabled = false;
+
         //폭발 이펙트 있을때
         if (explosionPrefab)
         {

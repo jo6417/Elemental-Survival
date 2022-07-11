@@ -551,82 +551,249 @@ public class EnemyManager : MonoBehaviour
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
-    public void HitMagic(GameObject other)
+    public void Hit(GameObject other)
     {
+        // 죽었으면 리턴
         if (isDead)
             return;
 
-        // 마법 정보 찾기
-        MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-        MagicInfo magic = magicHolder.magic;
-
-        // 마법 정보 없으면 리턴
-        if (magicHolder == null || magic == null)
-            return;
-
-        // 목표가 미설정 되었을때
-        if (magicHolder.targetType == MagicHolder.Target.None)
+        // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
+        if (other.gameObject.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
-            // print("타겟 미설정");
-            return;
-        }
+            // 공격한 몹 매니저
+            EnemyManager atkEnemyManager = enemyAtk.enemyManager;
 
-        // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
-        if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
-            return;
+            // 공격한 몹의 정보 찾기
+            EnemyInfo atkEnemy = enemyAtk.enemy;
 
-        // 고스트일때, 목표가 플레이어가 아니면 리턴
-        if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
-            return;
-
-        // print(transform.name + " : " + magic.magicName);
-
-        // 마법 데미지가 있으면
-        if (magic.power > 0)
-        {
-            //크리티컬 성공 여부
-            bool isCritical = MagicDB.Instance.MagicCritical(magic);
-            //크리티컬 데미지 계산
-            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
-            //데미지 계산
-            float damage = MagicDB.Instance.MagicPower(magic);
-            // 고정 데미지에 확률 계산
-            damage = Random.Range(damage * 0.8f, damage * 1.2f);
-
-            //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
-            if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
+            // other가 본인일때 리턴
+            if (atkEnemyManager == this)
             {
-                isCritical = false;
+                // print("본인 타격");
+                return;
             }
+
+            // 타격한 적이 비활성화 되었으면 리턴
+            // if (!hitEnemyManager.enabled)
+            //     return;
+
+            //피격 대상이 고스트일때
+            if (IsGhost)
+            {
+                //고스트 아닌 적이 때렸을때만 데미지
+                if (!atkEnemyManager.IsGhost)
+                    Damage(atkEnemy.power, false);
+            }
+            //피격 대상이 고스트 아닐때
             else
             {
-                damage = damage * criticalPower;
+                //고스트가 때렸으면 데미지
+                if (atkEnemyManager.IsGhost)
+                    Damage(atkEnemy.power, false);
+
+                // 아군 피해 옵션 켜져있을때
+                if (enemyAtk.friendlyFire)
+                    Damage(atkEnemy.power, false);
             }
 
-            //데미지 적용
-            Damage(damage, isCritical);
-        }
-
-        //넉백
-        if (magicHolder.knockbackForce > 0)
-        {
-            if (nowAction != Action.Jump && nowAction != Action.Attack)
+            // 넉백 디버프 있을때
+            if (enemyAtk.knockBackDebuff)
             {
-                StartCoroutine(Knockback(other, magicHolder.knockbackForce));
+                // print("enemy knock");
+
+                // 넉백
+                StartCoroutine(Knockback(other.gameObject, atkEnemyManager.enemy.power));
+            }
+
+            // flat 디버프 있을때, stop 카운트 중 아닐때
+            if (enemyAtk.flatDebuff && stopCount <= 0)
+            {
+                // print("enemy flat");
+
+                // 납작해지고 행동불능
+                StartCoroutine(FlatDebuff());
             }
         }
 
-        //시간 정지
-        if (magicHolder.isStop)
+        //마법 정보 찾기
+        if (other.TryGetComponent(out MagicHolder magicHolder))
         {
-            //몬스터 경직 카운터에 duration 만큼 추가
-            stopCount = MagicDB.Instance.MagicDuration(magic);
+            // 마법 정보 찾기
+            MagicInfo magic = magicHolder.magic;
 
-            // 해당 위치에 고정
-            // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            // 마법 정보 없으면 리턴
+            if (magicHolder == null || magic == null)
+                return;
+
+            // 목표가 미설정 되었을때
+            if (magicHolder.targetType == MagicHolder.Target.None)
+            {
+                // print("타겟 미설정");
+                return;
+            }
+
+            // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
+            if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
+                return;
+
+            // 고스트일때, 목표가 플레이어가 아니면 리턴
+            if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
+                return;
+
+            // print(transform.name + " : " + magic.magicName);
+
+            // 마법 데미지가 있으면
+            if (magic.power > 0)
+            {
+                //크리티컬 성공 여부
+                bool isCritical = MagicDB.Instance.MagicCritical(magic);
+                //크리티컬 데미지 계산
+                float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+
+                //데미지 계산
+                float damage = MagicDB.Instance.MagicPower(magic);
+                // 고정 데미지에 확률 계산
+                damage = Random.Range(damage * 0.8f, damage * 1.2f);
+
+                //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
+                if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
+                {
+                    isCritical = false;
+                }
+                else
+                {
+                    damage = damage * criticalPower;
+                }
+
+                //데미지 적용
+                Damage(damage, isCritical);
+            }
+
+            //넉백
+            if (magicHolder.knockbackForce > 0)
+            {
+                if (nowAction != Action.Jump && nowAction != Action.Attack)
+                {
+                    StartCoroutine(Knockback(other, magicHolder.knockbackForce));
+                }
+            }
+
+            //시간 정지
+            if (magicHolder.isStop)
+            {
+                //몬스터 경직 카운터에 duration 만큼 추가
+                stopCount = MagicDB.Instance.MagicDuration(magic);
+
+                // 해당 위치에 고정
+                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            }
+
+            //적의 마법에 충돌
+            // if (magicHolder != null && magicHolder.enabled)
+            // {
+            //     MagicInfo magic = magicHolder.magic;
+
+            //     //데미지 계산
+            //     float damage = MagicDB.Instance.MagicPower(magic);
+            //     // 고정 데미지에 확률 계산
+            //     damage = Random.Range(damage * 0.8f, damage * 1.2f);
+
+            //     //크리티컬 성공 여부
+            //     bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            //     //크리티컬 데미지 계산
+            //     float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+
+            //     //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
+            //     if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
+            //     {
+            //         isCritical = false;
+            //     }
+            //     else
+            //     {
+            //         damage = damage * criticalPower;
+            //     }
+
+            //     Damage(damage, isCritical);
+            // }
         }
     }
+
+    // public void HitMagic(GameObject other)
+    // {
+    //     if (isDead)
+    //         return;
+
+    //     // 마법 정보 찾기
+    //     MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+    //     MagicInfo magic = magicHolder.magic;
+
+    //     // 마법 정보 없으면 리턴
+    //     if (magicHolder == null || magic == null)
+    //         return;
+
+    //     // 목표가 미설정 되었을때
+    //     if (magicHolder.targetType == MagicHolder.Target.None)
+    //     {
+    //         // print("타겟 미설정");
+    //         return;
+    //     }
+
+    //     // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
+    //     if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
+    //         return;
+
+    //     // 고스트일때, 목표가 플레이어가 아니면 리턴
+    //     if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
+    //         return;
+
+    //     // print(transform.name + " : " + magic.magicName);
+
+    //     // 마법 데미지가 있으면
+    //     if (magic.power > 0)
+    //     {
+    //         //크리티컬 성공 여부
+    //         bool isCritical = MagicDB.Instance.MagicCritical(magic);
+    //         //크리티컬 데미지 계산
+    //         float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+
+    //         //데미지 계산
+    //         float damage = MagicDB.Instance.MagicPower(magic);
+    //         // 고정 데미지에 확률 계산
+    //         damage = Random.Range(damage * 0.8f, damage * 1.2f);
+
+    //         //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
+    //         if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
+    //         {
+    //             isCritical = false;
+    //         }
+    //         else
+    //         {
+    //             damage = damage * criticalPower;
+    //         }
+
+    //         //데미지 적용
+    //         Damage(damage, isCritical);
+    //     }
+
+    //     //넉백
+    //     if (magicHolder.knockbackForce > 0)
+    //     {
+    //         if (nowAction != Action.Jump && nowAction != Action.Attack)
+    //         {
+    //             StartCoroutine(Knockback(other, magicHolder.knockbackForce));
+    //         }
+    //     }
+
+    //     //시간 정지
+    //     if (magicHolder.isStop)
+    //     {
+    //         //몬스터 경직 카운터에 duration 만큼 추가
+    //         stopCount = MagicDB.Instance.MagicDuration(magic);
+
+    //         // 해당 위치에 고정
+    //         // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+    //     }
+    // }
 
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -802,16 +969,17 @@ public class EnemyManager : MonoBehaviour
             if (selfExplosion)
             {
                 // 폭발 반경 표시
-                explosionTrigger.atkRangeSprite.enabled = true;
-                explosionTrigger.atkRangeSprite.color = new Color(1, 1, 1, 80f / 255f);
+                explosionTrigger.atkRangeBackground.enabled = true;
+                explosionTrigger.atkRangeFill.enabled = true;
 
-                // 폭발 반경 깜빡이기
-                explosionTrigger.atkRangeSprite.DOColor(new Color(1, 0, 0, 80f / 255f), 1f)
-                .SetEase(Ease.Flash, 3, 0)
+                // 폭발 반경 인디케이터 사이즈 초기화
+                explosionTrigger.atkRangeFill.transform.localScale = Vector3.zero;
+                // 폭발 반경 인디케이터 사이즈 키우기
+                explosionTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
                 .OnComplete(() =>
                 {
-                    explosionTrigger.atkRangeSprite.color = new Color(1, 1, 1, 80f / 255f);
-                    explosionTrigger.atkRangeSprite.enabled = false;
+                    explosionTrigger.atkRangeBackground.enabled = false;
+                    explosionTrigger.atkRangeFill.enabled = false;
                 });
             }
 

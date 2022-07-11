@@ -5,10 +5,10 @@ using Lean.Pool;
 
 public class ParticleManager : MonoBehaviour
 {
-    ParticleSystem particle;
+    public ParticleSystem particle;
     Collider2D coll;
     public bool autoDespawn = true; //자동 디스폰 여부
-    public float collOverTime = 0.2f;
+    public float collOverTime = 0f;
 
     private void Awake()
     {

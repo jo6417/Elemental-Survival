@@ -53,13 +53,17 @@ public class DeathMineSpawner : MonoBehaviour
         // 마법 크리티컬 확률에 따라 지뢰 생성
         if (isDrop)
         {
-            GameObject deathMine = LeanPool.Spawn(minePrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            // 지뢰 오브젝트 생성
+            GameObject deathMine = LeanPool.Spawn(minePrefab, enemyManager.transform.position + Vector3.up * 2f, Quaternion.identity, SystemManager.Instance.magicPool);
 
             // 매직홀더 찾기
             MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>();
 
-            // 마법 타겟 정해주기
+            // 마법 타겟 넣기
             mineMagicHolder.SetTarget(MagicHolder.Target.Enemy);
+
+            // 마법 타겟 위치 넣기
+            mineMagicHolder.targetPos = enemyManager.transform.position;
         }
     }
 }

@@ -25,7 +25,8 @@ public class Ascii_AI : MonoBehaviour
     [Header("FallAtk")]
     public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
     public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 플레이어가 들어왔는지 보는 트리거
-    public SpriteRenderer fallRange;
+    public SpriteRenderer fallRangeBackground;
+    public SpriteRenderer fallRangeIndicator;
     public ParticleSystem fallDustEffect; //엎어질때 발생할 먼지 이펙트
 
     [Header("LaserAtk")]
@@ -51,7 +52,7 @@ public class Ascii_AI : MonoBehaviour
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
 
-        fallRange = fallRangeTrigger.GetComponent<SpriteRenderer>();
+        fallRangeBackground = fallRangeTrigger.GetComponent<SpriteRenderer>();
         laserRange = LaserRangeTrigger.GetComponent<SpriteRenderer>();
     }
 
@@ -90,7 +91,7 @@ public class Ascii_AI : MonoBehaviour
         speed = enemy.speed;
 
         //공격범위 오브젝트 초기화
-        fallRange.enabled = false;
+        fallRangeBackground.enabled = false;
         laserRange.enabled = false;
 
         //그림자 초기화
@@ -269,17 +270,18 @@ public class Ascii_AI : MonoBehaviour
         // 엎어질 준비 애니메이션 시작
         anim.SetTrigger("FallReady");
 
-        // 엎어질 범위 활성화 및 반짝거리기
-        fallRange.enabled = true;
-        Color originColor = new Color(1, 0, 0, 0.2f);
-        fallRange.color = originColor;
+        // 엎어질 범위 활성화
+        fallRangeBackground.enabled = true;
+        fallRangeIndicator.enabled = true;
 
-        fallRange.DOColor(new Color(1, 0, 0, 0f), 1f)
-        .SetEase(Ease.InOutFlash, 5, 0)
+        // 인디케이터 사이즈 초기화
+        fallRangeIndicator.transform.localScale = Vector3.zero;
+
+        // 인디케이터 사이즈 늘리기
+        fallRangeIndicator.transform.DOScale(Vector3.one, 1f)
+        .SetEase(Ease.Linear)
         .OnComplete(() =>
         {
-            fallRange.color = originColor;
-
             //넘어질때 표정
             faceText.text = "> ︿ <";
 
@@ -290,6 +292,10 @@ public class Ascii_AI : MonoBehaviour
 
     void FallAtkEnable()
     {
+        // 엎어질 범위 비활성화
+        fallRangeBackground.enabled = false;
+        fallRangeIndicator.enabled = false;
+
         // fallAtk 공격 활성화
         fallAtkColl.enabled = true;
 
@@ -336,16 +342,19 @@ public class Ascii_AI : MonoBehaviour
 
         // 동시에 공격 범위 표시
         // 엎어질 범위 활성화 및 반짝거리기
-        laserRange.enabled = true;
-        Color originColor = new Color(1, 0, 0, 0.2f);
-        laserRange.color = originColor;
+        // laserRange.enabled = true;
+        // Color originColor = new Color(1, 0, 0, 0.2f);
+        // laserRange.color = originColor;
 
-        laserRange.DOColor(new Color(1, 0, 0, 0f), 1f)
-        .SetEase(Ease.InOutFlash, 5, 0)
-        .OnComplete(() =>
-        {
-            laserRange.color = originColor;
-        });
+        // laserRange.DOColor(new Color(1, 0, 0, 0f), 1f)
+        // .SetEase(Ease.InOutFlash, 5, 0)
+        // .OnComplete(() =>
+        // {
+        //     laserRange.color = originColor;
+        // });
+
+        //펄스 이펙트 활성화
+        pulseEffect.SetActive(true);
 
         //게이지 모두 차오르면 
         yield return new WaitUntil(() => angryGauge.fillAmount >= 1f);
@@ -448,7 +457,7 @@ public class Ascii_AI : MonoBehaviour
         //레이저 생성
         GameObject magicObj = LeanPool.Spawn(LaserPrefab, shotter.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
-        LaserBeam laser = magicObj.GetComponent<LaserBeam>();
+        Explosion laser = magicObj.GetComponent<Explosion>();
         // 레이저 발사할 오브젝트 넣기
         laser.startObj = shotter;
 

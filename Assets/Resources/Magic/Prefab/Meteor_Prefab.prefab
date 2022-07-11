@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 2770057667058986667}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5634225058560491154}
   m_Father: {fileID: 0}
@@ -75,6 +75,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angleOffset: 0
   startOffset: {x: 0, y: 30}
+  rockSprite: {fileID: 5350171974902983272}
   fireTrail: {fileID: 6720872240345002128}
   magicHolder: {fileID: 2712818590590919898}
   explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,

@@ -10,10 +10,9 @@ public class Meteor : MonoBehaviour
     public Vector2 startOffset; //시작할 위치
 
     [Header("Refer")]
-    // public SpriteRenderer rockSprite; //운석 스프라이트
+    public SpriteRenderer rockSprite; //운석 스프라이트
     public ParticleSystem fireTrail;
     // public ParticleSystem mainParticle;
-    // public Collider2D coll;
     public MagicInfo magic;
     public MagicHolder magicHolder;
     public GameObject explosionPrefab; // 폭발 파티클
@@ -26,8 +25,8 @@ public class Meteor : MonoBehaviour
 
     private void Awake()
     {
-        //스케일 초기화
-        transform.localScale = Vector3.zero;
+        //스프라이트 끄기
+        rockSprite.enabled = false;
 
         //파티클 끄기
         fireTrail.gameObject.SetActive(false);
@@ -41,9 +40,6 @@ public class Meteor : MonoBehaviour
 
     IEnumerator Initial()
     {
-        //스케일 초기화
-        transform.localScale = Vector3.zero;
-
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
@@ -85,11 +81,11 @@ public class Meteor : MonoBehaviour
         //시작 위치로 올려보내기
         transform.position = startPos;
 
+        //스프라이트 끄기
+        rockSprite.enabled = true;
+
         //파티클 켜기
         fireTrail.gameObject.SetActive(true);
-
-        // 스케일 키우면서 등장
-        transform.DOScale(Vector3.one, 0.5f);
 
         //목표 위치 방향으로 회전
         Vector2 dir = endPos - startPos;
@@ -134,8 +130,8 @@ public class Meteor : MonoBehaviour
         //TODO 용암 균열 장판 남기기
         // LeanPool.Spawn(lavaPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-        // 스케일 줄어들어 사라지기
-        transform.DOScale(Vector3.zero, 0.2f);
+        //스프라이트 끄기
+        rockSprite.enabled = false;
 
         // 카메라 흔들기
         Camera.main.transform.DOShakePosition(0.2f, 0.3f, 50, 90f, false, false);

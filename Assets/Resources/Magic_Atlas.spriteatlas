@@ -73,6 +73,7 @@ SpriteAtlas:
   - {fileID: 7172787789769408317, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
   - {fileID: -8112224202027827953, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 8954982405313846772, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
+  - {fileID: 21300000, guid: a12cfe82c771ae040bad4ffd5030f64f, type: 3}
   - {fileID: 21300000, guid: 63524fa2c4b4ba045abd287ded7bb51b, type: 3}
   - {fileID: 21300000, guid: d517c663e7a7bb148be8c6c70e34247f, type: 3}
   - {fileID: 4117335768061151153, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
@@ -96,6 +97,7 @@ SpriteAtlas:
   - {fileID: 5785227754938472376, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 5211855851985303759, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 22442593591287992, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
+  - {fileID: 21300000, guid: 5ddbb22550d1d8e45af45dbc3a6fddf9, type: 3}
   - {fileID: 21300000, guid: a846f955773477346a68790fc68be129, type: 3}
   - {fileID: 21300000, guid: f80246a55bc89374b84ef9ad497d2c6d, type: 3}
   - {fileID: 21300000, guid: 845360268351fd14483682e19c071d7c, type: 3}
@@ -105,6 +107,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 37d6a05717b3f4f478e3a1b83b19b6b2, type: 3}
   - {fileID: 21300000, guid: b69a18771fd84ae47a880e5a518d982c, type: 3}
   - {fileID: 21300000, guid: d7d6f8871854dac4fa0445ae76154ebc, type: 3}
+  - {fileID: 21300000, guid: 5dd34ac761dc4674fa1407b88644f50e, type: 3}
   - {fileID: 21300000, guid: e1e3fde75271bb74b8ae734a848f8c4f, type: 3}
   - {fileID: 21300000, guid: 22c0cdc88e386484eafb1a31f9e27e12, type: 3}
   - {fileID: 21300000, guid: 4d039ec80c3885943947d00f7fd2bcb5, type: 3}
@@ -124,6 +127,7 @@ SpriteAtlas:
   - {fileID: 7045322567115125678, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
   - {fileID: 3078137181838870744, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
   - {fileID: -8471716954120399937, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
+  - {fileID: 21300000, guid: 81e4bf59f71ba0c499edaf28564aede3, type: 3}
   - {fileID: 21300000, guid: 65bab1993ed34d74986bf2b0564a2347, type: 3}
   - {fileID: -9092649447833480810, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
   - {fileID: 8807196387394903447, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
@@ -211,6 +215,8 @@ SpriteAtlas:
   - {fileID: -2722819298173475279, guid: e85f17ce4b091494383db0293ab73b4d, type: 3}
   - {fileID: 21300000, guid: f1fcefce2c26cde42ac56f63110deb3d, type: 3}
   - {fileID: 21300000, guid: d2abbaee8b1de824a9bd7e9bea586797, type: 3}
+  - {fileID: 21300000, guid: 26b2772f1ba09e74e8ca5dba294903be, type: 3}
+  - {fileID: 21300000, guid: 17518c2f753425743ac1fe29b0915f73, type: 3}
   - {fileID: 21300000, guid: 31b0367f8da80be479dd56f1245191dd, type: 3}
   - {fileID: 21300000, guid: e2ef8ecf2e08b4743a22185d1b6d1bbb, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -237,6 +243,7 @@ SpriteAtlas:
   - Hellfire_Crack-Sheet_5
   - LavaWalk_Sheet_1
   - LavaWalk_Sheet_0
+  - SuperSerum_Icon
   - Nimbus_Icon
   - WaterGem_
   - RuneLine_0
@@ -260,6 +267,7 @@ SpriteAtlas:
   - StompDust_Sheet_2
   - StompDust_Sheet_1
   - StompDust_Sheet_0
+  - Explosion_Icon
   - WindGem_
   - SandShot_Icon
   - TimeStop_Icon
@@ -269,6 +277,7 @@ SpriteAtlas:
   - IceSpear_Icon
   - IceSpear
   - WaterDrop
+  - Meteor_Icon
   - MetalCube_Icon
   - DustSpiral
   - Heist_Icon
@@ -288,6 +297,7 @@ SpriteAtlas:
   - Heist_Sheet_2
   - Heist_Sheet_1
   - Heist_Sheet_0
+  - DeathMine_Icon
   - SlingShot_Icon
   - Portal_Sheet_0
   - Portal_Sheet_1
@@ -375,6 +385,8 @@ SpriteAtlas:
   - Bubble_Sheet_2
   - WaterGem_Icon
   - DeathMine
+  - HellFire_Icon
+  - Ghosting_Icon
   - WindGem_Icon
   - Icicle_Icon
   m_RenderDataMap: {}

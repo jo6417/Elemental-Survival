@@ -38,12 +38,29 @@ public class DeathMine : MonoBehaviour
         // 라이트 색 초기화
         bombLight.color = Color.cyan;
 
-        // 인디케이터 레이저 색 초기화
+        // 룬 레이저 끄기
+        runeLaser.gameObject.SetActive(false);
+
+        // 룬 레이저 색 초기화
         ParticleSystem.ColorOverLifetimeModule particleColor = runeLaser.colorOverLifetime;
         particleColor.enabled = false;
 
         // 마법 range 만큼 감지 및 폭발 범위 적용
         explosionPrefab.transform.localScale = Vector2.one * MagicDB.Instance.MagicRange(magic);
+
+        // targetPos 들어올때까지 대기
+        yield return new WaitUntil(() => magicHolder.targetPos != null);
+
+        // 타겟 위치보다 위로 이동
+        // transform.position = magicHolder.targetPos + Vector3.up;
+
+        //todo 아래로 이동
+        transform.parent.DOMove(magicHolder.targetPos, 1f)
+        .SetEase(Ease.InBack);
+        yield return new WaitForSeconds(1.2f);
+
+        // 룬 레이저 켜기
+        runeLaser.gameObject.SetActive(true);
 
         // 공격 가능
         atkAble = true;
