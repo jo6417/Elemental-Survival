@@ -181,7 +181,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
-  atkRangeSprite: {fileID: 5702270505898070483}
+  atkRangeBackground: {fileID: 0}
+  atkRangeFill: {fileID: 0}
   enemyManager: {fileID: 5018633298159146536}
   atkTrigger: 0
 --- !u!58 &8644033354985020940
@@ -5182,7 +5183,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -5471,11 +5472,11 @@ GameObject:
   - component: {fileID: 944842427137493207}
   m_Layer: 7
   m_Name: KingSlime_Prefab
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8274267318279845525
 Transform:
   m_ObjectHideFlags: 0
@@ -5507,8 +5508,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
+  initialStart: 0
+  defaultHasItem: ffffffff
+  targetResetTime: 3
+  targetResetCount: 0
+  targetObj: {fileID: 0}
   state: 0
   nowAction: 0
   moveType: 0
@@ -5522,8 +5526,12 @@ MonoBehaviour:
   oppositeCount: 0
   selfExplosion: 0
   statusEffect: 0
+  attackRange: 0
+  changeGhost: 0
+  enemyAI: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 1881259223782753355}
+  shadow: {fileID: 0}
   spriteList:
   - {fileID: 1881259223782753332}
   - {fileID: 5045581792656180138}
@@ -5536,8 +5544,7 @@ MonoBehaviour:
   - {fileID: 3569926881157058607}
   rigid: {fileID: 944842427137493207}
   physicsColl: {fileID: 5989012684935532658}
-  hitColl: {fileID: 8450094565903836153}
-  enemyAI: {fileID: 0}
+  hitCollList: []
   hpMax: 0
   HpNow: 1
   power: 0
@@ -10410,7 +10417,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
@@ -10483,9 +10490,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8f46166926679e4c98c8b1bcb20e6d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kingSlimeAI: {fileID: 8274267318279845524}
   numInside: 0
   attack: 1
+  enemyManager: {fileID: 0}
 --- !u!198 &8660447163773140354
 ParticleSystem:
   m_ObjectHideFlags: 0

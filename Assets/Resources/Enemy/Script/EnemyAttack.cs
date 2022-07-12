@@ -77,6 +77,10 @@ public class EnemyAttack : MonoBehaviour
         if (attackReady)
             return;
 
+        // 타겟 없거나 비활성화면 리턴
+        if (!enemyManager.targetObj || !enemyManager.targetObj.activeSelf)
+            return;
+
         //플레이어 방향 계산
         targetDir = enemyManager.targetObj.transform.position - transform.position;
 

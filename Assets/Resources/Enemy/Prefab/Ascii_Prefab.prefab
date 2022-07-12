@@ -732,7 +732,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6014433321399679247
 Transform:
   m_ObjectHideFlags: 0
@@ -994,7 +994,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
-  atkRangeSprite: {fileID: 2028642404204801092}
+  atkRangeBackground: {fileID: 0}
+  atkRangeFill: {fileID: 0}
   enemyManager: {fileID: 6198355565525276696}
   atkTrigger: 0
 --- !u!212 &2028642404204801092
@@ -1437,7 +1438,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
-  atkRangeSprite: {fileID: 9177898890322600236}
+  atkRangeBackground: {fileID: 0}
+  atkRangeFill: {fileID: 0}
   enemyManager: {fileID: 6198355565525276696}
   atkTrigger: 0
 --- !u!212 &9177898890322600236

@@ -365,7 +365,7 @@ public class PlayerManager : MonoBehaviour
 
     // }
 
-    IEnumerator Hit(Transform other)
+    public IEnumerator Hit(Transform other)
     {
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
         if (other.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)

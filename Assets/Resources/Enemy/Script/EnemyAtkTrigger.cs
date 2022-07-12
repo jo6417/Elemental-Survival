@@ -9,7 +9,7 @@ public class EnemyAtkTrigger : MonoBehaviour
     public SpriteRenderer atkRangeFill;
     public EnemyManager enemyManager;
 
-    public bool atkTrigger; //범위내 플레이어 들어왔는지 여부
+    public bool atkTrigger; //범위내 타겟 들어왔는지 여부
 
     private void Awake()
     {
@@ -19,8 +19,10 @@ public class EnemyAtkTrigger : MonoBehaviour
 
     private void OnEnable()
     {
-        atkRangeBackground.enabled = false;
-        atkRangeFill.enabled = false;
+        if (atkRangeBackground)
+            atkRangeBackground.enabled = false;
+        if (atkRangeFill)
+            atkRangeFill.enabled = false;
 
         //폭발 이펙트 있을때
         if (explosionPrefab)
@@ -28,60 +30,95 @@ public class EnemyAtkTrigger : MonoBehaviour
             //폭발 콜라이더 및 이펙트 사이즈 동기화
             explosionPrefab.transform.localScale = transform.localScale;
         }
+
+        // 초기화
+        StartCoroutine(Initial());
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    IEnumerator Initial()
     {
-        //  고스트 아닐때, 플레이어가 충돌하면
-        if (other.CompareTag("Player") && !enemyManager.IsGhost)
-        {
-            atkTrigger = true;
+        yield return new WaitUntil(() => enemyManager.enemy != null);
 
-            // 자폭형 몬스터일때
-            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+        // 고스트일때
+        if (enemyManager.IsGhost)
+        {
+            // Enemy만 충돌하는 레이어
+            gameObject.layer = LayerMask.NameToLayer("EnemyTrigger");
+        }
+        // 일반 몹일때
+        else
+        {
+            // Player만 충돌하는 레이어
+            gameObject.layer = LayerMask.NameToLayer("PlayerTrigger");
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // 공격 트리거 켜진 상태면 리턴
+        if (atkTrigger)
+            return;
+
+        // 고스트 아닐때
+        if (!enemyManager.IsGhost)
+        {
+            // 플레이어가 충돌하면
+            if (other.CompareTag("Player"))
             {
-                // 자폭하기
-                StartCoroutine(enemyManager.Dead());
+                atkTrigger = true;
+
+                // 자폭형 몬스터일때
+                if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+                {
+                    // 자폭하기
+                    StartCoroutine(enemyManager.Dead());
+                }
             }
         }
-
-        // 고스트일때, 몬스터가 충돌하면
-        if (other.CompareTag("Enemy") && enemyManager.IsGhost)
+        else
         {
-            // 몬스터가 충돌했을때 히트박스 있을때
-            if (other.TryGetComponent(out EnemyHitBox hitBox))
+            // 몬스터가 충돌하면
+            if (other.CompareTag("Enemy"))
             {
-                // 충돌 대상이 본인이면 리턴
-                if (hitBox.enemyManager == enemyManager)
+                // 몬스터가 충돌했을때 히트박스 있을때
+                if (other.TryGetComponent(out EnemyHitBox hitBox))
+                {
+                    // 충돌 대상이 본인이면 리턴
+                    if (hitBox.enemyManager == enemyManager)
+                        return;
+
+                    // 충돌 몬스터도 고스트일때 리턴
+                    if (hitBox.enemyManager.IsGhost)
+                        return;
+                }
+                // 콜라이더가 히트박스를 갖고 있지 않을때 리턴
+                else
                     return;
 
-                // 충돌 몬스터도 고스트일때 리턴
-                if (hitBox.enemyManager.IsGhost)
-                    return;
-            }
-            // 콜라이더가 히트박스를 갖고 있지 않을때 리턴
-            else
-                return;
+                atkTrigger = true;
 
-            atkTrigger = true;
-
-            // 자폭형 몬스터일때
-            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
-            {
-                // 자폭하기
-                StartCoroutine(enemyManager.Dead());
+                // 자폭형 몬스터일때
+                if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+                {
+                    // 자폭하기
+                    StartCoroutine(enemyManager.Dead());
+                }
             }
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
+        // 공격 트리거 꺼진 상태면 리턴
+        if (!atkTrigger)
+            return;
+
         //  고스트 아닐때, 플레이어가 나가면
-        if (other.CompareTag("Player") && !enemyManager.IsGhost)
+        if (!enemyManager.IsGhost && other.CompareTag("Player"))
             atkTrigger = false;
 
         // 고스트일때, 몬스터가 나가면
-        if (other.CompareTag("Enemy") && enemyManager.IsGhost)
+        if (enemyManager.IsGhost && other.CompareTag("Enemy"))
             atkTrigger = false;
     }
 }

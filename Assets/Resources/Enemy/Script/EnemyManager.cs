@@ -172,6 +172,9 @@ public class EnemyManager : MonoBehaviour
         // 고스트 여부 초기화
         isGhost = changeGhost;
 
+        // 다음 리스폰할때 고스트 예약 초기화
+        changeGhost = false;
+
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
@@ -373,7 +376,7 @@ public class EnemyManager : MonoBehaviour
             return false;
 
         // 비활성화 되었으면 리턴
-        if (!gameObject.activeSelf)
+        if (!gameObject)
             return false;
 
         //죽음 애니메이션 중일때
@@ -551,11 +554,11 @@ public class EnemyManager : MonoBehaviour
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
-    public void Hit(GameObject other)
+    public IEnumerator Hit(GameObject other)
     {
         // 죽었으면 리턴
         if (isDead)
-            return;
+            yield break;
 
         // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
         if (other.gameObject.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
@@ -564,13 +567,14 @@ public class EnemyManager : MonoBehaviour
             EnemyManager atkEnemyManager = enemyAtk.enemyManager;
 
             // 공격한 몹의 정보 찾기
+            yield return new WaitUntil(() => enemyAtk.enemy != null);
             EnemyInfo atkEnemy = enemyAtk.enemy;
 
             // other가 본인일때 리턴
             if (atkEnemyManager == this)
             {
                 // print("본인 타격");
-                return;
+                yield break;
             }
 
             // 타격한 적이 비활성화 되었으면 리턴
@@ -623,22 +627,22 @@ public class EnemyManager : MonoBehaviour
 
             // 마법 정보 없으면 리턴
             if (magicHolder == null || magic == null)
-                return;
+                yield break;
 
             // 목표가 미설정 되었을때
             if (magicHolder.targetType == MagicHolder.Target.None)
             {
                 // print("타겟 미설정");
-                return;
+                yield break;
             }
 
             // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
             if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
-                return;
+                yield break;
 
             // 고스트일때, 목표가 플레이어가 아니면 리턴
             if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
-                return;
+                yield break;
 
             // print(transform.name + " : " + magic.magicName);
 
@@ -1011,8 +1015,7 @@ public class EnemyManager : MonoBehaviour
         }
         else
         {
-            // 다음 리스폰할때 고스트 여부 초기화
-            changeGhost = false;
+
         }
 
         //폭발 몬스터면 폭발 시키기
@@ -1022,7 +1025,7 @@ public class EnemyManager : MonoBehaviour
             GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             // 일단 비활성화
-            // effect.SetActive(false);
+            effect.SetActive(false);
 
             // 폭발에 몬스터 정보 넣기
             EnemyAttack effectAttack = effect.GetComponent<EnemyAttack>();
@@ -1032,7 +1035,7 @@ public class EnemyManager : MonoBehaviour
             effectAttack.friendlyFire = true;
 
             // 폭발 활성화
-            // effect.SetActive(true);
+            effect.SetActive(true);
         }
 
         // 먼지 이펙트 생성

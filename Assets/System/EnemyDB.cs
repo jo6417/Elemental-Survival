@@ -11,6 +11,7 @@ public class EnemyInfo
     public int grade;
     public string enemyName;
     public string enemyType;
+    public float spawnCool;
     public string description;
 
     [Header("Spec")]
@@ -34,12 +35,13 @@ public class EnemyInfo
 
     public EnemyInfo() { }
 
-    public EnemyInfo(int id, int grade, string enemyName, string enemyType, string description, float power, float speed, float range, float cooltime, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
+    public EnemyInfo(int id, int grade, string enemyName, string enemyType, float spawnCool, string description, float power, float speed, float range, float cooltime, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
         this.grade = grade;
         this.enemyName = enemyName;
         this.enemyType = enemyType;
+        this.spawnCool = spawnCool;
         this.description = description;
         this.power = power;
         this.speed = speed;
@@ -64,6 +66,7 @@ public class EnemyInfo
         this.grade = enemy.grade;
         this.enemyName = enemy.enemyName;
         this.enemyType = enemy.enemyType;
+        this.spawnCool = enemy.spawnCool;
         this.description = enemy.description;
         this.power = enemy.power;
         this.speed = enemy.speed;
@@ -189,7 +192,7 @@ public class EnemyDB : MonoBehaviour
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기
                 enemyDB[enemy["id"]] = new EnemyInfo
-                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["description"],
+                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["spawnCool"], enemy["description"],
                 enemy["power"], enemy["speed"], enemy["range"], enemy["cooltime"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"],
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
                 );

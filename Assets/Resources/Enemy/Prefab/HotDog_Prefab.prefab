@@ -5540,7 +5540,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
-  atkRangeSprite: {fileID: 0}
+  atkRangeBackground: {fileID: 0}
+  atkRangeFill: {fileID: 0}
   enemyManager: {fileID: 5442773849880543436}
   atkTrigger: 0
 --- !u!1 &2994293853978351907
@@ -15304,11 +15305,11 @@ GameObject:
   - component: {fileID: 694151884535631908}
   m_Layer: 7
   m_Name: HotDog_Prefab
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5471369762297914884
 Transform:
   m_ObjectHideFlags: 0
@@ -15343,8 +15344,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHasItem: 
-  referEnemyManager: {fileID: 0}
+  initialStart: 0
+  defaultHasItem: ffffffff
+  targetResetTime: 3
+  targetResetCount: 0
+  targetObj: {fileID: 0}
   state: 0
   nowAction: 0
   moveType: 0
@@ -15359,9 +15363,11 @@ MonoBehaviour:
   selfExplosion: 0
   statusEffect: 0
   attackRange: 0
+  changeGhost: 0
   enemyAI: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 1050721965792201694}
+  shadow: {fileID: 0}
   spriteList: []
   originMatList: []
   originMatColorList: []
@@ -25607,6 +25613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particle: {fileID: 0}
   autoDespawn: 0
   collOverTime: 0.2
 --- !u!1 &7524863061574833899
@@ -25622,12 +25629,12 @@ GameObject:
   - component: {fileID: 5113963980548023421}
   - component: {fileID: 4881784704069674639}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: DebugCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2182754097716681333
 RectTransform:
   m_ObjectHideFlags: 0

@@ -35,9 +35,10 @@ public class EnemySpawn : MonoBehaviour
     public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
     public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
     Collider2D fenceColl; // 스포너 테두리 콜라이더
+    public int modifyEnemyPower; //! 전투력 임의 수정값
     public int MaxEnemyPower; //최대 몬스터 전투력
     public int NowEnemyPower; //현재 몬스터 전투력
-    public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
+    // public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
     public float spawnCoolCount; //몬스터 스폰 쿨타임 카운트
     public List<EnemyManager> spawnAbleList = new List<EnemyManager>(); // 현재 맵에서 스폰 가능한 몹 리스트
     public List<EnemyManager> spawnEnemyList = new List<EnemyManager>(); //현재 스폰된 몬스터 리스트
@@ -71,15 +72,15 @@ public class EnemySpawn : MonoBehaviour
         // 쿨타임마다 실행하기
         if (spawnCoolCount <= 0)
         {
-            // 1~5초 사이 랜덤 쿨타임, 쿨타임 최대치는 플레이어 전투력마다 0.05초씩 줄어듬, 100레벨시 1초
-            float maxCoolTime = 5 - PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
-            //1~5초 사이 값으로 범위 제한
-            maxCoolTime = Mathf.Clamp(maxCoolTime, 0.5f, maxCoolTime);
-            // 플레이어 전투력에 따라 줄어드는 쿨타임 계산
-            spawnCoolTime = Random.Range(1, maxCoolTime);
+            // // 1~5초 사이 랜덤 쿨타임, 쿨타임 최대치는 플레이어 전투력마다 0.05초씩 줄어듬, 100레벨시 1초
+            // float maxCoolTime = 5 - PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
+            // //1~5초 사이 값으로 범위 제한
+            // maxCoolTime = Mathf.Clamp(maxCoolTime, 0.5f, maxCoolTime);
+            // // 플레이어 전투력에 따라 줄어드는 쿨타임 계산
+            // spawnCoolTime = Random.Range(1, maxCoolTime);
 
-            //몬스터 스폰 쿨타임 초기화
-            spawnCoolCount = spawnCoolTime;
+            // //몬스터 스폰 쿨타임 초기화
+            // spawnCoolCount = spawnCoolTime;
 
             //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
             float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
@@ -122,7 +123,7 @@ public class EnemySpawn : MonoBehaviour
         int timePower = Mathf.FloorToInt(time / 30f);
 
         //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수
-        MaxEnemyPower = PlayerManager.Instance.PlayerStat_Now.playerPower + timePower;
+        MaxEnemyPower = PlayerManager.Instance.PlayerStat_Now.playerPower + timePower + modifyEnemyPower;
 
         //max 전투력 넘었으면 중단
         if (MaxEnemyPower <= NowEnemyPower)
@@ -186,10 +187,23 @@ public class EnemySpawn : MonoBehaviour
         //포탈에서 몬스터 소환
         StartCoroutine(PortalSpawn(enemy, isElite));
 
+        // 해당 몬스터의 쿨타임 넣기
+        float spawnCoolTime = enemy.spawnCool;
+        // 쿨타임에 50% 범위 내 랜덤성 부여
+        spawnCoolTime = Random.Range(spawnCoolTime * 0.5f, spawnCoolTime * 1.5f);
+        // 1~5초 사이 값으로 범위 제한
+        spawnCoolTime = Mathf.Clamp(spawnCoolTime, 1f, 5f);
+
+        //! 쿨타임 고정
+        // spawnCoolTime = 0f;
+
+        // 쿨타임 갱신
+        spawnCoolCount = spawnCoolTime;
+
         // print(enemy.enemyName + " : 스폰");
     }
 
-    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null, bool isGhost = false)
+    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)
     {
         //스폰 스위치 꺼졌으면 스폰 취소
         if (!spawnSwitch)
@@ -293,19 +307,6 @@ public class EnemySpawn : MonoBehaviour
         // 포탈에서 몬스터 올라오는 속도
         float portalUpSpeed = 1f;
 
-        // 유령으로 소환이면
-        if (isGhost)
-        {
-            // 해당 유령은 고스트로 지정 예약
-            enemyManager.changeGhost = true;
-
-            // 포탈 스프라이트 끄기
-            portal.GetComponent<SpriteRenderer>().enabled = false;
-
-            // 더 빨리 올라오기
-            portalUpSpeed = 0.5f;
-        }
-
         //아이콘 찾기
         GameObject iconObj = portal.transform.Find("PortalMask").Find("EnemyIcon").gameObject;
 
@@ -317,12 +318,6 @@ public class EnemySpawn : MonoBehaviour
 
         // 떠오를 스프라이트에 몬스터 아이콘 넣기
         iconSprite.sprite = EnemyDB.Instance.GetIcon(enemy.id);
-
-        // 고스트 여부에 따라 아이콘 스프라이트 색 변경
-        if (isGhost)
-            iconSprite.color = new Color(0, 1, 1, 0.5f);
-        else
-            iconSprite.color = Color.white;
 
         //아이콘 비활성화
         iconObj.SetActive(false);
@@ -393,7 +388,8 @@ public class EnemySpawn : MonoBehaviour
             EnemyManager manager = other.GetComponent<EnemyManager>();
             EnemyAI enemyAI = other.GetComponent<EnemyAI>();
 
-            if (manager == null || enemyAI == null)
+            // 매니저가 없으면 몬스터 본체가 아니므로 리턴
+            if (manager == null)
                 return;
 
             //죽은 몬스터는 미적용

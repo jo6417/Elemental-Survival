@@ -63,7 +63,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a66f3cd010ad0da4e8178832f0675158, type: 3}
   - {fileID: 21300000, guid: aaf16a113a450c74dbf82c8b71e04eae, type: 3}
   - {fileID: 21300000, guid: b0394341af26a2c4b877ac242b33cedd, type: 3}
-  - {fileID: 21300000, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
+  - {fileID: -5712959122012955994, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
+  - {fileID: 5435921867156881161, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
   - {fileID: -4410874474111847179, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
   - {fileID: -2366728947610843007, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
   - {fileID: 2313115952658954009, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
@@ -233,7 +234,8 @@ SpriteAtlas:
   - LifeGem_
   - LifeGem_Icon
   - AppleBomb_Icon
-  - Bubble
+  - Bubble_0
+  - Bubble_1
   - Hellfire_Crack-Sheet_2
   - Hellfire_Crack-Sheet_3
   - Hellfire_Crack-Sheet_0

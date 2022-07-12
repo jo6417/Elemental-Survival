@@ -5340,7 +5340,7 @@ GameObject:
   - component: {fileID: 8494887417607790291}
   - component: {fileID: 8494887417607790289}
   - component: {fileID: 8494887417607790288}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Absorber
   m_TagString: Untagged
   m_Icon: {fileID: 0}

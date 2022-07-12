@@ -6,7 +6,8 @@ public class ParticleTrigger : MonoBehaviour
 {
     ParticleSystem particle;
     List<ParticleSystem.Particle> insideList = new List<ParticleSystem.Particle>(); // 플레이어에 닿은 파티클 목록
-    public int numInside; // 플레이어에 닿은 파티클 개수
+    public int numEnter; // 플레이어 콜라이더에 들어간 파티클 개수
+    public int numInside; // 플레이어 콜라이더 안에 존재하는 파티클 개수
 
     [Header("Attack")]
     public ParticleAttack attack; // 파티클에 닿았을때 실행할 공격 종류 선택

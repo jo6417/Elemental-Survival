@@ -37,22 +37,16 @@ public class CastMagic : MonoBehaviour
     public bool testAllMagic; //! 모든 마법 테스트
     // public bool noMagic; //! 마법 없이 테스트
 
-    [Header("Phone Spin")]
+    [Header("Phone Move")]
     public float spinSpeed = 1f; // 자전하는 속도
-    public float rotationSpeed = 50f; // 공전하는 속도
-    public float spinRange = 5f; //회전 반경
-    public float followSpeed = 5f; //플레이어 따라가는 속도
     float orbitAngle = 0f; // 현재 자전 각도
-    Vector3 slowFollowPos;
-    Vector3 spinOffset;
+    public float hoverSpeed = 5f; //둥둥 떠서 오르락내리락 하는 속도
+    public float hoverRange = 0.5f; // 오르락내리락 하는 범위
 
     private void OnEnable()
     {
         // 스케일 초기화
         transform.localScale = Vector3.one * 0.05f;
-
-        transform.position = slowFollowPos + Vector3.up * spinRange;
-        spinOffset = transform.position - slowFollowPos;
     }
 
     private void Update()
@@ -60,30 +54,17 @@ public class CastMagic : MonoBehaviour
         if (Time.timeScale == 0f)
             return;
 
-        SpinObject();
+        SpinAndHovering();
     }
 
-    void SpinObject()
+    void SpinAndHovering()
     {
-        // 중심점 벡터 slowFollowPos 가 플레이어 천천히 따라가기
-        slowFollowPos = Vector3.Lerp(slowFollowPos, PlayerManager.Instance.transform.position, Time.deltaTime * followSpeed);
-
-        // 중심점 기준으로 마법 오브젝트 위치 보정
-        transform.position = slowFollowPos + spinOffset;
-
-        // 중심점 기준 공전위치로 회전
-        float speed = Time.deltaTime * 50f;
-        transform.RotateAround(slowFollowPos, Vector3.back, speed);
-
-        //z축 위치 보정
-        transform.position = new Vector3(transform.position.x, transform.position.y, -1f);
-
-        // 중심점 벡터 기준으로 오프셋 재설정
-        spinOffset = transform.position - slowFollowPos;
-
         //오브젝트 각도 초기화, 자전 각도 추가
         orbitAngle += spinSpeed;
         transform.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
+
+        // 오르락내리락 하는 호버링 무빙
+        transform.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange, 0);
     }
 
     public void CastCheck()

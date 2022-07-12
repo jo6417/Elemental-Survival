@@ -26,8 +26,8 @@ TagManager:
   - Object
   - PostProcessing
   - UIParticle
-  - 
-  - 
+  - PlayerTrigger
+  - EnemyTrigger
   - 
   - 
   - 

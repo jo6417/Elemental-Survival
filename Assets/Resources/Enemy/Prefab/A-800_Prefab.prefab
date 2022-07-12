@@ -5083,7 +5083,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
-  atkRangeSprite: {fileID: 0}
+  atkRangeBackground: {fileID: 0}
+  atkRangeFill: {fileID: 0}
   enemyManager: {fileID: 2609816229949297132}
   atkTrigger: 0
 --- !u!58 &8480430584315433452
@@ -5136,8 +5137,8 @@ GameObject:
   - component: {fileID: 8165655979838027246}
   - component: {fileID: 3011208997921628261}
   - component: {fileID: 8703031671437433962}
-  - component: {fileID: 8165655979838027219}
   - component: {fileID: 8165655979838027218}
+  - component: {fileID: 8165655979838027219}
   m_Layer: 7
   m_Name: A-800_Prefab
   m_TagString: Untagged
@@ -5269,22 +5270,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!70 &8165655979838027219
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8165655979838027221}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.8, y: 0.8}
-  m_Direction: 1
 --- !u!50 &8165655979838027218
 Rigidbody2D:
   serializedVersion: 4
@@ -5306,6 +5291,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!70 &8165655979838027219
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8165655979838027221}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1.8, y: 0.8}
+  m_Direction: 1
 --- !u!1001 &7526139456532483561
 PrefabInstance:
   m_ObjectHideFlags: 0
