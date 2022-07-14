@@ -117,6 +117,9 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        // 위치 초기화
+        transform.position = Vector3.zero;
+
         rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
         anim = anim == null ? GetComponent<Animator>() : anim;
         sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
@@ -325,46 +328,6 @@ public class PlayerManager : MonoBehaviour
         // print("Dash : " + isDash);
     }
 
-    private void OnCollisionStay2D(Collision2D other)
-    {
-        //무언가 충돌되면 움직이는 방향 수정
-        Move();
-
-        //적에게 콜라이더 충돌
-        if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
-        {
-            StartCoroutine(Hit(other.transform));
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // print("OnTriggerEnter2D : " + other.name);
-
-        // 적에게 트리거 충돌
-        if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
-        {
-            StartCoroutine(Hit(other.transform));
-        }
-    }
-
-    // private void OnTriggerStay2D(Collider2D other)
-    // {
-    //     // print("OnTriggerStay2D : " + other.name);
-
-    //     // 적에게 트리거 충돌
-    //     if (other.gameObject.CompareTag("EnemyAttack") && hitCoolCount <= 0 && !isDash)
-    //     {
-    //         Hit(other.transform);
-    //     }
-    // }
-
-    // private void OnTriggerExit2D(Collider2D other)
-    // {
-    //     print("OnTriggerExit2D : " + other.name);
-
-    // }
-
     public IEnumerator Hit(Transform other)
     {
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
@@ -431,8 +394,8 @@ public class PlayerManager : MonoBehaviour
                 hitDelayCoroutine = HitDelay();
                 StartCoroutine(hitDelayCoroutine);
 
-                //데미지 계산
-                float damage = MagicDB.Instance.MagicPower(magic);
+                // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
+                float damage = magicHolder.setPower == 0 ? MagicDB.Instance.MagicPower(magic) : magicHolder.setPower;
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 

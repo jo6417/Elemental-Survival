@@ -9,7 +9,6 @@ TagManager:
   - Arrow
   - Item
   - Object
-  - EnemyAttack
   layers:
   - Default
   - TransparentFX
@@ -17,17 +16,17 @@ TagManager:
   - 3D
   - Water
   - UI
-  - Player
-  - Enemy
-  - Magic
-  - MagicEffect
-  - Item
+  - PlayerPhysics
+  - EnemyPhysics
+  - PlayerHit
+  - EnemyHit
+  - PlayerAttack
   - EnemyAttack
-  - Object
+  - AllAttack
   - PostProcessing
   - UIParticle
-  - PlayerTrigger
-  - EnemyTrigger
+  - Item
+  - Object
   - 
   - 
   - 

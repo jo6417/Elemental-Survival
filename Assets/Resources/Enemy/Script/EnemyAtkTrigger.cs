@@ -42,14 +42,14 @@ public class EnemyAtkTrigger : MonoBehaviour
         // 고스트일때
         if (enemyManager.IsGhost)
         {
-            // Enemy만 충돌하는 레이어
-            gameObject.layer = LayerMask.NameToLayer("EnemyTrigger");
+            // 플레이어가 공격하는 레이어
+            gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
         }
         // 일반 몹일때
         else
         {
-            // Player만 충돌하는 레이어
-            gameObject.layer = LayerMask.NameToLayer("PlayerTrigger");
+            // 몬스터가 공격하는 레이어
+            gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
         }
     }
 
@@ -59,50 +59,44 @@ public class EnemyAtkTrigger : MonoBehaviour
         if (atkTrigger)
             return;
 
-        // 고스트 아닐때
-        if (!enemyManager.IsGhost)
+        // 플레이어가 충돌하면
+        if (other.CompareTag("Player"))
         {
-            // 플레이어가 충돌하면
-            if (other.CompareTag("Player"))
-            {
-                atkTrigger = true;
+            atkTrigger = true;
 
-                // 자폭형 몬스터일때
-                if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
-                {
-                    // 자폭하기
-                    StartCoroutine(enemyManager.Dead());
-                }
+            // 자폭형 몬스터일때
+            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+            {
+                // 자폭하기
+                StartCoroutine(enemyManager.Dead());
             }
         }
-        else
-        {
-            // 몬스터가 충돌하면
-            if (other.CompareTag("Enemy"))
-            {
-                // 몬스터가 충돌했을때 히트박스 있을때
-                if (other.TryGetComponent(out EnemyHitBox hitBox))
-                {
-                    // 충돌 대상이 본인이면 리턴
-                    if (hitBox.enemyManager == enemyManager)
-                        return;
 
-                    // 충돌 몬스터도 고스트일때 리턴
-                    if (hitBox.enemyManager.IsGhost)
-                        return;
-                }
-                // 콜라이더가 히트박스를 갖고 있지 않을때 리턴
-                else
+        // 몬스터가 충돌하면
+        if (other.CompareTag("Enemy"))
+        {
+            // 몬스터가 충돌했을때 히트박스 있을때
+            if (other.TryGetComponent(out EnemyHitBox hitBox))
+            {
+                // 충돌 대상이 본인이면 리턴
+                if (hitBox.enemyManager == enemyManager)
                     return;
 
-                atkTrigger = true;
+                // 충돌 몬스터도 고스트일때 리턴
+                if (hitBox.enemyManager.IsGhost)
+                    return;
+            }
+            // 콜라이더가 히트박스를 갖고 있지 않을때 리턴
+            else
+                return;
 
-                // 자폭형 몬스터일때
-                if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
-                {
-                    // 자폭하기
-                    StartCoroutine(enemyManager.Dead());
-                }
+            atkTrigger = true;
+
+            // 자폭형 몬스터일때
+            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+            {
+                // 자폭하기
+                StartCoroutine(enemyManager.Dead());
             }
         }
     }

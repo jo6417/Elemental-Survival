@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8632908752227872800}
   - component: {fileID: 3459317121763309752}
   - component: {fileID: 1934147848397244494}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: StickyBubble_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -50,7 +50,8 @@ MonoBehaviour:
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 2
+  targetType: 1
+  setPower: 0
   knockbackForce: 0
   isStop: 0
   slowTime: 0
@@ -73,12 +74,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 8632908752227872801}
   particle: {fileID: 3459317121763309752}
-  playerLayer:
+  playerHitLayer:
     serializedVersion: 2
-    m_Bits: 64
-  enemyLayer:
+    m_Bits: 256
+  enemyHitLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 512
 --- !u!198 &3459317121763309752
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -3831,12 +3832,12 @@ ParticleSystem:
     radiusScale: 0.5
     collidesWith:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 512
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
     collisionMessages: 1
-    collidesWithDynamic: 0
+    collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
     enabled: 0

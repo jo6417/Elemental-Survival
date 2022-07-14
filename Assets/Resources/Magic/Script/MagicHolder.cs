@@ -24,6 +24,8 @@ public class MagicHolder : MonoBehaviour
         set { multipleSpeed = value; }
     }
 
+    [Header("Status")]
+    public float setPower = 0f;
     public float knockbackForce = 0; //넉백 파워
     public bool isStop; //정지 여부
     public float slowTime = 0; //슬로우 지속시간
@@ -69,6 +71,7 @@ public class MagicHolder : MonoBehaviour
         //변수 초기화
         addDuration = 0;
         multipleSpeed = 1;
+        setPower = 0f;
     }
 
     public Target GetTarget()
@@ -82,18 +85,15 @@ public class MagicHolder : MonoBehaviour
         switch (changeTarget)
         {
             case Target.Enemy:
-                transform.tag = "Magic";
-                gameObject.layer = LayerMask.NameToLayer("Magic");
+                gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
                 break;
 
             case Target.Player:
-                transform.tag = "EnemyAttack";
                 gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
                 break;
 
             case Target.Both:
-                transform.tag = "Magic";
-                gameObject.layer = LayerMask.NameToLayer("Magic");
+                gameObject.layer = LayerMask.NameToLayer("AllAttack");
                 break;
         }
 

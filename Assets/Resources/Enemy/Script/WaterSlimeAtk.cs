@@ -123,17 +123,20 @@ public class WaterSlimeAtk : MonoBehaviour
             transform.DOScale(Vector3.one, 0.5f);
         });
 
-        // 플레이어 방향 계산
-        targetDir = enemyManager.targetObj.transform.position - transform.position;
-
-        // 공격 오브젝트 각도 계산
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        // // 플레이어 방향 계산
+        // targetDir = enemyManager.targetObj.transform.position - transform.position;
+        // // 공격 오브젝트 각도 계산
+        // float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
         // 공격 오브젝트 생성
-        GameObject bubble = LeanPool.Spawn(bubblePrefab, bubblePrefab.transform.position, Quaternion.AngleAxis(angle + activeAngleOffset, Vector3.forward), SystemManager.Instance.magicPool);
+        GameObject bubbleAtk = LeanPool.Spawn(bubblePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
         // 마법 정보 찾기
-        MagicHolder bubbleMagic = bubble.GetComponent<MagicHolder>();
+        MagicHolder bubbleMagic = bubbleAtk.GetComponent<MagicHolder>();
+
+        //타겟 정보 넣기
+        bubbleMagic.targetObj = enemyManager.targetObj;
+        bubbleMagic.targetPos = enemyManager.targetObj.transform.position;
 
         // 타겟 설정
         if (enemyManager.IsGhost)

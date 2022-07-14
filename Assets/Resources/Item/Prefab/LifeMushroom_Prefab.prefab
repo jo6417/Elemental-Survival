@@ -13,13 +13,13 @@ GameObject:
   - component: {fileID: 4913014920624679320}
   - component: {fileID: 2702731958423311536}
   - component: {fileID: 3475788794744987400}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: LifeMushroom_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7838298846894818562
 Transform:
   m_ObjectHideFlags: 0

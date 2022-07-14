@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2539606679091371}
   - component: {fileID: 8348513666446652799}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: ChestCover
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -97,13 +97,13 @@ GameObject:
   - component: {fileID: 4512880338924512487}
   - component: {fileID: 8521050675796039438}
   - component: {fileID: 5346713223538836836}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: Chest
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1613252783085365155
 Transform:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2, y: 2}
+    oldSize: {x: 8, y: 8}
     newSize: {x: 1.6875, y: 1.3125}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

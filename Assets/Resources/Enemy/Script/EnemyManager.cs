@@ -11,6 +11,14 @@ public class EnemyManager : MonoBehaviour
 {
     [Header("Initial")]
     public bool initialStart = false;
+    private bool initialFinish = false;
+    public bool InitialFinish
+    {
+        get
+        {
+            return initialFinish;
+        }
+    }
     public EnemyHitCallback enemyHitCallback; //해당 몬스터 죽을때 실행될 함수들
     public delegate void EnemyHitCallback();
 
@@ -166,6 +174,8 @@ public class EnemyManager : MonoBehaviour
         rigid.velocity = Vector3.zero;
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
+        // 초기화 완료 취소
+        initialFinish = false;
         // 초기화 스위치 켜질때까지 대기
         yield return new WaitUntil(() => initialStart);
 
@@ -277,6 +287,8 @@ public class EnemyManager : MonoBehaviour
 
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;
+        // 초기화 완료
+        initialFinish = true;
     }
 
     public void ChangeTarget(GameObject newTarget)
@@ -342,8 +354,8 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
-        // 초기화 중이면 리턴
-        if (initialStart)
+        // 초기화 안됬으면 리턴
+        if (!initialFinish)
         {
             // 이동 멈추기
             rigid.velocity = Vector2.zero;
@@ -367,8 +379,8 @@ public class EnemyManager : MonoBehaviour
 
     public bool ManageState()
     {
-        // 초기화 중이면 리턴
-        if (initialStart)
+        // 초기화 안됬으면 리턴
+        if (!initialFinish)
             return false;
 
         // 몬스터 정보 없으면 리턴
@@ -376,7 +388,7 @@ public class EnemyManager : MonoBehaviour
             return false;
 
         // 비활성화 되었으면 리턴
-        if (!gameObject)
+        if (gameObject == null || !gameObject)
             return false;
 
         //죽음 애니메이션 중일때
@@ -596,8 +608,8 @@ public class EnemyManager : MonoBehaviour
                     Damage(atkEnemy.power, false);
 
                 // 아군 피해 옵션 켜져있을때
-                if (enemyAtk.friendlyFire)
-                    Damage(atkEnemy.power, false);
+                // if (enemyAtk.friendlyFire)
+                //     Damage(atkEnemy.power, false);
             }
 
             // 넉백 디버프 있을때
@@ -627,7 +639,10 @@ public class EnemyManager : MonoBehaviour
 
             // 마법 정보 없으면 리턴
             if (magicHolder == null || magic == null)
+            {
+                print($"magic is null : {gameObject}");
                 yield break;
+            }
 
             // 목표가 미설정 되었을때
             if (magicHolder.targetType == MagicHolder.Target.None)
@@ -636,13 +651,13 @@ public class EnemyManager : MonoBehaviour
                 yield break;
             }
 
-            // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
-            if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
-                yield break;
+            // // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
+            // if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
+            //     yield break;
 
-            // 고스트일때, 목표가 플레이어가 아니면 리턴
-            if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
-                yield break;
+            // // 고스트일때, 목표가 플레이어가 아니면 리턴
+            // if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
+            //     yield break;
 
             // print(transform.name + " : " + magic.magicName);
 
@@ -654,8 +669,8 @@ public class EnemyManager : MonoBehaviour
                 //크리티컬 데미지 계산
                 float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
-                //데미지 계산
-                float damage = MagicDB.Instance.MagicPower(magic);
+                //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
+                float damage = magicHolder.setPower == 0 ? MagicDB.Instance.MagicPower(magic) : magicHolder.setPower;
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
@@ -1027,12 +1042,15 @@ public class EnemyManager : MonoBehaviour
             // 일단 비활성화
             effect.SetActive(false);
 
-            // 폭발에 몬스터 정보 넣기
-            EnemyAttack effectAttack = effect.GetComponent<EnemyAttack>();
-            effectAttack.enemyManager = this;
+            // 폭발 데미지 넣기
+            MagicHolder magicHolder = effect.GetComponent<MagicHolder>();
+            magicHolder.setPower = enemy.power;
 
-            // 아군 공격 옵션 켜기
-            effectAttack.friendlyFire = true;
+            // 고스트 여부에 따라 충돌 레이어 바꾸기
+            if (isGhost)
+                effect.layer = LayerMask.NameToLayer("PlayerAttack");
+            else
+                effect.layer = LayerMask.NameToLayer("EnemyAttack");
 
             // 폭발 활성화
             effect.SetActive(true);

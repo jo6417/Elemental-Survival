@@ -14,11 +14,12 @@ public class EnemyAttack : MonoBehaviour
     public EnemyManager enemyManager;
     public EnemyInfo enemy;
     public string enemyName;
+    public Collider2D atkColl; //공격 콜라이더
     public GameObject dashEffect;
     public GameObject activeObj; //공격시 활성화할 오브젝트
 
     [Header("Attack State")]
-    public bool friendlyFire = false; // 충돌시 아군 피해 여부
+    // public bool friendlyFire = false; // 충돌시 아군 피해 여부
     public bool flatDebuff = false; //납작해지는 디버프
     public bool knockBackDebuff = false; //넉백 디버프
 
@@ -34,6 +35,10 @@ public class EnemyAttack : MonoBehaviour
 
     IEnumerator Initial()
     {
+        //공격 콜라이더 끄기
+        if (atkColl)
+            atkColl.enabled = false;
+
         yield return new WaitUntil(() => enemyManager != null && enemyManager.enemy != null);
 
         enemy = enemyManager.enemy;
@@ -69,6 +74,10 @@ public class EnemyAttack : MonoBehaviour
 
     private void Update()
     {
+        // 몬스터 매니저 비활성화 되었으면 리턴
+        if (!enemyManager)
+            return;
+
         // 상태 이상 있으면 리턴
         if (!enemyManager.ManageState())
             return;
@@ -104,9 +113,9 @@ public class EnemyAttack : MonoBehaviour
     {
         //움직일 방향에따라 회전
         if (targetDir.x > 0)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, 0, 0);
         else
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, 180, 0);
 
         // 이동 멈추기
         enemyManager.rigid.velocity = Vector3.zero;
@@ -137,24 +146,30 @@ public class EnemyAttack : MonoBehaviour
         // 밀리지 않게 kinematic으로 전환
         enemyManager.rigid.bodyType = RigidbodyType2D.Kinematic;
 
-        //플레이어 방향 계산
+        //플레이어 방향 다시 계산
         targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         if (targetDir.x > 0)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, 0, 0);
         else
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, 180, 0);
 
         // 돌진 시작 인디케이터 켜기
         dashEffect.SetActive(true);
 
         // 뒤로 살짝 이동
-        transform.DOMove(transform.position - targetDir.normalized, 1f);
+        enemyManager.transform.DOMove(transform.position - targetDir.normalized, 1f);
         yield return new WaitForSeconds(1f);
 
+        //공격 콜라이더 켜기
+        atkColl.enabled = true;
+
         // 플레이어 방향으로 돌진
-        transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
+        enemyManager.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
         yield return new WaitForSeconds(0.5f);
+
+        //공격 콜라이더 끄기
+        atkColl.enabled = false;
 
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(enemyManager.enemy.cooltime);

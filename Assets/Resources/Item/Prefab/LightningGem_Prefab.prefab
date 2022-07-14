@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3694098022795033563}
   - component: {fileID: 6945363797954994117}
   - component: {fileID: -4820399491703858232}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: LightningGem_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3694098022795033563}
   - component: {fileID: 7586015873738984936}
   - component: {fileID: 9197014291584377309}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: LifeGem_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}

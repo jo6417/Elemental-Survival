@@ -234,9 +234,8 @@ public class CastMagic : MonoBehaviour
             // 마법 오브젝트 생성
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
-            // 태그 및 레이어 마법으로 바꾸기
-            magicObj.tag = "Magic";
-            magicObj.layer = LayerMask.NameToLayer("Magic");
+            // 레이어 바꾸기
+            magicObj.layer = LayerMask.NameToLayer("PlayerAttack");
 
             //매직 홀더 찾기
             MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
@@ -324,10 +323,10 @@ public class CastMagic : MonoBehaviour
         List<GameObject> enemyObj = new List<GameObject>();
 
         //캐릭터 주변의 적들
-        List<Collider2D> enemyColList = new List<Collider2D>();
-        enemyColList.Clear();
+        List<Collider2D> enemyCollList = new List<Collider2D>();
+        enemyCollList.Clear();
         float range = MagicDB.Instance.MagicRange(magic);
-        enemyColList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("Enemy")).ToList();
+        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("EnemyHit")).ToList();
 
         // 투사체 개수 (마법 및 플레이어 투사체 버프 합산)
         int atkNum = MagicDB.Instance.MagicProjectile(magic);
@@ -341,13 +340,13 @@ public class CastMagic : MonoBehaviour
             // + Random.insideUnitCircle * range;
 
             // 플레이어 주변 범위내 랜덤한 적의 위치
-            if (enemyColList.Count > 0)
+            if (enemyCollList.Count > 0)
             {
-                Collider2D col = enemyColList[Random.Range(0, enemyColList.Count)];
+                Collider2D col = enemyCollList[Random.Range(0, enemyCollList.Count)];
                 Obj = col.gameObject;
 
                 //임시 리스트에서 지우기
-                enemyColList.Remove(col);
+                enemyCollList.Remove(col);
 
                 // print(col.transform.name + col.transform.position);
             }

@@ -13,13 +13,13 @@ GameObject:
   - component: {fileID: 5801114704758638198}
   - component: {fileID: 2061587709535125852}
   - component: {fileID: 135970888139532849}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: EmptyScroll_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &232237800481355647
 Transform:
   m_ObjectHideFlags: 0
@@ -46,11 +46,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ccb3a946fc21b4b9bf703f552b66a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGot: 0
+  isCollision: 0
   amount: 1
   isBundle: 0
   gemTypeIndex: -1
+  moveSpeed: 1
+  autoDespawnTime: 0
   itemName: 
+  sprite: {fileID: 0}
+  despawnEffect: {fileID: 0}
 --- !u!212 &5801114704758638198
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3694098022795033563}
   - component: {fileID: -3100849243058677573}
   - component: {fileID: -5931551257775946426}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: FireGem_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}

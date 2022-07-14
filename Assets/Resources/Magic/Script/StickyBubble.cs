@@ -11,8 +11,8 @@ public class StickyBubble : MonoBehaviour
     public ParticleSystem particle;
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
 
-    public LayerMask playerLayer;
-    public LayerMask enemyLayer;
+    public LayerMask playerHitLayer;
+    public LayerMask enemyHitLayer;
 
     private void Awake()
     {
@@ -35,12 +35,14 @@ public class StickyBubble : MonoBehaviour
 
         if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
         {
-            particleColl.collidesWith = enemyLayer;
+            gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
+            particleColl.collidesWith = enemyHitLayer;
         }
 
         if (magicHolder.GetTarget() == MagicHolder.Target.Player)
         {
-            particleColl.collidesWith = playerLayer;
+            gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
+            particleColl.collidesWith = playerHitLayer;
         }
 
         // 타겟 방향을 쳐다보기
@@ -60,20 +62,19 @@ public class StickyBubble : MonoBehaviour
         {
             //todo 충돌 지점에 거품 터진 스프라이트 남기기
 
-            // 플레이어에 데미지 주기
+            // 플레이어에 충돌하면 데미지 주기
             if (other.CompareTag("Player") && PlayerManager.Instance.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 StartCoroutine(PlayerManager.Instance.Hit(transform));
             }
 
-            // 히트박스를 찾았으면 데미지 주기
+            // 몬스터에 충돌하면 데미지 주기
             if (other.CompareTag("Enemy"))
             {
-                print(other.tag);
+                // print($"{other.name} : {other.tag} : {other.layer}");
+
                 if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
                 {
-                    print(other.tag);
-
                     StartCoroutine(enemyHitBox.enemyManager.Hit(gameObject));
                 }
             }

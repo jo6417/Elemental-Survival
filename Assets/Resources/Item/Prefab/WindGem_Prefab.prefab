@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3694098022795033563}
   - component: {fileID: 4253359242177900682}
   - component: {fileID: -601887707615329840}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: WindGem_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}

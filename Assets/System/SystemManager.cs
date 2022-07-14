@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
 using System.IO;
 using Newtonsoft.Json;
+using System.Text;
 
 public class SystemManager : MonoBehaviour
 {
@@ -46,6 +47,9 @@ public class SystemManager : MonoBehaviour
     public float time_current; // 현재 스테이지 플레이 타임
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
+
+    // [Header("Tag&Layer")]
+    // public Dictionary<string, int> tags = new Dictionary<string, int>();
 
     [Header("Pool")]
     public Transform enemyPool;
@@ -103,10 +107,9 @@ public class SystemManager : MonoBehaviour
     {
         yield return null;
 
-        Time.timeScale = 0f;
-
         //TODO 로딩 UI 띄우기
         print("로딩 시작");
+        Time.timeScale = 0f;
 
         // 로컬 세이브 불러오기
         yield return StartCoroutine(SaveManager.Instance.LoadData());
@@ -123,7 +126,6 @@ public class SystemManager : MonoBehaviour
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
-
         Time.timeScale = 1f;
     }
 

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2081905105}
   - component: {fileID: 2081905106}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 3694098022795033563}
   - component: {fileID: -3641125648688498088}
   - component: {fileID: 2957784182888461030}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: EarthGem_Prefab
   m_TagString: Item
   m_Icon: {fileID: 0}

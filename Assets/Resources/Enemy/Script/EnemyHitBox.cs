@@ -12,7 +12,7 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.particleHitCount > 0)
             return;
 
-        // 마법 파티클 충돌했을때
+        // 마법 파티클이 충돌했을때
         if (other.transform.CompareTag("Magic") && !enemyManager.isDead)
         {
             StartCoroutine(enemyManager.Hit(other.gameObject));
@@ -28,7 +28,7 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.hitCount > 0)
             return;
 
-        // 마법 충돌 했을때
+        // 마법이 충돌했을때
         if (other.transform.CompareTag("Magic"))
         {
             // 마법 정보 찾기
@@ -39,7 +39,7 @@ public class EnemyHitBox : MonoBehaviour
         }
 
         //적에게 맞았을때
-        if (other.transform.CompareTag("EnemyAttack"))
+        if (other.transform.CompareTag("Enemy"))
         {
             // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
             if (other.gameObject.TryGetComponent(out EnemyAttack enemyAtk)
