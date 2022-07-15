@@ -187,6 +187,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 7247921042507206276}
+  moveResetTime: 3
+  moveResetCount: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}

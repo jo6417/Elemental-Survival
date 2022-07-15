@@ -12,6 +12,11 @@ public class EnemyAI : MonoBehaviour
     [Header("Refer")]
     public EnemyManager enemyManager;
 
+    [Header("Walk")]
+    public float moveResetTime = 3f;
+    public float moveResetCount;
+    Vector3 moveToPos;
+
     [Header("Jump")]
     public float jumpCoolCount;
     [SerializeField]
@@ -78,11 +83,12 @@ public class EnemyAI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
-        // 타겟 null 체크
-        if (enemyManager.TargetObj != null)
-            // 타겟 방향 계산
-            targetDir = enemyManager.TargetObj.transform.position - transform.position;
-        else
+        // // 타겟 null 체크
+        // if (enemyManager.TargetObj != null)
+        //     // 타겟 방향 계산
+        //     targetDir = enemyManager.TargetObj.transform.position - transform.position;
+
+        if (enemyManager.TargetObj == null)
             // 타겟이 null 이면 멈추기
             enemyManager.rigid.velocity = Vector2.zero;
 
@@ -122,8 +128,19 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
+        // 목표 위치 갱신 시간 됬을때
+        if (moveResetCount < Time.time)
+        {
+            moveResetCount = Time.time + moveResetTime;
+
+            // 목표 위치에 랜덤 위치 더해서 부정확하게 만들기
+            moveToPos = (Vector2)enemyManager.targetObj.transform.position + Random.insideUnitCircle;
+
+            // print(moveToPos);
+        }
+
         //움직일 방향
-        // Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
+        targetDir = moveToPos - transform.position;
 
         //해당 방향으로 가속
         enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;

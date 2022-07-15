@@ -62,7 +62,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 95cf09a04a00c6e47927d2187ef92bda, type: 3}
   - {fileID: 21300000, guid: a66f3cd010ad0da4e8178832f0675158, type: 3}
   - {fileID: 21300000, guid: aaf16a113a450c74dbf82c8b71e04eae, type: 3}
-  - {fileID: 21300000, guid: b0394341af26a2c4b877ac242b33cedd, type: 3}
   - {fileID: -5712959122012955994, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
   - {fileID: 5435921867156881161, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
   - {fileID: -4410874474111847179, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
@@ -125,6 +124,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2b089229fff5a3940859b4f427daf7dd, type: 3}
   - {fileID: -2782545112699233976, guid: 71652839d0c5c8d48adc11c8864e4674, type: 3}
   - {fileID: -3007600717714129487, guid: 71652839d0c5c8d48adc11c8864e4674, type: 3}
+  - {fileID: 255445607470844576, guid: 71652839d0c5c8d48adc11c8864e4674, type: 3}
+  - {fileID: 6297776245848751711, guid: 71652839d0c5c8d48adc11c8864e4674, type: 3}
   - {fileID: 7045322567115125678, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
   - {fileID: 3078137181838870744, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
   - {fileID: -8471716954120399937, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
@@ -233,7 +234,6 @@ SpriteAtlas:
   - WindBlast_Icon
   - LifeGem_
   - LifeGem_Icon
-  - AppleBomb_Icon
   - Bubble_0
   - Bubble_1
   - Hellfire_Crack-Sheet_2
@@ -296,6 +296,8 @@ SpriteAtlas:
   - Hellfire_Mask
   - DirtyPuddle_0
   - DirtyPuddle_1
+  - DirtyPuddle_2
+  - DirtyPuddle_3
   - Heist_Sheet_2
   - Heist_Sheet_1
   - Heist_Sheet_0

@@ -169,7 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialStart: 0
+  initialStart: 1
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -224,6 +224,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetDir: {x: 0, y: 0, z: 0}
   enemyManager: {fileID: 4959071736242128182}
+  moveResetTime: 3
+  moveResetCount: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}

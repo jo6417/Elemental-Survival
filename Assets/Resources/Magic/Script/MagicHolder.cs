@@ -25,9 +25,10 @@ public class MagicHolder : MonoBehaviour
     }
 
     [Header("Status")]
-    public float setPower = 0f;
+    public float setPower = 0f; // 고정된 데미지
     public float knockbackForce = 0; //넉백 파워
     public bool isStop; //정지 여부
+    public float poisonTime = 0; // 독 도트 데미지 지속시간
     public float slowTime = 0; //슬로우 지속시간
     public float burnTime = 0; //화상 지속시간
     public float wetTime = 0; //젖음 지속시간

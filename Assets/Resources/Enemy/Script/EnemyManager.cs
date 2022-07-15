@@ -296,6 +296,9 @@ public class EnemyManager : MonoBehaviour
         // 타겟 리셋 타임 재설정
         targetResetCount = targetResetTime;
 
+        // 목표 위치 리셋 타임 재설정
+        enemyAI.moveResetCount = 0f;
+
         // 타겟 변경하기
         targetObj = newTarget;
 
@@ -373,7 +376,7 @@ public class EnemyManager : MonoBehaviour
         if (IsGhost && (targetResetCount <= 0 || targetObj == null))
             ChangeTarget(null);
         // 타겟 리셋 카운트 차감
-        else
+        else if (targetResetCount > 0)
             targetResetCount -= Time.deltaTime;
     }
 

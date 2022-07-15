@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class ParticleTrigger : MonoBehaviour
 {
+    [Header("Refer")]
+    public MagicHolder magicHolder;
+    public MagicInfo magic;
     ParticleSystem particle;
-    List<ParticleSystem.Particle> insideList = new List<ParticleSystem.Particle>(); // 플레이어에 닿은 파티클 목록
+    List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
+    List<ParticleSystem.Particle> insideList = new List<ParticleSystem.Particle>(); // 콜라이더에 닿은 파티클 목록
     public int numEnter; // 플레이어 콜라이더에 들어간 파티클 개수
     public int numInside; // 플레이어 콜라이더 안에 존재하는 파티클 개수
 
     [Header("Attack")]
     public ParticleAttack attack; // 파티클에 닿았을때 실행할 공격 종류 선택
-    public enum ParticleAttack { Damage, Poison };
+    public enum ParticleAttack { Damage, Poison, Slow, Knockback, Burn };
     public EnemyManager enemyManager;
 
     private void Awake()
@@ -19,7 +23,41 @@ public class ParticleTrigger : MonoBehaviour
         particle = GetComponent<ParticleSystem>();
 
         // 트리거 오브젝트로 플레이어 그림자 넣기
-        particle.trigger.SetCollider(0, PlayerManager.Instance.shadow);
+        // particle.trigger.SetCollider(0, PlayerManager.Instance.shadow);
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(Initial());
+    }
+
+    IEnumerator Initial()
+    {
+        yield return new WaitUntil(() => magicHolder.magic != null);
+        magic = magicHolder.magic;
+
+        // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
+        ParticleSystem.CollisionModule particleColl = particle.collision;
+
+        if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
+        {
+            gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
+            particleColl.collidesWith = SystemManager.Instance.layerList.enemyHitLayer;
+        }
+
+        if (magicHolder.GetTarget() == MagicHolder.Target.Player)
+        {
+            gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
+            particleColl.collidesWith = SystemManager.Instance.layerList.playerHitLayer;
+        }
+
+        // 타겟 방향을 쳐다보기
+        Vector2 targetDir = magicHolder.targetPos - transform.position;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(Vector3.forward * angle);
+
+        // 초기화 완료 되면 파티클 시작
+        particle.Play();
     }
 
     private void Update()
@@ -31,10 +69,43 @@ public class ParticleTrigger : MonoBehaviour
         //     DamageTrigger();
     }
 
+    private void OnParticleCollision(GameObject other)
+    {
+        ParticlePhysicsExtensions.GetCollisionEvents(particle, other, collisionEvents);
+
+        for (int i = 0; i < collisionEvents.Count; i++)
+        {
+            // 플레이어에 충돌하면 데미지 주기
+            if (other.CompareTag("Player") && PlayerManager.Instance.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
+            {
+                print($"Player : {other.name} : {other.tag} : {other.layer}");
+                StartCoroutine(PlayerManager.Instance.Hit(magicHolder.transform));
+            }
+
+            // 몬스터에 충돌하면 데미지 주기
+            if (other.CompareTag("Enemy"))
+            {
+                print($"Enemy : {other.name} : {other.tag} : {other.layer}");
+
+                if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
+                {
+                    StartCoroutine(enemyHitBox.enemyManager.Hit(magicHolder.gameObject));
+                }
+            }
+        }
+    }
+
     private void OnParticleTrigger()
     {
         // 플레이어 콜라이더에 inside 한 파티클 총 개수 산출
         numInside = particle.GetTriggerParticles(ParticleSystemTriggerEventType.Inside, insideList);
+
+        for (int i = 0; i < numInside; i++)
+        {
+            ParticleSystem.Particle p = insideList[i];
+
+            // print($"inside : {p.position}");
+        }
     }
 
     void PoisonTrigger()

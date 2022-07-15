@@ -10,6 +10,23 @@ using UnityEngine.Experimental.Rendering.Universal;
 using System.IO;
 using Newtonsoft.Json;
 using System.Text;
+using Pixeye.Unity;
+using System;
+
+[Serializable]
+public class LayerList
+{
+    public LayerMask playerPhysicsLayer;
+    public LayerMask enemyPhysicsLayer;
+    public LayerMask playerHitLayer;
+    public LayerMask enemyHitLayer;
+    public LayerMask playerAttackLayer;
+    public LayerMask enemyAttackLayer;
+    public LayerMask allAttackLayer;
+    public LayerMask itemLayer;
+    public LayerMask objectLayer;
+}
+
 
 public class SystemManager : MonoBehaviour
 {
@@ -48,8 +65,8 @@ public class SystemManager : MonoBehaviour
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
 
-    // [Header("Tag&Layer")]
-    // public Dictionary<string, int> tags = new Dictionary<string, int>();
+    [Header("Tag&Layer")]
+    public LayerList layerList;
 
     [Header("Pool")]
     public Transform enemyPool;
@@ -138,7 +155,7 @@ public class SystemManager : MonoBehaviour
     void SpawnPortalGate()
     {
         //포탈이 생성될 위치
-        Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * portalRange;
+        Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + UnityEngine.Random.insideUnitCircle.normalized * portalRange;
 
         //포탈 게이트 생성
         GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity, objectPool);

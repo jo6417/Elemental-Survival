@@ -226,6 +226,8 @@ public class PlayerManager : MonoBehaviour
         //히트 카운트 감소
         if (hitCoolCount > 0)
             hitCoolCount -= Time.deltaTime;
+
+        Move();
     }
 
     public void Move()
@@ -399,7 +401,13 @@ public class PlayerManager : MonoBehaviour
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-                Damage(damage);
+                if (magicHolder.poisonTime == 0)
+                    //데미지 입기
+                    Damage(damage);
+
+                // 독 피해 시간 있으면 도트 피해
+                if (magicHolder.poisonTime > 0)
+                    PoisonDotHit(damage, magicHolder.poisonTime);
             }
         }
     }
@@ -432,15 +440,15 @@ public class PlayerManager : MonoBehaviour
         //독 데미지 지속시간 넣기
         poisonCoolCount = duration;
 
-        // 포이즌 머터리얼로 변환
-        sprite.material = SystemManager.Instance.outLineMat;
-
-        // 보라색으로 스프라이트 색 변환
-        sprite.color = SystemManager.Instance.poisonColor;
-
         // 독 데미지 지속시간 남았을때 진행
         while (poisonCoolCount > 0)
         {
+            // 포이즌 머터리얼로 변환
+            sprite.material = SystemManager.Instance.outLineMat;
+
+            // 보라색으로 스프라이트 색 변환
+            sprite.color = SystemManager.Instance.poisonColor;
+
             // 독 데미지 입히기
             Damage(tickDamage);
 

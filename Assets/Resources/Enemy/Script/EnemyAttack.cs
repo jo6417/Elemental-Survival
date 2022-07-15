@@ -22,6 +22,7 @@ public class EnemyAttack : MonoBehaviour
     // public bool friendlyFire = false; // 충돌시 아군 피해 여부
     public bool flatDebuff = false; //납작해지는 디버프
     public bool knockBackDebuff = false; //넉백 디버프
+    public bool poisonDebuff = false; // 독 디버프
 
     private void Awake()
     {
@@ -66,8 +67,6 @@ public class EnemyAttack : MonoBehaviour
         // 이미 공격중이면 리턴
         if (enemyManager.nowAction == EnemyManager.Action.Attack)
         {
-            //속도 멈추기
-            enemyManager.rigid.velocity = Vector3.zero;
             return;
         }
     }
@@ -90,7 +89,7 @@ public class EnemyAttack : MonoBehaviour
         if (!enemyManager.targetObj || !enemyManager.targetObj.activeSelf)
             return;
 
-        //플레이어 방향 계산
+        // 타겟 방향 계산
         targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
@@ -102,12 +101,6 @@ public class EnemyAttack : MonoBehaviour
             StartCoroutine(ChooseAttack());
         }
     }
-
-    // private void OnDisable()
-    // {
-    //     //공격 역할을 다 하고 꺼졌을때 초기화
-    //     enemyManager.isGhost = false;
-    // }
 
     IEnumerator ChooseAttack()
     {
@@ -157,26 +150,35 @@ public class EnemyAttack : MonoBehaviour
         // 돌진 시작 인디케이터 켜기
         dashEffect.SetActive(true);
 
-        // 뒤로 살짝 이동
-        enemyManager.transform.DOMove(transform.position - targetDir.normalized, 1f);
+        // 타겟 방향 반대로 살짝 이동
+        enemyManager.rigid.velocity = -targetDir.normalized * 3f;
+        // enemyManager.transform.DOMove(transform.position - targetDir.normalized, 1f);
         yield return new WaitForSeconds(1f);
+
+        // rigid 타입 전환
+        enemyManager.rigid.bodyType = RigidbodyType2D.Dynamic;
 
         //공격 콜라이더 켜기
         atkColl.enabled = true;
 
-        // 플레이어 방향으로 돌진
-        enemyManager.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
+        // 타겟 방향으로 돌진
+        enemyManager.rigid.velocity = targetDir.normalized * 20f;
+        // enemyManager.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
         yield return new WaitForSeconds(0.5f);
+
+        // 속도 멈추기
+        enemyManager.rigid.velocity = Vector3.zero;
 
         //공격 콜라이더 끄기
         atkColl.enabled = false;
+
+        // 타겟 위치 추적 시간 초기화
+        enemyManager.targetResetCount = 0f;
 
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
-        // rigid 타입 전환
-        enemyManager.rigid.bodyType = RigidbodyType2D.Dynamic;
 
         //공격 준비 해제
         attackReady = false;

@@ -11,9 +11,6 @@ public class StickyBubble : MonoBehaviour
     public ParticleSystem particle;
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
 
-    public LayerMask playerHitLayer;
-    public LayerMask enemyHitLayer;
-
     private void Awake()
     {
         magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
@@ -36,13 +33,13 @@ public class StickyBubble : MonoBehaviour
         if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
         {
             gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
-            particleColl.collidesWith = enemyHitLayer;
+            particleColl.collidesWith = SystemManager.Instance.layerList.enemyHitLayer;
         }
 
         if (magicHolder.GetTarget() == MagicHolder.Target.Player)
         {
             gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
-            particleColl.collidesWith = playerHitLayer;
+            particleColl.collidesWith = SystemManager.Instance.layerList.playerHitLayer;
         }
 
         // 타겟 방향을 쳐다보기
