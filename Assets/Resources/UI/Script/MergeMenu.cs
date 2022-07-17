@@ -418,7 +418,7 @@ public class MergeMenu : MonoBehaviour
                 .SetUpdate(true);
 
             //자리에 맞게 사이즈 바꾸기
-            float scale = i == 3 ? 1f : 0.5f;
+            float scale = i == 3 ? 1f : 0.7f;
             rect.DOScale(scale, moveTime)
             .SetUpdate(true);
 

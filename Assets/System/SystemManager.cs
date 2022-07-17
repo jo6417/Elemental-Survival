@@ -98,6 +98,7 @@ public class SystemManager : MonoBehaviour
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public GameObject ghostPrefab; // 잔상 효과 프리팹
     public GameObject markPrefab; //! 위치 체크용 마크 프리팹
+    public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
 
     [Header("Material")]
     public Material spriteLitMat; //일반 스프라이트 Lit 머터리얼

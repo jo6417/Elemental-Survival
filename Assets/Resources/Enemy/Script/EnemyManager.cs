@@ -10,6 +10,7 @@ using System.Linq;
 public class EnemyManager : MonoBehaviour
 {
     [Header("Initial")]
+    public EnemyInfo enemy;
     public bool initialStart = false;
     private bool initialFinish = false;
     public bool InitialFinish
@@ -25,7 +26,6 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     private List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
-    public EnemyInfo enemy;
     public float targetResetTime = 3f; //타겟 재설정 시간
     public float targetResetCount = 0; //타겟 재설정 시간 카운트
     public GameObject targetObj; // 공격 목표
@@ -94,6 +94,7 @@ public class EnemyManager : MonoBehaviour
     public Rigidbody2D rigid;
     public Collider2D physicsColl; // 물리용 콜라이더
     public List<Collider2D> hitCollList; // 히트박스용 콜라이더
+    public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
 
     [Header("Stat")]
     public float hpMax = 0;
@@ -102,10 +103,9 @@ public class EnemyManager : MonoBehaviour
     public float speed;
     public float range;
 
-    // [Header("Attack Effect")]
-    // public bool friendlyFire = false; // 충돌시 아군 피해 여부
-    // public bool flatDebuff = false; //납작해지는 디버프
-    // public bool knockBackDebuff = false; //넉백 디버프
+    [Header("Debuff")]
+    float slowDebuffCount = 0f;
+    IEnumerator slowCoroutine = null;
 
     [Header("Debug")]
     [SerializeField]
@@ -120,6 +120,9 @@ public class EnemyManager : MonoBehaviour
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
+
+        // 버프 아이콘 부모 찾기
+        buffParent = buffParent == null ? transform.Find("BuffParent") : buffParent;
 
         //히트 콜라이더 없으면 EnemyHitBox로 찾아 넣기
         if (hitCollList.Count == 0)
@@ -148,10 +151,10 @@ public class EnemyManager : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 물리 콜라이더 끄기
         physicsColl.enabled = false;
@@ -169,6 +172,9 @@ public class EnemyManager : MonoBehaviour
             spriteList[i].material = originMatList[i];
             // spriteList[i].material.color = originMatColorList[i];
         }
+
+        //스케일 초기화
+        transform.localScale = Vector3.one;
 
         // rigid 초기화
         rigid.velocity = Vector3.zero;
@@ -188,14 +194,11 @@ public class EnemyManager : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
-        //프리팹 이름으로 몬스터 정보 찾아 넣기
-        if (enemy == null)
-            //적 정보 찾기
-            enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+        // 몬스터 정보 찾기
+        enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
 
-        //적 정보 인스턴싱, 적 오브젝트마다 따로 EnemyInfo 갖기
-        if (enemy != null)
-            enemy = new EnemyInfo(enemy);
+        // 몬스터 정보 인스턴싱, 몬스터 오브젝트마다 따로 EnemyInfo 갖기
+        enemy = new EnemyInfo(enemy);
 
         // enemy 정보 들어올때까지 대기
         yield return new WaitUntil(() => enemy != null);
@@ -640,6 +643,15 @@ public class EnemyManager : MonoBehaviour
             // 마법 정보 찾기
             MagicInfo magic = magicHolder.magic;
 
+            // 마법 파워 계산
+            float power = MagicDB.Instance.MagicPower(magic);
+            // 마법 지속시간 계산
+            float duration = MagicDB.Instance.MagicDuration(magic);
+            //크리티컬 성공 여부
+            bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            //크리티컬 데미지 계산
+            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+
             // 마법 정보 없으면 리턴
             if (magicHolder == null || magic == null)
             {
@@ -654,41 +666,31 @@ public class EnemyManager : MonoBehaviour
                 yield break;
             }
 
-            // // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
-            // if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
-            //     yield break;
-
-            // // 고스트일때, 목표가 플레이어가 아니면 리턴
-            // if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
-            //     yield break;
-
             // print(transform.name + " : " + magic.magicName);
 
             // 마법 데미지가 있으면
             if (magic.power > 0)
             {
-                //크리티컬 성공 여부
-                bool isCritical = MagicDB.Instance.MagicCritical(magic);
-                //크리티컬 데미지 계산
-                float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
                 //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                float damage = magicHolder.setPower == 0 ? MagicDB.Instance.MagicPower(magic) : magicHolder.setPower;
+                float damage = magicHolder.setPower == 0 ? power : magicHolder.setPower;
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-                //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
-                if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
-                {
-                    isCritical = false;
-                }
-                else
-                {
-                    damage = damage * criticalPower;
-                }
+                // 크리티컬 데미지 배율 반영
+                damage = damage * criticalPower;
 
                 //데미지 적용
                 Damage(damage, isCritical);
+            }
+
+            //시간 정지
+            if (magicHolder.isStop)
+            {
+                //몬스터 경직 카운터에 duration 만큼 추가
+                stopCount = duration;
+
+                // 해당 위치에 고정
+                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
             }
 
             //넉백
@@ -700,122 +702,19 @@ public class EnemyManager : MonoBehaviour
                 }
             }
 
-            //시간 정지
-            if (magicHolder.isStop)
+            // 슬로우 디버프, 크리티컬 성공일때
+            if (magicHolder.slowTime > 0 && isCritical)
             {
-                //몬스터 경직 카운터에 duration 만큼 추가
-                stopCount = MagicDB.Instance.MagicDuration(magic);
+                //이미 슬로우 코루틴 중이면 기존 코루틴 취소
+                if (slowCoroutine != null)
+                    StopCoroutine(slowCoroutine);
 
-                // 해당 위치에 고정
-                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+                slowCoroutine = SlowDebuff(magicHolder.slowTime);
+
+                StartCoroutine(slowCoroutine);
             }
-
-            //적의 마법에 충돌
-            // if (magicHolder != null && magicHolder.enabled)
-            // {
-            //     MagicInfo magic = magicHolder.magic;
-
-            //     //데미지 계산
-            //     float damage = MagicDB.Instance.MagicPower(magic);
-            //     // 고정 데미지에 확률 계산
-            //     damage = Random.Range(damage * 0.8f, damage * 1.2f);
-
-            //     //크리티컬 성공 여부
-            //     bool isCritical = MagicDB.Instance.MagicCritical(magic);
-            //     //크리티컬 데미지 계산
-            //     float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
-            //     //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
-            //     if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
-            //     {
-            //         isCritical = false;
-            //     }
-            //     else
-            //     {
-            //         damage = damage * criticalPower;
-            //     }
-
-            //     Damage(damage, isCritical);
-            // }
         }
     }
-
-    // public void HitMagic(GameObject other)
-    // {
-    //     if (isDead)
-    //         return;
-
-    //     // 마법 정보 찾기
-    //     MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-    //     MagicInfo magic = magicHolder.magic;
-
-    //     // 마법 정보 없으면 리턴
-    //     if (magicHolder == null || magic == null)
-    //         return;
-
-    //     // 목표가 미설정 되었을때
-    //     if (magicHolder.targetType == MagicHolder.Target.None)
-    //     {
-    //         // print("타겟 미설정");
-    //         return;
-    //     }
-
-    //     // 고스트 아닐때, 목표가 몬스터가 아니면 리턴
-    //     if (!isGhost && magicHolder.targetType != MagicHolder.Target.Enemy && magicHolder.targetType != MagicHolder.Target.Both)
-    //         return;
-
-    //     // 고스트일때, 목표가 플레이어가 아니면 리턴
-    //     if (isGhost && magicHolder.targetType != MagicHolder.Target.Player && magicHolder.targetType != MagicHolder.Target.Both)
-    //         return;
-
-    //     // print(transform.name + " : " + magic.magicName);
-
-    //     // 마법 데미지가 있으면
-    //     if (magic.power > 0)
-    //     {
-    //         //크리티컬 성공 여부
-    //         bool isCritical = MagicDB.Instance.MagicCritical(magic);
-    //         //크리티컬 데미지 계산
-    //         float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
-    //         //데미지 계산
-    //         float damage = MagicDB.Instance.MagicPower(magic);
-    //         // 고정 데미지에 확률 계산
-    //         damage = Random.Range(damage * 0.8f, damage * 1.2f);
-
-    //         //크리티컬 곱해도 데미지가 그대로면 크리티컬 아님
-    //         if (Mathf.RoundToInt(damage) >= Mathf.RoundToInt(damage * criticalPower))
-    //         {
-    //             isCritical = false;
-    //         }
-    //         else
-    //         {
-    //             damage = damage * criticalPower;
-    //         }
-
-    //         //데미지 적용
-    //         Damage(damage, isCritical);
-    //     }
-
-    //     //넉백
-    //     if (magicHolder.knockbackForce > 0)
-    //     {
-    //         if (nowAction != Action.Jump && nowAction != Action.Attack)
-    //         {
-    //             StartCoroutine(Knockback(other, magicHolder.knockbackForce));
-    //         }
-    //     }
-
-    //     //시간 정지
-    //     if (magicHolder.isStop)
-    //     {
-    //         //몬스터 경직 카운터에 duration 만큼 추가
-    //         stopCount = MagicDB.Instance.MagicDuration(magic);
-
-    //         // 해당 위치에 고정
-    //         // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-    //     }
-    // }
 
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -955,6 +854,46 @@ public class EnemyManager : MonoBehaviour
         // print(knockbackDir);
 
         yield return null;
+    }
+
+    public IEnumerator SlowDebuff(float slowDuration)
+    {
+        // 디버프량
+        float slowAmount = 0.2f;
+        // 슬로우 디버프 아이콘
+        GameObject slowIcon = null;
+
+        // 애니메이션 속도 저하
+        for (int i = 0; i < animList.Count; i++)
+        {
+            animList[i].speed = slowAmount;
+        }
+        // 이동 속도 저하 디버프
+        enemyAI.moveSpeedDebuff = slowAmount;
+
+        // 이미 슬로우 디버프 중 아닐때
+        if (!buffParent.Find(SystemManager.Instance.slowDebuffUI.name))
+            //슬로우 디버프 아이콘 붙이기
+            slowIcon = LeanPool.Spawn(SystemManager.Instance.slowDebuffUI, buffParent.position, Quaternion.identity, buffParent);
+
+        // 슬로우 시간동안 대기
+        yield return new WaitForSeconds(slowDuration);
+
+        // 애니메이션 속도 초기화
+        for (int i = 0; i < animList.Count; i++)
+        {
+            animList[i].speed = 1f;
+        }
+        // 이동 속도 저하 디버프 초기화
+        enemyAI.moveSpeedDebuff = 1f;
+
+        // 슬로우 아이콘 없에기
+        slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
+        if (slowIcon != null)
+            LeanPool.Despawn(slowIcon);
+
+        // 코루틴 변수 초기화
+        slowCoroutine = null;
     }
 
     public IEnumerator Dead()

@@ -163,7 +163,7 @@ public class SaveManager : MonoBehaviour
             syncBtn.targetGraphic.color = Color.green;
 
             // 버튼 상호작용 끄기
-            syncBtn.interactable = false;
+            // syncBtn.interactable = false;
         }
         else
         {

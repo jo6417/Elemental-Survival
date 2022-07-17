@@ -487,11 +487,12 @@ MonoBehaviour:
   activeAngleOffset: 0
   enemyManager: {fileID: 6198355565525276696}
   enemyName: 
+  atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  friendlyFire: 1
   flatDebuff: 1
   knockBackDebuff: 0
+  poisonDebuff: 0
 --- !u!61 &9097308635735847014
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -732,7 +733,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6014433321399679247
 Transform:
   m_ObjectHideFlags: 0
@@ -751,6 +752,7 @@ Transform:
   - {fileID: 5273690957148452561}
   - {fileID: 1658102579596688017}
   - {fileID: 4958593465809026628}
+  - {fileID: 5968424464775409605}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -799,6 +801,7 @@ MonoBehaviour:
   rigid: {fileID: 6014433321399679245}
   physicsColl: {fileID: 2380262803175011489}
   hitCollList: []
+  buffParent: {fileID: 0}
   hpMax: 0
   HpNow: 1
   power: 0
@@ -1248,6 +1251,36 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7634627627043772842
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5968424464775409605}
+  m_Layer: 0
+  m_Name: BuffParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5968424464775409605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7634627627043772842}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 12.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6014433321399679247}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7656262936305170168
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,8 +1741,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u25E3` \uFE3F \xB4\u25E2"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a7b7eb28d98036e4a9039c153c859ddf, type: 2}
-  m_sharedMaterial: {fileID: 5102506194067504121, guid: a7b7eb28d98036e4a9039c153c859ddf,
+  m_fontAsset: {fileID: 11400000, guid: edd35fbaf40504d43a4f3119a1f016e9, type: 2}
+  m_sharedMaterial: {fileID: 5102506194067504121, guid: edd35fbaf40504d43a4f3119a1f016e9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

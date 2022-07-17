@@ -122,7 +122,7 @@ public class EnemyAttack : MonoBehaviour
 
         // 액티브 공격 오브젝트 있으면 해당 공격 함수 실행
         if (activeObj != null)
-            StartCoroutine(ActiveAttack());
+            StartCoroutine(RangeAttack());
 
         // 돌진 이펙트 있으면 해당 공격 함수 실행
         if (dashEffect != null)
@@ -184,21 +184,12 @@ public class EnemyAttack : MonoBehaviour
         attackReady = false;
     }
 
-    public IEnumerator ActiveAttack()
+    public IEnumerator RangeAttack()
     {
         // print("Active Attack");
 
         // 공격 액션으로 전환
         enemyManager.nowAction = EnemyManager.Action.Attack;
-
-        // 플레이어 방향 계산
-        // targetDir = enemyManager.targetObj.transform.position - transform.position;
-
-        // 공격 오브젝트 각도 계산
-        // float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-
-        // 공격 오브젝트 생성
-        // LeanPool.Spawn(activeObj, activeObj.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
         // 공격 오브젝트 활성화
         activeObj.SetActive(true);

@@ -6,15 +6,19 @@ using DG.Tweening;
 
 public class Heist : MonoBehaviour
 {
+    [Header("Refer")]
     private MagicInfo magic;
     public MagicHolder magicHolder;
-    float speed = 0;
+    public GameObject electroTrail;
 
+    float speed = 0;
     public Color ghostStartColor;
     Color ghostEndColor;
     public float ghostFrequency = 0.001f; //고스트 생성 주기
     public float ghostDuration = 0.1f; //고스트 유지 시간
     float ghostCount = 0;
+    private Vector2 lastEffectPos; //마지막 이펙트 남긴 위치
+    public float effectDistance = 1f; // 이펙트 간의 거리
 
     private void OnEnable()
     {
@@ -33,22 +37,29 @@ public class Heist : MonoBehaviour
             PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed / speed;
 
         //버프할 스피드 불러오기
-        speed = MagicDB.Instance.MagicSpeed(magic, true);
+        speed = MagicDB.Instance.MagicSpeed(magic, true, magicHolder.targetType);
         //플레이어 이동속도 버프하기
         PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * speed;
 
         //속도에 따라 사이즈 변화
-        transform.localScale = Vector3.one * speed;
+        // transform.localScale = Vector3.one * speed;
 
         //플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
         transform.localPosition = Vector3.zero;
+
+        //마지막 발자국 위치 초기화
+        lastEffectPos = PlayerManager.Instance.transform.position;
     }
 
     private void Update()
     {
         //잔상 남기기
         GhostTrail();
+
+        //대쉬 할때 전기 이펙트 남기기
+        if (PlayerManager.Instance.isDash && Vector2.Distance(lastEffectPos, PlayerManager.Instance.transform.position) > effectDistance)
+            ElectroTrail();
     }
 
     void GhostTrail()
@@ -102,5 +113,25 @@ public class Heist : MonoBehaviour
         yield return new WaitForSeconds(ghostDuration / 3f);
 
         LeanPool.Despawn(ghostObj);
+    }
+
+    void ElectroTrail()
+    {
+        //플레이어 위치
+        Vector2 playerPos = PlayerManager.Instance.transform.position;
+
+        //마법 오브젝트 생성
+        GameObject magicObj = LeanPool.Spawn(electroTrail, playerPos, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        MagicHolder _magicHolder = magicObj.GetComponent<MagicHolder>();
+
+        //마법 정보 넣기
+        _magicHolder.magic = magic;
+
+        //마법 타겟 지정
+        _magicHolder.SetTarget(magicHolder.targetType);
+
+        //마지막 이펙트 위치 갱신
+        lastEffectPos = magicObj.transform.position;
     }
 }

@@ -97,7 +97,7 @@ public class KingSlime_AI : MonoBehaviour
                 float damage = Random.Range(enemyManager.power * 0.8f, enemyManager.power * 1.2f);
 
                 // 플레이어 체력 깎기
-                PlayerManager.Instance.Damage(damage);
+                PlayerManager.Instance.hitBox.Damage(damage);
 
                 // 플레이어가 입은 데미지만큼 보스 회복
                 enemyManager.Damage(-damage, false);

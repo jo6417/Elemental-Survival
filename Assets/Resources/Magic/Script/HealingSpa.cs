@@ -115,7 +115,7 @@ public class HealingSpa : MonoBehaviour
             healTrigger = false;
 
         //이펙트가 콜라이더 벗어나면 디스폰 시키기
-        if(effectObjs.Find(x => x == other.gameObject))
+        if (effectObjs.Find(x => x == other.gameObject))
         {
             print("이펙트 삭제");
             LeanPool.Despawn(other.gameObject);
@@ -181,7 +181,8 @@ public class HealingSpa : MonoBehaviour
         transform.DOScale(Vector2.zero, 1f)
         .SetEase(Ease.InBack)
         .SetDelay(MaxTime)
-        .OnComplete(() => {
+        .OnComplete(() =>
+        {
             LeanPool.Despawn(gameObject, 5f);
         });
     }
@@ -196,7 +197,7 @@ public class HealingSpa : MonoBehaviour
             // print("heal : " + healPower);
 
             //체력 회복
-            PlayerManager.Instance.Damage(-healPower);
+            PlayerManager.Instance.hitBox.Damage(-healPower);
 
             // 연못 크기 줄이기
             if (transform.localScale.x >= 0)

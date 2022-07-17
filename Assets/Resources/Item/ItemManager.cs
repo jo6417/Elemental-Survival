@@ -213,7 +213,7 @@ public class ItemManager : MonoBehaviour
         // 아이템이 힐 타입일때
         else if (item.itemType == "Heal")
         {
-            PlayerManager.Instance.Damage(-amount);
+            PlayerManager.Instance.hitBox.Damage(-amount);
         }
         else
         {

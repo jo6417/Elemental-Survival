@@ -88,7 +88,7 @@ public class A_800Atk : MonoBehaviour
         enemyManager.animList[0].SetBool("isAttack", false);
 
         // 공격 트리거 끄기
-        meleeAtkTrigger.atkTrigger = false;
+        // meleeAtkTrigger.atkTrigger = false;
 
         // Idle 상태로 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;

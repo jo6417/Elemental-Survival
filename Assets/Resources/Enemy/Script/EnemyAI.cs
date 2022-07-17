@@ -8,6 +8,7 @@ public class EnemyAI : MonoBehaviour
 {
     [Header("State")]
     public Vector3 targetDir; //플레이어 방향
+    public float moveSpeedDebuff = 1f; // 속도 디버프
 
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -33,10 +34,10 @@ public class EnemyAI : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => enemyManager.enemy != null);
@@ -85,8 +86,8 @@ public class EnemyAI : MonoBehaviour
 
         // // 타겟 null 체크
         // if (enemyManager.TargetObj != null)
-        //     // 타겟 방향 계산
-        //     targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        // 타겟 방향 계산
+        targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         if (enemyManager.TargetObj == null)
             // 타겟이 null 이면 멈추기
@@ -142,18 +143,27 @@ public class EnemyAI : MonoBehaviour
         //움직일 방향
         targetDir = moveToPos - transform.position;
 
-        //해당 방향으로 가속
-        enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
-
-        //움직일 방향에따라 회전
-        if (targetDir.x > 0)
+        // 목표위치 도착했으면 위치 다시 갱신
+        if (targetDir.magnitude < 0.1f)
         {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            moveResetCount = 0f;
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            //해당 방향으로 가속
+            enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speed * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+
+            //움직일 방향에따라 회전
+            if (targetDir.x > 0)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
         }
+
 
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
@@ -187,10 +197,10 @@ public class EnemyAI : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = targetDir.magnitude > enemyManager.range ? enemyManager.range : targetDir.magnitude;
+        float distance = targetDir.magnitude > enemyManager.speed ? enemyManager.speed : targetDir.magnitude;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = targetDir.normalized * distance * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
     }
 
     public void JumpMoveStop()

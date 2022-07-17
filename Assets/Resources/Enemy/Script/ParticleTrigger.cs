@@ -76,10 +76,10 @@ public class ParticleTrigger : MonoBehaviour
         for (int i = 0; i < collisionEvents.Count; i++)
         {
             // 플레이어에 충돌하면 데미지 주기
-            if (other.CompareTag("Player") && PlayerManager.Instance.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
+            if (other.CompareTag("Player") && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 print($"Player : {other.name} : {other.tag} : {other.layer}");
-                StartCoroutine(PlayerManager.Instance.Hit(magicHolder.transform));
+                StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder.transform));
             }
 
             // 몬스터에 충돌하면 데미지 주기
@@ -111,27 +111,27 @@ public class ParticleTrigger : MonoBehaviour
     void PoisonTrigger()
     {
         // 플레이어와 충돌한 독 웅덩이가 있을때, 플레이어 대쉬중 아닐때, 독 쿨타임중 아닐때
-        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.poisonCoolCount <= 0)
+        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitBox.poisonCoolCount <= 0)
         {
             print("poison attack!");
 
             // 플레이어 코루틴으로 도트 피해 입히기
-            StartCoroutine(PlayerManager.Instance.PoisonDotHit(2f, 5f));
+            StartCoroutine(PlayerManager.Instance.hitBox.PoisonDotHit(2f, 5f));
         }
     }
 
     void DamageTrigger()
     {
         // 플레이어와 충돌한 파티클이 있을때, 플레이어 대쉬중 아닐때, 히트 쿨타임중 아닐때
-        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitCoolCount <= 0)
+        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitBox.hitCoolCount <= 0)
         {
             print("particle damage");
 
             // 피격 딜레이 갱신
-            StartCoroutine(PlayerManager.Instance.HitDelay());
+            StartCoroutine(PlayerManager.Instance.hitBox.HitDelay());
 
             // 플레이어에게 몬스터 파워만큼 데미지 주기
-            PlayerManager.Instance.Damage(enemyManager.enemy.power);
+            PlayerManager.Instance.hitBox.Damage(enemyManager.enemy.power);
         }
     }
 }

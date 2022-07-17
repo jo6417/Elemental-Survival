@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class MagicHolder : MonoBehaviour
 {
+    [Header("Refer")]
     public MagicInfo magic; //보유한 마법 데이터
-    public string magicName; //마법 이름 확인
     public Collider2D coll;
     public GameObject targetObj = null; //목표 오브젝트
+
+    [Header("Status")]
+    public string magicName; //마법 이름 확인
     public Vector3 targetPos = default(Vector3); //목표 위치
     public enum Target { None, Enemy, Player, Both };
     public Target targetType; //마법의 목표 타겟
@@ -23,8 +26,9 @@ public class MagicHolder : MonoBehaviour
         get { return Mathf.Clamp(multipleSpeed, 1f, 100f); }
         set { multipleSpeed = value; }
     }
+    public bool init = false; //초기화 완료 여부
 
-    [Header("Status")]
+    [Header("After Effect")]
     public float setPower = 0f; // 고정된 데미지
     public float knockbackForce = 0; //넉백 파워
     public bool isStop; //정지 여부
@@ -49,6 +53,9 @@ public class MagicHolder : MonoBehaviour
 
     IEnumerator Initial()
     {
+        // 초기화 완료 안됨
+        init = false;
+
         // 마법 정보 알기 전까지 콜라이더 끄기
         if (coll != null)
             coll.enabled = false;
@@ -59,12 +66,19 @@ public class MagicHolder : MonoBehaviour
         if (magic == null)
             magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
 
+        //타겟 임의 지정되면 마법 정보에 반영
+        if (targetType != Target.None)
+            SetTarget(targetType);
+
         // 마법 정보 찾은 뒤 콜라이더 활성화
         if (coll != null)
             coll.enabled = true;
 
         //! 마법 이름 확인
         magicName = magic.magicName;
+
+        // 초기화 완료
+        init = true;
     }
 
     private void OnDisable()
@@ -97,6 +111,17 @@ public class MagicHolder : MonoBehaviour
                 gameObject.layer = LayerMask.NameToLayer("AllAttack");
                 break;
         }
+
+        //해당 마법의 타겟 변경
+        targetType = changeTarget;
+
+        StartCoroutine(MagicTarget(changeTarget));
+    }
+
+    IEnumerator MagicTarget(Target changeTarget)
+    {
+        // 마법 정보 들어올때까지 대기
+        yield return new WaitUntil(() => magic != null);
 
         //해당 마법의 타겟 변경
         targetType = changeTarget;

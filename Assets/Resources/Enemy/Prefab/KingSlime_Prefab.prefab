@@ -222,6 +222,36 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
+--- !u!1 &246815642518830139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7782616013514085546}
+  m_Layer: 0
+  m_Name: BuffParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7782616013514085546
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246815642518830139}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 8.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8274267318279845525}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1881259223782753333
 GameObject:
   m_ObjectHideFlags: 0
@@ -5476,7 +5506,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8274267318279845525
 Transform:
   m_ObjectHideFlags: 0
@@ -5493,6 +5523,7 @@ Transform:
   - {fileID: 5663970052114893258}
   - {fileID: 2211065673575955901}
   - {fileID: 8772641354684076293}
+  - {fileID: 7782616013514085546}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5545,6 +5576,7 @@ MonoBehaviour:
   rigid: {fileID: 944842427137493207}
   physicsColl: {fileID: 5989012684935532658}
   hitCollList: []
+  buffParent: {fileID: 0}
   hpMax: 0
   HpNow: 1
   power: 0
@@ -10490,6 +10522,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8f46166926679e4c98c8b1bcb20e6d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magicHolder: {fileID: 0}
+  numEnter: 0
   numInside: 0
   attack: 1
   enemyManager: {fileID: 0}
