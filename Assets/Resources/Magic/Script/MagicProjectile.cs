@@ -112,7 +112,7 @@ public class MagicProjectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         //적에게 충돌
-        if (magicHolder.targetType == MagicHolder.Target.Enemy && other.CompareTag("Enemy"))
+        if (magicHolder.targetType == MagicHolder.Target.Enemy && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
         {
             // 히트박스 없으면 리턴
             if (!other.TryGetComponent(out EnemyHitBox enemyHitBox))
@@ -133,7 +133,7 @@ public class MagicProjectile : MonoBehaviour
         }
 
         // 플레이어에게 충돌, 대쉬중이면 무시
-        if (magicHolder.targetType == MagicHolder.Target.Player && other.CompareTag("Player") && !PlayerManager.Instance.isDash)
+        if (magicHolder.targetType == MagicHolder.Target.Player && other.CompareTag(SystemManager.TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
         {
             //남은 관통횟수 0 일때 디스폰
             print(gameObject.name + " : " + pierceNum);

@@ -78,7 +78,7 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector]
     public float dashSpeed; //대쉬 버프 속도
     [HideInInspector]
-    public float speedDebuff = 1f; //이동속도 디버프
+    public float speedDeBuff = 1f; //이동속도 디버프
     public Vector3 lastDir; //마지막 바라봤던 방향
 
     [Header("<Refer>")]
@@ -228,6 +228,8 @@ public class PlayerManager : MonoBehaviour
         if (hitBox.hitCoolCount > 0)
             hitBox.hitCoolCount -= Time.deltaTime;
 
+        //대쉬 아닐때
+        // if (!isDash)
         Move();
     }
 
@@ -308,12 +310,10 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now.moveSpeed //플레이어 이동속도
         * nowMoveDir //움직일 방향
         * dashSpeed //대쉬할때 속도 증가
-        * speedDebuff //상태이상 걸렸을때 속도 디버프
+        * speedDeBuff // 속도 버프
         * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
         + hitBox.knockbackDir //넉백 벡터 추가
         ;
-
-        // print(rigid.velocity + "=" + PlayerStat_Now.moveSpeed + "*" + dir + "*" + VarManager.Instance.playerTimeScale);
 
         //마지막 방향 기억
         if (nowMoveDir != Vector2.zero)

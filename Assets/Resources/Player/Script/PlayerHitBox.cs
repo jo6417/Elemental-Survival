@@ -13,12 +13,13 @@ public class PlayerHitBox : MonoBehaviour
     public IEnumerator hitDelayCoroutine;
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
 
-    [Header("<State>")]
+    [Header("<Buff>")]
     public Transform buffParent; // 버프 아이콘 부모 오브젝트
     public Vector2 knockbackDir; //넉백 벡터
     public bool isFlat; //깔려서 납작해졌을때
     public float poisonCoolCount; //독 도트뎀 남은시간
     public IEnumerator slowCoroutine;
+    public IEnumerator shockCoroutine;
 
     private void OnCollisionStay2D(Collision2D other)
     {
@@ -29,7 +30,7 @@ public class PlayerHitBox : MonoBehaviour
         PlayerManager.Instance.Move();
 
         //적에게 콜라이더 충돌
-        if (other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Magic"))
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString()) || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
         {
             StartCoroutine(Hit(other.transform));
         }
@@ -43,7 +44,7 @@ public class PlayerHitBox : MonoBehaviour
             return;
 
         // 적에게 트리거 충돌
-        if (other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Magic"))
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString()) || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
         {
             StartCoroutine(Hit(other.transform));
         }
@@ -142,6 +143,18 @@ public class PlayerHitBox : MonoBehaviour
                     slowCoroutine = SlowDebuff(magicHolder.slowTime);
 
                     StartCoroutine(slowCoroutine);
+                }
+
+                // 감전 디버프 && 크리티컬일때
+                if (magicHolder.shockTime > 0 && isCritical)
+                {
+                    //이미 감전 코루틴 중이면 기존 코루틴 취소
+                    if (shockCoroutine != null)
+                        StopCoroutine(shockCoroutine);
+
+                    shockCoroutine = ShockDebuff(magicHolder.shockTime);
+
+                    StartCoroutine(shockCoroutine);
                 }
             }
         }
@@ -352,7 +365,7 @@ public class PlayerHitBox : MonoBehaviour
         PlayerManager.Instance.anim.speed = slowAmount;
 
         // 이동 속도 저하 디버프
-        PlayerManager.Instance.speedDebuff = slowAmount;
+        PlayerManager.Instance.speedDeBuff = slowAmount;
 
         // 이미 슬로우 디버프 중 아닐때
         if (!buffParent.Find(SystemManager.Instance.slowDebuffUI.name))
@@ -366,7 +379,7 @@ public class PlayerHitBox : MonoBehaviour
         PlayerManager.Instance.anim.speed = 1f;
 
         // 이동 속도 저하 디버프 초기화
-        PlayerManager.Instance.speedDebuff = 1f;
+        PlayerManager.Instance.speedDeBuff = 1f;
 
         // 슬로우 아이콘 없에기
         slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
@@ -375,6 +388,42 @@ public class PlayerHitBox : MonoBehaviour
 
         // 코루틴 변수 초기화
         slowCoroutine = null;
+    }
+
+    public IEnumerator ShockDebuff(float shockDuration)
+    {
+        // 디버프량
+        float slowAmount = 0f;
+        // 감전 디버프 이펙트
+        GameObject shockEffect = null;
+
+        // 애니메이션 속도 저하
+        PlayerManager.Instance.anim.speed = slowAmount;
+
+        // 이동 속도 저하 디버프
+        PlayerManager.Instance.speedDeBuff = slowAmount;
+
+        // 이미 감전 디버프 중 아닐때
+        if (!PlayerManager.Instance.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
+            //감전 디버프 이펙트 붙이기
+            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
+
+        // 감전 시간동안 대기
+        yield return new WaitForSeconds(shockDuration);
+
+        // 애니메이션 속도 초기화
+        PlayerManager.Instance.anim.speed = 1f;
+
+        // 이동 속도 저하 디버프 초기화
+        PlayerManager.Instance.speedDeBuff = 1f;
+
+        // 자식중에 감전 이펙트 찾기
+        shockEffect = PlayerManager.Instance.transform.Find(SystemManager.Instance.shockDebuffEffect.name).gameObject;
+        if (shockEffect != null)
+            LeanPool.Despawn(shockEffect);
+
+        // 코루틴 변수 초기화
+        shockCoroutine = null;
     }
 
     void Dead()

@@ -90,7 +90,7 @@ public class SuperSerum : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         // 초기화 완료 후 플레이어에 충돌하면
-        if (initialFinish && other.CompareTag("Player"))
+        if (initialFinish && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             // 이동 멈추기
             rigid.velocity = Vector3.zero;

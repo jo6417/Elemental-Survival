@@ -37,7 +37,7 @@ public class MagicHolder : MonoBehaviour
     public float burnTime = 0; //화상 지속시간
     public float wetTime = 0; //젖음 지속시간
     public float bleedTime = 0; //출혈 지속시간
-    public float electricTime = 0; //감전 지속시간
+    public float shockTime = 0; //감전 지속시간
     public float freezeTime = 0; //빙결 지속시간
 
     private void Awake()
@@ -100,15 +100,15 @@ public class MagicHolder : MonoBehaviour
         switch (changeTarget)
         {
             case Target.Enemy:
-                gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
+                gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
                 break;
 
             case Target.Player:
-                gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
+                gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
                 break;
 
             case Target.Both:
-                gameObject.layer = LayerMask.NameToLayer("AllAttack");
+                gameObject.layer = SystemManager.Instance.layerList.AllAttack_Layer;
                 break;
         }
 

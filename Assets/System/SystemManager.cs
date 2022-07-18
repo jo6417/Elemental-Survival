@@ -16,15 +16,27 @@ using System;
 [Serializable]
 public class LayerList
 {
-    public LayerMask playerPhysicsLayer;
-    public LayerMask enemyPhysicsLayer;
-    public LayerMask playerHitLayer;
-    public LayerMask enemyHitLayer;
-    public LayerMask playerAttackLayer;
-    public LayerMask enemyAttackLayer;
-    public LayerMask allAttackLayer;
-    public LayerMask itemLayer;
-    public LayerMask objectLayer;
+    public LayerMask PlayerPhysics_Mask;
+    public LayerMask EnemyPhysics_Mask;
+    public LayerMask PlayerHit_Mask;
+    public LayerMask EnemyHit_Mask;
+    public LayerMask PlayerAttack_Mask;
+    public LayerMask EnemyAttack_Mask;
+    public LayerMask AllAttack_Mask;
+    public LayerMask Item_Mask;
+    public LayerMask Object_Mask;
+
+    // public int pl {get{return LayerMask.NameToLayer("PlayerPhysics");}}
+
+    public int PlayerPhysics_Layer { get { return LayerMask.NameToLayer("PlayerPhysics"); } }
+    public int EnemyPhysics_Layer { get { return LayerMask.NameToLayer("EnemyPhysics"); } }
+    public int PlayerHit_Layer { get { return LayerMask.NameToLayer("PlayerHit"); } }
+    public int EnemyHit_Layer { get { return LayerMask.NameToLayer("EnemyHit"); } }
+    public int PlayerAttack_Layer { get { return LayerMask.NameToLayer("PlayerAttack"); } }
+    public int EnemyAttack_Layer { get { return LayerMask.NameToLayer("EnemyAttack"); } }
+    public int AllAttack_Layer { get { return LayerMask.NameToLayer("AllAttack"); } }
+    public int Item_Layer { get { return LayerMask.NameToLayer("Item"); } }
+    public int Object_Layer { get { return LayerMask.NameToLayer("Object"); } }
 }
 
 
@@ -67,6 +79,7 @@ public class SystemManager : MonoBehaviour
 
     [Header("Tag&Layer")]
     public LayerList layerList;
+    public enum TagNameList { Player, Enemy, Magic, Item, Object, EnemyAttack };
 
     [Header("Pool")]
     public Transform enemyPool;
@@ -96,9 +109,9 @@ public class SystemManager : MonoBehaviour
     [Header("Prefab")]
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
-    public GameObject ghostPrefab; // 잔상 효과 프리팹
     public GameObject markPrefab; //! 위치 체크용 마크 프리팹
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
+    public GameObject shockDebuffEffect; // 캐릭터 머리위에 붙는 감전 디버프 아이콘
 
     [Header("Material")]
     public Material spriteLitMat; //일반 스프라이트 Lit 머터리얼

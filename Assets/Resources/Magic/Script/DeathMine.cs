@@ -69,7 +69,7 @@ public class DeathMine : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         // 공격 가능할때, 플레이어가 접근하면
-        if (atkAble && other.CompareTag("Player"))
+        if (atkAble && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             atkAble = false;
 

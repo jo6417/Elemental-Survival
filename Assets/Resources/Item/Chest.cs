@@ -27,7 +27,7 @@ public class Chest : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         //플레이어가 상자에 닿았을때
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             col.enabled = false;
 

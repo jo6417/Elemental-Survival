@@ -12,6 +12,7 @@ public class AstralForm : MonoBehaviour
     public RectTransform fogCircle; //화면 덮을 원 오브젝트
     public Canvas fogCanvas;
     List<GameObject> enemyObjs;
+    public GameObject ghostPrefab; // 잔상 효과 프리팹
 
     [Header("Ghost")]
     float ghostCount = 0;
@@ -186,7 +187,7 @@ public class AstralForm : MonoBehaviour
     IEnumerator GhostTransition()
     {
         //고스트 오브젝트 소환
-        GameObject ghostObj = LeanPool.Spawn(SystemManager.Instance.ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, SystemManager.Instance.effectPool);
+        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, SystemManager.Instance.effectPool);
 
         //스프라이트 렌더러 찾기
         SpriteRenderer ghostSprite = ghostObj.GetComponent<SpriteRenderer>();

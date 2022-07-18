@@ -50,14 +50,14 @@ public class StickyBubble : MonoBehaviour
         ParticleSystem.CollisionModule particleColl = bubbleParticle.collision;
         if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
         {
-            gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
-            particleColl.collidesWith = SystemManager.Instance.layerList.enemyHitLayer;
+            gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+            particleColl.collidesWith = SystemManager.Instance.layerList.EnemyHit_Mask;
         }
 
         if (magicHolder.GetTarget() == MagicHolder.Target.Player)
         {
-            gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
-            particleColl.collidesWith = SystemManager.Instance.layerList.playerHitLayer;
+            gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+            particleColl.collidesWith = SystemManager.Instance.layerList.PlayerHit_Mask;
         }
 
         // 타겟 방향을 쳐다보기
@@ -85,19 +85,19 @@ public class StickyBubble : MonoBehaviour
             //todo 충돌 지점에 거품 터진 스프라이트 남기기
 
             // 플레이어에 충돌하면 데미지 주기
-            if (other.CompareTag("Player") && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
+            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 StartCoroutine(PlayerManager.Instance.hitBox.Hit(transform));
             }
 
             // 몬스터에 충돌하면 데미지 주기
-            if (other.CompareTag("Enemy"))
+            if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
             {
                 // print($"{other.name} : {other.tag} : {other.layer}");
 
                 if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
                 {
-                    StartCoroutine(enemyHitBox.enemyManager.Hit(gameObject));
+                    StartCoroutine(enemyHitBox.Hit(gameObject));
                 }
             }
         }

@@ -143,6 +143,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 5086723795068245898}
+  buffParent: {fileID: 0}
+  hitCount: 0
+  particleHitCount: 0
+  statusEffect: 0
+  stopCount: 0
 --- !u!61 &2428378071422653662
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -360,16 +365,13 @@ MonoBehaviour:
   portalSize: 1
   isElite: 0
   eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
   oppositeCount: 0
+  isDead: 0
   selfExplosion: 0
-  statusEffect: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 240281183651144037}
+  hitBox: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 0}
   shadow: {fileID: 6263737295829454142}
@@ -383,7 +385,6 @@ MonoBehaviour:
   rigid: {fileID: 5485836661786715579}
   physicsColl: {fileID: 5485836661786715578}
   hitCollList: []
-  buffParent: {fileID: 0}
   hpMax: 0
   HpNow: 1
   power: 0

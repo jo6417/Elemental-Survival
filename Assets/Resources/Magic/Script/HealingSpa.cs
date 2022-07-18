@@ -59,7 +59,7 @@ public class HealingSpa : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         // 적이 닿으면 연못 크기 늘리기, 쿨타임 지났을때, 살아있는 적일때
-        if (other.CompareTag("Enemy")
+        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
         && Time.time - reduceCoolCount >= 0.2f
         && !other.GetComponentInChildren<EnemyManager>().isDead)
         {
@@ -104,14 +104,14 @@ public class HealingSpa : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 플레이어 들어오면 HealOn
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
             healTrigger = true;
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         // 플레이어 나가면 HealOff
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
             healTrigger = false;
 
         //이펙트가 콜라이더 벗어나면 디스폰 시키기

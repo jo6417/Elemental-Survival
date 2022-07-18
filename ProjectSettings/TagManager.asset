@@ -6,9 +6,9 @@ TagManager:
   tags:
   - Enemy
   - Magic
-  - Arrow
   - Item
   - Object
+  - EnemyAttack
   layers:
   - Default
   - TransparentFX

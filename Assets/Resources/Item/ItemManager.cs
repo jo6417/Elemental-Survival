@@ -97,7 +97,7 @@ public class ItemManager : MonoBehaviour
         }
 
         // 플레이어와 충돌 했을때
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             // print("플레이어 아이템 획득");
 

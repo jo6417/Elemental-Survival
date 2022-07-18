@@ -77,9 +77,13 @@ public class EnemyAttack : MonoBehaviour
         if (!enemyManager)
             return;
 
-        // 상태 이상 있으면 리턴
+        // 상태 이상 있으면
         if (!enemyManager.ManageState())
+        {
+            // 이상 있으면 공격 콜라이더 끄기
+            atkColl.enabled = false;
             return;
+        }
 
         // 공격 준비중이면 리턴
         if (attackReady)

@@ -18,7 +18,7 @@ public class GemAbsorb : MonoBehaviour
             return;
 
         //아이템과 충돌 했을때
-        if (other.CompareTag("Item"))
+        if (other.CompareTag(SystemManager.TagNameList.Item.ToString()))
         {
             Rigidbody2D rigid = other.GetComponent<Rigidbody2D>();
             ItemManager itemManager = other.GetComponent<ItemManager>();

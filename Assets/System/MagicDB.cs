@@ -144,6 +144,8 @@ public class MagicDB : MonoBehaviour
     }
     #endregion
 
+    public enum MagicType { active, passive, ultimate };
+
     public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
     // public List<Sprite> magicIcon = null; //마법 아이콘 리스트
     public Dictionary<string, Sprite> magicIcon = new Dictionary<string, Sprite>();

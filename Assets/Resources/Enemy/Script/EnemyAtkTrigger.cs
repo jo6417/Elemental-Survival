@@ -43,13 +43,13 @@ public class EnemyAtkTrigger : MonoBehaviour
         if (enemyManager.IsGhost)
         {
             // 플레이어가 공격하는 레이어
-            gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
+            gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
         }
         // 일반 몹일때
         else
         {
             // 몬스터가 공격하는 레이어
-            gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
+            gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
         }
     }
 
@@ -60,7 +60,7 @@ public class EnemyAtkTrigger : MonoBehaviour
             return;
 
         // 플레이어가 충돌하면
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             atkTrigger = true;
 
@@ -68,12 +68,12 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
             {
                 // 자폭하기
-                StartCoroutine(enemyManager.Dead());
+                StartCoroutine(enemyManager.hitBox.Dead());
             }
         }
 
         // 몬스터가 충돌하면
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
         {
             // 몬스터가 충돌했을때 히트박스 있을때
             if (other.TryGetComponent(out EnemyHitBox hitBox))
@@ -96,7 +96,7 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
             {
                 // 자폭하기
-                StartCoroutine(enemyManager.Dead());
+                StartCoroutine(enemyManager.hitBox.Dead());
             }
         }
     }
@@ -108,11 +108,11 @@ public class EnemyAtkTrigger : MonoBehaviour
             return;
 
         //  고스트 아닐때, 플레이어가 나가면
-        if (!enemyManager.IsGhost && other.CompareTag("Player"))
+        if (!enemyManager.IsGhost && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
             atkTrigger = false;
 
         // 고스트일때, 몬스터가 나가면
-        if (enemyManager.IsGhost && other.CompareTag("Enemy"))
+        if (enemyManager.IsGhost && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
             atkTrigger = false;
     }
 }

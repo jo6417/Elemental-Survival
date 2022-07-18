@@ -100,7 +100,7 @@ public class KingSlime_AI : MonoBehaviour
                 PlayerManager.Instance.hitBox.Damage(damage);
 
                 // 플레이어가 입은 데미지만큼 보스 회복
-                enemyManager.Damage(-damage, false);
+                enemyManager.hitBox.Damage(-damage, false);
 
                 // 쿨타임 갱신
                 absorbCoolCount = 1f;
@@ -428,7 +428,7 @@ public class KingSlime_AI : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Player") // 플레이어가 충돌했을때
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()) // 플레이어가 충돌했을때
         && !PlayerManager.Instance.isDash // 플레이어 대쉬 아닐때
         && absorbAtkTrigger // 흡수 트리거 켜졌을때
         && !nowAbsorb) // 현재 흡수중 아닐때
@@ -446,7 +446,7 @@ public class KingSlime_AI : MonoBehaviour
             enemyManager.animList[0].SetBool("isBounce", true);
 
             // 플레이어 위치 이동하는 동안 이동 금지
-            PlayerManager.Instance.speedDebuff = 0;
+            PlayerManager.Instance.speedDeBuff = 0;
             // 이동 속도 반영
             PlayerManager.Instance.Move();
             // 플레이어 조작 차단
@@ -457,7 +457,7 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 이동 속도 디버프 걸기
-                PlayerManager.Instance.speedDebuff = 0.2f;
+                PlayerManager.Instance.speedDeBuff = 0.2f;
                 // 이동 속도 반영
                 PlayerManager.Instance.Move();
                 // 플레이어 조작 활성화
@@ -469,7 +469,7 @@ public class KingSlime_AI : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 흡수 중일때 플레이어 나가면
-        if (other.gameObject.CompareTag("Player")
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString())
         && nowAbsorb)
         {
             // print("흡수 끝");
@@ -481,7 +481,7 @@ public class KingSlime_AI : MonoBehaviour
             JumpEnd();
 
             // 이동 속도 디버프 해제
-            PlayerManager.Instance.speedDebuff = 1f;
+            PlayerManager.Instance.speedDeBuff = 1f;
             // 이동 속도 반영
             PlayerManager.Instance.Move();
 

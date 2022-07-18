@@ -36,9 +36,7 @@ public class Nimbus : MonoBehaviour
         //플레이어 주변을 도는 마커
         spinObj = LeanPool.Spawn(atkMark, transform.position, Quaternion.identity);
 
-        //플레이어와의 거리 보정
-        float range = MagicDB.Instance.MagicRange(magic);
-        transform.position = slowFollowPlayer + Vector3.up * range;
+        transform.position = slowFollowPlayer + Vector3.up * 5f;
 
         spinOffset = transform.position - slowFollowPlayer;
     }
@@ -104,20 +102,19 @@ public class Nimbus : MonoBehaviour
     IEnumerator StartAttack()
     {
         // 투사체 수만큼 주변의 적 마크
-        List<Vector2> enemyPos = MarkEnemyPos(magic);
+        List<GameObject> enemyObj = CastMagic.Instance.MarkEnemyObj(magic);
 
         //목표 위치
-        Vector2 targetPos;
-        GameObject mark = null;
+        // Vector2 targetObj;
 
         // 마크된 적 순서대로 위치 따라가기
-        for (int i = 0; i < enemyPos.Count; i++)
+        for (int i = 0; i < enemyObj.Count; i++)
         {
             //목표 위치
-            targetPos = enemyPos[i];
+            GameObject targetObj = enemyObj[i];
 
             //적의 위치에 마커 생성
-            mark = LeanPool.Spawn(atkMark, targetPos, Quaternion.identity);
+            // mark = LeanPool.Spawn(atkMark, targetObj, Quaternion.identity);
 
             // 히트박스 빨간색으로 바꾸기
             hitbox.DOColor(new Color(1, 0, 0, 80f / 255f), 0.5f);
@@ -127,7 +124,7 @@ public class Nimbus : MonoBehaviour
             while (aimCount > 0)
             {
                 // 위치 이동
-                Vector2 movePos = Vector2.Lerp(transform.position, targetPos, Time.deltaTime * 10f);
+                Vector2 movePos = Vector2.Lerp(transform.position, targetObj.transform.position, Time.deltaTime * 10f);
                 transform.position = movePos;
 
                 // 시간 차감 후 대기
@@ -147,49 +144,6 @@ public class Nimbus : MonoBehaviour
 
         // 모든 적 방문 후 쿨타임 시작
         state = State.Ready;
-    }
-
-    List<Vector2> MarkEnemyPos(MagicInfo magic)
-    {
-        // 마법 범위 계산
-        float range = MagicDB.Instance.MagicRange(magic);
-        // 투사체 개수 계산
-        int atkNum = MagicDB.Instance.MagicProjectile(magic);
-
-        List<Vector2> enemyPos = new List<Vector2>();
-
-        // 적 위치 넣을 리스트 준비
-        List<Collider2D> enemyColList = new List<Collider2D>();
-        enemyColList.Clear();
-
-        //범위 안의 모든 적 리스트에 담기
-        enemyColList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("Enemy")).ToList();
-
-        // 적 위치 리스트에 넣기
-        for (int i = 0; i < atkNum; i++)
-        {
-            // 플레이어 주변 범위내 랜덤 위치 벡터 생성
-            Vector2 pos = (Vector2)PlayerManager.Instance.transform.position
-            + Random.insideUnitCircle.normalized * range;
-
-            // 리스트에서 적 위치 꺼낸 후 삭제
-            if (enemyColList.Count > 0)
-            {
-                Collider2D col = enemyColList[Random.Range(0, enemyColList.Count)];
-                pos = col.transform.position;
-
-                //임시 리스트에서 지우기
-                enemyColList.Remove(col);
-
-                // print(col.transform.name + col.transform.position);
-            }
-
-            // 범위내에 적이 있으면 적위치, 없으면 무작위 위치 넣기
-            enemyPos.Add(pos);
-        }
-
-        //적의 위치 리스트 리턴
-        return enemyPos;
     }
 
     public void ColliderOn()

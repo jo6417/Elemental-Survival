@@ -49,7 +49,7 @@ public class GatePortal : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         //상호작용 키 표시 UI 활성화
-        if (other.CompareTag("Player") && nowGem < maxGem)
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && nowGem < maxGem)
         {
             showKey.SetActive(true);
         }
@@ -58,7 +58,7 @@ public class GatePortal : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         //상호작용 키 표시 UI 비활성화
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             showKey.SetActive(false);
         }
@@ -70,9 +70,9 @@ public class GatePortal : MonoBehaviour
         if (showKey.activeSelf && Input.GetKey(KeyCode.E) && delayCount <= 0)
         {
             //첫번째 젬 넣을때
-            if(nowGem == 0)
-            //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI
-            StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
+            if (nowGem == 0)
+                //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI
+                StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
 
             // 젬 하나씩 넣기
             nowGem++;
@@ -174,7 +174,7 @@ public class GatePortal : MonoBehaviour
     {
         // farDistance 보다 멀어지면
         float distance = Vector2.Distance(transform.position, PlayerManager.Instance.transform.position);
-        if(distance >= farDistance)
+        if (distance >= farDistance)
         {
             //포탈이 생성될 위치
             Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * SystemManager.Instance.portalRange;

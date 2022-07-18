@@ -10,7 +10,10 @@ public class Heist : MonoBehaviour
     private MagicInfo magic;
     public MagicHolder magicHolder;
     public GameObject electroTrail;
+    public GameObject ghostPrefab; // 잔상 효과 프리팹
+    public List<GameObject> ghostList = new List<GameObject>(); // 소환된 잔상 리스트
 
+    int magicLevel = 0;
     float speed = 0;
     public Color ghostStartColor;
     Color ghostEndColor;
@@ -23,26 +26,23 @@ public class Heist : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
     // 마법 레벨업 할때 새로 초기화 하기
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
-        //원래 속도 변수가 있으면 버프 빼기
-        if (speed != 0)
-            PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed / speed;
+        // 처음 마법 레벨 저장
+        magicLevel = magic.magicLevel;
 
-        //버프할 스피드 불러오기
+        // 레벨 갱신되면 스피드 스탯 새로 계산
         speed = MagicDB.Instance.MagicSpeed(magic, true, magicHolder.targetType);
-        //플레이어 이동속도 버프하기
-        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * speed;
 
-        //속도에 따라 사이즈 변화
-        // transform.localScale = Vector3.one * speed;
+        // 플레이어 이동속도 버프하기
+        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * speed;
 
         //플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
@@ -52,6 +52,20 @@ public class Heist : MonoBehaviour
         lastEffectPos = PlayerManager.Instance.transform.position;
     }
 
+    private void OnDisable()
+    {
+        // 기존 스피드 버프 계수 빼기
+        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed / speed;
+
+        // 소환된 잔상 모두 삭제
+        foreach (GameObject ghost in ghostList)
+        {
+            // 고스트 살아있으면
+            if (ghost && ghost != null && ghost.activeSelf)
+                LeanPool.Despawn(ghost);
+        }
+    }
+
     private void Update()
     {
         //잔상 남기기
@@ -59,7 +73,7 @@ public class Heist : MonoBehaviour
 
         //대쉬 할때 전기 이펙트 남기기
         if (PlayerManager.Instance.isDash && Vector2.Distance(lastEffectPos, PlayerManager.Instance.transform.position) > effectDistance)
-            ElectroTrail();
+            ShockTrail();
     }
 
     void GhostTrail()
@@ -83,8 +97,11 @@ public class Heist : MonoBehaviour
 
     IEnumerator GhostTransition()
     {
-        //고스트 오브젝트 소환
-        GameObject ghostObj = LeanPool.Spawn(SystemManager.Instance.ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, SystemManager.Instance.effectPool);
+        //잔상 오브젝트 소환
+        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, SystemManager.Instance.effectPool);
+
+        //잔상 리스트에 오브젝트 저장
+        ghostList.Add(ghostObj);
 
         //스프라이트 렌더러 찾기
         SpriteRenderer ghostSprite = ghostObj.GetComponent<SpriteRenderer>();
@@ -112,10 +129,13 @@ public class Heist : MonoBehaviour
 
         yield return new WaitForSeconds(ghostDuration / 3f);
 
+        //잔상 리스트에서 오브젝트 삭제
+        ghostList.Remove(ghostObj);
+
         LeanPool.Despawn(ghostObj);
     }
 
-    void ElectroTrail()
+    void ShockTrail()
     {
         //플레이어 위치
         Vector2 playerPos = PlayerManager.Instance.transform.position;
@@ -123,13 +143,19 @@ public class Heist : MonoBehaviour
         //마법 오브젝트 생성
         GameObject magicObj = LeanPool.Spawn(electroTrail, playerPos, Quaternion.identity, SystemManager.Instance.effectPool);
 
+        // 오브젝트 사이즈에 범위 반영
+        magicObj.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic);
+
         MagicHolder _magicHolder = magicObj.GetComponent<MagicHolder>();
 
         //마법 정보 넣기
         _magicHolder.magic = magic;
 
+        // 감전 시간 반영하기
+        _magicHolder.shockTime = MagicDB.Instance.MagicDuration(magic);
+
         //마법 타겟 지정
-        _magicHolder.SetTarget(magicHolder.targetType);
+        _magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
         //마지막 이펙트 위치 갱신
         lastEffectPos = magicObj.transform.position;

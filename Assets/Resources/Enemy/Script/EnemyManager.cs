@@ -62,14 +62,10 @@ public class EnemyManager : MonoBehaviour
     public float portalSize = 1f; //포탈 사이즈 지정값
     public bool isElite; //엘리트 몬스터 여부
     public int eliteClass; //엘리트 클래스 종류
-    public bool isDead; //죽음 코루틴 진행중 여부
-    public float particleHitCount = 0;
-    public float stopCount = 0;
-    public float hitCount = 0;
-    public float oppositeCount = 0;
-    Sequence damageTextSeq;
-    public bool selfExplosion = false; //죽을때 자폭 여부
+
     public bool statusEffect = false; //상태이상으로 색 변형 했는지 여부
+    public bool isDead; //죽음 코루틴 진행중 여부
+    public bool selfExplosion = false; //죽을때 자폭 여부
     public float attackRange; // 공격범위
     public bool changeGhost = false;
     private bool isGhost = false; // 마법으로 소환된 고스트 몬스터인지 여부
@@ -83,6 +79,7 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Refer")]
     public EnemyAI enemyAI;
+    public EnemyHitBox hitBox;
     public EnemyAtkTrigger explosionTrigger;
     public Transform spriteObj;
     public SpriteRenderer shadow; // 해당 몬스터 그림자
@@ -95,6 +92,7 @@ public class EnemyManager : MonoBehaviour
     public Collider2D physicsColl; // 물리용 콜라이더
     public List<Collider2D> hitCollList; // 히트박스용 콜라이더
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
+    public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
 
     [Header("Stat")]
     public float hpMax = 0;
@@ -104,8 +102,13 @@ public class EnemyManager : MonoBehaviour
     public float range;
 
     [Header("Debuff")]
-    float slowDebuffCount = 0f;
-    IEnumerator slowCoroutine = null;
+    public IEnumerator hitCoroutine;
+    public IEnumerator slowCoroutine = null;
+    public IEnumerator shockCoroutine = null;
+    public float oppositeCount = 0;
+    public float hitCount = 0;
+    public float particleHitCount = 0;
+    public float stopCount = 0;
 
     [Header("Debug")]
     [SerializeField]
@@ -120,9 +123,6 @@ public class EnemyManager : MonoBehaviour
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
-
-        // 버프 아이콘 부모 찾기
-        buffParent = buffParent == null ? transform.Find("BuffParent") : buffParent;
 
         //히트 콜라이더 없으면 EnemyHitBox로 찾아 넣기
         if (hitCollList.Count == 0)
@@ -144,6 +144,9 @@ public class EnemyManager : MonoBehaviour
             originMatList.Add(sprite.material);
             originMatColorList.Add(sprite.material.color);
         }
+
+        // 버프 아이콘 부모 찾기
+        buffParent = buffParent == null ? transform.Find("BuffParent") : buffParent;
 
         //초기 타겟은 플레이어
         targetObj = PlayerManager.Instance.gameObject;
@@ -317,7 +320,7 @@ public class EnemyManager : MonoBehaviour
         GameObject closeEnemy = null;
 
         //캐릭터 주변의 적들
-        List<Collider2D> enemyCollList = Physics2D.OverlapCircleAll(transform.position, 50f, 1 << LayerMask.NameToLayer("Enemy")).ToList();
+        List<Collider2D> enemyCollList = Physics2D.OverlapCircleAll(transform.position, 50f, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
         // 몬스터 본인 콜라이더는 전부 빼기
         for (int i = 0; i < hitCollList.Count; i++)
@@ -369,18 +372,32 @@ public class EnemyManager : MonoBehaviour
             return;
         }
 
-        // 파티클 히트 딜레이 차감
-        if (particleHitCount > 0)
-        {
-            particleHitCount -= Time.deltaTime;
-        }
-
         // 고스트일때, 타겟이 비활성화되거나 리셋타임이 되면 타겟 재설정
         if (IsGhost && (targetResetCount <= 0 || targetObj == null))
             ChangeTarget(null);
         // 타겟 리셋 카운트 차감
         else if (targetResetCount > 0)
             targetResetCount -= Time.deltaTime;
+
+        // 파티클 히트 딜레이 차감
+        if (particleHitCount > 0)
+        {
+            state = State.Hit;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
+
+            particleHitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+        }
+
+        // 히트 딜레이 차감
+        if (hitCount > 0)
+        {
+            state = State.Hit;
+
+            rigid.velocity = Vector2.zero; //이동 초기화
+
+            hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+        }
     }
 
     public bool ManageState()
@@ -479,28 +496,6 @@ public class EnemyManager : MonoBehaviour
             return false;
         }
 
-        //맞고 경직일때
-        if (hitCount > 0)
-        {
-            // 상태이상 변수 true
-            statusEffect = true;
-
-            state = State.Hit;
-
-            rigid.velocity = Vector2.zero; //이동 초기화
-
-            // 머터리얼 및 색 변경
-            foreach (SpriteRenderer sprite in spriteList)
-            {
-                sprite.material = SystemManager.Instance.hitMat;
-                sprite.color = SystemManager.Instance.hitColor;
-            }
-
-            hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-
-            return false;
-        }
-
         //스폰 콜라이더에 닿아 반대편으로 보내질때 잠시대기
         if (oppositeCount > 0)
         {
@@ -508,6 +503,25 @@ public class EnemyManager : MonoBehaviour
 
             oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
 
+            return false;
+        }
+
+        // 슬로우 디버프일때
+        // if (slowCoroutine != null)
+        // {
+        //     statusEffect = true;
+        // }
+
+        // 감전 디버프일때
+        if (shockCoroutine != null)
+        {
+            statusEffect = true;
+
+            state = State.Hit;
+
+            rigid.velocity = Vector2.zero; //이동 멈추기
+
+            // 행동불능이므로 리턴
             return false;
         }
 
@@ -551,177 +565,12 @@ public class EnemyManager : MonoBehaviour
         return true;
     }
 
-    public IEnumerator FlatDebuff()
-    {
-        //정지 시간 추가
-        stopCount = 2f;
-
-        //스케일 납작하게
-        transform.localScale = new Vector2(1f, 0.5f);
-
-        //위치 얼리기
-        rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-
-        //2초간 깔린채로 대기
-        yield return new WaitForSeconds(2f);
-
-        //스케일 복구
-        transform.localScale = Vector2.one;
-
-        //위치 얼리기
-        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
-    }
-
-    public IEnumerator Hit(GameObject other)
-    {
-        // 죽었으면 리턴
-        if (isDead)
-            yield break;
-
-        // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
-        if (other.gameObject.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
-        {
-            // 공격한 몹 매니저
-            EnemyManager atkEnemyManager = enemyAtk.enemyManager;
-
-            // 공격한 몹의 정보 찾기
-            yield return new WaitUntil(() => enemyAtk.enemy != null);
-            EnemyInfo atkEnemy = enemyAtk.enemy;
-
-            // other가 본인일때 리턴
-            if (atkEnemyManager == this)
-            {
-                // print("본인 타격");
-                yield break;
-            }
-
-            // 타격한 적이 비활성화 되었으면 리턴
-            // if (!hitEnemyManager.enabled)
-            //     return;
-
-            //피격 대상이 고스트일때
-            if (IsGhost)
-            {
-                //고스트 아닌 적이 때렸을때만 데미지
-                if (!atkEnemyManager.IsGhost)
-                    Damage(atkEnemy.power, false);
-            }
-            //피격 대상이 고스트 아닐때
-            else
-            {
-                //고스트가 때렸으면 데미지
-                if (atkEnemyManager.IsGhost)
-                    Damage(atkEnemy.power, false);
-
-                // 아군 피해 옵션 켜져있을때
-                // if (enemyAtk.friendlyFire)
-                //     Damage(atkEnemy.power, false);
-            }
-
-            // 넉백 디버프 있을때
-            if (enemyAtk.knockBackDebuff)
-            {
-                // print("enemy knock");
-
-                // 넉백
-                StartCoroutine(Knockback(other.gameObject, atkEnemyManager.enemy.power));
-            }
-
-            // flat 디버프 있을때, stop 카운트 중 아닐때
-            if (enemyAtk.flatDebuff && stopCount <= 0)
-            {
-                // print("enemy flat");
-
-                // 납작해지고 행동불능
-                StartCoroutine(FlatDebuff());
-            }
-        }
-
-        //마법 정보 찾기
-        if (other.TryGetComponent(out MagicHolder magicHolder))
-        {
-            // 마법 정보 찾기
-            MagicInfo magic = magicHolder.magic;
-
-            // 마법 파워 계산
-            float power = MagicDB.Instance.MagicPower(magic);
-            // 마법 지속시간 계산
-            float duration = MagicDB.Instance.MagicDuration(magic);
-            //크리티컬 성공 여부
-            bool isCritical = MagicDB.Instance.MagicCritical(magic);
-            //크리티컬 데미지 계산
-            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
-            // 마법 정보 없으면 리턴
-            if (magicHolder == null || magic == null)
-            {
-                print($"magic is null : {gameObject}");
-                yield break;
-            }
-
-            // 목표가 미설정 되었을때
-            if (magicHolder.targetType == MagicHolder.Target.None)
-            {
-                // print("타겟 미설정");
-                yield break;
-            }
-
-            // print(transform.name + " : " + magic.magicName);
-
-            // 마법 데미지가 있으면
-            if (magic.power > 0)
-            {
-                //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                float damage = magicHolder.setPower == 0 ? power : magicHolder.setPower;
-                // 고정 데미지에 확률 계산
-                damage = Random.Range(damage * 0.8f, damage * 1.2f);
-
-                // 크리티컬 데미지 배율 반영
-                damage = damage * criticalPower;
-
-                //데미지 적용
-                Damage(damage, isCritical);
-            }
-
-            //시간 정지
-            if (magicHolder.isStop)
-            {
-                //몬스터 경직 카운터에 duration 만큼 추가
-                stopCount = duration;
-
-                // 해당 위치에 고정
-                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-            }
-
-            //넉백
-            if (magicHolder.knockbackForce > 0)
-            {
-                if (nowAction != Action.Jump && nowAction != Action.Attack)
-                {
-                    StartCoroutine(Knockback(other, magicHolder.knockbackForce));
-                }
-            }
-
-            // 슬로우 디버프, 크리티컬 성공일때
-            if (magicHolder.slowTime > 0 && isCritical)
-            {
-                //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-                if (slowCoroutine != null)
-                    StopCoroutine(slowCoroutine);
-
-                slowCoroutine = SlowDebuff(magicHolder.slowTime);
-
-                StartCoroutine(slowCoroutine);
-            }
-        }
-    }
-
     private void OnTriggerExit2D(Collider2D other)
     {
         if (isDead)
             return;
 
-        if (other.transform.CompareTag("Magic"))
+        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
         {
             // 마법 정보 찾기
             MagicHolder magicHolder = other.GetComponent<MagicHolder>();
@@ -739,283 +588,8 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void Damage(float damage, bool isCritical)
-    {
-        if (enemy == null || isDead)
-            return;
-
-        //데미지 int로 바꾸기
-        damage = Mathf.RoundToInt(damage);
-
-        // 데미지 적용
-        HpNow -= damage;
-
-        //체력 범위 제한
-        HpNow = Mathf.Clamp(HpNow, 0, hpMax);
-
-        // 경직 시간 추가
-        if (damage > 0)
-            hitCount = enemy.hitDelay;
-
-        //데미지 UI 띄우기
-        DamageText(damage, isCritical);
-
-        //보스면 체력 UI 띄우기
-        if (enemy.enemyType == "boss")
-        {
-            StartCoroutine(UIManager.Instance.UpdateBossHp(this));
-        }
-
-        // 몬스터 맞았을때 함수 호출 (해당 몬스터만)
-        if (enemyHitCallback != null)
-            enemyHitCallback();
-
-        // print(HpNow + " / " + enemy.HpMax);
-        // 체력 0 이하면 죽음
-        if (HpNow <= 0)
-        {
-            // print("Dead Pos : " + transform.position);
-            //죽음 코루틴 시작
-            StartCoroutine(Dead());
-        }
-    }
-
-    void DamageText(float damage, bool isCritical)
-    {
-        // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
-        TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
-
-        // 크리티컬 떴을때 추가 강조효과 UI
-        if (damage > 0)
-        {
-            if (isCritical)
-            {
-                dmgTxt.color = Color.yellow;
-            }
-            else
-            {
-                dmgTxt.color = Color.white;
-            }
-
-            dmgTxt.text = damage.ToString();
-        }
-        // 데미지 없을때
-        else if (damage == 0)
-        {
-            dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
-            dmgTxt.text = "MISS";
-        }
-        // 데미지가 마이너스일때 (체력회복일때)
-        else if (damage < 0)
-        {
-            dmgTxt.color = new Color(0, 100f / 255f, 1);
-            dmgTxt.text = "+" + (-damage).ToString();
-        }
-
-        //데미지 UI 애니메이션
-        damageTextSeq = DOTween.Sequence();
-        damageTextSeq
-        .PrependCallback(() =>
-        {
-            //제로 사이즈로 시작
-            damageUI.transform.localScale = Vector3.zero;
-        })
-        .Append(
-            //오른쪽으로 dojump
-            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
-            .SetEase(Ease.OutBounce)
-        )
-        .Join(
-            //원래 크기로 늘리기
-            damageUI.transform.DOScale(Vector3.one, 0.5f)
-        )
-        .Append(
-            //줄어들어 사라지기
-            damageUI.transform.DOScale(Vector3.zero, 0.5f)
-        )
-        .OnComplete(() =>
-        {
-            LeanPool.Despawn(damageUI);
-        });
-    }
-
-    public IEnumerator Knockback(GameObject attacker, float knockbackForce)
-    {
-        // 반대 방향 및 넉백파워
-        Vector2 knockbackDir = transform.position - attacker.transform.position;
-        Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.PlayerStat_Now.knockbackForce - 1));
-        knockbackDir = knockbackDir.normalized + knockbackBuff;
-
-        // 피격 반대방향으로 이동
-        transform.DOMove((Vector2)transform.position + knockbackDir, enemy.hitDelay)
-        .SetEase(Ease.OutExpo);
-
-        // print(knockbackDir);
-
-        yield return null;
-    }
-
-    public IEnumerator SlowDebuff(float slowDuration)
-    {
-        // 디버프량
-        float slowAmount = 0.2f;
-        // 슬로우 디버프 아이콘
-        GameObject slowIcon = null;
-
-        // 애니메이션 속도 저하
-        for (int i = 0; i < animList.Count; i++)
-        {
-            animList[i].speed = slowAmount;
-        }
-        // 이동 속도 저하 디버프
-        enemyAI.moveSpeedDebuff = slowAmount;
-
-        // 이미 슬로우 디버프 중 아닐때
-        if (!buffParent.Find(SystemManager.Instance.slowDebuffUI.name))
-            //슬로우 디버프 아이콘 붙이기
-            slowIcon = LeanPool.Spawn(SystemManager.Instance.slowDebuffUI, buffParent.position, Quaternion.identity, buffParent);
-
-        // 슬로우 시간동안 대기
-        yield return new WaitForSeconds(slowDuration);
-
-        // 애니메이션 속도 초기화
-        for (int i = 0; i < animList.Count; i++)
-        {
-            animList[i].speed = 1f;
-        }
-        // 이동 속도 저하 디버프 초기화
-        enemyAI.moveSpeedDebuff = 1f;
-
-        // 슬로우 아이콘 없에기
-        slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
-        if (slowIcon != null)
-            LeanPool.Despawn(slowIcon);
-
-        // 코루틴 변수 초기화
-        slowCoroutine = null;
-    }
-
-    public IEnumerator Dead()
-    {
-        if (enemy == null)
-            yield break;
-
-        // 경직 시간 추가
-        // hitCount += 1f;
-
-        isDead = true;
-
-        //콜라이더 전부 끄기
-        if (hitCollList.Count > 0)
-            foreach (Collider2D coll in hitCollList)
-            {
-                coll.enabled = false;
-            }
-
-        if (spriteList != null)
-        {
-            foreach (SpriteRenderer sprite in spriteList)
-            {
-                // 머터리얼 및 색 변경
-                sprite.material = SystemManager.Instance.hitMat;
-                sprite.color = SystemManager.Instance.hitColor;
-
-                // 색깔 점점 흰색으로
-                sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
-                .SetEase(Ease.OutQuad);
-            }
-
-            // 자폭 몬스터일때
-            if (selfExplosion)
-            {
-                // 폭발 반경 표시
-                explosionTrigger.atkRangeBackground.enabled = true;
-                explosionTrigger.atkRangeFill.enabled = true;
-
-                // 폭발 반경 인디케이터 사이즈 초기화
-                explosionTrigger.atkRangeFill.transform.localScale = Vector3.zero;
-                // 폭발 반경 인디케이터 사이즈 키우기
-                explosionTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
-                .OnComplete(() =>
-                {
-                    explosionTrigger.atkRangeBackground.enabled = false;
-                    explosionTrigger.atkRangeFill.enabled = false;
-                });
-            }
-
-            //색 변경 완료 될때까지 대기
-            yield return new WaitUntil(() => spriteList[0].color == SystemManager.Instance.DeadColor);
-        }
-
-        //전역 시간 속도가 멈춰있다면 복구될때까지 대기
-        yield return new WaitUntil(() => SystemManager.Instance.globalTimeScale > 0);
-
-        // 고스트가 아닐때
-        if (!IsGhost)
-        {
-            //몬스터 총 전투력 빼기
-            EnemySpawn.Instance.NowEnemyPower -= enemy.grade;
-
-            //몬스터 킬 카운트 올리기
-            SystemManager.Instance.killCount++;
-            UIManager.Instance.UpdateKillCount();
-
-            //혈흔 이펙트 생성
-            GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-
-            //아이템 드랍
-            DropItem();
-
-            // 몬스터 리스트에서 몬스터 본인 빼기
-            EnemySpawn.Instance.EnemyDespawn(this);
-        }
-        else
-        {
-
-        }
-
-        //폭발 몬스터면 폭발 시키기
-        if (selfExplosion)
-        {
-            // 폭발 이펙트 스폰
-            GameObject effect = LeanPool.Spawn(explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-
-            // 일단 비활성화
-            effect.SetActive(false);
-
-            // 폭발 데미지 넣기
-            MagicHolder magicHolder = effect.GetComponent<MagicHolder>();
-            magicHolder.setPower = enemy.power;
-
-            // 고스트 여부에 따라 충돌 레이어 바꾸기
-            if (isGhost)
-                effect.layer = LayerMask.NameToLayer("PlayerAttack");
-            else
-                effect.layer = LayerMask.NameToLayer("EnemyAttack");
-
-            // 폭발 활성화
-            effect.SetActive(true);
-        }
-
-        // 먼지 이펙트 생성
-        GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-        // dust.tag = "Enemy";
-
-        // 트윈 및 시퀀스 끝내기
-        transform.DOKill();
-
-        // 공격 타겟 플레이어로 초기화
-        ChangeTarget(PlayerManager.Instance.gameObject);
-
-        // 몬스터 비활성화
-        LeanPool.Despawn(gameObject);
-
-        yield return null;
-    }
-
     // 갖고있는 아이템 드랍
-    void DropItem()
+    public void DropItem()
     {
         //아이템 없으면 원소젬 1개 추가, 최소 젬 1개라도 떨구게
         if (nowHasItem.Count == 0)

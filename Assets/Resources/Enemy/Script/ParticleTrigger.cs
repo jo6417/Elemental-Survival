@@ -41,14 +41,14 @@ public class ParticleTrigger : MonoBehaviour
 
         if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
         {
-            gameObject.layer = LayerMask.NameToLayer("PlayerAttack");
-            particleColl.collidesWith = SystemManager.Instance.layerList.enemyHitLayer;
+            gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+            particleColl.collidesWith = SystemManager.Instance.layerList.EnemyHit_Mask;
         }
 
         if (magicHolder.GetTarget() == MagicHolder.Target.Player)
         {
-            gameObject.layer = LayerMask.NameToLayer("EnemyAttack");
-            particleColl.collidesWith = SystemManager.Instance.layerList.playerHitLayer;
+            gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+            particleColl.collidesWith = SystemManager.Instance.layerList.PlayerHit_Mask;
         }
 
         // 타겟 방향을 쳐다보기
@@ -76,20 +76,20 @@ public class ParticleTrigger : MonoBehaviour
         for (int i = 0; i < collisionEvents.Count; i++)
         {
             // 플레이어에 충돌하면 데미지 주기
-            if (other.CompareTag("Player") && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
+            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 print($"Player : {other.name} : {other.tag} : {other.layer}");
                 StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder.transform));
             }
 
             // 몬스터에 충돌하면 데미지 주기
-            if (other.CompareTag("Enemy"))
+            if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
             {
                 print($"Enemy : {other.name} : {other.tag} : {other.layer}");
 
                 if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
                 {
-                    StartCoroutine(enemyHitBox.enemyManager.Hit(magicHolder.gameObject));
+                    StartCoroutine(enemyHitBox.Hit(magicHolder.gameObject));
                 }
             }
         }

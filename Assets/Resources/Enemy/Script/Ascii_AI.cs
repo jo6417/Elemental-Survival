@@ -384,11 +384,11 @@ public class Ascii_AI : MonoBehaviour
         EnemySpawn.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
         List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
-        foreach (EnemyManager enemy in enemys)
+        foreach (EnemyManager enemyManager in enemys)
         {
             // 보스 본인이 아닐때
-            if (enemy != enemyManager)
-                enemy.stopCount = 3f;
+            if (enemyManager != this.enemyManager)
+                enemyManager.stopCount = 3f;
         }
 
         //감시 시간

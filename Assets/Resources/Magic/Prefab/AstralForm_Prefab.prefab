@@ -121,18 +121,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  target: 0
+  targetType: 0
+  init: 0
+  setPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &7540521824293115842
 MonoBehaviour:
@@ -149,6 +152,8 @@ MonoBehaviour:
   magicHolder: {fileID: 0}
   fogCircle: {fileID: 7540521823902576213}
   fogCanvas: {fileID: 7540521824940693142}
+  ghostPrefab: {fileID: 6164809114435850960, guid: fd1936ed9e7a3a94c8e7440f1159e955,
+    type: 3}
   ghostFrequency: 0.005
   ghostDuration: 0.5
   ghostStartColor: {r: 0.9686107, g: 0.30980396, b: 1, a: 0.5882353}

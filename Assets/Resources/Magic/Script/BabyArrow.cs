@@ -91,8 +91,8 @@ public class BabyArrow : MonoBehaviour
     //화살 발사
     IEnumerator shotArrow()
     {
-        // 마크한 적의 위치 리스트
-        List<Vector2> enemyPos = MarkEnemyPos(magic);
+        // 마크한 적의 오브젝트 리스트
+        List<GameObject> enemyObj = CastMagic.Instance.MarkEnemyObj(magic);
 
         //트윈 모두 중단
         transform.DOPause();
@@ -102,25 +102,23 @@ public class BabyArrow : MonoBehaviour
         // light 밝기 올리기
         DOTween.To(() => headLight.intensity, x => headLight.intensity = x, 2f, 0.5f);
 
-        Vector2 targetPos; //목표 위치
-
         float endRotation; //날아갈 각도
 
         GameObject mark = null;
 
-        for (int i = 0; i < enemyPos.Count; i++)
+        for (int i = 0; i < enemyObj.Count; i++)
         {
-            //목표 위치
-            targetPos = enemyPos[i];
+            // 목표 오브젝트
+            GameObject targetObj = enemyObj[i];
 
             //적의 위치에 마커 생성
-            mark = LeanPool.Spawn(atkMark, targetPos, Quaternion.identity);
+            // mark = LeanPool.Spawn(atkMark, targetObj.transform.position, Quaternion.identity);
 
             //공격하는데 걸리는 시간 = 거리 / 속력
-            float atkDuration = Vector2.Distance(transform.position, targetPos) / MagicDB.Instance.MagicSpeed(magic, true);
+            float atkDuration = Vector2.Distance(transform.position, targetObj.transform.position) / MagicDB.Instance.MagicSpeed(magic, true);
 
             //날아갈 각도
-            Vector2 dir = targetPos - (Vector2)transform.position;
+            Vector3 dir = targetObj.transform.position - transform.position;
             endRotation = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f;
 
             // 마크 포지션 방향으로 domove
@@ -132,7 +130,7 @@ public class BabyArrow : MonoBehaviour
                 .SetEase(Ease.OutCirc)
             )
             .Append(
-                transform.DOMove(targetPos, atkDuration / enemyPos.Count)
+                transform.DOMove(targetObj.transform.position, atkDuration / enemyObj.Count)
             )
             .OnComplete(() =>
             {
@@ -183,44 +181,6 @@ public class BabyArrow : MonoBehaviour
         spinOffset = spinObj.transform.position - slowFollowPlayer;
 
         // spinObj.transform.rotation = Quaternion.Euler(Vector3.zero);
-    }
-
-    // 플레이어 주변 랜덤 적 위치에 마크하기
-    List<Vector2> MarkEnemyPos(MagicInfo magic)
-    {
-        List<Vector2> enemyPos = new List<Vector2>();
-
-        //캐릭터 주변의 적들
-        List<Collider2D> enemyPosList = new List<Collider2D>();
-        float range = MagicDB.Instance.MagicRange(magic);
-        enemyPosList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("Enemy")).ToList();
-
-        // 투사체 개수 (마법 및 플레이어 투사체 버프 합산)
-        int magicProjectile = MagicDB.Instance.MagicProjectile(magic);
-
-        // 적 위치 리스트에 넣기
-        for (int i = 0; i < magicProjectile; i++)
-        {
-            // 플레이어 주변 범위내 랜덤 위치 벡터 생성
-            Vector2 pos = (Vector2)PlayerManager.Instance.transform.position +
-            new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized * range;
-
-            // 범위내 적의 위치
-            if (enemyPosList.Count > 0)
-            {
-                Collider2D col = enemyPosList[Random.Range(0, enemyPosList.Count)];
-                pos = col.transform.position;
-
-                //임시 리스트에서 지우기
-                enemyPosList.Remove(col);
-            }
-
-            // 범위내에 적이 있으면 적위치, 없으면 무작위 위치 넣기
-            enemyPos.Add(pos);
-        }
-
-        //적의 위치 리스트 리턴
-        return enemyPos;
     }
 
     //화살이 날아가는 방향

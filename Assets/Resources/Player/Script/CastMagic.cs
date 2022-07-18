@@ -31,7 +31,7 @@ public class CastMagic : MonoBehaviour
     }
     #endregion
 
-    public List<GameObject> passiveMagics = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
+    public List<GameObject> passiveObjs = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
     public List<MagicInfo> nowCastMagics = new List<MagicInfo>(); //현재 사용중인 마법
     public List<int> defaultMagic = new List<int>(); //기본 마법
     public bool testAllMagic; //! 모든 마법 테스트
@@ -80,7 +80,7 @@ public class CastMagic : MonoBehaviour
             // print(magic.magicName + " : " + magic.magicLevel);
 
             // MagicDB에서 해당 마법과 같은 마법 찾기 (마법마다 같은 인스턴스를 써야 쿨타임 및 레벨 공유 가능)
-            MagicInfo referMagic = MagicDB.Instance.GetMagicByID(magic.id);
+            MagicInfo referMagic = new MagicInfo(MagicDB.Instance.GetMagicByID(magic.id));
 
             // ID가 같은 마법이 없으면 (처음 들어가는 마법이면)
             if (!castList.Exists(x => x.id == magic.id))
@@ -93,7 +93,7 @@ public class CastMagic : MonoBehaviour
 
             // print(referMagic.magicLevel + " : " + magic.magicLevel);
 
-            // 기존 마법에 레벨 더하기
+            // 기존 사용중이던 마법에 레벨만 더하기
             referMagic.magicLevel += magic.magicLevel;
         }
 
@@ -108,10 +108,10 @@ public class CastMagic : MonoBehaviour
                 //ID 같은 궁극기 마법 찾기
                 tempMagic = PlayerManager.Instance.ultimateList.Find(x => x.id == magic.id);
 
-                // 궁극기가 nowCastMagics에 없으면
+                // 마법이 현재 궁극기 리스트에 없으면, 신규 마법이면
                 if (tempMagic == null)
                 {
-                    //TODO 궁극기 리스트에 추가
+                    // 궁극기 리스트에 추가
                     PlayerManager.Instance.ultimateList.Add(magic);
                 }
 
@@ -125,7 +125,7 @@ public class CastMagic : MonoBehaviour
                 //ID 같은 일반 마법 찾기
                 tempMagic = nowCastMagics.Find(x => x.id == magic.id);
 
-                // 마법이 nowCastMagics에 없으면
+                // 마법이 현재 실행 마법 리스트에 없으면, 신규 마법이면
                 if (tempMagic == null)
                 {
                     // 패시브 마법일때
@@ -153,11 +153,22 @@ public class CastMagic : MonoBehaviour
                 }
             }
 
-            //현재 실행중인 마법 레벨이 다르면
+            //현재 실행중인 마법 레벨이 다르면 (마법 레벨업일때)
             if (tempMagic.magicLevel != magic.magicLevel)
             {
                 //최근 갱신된 레벨 넣어주기
                 tempMagic.magicLevel = magic.magicLevel;
+
+                // 패시브 마법이면
+                if (tempMagic.castType == MagicDB.MagicType.passive.ToString())
+                {
+                    // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
+                    GameObject passiveObj = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>().magic.id == tempMagic.id);
+
+                    // 패시브 오브젝트 껐다켜서 초기화
+                    passiveObj.SetActive(false);
+                    passiveObj.SetActive(true);
+                }
             }
         }
 
@@ -190,13 +201,13 @@ public class CastMagic : MonoBehaviour
                 if (nowCastMagics[i].castType == "passive")
                 {
                     // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-                    GameObject passiveMagic = passiveMagics.Find(x => x.GetComponent<MagicHolder>().magic.id == nowCastMagics[i].id);
+                    GameObject passiveMagic = passiveObjs.Find(x => x.GetComponent<MagicHolder>().magic.id == nowCastMagics[i].id);
 
                     // 찾은 오브젝트 디스폰
                     LeanPool.Despawn(passiveMagic);
 
                     // 패시브 리스트에서 제거
-                    passiveMagics.Remove(passiveMagic);
+                    passiveObjs.Remove(passiveMagic);
                 }
 
                 // nowCastMagics에서 제거, Active 마법은 자동 중단됨
@@ -222,7 +233,7 @@ public class CastMagic : MonoBehaviour
             yield break;
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<GameObject> enemyObj = MarkEnemy(magic);
+        List<GameObject> enemyObj = MarkEnemyObj(magic);
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
@@ -235,7 +246,7 @@ public class CastMagic : MonoBehaviour
             GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
             // 레이어 바꾸기
-            magicObj.layer = LayerMask.NameToLayer("PlayerAttack");
+            magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
 
             //매직 홀더 찾기
             MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
@@ -300,7 +311,7 @@ public class CastMagic : MonoBehaviour
             return;
 
         // 플레이어 위치에 마법 생성
-        GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
         //마법 정보 넣기
         magicObj.GetComponentInChildren<MagicHolder>().magic = magic;
@@ -312,36 +323,37 @@ public class CastMagic : MonoBehaviour
         magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
         //passive 마법 오브젝트 리스트에 넣기
-        passiveMagics.Add(magicObj);
+        passiveObjs.Add(magicObj);
 
         //nowCastMagics에 해당 마법 추가
         nowCastMagics.Add(magic);
     }
 
-    List<GameObject> MarkEnemy(MagicInfo magic)
+    public List<GameObject> MarkEnemyObj(MagicInfo magic)
     {
+        // 마법 범위 계산
+        float range = MagicDB.Instance.MagicRange(magic);
+        // 투사체 개수 계산
+        int atkNum = MagicDB.Instance.MagicProjectile(magic);
+
+        //리턴할 적 오브젝트 리스트
         List<GameObject> enemyObj = new List<GameObject>();
 
-        //캐릭터 주변의 적들
+        //범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
         enemyCollList.Clear();
-        float range = MagicDB.Instance.MagicRange(magic);
-        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << LayerMask.NameToLayer("EnemyHit")).ToList();
-
-        // 투사체 개수 (마법 및 플레이어 투사체 버프 합산)
-        int atkNum = MagicDB.Instance.MagicProjectile(magic);
+        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
         // 적 위치 리스트에 넣기
         for (int i = 0; i < atkNum; i++)
         {
-            // 플레이어 주변 범위내 랜덤 위치 벡터 생성
+            // 오브젝트 변수 생성
             GameObject Obj = null;
-            // (Vector2)PlayerManager.Instance.transform.position
-            // + Random.insideUnitCircle * range;
 
-            // 플레이어 주변 범위내 랜덤한 적의 위치
+            // 적 콜라이더 리스트가 비어있지않으면
             if (enemyCollList.Count > 0)
             {
+                // 리스트 내에서 랜덤으로 선택
                 Collider2D col = enemyCollList[Random.Range(0, enemyCollList.Count)];
                 Obj = col.gameObject;
 
@@ -351,7 +363,7 @@ public class CastMagic : MonoBehaviour
                 // print(col.transform.name + col.transform.position);
             }
 
-            // 범위내에 적이 있으면 적위치, 없으면 무작위 위치 넣기
+            // 적 오브젝트 변수에 담기
             enemyObj.Add(Obj);
         }
 
@@ -404,7 +416,7 @@ public class CastMagic : MonoBehaviour
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<GameObject> enemyObj = MarkEnemy(magic);
+        List<GameObject> enemyObj = MarkEnemyObj(magic);
 
         for (int i = 0; i < enemyObj.Count; i++)
         {
