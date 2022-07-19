@@ -154,14 +154,12 @@ public class EnemyAI : MonoBehaviour
             enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speed * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
             //움직일 방향에따라 회전
+            float leftAngle = enemyManager.lookLeft ? 180f : 0f;
+            float rightAngle = enemyManager.lookLeft ? 0f : 180f;
             if (targetDir.x > 0)
-            {
-                transform.rotation = Quaternion.Euler(0, 0, 0);
-            }
+                enemyManager.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
             else
-            {
-                transform.rotation = Quaternion.Euler(0, 180, 0);
-            }
+                enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
         }
 
 
@@ -190,11 +188,13 @@ public class EnemyAI : MonoBehaviour
             // 타겟이 null 이면 멈추기
             enemyManager.rigid.velocity = Vector2.zero;
 
-        //움직일 방향에따라 좌우반전
+        //움직일 방향에따라 회전
+        float leftAngle = enemyManager.lookLeft ? 180f : 0f;
+        float rightAngle = enemyManager.lookLeft ? 0f : 180f;
         if (targetDir.x > 0)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
         else
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
         float distance = targetDir.magnitude > enemyManager.speed ? enemyManager.speed : targetDir.magnitude;

@@ -20,6 +20,7 @@ public class EnemyManager : MonoBehaviour
             return initialFinish;
         }
     }
+    public bool lookLeft = false; //기본 스프라이트가 왼쪽을 바라보는지
     public EnemyHitCallback enemyHitCallback; //해당 몬스터 죽을때 실행될 함수들
     public delegate void EnemyHitCallback();
 

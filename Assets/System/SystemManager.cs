@@ -79,7 +79,7 @@ public class SystemManager : MonoBehaviour
 
     [Header("Tag&Layer")]
     public LayerList layerList;
-    public enum TagNameList { Player, Enemy, Magic, Item, Object, EnemyAttack };
+    public enum TagNameList { Player, Enemy, Magic, Item, Object };
 
     [Header("Pool")]
     public Transform enemyPool;

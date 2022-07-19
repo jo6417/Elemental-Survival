@@ -33,12 +33,16 @@ public class MergeMenu : MonoBehaviour
     }
     #endregion
 
+    [Header("Refer")]
+    public GameObject mergePanel; // 핸드폰 화면 패널
     public Button recipeBtn;
     public Button backBtn;
     public Button homeBtn;
+    public SpriteRenderer lightScreen; // 폰 스크린 전체 빛내는 HDR 이미지
+    public Image blackScreen; // 폰 작아질때 검은 이미지로 화면 가리기
+    public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
 
     [Header("Effect")]
-    public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
     public Vector3 phonePosition; //핸드폰일때 위치 기억
     public Vector3 phoneRotation; //핸드폰일때 회전값 기억
     public Vector3 phoneScale; //핸드폰일때 고정된 스케일
@@ -92,10 +96,10 @@ public class MergeMenu : MonoBehaviour
         selectedIconRect = selectedIcon.GetComponent<RectTransform>();
 
         // 키 입력 정리
-        InputInitial();
+        InputInit();
     }
 
-    void InputInitial()
+    void InputInit()
     {
         //플레이어 인풋 끄기
         PlayerManager.Instance.playerInput.Disable();
@@ -112,7 +116,7 @@ public class MergeMenu : MonoBehaviour
             if (!loadingPanel.activeSelf && !mergeChooseMode)
             {
                 //백 버튼 액션 실행
-                BackBtnAction();
+                StartCoroutine(BackBtnAction());
             }
         };
     }
@@ -172,10 +176,10 @@ public class MergeMenu : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //시간 멈추기
         Time.timeScale = 0f;
@@ -212,17 +216,29 @@ public class MergeMenu : MonoBehaviour
         Vector3 camPos = SystemManager.Instance.camParent.position;
         camPos.z = 0;
 
+        // 화면 라이트 끄기
+        lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 0f), 0.4f)
+        .SetUpdate(true);
+
+        float moveTime = 0.8f;
+
         // 팝업UI 위치,회전,스케일로 복구하기
-        CastMagic.Instance.transform.DOMove(camPos + UIPosition, 1f)
+        CastMagic.Instance.transform.DOMove(camPos + UIPosition, moveTime)
         .SetUpdate(true);
-        CastMagic.Instance.transform.DOScale(Vector3.one, 1f)
+        CastMagic.Instance.transform.DOScale(Vector3.one, moveTime)
         .SetUpdate(true);
-        CastMagic.Instance.transform.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), 1f, RotateMode.WorldAxisAdd)
+        CastMagic.Instance.transform.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
-        transform.localPosition = Vector3.zero;
 
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
+
+        // 핸드폰 화면 패널 켜기
+        mergePanel.SetActive(true);
+
+        // 검은화면 투명하게
+        blackScreen.DOColor(Color.clear, 0.2f)
+        .SetUpdate(true);
 
         // merge 슬롯 모두 켜기
         foreach (Button mergeSlot in mergeList)
@@ -651,11 +667,11 @@ public class MergeMenu : MonoBehaviour
     }
 
     // Back 버튼 누르면
-    public void BackBtnAction()
+    public IEnumerator BackBtnAction()
     {
         // 머지 패널 꺼져있으면 리턴
-        if (!gameObject.activeSelf)
-            return;
+        if (!mergePanel.activeSelf)
+            yield break;
 
         //TODO 레시피 화면일때
         //TODO 메인화면으로 전환
@@ -713,31 +729,53 @@ public class MergeMenu : MonoBehaviour
             // UI 커서 미리 끄기
             UIManager.Instance.UICursorToggle(false);
 
+            // 로딩 패널 켜기
+            loadingPanel.SetActive(true);
+
+            // 백버튼 색 채우기
             DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
             .SetUpdate(true);
 
+            // 화면 검은색으로
+            blackScreen.DOColor(new Color(70f / 255f, 70f / 255f, 70f / 255f, 1), 0.2f)
+            .SetUpdate(true);
+
+            // 화면 꺼지는 동안 대기
+            yield return new WaitForSecondsRealtime(0.2f);
+
+            // 핸드폰 화면 패널 끄기
+            mergePanel.SetActive(false);
+
+            float moveTime = 0.8f;
+
             // 매직폰 위치,회전,스케일로 복구하기
-            CastMagic.Instance.transform.DOMove(phonePosition, 1f)
+            CastMagic.Instance.transform.DOMove(phonePosition, moveTime)
             .SetUpdate(true);
-            CastMagic.Instance.transform.DOScale(phoneScale, 1f)
+            CastMagic.Instance.transform.DOScale(phoneScale, moveTime)
             .SetUpdate(true);
-            CastMagic.Instance.transform.DORotate(phoneRotation + new Vector3(0, 360f, 0), 1f, RotateMode.WorldAxisAdd)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                //백 버튼 변수 초기화
-                backBtnCount = 0f;
-                backBtnFill.fillAmount = 0f;
+            CastMagic.Instance.transform.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
+            .SetUpdate(true);
 
-                // 끝나면 시간 복구하기
-                Time.timeScale = 1f;
+            // 절반쯤 이동했을때 화면 라이트 켜기
+            lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 100f / 255f), moveTime / 2f)
+            .SetDelay(moveTime / 2f)
+            .SetUpdate(true);
 
-                //스마트폰 패널 종료
-                UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
+            // 핸드폰 이동하는 동안 대기
+            yield return new WaitForSecondsRealtime(moveTime);
 
-                // Merge 리스트에서 확인해서 필요한 마법 시전하기
-                CastMagic.Instance.CastCheck();
-            });
+            //백 버튼 변수 초기화
+            backBtnCount = 0f;
+            backBtnFill.fillAmount = 0f;
+
+            // 끝나면 시간 복구하기
+            Time.timeScale = 1f;
+
+            //스마트폰 캔버스 종료
+            UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
+
+            // Merge 리스트에서 확인해서 필요한 마법 시전하기
+            CastMagic.Instance.CastCheck();
         }
     }
 }

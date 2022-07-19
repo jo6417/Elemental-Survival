@@ -5510,7 +5510,7 @@ GameObject:
   - component: {fileID: 2053885278936677329}
   - component: {fileID: 1381354318287867368}
   - component: {fileID: 824052760}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: BiteTrigger
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -15335,7 +15335,7 @@ GameObject:
   - component: {fileID: 694151884535631908}
   m_Layer: 7
   m_Name: HotDog_Prefab
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15375,7 +15375,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialStart: 0
+  initialStart: 1
+  lookLeft: 1
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -15386,16 +15387,13 @@ MonoBehaviour:
   portalSize: 1
   isElite: 0
   eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
   statusEffect: 0
+  isDead: 0
+  selfExplosion: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 0}
+  hitBox: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 1050721965792201694}
   shadow: {fileID: 0}
@@ -15413,6 +15411,10 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  oppositeCount: 0
+  hitCount: 0
+  particleHitCount: 0
+  stopCount: 0
   enemyName: 
   enemyType: 
 --- !u!114 &6804233837202691747
@@ -20444,7 +20446,7 @@ GameObject:
   - component: {fileID: 4585352417041482287}
   m_Layer: 11
   m_Name: DashAtk
-  m_TagString: EnemyAttack
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30864,6 +30866,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5471369762297914884}
     m_Modifications:
+    - target: {fileID: 709002408, guid: 5879da2c47e58954295f4f2e7ac67363, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     - target: {fileID: 709002411, guid: 5879da2c47e58954295f4f2e7ac67363, type: 3}
       propertyPath: enemyManager
       value: 

@@ -109,10 +109,12 @@ public class EnemyAttack : MonoBehaviour
     IEnumerator ChooseAttack()
     {
         //움직일 방향에따라 회전
+        float leftAngle = enemyManager.lookLeft ? 180f : 0f;
+        float rightAngle = enemyManager.lookLeft ? 0f : 180f;
         if (targetDir.x > 0)
-            enemyManager.transform.rotation = Quaternion.Euler(0, 0, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
         else
-            enemyManager.transform.rotation = Quaternion.Euler(0, 180, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         // 이동 멈추기
         enemyManager.rigid.velocity = Vector3.zero;
@@ -146,10 +148,13 @@ public class EnemyAttack : MonoBehaviour
         //플레이어 방향 다시 계산
         targetDir = enemyManager.targetObj.transform.position - transform.position;
 
+        //움직일 방향에따라 회전
+        float leftAngle = enemyManager.lookLeft ? 180f : 0f;
+        float rightAngle = enemyManager.lookLeft ? 0f : 180f;
         if (targetDir.x > 0)
-            enemyManager.transform.rotation = Quaternion.Euler(0, 0, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
         else
-            enemyManager.transform.rotation = Quaternion.Euler(0, 180, 0);
+            enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         // 돌진 시작 인디케이터 켜기
         dashEffect.SetActive(true);

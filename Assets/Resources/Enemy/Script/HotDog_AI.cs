@@ -10,7 +10,7 @@ public class HotDog_AI : MonoBehaviour
     [Header("State")]
     bool initialDone = false;
     AnimState animState;
-    enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch };
+    enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch, BackStep };
     public EnemyManager enemyManager;
     public EnemyAtkTrigger biteTrigger;
     public int nowPhase = 1;
@@ -284,14 +284,14 @@ public class HotDog_AI : MonoBehaviour
             //! 거리 확인용
             stateText.text = "Attack : " + playerDistance;
 
-            // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
-
             // 현재 액션 변경
             enemyManager.nowAction = EnemyManager.Action.Attack;
 
+            // 속도 초기화
+            enemyManager.rigid.velocity = Vector3.zero;
+
             //공격 패턴 결정하기
-            ChooseAttack();
+            StartCoroutine(ChooseAttack());
         }
         else
         {
@@ -340,7 +340,7 @@ public class HotDog_AI : MonoBehaviour
             enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
             // 속도 빠르게
-            runSpeed = 1.5f;
+            runSpeed = 2f;
         }
 
         // 목표 위치 갱신 시간 됬을때
@@ -397,7 +397,7 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
-    void ChooseAttack()
+    IEnumerator ChooseAttack()
     {
         // 현재 액션 변경
         enemyManager.nowAction = EnemyManager.Action.Attack;
@@ -405,6 +405,25 @@ public class HotDog_AI : MonoBehaviour
         // 이동 애니메이션 종료
         enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+
+        // 백스텝 애니메이션 실행 후 대기
+        enemyManager.animList[0].SetTrigger(AnimState.BackStep.ToString());
+
+        // 플레이어까지 방향 벡터
+        Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
+
+        // 플레이어 방향 쳐다보기
+        if (playerDir.x > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        // 백스텝 애니메이션 대기
+        yield return new WaitForSeconds(1f);
 
         // 발 먼지 이펙트 끄기
         handDust.Stop();
@@ -418,7 +437,7 @@ public class HotDog_AI : MonoBehaviour
         print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        randomNum = 2;
+        // randomNum = 2;
 
         switch (randomNum)
         {
@@ -449,6 +468,14 @@ public class HotDog_AI : MonoBehaviour
 
         // 상태값 Idle로 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;
+    }
+
+    void BackStepMove()
+    {
+        // 플레이어까지 방향 벡터
+        Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
+
+        enemyManager.rigid.DOMove((Vector2)transform.position - playerDir.normalized * 10f, 1f);
     }
 
     void StartChargeEffect()

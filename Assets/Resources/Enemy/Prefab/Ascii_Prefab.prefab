@@ -769,6 +769,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 0
+  lookLeft: 1
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -779,16 +780,13 @@ MonoBehaviour:
   portalSize: 2
   isElite: 0
   eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
   statusEffect: 0
+  isDead: 0
+  selfExplosion: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 0}
+  hitBox: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 3634838079005204305}
   shadow: {fileID: 0}
@@ -807,6 +805,10 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  oppositeCount: 0
+  hitCount: 0
+  particleHitCount: 0
+  stopCount: 0
   enemyName: 
   enemyType: 
 --- !u!114 &8675768219682108783
