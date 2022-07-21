@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Pixeye.Unity;
 using System;
+using UnityEditor;
 
 [Serializable]
 public class LayerList
@@ -38,7 +39,6 @@ public class LayerList
     public int Item_Layer { get { return LayerMask.NameToLayer("Item"); } }
     public int Object_Layer { get { return LayerMask.NameToLayer("Object"); } }
 }
-
 
 public class SystemManager : MonoBehaviour
 {
@@ -76,6 +76,10 @@ public class SystemManager : MonoBehaviour
     public float time_current; // 현재 스테이지 플레이 타임
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
+
+    [Header("Test")]
+    public GameObject testObject;
+    public LayerMask PlayerPhysics_Mask;
 
     [Header("Tag&Layer")]
     public LayerList layerList;

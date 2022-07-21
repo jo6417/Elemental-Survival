@@ -259,6 +259,9 @@ public class HotDog_AI : MonoBehaviour
             //! 거리 확인용
             stateText.text = "Bite : " + playerDistance;
 
+            // 속도 초기화
+            enemyManager.rigid.velocity = Vector3.zero;
+
             // 현재 액션 변경
             enemyManager.nowAction = EnemyManager.Action.Attack;
 
@@ -284,11 +287,11 @@ public class HotDog_AI : MonoBehaviour
             //! 거리 확인용
             stateText.text = "Attack : " + playerDistance;
 
-            // 현재 액션 변경
-            enemyManager.nowAction = EnemyManager.Action.Attack;
-
             // 속도 초기화
             enemyManager.rigid.velocity = Vector3.zero;
+
+            // 현재 액션 변경
+            enemyManager.nowAction = EnemyManager.Action.Attack;
 
             //공격 패턴 결정하기
             StartCoroutine(ChooseAttack());
@@ -468,6 +471,9 @@ public class HotDog_AI : MonoBehaviour
 
         // 상태값 Idle로 초기화
         enemyManager.nowAction = EnemyManager.Action.Idle;
+
+        // 애니메이션 속도 초기화
+        enemyManager.animList[0].speed = 1f;
     }
 
     void BackStepMove()
@@ -492,6 +498,9 @@ public class HotDog_AI : MonoBehaviour
         // 물기 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Bite.ToString());
 
+        // 백스텝 애니메이션 실행 예약
+        enemyManager.animList[0].SetTrigger(AnimState.BackStep.ToString());
+
         // 페이즈별로 물기 모션 속도 적용
         enemyManager.animList[0].speed = speedMultiple;
     }
@@ -502,7 +511,7 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.animList[0].speed = 1f;
 
         // 행동 초기화
-        StartCoroutine(SetIdle(1f));
+        StartCoroutine(SetIdle(2f));
     }
     #endregion
 

@@ -90,6 +90,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
   - {fileID: 21300000, guid: 44896786367228440b7f236064f0c38b, type: 3}
   - {fileID: 21300000, guid: fd2ec896f18588247a5a07a6063bbf21, type: 3}
+  - {fileID: 8671521862425668071, guid: c9fa34b652299f447b5903b7020fb582, type: 3}
+  - {fileID: -1957025753035515453, guid: c9fa34b652299f447b5903b7020fb582, type: 3}
   - {fileID: 21300000, guid: 8b6375079bf0d9142af6635db7bd3799, type: 3}
   - {fileID: -5296900632283874856, guid: a532eb0702be3074e85665488a5b491a, type: 3}
   - {fileID: -4883419772191041604, guid: a532eb0702be3074e85665488a5b491a, type: 3}
@@ -230,6 +232,8 @@ SpriteAtlas:
   - B-800_Icon
   - WaterSlime_Icon
   - Ascii_Idle
+  - Ascii_Cable_1
+  - Ascii_Cable_0
   - Slime_Skin
   - Golem_Attack-Sheet_3
   - Golem_Attack-Sheet_2
