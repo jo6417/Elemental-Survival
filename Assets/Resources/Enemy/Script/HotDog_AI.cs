@@ -77,6 +77,9 @@ public class HotDog_AI : MonoBehaviour
 
     IEnumerator Initial()
     {
+        // 초기화 안됨
+        initialDone = false;
+
         // 호흡 이펙트 끄기
         breathEffect.gameObject.SetActive(false);
         // 스모크 이펙트 끄기
@@ -229,7 +232,7 @@ public class HotDog_AI : MonoBehaviour
         if (!enemyManager.ManageState())
             return;
 
-        // 초기화 완료 안됬으면 리턴
+        // AI 초기화 완료 안됬으면 리턴
         if (!initialDone)
             return;
 

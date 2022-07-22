@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 515477352032948623}
   - component: {fileID: 515477352032948617}
   - component: {fileID: 515477352032948622}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Spark
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4875,7 +4875,7 @@ GameObject:
   - component: {fileID: 2909977851084587480}
   - component: {fileID: 890574463894873209}
   - component: {fileID: 820841066109367233}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Explode
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4911,18 +4911,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
+  init: 0
+  setPower: 0
   knockbackForce: 10
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!58 &890574463894873209
 CircleCollider2D:
@@ -4948,7 +4951,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 515477353108599136}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -4972,7 +4975,7 @@ GameObject:
   - component: {fileID: 515477353434930066}
   - component: {fileID: 515477353434930028}
   - component: {fileID: 515477353434930029}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Ash
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -9835,7 +9838,7 @@ GameObject:
   - component: {fileID: 3761902246497963357}
   - component: {fileID: 3761902246497963358}
   - component: {fileID: 3761902246497963359}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Flame
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -14700,7 +14703,7 @@ GameObject:
   - component: {fileID: 332673775897905078}
   - component: {fileID: 6558328931824545046}
   - component: {fileID: 1858461208}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Explosion_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -14734,18 +14737,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
+  init: 0
+  setPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &332673775897905078
 MonoBehaviour:

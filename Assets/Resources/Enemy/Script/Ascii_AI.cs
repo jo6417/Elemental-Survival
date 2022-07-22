@@ -9,8 +9,14 @@ using System.Linq;
 
 public class Ascii_AI : MonoBehaviour
 {
-    public NowState nowState;
-    public enum NowState { Idle, Walk, Attack, Rest, Hit, Dead, TimeStop, SystemStop }
+    [Header("State")]
+    bool initialDone = false;
+    // public NowState nowState;
+    // public enum NowState { Idle, Walk, Attack, Rest, Hit, Dead, TimeStop, SystemStop }
+    public float farDistance = 10f;
+    public float closeDistance = 5f;
+    float speed;
+    List<int> atkList = new List<int>(); //공격 패턴 담을 변수
 
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -22,12 +28,19 @@ public class Ascii_AI : MonoBehaviour
     public Rigidbody2D rigid;
     public SpriteRenderer shadow;
 
+    public LineRenderer leftCable;
+    public LineRenderer rightCable;
+    public Animator handsAnim;
+    public Transform leftHand;
+    public Transform rightHand;
+
     [Header("FallAtk")]
     public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
     public EnemyAtkTrigger fallRangeTrigger; //엎어지기 범위 내에 플레이어가 들어왔는지 보는 트리거
     public SpriteRenderer fallRangeBackground;
     public SpriteRenderer fallRangeIndicator;
     public ParticleSystem fallDustEffect; //엎어질때 발생할 먼지 이펙트
+    public bool fallAtkDone = false; //방금 폴어택 했을때 true, 다른공격 하면 취소
 
     [Header("LaserAtk")]
     public GameObject LaserPrefab; //발사할 레이저 마법 프리팹
@@ -37,12 +50,16 @@ public class Ascii_AI : MonoBehaviour
     public EnemyAtkTrigger LaserRangeTrigger; //레이저 범위 내에 플레이어가 들어왔는지 보는 트리거
     public TextMeshProUGUI laserText;
 
-    float speed;
-    float coolCount;
-    List<int> atkList = new List<int>(); //공격 패턴 담을 변수
+    [Header("Cooltime")]
+    public float coolCount;
+    public float fallCooltime = 1f; //
+    public float laserCooltime = 3f; //무궁화꽃 쿨타임
+    public float groundPunchCooltime = 5f; // 그라운드 펀치 쿨타임
+    public float earthGroundCooltime = 8f; //접지 패턴 쿨타임
 
     //! 테스트
     [Header("Debug")]
+    public TextMeshProUGUI stateText;
     public bool fallAtkAble;
     public bool laserAtkAble;
 
@@ -63,6 +80,9 @@ public class Ascii_AI : MonoBehaviour
 
     IEnumerator Initial()
     {
+        // 초기화 안됨
+        initialDone = false;
+
         //표정 초기화
         faceText.text = "...";
 
@@ -109,6 +129,9 @@ public class Ascii_AI : MonoBehaviour
             // 강력한 데미지로 고정
             laserMagic.power = 20f;
         }
+
+        // 초기화 완료
+        initialDone = true;
     }
 
     private void Update()
@@ -120,88 +143,93 @@ public class Ascii_AI : MonoBehaviour
         if (!enemyManager.ManageState())
             return;
 
+        // AI 초기화 완료 안됬으면 리턴
+        if (!initialDone)
+            return;
+
         // 행동 관리
         ManageAction();
     }
 
     void ManageAction()
     {
-        //공격 리스트 비우기
-        atkList.Clear();
+        // Idle 아니면 리턴
+        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+            return;
 
-        // fall 콜라이더에 플레이어 있으면 리스트에 fall 공격패턴 담기
-        if (fallRangeTrigger.atkTrigger)
-            atkList.Add(0);
+        // 시간 멈추면 리턴
+        if (SystemManager.Instance.globalTimeScale == 0f)
+            return;
 
-        // Laser 콜라이더에 플레이어 있으면 리스트에 Laser 공격패턴 담기
-        if (LaserRangeTrigger.atkTrigger)
-            atkList.Add(1);
+        // 공격 쿨타임 차감
+        if (coolCount > 0)
+            coolCount -= Time.deltaTime;
 
-        // 공격 가능한 패턴 없을때 플레이어 따라가기
-        if (atkList.Count == 0)
+        // 플레이어 방향
+        Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
+
+        // 플레이어와의 거리
+        float playerDistance = playerDir.magnitude;
+
+        // 폴어택 가능할때, 쿨타임 가능할때, 마지막 공격이 폴어택이 아닐때
+        if (fallRangeTrigger.atkTrigger && coolCount <= 0 && !fallAtkDone)
         {
-            // 대기 상태면 걷기 시작
-            if (nowState == NowState.Idle)
-            {
-                nowState = NowState.Walk;
+            //! 거리 확인용
+            stateText.text = "Fall : " + playerDistance;
 
-                // 걷기 애니메이션 시작
-                anim.SetBool("isWalk", true);
-            }
+            // 속도 초기화
+            enemyManager.rigid.velocity = Vector3.zero;
+
+            // 현재 액션 변경
+            enemyManager.nowAction = EnemyManager.Action.Attack;
+
+            // 폴어택 공격
+            FalldownAttack();
+
+            // 연속 폴어택 방지
+            fallAtkDone = true;
+
+            // 쿨타임 갱신
+            coolCount = fallCooltime;
+
+            return;
+        }
+
+        // 공격 범위내에 있고 공격 쿨타임 됬을때
+        if (playerDistance <= farDistance && playerDistance >= closeDistance && coolCount <= 0)
+        {
+            //! 거리 확인용
+            // stateText.text = "Attack : " + playerDistance;
+
+            // // 속도 초기화
+            // enemyManager.rigid.velocity = Vector3.zero;
+
+            // // 현재 액션 변경
+            // enemyManager.nowAction = EnemyManager.Action.Attack;
+
+            // //공격 패턴 결정하기
+            // ChooseAttack();
         }
         else
         {
-            //공격 가능하면 걷기 멈춤
-            if (nowState == NowState.Walk)
-            {
-                // 걷기 애니메이션 끝내기
-                anim.SetBool("isWalk", false);
+            //! 거리 확인용
+            stateText.text = "Move : " + playerDistance;
 
-                // Idle 애니메이션 시작
-                SetIdle();
-            }
-        }
-
-        if (nowState == NowState.Walk)
-        {
-            // 위치 고정 해제
-            rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
-
-            //플레이어 따라가기
-            Walk();
-        }
-        else
-        {
-            //보스 자체 회전값 따라 캔버스 자식들 모두 역반전
-            // canvasChildren.rotation = transform.rotation;
-
-            //rigid 고정, 밀어도 안밀리게
-            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-
-            //이동 멈추기
-            rigid.velocity = Vector2.zero;
-        }
-
-        // 공격 쿨타임 돌리기
-        if (nowState == NowState.Idle)
-        {
-            if (coolCount <= 0)
-            {
-                nowState = NowState.Attack;
-
-                ChooseAttack();
-            }
-            else
-            {
-                coolCount -= Time.deltaTime;
-            }
+            // 공격 범위 내 위치로 이동
+            Move();
         }
     }
 
-    void Walk()
+    void Move()
     {
+        // 걷기 상태로 전환
+        enemyManager.nowAction = EnemyManager.Action.Walk;
+
         //걸을때 표정
         faceText.text = "● ▽ ●";
+
+        // 걷기 애니메이션 시작
+        anim.SetBool("isWalk", true);
 
         //움직일 방향
         Vector2 dir = PlayerManager.Instance.transform.position - transform.position;
@@ -230,11 +258,32 @@ public class Ascii_AI : MonoBehaviour
 
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
+
+        // idle 상태로 전환
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
     void ChooseAttack()
     {
-        nowState = NowState.Attack;
+        // 공격 상태로 전환
+        enemyManager.nowAction = EnemyManager.Action.Attack;
+
+        // 걷기 애니메이션 끝내기
+        anim.SetBool("isWalk", false);
+
+        // 이제 폴어택 가능
+        fallAtkDone = false;
+
+        //공격 리스트 비우기
+        atkList.Clear();
+
+        // fall 콜라이더에 플레이어 있으면 리스트에 fall 공격패턴 담기
+        // if (fallRangeTrigger.atkTrigger)
+        //     atkList.Add(0);
+
+        // Laser 콜라이더에 플레이어 있으면 리스트에 Laser 공격패턴 담기
+        if (LaserRangeTrigger.atkTrigger)
+            atkList.Add(1);
 
         // 가능한 공격 중에서 랜덤 뽑기
         int randAtk = -1;
@@ -243,12 +292,15 @@ public class Ascii_AI : MonoBehaviour
             randAtk = atkList[Random.Range(0, atkList.Count)];
         }
 
+        //! 디버그용 숫자 고정
+        // randAtk = 0;
+
         // 결정된 공격 패턴 실행
         switch (randAtk)
         {
-            case 0:
-                FalldownAttack();
-                break;
+            // case 0:
+            //     FalldownAttack();
+            //     break;
 
             case 1:
                 StartCoroutine(LaserAtk());
@@ -262,13 +314,63 @@ public class Ascii_AI : MonoBehaviour
         atkList.Clear();
     }
 
+    void ToggleCable(bool isPutIn)
+    {
+        // 케이블 집어넣기
+        if (isPutIn)
+        {
+            // 케이블 머리 부유 애니메이션 끄기
+            handsAnim.enabled = false;
+            // 양쪽 손을 시작부분으로 빠르게 domove
+            leftHand.DOMove(leftCable.transform.GetChild(0).position, 0.2f);
+            rightHand.DOMove(rightCable.transform.GetChild(0).position, 0.2f)
+            .OnComplete(() =>
+            {
+                // 케이블 라인 렌더러 끄기
+                leftCable.enabled = false;
+                rightCable.enabled = false;
+
+                // 케이블 헤드 끄기
+                leftCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = false;
+                rightCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = false;
+            });
+        }
+        // 케이블 꺼내기
+        else
+        {
+            // 케이블 헤드 켜기
+            leftCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = true;
+            rightCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = true;
+
+            // 케이블 라인 렌더러 켜기
+            leftCable.enabled = true;
+            rightCable.enabled = true;
+
+            // 양쪽 손을 시작부분으로 빠르게 domove
+            leftHand.DOMove(new Vector2(-12, 10), 0.2f);
+            leftHand.DOMove(new Vector2(12, 10), 0.2f)
+            .OnComplete(() =>
+            {
+                // 케이블 머리 부유 애니메이션 시작
+                handsAnim.enabled = true;
+            });
+        }
+
+    }
+
     void FalldownAttack()
     {
+        // 걷기 애니메이션 종료
+        anim.SetBool("isWalk", false);
+
         // 앞뒤로 흔들려서 당황하는 표정
         faceText.text = "◉ Д ◉";
 
         // 엎어질 준비 애니메이션 시작
         anim.SetTrigger("FallReady");
+
+        // 케이블 집어넣기
+        ToggleCable(true);
 
         // 엎어질 범위 활성화
         fallRangeBackground.enabled = true;
@@ -323,7 +425,7 @@ public class Ascii_AI : MonoBehaviour
         // 일어서기, 휴식 애니메이션 시작
         anim.SetBool("isFallAtk", false);
 
-        StartCoroutine(RestAnim(2f));
+        StartCoroutine(RestAnim());
     }
 
     IEnumerator LaserAtk()
@@ -369,9 +471,25 @@ public class Ascii_AI : MonoBehaviour
         laserText.text = "";
 
         //공격 준비 글자 채우기
-        StartCoroutine(LaserReadyText(targetText));
+        float delay = 0.2f;
+        while (laserText.text.Length < targetText.Length)
+        {
+            laserText.text = targetText.Substring(0, laserText.text.Length + 1);
 
-        // 글자 모두 표시되면 Stop 표시
+            //글자마다 랜덤 딜레이 갱신 
+            delay = Random.Range(0.2f, 0.5f);
+            delay = 0.1f;
+
+            yield return new WaitForSeconds(delay);
+        }
+
+        //펄스 이펙트 활성화
+        pulseEffect.SetActive(true);
+
+        // 공격 준비 끝나면 stop 띄우기
+        laserText.text = "STOP";
+
+        // Stop 표시될때까지 대기
         yield return new WaitUntil(() => laserText.text == "STOP");
 
         // 감시 애니메이션 시작
@@ -447,12 +565,12 @@ public class Ascii_AI : MonoBehaviour
         SystemManager.Instance.globalTimeScale = 1f;
 
         //휴식 시작
-        StartCoroutine(RestAnim(3f));
+        StartCoroutine(RestAnim());
     }
 
     void ShotLaser(Transform shotter)
     {
-        print("레이저 발사");
+        // print("레이저 발사");
 
         //레이저 생성
         GameObject magicObj = LeanPool.Spawn(LaserPrefab, shotter.position, Quaternion.identity, SystemManager.Instance.magicPool);
@@ -471,67 +589,51 @@ public class Ascii_AI : MonoBehaviour
         magicHolder.targetPos = PlayerManager.Instance.transform.position;
     }
 
-    IEnumerator RestAnim(float restTime)
+    IEnumerator RestAnim()
     {
         //휴식 시작
         anim.SetBool("isRest", true);
         //휴식할때 표정
         faceText.text = "x  _  x";
 
-        nowState = NowState.Rest;
-
-        yield return new WaitForSeconds(restTime);
+        // 쿨타임 0 될때까지 대기
+        yield return new WaitForSeconds(2f);
+        // yield return new WaitUntil(() => coolCount <= 0);
 
         //휴식 끝
         anim.SetBool("isRest", false);
 
-        // Idle 상태로 전환
-        SetIdle();
+        // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
+        enemyManager.nowAction = EnemyManager.Action.Idle;
+
+        // 케이블 꺼내기
+        ToggleCable(false);
     }
 
-    void SetIdle()
-    {
-        nowState = NowState.Idle;
+    // void SetIdle()
+    // {
+    //     //로딩중 텍스트 애니메이션
+    //     StartCoroutine(LoadingText());
+    // }
 
-        //로딩중 텍스트 애니메이션
-        StartCoroutine(LoadingText());
-    }
+    // IEnumerator LoadingText()
+    // {
+    //     string targetText = "...";
 
-    IEnumerator LoadingText()
-    {
-        string targetText = "...";
+    //     faceText.text = targetText;
 
-        faceText.text = targetText;
+    //     // 쿨타임 중일때
+    //     while (coolCount > 0)
+    //     {
+    //         if (faceText.text.Length < targetText.Length)
+    //             faceText.text = targetText.Substring(0, faceText.text.Length + 1);
+    //         else
+    //             faceText.text = targetText.Substring(0, 0);
 
-        while (nowState == NowState.Idle)
-        {
-            if (faceText.text.Length < targetText.Length)
-                faceText.text = targetText.Substring(0, faceText.text.Length + 1);
-            else
-                faceText.text = targetText.Substring(0, 0);
+    //         yield return new WaitForSeconds(0.2f);
+    //     }
 
-            yield return new WaitForSeconds(0.2f);
-        }
-    }
-
-    IEnumerator LaserReadyText(string targetText)
-    {
-        float delay = 0.2f;
-
-        while (laserText.text.Length < targetText.Length)
-        {
-            laserText.text = targetText.Substring(0, laserText.text.Length + 1);
-
-            //글자마다 랜덤 딜레이 갱신 
-            delay = Random.Range(0.2f, 0.5f);
-            delay = 0.1f;
-
-            yield return new WaitForSeconds(delay);
-        }
-
-        laserText.text = "STOP";
-
-        //펄스 이펙트 활성화
-        pulseEffect.SetActive(true);
-    }
+    //     // 쿨타임 끝나면 idle로 전환
+    //     enemyManager.nowAction = EnemyManager.Action.Idle;
+    // }
 }

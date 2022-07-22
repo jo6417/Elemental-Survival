@@ -43,9 +43,9 @@ public class Explosion : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
-        // 폭발 이펙트도 마법 정보 및 타겟 넣기
+        // 폭발 이펙트도 마법 정보 및 타겟 넣기        
         subMagicHolder.magic = magic;
-        subMagicHolder.SetTarget(magicHolder.targetType);
+        subMagicHolder.targetType = magicHolder.targetType;
 
         // 목표위치 초기화
         yield return new WaitUntil(() => magicHolder.targetPos != default(Vector3));
