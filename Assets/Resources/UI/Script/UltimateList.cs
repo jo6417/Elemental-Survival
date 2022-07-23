@@ -32,7 +32,7 @@ public class UltimateList : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
 
         UI_Input.Enable();
     }
@@ -57,7 +57,7 @@ public class UltimateList : MonoBehaviour
         }
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 

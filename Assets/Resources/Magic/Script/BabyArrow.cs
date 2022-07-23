@@ -41,10 +41,10 @@ public class BabyArrow : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // magic 정보 들어올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);

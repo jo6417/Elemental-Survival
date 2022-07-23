@@ -17,9 +17,11 @@ public class RopeMaker : MonoBehaviour
     {
         // 링크 전부 찾아 추가하기
         links.Clear();
-        for (int i = 0; i < linkNum; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
-            links.Add(transform.Find("Link_" + (i + 1)));
+            Transform child = transform.GetChild(i);
+            if (child.name.Contains("Link"))
+                links.Add(child);
         }
     }
 
@@ -58,7 +60,12 @@ public class RopeMaker : MonoBehaviour
         //     DestroyImmediate(transform.GetChild(i).gameObject);
         // }
 
+        // 이전 rigidbody 기억하기
         Rigidbody2D preRigid = null;
+
+        //라인 렌더러 없으면 컴포넌트 추가
+        if (lineRenderer == null)
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
 
         // 라인렌더러 포인트 개수 초기화
         lineRenderer.positionCount = linkNum;
@@ -66,7 +73,15 @@ public class RopeMaker : MonoBehaviour
         // 링크 수+2 만큼 오브젝트 생성
         for (int i = 0; i < linkNum + 2; i++)
         {
-            GameObject linkObj = Instantiate(ropeLinkPrefab, transform.position, Quaternion.identity, transform);
+            GameObject linkObj = null;
+
+            // 첫번째거나, 마지막일때
+            if (i == 0 || i == linkNum + 1)
+                linkObj = Instantiate(ropeLinkPrefab, transform.position, Quaternion.identity);
+            else
+                // 자식으로 넣기
+                linkObj = Instantiate(ropeLinkPrefab, transform.position, Quaternion.identity, transform);
+
 
             // rigidbody2d, hingejoint2d 붙여주기
             Rigidbody2D rigid = linkObj.GetComponent<Rigidbody2D>();

@@ -49,10 +49,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (isStackSlot)
             return;
 
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //버튼 상호작용 풀릴때까지 대기
         yield return new WaitUntil(() => button.interactable);

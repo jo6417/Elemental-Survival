@@ -17,10 +17,10 @@ public class BuckShot : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => TryGetComponent(out MagicHolder holder));

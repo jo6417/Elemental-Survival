@@ -49,12 +49,12 @@ public class MagicFalling : MonoBehaviour
     private void OnEnable()
     {
         //초기화 하기
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
 
         StartCoroutine(FallingMagicObj());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //스프라이트 초기화
         if (sprite != null)

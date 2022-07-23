@@ -27,11 +27,11 @@ public class LavaWalk : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
     // 마법 레벨업 할때 새로 초기화 하기
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);

@@ -14,7 +14,7 @@ public class LifeMushroom : MonoBehaviour
         magicHolder = GetComponent<MagicHolder>();
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
@@ -29,7 +29,7 @@ public class LifeMushroom : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
     private void OnDisable()

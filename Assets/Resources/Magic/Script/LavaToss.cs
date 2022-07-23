@@ -16,10 +16,10 @@ public class LavaToss : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         lavaPool.localScale = Vector2.zero;
 

@@ -11,7 +11,7 @@ public class StickyBubble : MonoBehaviour
     public ParticleSystem bubbleParticle;
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
 
-    bool init = false; // 초기화 완료 여부
+    bool initDone = false; // 초기화 완료 여부
 
     private void Awake()
     {
@@ -27,13 +27,13 @@ public class StickyBubble : MonoBehaviour
     IEnumerator Init()
     {
         //초기화 완료 안됨
-        init = false;
+        initDone = false;
 
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
         // magicHolder 초기화 완료까지 대기
-        yield return new WaitUntil(() => magicHolder.init);
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 슬로우 시간 갱신
         magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);
@@ -69,13 +69,13 @@ public class StickyBubble : MonoBehaviour
         bubbleParticle.Play();
 
         //초기화 완료
-        init = true;
+        initDone = true;
     }
 
     private void OnParticleCollision(GameObject other)
     {
         // 초기화 완료 전이면 리턴
-        if (!init)
+        if (!initDone)
             return;
 
         ParticlePhysicsExtensions.GetCollisionEvents(bubbleParticle, other, collisionEvents);

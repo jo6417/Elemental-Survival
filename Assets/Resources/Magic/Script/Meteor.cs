@@ -35,10 +35,10 @@ public class Meteor : MonoBehaviour
     private void OnEnable()
     {
         //초기화 하기
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);

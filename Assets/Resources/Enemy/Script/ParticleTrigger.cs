@@ -28,10 +28,10 @@ public class ParticleTrigger : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;

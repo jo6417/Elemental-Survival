@@ -8,7 +8,7 @@ using UnityEngine;
 public class HotDog_AI : MonoBehaviour
 {
     [Header("State")]
-    bool initialDone = false;
+    bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch, BackStep };
     public EnemyManager enemyManager;
@@ -72,13 +72,13 @@ public class HotDog_AI : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 초기화 안됨
-        initialDone = false;
+        initDone = false;
 
         // 호흡 이펙트 끄기
         breathEffect.gameObject.SetActive(false);
@@ -148,7 +148,7 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.enemyHitCallback += Hit;
 
         // 초기화 완료
-        initialDone = true;
+        initDone = true;
     }
 
     void PhaseChange(int phase)
@@ -233,7 +233,7 @@ public class HotDog_AI : MonoBehaviour
             return;
 
         // AI 초기화 완료 안됬으면 리턴
-        if (!initialDone)
+        if (!initDone)
             return;
 
         //행동 관리

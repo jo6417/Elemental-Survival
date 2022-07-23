@@ -19,10 +19,10 @@ public class MagicAnim : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //애니메이션 멈추기
         anim.speed = 0f;

@@ -38,10 +38,10 @@ public class KingSlime_AI : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 콜라이더 충돌 초기화
         enemyManager.physicsColl.enabled = false;

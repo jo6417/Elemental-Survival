@@ -29,10 +29,10 @@ public class Explosion : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //레이저 라인 렌더러 끄기
         laserLine.enabled = false;

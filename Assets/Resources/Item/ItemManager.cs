@@ -41,10 +41,10 @@ public class ItemManager : MonoBehaviour
     private void OnEnable()
     {
         //아이템 스폰할때마다 초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //아이템DB 로드 완료까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);

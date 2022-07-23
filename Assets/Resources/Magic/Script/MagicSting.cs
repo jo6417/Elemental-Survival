@@ -26,7 +26,7 @@ public class MagicSting : MonoBehaviour
         originScale = transform.localScale;
 
         //초기화 하기
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
     private void OnEnable()
@@ -34,7 +34,7 @@ public class MagicSting : MonoBehaviour
         StartCoroutine(StingMagicObj());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //시작할때 콜라이더 끄기
         ColliderTrigger(false);
@@ -59,7 +59,7 @@ public class MagicSting : MonoBehaviour
     IEnumerator StingMagicObj()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
 
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magic != null);

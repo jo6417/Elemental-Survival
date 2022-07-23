@@ -40,7 +40,7 @@ public class HealingSpa : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
 
         //딜레이마다 거품 생성
         StartCoroutine(BubbleCycle());
@@ -123,7 +123,7 @@ public class HealingSpa : MonoBehaviour
         }
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //마법 정보 불러올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);

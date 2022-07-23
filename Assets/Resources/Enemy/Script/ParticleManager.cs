@@ -19,10 +19,10 @@ public class ParticleManager : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         if (particle == null)
             particle = GetComponentInChildren<ParticleSystem>();

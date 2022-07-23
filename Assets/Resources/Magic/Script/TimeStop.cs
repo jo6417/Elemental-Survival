@@ -24,10 +24,10 @@ public class TimeStop : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 스프라이트 색깔 초기화
         spriteRenderer.color = Color.blue;

@@ -39,10 +39,10 @@ public class MagicProjectile : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //콜라이더 끄기
         coll.enabled = false;

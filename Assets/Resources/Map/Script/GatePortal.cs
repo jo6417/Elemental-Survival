@@ -26,10 +26,10 @@ public class GatePortal : MonoBehaviour
 
     private void OnEnable()
     {
-        Initial();
+        Init();
     }
 
-    void Initial()
+    void Init()
     {
         maxGem = Random.Range(10, 100);
 

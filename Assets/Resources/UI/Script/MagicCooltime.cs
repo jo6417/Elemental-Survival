@@ -17,10 +17,10 @@ public class MagicCooltime : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => toolTipTrigger.Magic != null);
         magic = toolTipTrigger.Magic;

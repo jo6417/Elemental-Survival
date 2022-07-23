@@ -10,7 +10,7 @@ using System.Linq;
 public class Ascii_AI : MonoBehaviour
 {
     [Header("State")]
-    bool initialDone = false;
+    bool initDone = false;
     // public NowState nowState;
     // public enum NowState { Idle, Walk, Attack, Rest, Hit, Dead, TimeStop, SystemStop }
     public float farDistance = 10f;
@@ -28,11 +28,20 @@ public class Ascii_AI : MonoBehaviour
     public Rigidbody2D rigid;
     public SpriteRenderer shadow;
 
-    public LineRenderer leftCable;
-    public LineRenderer rightCable;
-    public Animator handsAnim;
-    public Transform leftHand;
-    public Transform rightHand;
+    [Header("PunchAtk")]
+    public LineRenderer L_Cable;
+    public LineRenderer R_Cable;
+    public Transform L_CableStart;
+    public Transform R_CableStart;
+    public SpriteRenderer L_PlugHead;
+    public SpriteRenderer R_PlugHead;
+    public Animator L_Plug;
+    public Animator R_Plug;
+    public EnemyAttack L_PlugAtk;
+    public EnemyAttack R_PlugAtk;
+    public GameObject L_CableSpark; //케이블 타고 흐르는 스파크
+    public GameObject R_CableSpark; //케이블 타고 흐르는 스파크
+    public ParticleSystem groundCrackEffect; //땅 갈라지는 이펙트
 
     [Header("FallAtk")]
     public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
@@ -75,13 +84,13 @@ public class Ascii_AI : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 초기화 안됨
-        initialDone = false;
+        initDone = false;
 
         //표정 초기화
         faceText.text = "...";
@@ -131,7 +140,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // 초기화 완료
-        initialDone = true;
+        initDone = true;
     }
 
     private void Update()
@@ -144,7 +153,7 @@ public class Ascii_AI : MonoBehaviour
             return;
 
         // AI 초기화 완료 안됬으면 리턴
-        if (!initialDone)
+        if (!initDone)
             return;
 
         // 행동 관리
@@ -199,16 +208,16 @@ public class Ascii_AI : MonoBehaviour
         if (playerDistance <= farDistance && playerDistance >= closeDistance && coolCount <= 0)
         {
             //! 거리 확인용
-            // stateText.text = "Attack : " + playerDistance;
+            stateText.text = "Attack : " + playerDistance;
 
-            // // 속도 초기화
-            // enemyManager.rigid.velocity = Vector3.zero;
+            // 속도 초기화
+            enemyManager.rigid.velocity = Vector3.zero;
 
-            // // 현재 액션 변경
-            // enemyManager.nowAction = EnemyManager.Action.Attack;
+            // 현재 액션 변경
+            enemyManager.nowAction = EnemyManager.Action.Attack;
 
-            // //공격 패턴 결정하기
-            // ChooseAttack();
+            //공격 패턴 결정하기
+            ChooseAttack();
         }
         else
         {
@@ -241,22 +250,24 @@ public class Ascii_AI : MonoBehaviour
         if (dir.x > 0)
         {
             //내부 텍스트 오브젝트들 좌우반전
-            if (transform.rotation == Quaternion.Euler(0, 0, 0))
-            {
-                canvasChildren.rotation = Quaternion.Euler(0, 180, 0);
-            }
+            // if (transform.rotation == Quaternion.Euler(0, 0, 0))
+            // {
+            //     canvasChildren.rotation = Quaternion.Euler(0, 180, 0);
+            // }
 
-            transform.rotation = Quaternion.Euler(0, 180, 0);
+            if (transform.rotation != Quaternion.Euler(0, -180, 0))
+                transform.rotation = Quaternion.Euler(0, 180, 0);
         }
         else
         {
             //내부 텍스트 오브젝트들 좌우반전
-            if (transform.rotation == Quaternion.Euler(0, 180, 0))
-            {
-                canvasChildren.rotation = Quaternion.Euler(0, 0, 0);
-            }
+            // if (transform.rotation == Quaternion.Euler(0, 180, 0))
+            // {
+            //     canvasChildren.rotation = Quaternion.Euler(0, 0, 0);
+            // }
 
-            transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (transform.rotation != Quaternion.Euler(0, 0, 0))
+                transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
         // idle 상태로 전환
@@ -293,14 +304,14 @@ public class Ascii_AI : MonoBehaviour
         }
 
         //! 디버그용 숫자 고정
-        // randAtk = 0;
+        randAtk = 0;
 
         // 결정된 공격 패턴 실행
         switch (randAtk)
         {
-            // case 0:
-            //     FalldownAttack();
-            //     break;
+            case 0:
+                StartCoroutine(PunchAttack());
+                break;
 
             case 1:
                 StartCoroutine(LaserAtk());
@@ -316,47 +327,64 @@ public class Ascii_AI : MonoBehaviour
 
     void ToggleCable(bool isPutIn)
     {
+        // 케이블 시작점은 모니터 뒤로 이동
+        L_CableStart.DOLocalMove(new Vector2(5, 0), 0.5f);
+        R_CableStart.DOLocalMove(new Vector2(-5, 0), 0.5f);
+
+        // 플러그 각도 초기화
+        L_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+        R_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+
         // 케이블 집어넣기
         if (isPutIn)
         {
             // 케이블 머리 부유 애니메이션 끄기
-            handsAnim.enabled = false;
-            // 양쪽 손을 시작부분으로 빠르게 domove
-            leftHand.DOMove(leftCable.transform.GetChild(0).position, 0.2f);
-            rightHand.DOMove(rightCable.transform.GetChild(0).position, 0.2f)
+            L_Plug.enabled = false;
+            R_Plug.enabled = false;
+
+            // 양쪽 플러그를 시작부분으로 빠르게 domove
+            L_Plug.transform.DOLocalMove(new Vector2(5, 0), 0.5f);
+            R_Plug.transform.DOLocalMove(new Vector2(-5, 0), 0.5f)
             .OnComplete(() =>
             {
                 // 케이블 라인 렌더러 끄기
-                leftCable.enabled = false;
-                rightCable.enabled = false;
+                L_Cable.enabled = false;
+                R_Cable.enabled = false;
 
                 // 케이블 헤드 끄기
-                leftCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = false;
-                rightCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = false;
+                L_PlugHead.enabled = false;
+                R_PlugHead.enabled = false;
             });
         }
         // 케이블 꺼내기
         else
         {
             // 케이블 헤드 켜기
-            leftCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = true;
-            rightCable.transform.GetChild(leftCable.transform.childCount - 1).GetComponent<SpriteRenderer>().enabled = true;
+            L_PlugHead.enabled = true;
+            R_PlugHead.enabled = true;
 
             // 케이블 라인 렌더러 켜기
-            leftCable.enabled = true;
-            rightCable.enabled = true;
+            L_Cable.enabled = true;
+            R_Cable.enabled = true;
 
-            // 양쪽 손을 시작부분으로 빠르게 domove
-            leftHand.DOMove(new Vector2(-12, 10), 0.2f);
-            leftHand.DOMove(new Vector2(12, 10), 0.2f)
+            // 케이블 시작점은 모니터 뒤로 이동
+            L_CableStart.DOLocalMove(new Vector2(5, 0), 0.5f);
+            R_CableStart.DOLocalMove(new Vector2(-5, 0), 0.5f);
+
+            // 양쪽 플러그를 시작부분으로 빠르게 domove
+            L_Plug.transform.DOLocalMove(new Vector2(-12, 10), 0.5f);
+            R_Plug.transform.DOLocalMove(new Vector2(12, 10), 0.5f)
             .OnComplete(() =>
             {
                 // 케이블 머리 부유 애니메이션 시작
-                handsAnim.enabled = true;
+                L_Plug.enabled = true;
+                R_Plug.enabled = true;
             });
         }
 
     }
+
+    #region FallAttack
 
     void FalldownAttack()
     {
@@ -427,6 +455,143 @@ public class Ascii_AI : MonoBehaviour
 
         StartCoroutine(RestAnim());
     }
+
+    #endregion
+
+    #region PunchAttack
+
+    IEnumerator PunchAttack()
+    {
+        // 얼굴 바꾸기
+        faceText.text = "Ϟ( ◕.̫ ◕ )Ϟ";
+
+        // 케이블 애니메이션 끄기
+        L_Plug.enabled = false;
+        R_Plug.enabled = false;
+
+        // 전원 케이블을 옆으로 이동
+        L_Plug.transform.DOLocalMove(new Vector3(-15f, 10f, 0), 0.5f);
+        R_Plug.transform.DOLocalMove(new Vector3(15f, 10f, 0), 0.5f);
+
+        // 공격 케이블 시작점은 모니터 모서리로 이동
+        L_CableStart.DOLocalMove(Vector3.zero, 0.5f);
+        R_CableStart.DOLocalMove(Vector3.zero, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 케이블 sort layer를 모니터 앞으로 바꾸기
+        L_Cable.sortingOrder = 1;
+        R_Cable.sortingOrder = 1;
+
+        // 조준 시간 계산
+        float aimTime = Random.Range(1f, 2f);
+
+        //좌측 플러그 떨면서 조준 사격
+        L_Plug.transform.DOShakePosition(aimTime, 0.3f, 50, 90, false, false);
+        StartCoroutine(ShotPunch(aimTime, true));
+
+        aimTime += 0.5f;
+
+        // 우측 플러그 떨면서 조준 사격
+        R_Plug.transform.DOShakePosition(aimTime, 0.3f, 50, 90, false, false);
+        yield return StartCoroutine(ShotPunch(aimTime, false));
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 플러그 각도 초기화
+        L_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+        R_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+
+        //휴식 시작
+        StartCoroutine(RestAnim());
+    }
+
+    IEnumerator ShotPunch(float aimTime, bool isLeft)
+    {
+        // 케이블 방향에 따라 변수 정하기
+        Animator plug = isLeft ? L_Plug : R_Plug;
+        EnemyAttack plugAtk = isLeft ? L_PlugAtk : R_PlugAtk;
+        Transform cableStart = isLeft ? L_CableStart : R_CableStart;
+        LineRenderer cableLine = isLeft ? L_Cable : R_Cable;
+        GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark;
+        Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
+
+        // 케이블 끝 전기 파티클 켜기
+        plugHead.transform.GetChild(0).gameObject.SetActive(true);
+
+        float aimCount = aimTime;
+        while (aimCount > 0)
+        {
+            //시간 차감
+            aimCount -= Time.deltaTime;
+
+            // 플러그가 플레이어 방향 조준
+            plugHead.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, plug.transform.position) - 90f);
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+
+        // 케이블 끝 전기 파티클 끄기
+        plugHead.transform.GetChild(0).gameObject.SetActive(false);
+
+        // 케이블 끝이 반짝 빛나는 파티클 인디케이터
+        plugHead.transform.GetChild(1).gameObject.SetActive(true);
+
+        // 플레이어 위치로 빠르게 날려서 바닥에 꽂기
+        plug.transform.DOMove(PlayerManager.Instance.transform.position, 0.5f)
+        .SetEase(Ease.InBack)
+        .OnComplete(() =>
+        {
+            // 땅에 꽂힐때 이펙트 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
+            LeanPool.Spawn(groundCrackEffect, plug.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        });
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 스파크 켜기
+        cableSpark.SetActive(true);
+        // 전기 파티클이 전선을 타고 플러그까지 빠르게 도달
+        for (int i = 0; i < cableLine.positionCount; i++)
+        {
+            // 파티클 오브젝트가 라인 렌더러 포인트 순서대로 이동
+            cableSpark.transform.localPosition = cableLine.GetPosition(i);
+
+            // (1 / 링크개수) 만큼 대기
+            yield return new WaitForSeconds(1f / cableLine.positionCount);
+        }
+        // 스파크 끄기
+        cableSpark.SetActive(false);
+
+        // 도달 완료하면 공격 콜라이더 켜기
+        plugAtk.gameObject.SetActive(true);
+        StartCoroutine(plugAtk.AttackNDisable());
+
+        // 공격 시간동안 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 케이블 sort layer를 모니터 뒤로 바꾸기
+        cableLine.sortingOrder = -1;
+
+        // 케이블 시작점은 모니터 뒤로 이동
+        Vector2 startPos = isLeft ? new Vector2(5, 0) : new Vector2(-5, 0);
+        cableStart.DOLocalMove(startPos, 0.5f);
+
+        // 플러그 원위치
+        Vector2 plugPos = isLeft ? new Vector2(-12, 10) : new Vector2(12, 10);
+        plug.transform.DOLocalMove(plugPos, 0.5f)
+        .OnComplete(() =>
+        {
+            // 케이블 머리 부유 애니메이션 시작
+            plug.enabled = true;
+        });
+
+        // 원위치 하는동안 대기
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    #endregion
+
+    #region LaserAttack
 
     IEnumerator LaserAtk()
     {
@@ -589,6 +754,8 @@ public class Ascii_AI : MonoBehaviour
         magicHolder.targetPos = PlayerManager.Instance.transform.position;
     }
 
+    #endregion
+
     IEnumerator RestAnim()
     {
         //휴식 시작
@@ -606,8 +773,8 @@ public class Ascii_AI : MonoBehaviour
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
         enemyManager.nowAction = EnemyManager.Action.Idle;
 
-        // 케이블 꺼내기
-        ToggleCable(false);
+        // // 케이블 꺼내기
+        // ToggleCable(false);
     }
 
     // void SetIdle()

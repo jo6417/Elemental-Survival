@@ -26,10 +26,10 @@ public class SuperSerum : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 초기화 시작
         initialFinish = false;

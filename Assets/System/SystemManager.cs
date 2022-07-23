@@ -135,10 +135,10 @@ public class SystemManager : MonoBehaviour
     private void Awake()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return null;
 
@@ -185,6 +185,18 @@ public class SystemManager : MonoBehaviour
         ColorUtility.TryParseHtmlString("#" + hex, out color);
 
         return color;
+    }
+
+    public float GetVector2Dir(Vector2 to, Vector2 from)
+    {
+        // 타겟 방향
+        Vector2 targetDir = to - from;
+
+        // 플레이어 방향 2D 각도
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+
+        // 각도를 리턴
+        return angle;
     }
 
     public void AllTimeScale(float scale)

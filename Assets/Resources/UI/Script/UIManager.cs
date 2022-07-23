@@ -102,10 +102,10 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         //입력 초기화
-        InputInitial();
+        InputInit();
     }
 
-    void InputInitial()
+    void InputInit()
     {
         UI_Input = new NewInput();
 

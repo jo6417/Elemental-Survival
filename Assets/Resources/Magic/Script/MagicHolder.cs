@@ -26,7 +26,7 @@ public class MagicHolder : MonoBehaviour
         get { return Mathf.Clamp(multipleSpeed, 1f, 100f); }
         set { multipleSpeed = value; }
     }
-    public bool init = false; //초기화 완료 여부
+    public bool initDone = false; //초기화 완료 여부
 
     [Header("After Effect")]
     public float setPower = 0f; // 고정된 데미지
@@ -48,13 +48,13 @@ public class MagicHolder : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 초기화 완료 안됨
-        init = false;
+        initDone = false;
 
         // 마법 정보 알기 전까지 콜라이더 끄기
         if (coll != null)
@@ -78,7 +78,7 @@ public class MagicHolder : MonoBehaviour
         magicName = magic.magicName;
 
         // 초기화 완료
-        init = true;
+        initDone = true;
     }
 
     private void OnDisable()

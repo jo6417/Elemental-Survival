@@ -40,7 +40,7 @@ public class UltimateMagic : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
     private void Start()
@@ -48,7 +48,7 @@ public class UltimateMagic : MonoBehaviour
         // newMagic = MagicDB.Instance.GetMagicByID(49);
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //모든 오브젝트 끄고 대기
         magicPanel.gameObject.SetActive(false);

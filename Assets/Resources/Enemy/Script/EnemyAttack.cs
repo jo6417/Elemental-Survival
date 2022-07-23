@@ -6,9 +6,12 @@ using UnityEngine;
 
 public class EnemyAttack : MonoBehaviour
 {
+    [Header("State")]
+    bool initDone = false;
     Vector3 targetDir;
     public float activeAngleOffset; // 액티브 공격 오브젝트 방향 오프셋
     bool attackReady; //공격 준비중
+    public bool alwaysOnCollider = false; //항상 콜라이더 켜기 옵션
 
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -31,11 +34,13 @@ public class EnemyAttack : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
+        initDone = false;
+
         //공격 콜라이더 끄기
         if (atkColl)
             atkColl.enabled = false;
@@ -60,6 +65,12 @@ public class EnemyAttack : MonoBehaviour
 
         //공격 준비 해제
         attackReady = false;
+
+        // 콜라이더 항상 켜기일때
+        if (alwaysOnCollider)
+            atkColl.enabled = true;
+
+        initDone = true;
     }
 
     private void FixedUpdate()
@@ -73,8 +84,20 @@ public class EnemyAttack : MonoBehaviour
 
     private void Update()
     {
+        //공격 오브젝트 아무것도 없으면 리턴
+        if (activeObj == null && dashEffect == null)
+            return;
+
+        // 초기화 안됬으면 리턴
+        if (!initDone)
+            return;
+
         // 몬스터 매니저 비활성화 되었으면 리턴
         if (!enemyManager)
+            return;
+
+        // 공격 범위 0이하면 자동 공격 안한다는 뜻이므로 리턴
+        if (enemyManager.attackRange <= 0)
             return;
 
         // 상태 이상 있으면
@@ -97,7 +120,7 @@ public class EnemyAttack : MonoBehaviour
         targetDir = enemyManager.targetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
-        if (targetDir.magnitude <= enemyManager.attackRange && enemyManager.attackRange > 0)
+        if (targetDir.magnitude <= enemyManager.attackRange)
         {
             //공격 준비로 전환
             attackReady = true;
@@ -138,6 +161,8 @@ public class EnemyAttack : MonoBehaviour
     public IEnumerator DashAttack()
     {
         // print("Dash Attack");
+        // 초기화 완료까지 대기
+        yield return new WaitUntil(() => initDone);
 
         // 공격 액션으로 전환
         enemyManager.nowAction = EnemyManager.Action.Attack;
@@ -196,6 +221,8 @@ public class EnemyAttack : MonoBehaviour
     public IEnumerator RangeAttack()
     {
         // print("Active Attack");
+        // 초기화 완료까지 대기
+        yield return new WaitUntil(() => initDone);
 
         // 공격 액션으로 전환
         enemyManager.nowAction = EnemyManager.Action.Attack;
@@ -215,5 +242,22 @@ public class EnemyAttack : MonoBehaviour
 
         //공격 준비 해제
         attackReady = false;
+    }
+
+    public IEnumerator AttackNDisable()
+    {
+        // 초기화 완료까지 대기
+        yield return new WaitUntil(() => initDone);
+
+        // 공격 콜라이더 활성화
+        atkColl.enabled = true;
+
+        // 1프레임동안 대기
+        yield return new WaitForSeconds(Time.deltaTime);
+
+        // 공격 콜라이더 비활성화
+        atkColl.enabled = false;
+
+        gameObject.SetActive(false);
     }
 }

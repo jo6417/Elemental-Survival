@@ -132,10 +132,10 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Origin = PlayerStat_Now;
 
         // 입력값 초기화
-        InputInitial();
+        InputInit();
     }
 
-    void InputInitial()
+    void InputInit()
     {
         playerInput = new NewInput();
 

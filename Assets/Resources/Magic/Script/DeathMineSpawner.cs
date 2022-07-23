@@ -14,7 +14,7 @@ public class DeathMineSpawner : MonoBehaviour
         mineMagicHolder = GetComponent<MagicHolder>();
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => mineMagicHolder.magic != null);
         magic = mineMagicHolder.magic;
@@ -29,7 +29,7 @@ public class DeathMineSpawner : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
     private void OnDisable()

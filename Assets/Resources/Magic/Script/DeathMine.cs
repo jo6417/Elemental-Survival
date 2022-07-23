@@ -23,10 +23,10 @@ public class DeathMine : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 공격 불가능
         atkAble = false;

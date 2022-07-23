@@ -21,10 +21,10 @@ public class MagicArea : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         //색깔 초기화
         sprite.color = Color.white;

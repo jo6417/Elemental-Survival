@@ -25,10 +25,10 @@ public class Nimbus : MonoBehaviour
     private void OnEnable()
     {
         //초기화
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;

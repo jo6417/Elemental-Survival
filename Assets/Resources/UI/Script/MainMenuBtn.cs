@@ -18,10 +18,10 @@ public class MainMenuBtn : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Initial());
+        StartCoroutine(Init());
     }
 
-    IEnumerator Initial()
+    IEnumerator Init()
     {
         // 기본값 선택 대상을 preSelectedObj 에 넣기
         if (EventSystem.current.firstSelectedGameObject.TryGetComponent(out Button btn))
