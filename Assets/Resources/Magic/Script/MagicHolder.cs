@@ -29,7 +29,7 @@ public class MagicHolder : MonoBehaviour
     public bool initDone = false; //초기화 완료 여부
 
     [Header("After Effect")]
-    public float setPower = 0f; // 고정된 데미지
+    public float fixedPower = 0f; // 고정된 데미지
     public float knockbackForce = 0; //넉백 파워
     public bool isStop; //정지 여부
     public float poisonTime = 0; // 독 도트 데미지 지속시간
@@ -86,7 +86,7 @@ public class MagicHolder : MonoBehaviour
         //변수 초기화
         addDuration = 0;
         multipleSpeed = 1;
-        setPower = 0f;
+        fixedPower = 0f;
     }
 
     public Target GetTarget()

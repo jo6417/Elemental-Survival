@@ -170,7 +170,7 @@ public class EnemyHitBox : MonoBehaviour
             if (magic.power > 0)
             {
                 //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                float damage = magicHolder.setPower == 0 ? power : magicHolder.setPower;
+                float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
@@ -568,7 +568,7 @@ public class EnemyHitBox : MonoBehaviour
 
             // 폭발 데미지 넣기
             MagicHolder magicHolder = effect.GetComponent<MagicHolder>();
-            magicHolder.setPower = enemyManager.enemy.power;
+            magicHolder.fixedPower = enemyManager.enemy.power;
 
             // 고스트 여부에 따라 충돌 레이어 바꾸기
             if (enemyManager.IsGhost)

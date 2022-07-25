@@ -28,7 +28,7 @@ public class Ascii_AI : MonoBehaviour
     public Rigidbody2D rigid;
     public SpriteRenderer shadow;
 
-    [Header("PunchAtk")]
+    [Header("Cable")]
     public LineRenderer L_Cable;
     public LineRenderer R_Cable;
     public Transform L_CableStart;
@@ -42,6 +42,7 @@ public class Ascii_AI : MonoBehaviour
     public GameObject L_CableSpark; //케이블 타고 흐르는 스파크
     public GameObject R_CableSpark; //케이블 타고 흐르는 스파크
     public ParticleSystem groundCrackEffect; //땅 갈라지는 이펙트
+    public GameObject groundElectro; //바닥 전기 공격 프리팹
 
     [Header("FallAtk")]
     public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
@@ -304,7 +305,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         //! 디버그용 숫자 고정
-        randAtk = 0;
+        randAtk = 2;
 
         // 결정된 공격 패턴 실행
         switch (randAtk)
@@ -315,6 +316,10 @@ public class Ascii_AI : MonoBehaviour
 
             case 1:
                 StartCoroutine(LaserAtk());
+                break;
+
+            case 2:
+                StartCoroutine(GroundAttack());
                 break;
         }
 
@@ -509,7 +514,7 @@ public class Ascii_AI : MonoBehaviour
     IEnumerator ShotPunch(float aimTime, bool isLeft)
     {
         // 케이블 방향에 따라 변수 정하기
-        Animator plug = isLeft ? L_Plug : R_Plug;
+        Animator plugControler = isLeft ? L_Plug : R_Plug;
         EnemyAttack plugAtk = isLeft ? L_PlugAtk : R_PlugAtk;
         Transform cableStart = isLeft ? L_CableStart : R_CableStart;
         LineRenderer cableLine = isLeft ? L_Cable : R_Cable;
@@ -526,7 +531,7 @@ public class Ascii_AI : MonoBehaviour
             aimCount -= Time.deltaTime;
 
             // 플러그가 플레이어 방향 조준
-            plugHead.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, plug.transform.position) - 90f);
+            plugHead.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, plugControler.transform.position) - 90f);
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
@@ -537,13 +542,22 @@ public class Ascii_AI : MonoBehaviour
         // 케이블 끝이 반짝 빛나는 파티클 인디케이터
         plugHead.transform.GetChild(1).gameObject.SetActive(true);
 
-        // 플레이어 위치로 빠르게 날려서 바닥에 꽂기
-        plug.transform.DOMove(PlayerManager.Instance.transform.position, 0.5f)
+        Vector2 playerPos = PlayerManager.Instance.transform.position;
+        // 플레이어 위치로 플러그 헤드 이동
+        plugHead.transform.DOMove(playerPos, 0.5f)
         .SetEase(Ease.InBack)
         .OnComplete(() =>
         {
-            // 땅에 꽂힐때 이펙트 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
-            LeanPool.Spawn(groundCrackEffect, plug.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            // 이동 완료되면 플러그 멈추기
+            plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        });
+        // 플레이어 위치로 플러그 컨트롤러 이동
+        plugControler.transform.DOMove(playerPos, 0.5f)
+        .SetEase(Ease.InBack)
+        .OnComplete(() =>
+        {
+            // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
+            LeanPool.Spawn(groundCrackEffect, plugHead.transform.GetChild(0).position, Quaternion.identity, SystemManager.Instance.effectPool);
         });
 
         yield return new WaitForSeconds(0.5f);
@@ -566,8 +580,14 @@ public class Ascii_AI : MonoBehaviour
         plugAtk.gameObject.SetActive(true);
         StartCoroutine(plugAtk.AttackNDisable());
 
+        // 플러그 흔들기
+        plugControler.transform.DOShakePosition(0.5f, 0.3f, 50, 90, false, false);
+
         // 공격 시간동안 대기
         yield return new WaitForSeconds(0.5f);
+
+        // 공격 완료하면 플러그 이동 재개
+        plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
 
         // 케이블 sort layer를 모니터 뒤로 바꾸기
         cableLine.sortingOrder = -1;
@@ -578,15 +598,204 @@ public class Ascii_AI : MonoBehaviour
 
         // 플러그 원위치
         Vector2 plugPos = isLeft ? new Vector2(-12, 10) : new Vector2(12, 10);
-        plug.transform.DOLocalMove(plugPos, 0.5f)
+        plugControler.transform.DOLocalMove(plugPos, 0.5f)
         .OnComplete(() =>
         {
             // 케이블 머리 부유 애니메이션 시작
-            plug.enabled = true;
+            plugControler.enabled = true;
         });
 
         // 원위치 하는동안 대기
         yield return new WaitForSeconds(0.5f);
+    }
+
+    #endregion
+
+    #region GroundAttack
+
+    IEnumerator GroundAttack()
+    {
+        // 얼굴 바꾸기
+        faceText.text = "Ϟ( ◕.̫ ◕ )Ϟ";
+
+        // 플러그 땅에 꼽기
+        StartCoroutine(Grounding(true));
+        yield return StartCoroutine(Grounding(false));
+
+        // 전기 방출 횟수 계산
+        int atkNum = Random.Range(3, 7);
+
+        // 정해진 횟수만큼 전기 방출
+        for (int i = 0; i < atkNum; i++)
+        {
+            // 전기 방출
+            StartCoroutine(ElectroRelease(true, 50));
+            yield return StartCoroutine(ElectroRelease(false, 50));
+
+            // 방출마다 후딜레이
+            yield return new WaitForSeconds(1f);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 플러그 이동 가능
+        L_PlugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        R_PlugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+
+        // 플러그 각도 초기화
+        L_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+        R_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+
+        // 케이블 sort layer를 모니터 뒤로 바꾸기
+        L_Cable.sortingOrder = -1;
+        R_Cable.sortingOrder = -1;
+
+        // 케이블 시작점은 모니터 뒤로 이동
+        L_CableStart.DOLocalMove(new Vector2(5, 0), 0.5f);
+        R_CableStart.DOLocalMove(new Vector2(-5, 0), 0.5f);
+
+        // 플러그 원위치
+        L_Plug.transform.DOLocalMove(new Vector2(-12, 10), 0.5f);
+        R_Plug.transform.DOLocalMove(new Vector2(12, 10), 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 케이블 애니메이션 시작
+        L_Plug.enabled = true;
+        R_Plug.enabled = true;
+
+        //휴식 시작
+        StartCoroutine(RestAnim());
+    }
+
+    IEnumerator Grounding(bool isLeft)
+    {
+        // 케이블 방향에 따라 변수 정하기
+        Animator plugControler = isLeft ? L_Plug : R_Plug;
+        Transform cableStart = isLeft ? L_CableStart : R_CableStart;
+        LineRenderer cableLine = isLeft ? L_Cable : R_Cable;
+        Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
+
+        EnemyAttack plugAtk = isLeft ? L_PlugAtk : R_PlugAtk;
+        GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark;
+
+        // 케이블 애니메이션 끄기
+        plugControler.enabled = false;
+
+        // 전원 케이블을 옆으로 이동
+        Vector2 plugPos = isLeft ? new Vector3(-15f, 10f, 0) : new Vector3(15f, 10f, 0);
+        plugControler.transform.DOLocalMove(plugPos, 0.5f);
+
+        // 공격 케이블 시작점은 모니터 모서리로 이동
+        cableStart.DOLocalMove(Vector3.zero, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 케이블 sort layer를 모니터 앞으로 바꾸기
+        cableLine.sortingOrder = 1;
+
+        // 땅에 플러그 내리꼽기
+        //플러그가 아래를 바라보기
+        plugHead.transform.DORotate(new Vector3(0, 0, 180f), 0.5f);
+
+        Vector3 downPos = isLeft ? transform.position + new Vector3(-15f, 2.2f, 0) : transform.position + new Vector3(15f, 2.5f, 0);
+        // 플러그 헤드 아래로 이동
+        plugControler.transform.DOMove(downPos, 1f)
+        .SetEase(Ease.InBack);
+
+        // 플러그 컨트롤러 아래로 이동
+        plugHead.transform.DOMove(downPos, 1f)
+        .SetEase(Ease.InBack)
+        .OnComplete(() =>
+        {
+            // 이동 완료되면 플러그 멈추기
+            plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+
+            // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
+            LeanPool.Spawn(groundCrackEffect, plugHead.transform.GetChild(0).position, Quaternion.identity, SystemManager.Instance.effectPool);
+        });
+
+        yield return new WaitForSeconds(1f);
+    }
+
+    IEnumerator ElectroRelease(bool isLeft, int summonNum)
+    {
+        Animator plugControler = isLeft ? L_Plug : R_Plug;
+        Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
+        LineRenderer cableLine = isLeft ? L_Cable : R_Cable; // 케이블 라인 오브젝트
+        GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark; // 케이블 타고 흐르는 스파크 이펙트
+
+        // 스파크 켜기
+        cableSpark.SetActive(true);
+        // 전기 파티클이 전선을 타고 플러그까지 빠르게 도달
+        for (int i = 0; i < cableLine.positionCount; i++)
+        {
+            // 파티클 오브젝트가 라인 렌더러 포인트 순서대로 이동
+            cableSpark.transform.localPosition = cableLine.GetPosition(i);
+
+            // (1 / 링크개수) 만큼 대기
+            yield return new WaitForSeconds(1f / cableLine.positionCount);
+        }
+        // 스파크 끄기
+        cableSpark.SetActive(false);
+
+        // 페이즈 배율 적용
+        // summonNum = (int)(summonNum * projectileMultiple);
+
+        // 각 투사체 위치 저장할 배열
+        Vector3[] lastPos = new Vector3[summonNum];
+
+        // 원형 각도 중에 비어있는 인덱스 뽑기, 해당 방향은 발사하지 않고 넘어감
+        int emptyNum = 3; //비어있는 투사체 개수
+        // 시작 인덱스 뽑기, +2했을때 최대치 넘지않게
+        int emptyStart = Random.Range(0, summonNum - (emptyNum - 2)); //비어있는 투사체 시작 인덱스
+
+        // 원형으로 전기 방출
+        // 투사체 개수만큼 반복
+        for (int i = 0; i < summonNum; i++)
+        {
+            // 비우기 인덱스면 넘기기
+            if (i >= emptyStart && i <= emptyStart + emptyNum - 1)
+                continue;
+
+            // 소환할 각도를 벡터로 바꾸기
+            float angle = 360f * i / summonNum;
+            Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
+            // print(angle + " : " + summonDir);
+
+            // 투사체 소환 위치, 케이블 끝에서 summonDir 각도로 범위만큼 곱하기 
+            Vector3 targetPos = cableSpark.transform.position + summonDir * 5f;
+
+            // 각 투사체의 소환 위치 저장
+            lastPos[i] = targetPos;
+
+            // 전기 오브젝트 생성
+            GameObject magicObj = LeanPool.Spawn(groundElectro, cableSpark.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+            // summonDir 방향으로 발사
+            magicObj.GetComponent<Rigidbody2D>().velocity = summonDir * 10f;
+            // summonDir 방향으로 회전
+            magicObj.transform.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(summonDir) - 90f);
+
+            // 매직홀더 찾기
+            MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+            // magic 데이터 넣기
+            magicHolder.magic = laserMagic;
+
+            // 타겟을 플레이어로 전환
+            magicHolder.SetTarget(MagicHolder.Target.Player);
+
+            // 투사체 목표지점 넣기
+            magicHolder.targetPos = lastPos[i];
+
+            // 타겟 오브젝트 넣기
+            magicHolder.targetObj = PlayerManager.Instance.gameObject;
+        }
+
+        // 플러그 떨림
+        plugHead.transform.DOShakePosition(0.2f, 0.3f, 50, 90, false, false);
+        // 방출 시간 대기
+        yield return new WaitForSeconds(1f);
     }
 
     #endregion
@@ -602,6 +811,10 @@ public class Ascii_AI : MonoBehaviour
 
         // 모니터에 화를 참는 얼굴
         faceText.text = "◣` ︿ ´◢"; //TODO 얼굴 바꾸기
+
+        //! fff글자 출력 테스트
+
+        //todo 글자 출력 테스트
 
         // 동시에 점점 빨간색 게이지가 차오름
         angryGauge.fillAmount = 0f;

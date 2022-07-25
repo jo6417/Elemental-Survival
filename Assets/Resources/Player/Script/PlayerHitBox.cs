@@ -120,7 +120,7 @@ public class PlayerHitBox : MonoBehaviour
                 StartCoroutine(hitDelayCoroutine);
 
                 // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                float damage = magicHolder.setPower == 0 ? power : magicHolder.setPower;
+                float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
@@ -133,28 +133,36 @@ public class PlayerHitBox : MonoBehaviour
                 if (magicHolder.poisonTime > 0)
                     StartCoroutine(PoisonDotHit(damage, magicHolder.poisonTime));
 
-                // 슬로우 디버프 && 크리티컬일때
-                if (magicHolder.slowTime > 0 && isCritical)
+                // 슬로우 디버프 시간이 있을때
+                if (magicHolder.slowTime > 0)
                 {
-                    //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-                    if (slowCoroutine != null)
-                        StopCoroutine(slowCoroutine);
+                    // 디버프 성공일때, 혹은 타겟이 플레이어일때
+                    if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
+                    {
+                        //이미 슬로우 코루틴 중이면 기존 코루틴 취소
+                        if (slowCoroutine != null)
+                            StopCoroutine(slowCoroutine);
 
-                    slowCoroutine = SlowDebuff(magicHolder.slowTime);
+                        slowCoroutine = SlowDebuff(magicHolder.slowTime);
 
-                    StartCoroutine(slowCoroutine);
+                        StartCoroutine(slowCoroutine);
+                    }
                 }
 
                 // 감전 디버프 && 크리티컬일때
-                if (magicHolder.shockTime > 0 && isCritical)
+                if (magicHolder.shockTime > 0)
                 {
-                    //이미 감전 코루틴 중이면 기존 코루틴 취소
-                    if (shockCoroutine != null)
-                        StopCoroutine(shockCoroutine);
+                    // 디버프 성공일때, 혹은 타겟이 플레이어일때
+                    if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
+                    {
+                        //이미 감전 코루틴 중이면 기존 코루틴 취소
+                        if (shockCoroutine != null)
+                            StopCoroutine(shockCoroutine);
 
-                    shockCoroutine = ShockDebuff(magicHolder.shockTime);
+                        shockCoroutine = ShockDebuff(magicHolder.shockTime);
 
-                    StartCoroutine(shockCoroutine);
+                        StartCoroutine(shockCoroutine);
+                    }
                 }
             }
         }

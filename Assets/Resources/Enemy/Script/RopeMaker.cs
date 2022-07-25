@@ -23,9 +23,12 @@ public class RopeMaker : MonoBehaviour
             if (child.name.Contains("Link"))
                 links.Add(child);
         }
+
+        // 라인렌더러 포인트 개수 갱신
+        lineRenderer.positionCount = links.Count;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (drawLine)
         {

@@ -7,7 +7,7 @@ public class ParticleManager : MonoBehaviour
 {
     public ParticleSystem particle;
     Collider2D coll;
-    public bool autoDespawn = true; //자동 디스폰 여부
+    public bool autoDespawn = false; //자동 디스폰 여부
     public float collOverTime = 0f;
 
     private void Awake()

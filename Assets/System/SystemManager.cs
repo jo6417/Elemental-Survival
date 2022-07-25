@@ -199,6 +199,15 @@ public class SystemManager : MonoBehaviour
         return angle;
     }
 
+    public float GetVector2Dir(Vector2 targetDir)
+    {
+        // 플레이어 방향 2D 각도
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+
+        // 각도를 리턴
+        return angle;
+    }
+
     public void AllTimeScale(float scale)
     {
         playerTimeScale = scale;
