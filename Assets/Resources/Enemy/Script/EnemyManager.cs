@@ -106,10 +106,10 @@ public class EnemyManager : MonoBehaviour
     public IEnumerator hitCoroutine;
     public IEnumerator slowCoroutine = null;
     public IEnumerator shockCoroutine = null;
-    public float oppositeCount = 0;
-    public float hitCount = 0;
     public float particleHitCount = 0;
+    public float hitCount = 0;
     public float stopCount = 0;
+    public float oppositeCount = 0;
 
     [Header("Debug")]
     [SerializeField]
@@ -399,6 +399,14 @@ public class EnemyManager : MonoBehaviour
 
             hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
         }
+
+        // 멈춤 디버프 중일때 카운트 차감
+        if (stopCount > 0)
+            stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+
+        // 반대편 보내질때 행동 멈추기
+        if (oppositeCount > 0)
+            oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
     }
 
     public bool ManageState()
@@ -492,8 +500,6 @@ public class EnemyManager : MonoBehaviour
 
             transform.DOPause();
 
-            stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
-
             return false;
         }
 
@@ -501,8 +507,6 @@ public class EnemyManager : MonoBehaviour
         if (oppositeCount > 0)
         {
             rigid.velocity = Vector2.zero; //이동 초기화
-
-            oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
 
             return false;
         }

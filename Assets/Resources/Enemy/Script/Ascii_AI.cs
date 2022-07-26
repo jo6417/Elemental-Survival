@@ -35,6 +35,8 @@ public class Ascii_AI : MonoBehaviour
     public Transform R_CableStart;
     public SpriteRenderer L_PlugHead;
     public SpriteRenderer R_PlugHead;
+    public Transform L_PlugTip;
+    public Transform R_PlugTip;
     public Animator L_Plug;
     public Animator R_Plug;
     public EnemyAttack L_PlugAtk;
@@ -181,8 +183,8 @@ public class Ascii_AI : MonoBehaviour
         // 플레이어와의 거리
         float playerDistance = playerDir.magnitude;
 
-        // 폴어택 가능할때, 쿨타임 가능할때, 마지막 공격이 폴어택이 아닐때
-        if (fallRangeTrigger.atkTrigger && coolCount <= 0 && !fallAtkDone)
+        // 폴어택 범위에 들어왔을때, 마지막 공격이 폴어택이 아닐때
+        if (fallRangeTrigger.atkTrigger && !fallAtkDone)
         {
             //! 거리 확인용
             stateText.text = "Fall : " + playerDistance;
@@ -305,7 +307,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         //! 디버그용 숫자 고정
-        randAtk = 2;
+        // randAtk = 1;
 
         // 결정된 공격 패턴 실행
         switch (randAtk)
@@ -343,6 +345,10 @@ public class Ascii_AI : MonoBehaviour
         // 케이블 집어넣기
         if (isPutIn)
         {
+            // 이미 케이블 꺼져있으면 리턴
+            if (!L_PlugHead.enabled && !R_PlugHead.enabled)
+                return;
+
             // 케이블 머리 부유 애니메이션 끄기
             L_Plug.enabled = false;
             R_Plug.enabled = false;
@@ -364,6 +370,10 @@ public class Ascii_AI : MonoBehaviour
         // 케이블 꺼내기
         else
         {
+            // 이미 케이블 켜져있으면 리턴
+            if (L_PlugHead.enabled && R_PlugHead.enabled)
+                return;
+
             // 케이블 헤드 켜기
             L_PlugHead.enabled = true;
             R_PlugHead.enabled = true;
@@ -520,9 +530,10 @@ public class Ascii_AI : MonoBehaviour
         LineRenderer cableLine = isLeft ? L_Cable : R_Cable;
         GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark;
         Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
+        Transform plugTip = isLeft ? L_PlugTip : R_PlugTip;
 
         // 케이블 끝 전기 파티클 켜기
-        plugHead.transform.GetChild(0).gameObject.SetActive(true);
+        plugTip.gameObject.SetActive(true);
 
         float aimCount = aimTime;
         while (aimCount > 0)
@@ -537,7 +548,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // 케이블 끝 전기 파티클 끄기
-        plugHead.transform.GetChild(0).gameObject.SetActive(false);
+        plugTip.gameObject.SetActive(false);
 
         // 케이블 끝이 반짝 빛나는 파티클 인디케이터
         plugHead.transform.GetChild(1).gameObject.SetActive(true);
@@ -557,24 +568,12 @@ public class Ascii_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
-            LeanPool.Spawn(groundCrackEffect, plugHead.transform.GetChild(0).position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(groundCrackEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
         });
 
         yield return new WaitForSeconds(0.5f);
 
-        // 스파크 켜기
-        cableSpark.SetActive(true);
-        // 전기 파티클이 전선을 타고 플러그까지 빠르게 도달
-        for (int i = 0; i < cableLine.positionCount; i++)
-        {
-            // 파티클 오브젝트가 라인 렌더러 포인트 순서대로 이동
-            cableSpark.transform.localPosition = cableLine.GetPosition(i);
-
-            // (1 / 링크개수) 만큼 대기
-            yield return new WaitForSeconds(1f / cableLine.positionCount);
-        }
-        // 스파크 끄기
-        cableSpark.SetActive(false);
+        yield return StartCoroutine(CableSpark(isLeft));
 
         // 도달 완료하면 공격 콜라이더 켜기
         plugAtk.gameObject.SetActive(true);
@@ -675,6 +674,7 @@ public class Ascii_AI : MonoBehaviour
         Transform cableStart = isLeft ? L_CableStart : R_CableStart;
         LineRenderer cableLine = isLeft ? L_Cable : R_Cable;
         Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
+        Transform plugTip = isLeft ? L_PlugTip : R_PlugTip;
 
         EnemyAttack plugAtk = isLeft ? L_PlugAtk : R_PlugAtk;
         GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark;
@@ -712,7 +712,7 @@ public class Ascii_AI : MonoBehaviour
             plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
 
             // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
-            LeanPool.Spawn(groundCrackEffect, plugHead.transform.GetChild(0).position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(groundCrackEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
         });
 
         yield return new WaitForSeconds(1f);
@@ -726,18 +726,7 @@ public class Ascii_AI : MonoBehaviour
         GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark; // 케이블 타고 흐르는 스파크 이펙트
 
         // 스파크 켜기
-        cableSpark.SetActive(true);
-        // 전기 파티클이 전선을 타고 플러그까지 빠르게 도달
-        for (int i = 0; i < cableLine.positionCount; i++)
-        {
-            // 파티클 오브젝트가 라인 렌더러 포인트 순서대로 이동
-            cableSpark.transform.localPosition = cableLine.GetPosition(i);
-
-            // (1 / 링크개수) 만큼 대기
-            yield return new WaitForSeconds(1f / cableLine.positionCount);
-        }
-        // 스파크 끄기
-        cableSpark.SetActive(false);
+        StartCoroutine(CableSpark(isLeft));
 
         // 페이즈 배율 적용
         // summonNum = (int)(summonNum * projectileMultiple);
@@ -810,45 +799,41 @@ public class Ascii_AI : MonoBehaviour
         anim.SetTrigger("LaserReady");
 
         // 모니터에 화를 참는 얼굴
-        faceText.text = "◣` ︿ ´◢"; //TODO 얼굴 바꾸기
-
-        //! fff글자 출력 테스트
-
-        //todo 글자 출력 테스트
+        faceText.text = "◣` ︿ ´◢";
 
         // 동시에 점점 빨간색 게이지가 차오름
         angryGauge.fillAmount = 0f;
-        DOTween.To(() => angryGauge.fillAmount, x => angryGauge.fillAmount = x, 1f, 2f);
-
-        // 동시에 공격 범위 표시
-        // 엎어질 범위 활성화 및 반짝거리기
-        // laserRange.enabled = true;
-        // Color originColor = new Color(1, 0, 0, 0.2f);
-        // laserRange.color = originColor;
-
-        // laserRange.DOColor(new Color(1, 0, 0, 0f), 1f)
-        // .SetEase(Ease.InOutFlash, 5, 0)
-        // .OnComplete(() =>
-        // {
-        //     laserRange.color = originColor;
-        // });
+        DOTween.To(() => angryGauge.fillAmount, x => angryGauge.fillAmount = x, 1f, 1f);
 
         //펄스 이펙트 활성화
         pulseEffect.SetActive(true);
 
+        // 케이블 꺼내기
+        ToggleCable(false);
+
+        // 공격 케이블 시작점은 모니터 모서리로 이동
+        L_CableStart.DOLocalMove(Vector3.zero, 0.5f);
+        R_CableStart.DOLocalMove(Vector3.zero, 0.5f);
+
+        // 케이블 sort layer를 모니터 앞으로 바꾸기
+        L_Cable.sortingOrder = 1;
+        R_Cable.sortingOrder = 1;
+
         //게이지 모두 차오르면 
         yield return new WaitUntil(() => angryGauge.fillAmount >= 1f);
 
-        // 무궁화 애니메이션 시작
+        //todo 무궁화꽃 주문 끝날때까지 보스 무적상태 만들기
+
+        // 레이저 충전 애니메이션 시작
         anim.SetTrigger("LaserSet");
 
         //채워질 글자
         string targetText = "무궁화꽃이\n피었습니다";
 
-        //텍스트 비우기
+        // 텍스트 비우기
         laserText.text = "";
 
-        //공격 준비 글자 채우기
+        // 공격 준비 글자 채우기
         float delay = 0.2f;
         while (laserText.text.Length < targetText.Length)
         {
@@ -889,48 +874,93 @@ public class Ascii_AI : MonoBehaviour
 
         //감시 시간
         float watchTime = Time.time;
-        //플레이어 현재 위치
+        //플레이어 현재 위치 기억하기
         Vector3 playerPos = PlayerManager.Instance.transform.position;
 
         print("watch start : " + Time.time);
 
-        // 플레이어 움직이는지 감시
+        // 플레이어 조준 코루틴 실행
+        IEnumerator aimCable = AimCable();
+        StartCoroutine(aimCable);
+
+        // 감시 시간 타이머
         while (Time.time - watchTime < 3)
         {
-            //플레이어 위치 변경됬으면 레이저 발사
+            //플레이어 위치 변경됬으면
             if (playerPos != PlayerManager.Instance.transform.position)
             {
-                //움직이면 레이저 발사 애니메이션 재생
-                anim.SetBool("isLaserAtk", true);
-
-                // 레이저 쏠때 얼굴
+                // 화난 얼굴로 변경
                 faceText.text = "◣` ︿ ´◢";
 
-                // 플레이어에게 양쪽눈에서 레이저 여러번 발사
-                int whitchEye = 0;
-                for (int i = 0; i < 10; i++)
+                // 충전 시간
+                float chargeTime = 1f;
+
+                // 양쪽 케이블 타고 전기 흘리기
+                StartCoroutine(CableSpark(true, chargeTime));
+                StartCoroutine(CableSpark(false, chargeTime));
+
+                // 6칸이므로 6번 반복
+                for (int i = 0; i < 6; i++)
                 {
-                    ShotLaser(LaserRangeTrigger.transform.GetChild(whitchEye));
+                    string chargeText = "(" + new string('■', i) + new string('□', 6 - i) + ")";
 
-                    //쏘는 눈 변경
-                    whitchEye = whitchEye == 0 ? 1 : 0;
+                    laserText.text = chargeText;
 
-                    //레이저 쏘는 시간 대기
-                    yield return new WaitForSeconds(0.3f);
+                    // 6칸이므로 충전시간/6 시간만큼 대기
+                    yield return new WaitForSeconds(chargeTime / 6f);
                 }
 
-                //레이저 쏘는 시간 대기
-                yield return new WaitForSeconds(2f);
+                laserText.text = "(" + new string('■', 6) + ")";
 
-                //레이저 발사 종료
-                anim.SetBool("isLaserAtk", false);
+                // 플러그 끝 전기 이펙트 켜기
+                L_PlugTip.gameObject.SetActive(true);
+                R_PlugTip.gameObject.SetActive(true);
 
-                // while문 탈출
+                // 레이저 발사 실행, 끝날때까지 대기
+                yield return StartCoroutine(ShotLaser());
+
+                // 플러그 끝 전기 이펙트 끄기
+                L_PlugTip.gameObject.SetActive(false);
+                R_PlugTip.gameObject.SetActive(false);
+
+                // 케이블 sort layer를 모니터 뒤로 바꾸기
+                L_Cable.sortingOrder = -1;
+                R_Cable.sortingOrder = -1;
+
+                // 케이블 시작점은 모니터 뒤로 이동
+                L_CableStart.DOLocalMove(new Vector2(5, 0), 0.5f);
+                R_CableStart.DOLocalMove(new Vector2(-5, 0), 0.5f);
+
+                // 플러그 원위치
+                L_Plug.transform.DOLocalMove(new Vector2(-12, 10), 0.5f);
+                R_Plug.transform.DOLocalMove(new Vector2(12, 10), 0.5f);
+
+                yield return new WaitForSeconds(0.5f);
+
+                // 케이블 애니메이션 시작
+                L_Plug.enabled = true;
+                R_Plug.enabled = true;
+
+                // 조준 코루틴 멈추기
+                StopCoroutine(aimCable);
+
+                //몬스터 스폰 재개
+                EnemySpawn.Instance.spawnSwitch = true;
+                // 모든 몬스터 움직임 재개
+                SystemManager.Instance.globalTimeScale = 1f;
+
+                // 플러그 각도 초기화
+                L_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+                R_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
+
                 break;
             }
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
+
+        // 조준 코루틴 멈추기
+        StopCoroutine(aimCable);
 
         print("watch end : " + Time.time);
 
@@ -946,25 +976,85 @@ public class Ascii_AI : MonoBehaviour
         StartCoroutine(RestAnim());
     }
 
-    void ShotLaser(Transform shotter)
+    IEnumerator AimCable()
+    {
+        while (true)
+        {
+            // 양쪽 케이블이 플레이어 조준
+            L_PlugHead.transform.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, L_PlugHead.transform.position) - 90f);
+            R_PlugHead.transform.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, R_PlugHead.transform.position) - 90f);
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+    }
+
+    IEnumerator CableSpark(bool isLeft, float duration = 1f)
+    {
+        LineRenderer cableLine = isLeft ? L_Cable : R_Cable; // 케이블 라인 오브젝트
+        GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark; // 케이블 타고 흐르는 스파크 이펙트
+
+        // 스파크 켜기
+        cableSpark.SetActive(true);
+        // 전기 파티클이 전선을 타고 플러그까지 빠르게 도달
+        for (int i = 0; i < cableLine.positionCount; i++)
+        {
+            // 파티클 오브젝트가 라인 렌더러 포인트 순서대로 이동
+            cableSpark.transform.localPosition = cableLine.GetPosition(i);
+
+            // (1 / 링크개수) 만큼 대기
+            yield return new WaitForSeconds(duration / cableLine.positionCount);
+        }
+        // 스파크 끄기
+        cableSpark.SetActive(false);
+
+        yield return null;
+    }
+
+    IEnumerator ShotLaser()
     {
         // print("레이저 발사");
 
-        //레이저 생성
-        GameObject magicObj = LeanPool.Spawn(LaserPrefab, shotter.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        //움직이면 레이저 발사 애니메이션 재생
+        anim.SetBool("isLaserAtk", true);
 
-        Explosion laser = magicObj.GetComponent<Explosion>();
-        // 레이저 발사할 오브젝트 넣기
-        laser.startObj = shotter;
+        // 레이저 쏠때 얼굴
+        faceText.text = "◣` ︿ ´◢";
 
-        MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
-        // magic 데이터 넣기
-        magicHolder.magic = laserMagic;
+        // 양쪽 케이블에서 레이저 여러번 발사
+        Transform plugTip = L_PlugTip;
+        for (int i = 0; i < 10; i++)
+        {
+            // 쏘는 케이블 변경
+            plugTip = plugTip == L_PlugTip ? R_PlugTip : L_PlugTip;
 
-        // 타겟을 플레이어로 전환
-        magicHolder.SetTarget(MagicHolder.Target.Player);
-        // 레이저 목표지점 targetPos 넣기
-        magicHolder.targetPos = PlayerManager.Instance.transform.position;
+            // 발사할때 플러그 반동
+            plugTip.parent.DOPunchPosition((plugTip.parent.position - PlayerManager.Instance.transform.position).normalized, 0.2f, 10, 1);
+
+            //레이저 생성
+            GameObject magicObj = LeanPool.Spawn(LaserPrefab, plugTip.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+            Explosion laser = magicObj.GetComponent<Explosion>();
+            // 레이저 발사할 오브젝트 넣기
+            laser.startObj = plugTip;
+
+            MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+            // magic 데이터 넣기
+            magicHolder.magic = laserMagic;
+
+            // 타겟을 플레이어로 전환
+            magicHolder.SetTarget(MagicHolder.Target.Player);
+            // 레이저 목표지점 targetPos 넣기
+            magicHolder.targetPos = PlayerManager.Instance.transform.position;
+
+            //레이저 쏘는 시간 대기
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        //레이저 발사 후딜레이
+        yield return new WaitForSeconds(1f);
+
+        //레이저 발사 종료
+        anim.SetBool("isLaserAtk", false);
     }
 
     #endregion

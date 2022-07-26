@@ -2302,7 +2302,6 @@ LineRenderer:
   - {x: 0, y: 7.8, z: 0}
   - {x: 0, y: 8.1, z: 0}
   - {x: 0, y: 8.400001, z: 0}
-  - {x: 0, y: 8.700001, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.1
@@ -2405,7 +2404,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1189188653}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 8.700001, z: 0}
+  m_LocalPosition: {x: 0, y: 8.39, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1579057644501326438}
@@ -2500,7 +2499,7 @@ HingeJoint2D:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 0
-  m_Anchor: {x: 0, y: -3}
+  m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
   m_UseMotor: 0
   m_Motor:
@@ -3867,8 +3866,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: STOP
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 47ae4f5559c230a42bf649ec8034bd34, type: 2}
-  m_sharedMaterial: {fileID: 5102506194067504121, guid: a7b7eb28d98036e4a9039c153c859ddf,
+  m_fontAsset: {fileID: 11400000, guid: edd35fbaf40504d43a4f3119a1f016e9, type: 2}
+  m_sharedMaterial: {fileID: 5102506194067504121, guid: edd35fbaf40504d43a4f3119a1f016e9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -3893,8 +3892,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 3.5
-  m_fontSizeBase: 3.5
+  m_fontSize: 3
+  m_fontSizeBase: 3
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3932,7 +3931,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &1804659302
@@ -17948,7 +17947,6 @@ LineRenderer:
   - {x: 0, y: 7.8, z: 0}
   - {x: 0, y: 8.1, z: 0}
   - {x: 0, y: 8.400001, z: 0}
-  - {x: 0, y: 8.700001, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.1
@@ -23076,6 +23074,7 @@ GameObject:
   - component: {fileID: 6014433321399679246}
   - component: {fileID: 6014433321399679245}
   - component: {fileID: 2380262803175011489}
+  - component: {fileID: 1787359118}
   m_Layer: 7
   m_Name: Ascii_Prefab
   m_TagString: Untagged
@@ -23157,10 +23156,10 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
-  oppositeCount: 0
-  hitCount: 0
   particleHitCount: 0
+  hitCount: 0
   stopCount: 0
+  oppositeCount: 0
   enemyName: 
   enemyType: 
 --- !u!114 &8675768219682108783
@@ -23170,7 +23169,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6014433321399679345}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04890e3be6e797c45b4ca7915152a5ae, type: 3}
   m_Name: 
@@ -23190,6 +23189,8 @@ MonoBehaviour:
   R_CableStart: {fileID: 1629100504}
   L_PlugHead: {fileID: 3094186979478420199}
   R_PlugHead: {fileID: 1189188657}
+  L_PlugTip: {fileID: 2657338268235797570}
+  R_PlugTip: {fileID: 1579057644501326438}
   L_Plug: {fileID: 117016376}
   R_Plug: {fileID: 117016377}
   L_PlugAtk: {fileID: 8820440381221889038}
@@ -23326,6 +23327,17 @@ CapsuleCollider2D:
   m_Offset: {x: 0.3, y: 0}
   m_Size: {x: 17, y: 3}
   m_Direction: 1
+--- !u!210 &1787359118
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6014433321399679345}
+  m_Enabled: 1
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1 &6106412424610136788
 GameObject:
   m_ObjectHideFlags: 0
@@ -23914,7 +23926,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7471407788219910211}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 11.449, z: 0}
+  m_LocalPosition: {x: 0, y: 8.41, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2657338268235797570}
@@ -24009,7 +24021,7 @@ HingeJoint2D:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 0
-  m_Anchor: {x: 0, y: -3}
+  m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
   m_UseMotor: 0
   m_Motor:
@@ -30127,7 +30139,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9177898891022014108}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -7.671}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7213583925062649118}
@@ -30156,9 +30168,9 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: -1
   m_SortingLayerID: -1861760285
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &9177898891022014111
 MonoBehaviour:
@@ -30265,7 +30277,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u3147\u3145\u3147"
+  m_text: "CHARGING \\n (\u25A0\u25A0\u25A0\u25A1\u25A1\u25A1)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: edd35fbaf40504d43a4f3119a1f016e9, type: 2}
   m_sharedMaterial: {fileID: 5102506194067504121, guid: edd35fbaf40504d43a4f3119a1f016e9,
@@ -30500,15 +30512,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b151d4f50502bd94487b603adfea1fc3, type: 3}
---- !u!4 &4246543434151058019 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1249799429006374377, guid: b151d4f50502bd94487b603adfea1fc3,
-    type: 3}
-  m_PrefabInstance: {fileID: 3149965798827519882}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &4246543434151058016 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 1249799429006374378, guid: b151d4f50502bd94487b603adfea1fc3,
+    type: 3}
+  m_PrefabInstance: {fileID: 3149965798827519882}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4246543434151058019 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1249799429006374377, guid: b151d4f50502bd94487b603adfea1fc3,
     type: 3}
   m_PrefabInstance: {fileID: 3149965798827519882}
   m_PrefabAsset: {fileID: 0}
