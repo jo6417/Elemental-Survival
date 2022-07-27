@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 515477352032948623}
   - component: {fileID: 515477352032948617}
   - component: {fileID: 515477352032948622}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Spark
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4875,7 +4875,7 @@ GameObject:
   - component: {fileID: 2909977851084587480}
   - component: {fileID: 890574463894873209}
   - component: {fileID: 820841066109367233}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Explode
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4916,8 +4916,8 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
-  init: 0
-  setPower: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 10
   isStop: 0
   poisonTime: 0
@@ -4975,7 +4975,7 @@ GameObject:
   - component: {fileID: 515477353434930066}
   - component: {fileID: 515477353434930028}
   - component: {fileID: 515477353434930029}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Ash
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -9838,7 +9838,7 @@ GameObject:
   - component: {fileID: 3761902246497963357}
   - component: {fileID: 3761902246497963358}
   - component: {fileID: 3761902246497963359}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Flame
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -14703,7 +14703,7 @@ GameObject:
   - component: {fileID: 332673775897905078}
   - component: {fileID: 6558328931824545046}
   - component: {fileID: 1858461208}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Explosion_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -14742,8 +14742,8 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
-  init: 0
-  setPower: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
   poisonTime: 0

@@ -301,6 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 1
+  lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -311,16 +312,13 @@ MonoBehaviour:
   portalSize: 2
   isElite: 0
   eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
   statusEffect: 0
+  isDead: 0
+  selfExplosion: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 5097144648422318720}
+  hitBox: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 6879378120547341611}
   shadow: {fileID: 5083105368544687810}
@@ -340,6 +338,10 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  particleHitCount: 0
+  hitCount: 0
+  stopCount: 0
+  oppositeCount: 0
   enemyName: 
   enemyType: 
 --- !u!114 &5097144648422318720
@@ -479,12 +481,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeAngleOffset: 0
+  alwaysOnCollider: 0
   enemyManager: {fileID: 4959071736242128182}
   enemyName: 
   atkColl: {fileID: 7798079106442996327}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!61 &7798079106442996327

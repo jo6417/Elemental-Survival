@@ -212,6 +212,7 @@ SpriteAtlas:
   - {fileID: -2366385105781249481, guid: 57870d8e521eef145801111270879442, type: 3}
   - {fileID: 4185719524831961608, guid: 57870d8e521eef145801111270879442, type: 3}
   - {fileID: 21300000, guid: b8000e8edcf1d5945bad13e15436e26d, type: 3}
+  - {fileID: 21300000, guid: af3fee8e89964f149b2cc44f05ba9841, type: 3}
   - {fileID: -3234400725290422774, guid: e85f17ce4b091494383db0293ab73b4d, type: 3}
   - {fileID: -5242435963758582417, guid: e85f17ce4b091494383db0293ab73b4d, type: 3}
   - {fileID: -2722819298173475279, guid: e85f17ce4b091494383db0293ab73b4d, type: 3}
@@ -384,6 +385,7 @@ SpriteAtlas:
   - Nimbus_Sheet_8
   - Nimbus_Sheet_9
   - WaterBorder
+  - LifeMushroom_Icon
   - Bubble_Sheet_0
   - Bubble_Sheet_1
   - Bubble_Sheet_2

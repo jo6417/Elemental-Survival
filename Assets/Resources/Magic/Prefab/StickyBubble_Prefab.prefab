@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6082526332878303367}
   - component: {fileID: 5911569163407639278}
   - component: {fileID: 5597371135248299486}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: BubblePop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4876,7 +4876,7 @@ GameObject:
   - component: {fileID: 8632908752227872800}
   - component: {fileID: 3459317121763309752}
   - component: {fileID: 1934147848397244494}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: StickyBubble_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4915,8 +4915,8 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 1
-  init: 0
-  setPower: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
   poisonTime: 0
@@ -4924,7 +4924,7 @@ MonoBehaviour:
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &8632908752227872800
 MonoBehaviour:

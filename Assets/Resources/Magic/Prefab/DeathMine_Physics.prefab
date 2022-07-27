@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1523541554035324932}
   - component: {fileID: 1523541554035324934}
   - component: {fileID: 1523541554035324935}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Particle System
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -4879,7 +4879,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1523541554184484246}
   - component: {fileID: 1523541554184484241}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Light
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -4964,7 +4964,7 @@ GameObject:
   - component: {fileID: 1523541554251604805}
   - component: {fileID: 1523541554251604807}
   - component: {fileID: 1523541554251604801}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: DeathMine_Trigger
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -5013,18 +5013,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!58 &1523541554251604807
 CircleCollider2D:
@@ -5076,7 +5079,7 @@ GameObject:
   - component: {fileID: 1523541554266288952}
   - component: {fileID: 1523541554266288953}
   - component: {fileID: 1523541554266288958}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: DeathMine_Physics
   m_TagString: Object
   m_Icon: {fileID: 0}

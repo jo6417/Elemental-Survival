@@ -55,114 +55,130 @@ public class PlayerHitBox : MonoBehaviour
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
         if (other.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
+            // 몬스터 정보 찾기
             EnemyManager enemyManager = enemyAtk.enemyManager;
 
-            // 적 매니저 있고, 아군 고스트의 공격이 아닐때
-            if (enemyManager != null && !enemyManager.IsGhost)
+            // 몬스터 정보 없을때, 고스트일때 리턴
+            if (enemyManager == null || enemyManager.enemy == null || enemyManager.IsGhost)
             {
-                // hitCount 갱신되었으면 리턴, 중복 피격 방지
-                if (hitCoolCount > 0)
-                    yield break;
+                print($"enemy is null : {gameObject}");
+                yield break;
+            }
 
-                // 이미 피격 딜레이 코루틴 중이었으면 취소
-                if (hitDelayCoroutine != null)
-                    StopCoroutine(hitDelayCoroutine);
+            // hitCount 갱신되었으면 리턴, 중복 피격 방지
+            if (hitCoolCount > 0)
+                yield break;
 
-                //피격 딜레이 무적시간 시작
-                hitDelayCoroutine = HitDelay();
-                StartCoroutine(hitDelayCoroutine);
+            // 이미 피격 딜레이 코루틴 중이었으면 취소
+            if (hitDelayCoroutine != null)
+                StopCoroutine(hitDelayCoroutine);
 
-                yield return new WaitUntil(() => enemyAtk.enemy != null);
-                EnemyInfo enemy = enemyAtk.enemy;
+            //피격 딜레이 무적시간 시작
+            hitDelayCoroutine = HitDelay();
+            StartCoroutine(hitDelayCoroutine);
 
-                Damage(enemy.power);
+            yield return new WaitUntil(() => enemyAtk.enemy != null);
+            EnemyInfo enemy = enemyAtk.enemy;
 
-                // 넉백 디버프 있을때
-                if (enemyAtk.knockBackDebuff)
-                {
-                    // print("player knockback");
+            Damage(enemy.power);
 
-                    //넉백 방향 벡터 계산
-                    Vector2 dir = (transform.position - other.position).normalized * enemy.power;
+            // 넉백 디버프 있을때
+            if (enemyAtk.knockBackDebuff)
+            {
+                // print("player knockback");
 
-                    //넉백 디버프 실행
-                    StartCoroutine(Knockback(dir));
-                }
+                //넉백 방향 벡터 계산
+                Vector2 dir = (transform.position - other.position).normalized * enemy.power;
 
-                // flat 디버프 있을때, 마비 상태 아닐때
-                if (enemyAtk.flatDebuff && !isFlat)
-                {
-                    // print("player flat");
+                //넉백 디버프 실행
+                StartCoroutine(Knockback(dir));
+            }
 
-                    // 납작해지고 행동불능
-                    StartCoroutine(FlatDebuff());
-                }
+            // flat 디버프 있을때, 마비 상태 아닐때
+            if (enemyAtk.flatTime > 0 && !isFlat)
+            {
+                // print("player flat");
+
+                // 납작해지고 행동불능
+                StartCoroutine(FlatDebuff(enemyAtk.flatTime));
             }
         }
 
         //마법 정보 찾기
         if (other.TryGetComponent(out MagicHolder magicHolder))
         {
-            //적의 마법에 충돌
-            if (magicHolder != null && magicHolder.enabled)
+            // 마법 정보 찾기
+            MagicInfo magic = magicHolder.magic;
+
+            // 마법 정보 없으면 리턴
+            if (magicHolder == null || magic == null)
             {
-                MagicInfo magic = magicHolder.magic;
+                print($"magic is null : {gameObject}");
+                yield break;
+            }
 
-                float power = MagicDB.Instance.MagicPower(magic);
-                bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            // 목표가 미설정 되었을때
+            if (magicHolder.targetType == MagicHolder.Target.None)
+            {
+                // print("타겟 미설정");
+                yield break;
+            }
 
-                // 이미 피격 딜레이 코루틴 중이었으면 취소
-                if (hitDelayCoroutine != null)
-                    StopCoroutine(hitDelayCoroutine);
+            // 마법 스탯 계산
+            float power = MagicDB.Instance.MagicPower(magic);
+            bool isCritical = MagicDB.Instance.MagicCritical(magic);
 
-                //피격 딜레이 무적
-                hitDelayCoroutine = HitDelay();
-                StartCoroutine(hitDelayCoroutine);
+            // 이미 피격 딜레이 코루틴 중이었으면 취소
+            if (hitDelayCoroutine != null)
+                StopCoroutine(hitDelayCoroutine);
 
-                // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
-                // 고정 데미지에 확률 계산
-                damage = Random.Range(damage * 0.8f, damage * 1.2f);
+            //피격 딜레이 무적
+            hitDelayCoroutine = HitDelay();
+            StartCoroutine(hitDelayCoroutine);
 
-                // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
-                if (magicHolder.poisonTime == 0)
-                    //데미지 입기
-                    Damage(damage);
+            // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
+            float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
+            // 고정 데미지에 확률 계산
+            damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-                // 독 피해 시간 있으면 도트 피해
-                if (magicHolder.poisonTime > 0)
-                    StartCoroutine(PoisonDotHit(damage, magicHolder.poisonTime));
+            // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
+            if (magicHolder.poisonTime == 0)
+                //데미지 입기
+                Damage(damage);
 
-                // 슬로우 디버프 시간이 있을때
-                if (magicHolder.slowTime > 0)
+            // 독 피해 시간 있으면 도트 피해
+            if (magicHolder.poisonTime > 0)
+                StartCoroutine(PoisonDotHit(damage, magicHolder.poisonTime));
+
+            // 슬로우 디버프 시간이 있을때
+            if (magicHolder.slowTime > 0)
+            {
+                // 디버프 성공일때, 혹은 타겟이 플레이어일때
+                if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
                 {
-                    // 디버프 성공일때, 혹은 타겟이 플레이어일때
-                    if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
-                    {
-                        //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-                        if (slowCoroutine != null)
-                            StopCoroutine(slowCoroutine);
+                    //이미 슬로우 코루틴 중이면 기존 코루틴 취소
+                    if (slowCoroutine != null)
+                        StopCoroutine(slowCoroutine);
 
-                        slowCoroutine = SlowDebuff(magicHolder.slowTime);
+                    slowCoroutine = SlowDebuff(magicHolder.slowTime);
 
-                        StartCoroutine(slowCoroutine);
-                    }
+                    StartCoroutine(slowCoroutine);
                 }
+            }
 
-                // 감전 디버프 && 크리티컬일때
-                if (magicHolder.shockTime > 0)
+            // 감전 디버프 && 크리티컬일때
+            if (magicHolder.shockTime > 0)
+            {
+                // 디버프 성공일때, 혹은 타겟이 플레이어일때
+                if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
                 {
-                    // 디버프 성공일때, 혹은 타겟이 플레이어일때
-                    if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
-                    {
-                        //이미 감전 코루틴 중이면 기존 코루틴 취소
-                        if (shockCoroutine != null)
-                            StopCoroutine(shockCoroutine);
+                    //이미 감전 코루틴 중이면 기존 코루틴 취소
+                    if (shockCoroutine != null)
+                        StopCoroutine(shockCoroutine);
 
-                        shockCoroutine = ShockDebuff(magicHolder.shockTime);
+                    shockCoroutine = ShockDebuff(magicHolder.shockTime);
 
-                        StartCoroutine(shockCoroutine);
-                    }
+                    StartCoroutine(shockCoroutine);
                 }
             }
         }
@@ -181,10 +197,11 @@ public class PlayerHitBox : MonoBehaviour
         PlayerManager.Instance.PlayerStat_Now.hpNow -= damage;
 
         //체력 범위 제한
-        PlayerManager.Instance.PlayerStat_Now.hpNow = Mathf.Clamp(PlayerManager.Instance.PlayerStat_Now.hpNow, 0, PlayerManager.Instance.PlayerStat_Now.hpNow);
+        PlayerManager.Instance.PlayerStat_Now.hpNow = Mathf.Clamp(PlayerManager.Instance.PlayerStat_Now.hpNow, 0, PlayerManager.Instance.PlayerStat_Now.hpMax);
 
         //혈흔 파티클 생성
-        LeanPool.Spawn(PlayerManager.Instance.bloodPrefab, transform.position, Quaternion.identity);
+        if (damage > 0)
+            LeanPool.Spawn(PlayerManager.Instance.bloodPrefab, transform.position, Quaternion.identity);
 
         //데미지 UI 띄우기
         DamageText(damage, false);
@@ -335,12 +352,12 @@ public class PlayerHitBox : MonoBehaviour
         PlayerManager.Instance.Move();
     }
 
-    public IEnumerator FlatDebuff()
+    public IEnumerator FlatDebuff(float flatTime)
     {
         //마비됨
         isFlat = true;
         //플레이어 스프라이트 납작해짐
-        transform.localScale = new Vector2(1f, 0.5f);
+        PlayerManager.Instance.transform.localScale = new Vector2(1f, 0.5f);
 
         //위치 얼리기
         PlayerManager.Instance.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -348,12 +365,13 @@ public class PlayerHitBox : MonoBehaviour
         //플레이어 멈추기
         PlayerManager.Instance.Move();
 
-        yield return new WaitForSeconds(2f);
+        // 디버프 시간동안 대기
+        yield return new WaitForSeconds(flatTime);
 
         //마비 해제
         isFlat = false;
         //플레이어 스프라이트 복구
-        transform.localScale = Vector2.one;
+        PlayerManager.Instance.transform.localScale = Vector2.one;
 
         //위치 얼리기 해제
         PlayerManager.Instance.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;

@@ -66,7 +66,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2b592ffc665dadf47bef324f68d60283, type: 3}
   - {fileID: 21300000, guid: 7dce8a1d79d2ce74ebd25871d2d51296, type: 3}
   - {fileID: 21300000, guid: 9a82dfad901c07646a76021fb0e4b1a7, type: 3}
-  - {fileID: 21300000, guid: af3fee8e89964f149b2cc44f05ba9841, type: 3}
   - {fileID: 21300000, guid: 5b551ebf45165b140afd27e58dc906a7, type: 3}
   m_PackedSpriteNamesToIndex:
   - WindGem_Icon
@@ -86,7 +85,6 @@ SpriteAtlas:
   - LifeGem_Icon
   - BlessingWater_Icon
   - EarthGem_Icon
-  - LifeMushroom_Icon
   - EmptyScroll_Icon
   m_RenderDataMap: {}
   m_Tag: Item_Atlas

@@ -74,7 +74,7 @@ public class Explosion : MonoBehaviour
             //조준선 색깔 변경
             aimColor = Color.red;
             //레이저 색깔 변경
-            laserColor = Color.cyan;
+            laserColor = SystemManager.Instance.HexToRGBA("2DFFFF");
         }
 
         //레이저 발사

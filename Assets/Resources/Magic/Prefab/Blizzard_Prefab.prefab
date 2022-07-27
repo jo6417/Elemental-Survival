@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6008138310535059970}
   - component: {fileID: 1056827250892629718}
   - component: {fileID: 2647893212976384798}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: collider
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -44,18 +44,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!70 &2647893212976384798
 CapsuleCollider2D:
@@ -84,7 +87,7 @@ GameObject:
   - component: {fileID: 8520581640877415919}
   - component: {fileID: 255081985355121558}
   - component: {fileID: 6520982514827401289}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Blizzard_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -193,7 +196,7 @@ GameObject:
   - component: {fileID: 9133052939882172468}
   - component: {fileID: 7520440804590402243}
   - component: {fileID: 199320508503753188}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Particle
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -5069,7 +5072,7 @@ PrefabInstance:
     - target: {fileID: 8874241045075196594, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8874241045075196594, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}

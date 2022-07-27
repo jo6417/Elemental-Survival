@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1664592821}
   - component: {fileID: 1664592822}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 1472842765302339234}
   - component: {fileID: 8457075676751315464}
   - component: {fileID: 7441515338738039283}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: BabyArrow_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -121,17 +121,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
+  targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  target: 0
+  targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &1322037193
 MonoBehaviour:
@@ -247,7 +251,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1472842765396626677}
   - component: {fileID: 1472842765396626676}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: tail
   m_TagString: Untagged
   m_Icon: {fileID: 0}

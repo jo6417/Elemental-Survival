@@ -51,8 +51,8 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
-  init: 0
-  setPower: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
   poisonTime: 0

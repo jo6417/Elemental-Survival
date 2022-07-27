@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6814348584050193642}
   - component: {fileID: 8586956387036139591}
   - component: {fileID: 5350171974902983272}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Meteor_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -48,18 +48,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &2924200299590226628
 MonoBehaviour:
@@ -184,7 +187,7 @@ GameObject:
   - component: {fileID: 6100972738603568039}
   - component: {fileID: 6542284689530828685}
   - component: {fileID: 3909831157122065444}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: RingFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4997,7 +5000,7 @@ GameObject:
   - component: {fileID: 5634225058560491154}
   - component: {fileID: 6720872240345002128}
   - component: {fileID: 7690498272722779653}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: FireTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9804,7 +9807,7 @@ GameObject:
   - component: {fileID: 4691357121588163249}
   - component: {fileID: 3068287006867380060}
   - component: {fileID: 2316860779520662869}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: RingBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}

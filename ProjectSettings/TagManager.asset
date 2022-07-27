@@ -8,6 +8,7 @@ TagManager:
   - Magic
   - Item
   - Object
+  - EnemyAttack
   layers:
   - Default
   - TransparentFX
@@ -57,11 +58,11 @@ TagManager:
   - name: Player
     uniqueID: 3310079417
     locked: 0
-  - name: MagicEffect
-    uniqueID: 945064743
-    locked: 0
   - name: Magic
     uniqueID: 918817935
+    locked: 0
+  - name: MagicEffect
+    uniqueID: 945064743
     locked: 0
   - name: UI
     uniqueID: 1995009413

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3042065820334735687}
   - component: {fileID: 1009897354832255717}
   - component: {fileID: 3528283273403721553}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: MetalCube_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -51,15 +51,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coll: {fileID: 0}
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
+  targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &4103208101850571177
 MonoBehaviour:
@@ -73,15 +79,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 236e5e372587ea54383ce7d2ff512d0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anim: {fileID: 0}
+  magicHolder: {fileID: 0}
   magicName: 
-  col: {fileID: 8511969488732639964}
+  coll: {fileID: 0}
   fallEase: 26
-  startPos: {x: 0, y: 2}
+  angleOffset: 0
+  startOffset: {x: 0, y: 0}
   isExpand: 1
   isFade: 0
+  despawnEffectPrefab: {fileID: 0}
   particle: {fileID: 0}
-  magicEffect: {fileID: 5619414736512131746}
+  despawnEffect: {fileID: 0}
 --- !u!212 &8370058618797703207
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -120,7 +128,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 8092416761886967685, guid: ddf97f4ec5e18e94f87071609bc93ab6,
     type: 3}
@@ -4945,7 +4953,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: -1
   m_RenderMode: 0
   m_SortMode: 0
@@ -5042,12 +5050,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2346020423735354293, guid: e14cb71711a4cb040bdbc33d28d1ee38, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e14cb71711a4cb040bdbc33d28d1ee38, type: 3}
---- !u!1 &5619414736512131746 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
-    type: 3}
-  m_PrefabInstance: {fileID: 4301190184080224191}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4157790737822106822 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 145123485926321017, guid: e14cb71711a4cb040bdbc33d28d1ee38,

@@ -72,8 +72,6 @@ public class Ascii_AI : MonoBehaviour
     //! 테스트
     [Header("Debug")]
     public TextMeshProUGUI stateText;
-    public bool fallAtkAble;
-    public bool laserAtkAble;
 
     private void Awake()
     {
@@ -183,6 +181,9 @@ public class Ascii_AI : MonoBehaviour
         // 플레이어와의 거리
         float playerDistance = playerDir.magnitude;
 
+        //!
+        fallAtkDone = false;
+
         // 폴어택 범위에 들어왔을때, 마지막 공격이 폴어택이 아닐때
         if (fallRangeTrigger.atkTrigger && !fallAtkDone)
         {
@@ -252,25 +253,25 @@ public class Ascii_AI : MonoBehaviour
         //움직일 방향에따라 회전
         if (dir.x > 0)
         {
-            //내부 텍스트 오브젝트들 좌우반전
-            // if (transform.rotation == Quaternion.Euler(0, 0, 0))
-            // {
-            //     canvasChildren.rotation = Quaternion.Euler(0, 180, 0);
-            // }
-
             if (transform.rotation != Quaternion.Euler(0, -180, 0))
+            {
+                //보스 좌우반전
                 transform.rotation = Quaternion.Euler(0, 180, 0);
+
+                //내부 텍스트 오브젝트들 좌우반전
+                canvasChildren.rotation = Quaternion.Euler(0, 180, 0);
+            }
         }
         else
         {
-            //내부 텍스트 오브젝트들 좌우반전
-            // if (transform.rotation == Quaternion.Euler(0, 180, 0))
-            // {
-            //     canvasChildren.rotation = Quaternion.Euler(0, 0, 0);
-            // }
-
             if (transform.rotation != Quaternion.Euler(0, 0, 0))
+            {
+                //보스 좌우반전 초기화
                 transform.rotation = Quaternion.Euler(0, 0, 0);
+
+                //내부 텍스트 오브젝트들 좌우반전 초기화
+                canvasChildren.rotation = Quaternion.Euler(0, 0, 0);
+            }
         }
 
         // idle 상태로 전환
@@ -446,15 +447,15 @@ public class Ascii_AI : MonoBehaviour
 
         // 먼지 파티클 활성화
         fallDustEffect.gameObject.SetActive(true);
-
-        //일어서기, 휴식 애니메이션 재생
-        StartCoroutine(GetUpAnim());
     }
 
     void FallAtkDisable()
     {
         // fallAtk 공격 비활성화
         fallAtkColl.enabled = false;
+
+        //일어서기, 휴식 애니메이션 재생
+        StartCoroutine(GetUpAnim());
     }
 
     IEnumerator GetUpAnim()
@@ -462,8 +463,8 @@ public class Ascii_AI : MonoBehaviour
         //일어날때 표정
         faceText.text = "x  _  x";
 
-        // 엎어진채로 1초 대기
-        yield return new WaitForSeconds(1f);
+        // 엎어진채로 대기
+        yield return new WaitForSeconds(0f);
 
         // 일어서기, 휴식 애니메이션 시작
         anim.SetBool("isFallAtk", false);
@@ -911,6 +912,13 @@ public class Ascii_AI : MonoBehaviour
                 }
 
                 laserText.text = "(" + new string('■', 6) + ")";
+
+                //케이블 반짝이는 이벤트 켜기
+                L_PlugHead.transform.GetChild(1).gameObject.SetActive(true);
+                R_PlugHead.transform.GetChild(1).gameObject.SetActive(true);
+
+                // 풀충전 상태로 이펙트 시간동안 잠깐 대기
+                yield return new WaitForSeconds(0.5f);
 
                 // 플러그 끝 전기 이펙트 켜기
                 L_PlugTip.gameObject.SetActive(true);

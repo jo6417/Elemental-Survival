@@ -23,7 +23,7 @@ public class EnemyAttack : MonoBehaviour
 
     [Header("Attack State")]
     // public bool friendlyFire = false; // 충돌시 아군 피해 여부
-    public bool flatDebuff = false; //납작해지는 디버프
+    public float flatTime = 0f; //납작해지는 디버프
     public bool knockBackDebuff = false; //넉백 디버프
     public bool poisonDebuff = false; // 독 디버프
 

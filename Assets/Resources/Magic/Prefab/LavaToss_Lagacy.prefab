@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 690858175490142158}
   - component: {fileID: 5259343267321130873}
   - component: {fileID: 1116434044434221771}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: LavaToss_Lagacy
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -48,15 +48,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coll: {fileID: 0}
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 10, y: 10, z: 0}
+  targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 2
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &5971069816964518669
 MonoBehaviour:
@@ -112,7 +118,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: -2956701104251912436, guid: c34c339337b25c449a0d0ccbd6858f73,
     type: 3}

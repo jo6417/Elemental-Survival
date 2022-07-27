@@ -89,7 +89,7 @@ public class EnemyHitBox : MonoBehaviour
             // other가 본인일때 리턴
             if (atkEnemyManager == this)
             {
-                // print("본인 타격");
+                print(enemyManager.enemy.enemyName + " 본인 타격");
                 yield break;
             }
 
@@ -125,13 +125,13 @@ public class EnemyHitBox : MonoBehaviour
                 StartCoroutine(Knockback(other.gameObject, atkEnemyManager.enemy.power));
             }
 
-            // flat 디버프 있을때, stop 카운트 중 아닐때
-            if (enemyAtk.flatDebuff && enemyManager.stopCount <= 0)
+            // flat 디버프 시간 있을때, stop 카운트 중 아닐때
+            if (enemyAtk.flatTime > 0)
             {
-                // print("enemy flat");
+                // print(enemyManager.enemy.enemyName + " enemy flat");
 
                 // 납작해지고 행동불능
-                StartCoroutine(FlatDebuff());
+                StartCoroutine(FlatDebuff(enemyAtk.flatTime));
             }
         }
 
@@ -140,15 +140,6 @@ public class EnemyHitBox : MonoBehaviour
         {
             // 마법 정보 찾기
             MagicInfo magic = magicHolder.magic;
-
-            // 마법 파워 계산
-            float power = MagicDB.Instance.MagicPower(magic);
-            // 마법 지속시간 계산
-            float duration = MagicDB.Instance.MagicDuration(magic);
-            //크리티컬 성공 여부
-            bool isCritical = MagicDB.Instance.MagicCritical(magic);
-            //크리티컬 데미지 계산
-            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
             // 마법 정보 없으면 리턴
             if (magicHolder == null || magic == null)
@@ -163,6 +154,15 @@ public class EnemyHitBox : MonoBehaviour
                 // print("타겟 미설정");
                 yield break;
             }
+
+            // 마법 파워 계산
+            float power = MagicDB.Instance.MagicPower(magic);
+            // 마법 지속시간 계산
+            float duration = MagicDB.Instance.MagicDuration(magic);
+            //크리티컬 성공 여부
+            bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            //크리티컬 데미지 계산
+            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
             // print(transform.name + " : " + magic.magicName);
 
@@ -355,25 +355,20 @@ public class EnemyHitBox : MonoBehaviour
         });
     }
 
-    public IEnumerator FlatDebuff()
+    public IEnumerator FlatDebuff(float flatTime)
     {
         //정지 시간 추가
-        enemyManager.stopCount = 2f;
+        enemyManager.stopCount = flatTime;
 
         //스케일 납작하게
-        transform.localScale = new Vector2(1f, 0.5f);
+        enemyManager.transform.localScale = new Vector2(1f, 0.5f);
 
-        //위치 얼리기
-        enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-
-        //2초간 깔린채로 대기
-        yield return new WaitForSeconds(2f);
+        // stopCount 풀릴때까지 대기
+        yield return new WaitUntil(() => enemyManager.stopCount <= 0);
+        // yield return new WaitForSeconds(flatTime);
 
         //스케일 복구
-        transform.localScale = Vector2.one;
-
-        //위치 얼리기
-        enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        enemyManager.transform.localScale = Vector2.one;
     }
 
     public IEnumerator Knockback(GameObject attacker, float knockbackForce)
@@ -553,9 +548,6 @@ public class EnemyHitBox : MonoBehaviour
             // 몬스터 리스트에서 몬스터 본인 빼기
             EnemySpawn.Instance.EnemyDespawn(enemyManager);
         }
-        else
-        {
-        }
 
         //폭발 몬스터면 폭발 시키기
         if (enemyManager.selfExplosion)
@@ -579,6 +571,21 @@ public class EnemyHitBox : MonoBehaviour
             // 폭발 활성화
             effect.SetActive(true);
         }
+
+        // 감전 디버프 풀기
+        // 애니메이션 속도 초기화
+        for (int i = 0; i < enemyManager.animList.Count; i++)
+        {
+            enemyManager.animList[i].speed = 1f;
+        }
+        // 이동 속도 저하 디버프 초기화
+        enemyManager.enemyAI.moveSpeedDebuff = 1f;
+        // 자식중에 감전 이펙트 찾기
+        Transform shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
+        if (shockEffect != null)
+            LeanPool.Despawn(shockEffect);
+        // 감전 코루틴 변수 초기화
+        enemyManager.shockCoroutine = null;
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);

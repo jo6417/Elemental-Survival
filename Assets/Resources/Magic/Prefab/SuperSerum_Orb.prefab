@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4135367507661033484}
   - component: {fileID: 8468332488214465034}
   - component: {fileID: 7161046098970175039}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: SuperSerum_Orb
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -48,18 +48,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!114 &1298670031194684370
 MonoBehaviour:
@@ -174,7 +177,7 @@ GameObject:
   - component: {fileID: 1957593822852447937}
   - component: {fileID: 151284468529165936}
   - component: {fileID: 7167652524850847526}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: MoveEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

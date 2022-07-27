@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 584753633276013060}
   - component: {fileID: 584753633276013061}
   - component: {fileID: 584753633276013062}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: LavaParticle
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4779,7 +4779,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -4815,7 +4815,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 960351157851226751}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: LavaToss_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4852,7 +4852,7 @@ GameObject:
   - component: {fileID: 2230350204605646506}
   - component: {fileID: 2230350204605646517}
   - component: {fileID: 2230350204605646515}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: LavaPool
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4885,15 +4885,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coll: {fileID: 0}
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
+  targetType: 0
+  initDone: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!212 &2230350204605646506
 SpriteRenderer:
@@ -4933,7 +4939,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: -1
   m_Sprite: {fileID: 3414811593755899399, guid: 22ccebbd89fa70f48abd520471ee130b,
     type: 3}
@@ -4992,7 +4998,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6098184736184873508}
   - component: {fileID: 2915408825975928813}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: ParticleDeadLine
   m_TagString: Magic
   m_Icon: {fileID: 0}

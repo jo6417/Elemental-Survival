@@ -87,7 +87,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 45592604}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 3929e8a28321e134993cc5de032dc6db, type: 2}
   m_CullingMode: 0
@@ -3989,7 +3989,7 @@ MonoBehaviour:
   atkColl: {fileID: 1804659304}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!114 &1804659307
@@ -15563,7 +15563,7 @@ MonoBehaviour:
   m_text: :(
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 47ae4f5559c230a42bf649ec8034bd34, type: 2}
-  m_sharedMaterial: {fileID: 5102506194067504121, guid: a7b7eb28d98036e4a9039c153c859ddf,
+  m_sharedMaterial: {fileID: 5102506194067504121, guid: 47ae4f5559c230a42bf649ec8034bd34,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -15627,7 +15627,7 @@ MonoBehaviour:
   m_margin: {x: 1, y: 0.5, z: 1, w: 0.5}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &3138334578703547574
@@ -16089,7 +16089,7 @@ MonoBehaviour:
     0% complete'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 47ae4f5559c230a42bf649ec8034bd34, type: 2}
-  m_sharedMaterial: {fileID: 5102506194067504121, guid: a7b7eb28d98036e4a9039c153c859ddf,
+  m_sharedMaterial: {fileID: 5102506194067504121, guid: 47ae4f5559c230a42bf649ec8034bd34,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -16153,7 +16153,7 @@ MonoBehaviour:
   m_margin: {x: 1, y: 0, z: 1, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &3360599405188620662
@@ -16555,7 +16555,7 @@ GameObject:
   - component: {fileID: 6774181602686036681}
   - component: {fileID: 9097308635735847014}
   - component: {fileID: 7402702887672922418}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: FallAtkRange
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -16595,7 +16595,7 @@ MonoBehaviour:
   atkColl: {fileID: 9097308635735847014}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 1
+  flatTime: 2
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!61 &9097308635735847014
@@ -17280,7 +17280,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4284755770127680254}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: b9eb079f21a558246ba260dd982606f9, type: 2}
   m_CullingMode: 0
@@ -17431,7 +17431,7 @@ GameObject:
   - component: {fileID: 4324247056567234837}
   - component: {fileID: 4785999933028079198}
   - component: {fileID: 5005875183484341782}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: FallRangeIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23074,7 +23074,6 @@ GameObject:
   - component: {fileID: 6014433321399679246}
   - component: {fileID: 6014433321399679245}
   - component: {fileID: 2380262803175011489}
-  - component: {fileID: 1787359118}
   m_Layer: 7
   m_Name: Ascii_Prefab
   m_TagString: Untagged
@@ -23218,8 +23217,6 @@ MonoBehaviour:
   groundPunchCooltime: 5
   earthGroundCooltime: 8
   stateText: {fileID: 755036048}
-  fallAtkAble: 0
-  laserAtkAble: 0
 --- !u!212 &4947422215683903788
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -23327,17 +23324,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0.3, y: 0}
   m_Size: {x: 17, y: 3}
   m_Direction: 1
---- !u!210 &1787359118
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6014433321399679345}
-  m_Enabled: 1
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 0
 --- !u!1 &6106412424610136788
 GameObject:
   m_ObjectHideFlags: 0
@@ -23806,7 +23792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12941177, g: 0.38823533, b: 0.41960788, a: 1}
+  m_Color: {r: 0.24474896, g: 0.44687384, b: 0.7075472, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -24070,6 +24056,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7213583925062649118}
+  - component: {fileID: 117016375}
   m_Layer: 5
   m_Name: CanvasChildren
   m_TagString: Untagged
@@ -24097,11 +24084,19 @@ RectTransform:
   m_Father: {fileID: 9177898891022014109}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0000009536743, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 15.64, y: 11.12}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &117016375
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7656262936305170168}
+  m_CullTransparentMesh: 1
 --- !u!1 &7663366527787143224
 GameObject:
   m_ObjectHideFlags: 0
@@ -24774,7 +24769,7 @@ MonoBehaviour:
   atkColl: {fileID: 8820440381221889037}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!114 &3647791477519003123
@@ -29973,7 +29968,7 @@ GameObject:
   - component: {fileID: 9177898890322600236}
   - component: {fileID: 9177898890322600235}
   - component: {fileID: 8793836477010977265}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: FallAtkCheck
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -30138,8 +30133,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9177898891022014108}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -7.671}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7213583925062649118}
@@ -30148,7 +30143,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 6.1318}
+  m_AnchoredPosition: {x: 0, y: 6.24}
   m_SizeDelta: {x: 15.64, y: 11.12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &9177898891022014096
@@ -30170,7 +30165,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: -1
   m_SortingLayerID: -1861760285
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &9177898891022014111
 MonoBehaviour:
@@ -30507,6 +30502,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1249799429006374388, guid: b151d4f50502bd94487b603adfea1fc3,
         type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1249799429006374388, guid: b151d4f50502bd94487b603adfea1fc3,
+        type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -30603,15 +30603,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c10ccff4c63bad4e977db9abf782214, type: 3}
---- !u!4 &1273808526764278143 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5466876835642366017, guid: 7c10ccff4c63bad4e977db9abf782214,
-    type: 3}
-  m_PrefabInstance: {fileID: 6517629636126464318}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1270317115916665995 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5463525165796138421, guid: 7c10ccff4c63bad4e977db9abf782214,
+    type: 3}
+  m_PrefabInstance: {fileID: 6517629636126464318}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1273808526764278143 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5466876835642366017, guid: 7c10ccff4c63bad4e977db9abf782214,
     type: 3}
   m_PrefabInstance: {fileID: 6517629636126464318}
   m_PrefabAsset: {fileID: 0}
