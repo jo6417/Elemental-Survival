@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
 
@@ -8,10 +9,16 @@ public class LifeMushroomSpawner : MonoBehaviour
     MagicHolder magicHolder;
     MagicInfo magic;
     public GameObject lifeMushroom; // 회복 버섯
+    public GameObject poisonSmokeEffect; //독 연기 이펙트
+    float duration;
+
+    ParticleSystem particle;
+    List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
 
     private void Awake()
     {
         magicHolder = GetComponent<MagicHolder>();
+        particle = GetComponent<ParticleSystem>();
     }
 
     private void OnEnable()
@@ -23,6 +30,9 @@ public class LifeMushroomSpawner : MonoBehaviour
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
+
+        // 지속시간 계산
+        duration = MagicDB.Instance.MagicDuration(magic);
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += DropLifeSeed;
@@ -38,10 +48,35 @@ public class LifeMushroomSpawner : MonoBehaviour
         SystemManager.Instance.globalEnemyDeadCallback -= DropLifeSeed;
     }
 
-    // Life Seed 드랍하기
+    // 파티클에 충돌한 몬스터 감지
+    private void OnParticleCollision(GameObject other)
+    {
+        ParticlePhysicsExtensions.GetCollisionEvents(particle, other, collisionEvents);
+
+        for (int i = 0; i < collisionEvents.Count; i++)
+        {
+            // 몬스터에 충돌하면
+            if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+            {
+                // print($"Enemy : {other.name} : {other.tag} : {other.layer}");
+
+                if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
+                {
+                    // 독 도트 데미지 주기
+                    StartCoroutine(enemyHitBox.Hit(magicHolder.gameObject));
+                }
+            }
+        }
+    }
+
+    // 버섯 드랍하기
     public void DropLifeSeed(EnemyManager enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
+
+        // 독 데미지 받는중에만 진행
+        if (enemyManager.poisonCoolCount <= 0)
+            return;
 
         // 크리티컬 확률 = 드랍 확률
         bool isDrop = MagicDB.Instance.MagicCritical(magic);
@@ -55,8 +90,10 @@ public class LifeMushroomSpawner : MonoBehaviour
         {
             GameObject mushroom = LeanPool.Spawn(lifeMushroom, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
+            SpriteRenderer mushroomSprite = mushroom.GetComponent<SpriteRenderer>();
+
             // 아이템에 체력 회복량 넣기
-            // mushroom.GetComponent<ItemManager>().amount = healAmount;
+            mushroom.GetComponent<ItemManager>().amount = healAmount;
 
             //아이템 리지드 찾기
             Rigidbody2D itemRigid = mushroom.GetComponent<Rigidbody2D>();
@@ -66,6 +103,22 @@ public class LifeMushroomSpawner : MonoBehaviour
 
             // 아이템 랜덤 회전 시키기
             itemRigid.angularVelocity = Random.value < 0.5f ? 360f : -360f;
+
+            // 점점 썩어서 사라지기
+            mushroomSprite.DOColor(Color.clear, duration)
+            .SetEase(Ease.InExpo)
+            .OnComplete(() =>
+            {
+                // 버섯이 살아있을때
+                if (mushroom.activeInHierarchy)
+                {
+                    //디스폰
+                    LeanPool.Despawn(mushroom);
+
+                    //이펙트 소환
+                    LeanPool.Spawn(poisonSmokeEffect, mushroom.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                }
+            });
         }
     }
 }

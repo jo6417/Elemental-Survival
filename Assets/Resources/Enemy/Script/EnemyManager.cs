@@ -64,7 +64,7 @@ public class EnemyManager : MonoBehaviour
     public bool isElite; //엘리트 몬스터 여부
     public int eliteClass; //엘리트 클래스 종류
 
-    public bool statusEffect = false; //상태이상으로 색 변형 했는지 여부
+    public bool afterEffect = false; // 상태이상 여부
     public bool isDead; //죽음 코루틴 진행중 여부
     public bool selfExplosion = false; //죽을때 자폭 여부
     public float attackRange; // 공격범위
@@ -105,17 +105,21 @@ public class EnemyManager : MonoBehaviour
     [Header("Debuff")]
     public IEnumerator hitCoroutine;
     public IEnumerator slowCoroutine = null;
+    public IEnumerator poisonCoroutine = null;
     public IEnumerator shockCoroutine = null;
     public float particleHitCount = 0;
     public float hitCount = 0;
     public float stopCount = 0;
     public float oppositeCount = 0;
+    public float poisonCoolCount; //독 도트뎀 남은시간
 
     [Header("Debug")]
     [SerializeField]
     string enemyName;
     [SerializeField]
     string enemyType;
+    [SerializeField]
+    Vector3 velocity;
 
     void Awake()
     {
@@ -411,6 +415,9 @@ public class EnemyManager : MonoBehaviour
 
     public bool ManageState()
     {
+        // 상태이상 여부 초기화
+        afterEffect = false;
+
         // 초기화 안됬으면 리턴
         if (!initialFinish)
             return false;
@@ -426,9 +433,6 @@ public class EnemyManager : MonoBehaviour
         //죽음 애니메이션 중일때
         if (isDead)
         {
-            // 상태이상 변수 true
-            statusEffect = true;
-
             state = State.Dead;
 
             rigid.velocity = Vector2.zero; //이동 초기화
@@ -444,15 +448,13 @@ public class EnemyManager : MonoBehaviour
 
             transform.DOPause();
 
+            // 행동불능이므로 false 리턴
             return false;
         }
 
         //전역 타임스케일이 0 일때
         if (SystemManager.Instance.globalTimeScale == 0)
         {
-            // 상태이상 변수 true
-            statusEffect = true;
-
             state = State.MagicStop;
 
             // 애니메이션 멈추기
@@ -469,15 +471,13 @@ public class EnemyManager : MonoBehaviour
 
             transform.DOPause();
 
+            // 행동불능이므로 false 리턴
             return false;
         }
 
         // 멈춤 디버프일때
         if (stopCount > 0)
         {
-            // 상태이상 변수 true
-            statusEffect = true;
-
             state = State.TimeStop;
 
             rigid.velocity = Vector2.zero; //이동 초기화
@@ -500,6 +500,7 @@ public class EnemyManager : MonoBehaviour
 
             transform.DOPause();
 
+            // 행동불능이므로 false 리턴
             return false;
         }
 
@@ -508,65 +509,65 @@ public class EnemyManager : MonoBehaviour
         {
             rigid.velocity = Vector2.zero; //이동 초기화
 
+            // 행동불능이므로 false 리턴
             return false;
         }
-
-        // 슬로우 디버프일때
-        // if (slowCoroutine != null)
-        // {
-        //     statusEffect = true;
-        // }
 
         // 감전 디버프일때
         if (shockCoroutine != null)
         {
-            statusEffect = true;
-
-            state = State.Hit;
-
-            rigid.velocity = Vector2.zero; //이동 멈추기
-
-            // 행동불능이므로 리턴
+            // 행동불능이므로 false 리턴
             return false;
         }
 
-        //모든 문제 없으면 idle 상태로 전환
-        state = State.Idle;
-
-        // 상태이상 걸렸으면
-        if (statusEffect)
+        // 슬로우 디버프일때
+        if (slowCoroutine != null)
         {
-            //상태이상 해제됨
-            statusEffect = false;
-
-            // rigid, sprite, 트윈, 애니메이션 상태 초기화
-            for (int i = 0; i < spriteList.Count; i++)
-            {
-                spriteList[i].material = originMatList[i];
-
-                // 고스트 여부에 따라 복구색 바꾸기
-                if (IsGhost)
-                    spriteList[i].color = new Color(0, 1, 1, 0.5f);
-                else
-                    spriteList[i].color = originColorList[i];
-            }
-
-            transform.DOPlay();
-
-            // 애니메이션 속도 초기화
-            if (animList.Count > 0)
-            {
-                foreach (Animator anim in animList)
-                {
-                    anim.speed = 1f;
-                }
-            }
-
-            // rigid 초기화
-            rigid.velocity = Vector3.zero;
-            rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+            // 행동가능이므로 true 리턴
+            return true;
         }
 
+        // 포이즌 디버프일때
+        if (poisonCoroutine != null)
+        {
+            // 행동가능이므로 true 리턴
+            return true;
+        }
+
+        // 모든 문제 없으면 idle 상태로 전환
+        // state = State.Idle;
+
+        // rigid, sprite, 트윈, 애니메이션 상태 초기화
+        for (int i = 0; i < spriteList.Count; i++)
+        {
+            spriteList[i].material = originMatList[i];
+
+            // 고스트 여부에 따라 복구색 바꾸기
+            if (IsGhost)
+                spriteList[i].color = new Color(0, 1, 1, 0.5f);
+            else
+                spriteList[i].color = originColorList[i];
+        }
+
+        transform.DOPlay();
+
+        // 애니메이션 속도 초기화
+        if (animList.Count > 0)
+        {
+            foreach (Animator anim in animList)
+            {
+                anim.speed = 1f;
+            }
+        }
+
+        // rigid 초기화
+        // rigid.velocity = Vector3.zero;
+        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // 상태 이상 없음
+        afterEffect = true;
+
+        // 행동가능이므로 true 리턴
         return true;
     }
 

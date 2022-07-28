@@ -67,7 +67,7 @@ public class EnemyAI : MonoBehaviour
             return;
 
         // 상태 이상 있으면 리턴
-        if (enemyManager && !enemyManager.ManageState())
+        if (!enemyManager.ManageState())
             return;
 
         //행동 관리
@@ -84,16 +84,16 @@ public class EnemyAI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
-        // // 타겟 null 체크
-        // if (enemyManager.TargetObj != null)
-        // 타겟 방향 계산
-        targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        // 타겟 null 체크
+        if (enemyManager.TargetObj != null)
+            // 타겟 방향 계산
+            targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         if (enemyManager.TargetObj == null)
             // 타겟이 null 이면 멈추기
             enemyManager.rigid.velocity = Vector2.zero;
 
-        //걷는 타입일때
+        // 걷기, 대쉬 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Walk || enemyManager.moveType == EnemyManager.MoveType.Dash)
         {
             Walk();
@@ -199,13 +199,17 @@ public class EnemyAI : MonoBehaviour
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
         float distance = targetDir.magnitude > enemyManager.speed ? enemyManager.speed : targetDir.magnitude;
 
+        // print(targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
+
         //해당 방향으로 가속
         enemyManager.rigid.velocity = targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+
+        // print(enemyManager.rigid.velocity);
     }
 
     public void JumpMoveStop()
     {
-        //rigid 이동 멈추기
+        // rigid 이동 멈추기
         enemyManager.rigid.velocity = Vector2.zero;
     }
 

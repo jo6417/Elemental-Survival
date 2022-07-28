@@ -177,8 +177,21 @@ public class EnemyHitBox : MonoBehaviour
                 // 크리티컬 데미지 배율 반영
                 damage = damage * criticalPower;
 
-                //데미지 적용
-                Damage(damage, isCritical);
+                // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
+                if (magicHolder.poisonTime == 0)
+                    Damage(damage, isCritical);
+
+                // 포이즌 피해 시간 있으면 도트 피해
+                if (magicHolder.poisonTime > 0)
+                {
+                    //이미 포이즌 코루틴 중이면 기존 코루틴 취소
+                    if (enemyManager.poisonCoroutine != null)
+                        StopCoroutine(enemyManager.poisonCoroutine);
+
+                    enemyManager.poisonCoroutine = PoisonDotHit(damage, duration);
+
+                    StartCoroutine(enemyManager.poisonCoroutine);
+                }
             }
 
             //시간 정지
@@ -432,7 +445,7 @@ public class EnemyHitBox : MonoBehaviour
         // 디버프량
         float slowAmount = 0f;
         // 감전 디버프 이펙트
-        GameObject shockEffect = null;
+        Transform shockEffect = null;
 
         // 애니메이션 속도 저하
         for (int i = 0; i < enemyManager.animList.Count; i++)
@@ -443,11 +456,14 @@ public class EnemyHitBox : MonoBehaviour
         // 이동 속도 저하 디버프
         enemyManager.enemyAI.moveSpeedDebuff = slowAmount;
 
+        //이동 멈추기
+        enemyManager.rigid.velocity = Vector2.zero;
+
         // 이미 감전 디버프 중 아닐때
         if (!transform.Find(SystemManager.Instance.shockDebuffEffect.name))
         {
             //감전 디버프 이펙트 붙이기
-            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, transform.position, Quaternion.identity, transform);
+            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, transform.position, Quaternion.identity, transform).transform;
 
             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
             shockEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
@@ -466,12 +482,52 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.enemyAI.moveSpeedDebuff = 1f;
 
         // 자식중에 감전 이펙트 찾기
-        shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name).gameObject;
+        shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
         if (shockEffect != null)
             LeanPool.Despawn(shockEffect);
 
         // 코루틴 변수 초기화
         enemyManager.shockCoroutine = null;
+    }
+
+    public IEnumerator PoisonDotHit(float tickDamage, float duration)
+    {
+        //독 데미지 지속시간 넣기
+        enemyManager.poisonCoolCount = duration;
+
+        // 포이즌 디버프 아이콘
+        Transform poisonEffect = null;
+
+        // 이미 포이즌 디버프 중 아닐때
+        if (!enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
+        {
+            //포이즌 디버프 이펙트 붙이기
+            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, transform.position, Quaternion.identity, enemyManager.transform).transform;
+
+            // 포탈 사이즈 배율만큼 이펙트 배율 키우기
+            poisonEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
+        }
+
+        // 독 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
+        while (enemyManager.poisonCoolCount > 1 && !enemyManager.isDead)
+        {
+            // 독 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 독 데미지 지속시간에서 한틱 차감
+            enemyManager.poisonCoolCount -= 1f;
+        }
+
+        // 포이즌 아이콘 없에기
+        poisonEffect = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
+        if (poisonEffect != null)
+            LeanPool.Despawn(poisonEffect);
+
+        // 포이즌 코루틴 변수 초기화
+        enemyManager.poisonCoroutine = null;
     }
 
     public IEnumerator Dead()
@@ -572,20 +628,8 @@ public class EnemyHitBox : MonoBehaviour
             effect.SetActive(true);
         }
 
-        // 감전 디버프 풀기
-        // 애니메이션 속도 초기화
-        for (int i = 0; i < enemyManager.animList.Count; i++)
-        {
-            enemyManager.animList[i].speed = 1f;
-        }
-        // 이동 속도 저하 디버프 초기화
-        enemyManager.enemyAI.moveSpeedDebuff = 1f;
-        // 자식중에 감전 이펙트 찾기
-        Transform shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
-        if (shockEffect != null)
-            LeanPool.Despawn(shockEffect);
-        // 감전 코루틴 변수 초기화
-        enemyManager.shockCoroutine = null;
+        // 모든 디버프 해제
+        DebuffRemove();
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
@@ -601,5 +645,28 @@ public class EnemyHitBox : MonoBehaviour
         LeanPool.Despawn(enemyManager.gameObject);
 
         yield return null;
+    }
+
+    void DebuffRemove()
+    {
+        // 감전 디버프 해제
+        // 애니메이션 속도 초기화
+        for (int i = 0; i < enemyManager.animList.Count; i++)
+        {
+            enemyManager.animList[i].speed = 1f;
+        }
+        // 이동 속도 저하 디버프 초기화
+        enemyManager.enemyAI.moveSpeedDebuff = 1f;
+        // 자식중에 감전 이펙트 찾기
+        Transform shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
+        if (shockEffect != null)
+            LeanPool.Despawn(shockEffect);
+        // 감전 코루틴 변수 초기화
+        enemyManager.shockCoroutine = null;
+
+        // 포이즌 아이콘 없에기
+        Transform poisonIcon = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
+        if (poisonIcon != null)
+            LeanPool.Despawn(poisonIcon);
     }
 }

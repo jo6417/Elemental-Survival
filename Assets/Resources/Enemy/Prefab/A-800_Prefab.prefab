@@ -261,12 +261,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeAngleOffset: 0
+  alwaysOnCollider: 0
   enemyManager: {fileID: 2609816229949297132}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!58 &1016044293152676191
@@ -5109,7 +5110,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -5279,6 +5280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 1
+  lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -5289,16 +5291,13 @@ MonoBehaviour:
   portalSize: 1
   isElite: 0
   eliteClass: 0
-  isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
-  selfExplosion: 0
   statusEffect: 0
+  isDead: 0
+  selfExplosion: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 8165655979838027246}
+  hitBox: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 8165655979838027244}
   shadow: {fileID: 8933786517452488958}
@@ -5312,12 +5311,17 @@ MonoBehaviour:
   rigid: {fileID: 8165655979838027218}
   physicsColl: {fileID: 8165655979838027219}
   hitCollList: []
-  buffParent: {fileID: 0}
+  buffParent: {fileID: 4592455895541119263}
   hpMax: 0
   HpNow: 1
   power: 0
   speed: 0
   range: 0
+  particleHitCount: 0
+  hitCount: 0
+  stopCount: 0
+  oppositeCount: 0
+  poisonCoolCount: 0
   enemyName: 
   enemyType: 
 --- !u!114 &8165655979838027246
