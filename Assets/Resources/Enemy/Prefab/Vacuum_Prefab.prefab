@@ -79,12 +79,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeAngleOffset: 0
+  alwaysOnCollider: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!212 &1117852762
@@ -242,12 +243,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeAngleOffset: 0
+  alwaysOnCollider: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 0
   poisonDebuff: 0
 --- !u!212 &1169140570
@@ -5210,7 +5212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2282559697499699900
 Transform:
   m_ObjectHideFlags: 0
@@ -5247,6 +5249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 1
+  lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -5257,16 +5260,13 @@ MonoBehaviour:
   portalSize: 1.2
   isElite: 0
   eliteClass: 0
+  afterEffect: 0
   isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
   selfExplosion: 0
-  statusEffect: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 3988004795875851619}
+  hitBox: {fileID: 0}
   explosionTrigger: {fileID: 0}
   spriteObj: {fileID: 6348597076793159104}
   shadow: {fileID: 4450725897239236901}
@@ -5287,8 +5287,14 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  particleHitCount: 0
+  hitCount: 0
+  stopCount: 0
+  oppositeCount: 0
+  poisonCoolCount: 0
   enemyName: 
   enemyType: 
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &3988004795875851619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5393,6 +5399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 367713317556661536}
+  knockbackDir: {x: 0, y: 0}
 --- !u!70 &894845260486342895
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5492,12 +5499,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeAngleOffset: 0
+  alwaysOnCollider: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 7146421470627484963}
   dashEffect: {fileID: 2245917149986370186}
   activeObj: {fileID: 0}
-  flatDebuff: 0
+  flatTime: 0
   knockBackDebuff: 1
   poisonDebuff: 0
 --- !u!70 &7146421470627484963

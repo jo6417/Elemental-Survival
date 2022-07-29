@@ -22,7 +22,6 @@ public class MagicProjectile : MonoBehaviour
     [Header("Status")]
     float speed = 0;
     float duration = 0;
-    float pierceNum = 0; //관통 횟수
     Vector2 velocity;
 
     private void Awake()
@@ -33,7 +32,7 @@ public class MagicProjectile : MonoBehaviour
         coll = GetComponent<Collider2D>();
         sprite = GetComponent<SpriteRenderer>();
 
-        particleManager = particleManager == null ? GetComponentInChildren<ParticleManager>() : particleManager;
+        // particleManager = particleManager == null ? GetComponentInChildren<ParticleManager>() : particleManager;
     }
 
     private void OnEnable()
@@ -50,9 +49,6 @@ public class MagicProjectile : MonoBehaviour
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
-
-        //관통 횟수 초기화 
-        pierceNum = MagicDB.Instance.MagicPierce(magic);
 
         // 마법 스피드 계산 + 추가 스피드 곱하기
         speed = MagicDB.Instance.MagicSpeed(magic, true) * magicHolder.MultipleSpeed;
@@ -118,34 +114,32 @@ public class MagicProjectile : MonoBehaviour
             if (!other.TryGetComponent(out EnemyHitBox enemyHitBox))
                 return;
 
+            // 맞는 순간 콜라이더 끄기, 중복 충돌 방지
+            coll.enabled = false;
+
+            // print(other.transform.parent.parent.name + " : " + magicHolder.pierceCount);
+
             //남은 관통횟수 0 일때 디스폰
-            // print(gameObject.name + " : " + pierceNum);
-            if (pierceNum <= 0)
+            if (magicHolder.pierceCount == 0)
             {
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());
             }
             else
-            {
-                //관통 횟수 차감
-                pierceNum--;
-            }
+                // 관통 횟수 남아있으면 다시 콜라이더 켜기
+                coll.enabled = true;
         }
 
         // 플레이어에게 충돌, 대쉬중이면 무시
         if (magicHolder.targetType == MagicHolder.Target.Player && other.CompareTag(SystemManager.TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
         {
+            // print(gameObject.name + " : " + magicHolder.pierceCount);
+
             //남은 관통횟수 0 일때 디스폰
-            print(gameObject.name + " : " + pierceNum);
-            if (pierceNum <= 0)
+            if (magicHolder.pierceCount == 0)
             {
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());
-            }
-            else
-            {
-                //관통 횟수 차감
-                pierceNum--;
             }
         }
     }

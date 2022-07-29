@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 4959071736242128182}
+  knockbackDir: {x: 0, y: 0}
 --- !u!61 &5199000365732363104
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -312,7 +313,7 @@ MonoBehaviour:
   portalSize: 2
   isElite: 0
   eliteClass: 0
-  statusEffect: 0
+  afterEffect: 0
   isDead: 0
   selfExplosion: 0
   attackRange: 0
@@ -342,8 +343,10 @@ MonoBehaviour:
   hitCount: 0
   stopCount: 0
   oppositeCount: 0
+  poisonCoolCount: 0
   enemyName: 
   enemyType: 
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &5097144648422318720
 MonoBehaviour:
   m_ObjectHideFlags: 0

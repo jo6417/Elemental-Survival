@@ -128,6 +128,7 @@ public class EnemyManager : MonoBehaviour
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
+        hitBox = hitBox == null ? spriteObj.GetComponentInChildren<EnemyHitBox>() : hitBox;
 
         //히트 콜라이더 없으면 EnemyHitBox로 찾아 넣기
         if (hitCollList.Count == 0)
@@ -387,9 +388,7 @@ public class EnemyManager : MonoBehaviour
         // 파티클 히트 딜레이 차감
         if (particleHitCount > 0)
         {
-            state = State.Hit;
-
-            rigid.velocity = Vector2.zero; //이동 초기화
+            // state = State.Hit;
 
             particleHitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
         }
@@ -397,9 +396,7 @@ public class EnemyManager : MonoBehaviour
         // 히트 딜레이 차감
         if (hitCount > 0)
         {
-            state = State.Hit;
-
-            rigid.velocity = Vector2.zero; //이동 초기화
+            // state = State.Hit;
 
             hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
         }
@@ -510,6 +507,12 @@ public class EnemyManager : MonoBehaviour
             rigid.velocity = Vector2.zero; //이동 초기화
 
             // 행동불능이므로 false 리턴
+            return false;
+        }
+
+        // 피격 했을때
+        if (hitCount > 0)
+        {
             return false;
         }
 

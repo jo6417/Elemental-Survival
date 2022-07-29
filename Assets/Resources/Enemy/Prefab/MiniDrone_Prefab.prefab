@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 8701247743618535938}
+  knockbackDir: {x: 0, y: 0}
 --- !u!70 &3600352542222015601
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5219,7 +5220,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7752522856865055191
 Transform:
   m_ObjectHideFlags: 0
@@ -5251,6 +5252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 1
+  lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
@@ -5261,16 +5263,13 @@ MonoBehaviour:
   portalSize: 1
   isElite: 0
   eliteClass: 0
+  afterEffect: 0
   isDead: 0
-  particleHitCount: 0
-  stopCount: 0
-  hitCount: 0
-  oppositeCount: 0
   selfExplosion: 1
-  statusEffect: 0
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: -5451379877862882109}
+  hitBox: {fileID: 6866698392770798548}
   explosionTrigger: {fileID: 8096507129767913019}
   spriteObj: {fileID: 7235316671713338324}
   shadow: {fileID: 7195645699224406153}
@@ -5290,8 +5289,14 @@ MonoBehaviour:
   power: 0
   speed: 0
   range: 0
+  particleHitCount: 0
+  hitCount: 0
+  stopCount: 0
+  oppositeCount: 0
+  poisonCoolCount: 0
   enemyName: 
   enemyType: 
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &-5451379877862882109
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,6 +9,7 @@ public class EnemyHitBox : MonoBehaviour
 {
     [Header("Refer")]
     public EnemyManager enemyManager;
+    public Vector2 knockbackDir; //넉백 벡터
     // public EnemyInfo enemy;
 
     private void OnParticleCollision(GameObject other)
@@ -155,6 +156,12 @@ public class EnemyHitBox : MonoBehaviour
                 yield break;
             }
 
+            // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
+            if (magicHolder.pierceCount != -1 && magicHolder.pierceCount > 0)
+                // 관통 횟수 차감
+                magicHolder.pierceCount--;
+
+
             // 마법 파워 계산
             float power = MagicDB.Instance.MagicPower(magic);
             // 마법 지속시간 계산
@@ -174,8 +181,9 @@ public class EnemyHitBox : MonoBehaviour
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-                // 크리티컬 데미지 배율 반영
-                damage = damage * criticalPower;
+                // 크리티컬이면 크리티컬 데미지 배율 반영
+                if (isCritical)
+                    damage = damage * criticalPower;
 
                 // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
                 if (magicHolder.poisonTime == 0)
@@ -207,10 +215,7 @@ public class EnemyHitBox : MonoBehaviour
             //넉백
             if (magicHolder.knockbackForce > 0)
             {
-                if (enemyManager.nowAction != EnemyManager.Action.Jump && enemyManager.nowAction != EnemyManager.Action.Attack)
-                {
-                    StartCoroutine(Knockback(other, magicHolder.knockbackForce));
-                }
+                StartCoroutine(Knockback(other, magicHolder.knockbackForce));
             }
 
             // 슬로우 디버프, 크리티컬 성공일때
@@ -241,13 +246,16 @@ public class EnemyHitBox : MonoBehaviour
 
     public IEnumerator HitDelay()
     {
+        // Hit 상태로 변경
+        enemyManager.state = EnemyManager.State.Hit;
+
         enemyManager.hitCount = enemyManager.enemy.hitDelay;
 
         // 머터리얼 및 색 변경
-        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        for (int i = 0; i < enemyManager.spriteList.Count; i++)
         {
-            sprite.material = SystemManager.Instance.hitMat;
-            sprite.color = SystemManager.Instance.hitColor;
+            enemyManager.spriteList[i].material = SystemManager.Instance.hitMat;
+            enemyManager.spriteList[i].color = SystemManager.Instance.hitColor;
         }
 
         yield return new WaitUntil(() => enemyManager.hitCount <= 0);
@@ -386,14 +394,13 @@ public class EnemyHitBox : MonoBehaviour
 
     public IEnumerator Knockback(GameObject attacker, float knockbackForce)
     {
-        // 반대 방향 및 넉백파워
+        // 반대 방향으로 넉백 벡터
         Vector2 knockbackDir = transform.position - attacker.transform.position;
-        Vector2 knockbackBuff = knockbackDir.normalized * ((knockbackForce * 0.1f) + (PlayerManager.Instance.PlayerStat_Now.knockbackForce - 1));
-        knockbackDir = knockbackDir.normalized + knockbackBuff;
+        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
 
-        // 피격 반대방향으로 이동
-        transform.DOMove((Vector2)transform.position + knockbackDir, enemyManager.enemy.hitDelay)
-        .SetEase(Ease.OutExpo);
+        // 몬스터 위치에서 피격 반대방향 위치로 이동
+        enemyManager.transform.DOMove((Vector2)enemyManager.transform.position + knockbackDir, 1f)
+        .SetEase(Ease.OutBack);
 
         // print(knockbackDir);
 
@@ -460,10 +467,10 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.rigid.velocity = Vector2.zero;
 
         // 이미 감전 디버프 중 아닐때
-        if (!transform.Find(SystemManager.Instance.shockDebuffEffect.name))
+        if (!enemyManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
         {
             //감전 디버프 이펙트 붙이기
-            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, transform.position, Quaternion.identity, transform).transform;
+            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, enemyManager.transform.position, Quaternion.identity, transform).transform;
 
             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
             shockEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
@@ -482,7 +489,7 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.enemyAI.moveSpeedDebuff = 1f;
 
         // 자식중에 감전 이펙트 찾기
-        shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
+        shockEffect = enemyManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name);
         if (shockEffect != null)
             LeanPool.Despawn(shockEffect);
 
@@ -502,7 +509,7 @@ public class EnemyHitBox : MonoBehaviour
         if (!enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
         {
             //포이즌 디버프 이펙트 붙이기
-            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, transform.position, Quaternion.identity, enemyManager.transform).transform;
+            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, enemyManager.transform.position, Quaternion.identity, enemyManager.transform).transform;
 
             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
             poisonEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
@@ -596,7 +603,7 @@ public class EnemyHitBox : MonoBehaviour
             UIManager.Instance.UpdateKillCount();
 
             //혈흔 이펙트 생성
-            GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             //아이템 드랍
             enemyManager.DropItem();
@@ -609,7 +616,7 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.selfExplosion)
         {
             // 폭발 이펙트 스폰
-            GameObject effect = LeanPool.Spawn(enemyManager.explosionTrigger.explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject effect = LeanPool.Spawn(enemyManager.explosionTrigger.explosionPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             // 일단 비활성화
             effect.SetActive(false);
@@ -618,11 +625,11 @@ public class EnemyHitBox : MonoBehaviour
             MagicHolder magicHolder = effect.GetComponent<MagicHolder>();
             magicHolder.fixedPower = enemyManager.enemy.power;
 
-            // 고스트 여부에 따라 충돌 레이어 바꾸기
+            // 고스트 여부에 따라 타겟 및 충돌 레이어 바꾸기
             if (enemyManager.IsGhost)
-                effect.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+                magicHolder.SetTarget(MagicHolder.Target.Player);
             else
-                effect.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+                magicHolder.SetTarget(MagicHolder.Target.Both);
 
             // 폭발 활성화
             effect.SetActive(true);
@@ -632,11 +639,11 @@ public class EnemyHitBox : MonoBehaviour
         DebuffRemove();
 
         // 먼지 이펙트 생성
-        GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         // dust.tag = "Enemy";
 
         // 트윈 및 시퀀스 끝내기
-        transform.DOKill();
+        enemyManager.transform.DOKill();
 
         // 공격 타겟 플레이어로 초기화
         enemyManager.ChangeTarget(PlayerManager.Instance.gameObject);
@@ -658,7 +665,7 @@ public class EnemyHitBox : MonoBehaviour
         // 이동 속도 저하 디버프 초기화
         enemyManager.enemyAI.moveSpeedDebuff = 1f;
         // 자식중에 감전 이펙트 찾기
-        Transform shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
+        Transform shockEffect = enemyManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name);
         if (shockEffect != null)
             LeanPool.Despawn(shockEffect);
         // 감전 코루틴 변수 초기화

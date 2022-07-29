@@ -159,6 +159,8 @@ public class CastMagic : MonoBehaviour
                 //최근 갱신된 레벨 넣어주기
                 tempMagic.magicLevel = magic.magicLevel;
 
+                print($"Name : {tempMagic.magicName} / Level : {tempMagic.magicLevel}");
+
                 // 패시브 마법이면
                 if (tempMagic.castType == MagicDB.MagicType.passive.ToString())
                 {

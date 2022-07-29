@@ -27,6 +27,7 @@ public class MagicHolder : MonoBehaviour
         set { multipleSpeed = value; }
     }
     public bool initDone = false; //초기화 완료 여부
+    public int pierceCount = 0; // 실시간 관통 횟수 카운트
 
     [Header("After Effect")]
     public float fixedPower = 0f; // 고정된 데미지
@@ -65,6 +66,9 @@ public class MagicHolder : MonoBehaviour
         //프리팹 이름으로 마법 정보 찾아 넣기
         if (magic == null)
             magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
+
+        //관통 횟수 초기화 
+        pierceCount = MagicDB.Instance.MagicPierce(magic);
 
         //타겟 임의 지정되면 마법 정보에 반영
         if (targetType != Target.None)
@@ -115,15 +119,15 @@ public class MagicHolder : MonoBehaviour
         //해당 마법의 타겟 변경
         targetType = changeTarget;
 
-        StartCoroutine(MagicTarget(changeTarget));
+        // StartCoroutine(MagicTarget(changeTarget));
     }
 
-    IEnumerator MagicTarget(Target changeTarget)
-    {
-        // 마법 정보 들어올때까지 대기
-        yield return new WaitUntil(() => magic != null);
+    // IEnumerator MagicTarget(Target changeTarget)
+    // {
+    //     // 마법 정보 들어올때까지 대기
+    //     yield return new WaitUntil(() => magic != null);
 
-        //해당 마법의 타겟 변경
-        targetType = changeTarget;
-    }
+    //     //해당 마법의 타겟 변경
+    //     targetType = changeTarget;
+    // }
 }
