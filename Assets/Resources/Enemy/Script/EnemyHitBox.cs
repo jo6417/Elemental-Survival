@@ -12,6 +12,24 @@ public class EnemyHitBox : MonoBehaviour
     public Vector2 knockbackDir; //넉백 벡터
     // public EnemyInfo enemy;
 
+    private void OnEnable()
+    {
+        // 초기화
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        // 초기화 완료시까지 대기
+        yield return new WaitUntil(() => enemyManager.InitialFinish);
+
+        // 고스트 여부에 따라 히트박스 레이어 초기화
+        if (enemyManager.IsGhost)
+            gameObject.layer = SystemManager.Instance.layerList.PlayerHit_Layer;
+        else
+            gameObject.layer = SystemManager.Instance.layerList.EnemyHit_Layer;
+    }
+
     private void OnParticleCollision(GameObject other)
     {
         // 파티클 피격 딜레이 중이면 리턴
@@ -470,7 +488,7 @@ public class EnemyHitBox : MonoBehaviour
         if (!enemyManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
         {
             //감전 디버프 이펙트 붙이기
-            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, enemyManager.transform.position, Quaternion.identity, transform).transform;
+            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, enemyManager.transform.position, Quaternion.identity, enemyManager.transform).transform;
 
             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
             shockEffect.transform.localScale = Vector3.one * enemyManager.portalSize;

@@ -222,7 +222,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 0.23894797, b: 0.19607842, a: 0.45882353}
-      maxColor: {r: 1, g: 0.95686275, b: 0.03529412, a: 0.5803922}
+      maxColor: {r: 1, g: 0.9617051, b: 0.13836467, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4835,7 +4835,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_RenderMode: 0
   m_SortMode: 0
@@ -9698,7 +9698,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_RenderMode: 0
   m_SortMode: 0
@@ -9947,7 +9947,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 0, g: 0, b: 0, a: 1}
-      maxColor: {r: 1, g: 0.95686275, b: 0.03529412, a: 0.24705882}
+      maxColor: {r: 1, g: 0.9607843, b: 0.13725491, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14541,8 +14541,8 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c06c141bb301f1d4d8ceb899368ff49e, type: 2}
-  - {fileID: 2100000, guid: c06c141bb301f1d4d8ceb899368ff49e, type: 2}
+  - {fileID: 2100000, guid: 75d3068f22622a44c96497fa89a3157d, type: 2}
+  - {fileID: 2100000, guid: 75d3068f22622a44c96497fa89a3157d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14561,7 +14561,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 2
   m_RenderMode: 0
   m_SortMode: 0
@@ -14640,6 +14640,8 @@ MonoBehaviour:
   particle: {fileID: 0}
   autoDespawn: 1
   collOverTime: 0.2
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!114 &6052826482772270991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14652,19 +14654,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicName: 
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
-  setPower: 0
+  initDone: 0
+  pierceCount: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
+  poisonTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  electricTime: 0
+  shockTime: 0
   freezeTime: 0
 --- !u!58 &4361769515971435771
 CircleCollider2D:

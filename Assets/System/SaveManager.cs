@@ -78,9 +78,11 @@ public class SaveManager : MonoBehaviour
 
         // 해당 파일 경로에 저장
         File.WriteAllText(Application.persistentDataPath + "/save.json", jsonData);
+
         print("저장 완료 - " + Application.persistentDataPath + "/save.json");
 
         isSaving = false; //저장 끝
+
         yield return null;
     }
 
@@ -117,6 +119,8 @@ public class SaveManager : MonoBehaviour
 
         // 불러온 json 문자열을 SaveData 형태로 변환해서 변수에 넣기
         localSaveData = JsonConvert.DeserializeObject<SaveData>(loadData);
+
+        yield return null;
     }
 
     public void LoadSet()
@@ -156,6 +160,8 @@ public class SaveManager : MonoBehaviour
                 break;
         }
 
+        // print($"{string.Equals(localDBJson, webDBJson)}, {localDBJson.Length} : {webDBJson.Length}");
+
         // 해당 DB 종류의 로컬 json 문자열과 웹 json 문자열 비교
         if (string.Equals(localDBJson, webDBJson))
         {
@@ -171,7 +177,7 @@ public class SaveManager : MonoBehaviour
             syncBtn.targetGraphic.color = Color.red;
 
             // 버튼 상호작용 켜기
-            syncBtn.interactable = true;
+            // syncBtn.interactable = true;
         }
 
         // 동기화 아이콘 애니메이션 멈추고 각도 초기화
@@ -179,7 +185,7 @@ public class SaveManager : MonoBehaviour
         syncBtn.transform.Find("SyncIcon").rotation = Quaternion.Euler(Vector3.zero);
     }
 
-    IEnumerator WebDataLoad(SystemManager.DBType dbType, string uri)
+    public IEnumerator WebDataLoad(SystemManager.DBType dbType, string uri)
     {
         //Apps Script에서 가공된 json 데이터 문서 주소
         UnityWebRequest www = UnityWebRequest.Get(uri);
@@ -206,6 +212,8 @@ public class SaveManager : MonoBehaviour
                     webSaveData.itemDBJson = www.downloadHandler.text;
                     break;
             }
+
+            yield return null;
         }
     }
 

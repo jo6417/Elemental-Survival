@@ -217,7 +217,7 @@ public class MergeMenu : MonoBehaviour
         camPos.z = 0;
 
         // 화면 라이트 끄기
-        lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 0f), 0.4f)
+        lightScreen.DOColor(new Color(1f, 1f, 1f, 0f), 0.4f)
         .SetUpdate(true);
 
         float moveTime = 0.8f;

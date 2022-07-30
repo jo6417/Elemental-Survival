@@ -156,22 +156,28 @@ public class EnemyDB : MonoBehaviour
         Animator btnAnim = SystemManager.Instance.enemyDBSyncBtn.GetComponentInChildren<Animator>();
         btnAnim.enabled = true;
 
-        // 로컬 DB 데이터에 웹에서 가져온 DB 데이터를 덮어쓰기
+        // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
+        yield return StartCoroutine(
+            SaveManager.Instance.WebDataLoad(
+                SystemManager.DBType.Enemy,
+                "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
+        ));
+
+        // 로컬 세이브데이터에 웹에서 가져온 세이브데이터를 덮어쓰기
         SaveManager.Instance.localSaveData.enemyDBJson = SaveManager.Instance.webSaveData.enemyDBJson;
 
-        // DB 수정된 로컬 데이터를 저장, 완료시까지 대기
+        // 수정된 로컬 세이브데이터를 저장, 완료시까지 대기
         yield return StartCoroutine(SaveManager.Instance.Save());
 
-        // 로컬 데이터에서 파싱해서 DB에 넣기, 완료시까지 대기
+        // 로컬 세이브데이터에서 불러와 enemyDB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetEnemyDB());
 
         // 동기화 여부 다시 검사
         yield return StartCoroutine(
             SaveManager.Instance.DBSyncCheck(
-                SystemManager.DBType.Enemy,
-                SystemManager.Instance.enemyDBSyncBtn,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
-            ));
+                SystemManager.DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn,
+                "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp")
+        );
 
         // 아이콘 애니메이션 끄기
         btnAnim.enabled = false;
@@ -196,6 +202,8 @@ public class EnemyDB : MonoBehaviour
                 enemy["power"], enemy["speed"], enemy["range"], enemy["cooltime"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"],
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
                 );
+
+                yield return null;
             }
 
         }

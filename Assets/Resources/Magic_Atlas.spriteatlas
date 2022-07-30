@@ -71,6 +71,7 @@ SpriteAtlas:
   - {fileID: 5054158684240531576, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
   - {fileID: 4296841467722118704, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
   - {fileID: 7172787789769408317, guid: b74a4de136b171647a5f9b927d3938a0, type: 3}
+  - {fileID: 21300000, guid: cf0dec52bb67df245b2671ab65dca481, type: 3}
   - {fileID: -8112224202027827953, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 8954982405313846772, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 21300000, guid: a12cfe82c771ae040bad4ffd5030f64f, type: 3}
@@ -130,6 +131,7 @@ SpriteAtlas:
   - {fileID: 3078137181838870744, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
   - {fileID: -8471716954120399937, guid: 3d621d39365d5fc4a9fe136e157c0b10, type: 3}
   - {fileID: 21300000, guid: 81e4bf59f71ba0c499edaf28564aede3, type: 3}
+  - {fileID: 21300000, guid: a6d3ae69d6b275041bb99419493e0e47, type: 3}
   - {fileID: 21300000, guid: 65bab1993ed34d74986bf2b0564a2347, type: 3}
   - {fileID: -9092649447833480810, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
   - {fileID: 8807196387394903447, guid: 0be678b92f01a944680e1e9193ea5349, type: 3}
@@ -244,6 +246,7 @@ SpriteAtlas:
   - Hellfire_Crack-Sheet_6
   - Hellfire_Crack-Sheet_4
   - Hellfire_Crack-Sheet_5
+  - WindCutter_Icon
   - LavaWalk_Sheet_1
   - LavaWalk_Sheet_0
   - SuperSerum_Icon
@@ -303,6 +306,7 @@ SpriteAtlas:
   - Heist_Sheet_1
   - Heist_Sheet_0
   - DeathMine_Icon
+  - StickyBubble_Icon
   - SlingShot_Icon
   - Portal_Sheet_0
   - Portal_Sheet_1

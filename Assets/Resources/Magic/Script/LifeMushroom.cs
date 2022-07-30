@@ -167,7 +167,7 @@ public class LifeMushroom : MonoBehaviour
                     damage *= criticalPower;
                 }
 
-                print($"{damage / criticalPower} * {criticalPower} = {damage}");
+                // print($"{damage / criticalPower} * {criticalPower} = {damage}");
 
                 // 플레이어 체력 회복
                 PlayerManager.Instance.hitBox.Damage(-damage);

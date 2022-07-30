@@ -159,6 +159,13 @@ public class ItemDB : MonoBehaviour
         Animator btnAnim = SystemManager.Instance.itemDBSyncBtn.GetComponentInChildren<Animator>();
         btnAnim.enabled = true;
 
+        // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
+        yield return StartCoroutine(
+            SaveManager.Instance.WebDataLoad(
+                SystemManager.DBType.Item,
+                "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
+        ));
+
         // 로컬 DB 데이터에 웹에서 가져온 DB 데이터를 덮어쓰기
         SaveManager.Instance.localSaveData.itemDBJson = SaveManager.Instance.webSaveData.itemDBJson;
 

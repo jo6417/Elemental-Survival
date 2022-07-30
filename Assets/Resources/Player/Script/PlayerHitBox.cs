@@ -30,7 +30,8 @@ public class PlayerHitBox : MonoBehaviour
         PlayerManager.Instance.Move();
 
         //적에게 콜라이더 충돌
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString()) || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+         || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
         {
             StartCoroutine(Hit(other.transform));
         }
@@ -44,7 +45,8 @@ public class PlayerHitBox : MonoBehaviour
             return;
 
         // 적에게 트리거 충돌
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString()) || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+         || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
         {
             StartCoroutine(Hit(other.transform));
         }
@@ -61,7 +63,7 @@ public class PlayerHitBox : MonoBehaviour
             // 몬스터 정보 없을때, 고스트일때 리턴
             if (enemyManager == null || enemyManager.enemy == null || enemyManager.IsGhost)
             {
-                print($"enemy is null : {gameObject}");
+                Debug.Log($"enemy is null : {enemyManager.transform.position}");
                 yield break;
             }
 

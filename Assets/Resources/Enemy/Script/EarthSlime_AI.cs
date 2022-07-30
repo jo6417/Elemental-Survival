@@ -15,7 +15,8 @@ public class EarthSlime_AI : MonoBehaviour
         smashTrigger.atkTrigger = false;
 
         // 스매쉬 콜라이더 비활성화
-        smashColl.enabled = false;
+        smashColl.gameObject.SetActive(false);
+        // smashColl.enabled = false;
     }
 
     private void Update()
@@ -67,7 +68,7 @@ public class EarthSlime_AI : MonoBehaviour
         enemyManager.animList[0].SetTrigger("Attack");
 
         // 스매쉬 콜라이더 비활성화까지 대기
-        yield return new WaitUntil(() => !smashColl.enabled);
+        yield return new WaitUntil(() => !smashColl.gameObject.activeSelf);
 
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(enemyManager.enemy.cooltime);
@@ -81,7 +82,8 @@ public class EarthSlime_AI : MonoBehaviour
     public void SmashColliderOn()
     {
         // 스매쉬 콜라이더 활성화
-        smashColl.enabled = true;
+        // smashColl.enabled = true;
+        smashColl.gameObject.SetActive(true);
 
         // 착지 이펙트 소환
         LeanPool.Spawn(enemyManager.enemyAI.landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
@@ -90,6 +92,7 @@ public class EarthSlime_AI : MonoBehaviour
     public void SmashColliderOff()
     {
         // 스매쉬 콜라이더 비활성화
-        smashColl.enabled = false;
+        // smashColl.enabled = false;
+        smashColl.gameObject.SetActive(false);
     }
 }

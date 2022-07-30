@@ -4842,7 +4842,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -4938,7 +4938,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 4f609717f9da5aa4cb745461d5b10c96, type: 3}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
@@ -4997,7 +4997,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222f8bfec38cf4a429ef5932223d441e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionPrefab: {fileID: 9007070886495325254, guid: bd0d5f09ede166f4a85768cd3003f6d2,
+  explosionPrefab: {fileID: 4361769515971435773, guid: bd0d5f09ede166f4a85768cd3003f6d2,
     type: 3}
   bombLight: {fileID: 1523541554184484241}
   runeLaser: {fileID: 1523541554035324934}
@@ -5019,6 +5019,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -5079,7 +5080,7 @@ GameObject:
   - component: {fileID: 1523541554266288952}
   - component: {fileID: 1523541554266288953}
   - component: {fileID: 1523541554266288958}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: DeathMine_Physics
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -5141,7 +5142,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: d2abbaee8b1de824a9bd7e9bea586797, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

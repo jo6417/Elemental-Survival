@@ -165,6 +165,9 @@ public class EnemyManager : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 히트박스 끄기
+        hitBox.gameObject.SetActive(false);
+
         // 물리 콜라이더 끄기
         physicsColl.enabled = false;
         // 피격 콜라이더 끄기
@@ -296,6 +299,9 @@ public class EnemyManager : MonoBehaviour
 
         // Idle로 초기화
         nowAction = EnemyManager.Action.Idle;
+
+        // 히트박스 켜기
+        hitBox.gameObject.SetActive(true);
 
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;
