@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4911449409986564929}
   - component: {fileID: 7562726862252052690}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: Gate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3498888674094157275}
   - component: {fileID: 3498888674094157272}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: Circle (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,7 +176,7 @@ GameObject:
   - component: {fileID: 3498888674186376364}
   - component: {fileID: 3498888674186376365}
   - component: {fileID: 3498888674186376354}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: FillGauge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 3498888674206872741}
   - component: {fileID: 3498888674206872763}
   - component: {fileID: 3498888674206872762}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: KeyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -331,7 +331,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: E
+  m_text: F
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 47ae4f5559c230a42bf649ec8034bd34, type: 2}
   m_sharedMaterial: {fileID: 5102506194067504121, guid: 47ae4f5559c230a42bf649ec8034bd34,
@@ -414,7 +414,8 @@ GameObject:
   - component: {fileID: 3498888674311013415}
   - component: {fileID: 3498888674311013434}
   - component: {fileID: 3498888674311013413}
-  m_Layer: 12
+  - component: {fileID: 969585548}
+  m_Layer: 16
   m_Name: PortalGate
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -457,6 +458,7 @@ MonoBehaviour:
   farDistance: 150
   showKey: {fileID: 3498888674386110622}
   GemNum: {fileID: 3498888674513058620}
+  pressKey: {fileID: 3498888674206872762}
   anim: {fileID: 3498888674698079035}
   gaugeImg: {fileID: 3498888674186376365}
 --- !u!222 &3498888674311013415
@@ -494,6 +496,18 @@ SortingGroup:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
+--- !u!114 &969585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3498888674311013414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ce2187f3b665cc489f831c6b166d3ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3498888674386110622
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,7 +519,7 @@ GameObject:
   - component: {fileID: 3498888674386110623}
   - component: {fileID: 3498888674386110621}
   - component: {fileID: 3498888674386110620}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: PressKey
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -641,7 +655,7 @@ GameObject:
   - component: {fileID: 3498888674513058610}
   - component: {fileID: 3498888674513058621}
   - component: {fileID: 3498888674513058620}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: GemNum
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -777,7 +791,7 @@ GameObject:
   - component: {fileID: 3498888674658095675}
   - component: {fileID: 3498888674658095674}
   - component: {fileID: 3498888674658095653}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: UICanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -877,7 +891,7 @@ GameObject:
   - component: {fileID: 3498888674698079034}
   - component: {fileID: 3498888674698079032}
   - component: {fileID: 3498888674698079035}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: Portal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -979,7 +993,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3498888675284056958}
   - component: {fileID: 3498888675284056959}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1064,7 +1078,7 @@ GameObject:
   - component: {fileID: 3498888675741805486}
   - component: {fileID: 3498888675741805487}
   - component: {fileID: 3498888675741805484}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Stair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1174,7 +1188,7 @@ GameObject:
   - component: {fileID: 3498888675800116282}
   - component: {fileID: 3498888675800116280}
   - component: {fileID: 3498888675800116283}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: KeyImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1249,7 +1263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3498888675937678444}
   - component: {fileID: 3498888675937678445}
-  m_Layer: 12
+  m_Layer: 16
   m_Name: Circle (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

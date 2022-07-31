@@ -15,14 +15,25 @@ public class GatePortal : MonoBehaviour
     float farDistance = 150f; //해당 거리 이상 벌어지면 포탈 이동
 
     [Header("Refer")]
+    Interacter interacter; //상호작용 콜백 함수 클래스
     [SerializeField]
     GameObject showKey; //상호작용 키 표시 UI
     [SerializeField]
     TextMeshProUGUI GemNum; //젬 개수 표시 UI
     [SerializeField]
+    TextMeshProUGUI pressKey; //상호작용 인디케이터
+    [SerializeField]
     Animator anim; //포탈 이펙트 애니메이션
     [SerializeField]
     SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
+
+    [Header("Debug")]
+    public EnemyManager fixedBoss; //! 고정된 보스 소환
+
+    private void Awake()
+    {
+        interacter = GetComponent<Interacter>();
+    }
 
     private void OnEnable()
     {
@@ -44,63 +55,71 @@ public class GatePortal : MonoBehaviour
 
         //포탈 이펙트 오브젝트 비활성화
         anim.gameObject.SetActive(false);
-    }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        //상호작용 키 표시 UI 활성화
-        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && nowGem < maxGem)
-        {
-            showKey.SetActive(true);
-        }
-    }
+        // 상호작용 함수 콜백에 연결 시키기
+        interacter.interactSubmitCallback += InteractSubmit;
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        //상호작용 키 표시 UI 비활성화
-        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
-        {
-            showKey.SetActive(false);
-        }
+        // 상호작용 트리거 함수 콜백에 연결 시키기
+        interacter.interactTriggerCallback += InteractTrigger;
     }
 
     private void Update()
     {
-        // 상호작용 키 누르면
-        if (showKey.activeSelf && Input.GetKey(KeyCode.E) && delayCount <= 0)
-        {
-            //첫번째 젬 넣을때
-            if (nowGem == 0)
-                //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI
-                StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
-
-            // 젬 하나씩 넣기
-            nowGem++;
-
-            //젬 개수 UI 갱신
-            UpdateGemNum();
-
-            if (nowGem == maxGem)
-            {
-                // 상호작용 끄기
-                showKey.SetActive(false);
-
-                //보스 소환
-                StartCoroutine(SummonBoss());
-            }
-
-            //상호작용 딜레이 초기화
-            delayCount = interactDelay;
-        }
-        else
-        {
-            //딜레이 카운트 차감
-            if (delayCount > 0)
-                delayCount -= Time.deltaTime;
-        }
+        // 젬 넣기 딜레이 카운트 차감
+        if (delayCount > 0)
+            delayCount -= Time.deltaTime;
 
         //TODO 플레이어와 거리 너무 멀어지면 위치 이동
         MoveClose();
+    }
+
+    public void InteractTrigger(bool able)
+    {
+        //todo 플레이어 상호작용 키가 어떤 키인지 표시        
+        // pressKey.text = 
+
+        if (able && nowGem < maxGem)
+            showKey.SetActive(true);
+        else
+            showKey.SetActive(false);
+
+    }
+
+    // 포탈 상호작용
+    public void InteractSubmit()
+    {
+        // 딜레이 중이면 리턴
+        if (delayCount > 0)
+            return;
+
+        // 인디케이터 꺼져있으면 리턴
+        if (!showKey.activeSelf)
+            return;
+
+        //첫번째 젬 넣을때
+        if (nowGem == 0)
+            //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI
+            StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
+
+        //todo 플레이어 젬 소모
+
+        // 젬 하나씩 넣기
+        nowGem++;
+
+        //젬 개수 UI 갱신
+        UpdateGemNum();
+
+        if (nowGem == maxGem)
+        {
+            // 상호작용 인디케이터 끄기
+            showKey.SetActive(false);
+
+            //보스 소환
+            StartCoroutine(SummonBoss());
+        }
+
+        //상호작용 딜레이 초기화
+        delayCount = interactDelay;
     }
 
     void UpdateGemNum()
@@ -131,21 +150,29 @@ public class GatePortal : MonoBehaviour
             }
         };
 
+        // 보스 정보 찾기
+        EnemyInfo bossInfo = bosses[Random.Range(0, bosses.Count)];
+
+        //! 보스 정보 고정
+        bossInfo = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(fixedBoss.name.Split('_')[0]));
+
         //보스 프리팹 찾기
-        GameObject bossPrefab = EnemyDB.Instance.GetPrefab(bosses[Random.Range(0, bosses.Count)].id);
+        GameObject bossPrefab = EnemyDB.Instance.GetPrefab(bossInfo.id);
 
         //보스 소환 위치
         Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle * 10f;
 
-        // 보스 소환 및 비활성화
+        // 보스 소환
         GameObject bossObj = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, SystemManager.Instance.enemyPool);
-        bossObj.SetActive(false);
 
         // 보스 enemyManager 참조
         EnemyManager enemyManager = bossObj.GetComponent<EnemyManager>();
 
+        // 보스 초기화 시작
+        enemyManager.initialStart = true;
+
         //포탈에서 보스 소환
-        StartCoroutine(EnemySpawn.Instance.PortalSpawn(bosses[Random.Range(0, bosses.Count)], false, bossPos, bossObj));
+        // StartCoroutine(EnemySpawn.Instance.PortalSpawn(bosses[Random.Range(0, bosses.Count)], false, bossPos, bossObj));
 
         // 보스 소환 후 포탈 이펙트 활성화
         anim.gameObject.SetActive(true);

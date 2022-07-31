@@ -23,7 +23,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4688597119053068692
 Transform:
   m_ObjectHideFlags: 0
@@ -56,6 +56,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 2
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 2
   isStop: 0

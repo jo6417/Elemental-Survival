@@ -80,6 +80,7 @@ public class PlayerManager : MonoBehaviour
     [HideInInspector]
     public float speedDeBuff = 1f; //이동속도 디버프
     public Vector3 lastDir; //마지막 바라봤던 방향
+    public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
     public PlayerHitBox hitBox;
@@ -172,6 +173,13 @@ public class PlayerManager : MonoBehaviour
         playerInput.Player.Ultimate.performed += val =>
         {
             StartCoroutine(CastMagic.Instance.UseUltimateMagic());
+        };
+
+        // 상호작용 버튼 매핑
+        playerInput.Player.Interact.performed += val =>
+        {
+            // 현재 상호작용 가능한 오브젝트 상호작용 하기
+            InteractSubmit();
         };
     }
 
@@ -331,6 +339,13 @@ public class PlayerManager : MonoBehaviour
         // print("Dash : " + isDash);
     }
 
+    public void InteractSubmit()
+    {
+        // 가장 가까운 상호작용 오브젝트와 상호작용 실행
+        if (playerInteracter.nearInteracter != null && playerInteracter.nearInteracter.interactSubmitCallback != null)
+            playerInteracter.nearInteracter.interactSubmitCallback();
+    }
+
     public void GetItem(ItemInfo getItem)
     {
         // print(getItem.itemType + " : " + getItem.itemName);
@@ -374,7 +389,7 @@ public class PlayerManager : MonoBehaviour
             // UIManager.Instance.UpdateItems();
 
             // 모든 아이템 버프 갱신
-            buffUpdate();
+            BuffUpdate();
         }
     }
 
@@ -481,7 +496,7 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now.playerPower = GetPlayerPower();
     }
 
-    void buffUpdate()
+    void BuffUpdate()
     {
         //초기 스탯 복사
         PlayerStat PlayerStat_Temp = new PlayerStat();

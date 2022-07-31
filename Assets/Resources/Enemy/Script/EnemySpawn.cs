@@ -40,6 +40,7 @@ public class EnemySpawn : MonoBehaviour
     public int NowEnemyPower; //현재 몬스터 전투력
     // public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
     public float spawnCoolCount; //몬스터 스폰 쿨타임 카운트
+    public bool nowSpawning; //스폰중일때
     public List<EnemyManager> spawnAbleList = new List<EnemyManager>(); // 현재 맵에서 스폰 가능한 몹 리스트
     public List<EnemyManager> spawnEnemyList = new List<EnemyManager>(); //현재 스폰된 몬스터 리스트
 
@@ -69,29 +70,22 @@ public class EnemySpawn : MonoBehaviour
         if (!EnemyDB.Instance.loadDone)
             return;
 
-        // 쿨타임마다 실행하기
-        if (spawnCoolCount <= 0)
+        // 쿨타임마다 실행하기, 스폰중 아닐때
+        if (spawnCoolCount <= 0 && !nowSpawning)
         {
-            // // 1~5초 사이 랜덤 쿨타임, 쿨타임 최대치는 플레이어 전투력마다 0.05초씩 줄어듬, 100레벨시 1초
-            // float maxCoolTime = 5 - PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
-            // //1~5초 사이 값으로 범위 제한
-            // maxCoolTime = Mathf.Clamp(maxCoolTime, 0.5f, maxCoolTime);
-            // // 플레이어 전투력에 따라 줄어드는 쿨타임 계산
-            // spawnCoolTime = Random.Range(1, maxCoolTime);
+            // //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
+            // float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
 
-            // //몬스터 스폰 쿨타임 초기화
-            // spawnCoolCount = spawnCoolTime;
+            // // 스폰 횟수 범위 제한
+            // maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
 
-            //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
-            float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
-            // 스폰 횟수 범위 제한
-            maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
+            // // 1~3번 중 랜덤으로 반복
+            // int spawnNum = Random.Range(1, (int)maxSpawnNum);
 
-            int spawnNum = Random.Range(1, (int)maxSpawnNum); //1~3번 중 랜덤으로 반복
             // print(spawnCoolTime + " / " + spawnNum + " 번 스폰");
 
             //! 테스트를 위해 하나씩소환
-            spawnNum = 1;
+            int spawnNum = 1;
 
             for (int i = 0; i < spawnNum; i++)
             {
@@ -128,6 +122,9 @@ public class EnemySpawn : MonoBehaviour
         //max 전투력 넘었으면 중단
         if (MaxEnemyPower <= NowEnemyPower)
             yield break;
+
+        // 스폰 시작
+        nowSpawning = true;
 
         //몬스터DB에서 랜덤 id 뽑기
         int enemyId = -1;
@@ -192,7 +189,7 @@ public class EnemySpawn : MonoBehaviour
         // 쿨타임에 50% 범위 내 랜덤성 부여
         spawnCoolTime = Random.Range(spawnCoolTime * 0.5f, spawnCoolTime * 1.5f);
         // 1~5초 사이 값으로 범위 제한
-        spawnCoolTime = Mathf.Clamp(spawnCoolTime, 1f, 5f);
+        spawnCoolTime = Mathf.Clamp(spawnCoolTime, 1f, 10f);
 
         //! 쿨타임 고정
         // spawnCoolTime = 0f;
@@ -201,6 +198,9 @@ public class EnemySpawn : MonoBehaviour
         spawnCoolCount = spawnCoolTime;
 
         // print(enemy.enemyName + " : 스폰");
+
+        // 스폰 끝
+        nowSpawning = false;
     }
 
     public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)

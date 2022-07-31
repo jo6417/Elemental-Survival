@@ -275,7 +275,7 @@ public class Bawi_AI : MonoBehaviour
         // print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        randomNum = 0;
+        // randomNum = 0;
 
         switch (randomNum)
         {

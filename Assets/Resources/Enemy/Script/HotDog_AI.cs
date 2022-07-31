@@ -36,6 +36,7 @@ public class HotDog_AI : MonoBehaviour
     public ParticleSystem footDust;
     public Vector2 moveToPos; // 목표 위치
     public float moveResetCount; // 목표위치 갱신 시간 카운트
+    Vector2 lastPlayerDir; //마지막 관측된 플레이어 위치
 
     [Header("Stealth Atk")]
     public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
@@ -228,6 +229,10 @@ public class HotDog_AI : MonoBehaviour
         if (enemyManager.enemy == null)
             return;
 
+        // Idle 아니면 리턴
+        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+            return;
+
         // 상태 이상 있으면 리턴
         if (!enemyManager.ManageState())
             return;
@@ -243,8 +248,8 @@ public class HotDog_AI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
-            return;
+        // if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        //     return;
 
         // 시간 멈추면 리턴
         if (SystemManager.Instance.globalTimeScale == 0f)
@@ -412,6 +417,9 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
+        // 플레이어 마지막 위치 갱신
+        lastPlayerDir = PlayerManager.Instance.transform.position - transform.position;
+
         // 백스텝 애니메이션 실행 후 대기
         enemyManager.animList[0].SetTrigger(AnimState.BackStep.ToString());
 
@@ -481,10 +489,8 @@ public class HotDog_AI : MonoBehaviour
 
     void BackStepMove()
     {
-        // 플레이어까지 방향 벡터
-        Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
-
-        enemyManager.rigid.DOMove((Vector2)transform.position - playerDir.normalized * 10f, 1f);
+        // 마지막 플레이어 위치 반대 방향으로 이동
+        enemyManager.rigid.DOMove((Vector2)transform.position - lastPlayerDir.normalized * 10f, 1f);
     }
 
     void StartChargeEffect()
@@ -698,6 +704,12 @@ public class HotDog_AI : MonoBehaviour
         // 짖기 애니메이션 재생
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), true);
 
+        // 피격 콜라이더 전부 끄기
+        foreach (Collider2D coll in enemyManager.hitCollList)
+        {
+            coll.enabled = false;
+        }
+
         // 투명해질때까지 대기
         yield return new WaitUntil(() => enemyManager.spriteList[0].color == Color.clear);
 
@@ -891,19 +903,13 @@ public class HotDog_AI : MonoBehaviour
         //충돌 콜라이더 끄기
         enemyManager.physicsColl.enabled = false;
 
-        // 피격 콜라이더 끄기
-        foreach (Collider2D coll in enemyManager.hitCollList)
-        {
-            coll.enabled = false;
-        }
-
         // 글로벌 라이트 어둡게
         DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, 0.1f, 1f);
 
         // 스프라이트 투명해지며 사라지기
-        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        for (int i = 0; i < enemyManager.spriteList.Count; i++)
         {
-            sprite.DOColor(Color.clear, 1f)
+            enemyManager.spriteList[i].DOColor(Color.clear, 1f)
             .OnComplete(() =>
             {
                 // 몸에서 HDR 빛나는 오브젝트 모두 끄기
