@@ -15,6 +15,7 @@ public class SuperSerum : MonoBehaviour
     [Header("Status")]
     bool initialFinish = false;
     float hpAddAmount = 1;
+    bool isGet; //획득 여부
 
 
     private void Awake()
@@ -33,6 +34,9 @@ public class SuperSerum : MonoBehaviour
     {
         // 초기화 시작
         initialFinish = false;
+
+        // 획득 여부 초기화
+        isGet = false;
 
         // 사이즈 초기화
         transform.localScale = Vector2.zero;
@@ -90,8 +94,11 @@ public class SuperSerum : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         // 초기화 완료 후 플레이어에 충돌하면
-        if (initialFinish && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (!isGet && initialFinish && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
+            // 획득함, 중복 획득 방지
+            isGet = true;
+
             // 이동 멈추기
             rigid.velocity = Vector3.zero;
 
@@ -103,7 +110,7 @@ public class SuperSerum : MonoBehaviour
     void GetSuperSerum()
     {
         // 플레이어 자식으로 획득 이펙트 스폰
-        GameObject effect = LeanPool.Spawn(getEffect.gameObject, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
+        LeanPool.Spawn(getEffect.gameObject, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
 
         // 플레이어 최대체력 상승
         PlayerManager.Instance.PlayerStat_Now.hpMax += hpAddAmount;
@@ -112,6 +119,6 @@ public class SuperSerum : MonoBehaviour
         UIManager.Instance.UpdateHp();
 
         // 세럼 오브젝트 디스폰
-        LeanPool.Despawn(transform);
+        LeanPool.Despawn(gameObject);
     }
 }

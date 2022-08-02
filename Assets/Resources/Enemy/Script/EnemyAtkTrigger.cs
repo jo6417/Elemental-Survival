@@ -68,7 +68,7 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
             {
                 // 자폭하기
-                StartCoroutine(enemyManager.hitBox.Dead());
+                StartCoroutine(enemyManager.hitBoxList[0].Dead());
             }
         }
 
@@ -96,7 +96,7 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
             {
                 // 자폭하기
-                StartCoroutine(enemyManager.hitBox.Dead());
+                StartCoroutine(enemyManager.hitBoxList[0].Dead());
             }
         }
     }

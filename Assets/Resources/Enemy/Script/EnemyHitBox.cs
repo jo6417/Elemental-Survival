@@ -21,7 +21,7 @@ public class EnemyHitBox : MonoBehaviour
     IEnumerator Init()
     {
         // 초기화 완료시까지 대기
-        yield return new WaitUntil(() => enemyManager.InitialFinish);
+        yield return new WaitUntil(() => enemyManager.initialFinish);
 
         // 고스트 여부에 따라 히트박스 레이어 초기화
         if (enemyManager.IsGhost)
@@ -36,8 +36,12 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.particleHitCount > 0)
             return;
 
+        // 죽었으면 리턴
+        if (enemyManager.isDead)
+            return;
+
         // 마법 파티클이 충돌했을때
-        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()) && !enemyManager.isDead)
+        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
         {
             StartCoroutine(Hit(other.gameObject));
 
@@ -50,6 +54,10 @@ public class EnemyHitBox : MonoBehaviour
     {
         // 피격 딜레이 중이면 리턴
         if (enemyManager.hitCount > 0)
+            return;
+
+        // 죽었으면 리턴
+        if (enemyManager.isDead)
             return;
 
         // 마법이 충돌했을때
@@ -76,6 +84,10 @@ public class EnemyHitBox : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
+        // 죽었으면 리턴
+        if (enemyManager.isDead)
+            return;
+
         // 계속 마법 트리거 콜라이더 안에 있을때
         if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()) && enemyManager.hitCount <= 0)
         {
@@ -265,11 +277,11 @@ public class EnemyHitBox : MonoBehaviour
     public IEnumerator HitDelay()
     {
         // Hit 상태로 변경
-        enemyManager.state = EnemyManager.State.Hit;
+        enemyManager.nowState = EnemyManager.State.Hit;
 
         enemyManager.hitCount = enemyManager.enemy.hitDelay;
 
-        // 머터리얼 및 색 변경
+        // 히트 머터리얼 및 색으로 변경
         for (int i = 0; i < enemyManager.spriteList.Count; i++)
         {
             enemyManager.spriteList[i].material = SystemManager.Instance.hitMat;
@@ -278,12 +290,26 @@ public class EnemyHitBox : MonoBehaviour
 
         yield return new WaitUntil(() => enemyManager.hitCount <= 0);
 
-        // 머터리얼 및 색 초기화
-        for (int i = 0; i < enemyManager.spriteList.Count; i++)
-        {
-            enemyManager.spriteList[i].material = enemyManager.originMatList[i];
-            enemyManager.spriteList[i].color = enemyManager.originColorList[i];
-        }
+        // 죽었으면 복구하지않고 리턴
+        if (enemyManager.isDead)
+            yield break;
+
+        // 고스트일때
+        if (enemyManager.IsGhost)
+            // 유령 머터리얼 및 색으로 초기화
+            for (int i = 0; i < enemyManager.spriteList.Count; i++)
+            {
+                enemyManager.spriteList[i].material = SystemManager.Instance.outLineMat;
+                enemyManager.spriteList[i].color = new Color(0, 1, 1, 0.5f);
+            }
+        // 일반 몹일때
+        else
+            // 일반몹 머터리얼 및 색으로 초기화
+            for (int i = 0; i < enemyManager.spriteList.Count; i++)
+            {
+                enemyManager.spriteList[i].material = enemyManager.originMatList[i];
+                enemyManager.spriteList[i].color = enemyManager.originColorList[i];
+            }
 
         // 코루틴 변수 초기화
         enemyManager.hitCoroutine = null;
@@ -291,12 +317,17 @@ public class EnemyHitBox : MonoBehaviour
 
     public void Damage(float damage, bool isCritical)
     {
+        // 적 정보 없으면 리턴
+        if (enemyManager == null || enemyManager.enemy == null)
+            return;
+
+        // 죽었으면 리턴
+        if (enemyManager.isDead)
+            return;
+
         //피격 딜레이 무적시간 시작
         enemyManager.hitCoroutine = HitDelay();
         StartCoroutine(enemyManager.hitCoroutine);
-
-        if (enemyManager.enemy == null || enemyManager.isDead)
-            return;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
@@ -427,10 +458,14 @@ public class EnemyHitBox : MonoBehaviour
 
     public IEnumerator SlowDebuff(float slowDuration)
     {
+        // 죽었으면 초기화 없이 리턴
+        if (enemyManager.isDead)
+            yield break;
+
         // 디버프량
         float slowAmount = 0.2f;
         // 슬로우 디버프 아이콘
-        GameObject slowIcon = null;
+        Transform slowIcon = null;
 
         // 애니메이션 속도 저하
         for (int i = 0; i < enemyManager.animList.Count; i++)
@@ -443,10 +478,14 @@ public class EnemyHitBox : MonoBehaviour
         // 이미 슬로우 디버프 중 아닐때
         if (!enemyManager.buffParent.Find(SystemManager.Instance.slowDebuffUI.name))
             //슬로우 디버프 아이콘 붙이기
-            slowIcon = LeanPool.Spawn(SystemManager.Instance.slowDebuffUI, enemyManager.buffParent.position, Quaternion.identity, enemyManager.buffParent);
+            slowIcon = LeanPool.Spawn(SystemManager.Instance.slowDebuffUI, enemyManager.buffParent.position, Quaternion.identity, enemyManager.buffParent).transform;
 
         // 슬로우 시간동안 대기
         yield return new WaitForSeconds(slowDuration);
+
+        // 죽었으면 초기화 없이 리턴
+        if (enemyManager.isDead)
+            yield break;
 
         // 애니메이션 속도 초기화
         for (int i = 0; i < enemyManager.animList.Count; i++)
@@ -457,7 +496,7 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.enemyAI.moveSpeedDebuff = 1f;
 
         // 슬로우 아이콘 없에기
-        slowIcon = enemyManager.buffParent.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
+        slowIcon = enemyManager.buffParent.Find(SystemManager.Instance.slowDebuffUI.name);
         if (slowIcon != null)
             LeanPool.Despawn(slowIcon);
 
@@ -496,6 +535,10 @@ public class EnemyHitBox : MonoBehaviour
 
         // 감전 시간동안 대기
         yield return new WaitForSeconds(shockDuration);
+
+        // 죽었으면 초기화 없이 리턴
+        if (enemyManager.isDead)
+            yield break;
 
         // 애니메이션 속도 초기화
         for (int i = 0; i < enemyManager.animList.Count; i++)
@@ -562,15 +605,23 @@ public class EnemyHitBox : MonoBehaviour
 
         // 경직 시간 추가
         // hitCount += 1f;
+        enemyManager.nowState = EnemyManager.State.Dead;
+
+        enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
 
         enemyManager.isDead = true;
 
-        //콜라이더 전부 끄기
-        if (enemyManager.hitCollList.Count > 0)
-            foreach (Collider2D coll in enemyManager.hitCollList)
-            {
-                coll.enabled = false;
-            }
+        // 초기화 완료 취소
+        enemyManager.initialFinish = false;
+
+        // 애니메이션 멈추기
+        for (int i = 0; i < enemyManager.animList.Count; i++)
+        {
+            enemyManager.animList[i].speed = 0f;
+        }
+
+        // 트윈 멈추기
+        transform.DOPause();
 
         if (enemyManager.spriteList != null)
         {
@@ -589,17 +640,17 @@ public class EnemyHitBox : MonoBehaviour
             if (enemyManager.selfExplosion)
             {
                 // 폭발 반경 표시
-                enemyManager.explosionTrigger.atkRangeBackground.enabled = true;
-                enemyManager.explosionTrigger.atkRangeFill.enabled = true;
+                enemyManager.enemyAtkTrigger.atkRangeBackground.enabled = true;
+                enemyManager.enemyAtkTrigger.atkRangeFill.enabled = true;
 
                 // 폭발 반경 인디케이터 사이즈 초기화
-                enemyManager.explosionTrigger.atkRangeFill.transform.localScale = Vector3.zero;
+                enemyManager.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
                 // 폭발 반경 인디케이터 사이즈 키우기
-                enemyManager.explosionTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
+                enemyManager.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
                 .OnComplete(() =>
                 {
-                    enemyManager.explosionTrigger.atkRangeBackground.enabled = false;
-                    enemyManager.explosionTrigger.atkRangeFill.enabled = false;
+                    enemyManager.enemyAtkTrigger.atkRangeBackground.enabled = false;
+                    enemyManager.enemyAtkTrigger.atkRangeFill.enabled = false;
                 });
             }
 
@@ -634,7 +685,7 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.selfExplosion)
         {
             // 폭발 이펙트 스폰
-            GameObject effect = LeanPool.Spawn(enemyManager.explosionTrigger.explosionPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject effect = LeanPool.Spawn(enemyManager.enemyAtkTrigger.explosionPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             // 일단 비활성화
             effect.SetActive(false);
@@ -664,7 +715,7 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.transform.DOKill();
 
         // 공격 타겟 플레이어로 초기화
-        enemyManager.ChangeTarget(PlayerManager.Instance.gameObject);
+        enemyManager.TargetObj = PlayerManager.Instance.gameObject;
 
         // 몬스터 비활성화
         LeanPool.Despawn(enemyManager.gameObject);
@@ -674,12 +725,17 @@ public class EnemyHitBox : MonoBehaviour
 
     void DebuffRemove()
     {
+        //슬로우 디버프 해제
+        // 이동 속도 저하 디버프 초기화
+        PlayerManager.Instance.speedDeBuff = 1f;
+        // 슬로우 아이콘 없에기
+        Transform slowIcon = enemyManager.buffParent.Find(SystemManager.Instance.slowDebuffUI.name);
+        if (slowIcon != null)
+            LeanPool.Despawn(slowIcon);
+        // 코루틴 변수 초기화
+        enemyManager.slowCoroutine = null;
+
         // 감전 디버프 해제
-        // 애니메이션 속도 초기화
-        for (int i = 0; i < enemyManager.animList.Count; i++)
-        {
-            enemyManager.animList[i].speed = 1f;
-        }
         // 이동 속도 저하 디버프 초기화
         enemyManager.enemyAI.moveSpeedDebuff = 1f;
         // 자식중에 감전 이펙트 찾기
@@ -693,5 +749,7 @@ public class EnemyHitBox : MonoBehaviour
         Transform poisonIcon = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
         if (poisonIcon != null)
             LeanPool.Despawn(poisonIcon);
+        // 포이즌 코루틴 변수 초기화
+        enemyManager.poisonCoroutine = null;
     }
 }

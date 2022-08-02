@@ -12,14 +12,7 @@ public class EnemyManager : MonoBehaviour
     [Header("Initial")]
     public EnemyInfo enemy;
     public bool initialStart = false;
-    private bool initialFinish = false;
-    public bool InitialFinish
-    {
-        get
-        {
-            return initialFinish;
-        }
-    }
+    public bool initialFinish = false;
     public bool lookLeft = false; //기본 스프라이트가 왼쪽을 바라보는지
     public EnemyHitCallback enemyHitCallback; //해당 몬스터 죽을때 실행될 함수들
     public delegate void EnemyHitCallback();
@@ -29,7 +22,7 @@ public class EnemyManager : MonoBehaviour
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
     public float targetResetTime = 3f; //타겟 재설정 시간
     public float targetResetCount = 0; //타겟 재설정 시간 카운트
-    public GameObject targetObj; // 공격 목표
+    GameObject targetObj; // 공격 목표
     public GameObject TargetObj
     {
         get
@@ -43,10 +36,29 @@ public class EnemyManager : MonoBehaviour
 
             return targetObj;
         }
+
+        set
+        {
+            // 타겟 리셋 타임 재설정
+            targetResetCount = targetResetTime;
+
+            // 타겟 변경하기
+            targetObj = value;
+
+            // 타겟이 null이면
+            if (targetObj == null)
+            {
+                // 목표 위치 리셋 타임 재설정
+                // enemyAI.moveResetCount = 0f;
+
+                // 주변 몬스터 타겟 찾아 넣기
+                targetObj = SearchTarget();
+            }
+        }
     }
 
     [Header("State")]
-    public State state; //현재 상태
+    public State nowState; //현재 상태
     public enum State { Idle, Hit, Dead, TimeStop, MagicStop }
     public Action nowAction = Action.Idle; //현재 행동
     public enum Action { Idle, Walk, Jump, Attack }
@@ -80,8 +92,10 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Refer")]
     public EnemyAI enemyAI;
-    public EnemyHitBox hitBox;
-    public EnemyAtkTrigger explosionTrigger;
+    // public EnemyHitBox hitBox;
+    public EnemyAtkTrigger enemyAtkTrigger;
+    // public EnemyAttack enemyAtkList;
+    public List<EnemyAttack> enemyAtkList = new List<EnemyAttack>(); // 공격 콜라이더 리스트
     public Transform spriteObj;
     public SpriteRenderer shadow; // 해당 몬스터 그림자
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
@@ -91,7 +105,7 @@ public class EnemyManager : MonoBehaviour
     public List<Animator> animList = new List<Animator>();
     public Rigidbody2D rigid;
     public Collider2D physicsColl; // 물리용 콜라이더
-    public List<Collider2D> hitCollList; // 히트박스용 콜라이더
+    public List<EnemyHitBox> hitBoxList; // 히트박스 리스트
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
 
@@ -128,20 +142,12 @@ public class EnemyManager : MonoBehaviour
         spriteObj = spriteObj == null ? transform : spriteObj;
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
-        hitBox = hitBox == null ? spriteObj.GetComponentInChildren<EnemyHitBox>() : hitBox;
 
-        //히트 콜라이더 없으면 EnemyHitBox로 찾아 넣기
-        if (hitCollList.Count == 0)
-            foreach (EnemyHitBox hitBox in GetComponentsInChildren<EnemyHitBox>())
-            {
-                hitCollList.Add(hitBox.GetComponent<Collider2D>());
-            }
+        // 히트 박스 찾기
+        hitBoxList = hitBoxList.Count == 0 ? GetComponentsInChildren<EnemyHitBox>().ToList() : hitBoxList;
 
         // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
-        if (spriteList.Count == 0)
-        {
-            spriteList = spriteObj.GetComponentsInChildren<SpriteRenderer>().ToList();
-        }
+        spriteList = spriteList.Count == 0 ? GetComponentsInChildren<SpriteRenderer>().ToList() : spriteList;
 
         // 초기 스프라이트 정보 수집
         foreach (SpriteRenderer sprite in spriteList)
@@ -155,35 +161,36 @@ public class EnemyManager : MonoBehaviour
         buffParent = buffParent == null ? transform.Find("BuffParent") : buffParent;
 
         //초기 타겟은 플레이어
-        targetObj = PlayerManager.Instance.gameObject;
+        TargetObj = PlayerManager.Instance.gameObject;
+
+        // 공격 트리거 찾기
+        enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
+        // 공격 콜라이더 찾기
+        enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
+
+        // 초기화 시작 및 완료 변수 초기화
+        initialStart = false;
+        initialFinish = false;
     }
 
     private void OnEnable()
     {
+        // 초기화 완료 취소
+        initialFinish = false;
+
         StartCoroutine(Init());
     }
 
     IEnumerator Init()
     {
-        // 히트박스 끄기
-        hitBox.gameObject.SetActive(false);
+        // 히트박스 전부 끄기
+        for (int i = 0; i < hitBoxList.Count; i++)
+        {
+            hitBoxList[i].gameObject.SetActive(false);
+        }
 
         // 물리 콜라이더 끄기
         physicsColl.enabled = false;
-        // 피격 콜라이더 끄기
-        if (hitCollList.Count > 0)
-            foreach (Collider2D coll in hitCollList)
-            {
-                coll.enabled = false;
-            }
-
-        // 모든 스프라이트 색깔,머터리얼 초기화
-        for (int i = 0; i < spriteList.Count; i++)
-        {
-            // 머터리얼 초기화
-            spriteList[i].material = originMatList[i];
-            // spriteList[i].material.color = originMatColorList[i];
-        }
 
         //스케일 초기화
         transform.localScale = Vector3.one;
@@ -192,8 +199,6 @@ public class EnemyManager : MonoBehaviour
         rigid.velocity = Vector3.zero;
         rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-        // 초기화 완료 취소
-        initialFinish = false;
         // 초기화 스위치 켜질때까지 대기
         yield return new WaitUntil(() => initialStart);
 
@@ -247,8 +252,29 @@ public class EnemyManager : MonoBehaviour
             //체력 절반으로 초기화
             HpNow = enemy.hpMax / 2f;
 
+            // rigid, sprite, 트윈, 애니메이션 상태 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                // 고스트 여부에 따라 복구 머터리얼 바꾸기
+                spriteList[i].material = SystemManager.Instance.outLineMat;
+                spriteList[i].color = new Color(0, 1, 1, 0.5f);
+            }
+
             // 그림자 더 투명하게
             shadow.color = new Color(0, 0, 0, 0.25f);
+
+            // 자폭형 몬스터 아닐때
+            if (!selfExplosion)
+            {
+                // 공격 트리거 레이어를 플레이어 공격으로 바꾸기
+                if (enemyAtkTrigger)
+                    enemyAtkTrigger.gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+                // 공격 레이어를 플레이어 공격으로 바꾸기
+                for (int i = 0; i < enemyAtkList.Count; i++)
+                {
+                    enemyAtkList[i].gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+                }
+            }
         }
         else
         {
@@ -258,15 +284,25 @@ public class EnemyManager : MonoBehaviour
             // 물리 콜라이더 켜기
             physicsColl.enabled = true;
 
+            // rigid, sprite, 트윈, 애니메이션 상태 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                // 고스트 여부에 따라 복구 머터리얼 바꾸기
+                spriteList[i].material = originMatList[i];
+                spriteList[i].color = originColorList[i];
+            }
+
             // 그림자 색 초기화
             if (shadow)
                 shadow.color = new Color(0, 0, 0, 0.5f);
 
-            // 모든 스프라이트 색깔,머터리얼 초기화
-            for (int i = 0; i < spriteList.Count; i++)
+            // 공격 트리거 레이어를 몬스터 공격으로 바꾸기
+            if (enemyAtkTrigger)
+                enemyAtkTrigger.gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+            // 공격 레이어를 몬스터 공격으로 바꾸기
+            for (int i = 0; i < enemyAtkList.Count; i++)
             {
-                // 색깔 초기화
-                spriteList[i].color = originColorList[i];
+                enemyAtkList[i].gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
             }
         }
 
@@ -274,14 +310,21 @@ public class EnemyManager : MonoBehaviour
         isDead = false;
 
         // idle 상태로 전환
-        state = State.Idle;
+        nowState = State.Idle;
 
-        //콜라이더 켜기
-        if (hitCollList.Count > 0)
-            foreach (Collider2D coll in hitCollList)
-            {
-                coll.enabled = true;
-            }
+        // 히트박스 전부 켜기
+        for (int i = 0; i < hitBoxList.Count; i++)
+        {
+            hitBoxList[i].gameObject.SetActive(true);
+        }
+
+        for (int i = 0; i < animList.Count; i++)
+        {
+            // 애니메이터 켜기
+            animList[i].enabled = true;
+            // 애니메이션 속도 초기화
+            animList[i].speed = 1f;
+        }
 
         //! 테스트 확인용
         enemyName = enemy.enemyName;
@@ -300,29 +343,10 @@ public class EnemyManager : MonoBehaviour
         // Idle로 초기화
         nowAction = EnemyManager.Action.Idle;
 
-        // 히트박스 켜기
-        hitBox.gameObject.SetActive(true);
-
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;
         // 초기화 완료
         initialFinish = true;
-    }
-
-    public void ChangeTarget(GameObject newTarget)
-    {
-        // 타겟 리셋 타임 재설정
-        targetResetCount = targetResetTime;
-
-        // 목표 위치 리셋 타임 재설정
-        enemyAI.moveResetCount = 0f;
-
-        // 타겟 변경하기
-        targetObj = newTarget;
-
-        // 지정 타겟이 null이면 주변 몬스터 타겟 찾아 넣기
-        if (targetObj == null)
-            targetObj = SearchTarget();
     }
 
     GameObject SearchTarget()
@@ -335,9 +359,9 @@ public class EnemyManager : MonoBehaviour
         List<Collider2D> enemyCollList = Physics2D.OverlapCircleAll(transform.position, 50f, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
         // 몬스터 본인 콜라이더는 전부 빼기
-        for (int i = 0; i < hitCollList.Count; i++)
+        for (int i = 0; i < hitBoxList.Count; i++)
         {
-            enemyCollList.Remove(hitCollList[i]);
+            enemyCollList.Remove(hitBoxList[i].GetComponent<Collider2D>());
         }
 
         // 주변에 아무도 없으면 리턴 
@@ -351,7 +375,7 @@ public class EnemyManager : MonoBehaviour
             {
                 // 찾은 몬스터도 고스트일때
                 if (hitBox.enemyManager.IsGhost)
-                    // 다음으로 진행
+                    // 다음으로 넘기기
                     continue;
             }
             else
@@ -385,11 +409,17 @@ public class EnemyManager : MonoBehaviour
         }
 
         // 고스트일때, 타겟이 비활성화되거나 리셋타임이 되면 타겟 재설정
-        if (IsGhost && (targetResetCount <= 0 || targetObj == null))
-            ChangeTarget(null);
+        if (IsGhost && (targetResetCount <= 0 || TargetObj == null))
+            // 타겟 리셋하기
+            TargetObj = null;
+
         // 타겟 리셋 카운트 차감
-        else if (targetResetCount > 0)
+        if (targetResetCount > 0)
             targetResetCount -= Time.deltaTime;
+
+        // 이동 리셋 카운트 차감
+        if (enemyAI.moveResetCount > 0)
+            enemyAI.moveResetCount -= Time.deltaTime;
 
         // 파티클 히트 딜레이 차감
         if (particleHitCount > 0)
@@ -436,20 +466,17 @@ public class EnemyManager : MonoBehaviour
         //죽음 애니메이션 중일때
         if (isDead)
         {
-            state = State.Dead;
+            // nowState = State.Dead;
 
-            rigid.velocity = Vector2.zero; //이동 초기화
-            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            // rigid.velocity = Vector2.zero; //이동 초기화
+            // rigid.constraints = RigidbodyConstraints2D.FreezeAll;
 
-            if (animList.Count > 0)
-            {
-                foreach (Animator anim in animList)
-                {
-                    anim.speed = 0f;
-                }
-            }
+            // for (int i = 0; i < animList.Count; i++)
+            // {
+            //     animList[i].speed = 0f;
+            // }
 
-            transform.DOPause();
+            // transform.DOPause();
 
             // 행동불능이므로 false 리턴
             return false;
@@ -458,7 +485,7 @@ public class EnemyManager : MonoBehaviour
         //전역 타임스케일이 0 일때
         if (SystemManager.Instance.globalTimeScale == 0)
         {
-            state = State.MagicStop;
+            nowState = State.MagicStop;
 
             // 애니메이션 멈추기
             if (animList.Count > 0)
@@ -481,7 +508,7 @@ public class EnemyManager : MonoBehaviour
         // 멈춤 디버프일때
         if (stopCount > 0)
         {
-            state = State.TimeStop;
+            nowState = State.TimeStop;
 
             rigid.velocity = Vector2.zero; //이동 초기화
             rigid.constraints = RigidbodyConstraints2D.FreezeAll;
@@ -546,19 +573,25 @@ public class EnemyManager : MonoBehaviour
         // 모든 문제 없으면 idle 상태로 전환
         // state = State.Idle;
 
-        // rigid, sprite, 트윈, 애니메이션 상태 초기화
-        for (int i = 0; i < spriteList.Count; i++)
-        {
-            spriteList[i].material = originMatList[i];
-
-            // 고스트 여부에 따라 복구색 바꾸기
-            if (IsGhost)
+        // 고스트 여부에 따라 복구 머터리얼 바꾸기
+        if (IsGhost)
+            // rigid, sprite, 트윈, 애니메이션 상태 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                // 고스트 여부에 따라 복구 머터리얼 바꾸기
+                spriteList[i].material = SystemManager.Instance.outLineMat;
                 spriteList[i].color = new Color(0, 1, 1, 0.5f);
-            else
+            }
+        else
+            // rigid, sprite, 트윈, 애니메이션 상태 초기화
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                // 고스트 여부에 따라 복구 머터리얼 바꾸기
+                spriteList[i].material = originMatList[i];
                 spriteList[i].color = originColorList[i];
-        }
+            }
 
-        transform.DOPlay();
+        // transform.DOPlay();
 
         // 애니메이션 속도 초기화
         if (animList.Count > 0)

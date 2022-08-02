@@ -52,6 +52,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -74,7 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6679ba2f16ea4b4b8c0709cc8d49b6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minePrefab: {fileID: 1523541554266288957, guid: 55af0993e4c26c6409ff8faff9e9eef6,
+  minePrefab: {fileID: 2691994544499633479, guid: 55af0993e4c26c6409ff8faff9e9eef6,
     type: 3}
 --- !u!199 &9053117062716652818
 ParticleSystemRenderer:

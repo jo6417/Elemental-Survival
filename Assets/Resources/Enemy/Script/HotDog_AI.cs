@@ -704,10 +704,10 @@ public class HotDog_AI : MonoBehaviour
         // 짖기 애니메이션 재생
         enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), true);
 
-        // 피격 콜라이더 전부 끄기
-        foreach (Collider2D coll in enemyManager.hitCollList)
+        // 히트박스 전부 끄기
+        for (int i = 0; i < enemyManager.hitBoxList.Count; i++)
         {
-            coll.enabled = false;
+            enemyManager.hitBoxList[i].gameObject.SetActive(false);
         }
 
         // 투명해질때까지 대기
@@ -769,11 +769,12 @@ public class HotDog_AI : MonoBehaviour
             eyeGlow.gameObject.SetActive(true);
             eyeGlow.DOColor(Color.white, 0.2f);
 
-            // 피격 콜라이더 켜기
-            foreach (Collider2D coll in enemyManager.hitCollList)
+            // 히트박스 전부 켜기
+            for (int j = 0; j < enemyManager.hitBoxList.Count; j++)
             {
-                coll.enabled = true;
+                enemyManager.hitBoxList[i].gameObject.SetActive(true);
             }
+
             // 대쉬 어택 콜라이더 켜기
             dashAtk.enabled = true;
 
@@ -814,11 +815,12 @@ public class HotDog_AI : MonoBehaviour
             // 눈빛 끄기
             eyeGlow.DOColor(Color.clear, 0.2f);
 
-            // 피격 콜라이더 끄기
-            foreach (Collider2D coll in enemyManager.hitCollList)
+            // 히트박스 전부 끄기
+            for (int j = 0; j < enemyManager.hitBoxList.Count; j++)
             {
-                coll.enabled = false;
+                enemyManager.hitBoxList[i].gameObject.SetActive(false);
             }
+
             // 대쉬 어택 콜라이더 끄기
             dashAtk.enabled = false;
 
@@ -848,10 +850,10 @@ public class HotDog_AI : MonoBehaviour
         // 충돌 콜라이더 켜기
         enemyManager.physicsColl.enabled = true;
 
-        // 피격 콜라이더 켜기
-        foreach (Collider2D coll in enemyManager.hitCollList)
+        // 히트박스 전부 끄기
+        for (int i = 0; i < enemyManager.hitBoxList.Count; i++)
         {
-            coll.enabled = true;
+            enemyManager.hitBoxList[i].gameObject.SetActive(true);
         }
 
         // 애니메이션 idle

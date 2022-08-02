@@ -53,9 +53,6 @@ public class Ghosting : MonoBehaviour
         // 이미 유령 아닐때, 보스 아닐때
         if (!enemyManager.IsGhost && enemyManager.enemy.enemyType != "boss")
         {
-            // 포탈에서 몬스터 유령 소환
-            // StartCoroutine(EnemySpawn.Instance.PortalSpawn(enemyManager.enemy, false, enemyManager.transform.position, null, true));
-
             //몬스터 프리팹 찾기
             GameObject ghostPrefab = EnemyDB.Instance.GetPrefab(enemyManager.enemy.id);
 
@@ -73,22 +70,25 @@ public class Ghosting : MonoBehaviour
                 // 스프라이트 투명하게
                 ghostManager.spriteList[i].color = Color.clear;
                 // 머터리얼 초기화
-                ghostManager.spriteList[i].material = ghostManager.originMatList[i];
+                ghostManager.spriteList[i].material = SystemManager.Instance.outLineMat;
             }
 
             // 타겟 null로 초기화
-            ghostManager.ChangeTarget(null);
+            ghostManager.TargetObj = null;
 
             for (int i = 0; i < ghostManager.spriteList.Count; i++)
             {
                 // 스프라이트 유령색으로 바꾸기
-                ghostManager.spriteList[i].DOColor(new Color(0, 1, 1, 0.5f), 1f)
+                // ghostManager.spriteList[i].
+                ghostManager.spriteList[i].DOColor(new Color(0, 1, 1, 0.5f), 2f)
                 .OnComplete(() =>
                 {
                     // 마지막 스프라이트일때
                     if (i == ghostManager.spriteList.Count)
+                    {
                         // 소환된 몬스터 초기화 시작
                         ghostManager.initialStart = true;
+                    }
                 });
             }
         }

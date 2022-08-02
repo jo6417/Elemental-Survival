@@ -54,8 +54,9 @@ public class A_800Atk : MonoBehaviour
             return;
         }
 
-        //플레이어 방향 계산
-        targetDir = enemyManager.targetObj.transform.position - transform.position;
+        // 타겟 방향 계산
+        if (enemyManager.TargetObj != null)
+            targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         // 공격 트리거 켜지면 공격 시작
         if (meleeAtkTrigger.atkTrigger)
@@ -100,7 +101,7 @@ public class A_800Atk : MonoBehaviour
         meleeColl.gameObject.SetActive(true);
 
         //플레이어 방향 계산
-        targetDir = enemyManager.targetObj.transform.position - transform.position;
+        targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         //플레이어 방향으로 회전
         float rotation = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;

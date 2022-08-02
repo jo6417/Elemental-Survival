@@ -53,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 40506420e55a4a34f8d4928dfd7d2778, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -321,7 +321,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5485836661786715577
 Transform:
   m_ObjectHideFlags: 0
@@ -352,12 +352,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 1
+  initialFinish: 0
   lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
-  targetObj: {fileID: 0}
-  state: 0
+  nowState: 0
   nowAction: 0
   moveType: 1
   portalSize: 1
@@ -369,8 +369,8 @@ MonoBehaviour:
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 240281183651144037}
-  hitBox: {fileID: 2044665212814803894}
-  explosionTrigger: {fileID: 0}
+  enemyAtkTrigger: {fileID: 0}
+  enemyAtkList: []
   spriteObj: {fileID: 0}
   shadow: {fileID: 6263737295829454142}
   spriteList:
@@ -382,7 +382,7 @@ MonoBehaviour:
   - {fileID: 5485836661786715589}
   rigid: {fileID: 5485836661786715579}
   physicsColl: {fileID: 5485836661786715578}
-  hitCollList: []
+  hitBoxList: []
   buffParent: {fileID: 0}
   hpMax: 0
   HpNow: 1
@@ -463,9 +463,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
-  m_LinearDrag: 0
-  m_AngularDrag: 0
+  m_Mass: 0.5
+  m_LinearDrag: 1
+  m_AngularDrag: 1
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0

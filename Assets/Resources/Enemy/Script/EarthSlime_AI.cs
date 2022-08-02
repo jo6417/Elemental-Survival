@@ -30,7 +30,7 @@ public class EarthSlime_AI : MonoBehaviour
             return;
 
         // 타겟 없거나 비활성화면 리턴
-        if (!enemyManager.targetObj || !enemyManager.targetObj.activeSelf)
+        if (!enemyManager.TargetObj || !enemyManager.TargetObj.activeSelf)
             return;
 
         // 이미 공격중이면 리턴
@@ -56,7 +56,7 @@ public class EarthSlime_AI : MonoBehaviour
         // print("SmashAttack");
 
         // 타겟 방향 계산
-        Vector2 targetDir = enemyManager.targetObj.transform.position - transform.position;
+        Vector2 targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         // 타겟 방향에 따라 회전
         if (targetDir.x > 0)

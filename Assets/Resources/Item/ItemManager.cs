@@ -158,7 +158,7 @@ public class ItemManager : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, radius);
     }
 
-    IEnumerator GetMove(Transform Getter)
+    public IEnumerator GetMove(Transform Getter)
     {
         // 아이템 위치부터 플레이어 쪽으로 방향 벡터
         Vector2 dir = Getter.position - transform.position;

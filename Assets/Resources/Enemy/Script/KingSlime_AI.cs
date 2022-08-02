@@ -100,7 +100,7 @@ public class KingSlime_AI : MonoBehaviour
                 PlayerManager.Instance.hitBox.Damage(damage);
 
                 // 플레이어가 입은 데미지만큼 보스 회복
-                enemyManager.hitBox.Damage(-damage, false);
+                enemyManager.hitBoxList[0].Damage(-damage, false);
 
                 // 쿨타임 갱신
                 absorbCoolCount = 1f;
@@ -295,16 +295,12 @@ public class KingSlime_AI : MonoBehaviour
             //컴포넌트 초기화
             // Collider2D babyColl = babySlime.GetComponent<Collider2D>();
             EnemyManager babyEnemyManager = babySlime.GetComponent<EnemyManager>();
-            EnemyAI babyEnemyAI = babySlime.GetComponent<EnemyAI>();
 
-            // 소환수 콜라이더 끄기
-            foreach (Collider2D coll in babyEnemyManager.hitCollList)
+            // 소환수 히트박스 끄기
+            for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
             {
-                coll.enabled = false;
+                babyEnemyManager.hitBoxList[i].gameObject.SetActive(false);
             }
-
-            // 소환수 AI 끄기
-            babyEnemyAI.enabled = false;
 
             //소환 위치
             Vector2 summonPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * 20f;
@@ -313,13 +309,14 @@ public class KingSlime_AI : MonoBehaviour
             babySlime.transform.DOJump(summonPos, 5f, 1, 1f)
             .OnComplete(() =>
             {
-                // 소환수 콜라이더 활성화
-                foreach (Collider2D coll in babyEnemyManager.hitCollList)
+                // 소환수 히트박스 켜기
+                for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
                 {
-                    coll.enabled = true;
+                    babyEnemyManager.hitBoxList[i].gameObject.SetActive(true);
                 }
-                // 소환수 AI 활성화
-                babyEnemyAI.enabled = true;
+
+                // 소환수 초기화
+                babyEnemyManager.initialStart = true;
             });
 
             //소환 딜레이

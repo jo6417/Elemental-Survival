@@ -15,6 +15,7 @@ public class WaterSlimeAtk : MonoBehaviour
     public EnemyManager enemyManager;
     public string enemyName;
     public GameObject bubblePrefab; //거품 프리팹
+    IEnumerator atkCoroutine; // 거품 공격 코루틴
 
     private void Awake()
     {
@@ -44,7 +45,15 @@ public class WaterSlimeAtk : MonoBehaviour
     private void Update()
     {
         // 몬스터 정보 없으면 리턴
-        if (enemyManager.enemy == null)
+        if (enemyManager == null || enemyManager.enemy == null)
+            return;
+
+        // 죽었으면 공격 멈추기
+        if (enemyManager.isDead && atkCoroutine != null)
+            StopCoroutine(atkCoroutine);
+
+        // 상태 이상 있으면 리턴
+        if (!enemyManager.ManageState())
             return;
 
         // 이미 공격중이면 리턴
@@ -59,8 +68,13 @@ public class WaterSlimeAtk : MonoBehaviour
         if (attackReady)
             return;
 
-        //플레이어 방향 계산
-        targetDir = enemyManager.targetObj.transform.position - transform.position;
+        // 타겟 없거나 비활성화면 리턴
+        if (!enemyManager.TargetObj || !enemyManager.TargetObj.activeSelf)
+            return;
+
+        // 타겟 방향 계산
+        if (enemyManager.TargetObj != null)
+            targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
         if (targetDir.magnitude <= attackRange && attackRange > 0)
@@ -92,7 +106,8 @@ public class WaterSlimeAtk : MonoBehaviour
         }
 
         // 거품 공격 실행
-        StartCoroutine(BubbleAttack());
+        atkCoroutine = BubbleAttack();
+        StartCoroutine(atkCoroutine);
     }
 
     public IEnumerator BubbleAttack()
@@ -135,8 +150,11 @@ public class WaterSlimeAtk : MonoBehaviour
         MagicHolder bubbleMagic = bubbleAtk.GetComponent<MagicHolder>();
 
         //타겟 정보 넣기
-        bubbleMagic.targetObj = enemyManager.targetObj;
-        bubbleMagic.targetPos = enemyManager.targetObj.transform.position;
+        if (enemyManager.TargetObj != null)
+        {
+            bubbleMagic.targetObj = enemyManager.TargetObj;
+            bubbleMagic.targetPos = enemyManager.TargetObj.transform.position;
+        }
 
         // 타겟 설정
         if (enemyManager.IsGhost)
@@ -151,5 +169,8 @@ public class WaterSlimeAtk : MonoBehaviour
         enemyManager.animList[0].enabled = true;
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
+
+        // 코루틴 비우기
+        atkCoroutine = null;
     }
 }

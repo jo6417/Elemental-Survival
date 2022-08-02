@@ -16,7 +16,6 @@ public class EnemyAI : MonoBehaviour
     [Header("Walk")]
     public float moveResetTime = 3f;
     public float moveResetCount;
-    Vector3 moveToPos;
 
     [Header("Jump")]
     public float jumpCoolCount;
@@ -84,15 +83,6 @@ public class EnemyAI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
-        // 타겟 null 체크
-        if (enemyManager.TargetObj != null)
-            // 타겟 방향 계산
-            targetDir = enemyManager.TargetObj.transform.position - transform.position;
-
-        if (enemyManager.TargetObj == null)
-            // 타겟이 null 이면 멈추기
-            enemyManager.rigid.velocity = Vector2.zero;
-
         // 걷기, 대쉬 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Walk || enemyManager.moveType == EnemyManager.MoveType.Dash)
         {
@@ -102,6 +92,16 @@ public class EnemyAI : MonoBehaviour
         //점프 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Jump)
         {
+            // 타겟이 null일때
+            if (enemyManager.TargetObj == null)
+            {
+                // 플레이어 주변 위치로 계산
+                targetDir = PlayerNearPos() - transform.position;
+            }
+            else
+                // 타겟 방향 계산
+                targetDir = enemyManager.TargetObj.transform.position - transform.position;
+
             // 점프 쿨타임 아닐때, 플레이어가 공격 범위보다 멀때
             if (jumpCoolCount <= 0 && targetDir.magnitude > enemyManager.attackRange)
                 JumpStart();
@@ -130,18 +130,23 @@ public class EnemyAI : MonoBehaviour
         }
 
         // 목표 위치 갱신 시간 됬을때
-        if (moveResetCount < Time.time)
+        if (moveResetCount <= 0)
         {
-            moveResetCount = Time.time + moveResetTime;
+            moveResetCount = moveResetTime;
 
-            // 목표 위치에 랜덤 위치 더해서 부정확하게 만들기
-            moveToPos = (Vector2)enemyManager.targetObj.transform.position + Random.insideUnitCircle;
+            // 타겟이 null일때
+            if (enemyManager.TargetObj == null)
+            {
+                // 플레이어 주변 위치로 계산
+                targetDir = PlayerNearPos() - transform.position;
+            }
+            // 타겟이 있을때
+            else
+                // 목표 방향 계산, 랜덤 위치 더해서 부정확하게 만들기
+                targetDir = enemyManager.TargetObj.transform.position + (Vector3)Random.insideUnitCircle - transform.position;
 
             // print(moveToPos);
         }
-
-        //움직일 방향
-        targetDir = moveToPos - transform.position;
 
         // 목표위치 도착했으면 위치 다시 갱신
         if (targetDir.magnitude < 0.1f)
@@ -180,13 +185,16 @@ public class EnemyAI : MonoBehaviour
 
     public void JumpMove()
     {
-        // 타겟 null 체크
-        if (enemyManager.TargetObj != null)
+        // 타겟이 null일때
+        if (enemyManager.TargetObj == null)
+        {
+            // 플레이어 주변 위치로 계산
+            targetDir = PlayerNearPos() - transform.position;
+        }
+        // 타겟이 있을때
+        else
             // 타겟 방향 계산
             targetDir = enemyManager.TargetObj.transform.position - transform.position;
-        else
-            // 타겟이 null 이면 멈추기
-            enemyManager.rigid.velocity = Vector2.zero;
 
         //움직일 방향에따라 회전
         float leftAngle = enemyManager.lookLeft ? 180f : 0f;
@@ -224,5 +232,10 @@ public class EnemyAI : MonoBehaviour
 
         // 현재 행동 끝내기
         enemyManager.nowAction = EnemyManager.Action.Idle;
+    }
+
+    Vector3 PlayerNearPos(float range = 5f)
+    {
+        return PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle.normalized * range;
     }
 }

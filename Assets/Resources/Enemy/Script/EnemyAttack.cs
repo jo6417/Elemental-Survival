@@ -113,11 +113,11 @@ public class EnemyAttack : MonoBehaviour
             return;
 
         // 타겟 없거나 비활성화면 리턴
-        if (!enemyManager.targetObj || !enemyManager.targetObj.activeSelf)
+        if (!enemyManager.TargetObj || !enemyManager.TargetObj.activeSelf)
             return;
 
         // 타겟 방향 계산
-        targetDir = enemyManager.targetObj.transform.position - transform.position;
+        targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
         if (targetDir.magnitude <= enemyManager.attackRange)
@@ -168,10 +168,10 @@ public class EnemyAttack : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Attack;
 
         // 밀리지 않게 kinematic으로 전환
-        enemyManager.rigid.bodyType = RigidbodyType2D.Kinematic;
+        // enemyManager.rigid.bodyType = RigidbodyType2D.Kinematic;
 
         //플레이어 방향 다시 계산
-        targetDir = enemyManager.targetObj.transform.position - transform.position;
+        targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         //움직일 방향에따라 회전
         float leftAngle = enemyManager.lookLeft ? 180f : 0f;
