@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 289528903}
   - component: {fileID: 289528902}
   - component: {fileID: 289528904}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SlingShot-Sheet_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 4052886725512566304, guid: 11a77594c0e18be48b681768f9e067eb,
     type: 3}
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 395029431}
   - component: {fileID: 395029430}
   - component: {fileID: 395029432}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SlingShot-Sheet_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: -4898178295380021446, guid: 11a77594c0e18be48b681768f9e067eb,
     type: 3}
@@ -256,7 +256,7 @@ GameObject:
   - component: {fileID: 1217664162}
   - component: {fileID: 1217664161}
   - component: {fileID: 1217664163}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SlingShot-Sheet_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: -6973035357185448733, guid: 11a77594c0e18be48b681768f9e067eb,
     type: 3}
@@ -382,9 +382,9 @@ GameObject:
   - component: {fileID: 5039487350311399529}
   - component: {fileID: 3858180519394124975}
   - component: {fileID: 2813631546323973093}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SlingShot_Prefab
-  m_TagString: EnemyAttack
+  m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -424,6 +424,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 5
   isStop: 0
@@ -446,7 +447,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lookDir: 1
+  lookDir: 0
+  isSpin: 1
   spreadForce: 3
   particleManager: {fileID: 0}
   shatters:
@@ -455,6 +457,7 @@ MonoBehaviour:
   - {fileID: 395029428}
   hitEffect: {fileID: 1994870664517383061, guid: 9f2d6315a7af63841baea7c567eff226,
     type: 3}
+  rigid: {fileID: 0}
 --- !u!212 &7344502147705067009
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -493,7 +496,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: -2435822838769587993, guid: 11a77594c0e18be48b681768f9e067eb,
     type: 3}
@@ -583,7 +586,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_SortMode: 0

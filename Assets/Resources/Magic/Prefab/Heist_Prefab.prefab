@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5657517877285718282}
   - component: {fileID: 5657517877285718389}
   - component: {fileID: 5657517877285718388}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Heist_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -51,8 +51,9 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 1
-  init: 0
-  setPower: 0
+  initDone: 0
+  pierceCount: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
   poisonTime: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3652062142474944295}
   - component: {fileID: 96972450803020946}
   - component: {fileID: 6201037514349963625}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ghosting_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -52,6 +52,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3042065820334735687}
   - component: {fileID: 1009897354832255717}
   - component: {fileID: 3528283273403721553}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: MetalCube_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -57,6 +57,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -128,7 +129,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 8092416761886967685, guid: ddf97f4ec5e18e94f87071609bc93ab6,
     type: 3}
@@ -4953,7 +4954,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: -1
   m_RenderMode: 0
   m_SortMode: 0
@@ -5046,6 +5047,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StompDust_Effect
+      objectReference: {fileID: 0}
+    - target: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2346020423735354293, guid: e14cb71711a4cb040bdbc33d28d1ee38, type: 3}

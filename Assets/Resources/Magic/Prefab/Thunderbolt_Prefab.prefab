@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8422792374676327901}
   - component: {fileID: 8422792374676327900}
   - component: {fileID: 8422792374676327875}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Thunderbolt_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -53,6 +53,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -117,7 +118,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 4866485357111499113, guid: c4f007ccd80da8147aa55cede9124f50,
     type: 3}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5079273323515960509}
   - component: {fileID: 3858350433360680319}
   - component: {fileID: 8683942701006096633}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LavaSparkUp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4882,7 +4882,7 @@ GameObject:
   - component: {fileID: 8500939953836953368}
   - component: {fileID: 8500939953836953374}
   - component: {fileID: 8500939953836953375}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LavaParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9752,7 +9752,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8500939954073941841}
   - component: {fileID: 8500939954073941840}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Skull
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9836,7 +9836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8500939954579973899}
   - component: {fileID: 8500939954579973898}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LavaPillar
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -9919,7 +9919,7 @@ GameObject:
   - component: {fileID: 8500939955285953714}
   - component: {fileID: 8500939955285953713}
   - component: {fileID: 3327068179478164566}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: GroundMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10016,7 +10016,7 @@ GameObject:
   - component: {fileID: 8500939955424935689}
   - component: {fileID: 8500939955424935690}
   - component: {fileID: 7298686736352122687}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HellFire_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -10057,6 +10057,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -10192,7 +10193,7 @@ GameObject:
   - component: {fileID: 5642212436027588650}
   - component: {fileID: 8590984145777138202}
   - component: {fileID: 8591400833896692338}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10228,6 +10229,8 @@ MonoBehaviour:
   particle: {fileID: 0}
   autoDespawn: 0
   collOverTime: 0.2
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!198 &8590984145777138202
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -15641,7 +15644,7 @@ PrefabInstance:
     - target: {fileID: 444469309744675838, guid: d9de1b6b57ddf424f9164127d9476914,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 444469309744675838, guid: d9de1b6b57ddf424f9164127d9476914,
         type: 3}

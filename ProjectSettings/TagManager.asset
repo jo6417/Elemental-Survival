@@ -8,7 +8,6 @@ TagManager:
   - Magic
   - Item
   - Object
-  - EnemyAttack
   layers:
   - Default
   - TransparentFX

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2565760932959180150}
   - component: {fileID: 6367948304201872039}
   - component: {fileID: 2296221395109271317}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LavaFootprint_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -53,6 +53,7 @@ MonoBehaviour:
   targetPos: {x: 10, y: 10, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0

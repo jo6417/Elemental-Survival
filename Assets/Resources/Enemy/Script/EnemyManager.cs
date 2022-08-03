@@ -186,7 +186,7 @@ public class EnemyManager : MonoBehaviour
         // 히트박스 전부 끄기
         for (int i = 0; i < hitBoxList.Count; i++)
         {
-            hitBoxList[i].gameObject.SetActive(false);
+            hitBoxList[i].enabled = false;
         }
 
         // 물리 콜라이더 끄기
@@ -315,7 +315,7 @@ public class EnemyManager : MonoBehaviour
         // 히트박스 전부 켜기
         for (int i = 0; i < hitBoxList.Count; i++)
         {
-            hitBoxList[i].gameObject.SetActive(true);
+            hitBoxList[i].enabled = true;
         }
 
         for (int i = 0; i < animList.Count; i++)
@@ -335,7 +335,7 @@ public class EnemyManager : MonoBehaviour
         range = enemy.range;
 
         //보스면 체력 UI 띄우기
-        if (enemy.enemyType == "boss")
+        if (enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
         {
             StartCoroutine(UIManager.Instance.UpdateBossHp(this));
         }
@@ -418,7 +418,7 @@ public class EnemyManager : MonoBehaviour
             targetResetCount -= Time.deltaTime;
 
         // 이동 리셋 카운트 차감
-        if (enemyAI.moveResetCount > 0)
+        if (enemyAI && enemyAI.moveResetCount > 0)
             enemyAI.moveResetCount -= Time.deltaTime;
 
         // 파티클 히트 딜레이 차감

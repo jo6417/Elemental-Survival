@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6082526332878303367}
   - component: {fileID: 5911569163407639278}
   - component: {fileID: 5597371135248299486}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BubblePop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4836,7 +4836,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -4876,7 +4876,7 @@ GameObject:
   - component: {fileID: 8632908752227872800}
   - component: {fileID: 3459317121763309752}
   - component: {fileID: 1934147848397244494}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: StickyBubble_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4916,6 +4916,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 1
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -9744,7 +9745,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0

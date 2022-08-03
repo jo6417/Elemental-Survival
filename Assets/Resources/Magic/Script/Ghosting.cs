@@ -51,7 +51,7 @@ public class Ghosting : MonoBehaviour
         int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
 
         // 이미 유령 아닐때, 보스 아닐때
-        if (!enemyManager.IsGhost && enemyManager.enemy.enemyType != "boss")
+        if (!enemyManager.IsGhost && enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
         {
             //몬스터 프리팹 찾기
             GameObject ghostPrefab = EnemyDB.Instance.GetPrefab(enemyManager.enemy.id);

@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 1957593822852447937}
   - component: {fileID: 151284468529165936}
   - component: {fileID: 7167652524850847526}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: MoveEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6862966331769526238}
   - component: {fileID: 1161387252916033998}
   - component: {fileID: 1161387252916033999}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: LandEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4896,9 +4896,9 @@ GameObject:
   - component: {fileID: 2691994544499633474}
   - component: {fileID: 2691994544499633475}
   - component: {fileID: 2691994544499633476}
-  m_Layer: 7
+  m_Layer: 16
   m_Name: DeathMine_Physics
-  m_TagString: Object
+  m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5076,7 +5076,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2691994544547851244}
   - component: {fileID: 2691994544547851243}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Light
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -5159,7 +5159,7 @@ GameObject:
   - component: {fileID: 2691994544940279422}
   - component: {fileID: 2691994544940279420}
   - component: {fileID: 2691994544940279421}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Particle System
   m_TagString: Object
   m_Icon: {fileID: 0}

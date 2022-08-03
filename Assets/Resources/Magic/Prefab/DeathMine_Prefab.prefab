@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5644447144099378855}
   - component: {fileID: 9053117062716652818}
   - component: {fileID: 3095418995670474985}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DeathMine_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}

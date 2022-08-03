@@ -49,7 +49,7 @@ public class CastMagic : MonoBehaviour
         transform.localScale = Vector3.one * 0.05f;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (Time.timeScale == 0f)
             return;

@@ -143,7 +143,7 @@ public class GatePortal : MonoBehaviour
         foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
         {
             //타입이 보스면
-            if (value.Value.enemyType == "boss")
+            if (value.Value.enemyType == EnemyDB.EnemyType.Boss.ToString())
             {
                 //리스트에 포함
                 bosses.Add(value.Value);

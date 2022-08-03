@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3587941395627224305}
   - component: {fileID: 7242530360186092055}
   - component: {fileID: 1665908488469641415}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PoisonPool
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -4896,9 +4896,9 @@ GameObject:
   - component: {fileID: 5658803231978076615}
   - component: {fileID: 4931099248548569686}
   - component: {fileID: 8913964027928015166}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PoisonSplatter
-  m_TagString: Enemy
+  m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9731,7 +9731,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -9769,7 +9769,7 @@ GameObject:
   - component: {fileID: 4206556132054711112}
   - component: {fileID: 7894088495083372973}
   - component: {fileID: 7001415547036628942}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: PoisonBubble
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -14536,7 +14536,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0

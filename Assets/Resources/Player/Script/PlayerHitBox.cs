@@ -126,6 +126,11 @@ public class PlayerHitBox : MonoBehaviour
                 yield break;
             }
 
+            // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
+            if (magicHolder.pierceCount != -1 && magicHolder.pierceCount > 0)
+                // 관통 횟수 차감
+                magicHolder.pierceCount--;
+
             // 마법 스탯 계산
             float power = MagicDB.Instance.MagicPower(magic);
             bool isCritical = MagicDB.Instance.MagicCritical(magic);

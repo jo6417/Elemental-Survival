@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7540521823902576213}
   - component: {fileID: 7540521823902576203}
   - component: {fileID: 7540521823902576212}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Fog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 7540521824293115840}
   - component: {fileID: 7540521824293115841}
   - component: {fileID: 7540521824293115842}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: AstralForm_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -126,8 +126,9 @@ MonoBehaviour:
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
-  init: 0
-  setPower: 0
+  initDone: 0
+  pierceCount: 0
+  fixedPower: 0
   knockbackForce: 0
   isStop: 0
   poisonTime: 0
@@ -169,7 +170,7 @@ GameObject:
   - component: {fileID: 7540521824940693142}
   - component: {fileID: 7540521824940693143}
   - component: {fileID: 7540521824940693136}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

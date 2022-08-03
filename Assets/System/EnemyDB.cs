@@ -117,6 +117,7 @@ public class EnemyDB : MonoBehaviour
     public Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>(); //몬스터 프리팹 리스트
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
+    public enum EnemyType { Normal, Boss };
 
     void Awake()
     {
@@ -279,7 +280,7 @@ public class EnemyDB : MonoBehaviour
         foreach (KeyValuePair<int, EnemyInfo> info in enemyDB)
         {
             //해당 등급이고, 일반 몬스터면 리스트에 추가
-            if (info.Value.grade == randGrade && info.Value.enemyType == "normal")
+            if (info.Value.grade == randGrade && info.Value.enemyType == EnemyType.Normal.ToString())
             {
                 tempList.Add(info.Value.id);
             }

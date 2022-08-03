@@ -566,7 +566,7 @@ public class PlayerManager : MonoBehaviour
     void Levelup()
     {
         // 시간 멈추기
-        Time.timeScale = 0;
+        // Time.timeScale = 0;
 
         //레벨업
         PlayerStat_Now.Level++;
@@ -580,8 +580,7 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now.ExpMax = 3;
 
         // 마법 합성 메뉴 띄우기
-        UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
-        // UIManager.Instance.PopupUI(UIManager.Instance.mixMagicPanel);
+        // UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
     }
 
     public void PayGem(int gemIndex, int price)

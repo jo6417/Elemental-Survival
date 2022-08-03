@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2695430628999012254}
   - component: {fileID: 3059431576790359790}
   - component: {fileID: 6341378058746241102}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: HeistEffect
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -53,6 +53,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -78,6 +79,8 @@ MonoBehaviour:
   particle: {fileID: 0}
   autoDespawn: 1
   collOverTime: 0
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!58 &2695430628999012254
 CircleCollider2D:
   m_ObjectHideFlags: 0

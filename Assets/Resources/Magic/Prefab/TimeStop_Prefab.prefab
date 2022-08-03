@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 5386368947932050669}
   - component: {fileID: 5386368947932050668}
   - component: {fileID: 5386368947932050671}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: TimeStop_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}

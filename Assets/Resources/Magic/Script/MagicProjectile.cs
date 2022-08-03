@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class MagicProjectile : MonoBehaviour
 {
+    [Header("Modify")]
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
+    public bool isSpin; // 투사체 회전 여부
     public float spreadForce = 10f; // 파편 날아가는 강도
 
     [Header("Refer")]
@@ -15,7 +17,7 @@ public class MagicProjectile : MonoBehaviour
     public ParticleManager particleManager;
     public GameObject[] shatters; //파편들
     public GameObject hitEffect; //타겟에 적중했을때 이펙트
-    Rigidbody2D rigid;
+    public Rigidbody2D rigid;
     Collider2D coll;
     SpriteRenderer sprite;
 
@@ -88,6 +90,10 @@ public class MagicProjectile : MonoBehaviour
 
         // 해당 방향으로 날리기
         rigid.velocity = dir.normalized * speed;
+
+        // 날아가는 방향따라 회전 시키기
+        if (isSpin)
+            rigid.angularVelocity = dir.x > 0 ? -speed * 30f : speed * 30f;
 
         //타겟 위치 초기화
         targetPos = Vector2.zero;

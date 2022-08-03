@@ -15,7 +15,7 @@ public class KeepDistanceMove : MonoBehaviour
         rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         FollowMove();
     }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6008138310535059970}
   - component: {fileID: 1056827250892629718}
   - component: {fileID: 2647893212976384798}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: collider
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -50,6 +50,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -87,7 +88,7 @@ GameObject:
   - component: {fileID: 8520581640877415919}
   - component: {fileID: 255081985355121558}
   - component: {fileID: 6520982514827401289}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Blizzard_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -172,7 +173,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: fe793b17594220349accfc1346ead8be, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -196,7 +197,7 @@ GameObject:
   - component: {fileID: 9133052939882172468}
   - component: {fileID: 7520440804590402243}
   - component: {fileID: 199320508503753188}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Particle
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -256,7 +257,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -5057,7 +5058,7 @@ PrefabInstance:
     - target: {fileID: 8352782153783861176, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8352782153783861176, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}
@@ -5072,7 +5073,7 @@ PrefabInstance:
     - target: {fileID: 8874241045075196594, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8874241045075196594, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}

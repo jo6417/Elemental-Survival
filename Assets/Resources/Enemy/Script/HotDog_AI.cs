@@ -707,7 +707,7 @@ public class HotDog_AI : MonoBehaviour
         // 히트박스 전부 끄기
         for (int i = 0; i < enemyManager.hitBoxList.Count; i++)
         {
-            enemyManager.hitBoxList[i].gameObject.SetActive(false);
+            enemyManager.hitBoxList[i].enabled = false;
         }
 
         // 투명해질때까지 대기
@@ -772,7 +772,7 @@ public class HotDog_AI : MonoBehaviour
             // 히트박스 전부 켜기
             for (int j = 0; j < enemyManager.hitBoxList.Count; j++)
             {
-                enemyManager.hitBoxList[i].gameObject.SetActive(true);
+                enemyManager.hitBoxList[i].enabled = true;
             }
 
             // 대쉬 어택 콜라이더 켜기
@@ -818,7 +818,7 @@ public class HotDog_AI : MonoBehaviour
             // 히트박스 전부 끄기
             for (int j = 0; j < enemyManager.hitBoxList.Count; j++)
             {
-                enemyManager.hitBoxList[i].gameObject.SetActive(false);
+                enemyManager.hitBoxList[i].enabled = false;
             }
 
             // 대쉬 어택 콜라이더 끄기
@@ -850,10 +850,10 @@ public class HotDog_AI : MonoBehaviour
         // 충돌 콜라이더 켜기
         enemyManager.physicsColl.enabled = true;
 
-        // 히트박스 전부 끄기
+        // 히트박스 전부 켜기
         for (int i = 0; i < enemyManager.hitBoxList.Count; i++)
         {
-            enemyManager.hitBoxList[i].gameObject.SetActive(true);
+            enemyManager.hitBoxList[i].enabled = true;
         }
 
         // 애니메이션 idle

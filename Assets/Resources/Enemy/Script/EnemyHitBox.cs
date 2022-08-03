@@ -32,6 +32,10 @@ public class EnemyHitBox : MonoBehaviour
 
     private void OnParticleCollision(GameObject other)
     {
+        // 초기화 안됬으면 리턴
+        if (!enemyManager.initialFinish)
+            return;
+
         // 파티클 피격 딜레이 중이면 리턴
         if (enemyManager.particleHitCount > 0)
             return;
@@ -52,6 +56,10 @@ public class EnemyHitBox : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // 초기화 안됬으면 리턴
+        if (!enemyManager.initialFinish)
+            return;
+
         // 피격 딜레이 중이면 리턴
         if (enemyManager.hitCount > 0)
             return;
@@ -84,6 +92,10 @@ public class EnemyHitBox : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
+        // 초기화 안됬으면 리턴
+        if (!enemyManager.initialFinish)
+            return;
+
         // 죽었으면 리턴
         if (enemyManager.isDead)
             return;
@@ -232,44 +244,48 @@ public class EnemyHitBox : MonoBehaviour
                 }
             }
 
-            //시간 정지
-            if (magicHolder.isStop)
+            // 보스가 아닐때 디버프
+            if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
             {
-                //몬스터 경직 카운터에 duration 만큼 추가
-                enemyManager.stopCount = duration;
+                //시간 정지
+                if (magicHolder.isStop)
+                {
+                    //몬스터 경직 카운터에 duration 만큼 추가
+                    enemyManager.stopCount = duration;
 
-                // 해당 위치에 고정
-                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-            }
+                    // 해당 위치에 고정
+                    // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+                }
 
-            //넉백
-            if (magicHolder.knockbackForce > 0)
-            {
-                StartCoroutine(Knockback(other, magicHolder.knockbackForce));
-            }
+                //넉백
+                if (magicHolder.knockbackForce > 0)
+                {
+                    StartCoroutine(Knockback(other, magicHolder.knockbackForce));
+                }
 
-            // 슬로우 디버프, 크리티컬 성공일때
-            if (magicHolder.slowTime > 0 && isCritical)
-            {
-                //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-                if (enemyManager.slowCoroutine != null)
-                    StopCoroutine(enemyManager.slowCoroutine);
+                // 슬로우 디버프, 크리티컬 성공일때
+                if (magicHolder.slowTime > 0 && isCritical)
+                {
+                    //이미 슬로우 코루틴 중이면 기존 코루틴 취소
+                    if (enemyManager.slowCoroutine != null)
+                        StopCoroutine(enemyManager.slowCoroutine);
 
-                enemyManager.slowCoroutine = SlowDebuff(magicHolder.slowTime);
+                    enemyManager.slowCoroutine = SlowDebuff(magicHolder.slowTime);
 
-                StartCoroutine(enemyManager.slowCoroutine);
-            }
+                    StartCoroutine(enemyManager.slowCoroutine);
+                }
 
-            // 감전 디버프 && 크리티컬일때
-            if (magicHolder.shockTime > 0 && isCritical)
-            {
-                //이미 감전 코루틴 중이면 기존 코루틴 취소
-                if (enemyManager.shockCoroutine != null)
-                    StopCoroutine(enemyManager.shockCoroutine);
+                // 감전 디버프 && 크리티컬일때
+                if (magicHolder.shockTime > 0 && isCritical)
+                {
+                    //이미 감전 코루틴 중이면 기존 코루틴 취소
+                    if (enemyManager.shockCoroutine != null)
+                        StopCoroutine(enemyManager.shockCoroutine);
 
-                enemyManager.shockCoroutine = ShockDebuff(magicHolder.shockTime);
+                    enemyManager.shockCoroutine = ShockDebuff(magicHolder.shockTime);
 
-                StartCoroutine(enemyManager.shockCoroutine);
+                    StartCoroutine(enemyManager.shockCoroutine);
+                }
             }
         }
     }
@@ -346,7 +362,7 @@ public class EnemyHitBox : MonoBehaviour
         DamageText(damage, isCritical);
 
         //보스면 체력 UI 띄우기
-        if (enemyManager.enemy.enemyType == "boss")
+        if (enemyManager.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
         {
             StartCoroutine(UIManager.Instance.UpdateBossHp(enemyManager));
         }
@@ -705,7 +721,8 @@ public class EnemyHitBox : MonoBehaviour
         }
 
         // 모든 디버프 해제
-        DebuffRemove();
+        if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+            DebuffRemove();
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);

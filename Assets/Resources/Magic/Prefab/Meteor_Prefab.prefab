@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6814348584050193642}
   - component: {fileID: 8586956387036139591}
   - component: {fileID: 5350171974902983272}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Meteor_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -54,6 +54,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -163,7 +164,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3a1fd4e9a64de804b9a45cbcaf3afe45, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -187,7 +188,7 @@ GameObject:
   - component: {fileID: 6100972738603568039}
   - component: {fileID: 6542284689530828685}
   - component: {fileID: 3909831157122065444}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RingFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4962,7 +4963,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
@@ -5000,7 +5001,7 @@ GameObject:
   - component: {fileID: 5634225058560491154}
   - component: {fileID: 6720872240345002128}
   - component: {fileID: 7690498272722779653}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FireTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9769,7 +9770,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
@@ -9807,7 +9808,7 @@ GameObject:
   - component: {fileID: 4691357121588163249}
   - component: {fileID: 3068287006867380060}
   - component: {fileID: 2316860779520662869}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: RingBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14582,7 +14583,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: -2
   m_RenderMode: 0
   m_SortMode: 0

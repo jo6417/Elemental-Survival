@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7564278692520475206}
   - component: {fileID: 1857803212540901824}
   - component: {fileID: 2799846296830280201}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: LavaWalk_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -51,6 +51,7 @@ MonoBehaviour:
   targetPos: {x: 10, y: 10, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0

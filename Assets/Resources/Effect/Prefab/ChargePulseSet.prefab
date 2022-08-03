@@ -50,8 +50,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particle: {fileID: 0}
   autoDespawn: 1
   collOverTime: 0.2
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!198 &82509555809204835
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -125,7 +128,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0
@@ -4797,7 +4800,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
@@ -4891,6 +4894,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RaySpread
       objectReference: {fileID: 0}
+    - target: {fileID: 7453841631393445242, guid: 4b9103ab578726c4193cf65ea7ba2cf0,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b9103ab578726c4193cf65ea7ba2cf0, type: 3}
 --- !u!4 &7037187618954547546 stripped
@@ -4910,6 +4918,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PulseBackground
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673729282205818746, guid: bc1f5f7fb74d89f438f7698dc9a6f4f1,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7673729282205818747, guid: bc1f5f7fb74d89f438f7698dc9a6f4f1,
         type: 3}
@@ -5063,6 +5076,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7673729282205818746, guid: bc1f5f7fb74d89f438f7698dc9a6f4f1,
         type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7673729282205818746, guid: bc1f5f7fb74d89f438f7698dc9a6f4f1,
+        type: 3}
       propertyPath: startDelay.scalar
       value: 0.2
       objectReference: {fileID: 0}
@@ -5136,6 +5154,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4373411264836466744}
     m_Modifications:
+    - target: {fileID: 777194486002467408, guid: b87faeccbf62b604f842d98a6e0a6eae,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 777194486002467410, guid: b87faeccbf62b604f842d98a6e0a6eae,
         type: 3}
       propertyPath: m_RootOrder

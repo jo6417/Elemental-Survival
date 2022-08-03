@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9018348830851890753}
   - component: {fileID: 8105981947041158261}
   - component: {fileID: 7826017966785129540}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FireBall_Smoke
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4777,7 +4777,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: -2
   m_RenderMode: 0
   m_SortMode: 0
@@ -4820,7 +4820,7 @@ GameObject:
   - component: {fileID: 3506392678627035311}
   - component: {fileID: 6156080236530070924}
   - component: {fileID: 5708354616057988362}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FireBall_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
@@ -4857,6 +4857,8 @@ MonoBehaviour:
   particle: {fileID: 4670333872291652156}
   autoDespawn: 0
   collOverTime: 0
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!114 &4421449292995084070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4875,6 +4877,7 @@ MonoBehaviour:
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
+  pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
   isStop: 0
@@ -9664,7 +9667,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
