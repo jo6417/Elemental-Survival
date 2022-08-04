@@ -16,8 +16,7 @@ public class Bawi_AI : MonoBehaviour
     public float stoneThrowCoolTime;
     public float drillDashCoolTime;
     public float drillChaseCoolTime;
-    public float farDistance = 10f;
-    // public float closeDistance = 5f;
+    public float atkRange = 20f; // 공격 범위
     public Vector2 fistParentLocalPos = new Vector2(5, 0); // fistParent 초기 위치
     public Vector2 drillParentLocalPos = new Vector2(-5, 0); // drillParent 초기 위치
     public Vector2 fistPartLocalPos = new Vector2(0, 5); // fistPart의 초기 위치
@@ -85,15 +84,6 @@ public class Bawi_AI : MonoBehaviour
     {
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => enemyManager.enemy != null);
-
-        //애니메이션 스피드 초기화
-        if (enemyManager.animList != null)
-        {
-            foreach (Animator anim in enemyManager.animList)
-            {
-                anim.speed = 1f;
-            }
-        }
 
         //속도 초기화
         enemyManager.rigid.velocity = Vector2.zero;
@@ -183,7 +173,7 @@ public class Bawi_AI : MonoBehaviour
         stateText.text = "CoolCount : " + coolCount;
 
         // 쿨타임 됬을때, 범위 내에 있을때
-        if (coolCount <= 0 && distance <= farDistance)
+        if (coolCount <= 0 && distance <= atkRange)
         {
             //! 거리 확인용
             // stateText.text = "Close : " + distance;

@@ -16,6 +16,8 @@ public class EnemyAI : MonoBehaviour
     [Header("Walk")]
     public float moveResetTime = 3f;
     public float moveResetCount;
+    [SerializeField]
+    bool directionTilt = false; // 가는 방향으로 기울이기 여부
 
     [Header("Jump")]
     public float jumpCoolCount;
@@ -83,6 +85,27 @@ public class EnemyAI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
+        // 타겟이 null일때
+        if (enemyManager.TargetObj == null)
+        {
+            // 플레이어 주변 위치로 계산
+            targetDir = PlayerNearPos() - transform.position;
+        }
+        // 타겟이 있을때
+        else
+            // 타겟 방향 계산
+            targetDir = enemyManager.TargetObj.transform.position - transform.position;
+
+        // 방향따라 기울이기
+        if (directionTilt)
+        {
+            float angleZ = -Mathf.Abs(Mathf.Clamp(targetDir.x, -20f, 20f));
+            Quaternion rotation = Quaternion.Lerp(enemyManager.spriteObj.localRotation, Quaternion.Euler(0, 0, angleZ), 0.1f);
+
+            // 스프라이트 몸체 기울이기
+            enemyManager.spriteObj.localRotation = rotation;
+        }
+
         // 걷기, 대쉬 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Walk || enemyManager.moveType == EnemyManager.MoveType.Dash)
         {
@@ -92,16 +115,6 @@ public class EnemyAI : MonoBehaviour
         //점프 타입일때
         if (enemyManager.moveType == EnemyManager.MoveType.Jump)
         {
-            // 타겟이 null일때
-            if (enemyManager.TargetObj == null)
-            {
-                // 플레이어 주변 위치로 계산
-                targetDir = PlayerNearPos() - transform.position;
-            }
-            else
-                // 타겟 방향 계산
-                targetDir = enemyManager.TargetObj.transform.position - transform.position;
-
             // 점프 쿨타임 아닐때, 플레이어가 공격 범위보다 멀때
             if (jumpCoolCount <= 0 && targetDir.magnitude > enemyManager.attackRange)
                 JumpStart();

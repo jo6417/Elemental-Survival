@@ -9,8 +9,6 @@ public class EnemyHitBox : MonoBehaviour
 {
     [Header("Refer")]
     public EnemyManager enemyManager;
-    public Vector2 knockbackDir; //넉백 벡터
-    // public EnemyInfo enemy;
 
     private void OnEnable()
     {
