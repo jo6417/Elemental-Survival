@@ -73,15 +73,6 @@ public class EnemyAttack : MonoBehaviour
         initDone = true;
     }
 
-    private void FixedUpdate()
-    {
-        // 이미 공격중이면 리턴
-        if (enemyManager.nowAction == EnemyManager.Action.Attack)
-        {
-            return;
-        }
-    }
-
     private void Update()
     {
         //공격 오브젝트 아무것도 없으면 리턴

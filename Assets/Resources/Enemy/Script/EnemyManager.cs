@@ -20,8 +20,6 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     private List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
-    public float targetResetTime = 3f; //타겟 재설정 시간
-    public float targetResetCount = 0; //타겟 재설정 시간 카운트
     GameObject targetObj; // 공격 목표
     public GameObject TargetObj
     {
@@ -56,6 +54,13 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
+
+    [Header("Move")]
+    public float targetResetTime = 3f; //타겟 재설정 시간
+    public float targetResetCount = 0; //타겟 재설정 시간 카운트
+    public Vector3 movePos; // 이동하려는 위치
+    public Vector3 targetPos; // 추적한 타겟 위치
+    public Vector3 targetDir; // 타겟 방향
 
     [Header("State")]
     public State nowState; //현재 상태
@@ -169,7 +174,7 @@ public class EnemyManager : MonoBehaviour
         enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
 
         // 초기화 시작 및 완료 변수 초기화
-        initialStart = false;
+        // initialStart = false;
         initialFinish = false;
     }
 
@@ -417,10 +422,6 @@ public class EnemyManager : MonoBehaviour
         if (targetResetCount > 0)
             targetResetCount -= Time.deltaTime;
 
-        // 이동 리셋 카운트 차감
-        if (enemyAI && enemyAI.moveResetCount > 0)
-            enemyAI.moveResetCount -= Time.deltaTime;
-
         // 파티클 히트 딜레이 차감
         if (particleHitCount > 0)
         {
@@ -463,21 +464,9 @@ public class EnemyManager : MonoBehaviour
         if (gameObject == null || !gameObject)
             return false;
 
-        //죽음 애니메이션 중일때
+        // 죽는 중일때
         if (isDead)
         {
-            // nowState = State.Dead;
-
-            // rigid.velocity = Vector2.zero; //이동 초기화
-            // rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-
-            // for (int i = 0; i < animList.Count; i++)
-            // {
-            //     animList[i].speed = 0f;
-            // }
-
-            // transform.DOPause();
-
             // 행동불능이므로 false 리턴
             return false;
         }

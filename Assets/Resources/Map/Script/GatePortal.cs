@@ -75,7 +75,7 @@ public class GatePortal : MonoBehaviour
 
     public void InteractTrigger(bool able)
     {
-        //todo 플레이어 상호작용 키가 어떤 키인지 표시        
+        //todo 플레이어 상호작용 키가 어떤 키인지 표시
         // pressKey.text = 
 
         if (able && nowGem < maxGem)

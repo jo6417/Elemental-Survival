@@ -45,7 +45,7 @@ Material:
     - Vector1_4f862c53de894a9bbec4ec55cf277a14: 0.999
     - Vector1_9570659e0b824d928bbf76cf0858ab38: 0
     - Vector1_b2a59d58327840169d7aa11155f7413c: 5.78
-    - _FillRate: 0.608
+    - _FillRate: 1
     - _VerticalFill: 0.5
     m_Colors:
     - _Color: {r: 1, g: 0, b: 0, a: 1}

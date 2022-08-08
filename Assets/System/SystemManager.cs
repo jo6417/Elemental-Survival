@@ -180,10 +180,15 @@ public class SystemManager : MonoBehaviour
         GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity, objectPool);
     }
 
-    public Color HexToRGBA(string hex)
+    public Color HexToRGBA(string hex, float alpha = 1)
     {
         Color color;
         ColorUtility.TryParseHtmlString("#" + hex, out color);
+
+        if (alpha != 1)
+        {
+            color.a = alpha;
+        }
 
         return color;
     }

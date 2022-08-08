@@ -7,15 +7,15 @@ using Lean.Pool;
 public class EnemyAI : MonoBehaviour
 {
     [Header("State")]
-    public Vector3 targetDir; //플레이어 방향
     public float moveSpeedDebuff = 1f; // 속도 디버프
 
     [Header("Refer")]
     public EnemyManager enemyManager;
 
     [Header("Walk")]
-    public float moveResetTime = 3f;
-    public float moveResetCount;
+    public Vector3 targetDir; //플레이어 방향
+    public float moveCoolTime = 1f; // 타겟 위치 추적 시간
+    public float moveCoolCount; // 타겟 위치 추적 시간 카운트
     [SerializeField]
     bool directionTilt = false; // 가는 방향으로 기울이기 여부
 
@@ -61,11 +61,41 @@ public class EnemyAI : MonoBehaviour
         enemyManager.physicsColl.isTrigger = false;
     }
 
+    private void Update()
+    {
+        // 이동 리셋 카운트 차감
+        if (moveCoolCount > 0)
+            moveCoolCount -= Time.deltaTime;
+    }
+
     private void FixedUpdate()
     {
         // 몬스터 정보 없으면 리턴
         if (enemyManager.enemy == null)
             return;
+
+        // 목표 위치 갱신 시간 됬을때, 추적 위치 계산
+        if (moveCoolCount <= 0)
+        {
+            // 추적 타이머 갱신
+            moveCoolCount = moveCoolTime;
+
+            // 타겟이 null일때
+            if (enemyManager.TargetObj == null)
+                // 플레이어 주변 위치로 계산
+                enemyManager.targetPos = PlayerNearPos();
+            // 타겟이 있을때
+            else
+                // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
+                enemyManager.targetPos = enemyManager.TargetObj.transform.position
+                + (Vector3)Random.insideUnitCircle;
+        }
+
+        // 목표 위치를 추적 위치로 서서히 바꾸기
+        enemyManager.movePos = Vector3.Lerp(enemyManager.movePos, enemyManager.targetPos, Time.deltaTime * 0.5f);
+
+        // 목표 방향 계산
+        targetDir = enemyManager.movePos - transform.position;
 
         // 상태 이상 있으면 리턴
         if (!enemyManager.ManageState())
@@ -84,17 +114,6 @@ public class EnemyAI : MonoBehaviour
         // 시간 멈추면 리턴
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
-
-        // 타겟이 null일때
-        if (enemyManager.TargetObj == null)
-        {
-            // 플레이어 주변 위치로 계산
-            targetDir = PlayerNearPos() - transform.position;
-        }
-        // 타겟이 있을때
-        else
-            // 타겟 방향 계산
-            targetDir = enemyManager.TargetObj.transform.position - transform.position;
 
         // 방향따라 기울이기
         if (directionTilt)
@@ -142,29 +161,10 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        // 목표 위치 갱신 시간 됬을때
-        if (moveResetCount <= 0)
-        {
-            moveResetCount = moveResetTime;
-
-            // 타겟이 null일때
-            if (enemyManager.TargetObj == null)
-            {
-                // 플레이어 주변 위치로 계산
-                targetDir = PlayerNearPos() - transform.position;
-            }
-            // 타겟이 있을때
-            else
-                // 목표 방향 계산, 랜덤 위치 더해서 부정확하게 만들기
-                targetDir = enemyManager.TargetObj.transform.position + (Vector3)Random.insideUnitCircle - transform.position;
-
-            // print(moveToPos);
-        }
-
         // 목표위치 도착했으면 위치 다시 갱신
         if (targetDir.magnitude < 0.1f)
         {
-            moveResetCount = 0f;
+            moveCoolCount = 0f;
         }
         else
         {
@@ -184,6 +184,23 @@ public class EnemyAI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        // 보스부터 이동 위치까지 직선
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, enemyManager.movePos);
+
+        // 이동 위치 기즈모
+        Gizmos.DrawIcon(enemyManager.movePos, "Circle.png", true, new Color(1, 0, 0, 0.5f));
+
+        // 추적 위치 기즈모
+        Gizmos.DrawIcon(enemyManager.targetPos, "Circle.png", true, new Color(0, 0, 1, 0.5f));
+
+        // 추적 위치부터 이동 위치까지 직선
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(enemyManager.targetPos, enemyManager.movePos);
+    }
+
     void JumpStart()
     {
         // 현재 행동 점프로 전환
@@ -198,17 +215,6 @@ public class EnemyAI : MonoBehaviour
 
     public void JumpMove()
     {
-        // 타겟이 null일때
-        if (enemyManager.TargetObj == null)
-        {
-            // 플레이어 주변 위치로 계산
-            targetDir = PlayerNearPos() - transform.position;
-        }
-        // 타겟이 있을때
-        else
-            // 타겟 방향 계산
-            targetDir = enemyManager.TargetObj.transform.position - transform.position;
-
         //움직일 방향에따라 회전
         float leftAngle = enemyManager.lookLeft ? 180f : 0f;
         float rightAngle = enemyManager.lookLeft ? 0f : 180f;
@@ -247,7 +253,7 @@ public class EnemyAI : MonoBehaviour
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
-    Vector3 PlayerNearPos(float range = 5f)
+    Vector3 PlayerNearPos(float range = 3f)
     {
         return PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle.normalized * range;
     }

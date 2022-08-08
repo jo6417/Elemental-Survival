@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Lean.Pool;
 using TMPro;
 using UnityEngine;
@@ -10,24 +11,35 @@ public class Quad_AI : MonoBehaviour
     [SerializeField]
     Patten patten = Patten.None;
     enum Patten { PushSide, PushCircle, BladeShot, FanSwing, None };
-    private float coolCount;
+    private float atkCoolCount;
     public float pushSideCoolTime;
     public float pushCircleCoolTime;
     public float bladeShotCoolTime;
     public float fanSwingCoolTime;
     public float atkRange = 30f; // 공격 범위
-    Vector3 targetPos; // 추적할 위치
     public float fanSensitive = 0.1f; //프로펠러 기울기 감도 조절
+
+    [Header("Walk")]
+    float targetSearchCount; // 타겟 위치 추적 시간 카운트
+    [SerializeField]
+    float targetSearchTime = 3f; // 타겟 위치 추적 시간
+    Vector3[] fanDefaultPos = new Vector3[4]; // 프로펠러 원위치 리스트
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
     public EnemyManager enemyManager;
     public Transform body;
+    public Transform fanParent;
     public Transform eye;
-    public Transform[] fans = new Transform[4]; // 프로펠러들
+    public Color fanColorDefault = new Color(30f / 255f, 1f, 1f, 10f / 255f);
+    public Color fanColorRage = new Color(1f, 30f / 255f, 30f / 255f, 1f);
+    Transform[] fans = new Transform[4]; // 프로펠러 리스트
+    SpriteRenderer[] wings = new SpriteRenderer[4]; // 프로펠러 날개 리스트
+    ParticleManager[] flyEffects = new ParticleManager[4]; // 비행 파티클 리스트
+    ParticleManager[] pushEffects = new ParticleManager[4]; // 밀어내기 이펙트 리스트
 
     [Header("PushSide")]
-    public GameObject wallBox; // 플레이어 가두기 위한 상자 콜라이더
+    public GameObject wallBox; // 플레이어 가두는 상자 프리팹
     public GameObject sawBladeHorizon; // 가로 톱날
     public GameObject sawBladeVertical; // 세로 톱날
 
@@ -50,6 +62,20 @@ public class Quad_AI : MonoBehaviour
             }
         }
 
+        // 프로펠러 관련 오브젝트 찾기
+        for (int i = 0; i < 4; i++)
+        {
+            fans[i] = fanParent.GetChild(i);
+
+            // 프로펠러 원래 로컬 위치 저장
+            fanDefaultPos[i] = fans[i].localPosition;
+
+            // 프로펠러 하위 오브젝트들 찾기
+            wings[i] = fans[i].GetChild(0).GetComponentInChildren<SpriteRenderer>();
+            flyEffects[i] = fans[i].GetChild(1).GetComponent<ParticleManager>();
+            pushEffects[i] = fans[i].GetChild(2).GetComponentInChildren<ParticleManager>(true);
+        }
+
         //속도 초기화
         enemyManager.rigid.velocity = Vector2.zero;
         // 위치 고정 해제
@@ -61,6 +87,34 @@ public class Quad_AI : MonoBehaviour
         // 몬스터 정보 없으면 리턴
         if (enemyManager.enemy == null)
             return;
+
+        // 타겟 추적 쿨타임 차감
+        if (targetSearchCount > 0)
+            targetSearchCount -= Time.deltaTime;
+        // 쿨타임 됬을때
+        else
+        {
+            // 플레이어 추정 위치 계산
+            enemyManager.targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 3f;
+
+            // 추적 쿨타임 갱신
+            targetSearchCount = targetSearchTime;
+        }
+
+        // 추적 위치 벡터를 서서히 이동
+        enemyManager.movePos = Vector3.Lerp(enemyManager.movePos, enemyManager.targetPos, Time.deltaTime);
+
+        // 플레이어 방향
+        enemyManager.targetDir = enemyManager.movePos - body.position;
+
+        // 플레이어 방향 각도
+        float playerAngle = Mathf.Atan2(enemyManager.targetDir.y, enemyManager.targetDir.x) * Mathf.Rad2Deg;
+
+        // 눈동자 플레이어 방향으로 이동
+        eye.position = body.position + enemyManager.targetDir.normalized * 1f;
+
+        // 눈동자 플레이어 방향으로 회전
+        eye.rotation = Quaternion.Euler(0, 0, playerAngle + 135f);
 
         // 상태 이상 있으면 리턴
         if (!enemyManager.ManageState())
@@ -80,25 +134,24 @@ public class Quad_AI : MonoBehaviour
         if (enemyManager.nowAction != EnemyManager.Action.Idle)
             return;
 
-        // 플레이어 추정 위치 계산
-        targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 3f;
+        // 공격 쿨타임 차감
+        if (atkCoolCount > 0)
+            atkCoolCount -= Time.deltaTime;
 
         // 플레이어 방향
-        Vector2 dir = targetPos - transform.position;
+        Vector2 dir = enemyManager.movePos - transform.position;
 
         // 플레이어와의 거리
         float distance = dir.magnitude;
 
-        // 쿨타임 차감
-        coolCount -= Time.deltaTime;
-
         //! 쿨타임 확인
-        stateText.text = "CoolCount : " + coolCount;
+        stateText.text = "CoolCount : " + atkCoolCount;
 
-        // 쿨타임 됬을때, 범위 내에 있을때
+        // 범위 내에 있을때
         if (distance <= atkRange)
         {
-            if (coolCount <= 0)
+            // 쿨타임 됬을때
+            if (atkCoolCount <= 0)
             {
                 // 속도 초기화
                 enemyManager.rigid.velocity = Vector3.zero;
@@ -134,7 +187,7 @@ public class Quad_AI : MonoBehaviour
                 // 주먹 내려찍기 패턴
                 StartCoroutine(PushSide());
                 //쿨타임 갱신
-                coolCount = pushSideCoolTime;
+                atkCoolCount = pushSideCoolTime;
                 break;
         }
     }
@@ -147,79 +200,264 @@ public class Quad_AI : MonoBehaviour
         enemyManager.animList[0].enabled = true;
         // Idle 애니메이션으로 전환
         // enemyManager.animList[0].SetBool("UseFist", false);
-        // enemyManager.animList[0].SetBool("UseDrill", false);
 
-        // 플레이어 방향
-        Vector3 playerDir = PlayerManager.Instance.transform.position - body.position;
-
-        // 플레이어 방향 각도
-        float playerAngle = Mathf.Atan2(playerDir.y, playerDir.x) * Mathf.Rad2Deg;
-
-        // 플레이어 방향으로 눈 이동
-        eye.position = body.position + playerDir.normalized * 1f;
-
-        // 플레이어 방향으로 회전
-        eye.rotation = Quaternion.Euler(0, 0, playerAngle + 135f);
+        //! 거리 확인
+        stateText.text = "Distance : " + enemyManager.targetDir.magnitude;
 
         // 기울임 각도 계산
-        float angleZ = -Mathf.Clamp(playerDir.x, -20f, 20f);
-        Quaternion rotation = Quaternion.Lerp(fans[0].rotation, Quaternion.Euler(0, 0, angleZ), fanSensitive);
-
-        // 보스 몸체 기울이기
-        body.rotation = rotation;
+        float angleZ = -Mathf.Clamp(enemyManager.targetDir.x / 1.5f, -20f, 20f);
+        Quaternion rotation = Quaternion.Lerp(fanParent.rotation, Quaternion.Euler(0, 0, angleZ), fanSensitive);
 
         // 프로펠러 기울이기
-        // for (int i = 0; i < fans.Length; i++)
-        // {
-        //     fans[i].rotation = rotation;
-        // }
+        fanParent.rotation = rotation;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = playerDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = enemyManager.targetDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
 
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        // 보스부터 이동 위치까지 직선
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, enemyManager.movePos);
+
+        // 이동 위치 기즈모
+        Gizmos.DrawIcon(enemyManager.movePos, "Circle.png", true, new Color(1, 0, 0, 0.5f));
+
+        // 추적 위치 기즈모
+        Gizmos.DrawIcon(enemyManager.targetPos, "Circle.png", true, new Color(0, 0, 1, 0.5f));
+
+        // 추적 위치부터 이동 위치까지 직선
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(enemyManager.targetPos, enemyManager.movePos);
+    }
+
     IEnumerator PushSide()
     {
-        //todo 플레이어 위치에 벽 오브젝트 소환해서 플레이어 가두기
+        // 플레이어 위치에 벽 오브젝트 소환해서 플레이어 가두기
         GameObject wall = LeanPool.Spawn(wallBox, PlayerManager.Instance.transform.position, Quaternion.identity);
-        SpriteRenderer wallSprite = wall.GetComponent<SpriteRenderer>();
+        // 스프라이트 찾기
+        SpriteRenderer wallGround = wall.GetComponentInChildren<SpriteRenderer>();
+        // 가두기 콜라이더 찾기
+        Collider2D wallColl = wall.GetComponentInChildren<Collider2D>();
+        // EnemyAttack 찾기
+        EnemyAttack wallAtk = wall.GetComponent<EnemyAttack>();
+        // 모든 벽 파티클 찾기
+        ParticleSystem[] wallParticles = wall.GetComponentsInChildren<ParticleSystem>(true);
 
-        //todo 벽 모서리 위치 계산
+        // 몬스터 매니저 넣기
+        wallAtk.enemyManager = enemyManager;
+
+        // 벽 콜라이더 끄기
+        wallColl.enabled = false;
+        // 바닥 색깔 초기화
+        wallGround.DOColor(SystemManager.Instance.HexToRGBA("00FFFF", 30f / 255f), 0.5f);
+        // 바닥 사이즈 키우기
+        wallGround.transform.localScale = Vector3.zero;
+        wallGround.transform.DOScale(new Vector2(50, 30), 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 벽 콜라이더 켜기
+        wallColl.enabled = true;
+        // 벽 파티클 전부 켜기
+        for (int i = 0; i < wallParticles.Length; i++)
+        {
+            wallParticles[i].Play();
+        }
+
+        // 좌,우 중 한쪽 선정
+        bool isLeftSide = Random.value > 0.5f ? true : false;
+
+        // 이동할 위치
+        Vector3 wallSidePos = isLeftSide ? wall.transform.position + Vector3.left * 30f : wall.transform.position + Vector3.right * 30f;
+
+        // 벽 가운데로 이동
+        transform.DOMove(wallSidePos, 2f)
+        .SetEase(Ease.InOutCubic);
+
+        // 프로펠러 수평으로
+        fanParent.DORotate(Vector3.forward, 2f);
+
+        yield return new WaitForSeconds(2f);
+
+        // 해당 벽 파티클 끄기
+        if (isLeftSide)
+            wallParticles[1].Stop();
+        else
+            wallParticles[3].Stop();
+
+        // 벽 모서리 위치 계산
         Vector2 leftUpEdge = new Vector2(
-            wall.transform.position.x - wallSprite.bounds.size.x / 2f,
-            wall.transform.position.y + wallSprite.bounds.size.y / 2f);
-        Vector2 rightUpEdge = new Vector2(
-            wall.transform.position.x + wallSprite.bounds.size.x / 2f,
-            wall.transform.position.y + wallSprite.bounds.size.y / 2f);
+            wall.transform.position.x - wallGround.bounds.size.x / 2f,
+            wall.transform.position.y + wallGround.bounds.size.y / 2f);
         Vector2 leftDownEdge = new Vector2(
-            wall.transform.position.x - wallSprite.bounds.size.x / 2f,
-            wall.transform.position.y - wallSprite.bounds.size.y / 2f);
+            wall.transform.position.x - wallGround.bounds.size.x / 2f,
+            wall.transform.position.y - wallGround.bounds.size.y / 2f);
+        Vector2 rightUpEdge = new Vector2(
+            wall.transform.position.x + wallGround.bounds.size.x / 2f,
+            wall.transform.position.y + wallGround.bounds.size.y / 2f);
         Vector2 rightDownEdge = new Vector2(
-            wall.transform.position.x + wallSprite.bounds.size.x / 2f,
-            wall.transform.position.y - wallSprite.bounds.size.y / 2f);
+            wall.transform.position.x + wallGround.bounds.size.x / 2f,
+            wall.transform.position.y - wallGround.bounds.size.y / 2f);
 
-        //todo 모서리 사이 거리 계산
-        //todo 톱니 사이즈로 거리 나눠서 톱니 위치 포인트 산출
-        //todo 해당 포인트에 톱니 소환
-        //todo 톱니 domove, Ease.InBack 으로 바닥에 박기
+        // 벽 가운데 위치
+        Vector2 sideCenterPos = isLeftSide ? (leftUpEdge + leftDownEdge) / 2f : (rightUpEdge + rightDownEdge) / 2f;
+        // 첫번째 프로펠러 위치
+        Vector2 firstFanPos = sideCenterPos + Vector2.up * 12f;
+        // 프로펠러 회전 각도
+        Vector3 fanRotate = isLeftSide ? Vector3.forward * -90f : Vector3.forward * 90f;
 
-        //todo 좌,우 중 한쪽 벽 가운데로 이동해 프로펠러를 일렬로 배치
+        for (int i = 0; i < 4; i++)
+        {
+            Transform fan = fans[i];
+            GameObject push = pushEffects[i].gameObject;
 
-        //todo 보스는 대각으로 몸체 기울이며 바람쏴서 플레이어를 밀어냄
-        //todo 플레이어 속도에 비례한 힘으로 밀어내기, 보스쪽으로 이동 누르면 조금씩 나아갈정도
-        //todo 페이즈가 오르면 해당 패턴에서 플레이어쪽 X방향으로 윈드커터 랜덤하게 발사
+            // 비행 파티클 끄기
+            flyEffects[i].SmoothDisable();
 
-        // 벽 비활성화
-        // wall.SetActive(false);
+            // 벽 한쪽에 프로펠러를 일렬로 배치
+            fan.DOMove(firstFanPos + Vector2.down * 8f * i, 1f);
 
-        //todo 과부하로 착지해서 휴식
-        //todo 연기 파티클, 불꽃 파티클
+            // 프로펠러 벽 안쪽으로 회전
+            fan.DORotate(fanRotate, 1f)
+            .OnComplete(() =>
+            {
+                // 밀어내기 바람 파티클 켜기
+                push.SetActive(true);
+            });
 
-        yield return null;
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // 처음에는 일정시간 밀어내기만
+        yield return new WaitForSeconds(3f);
+
+        // 안쪽 방향 벡터
+        Vector3 innerDir = isLeftSide ? Vector3.right : Vector3.left;
+
+        //블레이드 발사 패턴 랜덤 횟수
+        for (int i = 0; i < Random.Range(3, 5); i++)
+        {
+            //todo 프로펠러 2~3개 선정
+            // 랜덤 프로펠러 선정
+            int fanIndex = Random.Range(0, 4);
+
+            // 밀어내기 이펙트 끄기
+            pushEffects[fanIndex].SmoothDisable();
+
+            // 프로펠러 빨갛게 달아오르기
+            wings[fanIndex].DOColor(fanColorRage, 1f);
+            yield return new WaitForSeconds(1f);
+
+            // 프로펠러 스프라이트 끄기
+            wings[fanIndex].enabled = false;
+            // 프로펠러 색깔 초기화
+            wings[fanIndex].color = fanColorDefault;
+
+            // 발사 반동으로 떨림
+            fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
+
+            // 블레이드 생성
+            GameObject shotBlade = LeanPool.Spawn(sawBladeHorizon, wings[fanIndex].transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+
+            // 블레이드에 몬스터 매니저 넣기
+            shotBlade.GetComponent<EnemyAttack>().enemyManager = enemyManager;
+
+            // 블레이드 스프라이트 켜기
+            SpriteRenderer bladeSprite = shotBlade.GetComponentInChildren<SpriteRenderer>();
+            bladeSprite.enabled = true;
+
+            // 발사 방향에 따라 발사체 회전
+            shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180f, 0);
+
+            //사이즈 제로에서 키우기
+            shotBlade.transform.localScale = Vector3.zero;
+            shotBlade.transform.DOScale(Vector3.one, 0.2f);
+
+            // 플레이어 쪽으로 프로펠러 블레이드 발사 후 복귀
+            Vector3 blade_TargetPos = wings[fanIndex].transform.position + innerDir * wallGround.bounds.size.x;
+            shotBlade.transform.DOMove(blade_TargetPos, 1f)
+            .SetLoops(2, LoopType.Yoyo);
+            yield return new WaitForSeconds(1f);
+
+            // 발사 방향 반대로 블레이드 회전
+            shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 180f, 0) : Quaternion.Euler(0, 0, 0);
+            // 복귀 시간 대기
+            yield return new WaitForSeconds(1f);
+
+            // 블레이드 스프라이트 끄기
+            bladeSprite.enabled = false;
+            // 블레이드 디스폰
+            shotBlade.GetComponent<ParticleManager>().SmoothDespawn();
+
+            // 프로펠러 스프라이트 켜기
+            wings[fanIndex].enabled = true;
+
+            // 프로펠러 장착 반동으로 떨림
+            fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
+
+            // 살짝 딜레이 후 밀어내기 바람 이펙트 켜기
+            yield return new WaitForSeconds(0.5f);
+            pushEffects[fanIndex].gameObject.SetActive(true);
+        }
+
+        // 바람 밀어내기 이펙트 끄기
+        for (int i = 0; i < 4; i++)
+        {
+            pushEffects[i].SmoothDisable();
+        }
+
+        // 벽 콜라이더 끄기
+        wallColl.enabled = false;
+
+        // 벽의 모든 파티클 끄기
+        for (int i = 0; i < wallParticles.Length; i++)
+        {
+            wallParticles[i].Stop();
+        }
+
+        // 바닥 색깔 연해지기
+        Color clearColor = wallGround.color;
+        clearColor.a = 0;
+        wallGround.DOColor(clearColor, 1f);
+
+        yield return new WaitForSeconds(1f);
+
+        // 벽 디스폰
+        LeanPool.Despawn(wall);
+
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject flyDust = flyEffects[i].gameObject;
+
+            // 프로펠러 원위치
+            fans[i].DOLocalMove(fanDefaultPos[i], 1f)
+            .OnComplete(() =>
+            {
+                // 비행 먼지 이펙트 켜기
+                flyDust.SetActive(true);
+            });
+
+            // 프로펠러 회전값 초기화
+            fans[i].DORotate(Vector3.zero, 1f);
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // 원위치 시간 대기
+        yield return new WaitForSeconds(1f);
+
+        //todo 보스 그 자리에서 과부하로 착지해서 휴식 애니메이션
+        // 애니메이션 프로펠러 살짝씩 떨리기, 프로펠러 회전 하다 말다 반복, 눈알 위치 오작동
+        //todo 연기 파티클, 불꽃 파티클 켜기
+
+        // 휴식 시간 대기
+        yield return new WaitForSeconds(1f);
 
         // Idle 상태로 전환
-        // enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 }
