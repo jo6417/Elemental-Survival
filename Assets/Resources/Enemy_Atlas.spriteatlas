@@ -164,6 +164,7 @@ SpriteAtlas:
   - {fileID: 9117267712165489306, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: -1564529393729310769, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: -3341310513498487426, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
+  - {fileID: -793974024988719969, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
@@ -310,6 +311,7 @@ SpriteAtlas:
   - DroneFan_2
   - DroneFan_1
   - DroneFan_0
+  - DroneFan_4
   - Slime_Light
   - HotDog
   - HotDog_emission

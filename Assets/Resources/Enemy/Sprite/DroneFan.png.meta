@@ -14,6 +14,9 @@ TextureImporter:
   - first:
       213: 40661236521451113
     second: DroneFan_3
+  - first:
+      213: -793974024988719969
+    second: DroneFan_4
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -182,6 +185,27 @@ TextureImporter:
       bones: []
       spriteID: 96e3dfedd25709000800000000000000
       internalID: 40661236521451113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DroneFan_4
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 6
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9409a7b4dc3bf4f0800000000000000
+      internalID: -793974024988719969
       vertices: []
       indices: 
       edges: []

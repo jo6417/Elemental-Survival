@@ -37,11 +37,11 @@ public class Quad_AI : MonoBehaviour
     SpriteRenderer[] wings = new SpriteRenderer[4]; // 프로펠러 날개 리스트
     ParticleManager[] flyEffects = new ParticleManager[4]; // 비행 파티클 리스트
     ParticleManager[] pushEffects = new ParticleManager[4]; // 밀어내기 이펙트 리스트
+    public List<GameObject> restEffects = new List<GameObject>();
 
     [Header("PushSide")]
     public GameObject wallBox; // 플레이어 가두는 상자 프리팹
-    public GameObject sawBladeHorizon; // 가로 톱날
-    public GameObject sawBladeVertical; // 세로 톱날
+    public GameObject fanBlade; // 가로 톱날
 
     private void OnEnable()
     {
@@ -52,6 +52,12 @@ public class Quad_AI : MonoBehaviour
     {
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => enemyManager.enemy != null);
+
+        // 휴식 이펙트 전부 끄기
+        for (int i = 0; i < restEffects.Count; i++)
+        {
+            restEffects[i].SetActive(false);
+        }
 
         //애니메이션 스피드 초기화
         if (enemyManager.animList != null)
@@ -171,6 +177,9 @@ public class Quad_AI : MonoBehaviour
     {
         // 현재 액션 변경
         enemyManager.nowAction = EnemyManager.Action.Attack;
+
+        // 애니메이터 끄기
+        enemyManager.animList[0].enabled = false;
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 5);
@@ -303,6 +312,9 @@ public class Quad_AI : MonoBehaviour
             wall.transform.position.x + wallGround.bounds.size.x / 2f,
             wall.transform.position.y - wallGround.bounds.size.y / 2f);
 
+        // 벽 가로 사이즈
+        float horizonSize = wallGround.bounds.size.x;
+
         // 벽 가운데 위치
         Vector2 sideCenterPos = isLeftSide ? (leftUpEdge + leftDownEdge) / 2f : (rightUpEdge + rightDownEdge) / 2f;
         // 첫번째 프로펠러 위치
@@ -335,73 +347,47 @@ public class Quad_AI : MonoBehaviour
         // 처음에는 일정시간 밀어내기만
         yield return new WaitForSeconds(3f);
 
-        // 안쪽 방향 벡터
-        Vector3 innerDir = isLeftSide ? Vector3.right : Vector3.left;
+        // 프로펠러 인덱스 리스트 만들기
+        List<int> bladeIndexes = new List<int>();
 
-        //블레이드 발사 패턴 랜덤 횟수
-        for (int i = 0; i < Random.Range(3, 5); i++)
+        // 블레이드 발사 횟수 3~5번
+        int shotNum = Random.Range(3, 6);
+
+        //! 블레이드 발사 횟수 고정
+        shotNum = 1;
+
+        // 블레이드 횟수만큼 발사
+        for (int j = 0; j < shotNum; j++)
         {
-            //todo 프로펠러 2~3개 선정
-            // 랜덤 프로펠러 선정
-            int fanIndex = Random.Range(0, 4);
+            // 리스트 비우기
+            bladeIndexes.Clear();
+            // 리스트 인덱스로 모두 채우기
+            for (int i = 0; i < 4; i++)
+            {
+                bladeIndexes.Add(i);
+            }
 
-            // 밀어내기 이펙트 끄기
-            pushEffects[fanIndex].SmoothDisable();
+            // 한번에 발사할 블레이드 개수 2~3개중 랜덤
+            float multipleNum = Random.Range(2, 4);
 
-            // 프로펠러 빨갛게 달아오르기
-            wings[fanIndex].DOColor(fanColorRage, 1f);
-            yield return new WaitForSeconds(1f);
+            //! 블레이드 개수 고정
+            // multipleNum = 2;
 
-            // 프로펠러 스프라이트 끄기
-            wings[fanIndex].enabled = false;
-            // 프로펠러 색깔 초기화
-            wings[fanIndex].color = fanColorDefault;
+            for (int i = 0; i < multipleNum; i++)
+            {
+                // 남은 프로펠러 중 랜덤 인덱스 선정
+                int fanIndex = Random.Range(0, bladeIndexes.Count);
 
-            // 발사 반동으로 떨림
-            fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
+                // bladeIndexes[fanIndex] 번째의 프로펠러 발사
+                if (i == multipleNum - 1)
+                    // 마지막 반복일때, 코루틴 시간 대기
+                    yield return StartCoroutine(ShotBlade(bladeIndexes[fanIndex], isLeftSide, horizonSize));
+                else
+                    StartCoroutine(ShotBlade(bladeIndexes[fanIndex], isLeftSide, horizonSize));
 
-            // 블레이드 생성
-            GameObject shotBlade = LeanPool.Spawn(sawBladeHorizon, wings[fanIndex].transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
-
-            // 블레이드에 몬스터 매니저 넣기
-            shotBlade.GetComponent<EnemyAttack>().enemyManager = enemyManager;
-
-            // 블레이드 스프라이트 켜기
-            SpriteRenderer bladeSprite = shotBlade.GetComponentInChildren<SpriteRenderer>();
-            bladeSprite.enabled = true;
-
-            // 발사 방향에 따라 발사체 회전
-            shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180f, 0);
-
-            //사이즈 제로에서 키우기
-            shotBlade.transform.localScale = Vector3.zero;
-            shotBlade.transform.DOScale(Vector3.one, 0.2f);
-
-            // 플레이어 쪽으로 프로펠러 블레이드 발사 후 복귀
-            Vector3 blade_TargetPos = wings[fanIndex].transform.position + innerDir * wallGround.bounds.size.x;
-            shotBlade.transform.DOMove(blade_TargetPos, 1f)
-            .SetLoops(2, LoopType.Yoyo);
-            yield return new WaitForSeconds(1f);
-
-            // 발사 방향 반대로 블레이드 회전
-            shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 180f, 0) : Quaternion.Euler(0, 0, 0);
-            // 복귀 시간 대기
-            yield return new WaitForSeconds(1f);
-
-            // 블레이드 스프라이트 끄기
-            bladeSprite.enabled = false;
-            // 블레이드 디스폰
-            shotBlade.GetComponent<ParticleManager>().SmoothDespawn();
-
-            // 프로펠러 스프라이트 켜기
-            wings[fanIndex].enabled = true;
-
-            // 프로펠러 장착 반동으로 떨림
-            fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
-
-            // 살짝 딜레이 후 밀어내기 바람 이펙트 켜기
-            yield return new WaitForSeconds(0.5f);
-            pushEffects[fanIndex].gameObject.SetActive(true);
+                // 해당 인덱스 빼기
+                bladeIndexes.RemoveAt(fanIndex);
+            }
         }
 
         // 바람 밀어내기 이펙트 끄기
@@ -450,12 +436,106 @@ public class Quad_AI : MonoBehaviour
         // 원위치 시간 대기
         yield return new WaitForSeconds(1f);
 
-        //todo 보스 그 자리에서 과부하로 착지해서 휴식 애니메이션
-        // 애니메이션 프로펠러 살짝씩 떨리기, 프로펠러 회전 하다 말다 반복, 눈알 위치 오작동
-        //todo 연기 파티클, 불꽃 파티클 켜기
+        // 과부하 휴식 트랜지션 재생
+        StartCoroutine(OverloadRest());
+    }
+
+    IEnumerator ShotBlade(int fanIndex, bool isLeftSide, float horizonSize)
+    {
+        // 안쪽 방향 벡터
+        Vector3 innerDir = isLeftSide ? Vector3.right : Vector3.left;
+
+        // 밀어내기 이펙트 끄기
+        pushEffects[fanIndex].SmoothDisable();
+
+        // 프로펠러 빨갛게 달아오르기
+        wings[fanIndex].DOColor(fanColorRage, 1f);
+        yield return new WaitForSeconds(1f);
+
+        // 프로펠러 날개 오브젝트 끄기
+        wings[fanIndex].gameObject.SetActive(false);
+        // 프로펠러 색깔 초기화
+        wings[fanIndex].color = fanColorDefault;
+
+        // 발사 반동으로 떨림
+        fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
+
+        // 블레이드 생성
+        GameObject shotBlade = LeanPool.Spawn(fanBlade, wings[fanIndex].transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+
+        // 블레이드에 몬스터 매니저 넣기
+        shotBlade.GetComponent<EnemyAttack>().enemyManager = enemyManager;
+
+        // 블레이드 스프라이트 켜기
+        SpriteRenderer bladeSprite = shotBlade.GetComponentInChildren<SpriteRenderer>();
+        bladeSprite.enabled = true;
+
+        // 발사 방향에 따라 발사체 회전
+        shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180f, 0);
+
+        //사이즈 제로에서 키우기
+        shotBlade.transform.localScale = Vector3.zero;
+        shotBlade.transform.DOScale(Vector3.one, 0.2f);
+
+        // 플레이어 쪽으로 프로펠러 블레이드 발사 후 복귀
+        Vector3 blade_TargetPos = wings[fanIndex].transform.position + innerDir * horizonSize;
+        shotBlade.transform.DOMove(blade_TargetPos, 1f)
+        .SetLoops(2, LoopType.Yoyo);
+        yield return new WaitForSeconds(1f);
+
+        // 발사 방향 반대로 블레이드 회전
+        shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 180f, 0) : Quaternion.Euler(0, 0, 0);
+        // 복귀 시간 대기
+        yield return new WaitForSeconds(1f);
+
+        // 블레이드 스프라이트 끄기
+        bladeSprite.enabled = false;
+        // 블레이드 디스폰
+        LeanPool.Despawn(shotBlade);
+
+        // 프로펠러 스프라이트 켜기
+        wings[fanIndex].gameObject.SetActive(true);
+
+        // 프로펠러 장착 반동으로 떨림
+        fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
+
+        // 살짝 딜레이 후 밀어내기 바람 이펙트 켜기
+        yield return new WaitForSeconds(0.5f);
+        pushEffects[fanIndex].gameObject.SetActive(true);
+    }
+
+    IEnumerator OverloadRest()
+    {
+        // 애니메이터 켜기
+        enemyManager.animList[0].enabled = true;
+
+        //todo 애니메이션 프로펠러 살짝씩 떨리기, 프로펠러 회전 하다 말다 반복, 눈알 위치 오작동
+        // 보스 그 자리에서 과부하로 착지해서 휴식 애니메이션
+        enemyManager.animList[0].SetBool("isRest", true);
+
+        // 휴식 이펙트 전부 켜기
+        for (int i = 0; i < restEffects.Count; i++)
+        {
+            restEffects[i].SetActive(true);
+        }
 
         // 휴식 시간 대기
+        yield return new WaitForSeconds(5f);
+
+        // 휴식 애니메이션 종료
+        enemyManager.animList[0].SetBool("isRest", false);
+
+        // 휴식 이펙트 전부 끄기
+        for (int i = 0; i < restEffects.Count; i++)
+        {
+            restEffects[i].GetComponent<ParticleManager>().SmoothDisable();
+        }
+
+        // idle 복귀 시간 대기
         yield return new WaitForSeconds(1f);
+
+        // 애니메이터 끄기
+        enemyManager.animList[0].enabled = false;
 
         // Idle 상태로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;

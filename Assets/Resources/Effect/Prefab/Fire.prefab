@@ -45,8 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particle: {fileID: 0}
   autoDespawn: 0
   collOverTime: 0.2
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!198 &198203777143593298
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -237,7 +240,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 0.26896548, b: 0, a: 1}
-      maxColor: {r: 1, g: 0.14117648, b: 0.08176094, a: 1}
+      maxColor: {r: 1, g: 0.05490196, b: 0, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4813,7 +4816,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 918817935
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
