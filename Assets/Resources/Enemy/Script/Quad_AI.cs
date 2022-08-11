@@ -43,6 +43,9 @@ public class Quad_AI : MonoBehaviour
     public GameObject wallBox; // 플레이어 가두는 상자 프리팹
     public GameObject fanBlade; // 가로 톱날
 
+    [Header("PushCircle")]
+    public ParticleSystem wallCircle; // 플레이어 가두는 원형 프리팹
+
     private void OnEnable()
     {
         StartCoroutine(Init());
@@ -86,12 +89,19 @@ public class Quad_AI : MonoBehaviour
         enemyManager.rigid.velocity = Vector2.zero;
         // 위치 고정 해제
         enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // 원형 밀어내기 콜라이더 끄기
+        wallCircle.gameObject.SetActive(false);
+        wallCircle.GetComponentInChildren<CircleCollider2D>(true).enabled = false;
     }
 
     private void Update()
     {
         // 몬스터 정보 없으면 리턴
         if (enemyManager.enemy == null)
+            return;
+
+        if (enemyManager.nowAction == EnemyManager.Action.Rest)
             return;
 
         // 타겟 추적 쿨타임 차감
@@ -193,10 +203,17 @@ public class Quad_AI : MonoBehaviour
         switch (randomNum)
         {
             case 0:
-                // 주먹 내려찍기 패턴
+                // 한쪽으로 밀기 패턴
                 StartCoroutine(PushSide());
                 //쿨타임 갱신
                 atkCoolCount = pushSideCoolTime;
+                break;
+
+            case 1:
+                // 원형으로 밀기 패턴
+                StartCoroutine(PushCircle());
+                //쿨타임 갱신
+                atkCoolCount = pushCircleCoolTime;
                 break;
         }
     }
@@ -214,7 +231,7 @@ public class Quad_AI : MonoBehaviour
         stateText.text = "Distance : " + enemyManager.targetDir.magnitude;
 
         // 기울임 각도 계산
-        float angleZ = -Mathf.Clamp(enemyManager.targetDir.x / 1.5f, -20f, 20f);
+        float angleZ = -Mathf.Clamp(enemyManager.targetDir.x / 1.5f, -15f, 15f);
         Quaternion rotation = Quaternion.Lerp(fanParent.rotation, Quaternion.Euler(0, 0, angleZ), fanSensitive);
 
         // 프로펠러 기울이기
@@ -245,19 +262,16 @@ public class Quad_AI : MonoBehaviour
 
     IEnumerator PushSide()
     {
+        //todo 저공으로 내려오기
+
         // 플레이어 위치에 벽 오브젝트 소환해서 플레이어 가두기
         GameObject wall = LeanPool.Spawn(wallBox, PlayerManager.Instance.transform.position, Quaternion.identity);
         // 스프라이트 찾기
         SpriteRenderer wallGround = wall.GetComponentInChildren<SpriteRenderer>();
         // 가두기 콜라이더 찾기
         Collider2D wallColl = wall.GetComponentInChildren<Collider2D>();
-        // EnemyAttack 찾기
-        EnemyAttack wallAtk = wall.GetComponent<EnemyAttack>();
         // 모든 벽 파티클 찾기
         ParticleSystem[] wallParticles = wall.GetComponentsInChildren<ParticleSystem>(true);
-
-        // 몬스터 매니저 넣기
-        wallAtk.enemyManager = enemyManager;
 
         // 벽 콜라이더 끄기
         wallColl.enabled = false;
@@ -354,7 +368,7 @@ public class Quad_AI : MonoBehaviour
         int shotNum = Random.Range(3, 6);
 
         //! 블레이드 발사 횟수 고정
-        shotNum = 1;
+        // shotNum = 1;
 
         // 블레이드 횟수만큼 발사
         for (int j = 0; j < shotNum; j++)
@@ -504,12 +518,81 @@ public class Quad_AI : MonoBehaviour
         pushEffects[fanIndex].gameObject.SetActive(true);
     }
 
+    IEnumerator PushCircle()
+    {
+        //todo 저공으로 내려오기
+
+        //플레이어 위치로 이동
+        transform.DOMove(PlayerManager.Instance.transform.position, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 원형 바닥 사이즈 초기화
+        wallCircle.transform.localScale = Vector3.zero;
+        // 원형 바닥 활성화
+        wallCircle.gameObject.SetActive(true);
+        // 원형 바닥 사이즈 키우기
+        wallCircle.transform.DOScale(Vector3.one * 20, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 원형 테두리 및 밀어내기 파티클 켜기
+        wallCircle.Play();
+
+        // 원형 밀어내기 콜라이더 켜기
+        wallCircle.GetComponentInChildren<CircleCollider2D>(true).enabled = true;
+
+        // 모든 팬 위치 정렬
+        for (int i = 0; i < 4; i++)
+        {
+            Vector2 fanPos = Vector2.zero;
+
+            if (i == 0 || i == 2)
+                fanPos.x = -3;
+            if (i == 1 || i == 3)
+                fanPos.x = 3;
+            if (i == 0 || i == 1)
+                fanPos.y = 3;
+            if (i == 2 || i == 3)
+                fanPos.y = -3;
+
+            fans[i].localPosition = fanPos;
+        }
+
+        // 팬을 빠르게 공전시키기
+        fanParent.DORotate(Vector3.forward * 360f, 1f, RotateMode.WorldAxisAdd)
+        .OnUpdate(() =>
+        {
+            // 팬들의 각도가 항상 바깥쪽 바라보기
+            for (int i = 0; i < 4; i++)
+            {
+                // 몸체보다 왼쪽에 있을때
+                if (fans[i].position.x < body.position.x)
+                    fans[i].rotation = Quaternion.Euler(0, 0, 90);
+                // 몸체보다 오른쪽에 있을때
+                else
+                    fans[i].rotation = Quaternion.Euler(0, 0, -90);
+            }
+        })
+        .SetEase(Ease.Linear)
+        .SetLoops(-1);
+
+        //todo 윈드커터 마법을 모든 프로펠러에서 발사
+        //todo 스파이럴 모양으로 회전하면서 연속 발사
+        //todo 3발 점사로 쏘고 살짝 회전하고 반복
+        //todo 일부 비어있는 원형으로 발사(대쉬로 넘기 패턴)
+        //todo 과부하로 착지해서 휴식
+        //todo 연기 파티클, 불꽃 파티클
+    }
+
     IEnumerator OverloadRest()
     {
-        // 애니메이터 켜기
+        // Rest 상태로 전환
+        enemyManager.nowAction = EnemyManager.Action.Rest;
+
+        // 메인 애니메이터 켜기
         enemyManager.animList[0].enabled = true;
 
-        //todo 애니메이션 프로펠러 살짝씩 떨리기, 프로펠러 회전 하다 말다 반복, 눈알 위치 오작동
         // 보스 그 자리에서 과부하로 착지해서 휴식 애니메이션
         enemyManager.animList[0].SetBool("isRest", true);
 
@@ -518,6 +601,49 @@ public class Quad_AI : MonoBehaviour
         {
             restEffects[i].SetActive(true);
         }
+
+        for (int i = 0; i < 4; i++)
+        {
+            // 프로펠러 애니메이터 전부 끄기
+            enemyManager.animList[i + 1].enabled = false;
+
+            // 비행 파티클 전부 끄기
+            flyEffects[i].SmoothDisable();
+        }
+
+        // 눈알 위치 오작동
+        Sequence eyeSeq = DOTween.Sequence();
+        eyeSeq
+        .SetDelay(1f)
+        .Append(
+            eye.DOShakePosition(0.4f, 0.05f, 10, 90f, false, true)
+        )
+        .AppendInterval(Random.Range(0, 0.6f))
+        .Append(
+            eye.DOShakePosition(0.4f, 0.05f, 10, 90f, false, true)
+        )
+        .AppendInterval(Random.Range(0, 0.6f))
+        .Append(
+            eye.DOShakePosition(0.4f, 0.05f, 10, 90f, false, true)
+        )
+        .AppendInterval(Random.Range(0, 0.6f))
+        .Append(
+            eye.DOShakePosition(0.4f, 0.05f, 10, 90f, false, true)
+        )
+        .AppendInterval(Random.Range(0, 0.6f));
+
+        // 1번 프로펠러 주기적으로 돌리기
+        Sequence wingSeq = DOTween.Sequence();
+        wingSeq.Append(
+            wings[1].transform.DOLocalRotate(Vector3.forward * 90, 0.5f, RotateMode.LocalAxisAdd)
+            .SetEase(Ease.OutCubic)
+        )
+        .SetDelay(1f)
+        .SetLoops(3);
+
+        // 3번 프로펠러 계속 돌리기
+        wings[3].transform.DOLocalRotate(Vector3.forward * 90 * 5, 5f, RotateMode.LocalAxisAdd)
+        .SetEase(Ease.InSine);
 
         // 휴식 시간 대기
         yield return new WaitForSeconds(5f);
@@ -531,10 +657,25 @@ public class Quad_AI : MonoBehaviour
             restEffects[i].GetComponent<ParticleManager>().SmoothDisable();
         }
 
+        // 프로펠러 애니메이터 전부 켜기
+        for (int i = 1; i < 5; i++)
+        {
+            Animator fanAnim = enemyManager.animList[i];
+
+            // 프로펠러 점점 빠르게 원래 속도까지 돌리기
+            fanAnim.transform.DOLocalRotate(Vector3.forward * 360, 0.5f, RotateMode.LocalAxisAdd)
+            .SetEase(Ease.InSine)
+            .OnComplete(() =>
+            {
+                //끝나면 애니메이터 켜기
+                fanAnim.enabled = true;
+            });
+        }
+
         // idle 복귀 시간 대기
         yield return new WaitForSeconds(1f);
 
-        // 애니메이터 끄기
+        // 메인 애니메이터 끄기
         enemyManager.animList[0].enabled = false;
 
         // Idle 상태로 전환

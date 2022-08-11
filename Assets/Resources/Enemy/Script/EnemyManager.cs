@@ -66,7 +66,7 @@ public class EnemyManager : MonoBehaviour
     public State nowState; //현재 상태
     public enum State { Idle, Hit, Dead, TimeStop, MagicStop }
     public Action nowAction = Action.Idle; //현재 행동
-    public enum Action { Idle, Walk, Jump, Attack }
+    public enum Action { Idle, Rest, Walk, Jump, Attack }
     public MoveType moveType;
     public enum MoveType
     {
