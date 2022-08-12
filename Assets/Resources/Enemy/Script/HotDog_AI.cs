@@ -462,7 +462,7 @@ public class HotDog_AI : MonoBehaviour
                 break;
             case 1:
                 // 원거리 메테오 쿨타임 아닐때 meteor 패턴 코루틴
-                StartCoroutine(MeteorAtk());
+                MeteorAtk();
                 coolCount = meteorCooltime;
                 break;
             case 2:
@@ -653,10 +653,8 @@ public class HotDog_AI : MonoBehaviour
     #endregion
 
     #region Meteor
-    IEnumerator MeteorAtk()
+    void MeteorAtk()
     {
-        yield return null;
-
         // 차지 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
         // 에너지볼 발사 애니메이션 재생
