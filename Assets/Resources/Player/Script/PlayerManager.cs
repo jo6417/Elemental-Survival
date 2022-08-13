@@ -236,9 +236,9 @@ public class PlayerManager : MonoBehaviour
         if (hitBox.hitCoolCount > 0)
             hitBox.hitCoolCount -= Time.deltaTime;
 
-        //대쉬 아닐때
-        // if (!isDash)
-        Move();
+        //대쉬중 아닐때
+        if (!isDash)
+            Move();
     }
 
     public void Move()

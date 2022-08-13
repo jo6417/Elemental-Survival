@@ -11,7 +11,8 @@ public class Quad_AI : MonoBehaviour
     [Header("State")]
     [SerializeField]
     Patten patten = Patten.None;
-    enum Patten { PushSide, PushCircle, BladeShot, FanSwing, None };
+    enum Patten { PushSide, PushCircle, SingleShot, FanSwing, None };
+    bool fanTilt = true; // 팬 기울이기 여부
     private float atkCoolCount;
     public float pushSideCoolTime;
     public float pushCircleCoolTime;
@@ -57,6 +58,9 @@ public class Quad_AI : MonoBehaviour
     float windShotDelay = 0.1f; // 윈드커터 발사 간격
 
     [Header("BladeShot")]
+    public GameObject maskedBladePrefab; // 가로로 박히는 프로펠러 톱날 프리팹
+    public GameObject dirtSlashEffect;
+    public GameObject dirtLayEffect;
     public LineRenderer eyeLaser;
     public SpriteRenderer targetMarker;
     public float aimTime = 3f;
@@ -79,6 +83,8 @@ public class Quad_AI : MonoBehaviour
 
         // 전체 레이어 그룹 찾기
         sortingLayer = GetComponent<SortingGroup>();
+        // 레이어 1로 초기화
+        sortingLayer.sortingOrder = 1;
     }
 
     private void OnEnable()
@@ -158,7 +164,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         // 추적 위치 벡터를 서서히 이동
-        enemyManager.movePos = Vector3.Lerp(enemyManager.movePos, enemyManager.targetPos, Time.deltaTime * 10f);
+        enemyManager.movePos = Vector3.Lerp(enemyManager.movePos, enemyManager.targetPos, Time.deltaTime * 2f);
 
         // 플레이어 방향
         enemyManager.targetDir = enemyManager.movePos - body.position;
@@ -222,9 +228,9 @@ public class Quad_AI : MonoBehaviour
                 return;
             }
         }
-        else
-            // 플레이어 따라가기
-            Walk();
+
+        // 플레이어 따라가기
+        Walk();
     }
 
     void ChooseAttack()
@@ -262,7 +268,7 @@ public class Quad_AI : MonoBehaviour
 
             case 2:
                 // 단일 블레이드 발사 패턴
-                StartCoroutine(BladeShot());
+                StartCoroutine(SingleShot());
                 //쿨타임 갱신
                 atkCoolCount = bladeShotCoolTime;
                 break;
@@ -286,10 +292,25 @@ public class Quad_AI : MonoBehaviour
         Quaternion rotation = Quaternion.Lerp(fanParent.rotation, Quaternion.Euler(0, 0, angleZ), fanSensitive);
 
         // 프로펠러 기울이기
-        fanParent.rotation = rotation;
+        if (fanTilt)
+            fanParent.rotation = rotation;
+
+        // 플레이어까지 거리
+        float distance = Vector3.Distance(enemyManager.movePos, transform.position);
+
+        // 공격범위 이내 접근 못하게 하는 속도 계수
+        float nearSpeed = distance < atkRange
+        // 범위 안에 있을때
+        ? enemyManager.targetDir.magnitude - atkRange
+        // 범위 밖에 있을때
+        : 1f;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = enemyManager.targetDir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity =
+        enemyManager.targetDir.normalized
+        * enemyManager.speed
+        * SystemManager.Instance.globalTimeScale
+        * nearSpeed;
 
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }
@@ -765,24 +786,40 @@ public class Quad_AI : MonoBehaviour
         StartCoroutine(OverloadRest());
     }
 
-    IEnumerator BladeShot()
+    IEnumerator SingleShot()
     {
-        // 발사할 날개 선정
-        SpriteRenderer wing = wings[Random.Range(0, 4)];
+        // 발사할 날개 인덱스 선정
+        int wingNum = Random.Range(0, 4);
 
-        //todo 날개 빠르게 돌리며 빨갛게 달아오름
-        wing.DOColor(fanRageColor, aimTime);
+        //! 발사할 날개 고정
+        wingNum = 1;
 
-        //todo 날개에서 연기 피어오르는 이펙트 켜기
+        SpriteRenderer shotWing = wings[wingNum];
+
+        // 날개 빠르게 돌리며 빨갛게 달아오름
+        shotWing.DOColor(fanRageColor, aimTime);
+
+        //todo 날개 쪽으로 기 모으는 HDR 이펙트
 
         // 조준 시간 초기화
         float aimCount = aimTime;
 
+        // 레이저 및 마커 활성화
+        eyeLaser.enabled = true;
+        targetMarker.enabled = true;
+
+        // 레이저 굵기
+        float laserWidth = 0.3f;
+        float targetWidth = 0;
+
         // 조준 하는동안 플레이어 위쪽에서 계속 추적
         while (aimCount > 0)
         {
+            // 조준 시간 차감
+            aimCount -= Time.deltaTime;
+
             // 플레이어 위쪽 목표 위치
-            Vector3 targetPos = PlayerManager.Instance.transform.position + Vector3.up * 8f;
+            Vector3 targetPos = PlayerManager.Instance.transform.position + Vector3.up * 10f;
 
             // 목표 위치로 이동
             transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 2f);
@@ -797,19 +834,32 @@ public class Quad_AI : MonoBehaviour
             // 드론 아래쪽이 플레이어를 바라보게 기울이기
             fanParent.rotation = rotation;
 
-            // 추적하는동안 눈에서 레이저로 목표지점 표시
-            // 레이저 및 마커 활성화
-            eyeLaser.enabled = true;
-            targetMarker.enabled = true;
-
             // 레이저 포인트 설정
             eyeLaser.SetPosition(0, eyeLaser.transform.position);
             eyeLaser.SetPosition(1, enemyManager.movePos);
             // 타겟 위치에 마커 옮기기
             targetMarker.transform.position = enemyManager.movePos;
 
-            // 조준 시간 차감
-            aimCount -= Time.deltaTime;
+            // 레이저 굵기 점점 얇아짐
+            targetWidth = aimCount / aimTime * 0.3f;
+
+            // 20% 남았을때
+            if (aimCount / aimTime < 0.2f)
+                // 레이저 점점 굵게
+                targetWidth = (aimTime - aimCount) / aimTime * 0.5f;
+
+            // 10% 남았을때
+            if (aimCount / aimTime < 0.1f)
+                // 0으로 줄어들기
+                targetWidth = 0f;
+
+            // 레이저 굵기 목표 굵기로 점점 변화
+            laserWidth = Mathf.Lerp(laserWidth, targetWidth, 0.1f);
+
+            // 레이저 굵기 적용
+            eyeLaser.startWidth = laserWidth;
+            eyeLaser.endWidth = laserWidth;
+
             yield return new WaitForSeconds(Time.deltaTime);
         }
 
@@ -818,61 +868,147 @@ public class Quad_AI : MonoBehaviour
         targetMarker.enabled = false;
 
         // 발사할 프로펠러 진동
-        wing.transform.parent.DOShakePosition(0.2f, 0.05f, 10, 90f, false, false);
+        shotWing.transform.parent.DOShakePosition(0.2f, 0.05f, 10, 90f, false, false);
 
         //todo 날개에서 연기 피어오르는 이펙트 끄기
-        //todo 프로펠러에서 불씨 파티클 튀기기
+        //todo 프로펠러에서 불씨 파티클
 
-        //todo 플레이어 위치에 톱니 발사
-        // 블레이드 생성
-        GameObject shotBlade = LeanPool.Spawn(bladePrefab, wing.transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+        // 목표 위치에 블레이드 마스크 생성
+        GameObject bladeMask = LeanPool.Spawn(maskedBladePrefab, enemyManager.movePos, Quaternion.identity, SystemManager.Instance.enemyPool);
+
+        // 자식중에 블레이드 오브젝트 찾기
+        Transform shotBlade = bladeMask.GetComponentInChildren<Animator>().transform;
+
+        // 블레이드 위치를 프로펠러 위치로 초기화
+        shotBlade.position = shotWing.transform.position;
+        shotBlade.localScale = Vector3.zero;
 
         // 블레이드에 몬스터 매니저 넣기
-        shotBlade.GetComponent<EnemyAttack>().enemyManager = enemyManager;
+        bladeMask.GetComponentInChildren<EnemyAttack>().enemyManager = enemyManager;
 
         // 블레이드 스프라이트 켜기
         SpriteRenderer bladeSprite = shotBlade.GetComponentInChildren<SpriteRenderer>();
         bladeSprite.enabled = true;
 
         // 발사 방향에 따라 발사체 회전
-        shotBlade.transform.rotation
+        shotBlade.rotation
         = enemyManager.movePos.x > transform.position.x
         ? Quaternion.Euler(0, 0, 0)
         : Quaternion.Euler(0, 180f, 0);
 
         //사이즈 제로에서 키우기
-        shotBlade.transform.localScale = Vector3.zero;
-        shotBlade.transform.DOScale(Vector3.one, 0.2f);
+        shotBlade.DOScale(Vector3.one, 0.2f);
+
+        //todo 톱니에 잔상 효과 부여
 
         // 플레이어 쪽으로 블레이드 발사
-        shotBlade.transform.DOMove(enemyManager.movePos, 0.3f);
+        shotBlade.DOMove(enemyManager.movePos, 0.4f)
+        .OnComplete(() =>
+        {
+            // 블레이드 회전 애니메이터 멈추기
+            shotBlade.GetComponentInChildren<Animator>().enabled = false;
 
-        //todo 톱니에 잔상 효과
-        //todo 날아간 톱니는 목표 위치 바닥에 박힘, 마스크로 아래 절반 가리기
-        //todo 박힐때 흙 튀는 파티클
-        //todo 톱니와 바닥 맞닿는 부분에 생성되어 고정된 흙 무더기 파티클, 뽑힐때 사라짐
+            // 박힐때 흙 튀기기
+            LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            // 흙 깔아주기
+            LeanPool.Spawn(dirtLayEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        });
 
-        //todo 쏘는 반대 방향으로 보스 몸 전체 넉백 이동
+        // wing 오브젝트 끄기
+        shotWing.gameObject.SetActive(false);
+        // wing 색깔 초기화
+        shotWing.color = fanColorDefault;
+        // 발사된 날개 비행 파티클 끄기
+        flyEffects[wingNum].SmoothDisable();
+
+        // 발사할때 위치 저장
+        Vector2 shotPos = transform.position;
+        // 발사할때 각도 저장
+        Quaternion shotRotate = transform.rotation;
+
+        // 쏘는 반대 방향으로 보스 몸 전체 넉백 이동
         Vector3 shotDir = enemyManager.movePos - transform.position;
-        transform.DOMove(transform.position - shotDir.normalized, 0.5f)
-        .SetEase(Ease.OutCirc);
+        transform.DOMove(transform.position - shotDir.normalized * 3f, 0.5f)
+        .SetEase(Ease.OutBack);
 
-        //todo 쏘는 프로펠러에 따라 fanParent 기울어졌다 돌아오는 넉백
+        // 프로펠러 방향에 따라 기울기 넉백 계산
+        Vector3 knockbackRotate = wingNum == 0 || wingNum == 2
+        ? Vector3.back * 20f
+        : Vector3.forward * 20f;
 
-        //todo 몸 전체 진동
-        //todo 땅에 박힌 프로펠러 진동
+        // 넉백으로 기울어졌다 돌아오기
+        fanParent.DOPunchRotation(knockbackRotate, 0.5f, 5);
 
-        //todo 블레이드 땅에서 뽑히며 프로펠러로 날아와서 디스폰
-        //todo 뽑힐때 흙 튀는 파티클
+        yield return new WaitForSeconds(0.5f);
 
-        //todo 블레이드 장착되며 wing 스프라이트 켜기
-        //todo 불꽃 파티클 튀기기
-        //todo 보스 몸체 넉백으로 날아온 방향대로 넉백, 기울이기 넉백
+        // 발사할때 위치로 서서히 돌아오기
+        transform.DOMove(shotPos, 1f)
+        .SetEase(Ease.OutSine);
+
+        yield return new WaitForSeconds(1f);
+
+        // 몸 전체 약한 기울기 진동
+        fanParent.DOShakeRotation(1f, Vector3.forward, 50, 90, false);
+        // 땅에 박힌 프로펠러 강한 진동
+        shotBlade.DOShakeRotation(1f, Vector3.forward * 5f, 100, 90, false);
+
+        // 땅에 박힌 블레이드가 프로펠러 방향으로 살짝 이동
+        shotBlade.DOMove(shotBlade.transform.position - shotDir.normalized * 0.1f, 0.1f)
+        .SetEase(Ease.Linear);
+        // 살짝 회전
+        shotBlade.DORotate(Vector3.forward * 10f, 0.1f)
+        .SetEase(Ease.Linear);
+
+        yield return new WaitForSeconds(1f);
+
+        // 블레이드 좌우 반전
+        shotBlade.transform.rotation = Quaternion.Euler(shotBlade.transform.rotation.eulerAngles.x + 180f, 0, 0);
+
+        // 블레이드 회전 애니메이터 켜기
+        shotBlade.GetComponentInChildren<Animator>().enabled = true;
+
+        // 뽑힐때 흙 튀기기
+        LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 블레이드 프로펠러로 날아가기
+        shotBlade.DOMove(shotWing.transform.parent.position, 0.2f)
+        .SetEase(Ease.Linear);
+
+        yield return new WaitForSeconds(0.2f);
+
+        // 블레이드 디스폰
+        LeanPool.Despawn(bladeMask);
+
+        // 블레이드 장착되며 wing 오브젝트 켜기
+        shotWing.gameObject.SetActive(true);
+        // 발사된 날개 비행 파티클 켜기
+        flyEffects[wingNum].gameObject.SetActive(true);
+
+        //todo 장착할때 불꽃 파티클
+        // 블레이드 날아온 방향으로 보스 몸 전체 넉백 이동
+        transform.DOMove(transform.position - shotDir.normalized * 3f, 0.5f)
+        .SetEase(Ease.OutBack);
+
+        // 프로펠러 방향에 따라 기울기 넉백 계산
+        knockbackRotate = wingNum == 0 || wingNum == 2
+        ? Vector3.back * 20f
+        : Vector3.forward * 20f;
+
+        // 프로펠러 기울기 끄기
+        fanTilt = false;
+
+        // 기울기 넉백
+        fanParent.DOPunchRotation(knockbackRotate, 0.5f, 5)
+        .OnComplete(() =>
+        {
+            // 프로펠러 기울기 켜기
+            fanTilt = true;
+        });
 
         //todo 플레이어는 피격시 출혈 데미지 및 넉백
 
-        //todo 과부하 휴식
-        // StartCoroutine(OverloadRest());
+        // Idle 상태로 전환
+        enemyManager.nowAction = EnemyManager.Action.Idle;
     }
 
     IEnumerator OverloadRest()

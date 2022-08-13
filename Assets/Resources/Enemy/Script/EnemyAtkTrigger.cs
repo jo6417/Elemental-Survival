@@ -27,7 +27,8 @@ public class EnemyAtkTrigger : MonoBehaviour
         //폭발 이펙트 있을때
         if (explosionPrefab)
         {
-            //폭발 콜라이더 및 이펙트 사이즈 동기화
+            //폭발 콜라이더 및 트랜스폼 사이즈 동기화
+            explosionPrefab.GetComponent<CircleCollider2D>().radius = transform.GetComponent<CircleCollider2D>().radius;
             explosionPrefab.transform.localScale = transform.localScale;
         }
 
