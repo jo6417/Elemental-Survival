@@ -16,6 +16,11 @@ public class EnemyHitBox : MonoBehaviour
         StartCoroutine(Init());
     }
 
+    private void Awake()
+    {
+
+    }
+
     IEnumerator Init()
     {
         // 초기화 완료시까지 대기

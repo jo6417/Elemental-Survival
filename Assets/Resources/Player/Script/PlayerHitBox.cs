@@ -17,9 +17,11 @@ public class PlayerHitBox : MonoBehaviour
     public Transform buffParent; // 버프 아이콘 부모 오브젝트
     public Vector2 knockbackDir; //넉백 벡터
     public bool isFlat; //깔려서 납작해졌을때
-    public float poisonCoolCount; //독 도트뎀 남은시간
+    public float poisonCoolCount; // 독 디버프 남은시간
+    public float bleedCoolCount; // 출혈 디버프 남은시간
     public IEnumerator slowCoroutine;
     public IEnumerator shockCoroutine;
+    public IEnumerator bleedCoroutine;
 
     private void OnCollisionStay2D(Collision2D other)
     {
@@ -104,6 +106,19 @@ public class PlayerHitBox : MonoBehaviour
                 // 납작해지고 행동불능
                 StartCoroutine(FlatDebuff(enemyAtk.flatTime));
             }
+
+            // 출혈 지속시간 있으면 도트 피해
+            if (enemyAtk.bleedTime > 0)
+            {
+                //이미 출혈 코루틴 중이면 기존 코루틴 취소
+                if (bleedCoroutine != null)
+                    StopCoroutine(bleedCoroutine);
+
+                bleedCoroutine = BleedDotHit(1, enemyAtk.bleedTime);
+
+                StartCoroutine(bleedCoroutine);
+            }
+
         }
 
         //마법 정보 찾기
@@ -340,6 +355,41 @@ public class PlayerHitBox : MonoBehaviour
 
         //원래 색으로 복구
         PlayerManager.Instance.sprite.color = Color.white;
+    }
+
+    public IEnumerator BleedDotHit(float tickDamage, float duration)
+    {
+        // 출혈 디버프 아이콘
+        GameObject bleedIcon = null;
+
+        // 이미 출혈 디버프 중 아닐때
+        if (bleedCoolCount <= 0)
+            //출혈 디버프 아이콘 붙이기
+            bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, buffParent.position, Quaternion.identity, buffParent);
+
+        // 출혈 데미지 지속시간 넣기
+        bleedCoolCount = duration;
+
+        // 출혈 데미지 지속시간 남았을때 진행
+        while (bleedCoolCount > 0)
+        {
+            // 출혈 데미지 입히기
+            Damage(tickDamage);
+
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 출혈 데미지 지속시간에서 한틱 차감
+            bleedCoolCount -= 1f;
+        }
+
+        // 출혈 아이콘 없에기
+        bleedIcon = buffParent.Find(SystemManager.Instance.bleedDebuffUI.name).gameObject;
+        if (bleedIcon != null)
+            LeanPool.Despawn(bleedIcon);
+
+        // 코루틴 비우기
+        bleedCoroutine = null;
     }
 
     public IEnumerator Knockback(Vector2 dir)

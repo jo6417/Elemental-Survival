@@ -4,14 +4,14 @@ using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
 
-public class EnemyAttack : MonoBehaviour
+public class EnemyAttack : Attack
 {
     [Header("State")]
     bool initDone = false;
     Vector3 targetDir;
     public float activeAngleOffset; // 액티브 공격 오브젝트 방향 오프셋
     bool attackReady; //공격 준비중
-    public bool alwaysOnCollider = false; //항상 콜라이더 켜기 옵션
+    public bool defaultCollOn = true; //항상 콜라이더 켜기 옵션
 
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -21,15 +21,10 @@ public class EnemyAttack : MonoBehaviour
     public GameObject dashEffect;
     public GameObject activeObj; //공격시 활성화할 오브젝트
 
-    [Header("Attack State")]
-    // public bool friendlyFire = false; // 충돌시 아군 피해 여부
-    public float flatTime = 0f; //납작해지는 디버프
-    public bool knockBackDebuff = false; //넉백 디버프
-    public bool poisonDebuff = false; // 독 디버프
-
     private void Awake()
     {
         enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+        atkColl = atkColl == null ? GetComponentInChildren<Collider2D>() : atkColl;
     }
 
     private void OnEnable()
@@ -67,7 +62,7 @@ public class EnemyAttack : MonoBehaviour
         attackReady = false;
 
         // 콜라이더 항상 켜기일때
-        if (alwaysOnCollider)
+        if (defaultCollOn)
             atkColl.enabled = true;
 
         initDone = true;

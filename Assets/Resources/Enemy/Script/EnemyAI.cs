@@ -186,6 +186,9 @@ public class EnemyAI : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        if (enemyManager == null)
+            enemyManager = GetComponent<EnemyManager>();
+
         // 보스부터 이동 위치까지 직선
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, enemyManager.movePos);

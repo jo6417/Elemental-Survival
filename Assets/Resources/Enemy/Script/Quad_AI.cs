@@ -40,7 +40,7 @@ public class Quad_AI : MonoBehaviour
     ParticleManager[] flyEffects = new ParticleManager[4]; // 비행 파티클 리스트
     ParticleManager[] pushEffects = new ParticleManager[4]; // 밀어내기 이펙트 리스트
     public List<GameObject> restEffects = new List<GameObject>();
-    SortingGroup sortingLayer; //전체 레이어
+    public SortingGroup sortingLayer; //전체 레이어
 
     [Header("PushSide")]
     public GameObject wallBox; // 플레이어 가두는 상자 프리팹
@@ -61,6 +61,8 @@ public class Quad_AI : MonoBehaviour
     public GameObject maskedBladePrefab; // 가로로 박히는 프로펠러 톱날 프리팹
     public GameObject dirtSlashEffect;
     public GameObject dirtLayEffect;
+    public ParticleSystem chargeEffect; // 기모으기 이펙트
+    public ParticleSystem fanSparkEffect; // 프로펠러 스파크 이펙트
     public LineRenderer eyeLaser;
     public SpriteRenderer targetMarker;
     public float aimTime = 3f;
@@ -81,8 +83,6 @@ public class Quad_AI : MonoBehaviour
             pushEffects[i] = fans[i].GetChild(2).GetComponentInChildren<ParticleManager>(true);
         }
 
-        // 전체 레이어 그룹 찾기
-        sortingLayer = GetComponent<SortingGroup>();
         // 레이어 1로 초기화
         sortingLayer.sortingOrder = 1;
     }
@@ -799,7 +799,8 @@ public class Quad_AI : MonoBehaviour
         // 날개 빠르게 돌리며 빨갛게 달아오름
         shotWing.DOColor(fanRageColor, aimTime);
 
-        //todo 날개 쪽으로 기 모으는 HDR 이펙트
+        //todo 기 모으는 이펙트 프로펠러 자식으로 소환
+        ParticleSystem fanCharge = LeanPool.Spawn(chargeEffect, fans[wingNum].transform.position, Quaternion.identity, fans[wingNum].transform);
 
         // 조준 시간 초기화
         float aimCount = aimTime;
@@ -870,8 +871,10 @@ public class Quad_AI : MonoBehaviour
         // 발사할 프로펠러 진동
         shotWing.transform.parent.DOShakePosition(0.2f, 0.05f, 10, 90f, false, false);
 
-        //todo 날개에서 연기 피어오르는 이펙트 끄기
-        //todo 프로펠러에서 불씨 파티클
+        //todo 프로펠러 차지 이펙트 끄기
+        fanCharge.GetComponent<ParticleManager>().SmoothDespawn();
+        //todo 프로펠러에서 불씨 파티클 생성
+        LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 목표 위치에 블레이드 마스크 생성
         GameObject bladeMask = LeanPool.Spawn(maskedBladePrefab, enemyManager.movePos, Quaternion.identity, SystemManager.Instance.enemyPool);
@@ -985,6 +988,8 @@ public class Quad_AI : MonoBehaviour
         flyEffects[wingNum].gameObject.SetActive(true);
 
         //todo 장착할때 불꽃 파티클
+        LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
         // 블레이드 날아온 방향으로 보스 몸 전체 넉백 이동
         transform.DOMove(transform.position - shotDir.normalized * 3f, 0.5f)
         .SetEase(Ease.OutBack);

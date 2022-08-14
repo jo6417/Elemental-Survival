@@ -93,8 +93,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4902996646881834554}
   - component: {fileID: 3430336208940329227}
-  - component: {fileID: 6636149321359972163}
   - component: {fileID: 4902996646881834534}
+  - component: {fileID: 6457795012756918529}
   m_Layer: 11
   m_Name: FanBlade
   m_TagString: Enemy
@@ -129,6 +129,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  isStop: 0
+  poisonTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  bleedTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  knockBackDebuff: 0
   activeAngleOffset: 0
   alwaysOnCollider: 0
   enemyManager: {fileID: 0}
@@ -136,35 +149,6 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatTime: 0
-  knockBackDebuff: 0
-  poisonDebuff: 0
---- !u!61 &6636149321359972163
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4902996646881834528}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 6, y: 6}
-    newSize: {x: 6, y: 6}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 6, y: 6}
-  m_EdgeRadius: 0
 --- !u!210 &4902996646881834534
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -176,6 +160,22 @@ SortingGroup:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
+--- !u!58 &6457795012756918529
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4902996646881834528}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 3
 --- !u!1 &4902996648110966840
 GameObject:
   m_ObjectHideFlags: 0

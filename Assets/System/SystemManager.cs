@@ -115,7 +115,8 @@ public class SystemManager : MonoBehaviour
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public GameObject markPrefab; //! 위치 체크용 마크 프리팹
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
-    public GameObject poisonDebuffEffect; // 캐릭터 몸에 붙는 슬로우 디버프 이펙트
+    public GameObject poisonDebuffEffect; // 캐릭터 몸에 붙는 포이즌 디버프 이펙트
+    public GameObject bleedDebuffUI; // 캐릭터 머리위에 붙는 출혈 디버프 아이콘
     public GameObject shockDebuffEffect; // 캐릭터 몸에 붙는 감전 디버프 이펙트
 
     [Header("Material")]

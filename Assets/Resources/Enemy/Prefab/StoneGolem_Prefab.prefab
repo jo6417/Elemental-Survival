@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 4959071736242128182}
-  knockbackDir: {x: 0, y: 0}
 --- !u!61 &5199000365732363104
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -302,12 +301,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialStart: 1
+  initialFinish: 0
   lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
-  targetObj: {fileID: 0}
-  state: 0
+  movePos: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  targetDir: {x: 0, y: 0, z: 0}
+  nowState: 0
   nowAction: 0
   moveType: 0
   portalSize: 2
@@ -319,8 +321,8 @@ MonoBehaviour:
   attackRange: 0
   changeGhost: 0
   enemyAI: {fileID: 5097144648422318720}
-  hitBox: {fileID: 0}
-  explosionTrigger: {fileID: 0}
+  enemyAtkTrigger: {fileID: 0}
+  enemyAtkList: []
   spriteObj: {fileID: 6879378120547341611}
   shadow: {fileID: 5083105368544687810}
   spriteList:
@@ -332,7 +334,7 @@ MonoBehaviour:
   - {fileID: 4206692473337556097}
   rigid: {fileID: 4498973164959321897}
   physicsColl: {fileID: 400382383}
-  hitCollList: []
+  hitBoxList: []
   buffParent: {fileID: 0}
   hpMax: 0
   HpNow: 1
@@ -359,11 +361,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetDir: {x: 0, y: 0, z: 0}
   moveSpeedDebuff: 1
   enemyManager: {fileID: 4959071736242128182}
-  moveResetTime: 3
-  moveResetCount: 0
+  targetDir: {x: 0, y: 0, z: 0}
+  moveCoolTime: 1
+  moveCoolCount: 0
+  directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}
@@ -483,16 +486,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  isStop: 0
+  poisonTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  bleedTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  knockBackDebuff: 0
   activeAngleOffset: 0
-  alwaysOnCollider: 0
+  defaultCollOn: 0
   enemyManager: {fileID: 4959071736242128182}
   enemyName: 
   atkColl: {fileID: 7798079106442996327}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatTime: 0
-  knockBackDebuff: 0
-  poisonDebuff: 0
 --- !u!61 &7798079106442996327
 BoxCollider2D:
   m_ObjectHideFlags: 0
