@@ -79,7 +79,7 @@ public class ParticleTrigger : MonoBehaviour
             if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 print($"Player : {other.name} : {other.tag} : {other.layer}");
-                StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder.transform));
+                StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder));
             }
 
             // 몬스터에 충돌하면 데미지 주기
@@ -89,7 +89,7 @@ public class ParticleTrigger : MonoBehaviour
 
                 if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
                 {
-                    StartCoroutine(enemyHitBox.Hit(magicHolder.gameObject));
+                    StartCoroutine(enemyHitBox.Hit(magicHolder));
                 }
             }
         }
@@ -131,7 +131,7 @@ public class ParticleTrigger : MonoBehaviour
             StartCoroutine(PlayerManager.Instance.hitBox.HitDelay());
 
             // 플레이어에게 몬스터 파워만큼 데미지 주기
-            PlayerManager.Instance.hitBox.Damage(enemyManager.enemy.power);
+            PlayerManager.Instance.hitBox.Damage(enemyManager.enemy.power, false);
         }
     }
 }

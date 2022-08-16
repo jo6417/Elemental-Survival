@@ -5,7 +5,7 @@ using Lean.Pool;
 using TMPro;
 using UnityEngine;
 
-public class EnemyHitBox : MonoBehaviour
+public class EnemyHitBox : MonoBehaviour, IHitBox
 {
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -14,11 +14,6 @@ public class EnemyHitBox : MonoBehaviour
     {
         // 초기화
         StartCoroutine(Init());
-    }
-
-    private void Awake()
-    {
-
     }
 
     IEnumerator Init()
@@ -47,14 +42,23 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.isDead)
             return;
 
-        // 마법 파티클이 충돌했을때
-        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // 공격 오브젝트와 충돌 했을때
+        if (other.TryGetComponent(out Attack attack))
         {
-            StartCoroutine(Hit(other.gameObject));
+            StartCoroutine(Hit(attack));
 
             //파티클 피격 딜레이 시작
             enemyManager.particleHitCount = 0.2f;
         }
+
+        // // 마법 파티클이 충돌했을때
+        // if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // {
+        //     StartCoroutine(Hit(other.gameObject));
+
+        //     //파티클 피격 딜레이 시작
+        //     enemyManager.particleHitCount = 0.2f;
+        // }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -71,26 +75,32 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.isDead)
             return;
 
-        // 마법이 충돌했을때
-        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // 공격 오브젝트와 충돌 했을때
+        if (other.TryGetComponent(out Attack attack))
         {
-            // 마법 정보 찾기
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-            MagicInfo magic = magicHolder.magic;
-
-            StartCoroutine(Hit(other.gameObject));
+            StartCoroutine(Hit(attack));
         }
 
-        //적에게 맞았을때
-        if (other.transform.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
-        {
-            // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
-            if (other.gameObject.TryGetComponent(out EnemyAttack enemyAtk)
-            || other.gameObject.TryGetComponent(out MagicHolder magicHolder))
-            {
-                StartCoroutine(Hit(other.gameObject));
-            }
-        }
+        // // 마법이 충돌했을때
+        // if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // {
+        //     // 마법 정보 찾기
+        //     MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+        //     MagicInfo magic = magicHolder.magic;
+
+        //     StartCoroutine(Hit(other.gameObject));
+        // }
+
+        // //적에게 맞았을때
+        // if (other.transform.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+        // {
+        //     // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
+        //     if (other.gameObject.TryGetComponent(out EnemyAttack enemyAtk)
+        //     || other.gameObject.TryGetComponent(out MagicHolder magicHolder))
+        //     {
+        //         StartCoroutine(Hit(other.gameObject));
+        //     }
+        // }
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -103,20 +113,32 @@ public class EnemyHitBox : MonoBehaviour
         if (enemyManager.isDead)
             return;
 
-        // 계속 마법 트리거 콜라이더 안에 있을때
-        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()) && enemyManager.hitCount <= 0)
+        // 마법 공격 오브젝트와 충돌 했을때
+        if (other.TryGetComponent(out MagicHolder magicHolder))
         {
-            // 마법 정보 찾기
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-            MagicInfo magic = magicHolder.magic;
+            // 마법 정보 없으면 리턴
+            if (magicHolder.magic == null)
+                return;
 
             // 다단히트 마법일때만
-            if (magic.multiHit)
-                StartCoroutine(Hit(other.gameObject));
+            if (magicHolder.magic.multiHit)
+                StartCoroutine(Hit(magicHolder));
         }
+
+        // // 계속 마법 트리거 콜라이더 안에 있을때
+        // if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()) && enemyManager.hitCount <= 0)
+        // {
+        //     // 마법 정보 찾기
+        //     MagicHolder magicHolder = other.GetComponent<MagicHolder>();
+        //     MagicInfo magic = magicHolder.magic;
+
+        //     // 다단히트 마법일때만
+        //     if (magic.multiHit)
+        //         StartCoroutine(Hit(other.gameObject));
+        // }
     }
 
-    public IEnumerator Hit(GameObject other)
+    public IEnumerator Hit(Attack other)
     {
         // 죽었으면 리턴
         if (enemyManager.isDead)
@@ -168,7 +190,7 @@ public class EnemyHitBox : MonoBehaviour
                 // print("enemy knock");
 
                 // 넉백
-                StartCoroutine(Knockback(other.gameObject, atkEnemyManager.enemy.power));
+                StartCoroutine(Knockback(other, atkEnemyManager.enemy.power));
             }
 
             // flat 디버프 시간 있을때, stop 카운트 중 아닐때
@@ -352,10 +374,10 @@ public class EnemyHitBox : MonoBehaviour
         damage = Mathf.RoundToInt(damage);
 
         // 데미지 적용
-        enemyManager.HpNow -= damage;
+        enemyManager.hpNow -= damage;
 
         //체력 범위 제한
-        enemyManager.HpNow = Mathf.Clamp(enemyManager.HpNow, 0, enemyManager.hpMax);
+        enemyManager.hpNow = Mathf.Clamp(enemyManager.hpNow, 0, enemyManager.hpMax);
 
         // 경직 시간 추가
         if (damage > 0)
@@ -376,15 +398,15 @@ public class EnemyHitBox : MonoBehaviour
 
         // print(HpNow + " / " + enemy.HpMax);
         // 체력 0 이하면 죽음
-        if (enemyManager.HpNow <= 0)
+        if (enemyManager.hpNow <= 0)
         {
             // print("Dead Pos : " + transform.position);
-            //죽음 코루틴 시작
-            StartCoroutine(Dead());
+            //죽음 시작
+            Dead();
         }
     }
 
-    void DamageText(float damage, bool isCritical)
+    public void DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
@@ -444,6 +466,96 @@ public class EnemyHitBox : MonoBehaviour
         });
     }
 
+    public IEnumerator PoisonDotHit(float tickDamage, float duration)
+    {
+        //독 데미지 지속시간 넣기
+        enemyManager.poisonCoolCount = duration;
+
+        // 포이즌 디버프 아이콘
+        Transform poisonEffect = null;
+
+        // 이미 포이즌 디버프 중 아닐때
+        if (!enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
+        {
+            //포이즌 디버프 이펙트 붙이기
+            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, enemyManager.transform.position, Quaternion.identity, enemyManager.transform).transform;
+
+            // 포탈 사이즈 배율만큼 이펙트 배율 키우기
+            poisonEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
+        }
+
+        // 독 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
+        while (enemyManager.poisonCoolCount > 1 && !enemyManager.isDead)
+        {
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 독 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 독 데미지 지속시간에서 한틱 차감
+            enemyManager.poisonCoolCount -= 1f;
+        }
+
+        // 포이즌 아이콘 없에기
+        poisonEffect = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
+        if (poisonEffect != null)
+            LeanPool.Despawn(poisonEffect);
+
+        // 포이즌 코루틴 변수 초기화
+        enemyManager.poisonCoroutine = null;
+    }
+
+    public IEnumerator BleedDotHit(float tickDamage, float duration)
+    {
+        // 출혈 디버프 아이콘
+        GameObject bleedIcon = null;
+
+        // 이미 출혈 디버프 중 아닐때
+        if (enemyManager.bleedCoolCount <= 0)
+            //출혈 디버프 아이콘 붙이기
+            bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, enemyManager.buffParent.position, Quaternion.identity, enemyManager.buffParent);
+
+        // 출혈 데미지 지속시간 넣기
+        enemyManager.bleedCoolCount = duration;
+
+        // 출혈 데미지 지속시간 남았을때 진행
+        while (enemyManager.bleedCoolCount > 0)
+        {
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 출혈 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 출혈 데미지 지속시간에서 한틱 차감
+            enemyManager.bleedCoolCount -= 1f;
+        }
+
+        // 출혈 아이콘 없에기
+        bleedIcon = enemyManager.buffParent.Find(SystemManager.Instance.bleedDebuffUI.name).gameObject;
+        if (bleedIcon != null)
+            LeanPool.Despawn(bleedIcon);
+
+        // 코루틴 비우기
+        enemyManager.bleedCoroutine = null;
+    }
+
+    public IEnumerator Knockback(Attack attacker, float knockbackForce)
+    {
+        // 반대 방향으로 넉백 벡터
+        Vector2 knockbackDir = transform.position - attacker.transform.position;
+        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
+
+        // 몬스터 위치에서 피격 반대방향 위치로 이동
+        enemyManager.transform.DOMove((Vector2)enemyManager.transform.position + knockbackDir, 1f)
+        .SetEase(Ease.OutBack);
+
+        // print(knockbackDir);
+
+        yield return null;
+    }
+
     public IEnumerator FlatDebuff(float flatTime)
     {
         //정지 시간 추가
@@ -458,21 +570,6 @@ public class EnemyHitBox : MonoBehaviour
 
         //스케일 복구
         enemyManager.transform.localScale = Vector2.one;
-    }
-
-    public IEnumerator Knockback(GameObject attacker, float knockbackForce)
-    {
-        // 반대 방향으로 넉백 벡터
-        Vector2 knockbackDir = transform.position - attacker.transform.position;
-        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
-
-        // 몬스터 위치에서 피격 반대방향 위치로 이동
-        enemyManager.transform.DOMove((Vector2)enemyManager.transform.position + knockbackDir, 1f)
-        .SetEase(Ease.OutBack);
-
-        // print(knockbackDir);
-
-        yield return null;
     }
 
     public IEnumerator SlowDebuff(float slowDuration)
@@ -577,50 +674,10 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.shockCoroutine = null;
     }
 
-    public IEnumerator PoisonDotHit(float tickDamage, float duration)
-    {
-        //독 데미지 지속시간 넣기
-        enemyManager.poisonCoolCount = duration;
-
-        // 포이즌 디버프 아이콘
-        Transform poisonEffect = null;
-
-        // 이미 포이즌 디버프 중 아닐때
-        if (!enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
-        {
-            //포이즌 디버프 이펙트 붙이기
-            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, enemyManager.transform.position, Quaternion.identity, enemyManager.transform).transform;
-
-            // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-            poisonEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
-        }
-
-        // 독 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
-        while (enemyManager.poisonCoolCount > 1 && !enemyManager.isDead)
-        {
-            // 독 데미지 입히기
-            Damage(tickDamage, false);
-
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
-
-            // 독 데미지 지속시간에서 한틱 차감
-            enemyManager.poisonCoolCount -= 1f;
-        }
-
-        // 포이즌 아이콘 없에기
-        poisonEffect = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
-        if (poisonEffect != null)
-            LeanPool.Despawn(poisonEffect);
-
-        // 포이즌 코루틴 변수 초기화
-        enemyManager.poisonCoroutine = null;
-    }
-
-    public IEnumerator Dead()
+    public void Dead()
     {
         if (enemyManager.enemy == null)
-            yield break;
+            return;
 
         // 경직 시간 추가
         // hitCount += 1f;
@@ -674,11 +731,8 @@ public class EnemyHitBox : MonoBehaviour
             }
 
             //색 변경 완료 될때까지 대기
-            yield return new WaitUntil(() => enemyManager.spriteList[0].color == SystemManager.Instance.DeadColor);
+            // yield return new WaitUntil(() => enemyManager.spriteList[0].color == SystemManager.Instance.DeadColor);
         }
-
-        //전역 시간 속도가 멈춰있다면 복구될때까지 대기
-        yield return new WaitUntil(() => SystemManager.Instance.globalTimeScale > 0);
 
         // 고스트가 아닐때
         if (!enemyManager.IsGhost)
@@ -739,15 +793,14 @@ public class EnemyHitBox : MonoBehaviour
 
         // 몬스터 비활성화
         LeanPool.Despawn(enemyManager.gameObject);
-
-        yield return null;
     }
 
-    void DebuffRemove()
+    public void DebuffRemove()
     {
-        //슬로우 디버프 해제
         // 이동 속도 저하 디버프 초기화
-        PlayerManager.Instance.speedDeBuff = 1f;
+        enemyManager.enemyAI.moveSpeedDebuff = 1f;
+
+        //슬로우 디버프 해제
         // 슬로우 아이콘 없에기
         Transform slowIcon = enemyManager.buffParent.Find(SystemManager.Instance.slowDebuffUI.name);
         if (slowIcon != null)
@@ -756,8 +809,6 @@ public class EnemyHitBox : MonoBehaviour
         enemyManager.slowCoroutine = null;
 
         // 감전 디버프 해제
-        // 이동 속도 저하 디버프 초기화
-        enemyManager.enemyAI.moveSpeedDebuff = 1f;
         // 자식중에 감전 이펙트 찾기
         Transform shockEffect = enemyManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name);
         if (shockEffect != null)

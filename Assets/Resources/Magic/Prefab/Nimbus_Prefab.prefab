@@ -63,7 +63,7 @@ MonoBehaviour:
   burnTime: 0
   wetTime: 0
   bleedTime: 0
-  shockTime: 0
+  shockTime: 2
   freezeTime: 0
 --- !u!114 &7103772506411635269
 MonoBehaviour:

@@ -10,8 +10,8 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class PlayerStat
 {
     public int playerPower; //플레이어 전투력
-    public float hpMax = 100; // 최대 체력
-    public float hpNow = 5; // 체력
+    public float hpMax = 10000; // 최대 체력
+    public float hpNow = 10000; // 체력
     public float Level = 1; //레벨
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
@@ -39,7 +39,7 @@ public class PlayerStat
     public float wind_atk = 1;
 }
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Character
 {
     #region Singleton
     private static PlayerManager instance;
@@ -65,7 +65,6 @@ public class PlayerManager : MonoBehaviour
     }
     #endregion
 
-    public bool godMod = true; //! 플레이어 갓모드
     public NewInput playerInput;
     // Sequence damageTextSeq; //데미지 텍스트 시퀀스
     public float camFollowSpeed = 10f;
@@ -83,13 +82,13 @@ public class PlayerManager : MonoBehaviour
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
+    // public Animator anim;
+    public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
-    public Animator anim;
     public SpriteRenderer sprite;
-    public Rigidbody2D rigid;
+    // public Rigidbody2D rigid;
     public Light2D playerLight;
-    public GameObject bloodPrefab; //플레이어 혈흔 파티클
     // public Transform buffParent; // 버프 아이콘 부모 오브젝트
 
     [Header("<Stat>")] //플레이어 스탯

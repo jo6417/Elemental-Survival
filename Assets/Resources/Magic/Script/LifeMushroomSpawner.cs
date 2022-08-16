@@ -63,7 +63,7 @@ public class LifeMushroomSpawner : MonoBehaviour
                 if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
                 {
                     // 독 도트 데미지 주기
-                    StartCoroutine(enemyHitBox.Hit(magicHolder.gameObject));
+                    StartCoroutine(enemyHitBox.Hit(magicHolder));
                 }
             }
         }

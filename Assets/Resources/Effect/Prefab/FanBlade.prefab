@@ -131,19 +131,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pierceCount: 0
   fixedPower: 0
-  knockbackForce: 0
+  knockbackForce: 10
   isStop: 0
   poisonTime: 0
+  bleedTime: 3
   slowTime: 0
   burnTime: 0
   wetTime: 0
-  bleedTime: 0
   shockTime: 0
   freezeTime: 0
   flatTime: 0
   knockBackDebuff: 0
   activeAngleOffset: 0
-  alwaysOnCollider: 0
+  defaultCollOn: 1
   enemyManager: {fileID: 0}
   enemyName: 
   atkColl: {fileID: 0}

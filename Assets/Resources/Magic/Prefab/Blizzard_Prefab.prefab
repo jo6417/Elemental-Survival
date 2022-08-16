@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1056827250892629718}
   - component: {fileID: 2647893212976384798}
   m_Layer: 10
-  m_Name: collider
+  m_Name: Blizzard_Collider
   m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,10 +195,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9133052939882172468}
+  - component: {fileID: 7499246301787825469}
   - component: {fileID: 7520440804590402243}
   - component: {fileID: 199320508503753188}
   m_Layer: 10
-  m_Name: Particle
+  m_Name: SnowTrail
   m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -218,6 +219,23 @@ Transform:
   m_Father: {fileID: 8520581640877415919}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7499246301787825469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231687110859790057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 0}
+  autoDespawn: 0
+  collOverTime: 0
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!199 &7520440804590402243
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -238,7 +256,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 75d3068f22622a44c96497fa89a3157d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1117,7 +1135,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 5
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1170,7 +1188,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 5
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1234,7 +1252,7 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
+          value: 0.5
           inSlope: 2
           outSlope: 2
           tangentMode: 0
@@ -1733,7 +1751,6 @@ ParticleSystem:
     rowMode: 1
     sprites:
     - sprite: {fileID: 21300000, guid: d2b459d32a648f24d8c9e125b65874d0, type: 3}
-    - sprite: {fileID: 21300000, guid: 86ff925263a6ab241b026fd44c01c9a5, type: 3}
     - sprite: {fileID: 21300000, guid: 2cd0ef912b931ca48ab336bbe94ec9d3, type: 3}
     - sprite: {fileID: 21300000, guid: eabb18625ddad60428acd199bc1d3e5c, type: 3}
     flipU: 0

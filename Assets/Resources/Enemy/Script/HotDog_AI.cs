@@ -960,7 +960,7 @@ public class HotDog_AI : MonoBehaviour
         // 체력이 2/3 ~ 3/3 사이일때 1페이즈
 
         // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
-        if (nowPhase == 1 && enemyManager.HpNow / enemyManager.hpMax <= 2f / 3f)
+        if (nowPhase == 1 && enemyManager.hpNow / enemyManager.hpMax <= 2f / 3f)
         {
             // 페이즈2 색으로 노란색 HDR 넣기
             if (glowMat.color != hdrYellow)
@@ -968,7 +968,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
-        if (nowPhase == 2 && enemyManager.HpNow / enemyManager.hpMax <= 1f / 3f)
+        if (nowPhase == 2 && enemyManager.hpNow / enemyManager.hpMax <= 1f / 3f)
         {
             // 페이즈3 색으로 파란색 HDR 넣기
             if (glowMat.color != hdrBlue)
@@ -976,7 +976,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 체력이 0 이하일때, 죽었을때
-        if (enemyManager.HpNow <= 0)
+        if (enemyManager.hpNow <= 0)
         {
             // 글로벌 라이트 초기화
             SystemManager.Instance.globalLight.intensity = SystemManager.Instance.globalLight.intensity;

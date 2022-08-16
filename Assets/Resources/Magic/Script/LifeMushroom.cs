@@ -170,7 +170,7 @@ public class LifeMushroom : MonoBehaviour
                 // print($"{damage / criticalPower} * {criticalPower} = {damage}");
 
                 // 플레이어 체력 회복
-                PlayerManager.Instance.hitBox.Damage(-damage);
+                PlayerManager.Instance.hitBox.Damage(-damage, false);
             }
 
             // 몬스터가 획득하면
@@ -180,7 +180,7 @@ public class LifeMushroom : MonoBehaviour
                 // 해당 몬스터 데미지
                 if (other.transform.TryGetComponent(out EnemyHitBox enemyHitBox))
                 {
-                    StartCoroutine(enemyHitBox.Hit(gameObject));
+                    StartCoroutine(enemyHitBox.Hit(magicHolder));
                 }
             }
 

@@ -177,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pierceCount: 0
   fixedPower: 0
-  knockbackForce: 0
+  knockbackForce: 10
   isStop: 0
   poisonTime: 0
   bleedTime: 3

@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    public float hp;
+    public float hpNow;
     public float hpMax;
-    public float damage;
+
+    [Header("Refer")]
+    public Rigidbody2D rigid;
+    // HitBox hitBox;
+    public Animator anim;
+    // public SpriteRenderer sprite;
 }

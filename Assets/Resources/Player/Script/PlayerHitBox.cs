@@ -5,7 +5,7 @@ using Lean.Pool;
 using TMPro;
 using UnityEngine;
 
-public class PlayerHitBox : MonoBehaviour
+public class PlayerHitBox : MonoBehaviour, IHitBox
 {
     [Header("<State>")]
     float hitDelayTime = 0.2f; //피격 무적시간
@@ -19,9 +19,10 @@ public class PlayerHitBox : MonoBehaviour
     public bool isFlat; //깔려서 납작해졌을때
     public float poisonCoolCount; // 독 디버프 남은시간
     public float bleedCoolCount; // 출혈 디버프 남은시간
+    public IEnumerator poisonCoroutine;
+    public IEnumerator bleedCoroutine;
     public IEnumerator slowCoroutine;
     public IEnumerator shockCoroutine;
-    public IEnumerator bleedCoroutine;
 
     private void OnCollisionStay2D(Collision2D other)
     {
@@ -31,12 +32,18 @@ public class PlayerHitBox : MonoBehaviour
         //무언가 충돌되면 움직이는 방향 수정
         PlayerManager.Instance.Move();
 
-        //적에게 콜라이더 충돌
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
-         || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // 공격 오브젝트와 충돌 했을때
+        if (other.gameObject.TryGetComponent(out Attack attack))
         {
-            StartCoroutine(Hit(other.transform));
+            StartCoroutine(Hit(attack));
         }
+
+        // //적에게 콜라이더 충돌
+        // if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+        //  || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // {
+        //     StartCoroutine(Hit(other));
+        // }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -46,15 +53,21 @@ public class PlayerHitBox : MonoBehaviour
         if (hitCoolCount > 0 || PlayerManager.Instance.isDash)
             return;
 
-        // 적에게 트리거 충돌
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
-         || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // 공격 오브젝트와 충돌 했을때
+        if (other.TryGetComponent(out Attack attack))
         {
-            StartCoroutine(Hit(other.transform));
+            StartCoroutine(Hit(attack));
         }
+
+        // // 적에게 트리거 충돌
+        // if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+        //  || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
+        // {
+        //     StartCoroutine(Hit(other));
+        // }
     }
 
-    public IEnumerator Hit(Transform other)
+    public IEnumerator Hit(Attack other)
     {
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
         if (other.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
@@ -84,7 +97,7 @@ public class PlayerHitBox : MonoBehaviour
             yield return new WaitUntil(() => enemyAtk.enemy != null);
             EnemyInfo enemy = enemyAtk.enemy;
 
-            Damage(enemy.power);
+            Damage(enemy.power, false);
 
             // 넉백 디버프 있을때
             if (enemyAtk.knockBackDebuff)
@@ -92,10 +105,10 @@ public class PlayerHitBox : MonoBehaviour
                 // print("player knockback");
 
                 //넉백 방향 벡터 계산
-                Vector2 dir = (transform.position - other.position).normalized * enemy.power;
+                Vector2 dir = (transform.position - other.transform.position).normalized * enemy.power;
 
                 //넉백 디버프 실행
-                StartCoroutine(Knockback(dir));
+                StartCoroutine(Knockback(other, enemy.power));
             }
 
             // flat 디버프 있을때, 마비 상태 아닐때
@@ -166,11 +179,19 @@ public class PlayerHitBox : MonoBehaviour
             // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
             if (magicHolder.poisonTime == 0)
                 //데미지 입기
-                Damage(damage);
+                Damage(damage, false);
 
-            // 독 피해 시간 있으면 도트 피해
+            // 포이즌 피해 시간 있으면 도트 피해
             if (magicHolder.poisonTime > 0)
-                StartCoroutine(PoisonDotHit(damage, magicHolder.poisonTime));
+            {
+                //이미 포이즌 코루틴 중이면 기존 코루틴 취소
+                if (poisonCoroutine != null)
+                    StopCoroutine(poisonCoroutine);
+
+                poisonCoroutine = PoisonDotHit(damage, magicHolder.poisonTime);
+
+                StartCoroutine(poisonCoroutine);
+            }
 
             // 슬로우 디버프 시간이 있을때
             if (magicHolder.slowTime > 0)
@@ -205,11 +226,10 @@ public class PlayerHitBox : MonoBehaviour
             }
         }
     }
-
-    public bool Damage(float damage)
+    public void Damage(float damage, bool isCritical)
     {
         //! 갓모드 켜져 있으면 데미지 0
-        if (PlayerManager.Instance.godMod && damage > 0)
+        if (SystemManager.Instance.godMod && damage > 0)
             damage = 0;
 
         //데미지 int로 바꾸기
@@ -235,14 +255,10 @@ public class PlayerHitBox : MonoBehaviour
         {
             print("Game Over");
             Dead();
-
-            return true;
         }
-
-        return false;
     }
 
-    void DamageText(float damage, bool isCritical)
+    public void DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
@@ -331,6 +347,9 @@ public class PlayerHitBox : MonoBehaviour
         //독 데미지 지속시간 넣기
         poisonCoolCount = duration;
 
+        // 한 틱동안 대기
+        yield return new WaitForSeconds(1f);
+
         // 독 데미지 지속시간 남았을때 진행
         while (poisonCoolCount > 0)
         {
@@ -341,13 +360,13 @@ public class PlayerHitBox : MonoBehaviour
             PlayerManager.Instance.sprite.color = SystemManager.Instance.poisonColor;
 
             // 독 데미지 입히기
-            Damage(tickDamage);
-
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
+            Damage(tickDamage, false);
 
             // 독 데미지 지속시간에서 한틱 차감
             poisonCoolCount -= 1f;
+
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
         }
 
         //원래 머터리얼로 복구
@@ -362,6 +381,9 @@ public class PlayerHitBox : MonoBehaviour
         // 출혈 디버프 아이콘
         GameObject bleedIcon = null;
 
+        // 한 틱동안 대기
+        yield return new WaitForSeconds(1f);
+
         // 이미 출혈 디버프 중 아닐때
         if (bleedCoolCount <= 0)
             //출혈 디버프 아이콘 붙이기
@@ -374,13 +396,13 @@ public class PlayerHitBox : MonoBehaviour
         while (bleedCoolCount > 0)
         {
             // 출혈 데미지 입히기
-            Damage(tickDamage);
-
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
+            Damage(tickDamage, false);
 
             // 출혈 데미지 지속시간에서 한틱 차감
             bleedCoolCount -= 1f;
+
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
         }
 
         // 출혈 아이콘 없에기
@@ -392,8 +414,12 @@ public class PlayerHitBox : MonoBehaviour
         bleedCoroutine = null;
     }
 
-    public IEnumerator Knockback(Vector2 dir)
+    public IEnumerator Knockback(Attack attacker, float knockbackForce)
     {
+        // 반대 방향으로 넉백 벡터
+        Vector2 dir = transform.position - attacker.transform.position;
+        dir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
+
         // 넉백 벡터 수정
         knockbackDir = dir;
 
@@ -509,12 +535,41 @@ public class PlayerHitBox : MonoBehaviour
         shockCoroutine = null;
     }
 
-    void Dead()
+    public void Dead()
     {
         // 시간 멈추기
         Time.timeScale = 0;
 
         //TODO 게임오버 UI 띄우기
         UIManager.Instance.GameOver();
+    }
+
+    public void DebuffRemove()
+    {
+        // 이동 속도 저하 디버프 초기화
+        PlayerManager.Instance.speedDeBuff = 1f;
+
+        //슬로우 디버프 해제
+        // 슬로우 아이콘 없에기
+        Transform slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name);
+        if (slowIcon != null)
+            LeanPool.Despawn(slowIcon);
+        // 코루틴 변수 초기화
+        slowCoroutine = null;
+
+        // 감전 디버프 해제
+        // 자식중에 감전 이펙트 찾기
+        Transform shockEffect = transform.Find(SystemManager.Instance.shockDebuffEffect.name);
+        if (shockEffect != null)
+            LeanPool.Despawn(shockEffect);
+        // 감전 코루틴 변수 초기화
+        shockCoroutine = null;
+
+        // 포이즌 아이콘 없에기
+        Transform poisonIcon = transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
+        if (poisonIcon != null)
+            LeanPool.Despawn(poisonIcon);
+        // 포이즌 코루틴 변수 초기화
+        poisonCoroutine = null;
     }
 }

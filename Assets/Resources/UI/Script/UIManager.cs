@@ -676,7 +676,7 @@ public class UIManager : MonoBehaviour
         //보스 몬스터 정보 들어올때까지 대기
         yield return new WaitUntil(() => bossManager.enemy != null);
 
-        float bossHpNow = bossManager.HpNow;
+        float bossHpNow = bossManager.hpNow;
         float bossHpMax = bossManager.hpMax;
 
         //보스 체력 UI 활성화

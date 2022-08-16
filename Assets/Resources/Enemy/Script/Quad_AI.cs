@@ -11,13 +11,13 @@ public class Quad_AI : MonoBehaviour
     [Header("State")]
     [SerializeField]
     Patten patten = Patten.None;
-    enum Patten { PushSide, PushCircle, SingleShot, FanSwing, None };
+    enum Patten { PushSide, PushCircle, SingleShot, FanSmash, None };
     bool fanTilt = true; // 팬 기울이기 여부
     private float atkCoolCount;
     public float pushSideCoolTime;
     public float pushCircleCoolTime;
     public float bladeShotCoolTime;
-    public float fanSwingCoolTime;
+    public float fanSmashCoolTime;
     public float atkRange = 30f; // 공격 범위
     public float fanSensitive = 0.1f; //프로펠러 기울기 감도 조절
 
@@ -31,10 +31,11 @@ public class Quad_AI : MonoBehaviour
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
     public EnemyManager enemyManager;
     public Transform body;
+    public Transform head;
     public Transform fanParent;
     public Transform eye;
     public Color fanColorDefault = new Color(30f / 255f, 1f, 1f, 10f / 255f);
-    public Color fanRageColor = new Color(1f, 30f / 255f, 30f / 255f, 1f);
+    public Color rageColor = new Color(1f, 30f / 255f, 30f / 255f, 1f);
     Transform[] fans = new Transform[4]; // 프로펠러 리스트
     SpriteRenderer[] wings = new SpriteRenderer[4]; // 프로펠러 날개 리스트
     ParticleManager[] flyEffects = new ParticleManager[4]; // 비행 파티클 리스트
@@ -167,13 +168,13 @@ public class Quad_AI : MonoBehaviour
         enemyManager.movePos = Vector3.Lerp(enemyManager.movePos, enemyManager.targetPos, Time.deltaTime * 2f);
 
         // 플레이어 방향
-        enemyManager.targetDir = enemyManager.movePos - body.position;
+        enemyManager.targetDir = enemyManager.movePos - head.position;
 
         // 플레이어 방향 각도
         float playerAngle = Mathf.Atan2(enemyManager.targetDir.y, enemyManager.targetDir.x) * Mathf.Rad2Deg;
 
         // 눈동자 플레이어 방향으로 이동
-        eye.position = body.position + enemyManager.targetDir.normalized * 1f;
+        eye.position = head.position + enemyManager.targetDir.normalized * 1f;
 
         // 눈동자 플레이어 방향으로 회전
         eye.rotation = Quaternion.Euler(0, 0, playerAngle + 135f);
@@ -272,6 +273,13 @@ public class Quad_AI : MonoBehaviour
                 //쿨타임 갱신
                 atkCoolCount = bladeShotCoolTime;
                 break;
+
+            case 3:
+                // 프로펠러 후려치기 패턴
+                StartCoroutine(FanSmash());
+                //쿨타임 갱신
+                atkCoolCount = fanSmashCoolTime;
+                break;
         }
     }
 
@@ -289,11 +297,11 @@ public class Quad_AI : MonoBehaviour
 
         // 기울임 각도 계산
         float angleZ = -Mathf.Clamp(enemyManager.targetDir.x / 1.5f, -15f, 15f);
-        Quaternion rotation = Quaternion.Lerp(fanParent.rotation, Quaternion.Euler(0, 0, angleZ), fanSensitive);
+        Quaternion rotation = Quaternion.Lerp(body.localRotation, Quaternion.Euler(0, 0, angleZ), fanSensitive);
 
         // 프로펠러 기울이기
         if (fanTilt)
-            fanParent.rotation = rotation;
+            body.localRotation = rotation;
 
         // 플레이어까지 거리
         float distance = Vector3.Distance(enemyManager.movePos, transform.position);
@@ -381,7 +389,7 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.OutCubic)
         .OnComplete(() =>
         {
-            // 몸체 및 프로펠러 레이어 0으로 내리기
+            // 머리 및 프로펠러 레이어 0으로 내리기
             sortingLayer.sortingOrder = 0;
         });
 
@@ -508,11 +516,11 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.OutCubic)
         .OnComplete(() =>
         {
-            // 몸체 및 프로펠러 레이어 1로 올리기
+            // 머리 및 프로펠러 레이어 1로 올리기
             sortingLayer.sortingOrder = 1;
         });
 
-        // 몸체 올라간 만큼 프로펠러들 낮추기
+        // 머리 올라간 만큼 프로펠러들 낮추기
         fanParent.DOLocalMove(new Vector3(0, -3f, 0), 1f);
 
         yield return new WaitForSeconds(1f);
@@ -536,7 +544,7 @@ public class Quad_AI : MonoBehaviour
         pushEffects[fanIndex].SmoothDisable();
 
         // 프로펠러 빨갛게 달아오르기
-        wings[fanIndex].DOColor(fanRageColor, 1f);
+        wings[fanIndex].DOColor(rageColor, 1f);
         yield return new WaitForSeconds(1f);
 
         // 프로펠러 날개 오브젝트 끄기
@@ -615,7 +623,7 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.OutCubic)
         .OnComplete(() =>
         {
-            // 몸체 및 프로펠러 레이어 0으로 내리기
+            // 머리 및 프로펠러 레이어 0으로 내리기
             sortingLayer.sortingOrder = 0;
         });
 
@@ -645,23 +653,10 @@ public class Quad_AI : MonoBehaviour
             // 비행 이펙트 전부 끄기
             flyEffects[i].SmoothDisable();
 
-            Vector2 fanPos = Vector2.zero;
-
-            if (i == 0 || i == 2)
-                fanPos.x = -3;
-            if (i == 1 || i == 3)
-                fanPos.x = 3;
-            if (i == 0 || i == 1)
-                fanPos.y = 3;
-            if (i == 2 || i == 3)
-                fanPos.y = -3;
-
-            fans[i].DOLocalMove(fanPos, 0.2f);
-
-            // 몸체보다 왼쪽에 있을때
-            if (fans[i].position.x < body.position.x)
+            // 머리보다 왼쪽에 있을때
+            if (fans[i].position.x < head.position.x)
                 fans[i].DORotate(Vector3.forward * 90f, 0.2f);
-            // 몸체보다 오른쪽에 있을때
+            // 머리보다 오른쪽에 있을때
             else
                 fans[i].DORotate(Vector3.forward * -90f, 0.2f);
 
@@ -678,10 +673,10 @@ public class Quad_AI : MonoBehaviour
             // 팬들의 각도가 항상 바깥쪽 바라보기
             for (int i = 0; i < 4; i++)
             {
-                // 몸체보다 왼쪽에 있을때
-                if (fans[i].position.x < body.position.x)
+                // 머리보다 왼쪽에 있을때
+                if (fans[i].position.x < head.position.x)
                     fans[i].rotation = Quaternion.Euler(0, 0, 90);
-                // 몸체보다 오른쪽에 있을때
+                // 머리보다 오른쪽에 있을때
                 else
                     fans[i].rotation = Quaternion.Euler(0, 0, -90);
             }
@@ -698,10 +693,10 @@ public class Quad_AI : MonoBehaviour
             // 팬들의 각도가 항상 바깥쪽 바라보기
             for (int i = 0; i < 4; i++)
             {
-                // 몸체보다 왼쪽에 있을때
-                if (fans[i].position.x < body.position.x)
+                // 머리보다 왼쪽에 있을때
+                if (fans[i].position.x < head.position.x)
                     fans[i].rotation = Quaternion.Euler(0, 0, 90);
-                // 몸체보다 오른쪽에 있을때
+                // 머리보다 오른쪽에 있을때
                 else
                     fans[i].rotation = Quaternion.Euler(0, 0, -90);
             }
@@ -722,8 +717,8 @@ public class Quad_AI : MonoBehaviour
                 // 생성할 프로펠러
                 Transform shotterFan = fans[i];
 
-                // 몸체에서 프로펠러까지 방향
-                Vector2 fanDir = shotterFan.position - body.transform.position;
+                // 머리에서 프로펠러까지 방향
+                Vector2 fanDir = shotterFan.position - head.transform.position;
                 // 프로펠러 전방 목표 지점
                 Vector2 targetPos = (Vector2)shotterFan.position + fanDir.normalized;
 
@@ -797,9 +792,9 @@ public class Quad_AI : MonoBehaviour
         SpriteRenderer shotWing = wings[wingNum];
 
         // 날개 빠르게 돌리며 빨갛게 달아오름
-        shotWing.DOColor(fanRageColor, aimTime);
+        shotWing.DOColor(rageColor, aimTime);
 
-        //todo 기 모으는 이펙트 프로펠러 자식으로 소환
+        // 기 모으는 이펙트 프로펠러 자식으로 소환
         ParticleSystem fanCharge = LeanPool.Spawn(chargeEffect, fans[wingNum].transform.position, Quaternion.identity, fans[wingNum].transform);
 
         // 조준 시간 초기화
@@ -871,9 +866,9 @@ public class Quad_AI : MonoBehaviour
         // 발사할 프로펠러 진동
         shotWing.transform.parent.DOShakePosition(0.2f, 0.05f, 10, 90f, false, false);
 
-        //todo 프로펠러 차지 이펙트 끄기
+        // 프로펠러 차지 이펙트 끄기
         fanCharge.GetComponent<ParticleManager>().SmoothDespawn();
-        //todo 프로펠러에서 불씨 파티클 생성
+        // 프로펠러에서 불씨 파티클 생성
         LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 목표 위치에 블레이드 마스크 생성
@@ -901,8 +896,6 @@ public class Quad_AI : MonoBehaviour
 
         //사이즈 제로에서 키우기
         shotBlade.DOScale(Vector3.one, 0.2f);
-
-        //todo 톱니에 잔상 효과 부여
 
         // 플레이어 쪽으로 블레이드 발사
         shotBlade.DOMove(enemyManager.movePos, 0.4f)
@@ -987,7 +980,7 @@ public class Quad_AI : MonoBehaviour
         // 발사된 날개 비행 파티클 켜기
         flyEffects[wingNum].gameObject.SetActive(true);
 
-        //todo 장착할때 불꽃 파티클
+        // 장착할때 불꽃 파티클
         LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 블레이드 날아온 방향으로 보스 몸 전체 넉백 이동
@@ -1010,10 +1003,95 @@ public class Quad_AI : MonoBehaviour
             fanTilt = true;
         });
 
-        //todo 플레이어는 피격시 출혈 데미지 및 넉백
-
         // Idle 상태로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
+    }
+
+    IEnumerator FanSmash()
+    {
+        // 몸체 저공으로 내려오기
+        body.DOLocalMove(new Vector3(0, 2.5f, 0), 1f)
+        .SetEase(Ease.OutCubic)
+        .OnComplete(() =>
+        {
+            // 머리 및 프로펠러 레이어 1으로
+            sortingLayer.sortingOrder = 1;
+        });
+
+        // 몸체 각도 초기화
+        body.DOLocalRotate(Vector3.zero, 1f)
+        .SetEase(Ease.OutCubic);
+
+        // 모든 팬 위치 정렬
+        for (int i = 0; i < 4; i++)
+        {
+            // 비행 이펙트 전부 끄기
+            flyEffects[i].SmoothDisable();
+
+            fans[i].DORotate(Vector3.zero, 0.2f);
+
+            // 그룹 레이어 통일
+            fans[i].GetComponent<SortingGroup>().sortingOrder = 1;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        // // 점점 빠르게 반 바퀴만 돌리기
+        // fanParent.DOLocalRotate(Vector3.forward * 180f, 0.5f / spinSpeed, RotateMode.LocalAxisAdd)
+        // .OnUpdate(() =>
+        // {
+        //     // 프로펠러들의 각도 유지
+        //     for (int i = 0; i < 4; i++)
+        //     {
+        //         fans[i].rotation = Quaternion.Euler(0, 0, 0);
+        //     }
+        // })
+        // .SetEase(Ease.InSine);
+
+        // // 반 바퀴 돌리는 동안 대기
+        // yield return new WaitForSeconds(0.5f / spinSpeed);
+
+        for (int i = 0; i < 4; i++)
+        {
+            //todo 프로펠러 가드 및 날개 빨갛게 달궈짐
+            fans[i].GetComponent<SpriteRenderer>().DOColor(rageColor, 1f);
+            wings[i].DOColor(rageColor, 1f)
+            .OnComplete(() =>
+            {
+                //todo 달궈진 후에는 프로펠러에서 전체적으로 짧은 연기가 나며, 지속적으로 원형 불꽃 파티클 튀는 이펙트
+
+            });
+
+            //todo 모든 프로펠러에 어택 콜라이더 켜기
+            wings[i].GetComponent<Collider2D>().enabled = true;
+        }
+
+        //todo 점점 빠르게 프로펠러 전체 공전 반복
+        for (int i = 0; i < 10; i++)
+        {
+            // 회전 시간 계산
+            float spinTime = 0.5f / spinSpeed / (i + 1);
+
+            //todo 점점 빠르게 회전시키기
+            fanParent.DOLocalRotate(Vector3.forward * 360f, spinTime, RotateMode.LocalAxisAdd);
+
+            yield return new WaitForSeconds(spinTime);
+        }
+        // fanParent.DOLocalRotate(Vector3.forward * 360f, 0.5f / spinSpeed, RotateMode.LocalAxisAdd)
+        // .OnUpdate(() =>
+        // {
+        //     // 프로펠러들의 각도 유지
+        //     for (int i = 0; i < 4; i++)
+        //     {
+        //         fans[i].rotation = Quaternion.Euler(0, 0, 0);
+        //     }
+        // })
+        // .SetEase(Ease.Linear)
+        // .SetLoops(-1);
+
+        //todo 마지막 공전일때 머리와 거리 빠르게 벌어졌다가 줄어들며 후려치기
+
+        //todo 과부하로 착지해서 휴식
     }
 
     IEnumerator OverloadRest()

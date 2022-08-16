@@ -80,6 +80,14 @@ public class SystemManager : MonoBehaviour
     [Header("Test")]
     public GameObject testObject;
     public LayerMask PlayerPhysics_Mask;
+    public Button timeBtn; //! 시간 속도 토글 버튼
+    public Button godModBtn; //! 갓모드 토글 버튼
+    public bool godMod = true; //! 플레이어 갓모드 여부
+    //! DB 동기화 버튼
+    public Button magicDBSyncBtn;
+    public Button enemyDBSyncBtn;
+    public Button itemDBSyncBtn;
+    public GameObject markPrefab; //! 위치 체크용 마크 프리팹
 
     [Header("Tag&Layer")]
     public LayerList layerList;
@@ -99,21 +107,14 @@ public class SystemManager : MonoBehaviour
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
-    public Button timeBtn; //! 시간 속도 토글 버튼
-    public Button godModBtn; //! 갓모드 토글 버튼
 
     [Header("DataBase")]
     public DBType dBType;
     public enum DBType { Magic, Enemy, Item };
-    //! DB 동기화 버튼
-    public Button magicDBSyncBtn;
-    public Button enemyDBSyncBtn;
-    public Button itemDBSyncBtn;
 
     [Header("Prefab")]
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
-    public GameObject markPrefab; //! 위치 체크용 마크 프리팹
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
     public GameObject poisonDebuffEffect; // 캐릭터 몸에 붙는 포이즌 디버프 이펙트
     public GameObject bleedDebuffUI; // 캐릭터 머리위에 붙는 출혈 디버프 아이콘
@@ -247,9 +248,9 @@ public class SystemManager : MonoBehaviour
         Image godModImg = godModBtn.GetComponent<Image>();
         TextMeshProUGUI godModTxt = godModBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-        PlayerManager.Instance.godMod = !PlayerManager.Instance.godMod;
+        godMod = !godMod;
 
-        if (PlayerManager.Instance.godMod)
+        if (godMod)
         {
             godModImg.color = Color.green;
             godModTxt.text = "GodMod On";

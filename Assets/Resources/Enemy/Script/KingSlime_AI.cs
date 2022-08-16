@@ -97,7 +97,7 @@ public class KingSlime_AI : MonoBehaviour
                 float damage = Random.Range(enemyManager.power * 0.8f, enemyManager.power * 1.2f);
 
                 // 플레이어 체력 깎기
-                PlayerManager.Instance.hitBox.Damage(damage);
+                PlayerManager.Instance.hitBox.Damage(damage, false);
 
                 // 플레이어가 입은 데미지만큼 보스 회복
                 enemyManager.hitBoxList[0].Damage(-damage, false);
@@ -286,7 +286,7 @@ public class KingSlime_AI : MonoBehaviour
         // yield return new WaitUntil(() => enemyManager.animList[0].enabled);
 
         // 남은 체력에 비례해서 소환 횟수 산출, 5~15마리
-        int summonNum = 5 + Mathf.RoundToInt(10 * (enemyManager.hpMax - enemyManager.HpNow) / enemyManager.hpMax);
+        int summonNum = 5 + Mathf.RoundToInt(10 * (enemyManager.hpMax - enemyManager.hpNow) / enemyManager.hpMax);
         for (int i = 0; i < summonNum; i++)
         {
             //슬라임 소환

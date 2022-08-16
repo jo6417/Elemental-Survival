@@ -7,7 +7,7 @@ using DG.Tweening;
 using TMPro;
 using System.Linq;
 
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : Character
 {
     [Header("Initial")]
     public EnemyInfo enemy;
@@ -108,29 +108,35 @@ public class EnemyManager : MonoBehaviour
     public List<Color> originMatColorList = new List<Color>(); //변형 전 머터리얼 색
     public List<Color> originColorList = new List<Color>(); // 변형 전 스프라이트 색
     public List<Animator> animList = new List<Animator>();
-    public Rigidbody2D rigid;
+    // public Rigidbody2D rigid;
     public Collider2D physicsColl; // 물리용 콜라이더
     public List<EnemyHitBox> hitBoxList; // 히트박스 리스트
-    public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
 
     [Header("Stat")]
-    public float hpMax = 0;
-    public float HpNow = 0;
+    // public float hpMax = 0;
+    // public float hpNow = 0;
     public float power;
     public float speed;
     public float range;
 
+    // [Header("<Buff>")]
+    // public Vector2 knockbackDir; //넉백 벡터
+    // public bool isFlat; //깔려서 납작해졌을때
+
     [Header("Debuff")]
+    public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
-    public IEnumerator slowCoroutine = null;
     public IEnumerator poisonCoroutine = null;
+    public IEnumerator bleedCoroutine = null;
+    public IEnumerator slowCoroutine = null;
     public IEnumerator shockCoroutine = null;
     public float particleHitCount = 0;
     public float hitCount = 0;
     public float stopCount = 0;
     public float oppositeCount = 0;
     public float poisonCoolCount; //독 도트뎀 남은시간
+    public float bleedCoolCount; // 출혈 디버프 남은시간
 
     [Header("Debug")]
     [SerializeField]
@@ -255,7 +261,7 @@ public class EnemyManager : MonoBehaviour
         if (IsGhost)
         {
             //체력 절반으로 초기화
-            HpNow = enemy.hpMax / 2f;
+            hpNow = enemy.hpMax / 2f;
 
             // rigid, sprite, 트윈, 애니메이션 상태 초기화
             for (int i = 0; i < spriteList.Count; i++)
@@ -284,7 +290,7 @@ public class EnemyManager : MonoBehaviour
         else
         {
             // 맥스 체력으로 초기화
-            HpNow = enemy.hpMax;
+            hpNow = enemy.hpMax;
 
             // 물리 콜라이더 켜기
             physicsColl.enabled = true;
