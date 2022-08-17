@@ -63,8 +63,8 @@ public class MagicProjectile : MonoBehaviour
             sprite.enabled = true;
 
         // 파티클 활성화
-        if (particleManager != null)
-            particleManager.particle.Play();
+        // if (particleManager != null)
+        //     particleManager.particle.Play();
 
         //콜라이더 켜기
         coll.enabled = true;

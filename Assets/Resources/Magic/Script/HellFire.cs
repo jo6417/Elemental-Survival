@@ -31,13 +31,13 @@ public class HellFire : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
-        // 타겟에 따라 해골 색 바꾸기
-        if (magicHolder.targetType == MagicHolder.Target.Player)
-            // 플레이어가 타겟이면 빨간색
+        // 레이어에 따라 해골 색 바꾸기
+        if (magicHolder.gameObject.layer == SystemManager.Instance.layerList.EnemyAttack_Layer)
+            // 몬스터 공격이면 빨간색
             skullSprite.color = new Color(1, 0, 0, 1);
 
-        if (magicHolder.targetType == MagicHolder.Target.Enemy)
-            // 몬스터가 타겟이면 흰색
+        if (magicHolder.gameObject.layer == SystemManager.Instance.layerList.PlayerAttack_Layer)
+            // 플레이어 공격이면 흰색
             skullSprite.color = new Color(1, 1, 1, 1);
 
         // 타겟 위치로 이동

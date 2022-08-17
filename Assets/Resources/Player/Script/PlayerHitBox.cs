@@ -37,13 +37,6 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         {
             StartCoroutine(Hit(attack));
         }
-
-        // //적에게 콜라이더 충돌
-        // if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
-        //  || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
-        // {
-        //     StartCoroutine(Hit(other));
-        // }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -58,19 +51,15 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         {
             StartCoroutine(Hit(attack));
         }
-
-        // // 적에게 트리거 충돌
-        // if (other.gameObject.CompareTag(SystemManager.TagNameList.Enemy.ToString())
-        //  || other.gameObject.CompareTag(SystemManager.TagNameList.Magic.ToString()))
-        // {
-        //     StartCoroutine(Hit(other));
-        // }
     }
 
-    public IEnumerator Hit(Attack other)
+    public IEnumerator Hit(Attack attacker)
     {
+        //크리티컬 성공 여부
+        bool isCritical = false;
+
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
-        if (other.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
+        if (attacker.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 몬스터 정보 찾기
             EnemyManager enemyManager = enemyAtk.enemyManager;
@@ -97,45 +86,12 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             yield return new WaitUntil(() => enemyAtk.enemy != null);
             EnemyInfo enemy = enemyAtk.enemy;
 
+            // 데미지 적용
             Damage(enemy.power, false);
-
-            // 넉백 디버프 있을때
-            if (enemyAtk.knockBackDebuff)
-            {
-                // print("player knockback");
-
-                //넉백 방향 벡터 계산
-                Vector2 dir = (transform.position - other.transform.position).normalized * enemy.power;
-
-                //넉백 디버프 실행
-                StartCoroutine(Knockback(other, enemy.power));
-            }
-
-            // flat 디버프 있을때, 마비 상태 아닐때
-            if (enemyAtk.flatTime > 0 && !isFlat)
-            {
-                // print("player flat");
-
-                // 납작해지고 행동불능
-                StartCoroutine(FlatDebuff(enemyAtk.flatTime));
-            }
-
-            // 출혈 지속시간 있으면 도트 피해
-            if (enemyAtk.bleedTime > 0)
-            {
-                //이미 출혈 코루틴 중이면 기존 코루틴 취소
-                if (bleedCoroutine != null)
-                    StopCoroutine(bleedCoroutine);
-
-                bleedCoroutine = BleedDotHit(1, enemyAtk.bleedTime);
-
-                StartCoroutine(bleedCoroutine);
-            }
-
         }
 
         //마법 정보 찾기
-        if (other.TryGetComponent(out MagicHolder magicHolder))
+        if (attacker.TryGetComponent(out MagicHolder magicHolder))
         {
             // 마법 정보 찾기
             MagicInfo magic = magicHolder.magic;
@@ -159,9 +115,12 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
                 // 관통 횟수 차감
                 magicHolder.pierceCount--;
 
-            // 마법 스탯 계산
+            // 데미지 계산
             float power = MagicDB.Instance.MagicPower(magic);
-            bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            // 크리티컬 성공 여부 계산
+            isCritical = MagicDB.Instance.MagicCritical(magic);
+            // 크리티컬 데미지 계산
+            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
             // 이미 피격 딜레이 코루틴 중이었으면 취소
             if (hitDelayCoroutine != null)
@@ -176,56 +135,94 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             // 고정 데미지에 확률 계산
             damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-            // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
-            if (magicHolder.poisonTime == 0)
-                //데미지 입기
-                Damage(damage, false);
+            // 크리티컬이면 크리티컬 데미지 배율 반영
+            if (isCritical)
+                damage = damage * criticalPower;
 
-            // 포이즌 피해 시간 있으면 도트 피해
-            if (magicHolder.poisonTime > 0)
-            {
-                //이미 포이즌 코루틴 중이면 기존 코루틴 취소
-                if (poisonCoroutine != null)
-                    StopCoroutine(poisonCoroutine);
+            //데미지 입기
+            Damage(damage, false);
+        }
 
-                poisonCoroutine = PoisonDotHit(damage, magicHolder.poisonTime);
+        // 디버프 판단해서 적용
+        Debuff(attacker, isCritical);
+    }
 
-                StartCoroutine(poisonCoroutine);
-            }
+    public void Debuff(Attack attacker, bool isCritical)
+    {
+        //시간 정지
+        if (attacker.stopTime > 0)
+        {
+            // 경직 카운터에 stopTime 만큼 추가
+            // stopCount = attacker.stopTime;
 
-            // 슬로우 디버프 시간이 있을때
-            if (magicHolder.slowTime > 0)
-            {
-                // 디버프 성공일때, 혹은 타겟이 플레이어일때
-                if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
-                {
-                    //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-                    if (slowCoroutine != null)
-                        StopCoroutine(slowCoroutine);
+            // 해당 위치에 고정
+            // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
 
-                    slowCoroutine = SlowDebuff(magicHolder.slowTime);
+        //넉백
+        if (attacker.knockbackForce > 0)
+        {
+            StartCoroutine(Knockback(attacker, attacker.knockbackForce));
+        }
 
-                    StartCoroutine(slowCoroutine);
-                }
-            }
+        // 슬로우 디버프, 크리티컬 성공일때
+        if (attacker.slowTime > 0 && isCritical)
+        {
+            //이미 슬로우 코루틴 중이면 기존 코루틴 취소
+            if (slowCoroutine != null)
+                StopCoroutine(slowCoroutine);
 
-            // 감전 디버프 && 크리티컬일때
-            if (magicHolder.shockTime > 0)
-            {
-                // 디버프 성공일때, 혹은 타겟이 플레이어일때
-                if (isCritical || magicHolder.targetType == MagicHolder.Target.Player)
-                {
-                    //이미 감전 코루틴 중이면 기존 코루틴 취소
-                    if (shockCoroutine != null)
-                        StopCoroutine(shockCoroutine);
+            slowCoroutine = SlowDebuff(attacker.slowTime);
 
-                    shockCoroutine = ShockDebuff(magicHolder.shockTime);
+            StartCoroutine(slowCoroutine);
+        }
 
-                    StartCoroutine(shockCoroutine);
-                }
-            }
+        // 감전 디버프 && 크리티컬일때
+        if (attacker.shockTime > 0 && isCritical)
+        {
+            //이미 감전 코루틴 중이면 기존 코루틴 취소
+            if (shockCoroutine != null)
+                StopCoroutine(shockCoroutine);
+
+            shockCoroutine = ShockDebuff(attacker.shockTime);
+
+            StartCoroutine(shockCoroutine);
+        }
+
+        // flat 디버프 있을때, flat 상태 아닐때
+        if (attacker.flatTime > 0 && !isFlat)
+        {
+            // print("player flat");
+
+            // 납작해지고 행동불능
+            StartCoroutine(FlatDebuff(attacker.flatTime));
+        }
+
+        // 포이즌 피해 시간 있으면 도트 피해
+        if (attacker.poisonTime > 0)
+        {
+            //이미 포이즌 코루틴 중이면 기존 코루틴 취소
+            if (poisonCoroutine != null)
+                StopCoroutine(poisonCoroutine);
+
+            poisonCoroutine = PoisonDotHit(1, attacker.poisonTime);
+
+            StartCoroutine(poisonCoroutine);
+        }
+
+        // 출혈 지속시간 있으면 도트 피해
+        if (attacker.bleedTime > 0)
+        {
+            //이미 출혈 코루틴 중이면 기존 코루틴 취소
+            if (bleedCoroutine != null)
+                StopCoroutine(bleedCoroutine);
+
+            bleedCoroutine = BleedDotHit(1, attacker.bleedTime);
+
+            StartCoroutine(bleedCoroutine);
         }
     }
+
     public void Damage(float damage, bool isCritical)
     {
         //! 갓모드 켜져 있으면 데미지 0
@@ -416,17 +413,16 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
     public IEnumerator Knockback(Attack attacker, float knockbackForce)
     {
-        // 반대 방향으로 넉백 벡터
+        // 플레이어 방향으로 넉백 방향 계산
         Vector2 dir = transform.position - attacker.transform.position;
-        dir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
 
         // 넉백 벡터 수정
-        knockbackDir = dir;
+        knockbackDir = dir.normalized * knockbackForce * 2f;
 
         // 넉백 벡터 반영하기
         PlayerManager.Instance.Move();
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
 
         //넉백 버프 빼기
         knockbackDir = Vector2.zero;

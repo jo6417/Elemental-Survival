@@ -50,15 +50,6 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             //파티클 피격 딜레이 시작
             enemyManager.particleHitCount = 0.2f;
         }
-
-        // // 마법 파티클이 충돌했을때
-        // if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
-        // {
-        //     StartCoroutine(Hit(other.gameObject));
-
-        //     //파티클 피격 딜레이 시작
-        //     enemyManager.particleHitCount = 0.2f;
-        // }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -80,27 +71,6 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         {
             StartCoroutine(Hit(attack));
         }
-
-        // // 마법이 충돌했을때
-        // if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
-        // {
-        //     // 마법 정보 찾기
-        //     MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-        //     MagicInfo magic = magicHolder.magic;
-
-        //     StartCoroutine(Hit(other.gameObject));
-        // }
-
-        // //적에게 맞았을때
-        // if (other.transform.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
-        // {
-        //     // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
-        //     if (other.gameObject.TryGetComponent(out EnemyAttack enemyAtk)
-        //     || other.gameObject.TryGetComponent(out MagicHolder magicHolder))
-        //     {
-        //         StartCoroutine(Hit(other.gameObject));
-        //     }
-        // }
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -124,28 +94,19 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             if (magicHolder.magic.multiHit)
                 StartCoroutine(Hit(magicHolder));
         }
-
-        // // 계속 마법 트리거 콜라이더 안에 있을때
-        // if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()) && enemyManager.hitCount <= 0)
-        // {
-        //     // 마법 정보 찾기
-        //     MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-        //     MagicInfo magic = magicHolder.magic;
-
-        //     // 다단히트 마법일때만
-        //     if (magic.multiHit)
-        //         StartCoroutine(Hit(other.gameObject));
-        // }
     }
 
-    public IEnumerator Hit(Attack other)
+    public IEnumerator Hit(Attack attacker)
     {
         // 죽었으면 리턴
         if (enemyManager.isDead)
             yield break;
 
+        //크리티컬 성공 여부
+        bool isCritical = false;
+
         // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
-        if (other.gameObject.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
+        if (attacker.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 공격한 몹 매니저
             EnemyManager atkEnemyManager = enemyAtk.enemyManager;
@@ -165,46 +126,24 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             // if (!hitEnemyManager.enabled)
             //     return;
 
-            //피격 대상이 고스트일때
+            // 피격 대상이 고스트일때
             if (enemyManager.IsGhost)
             {
                 //고스트 아닌 적이 때렸을때만 데미지
                 if (!atkEnemyManager.IsGhost)
                     Damage(atkEnemy.power, false);
             }
-            //피격 대상이 고스트 아닐때
+            // 피격 대상이 고스트 아닐때
             else
             {
                 //고스트가 때렸으면 데미지
                 if (atkEnemyManager.IsGhost)
                     Damage(atkEnemy.power, false);
-
-                // 아군 피해 옵션 켜져있을때
-                // if (enemyAtk.friendlyFire)
-                //     Damage(atkEnemy.power, false);
-            }
-
-            // 넉백 디버프 있을때
-            if (enemyAtk.knockBackDebuff)
-            {
-                // print("enemy knock");
-
-                // 넉백
-                StartCoroutine(Knockback(other, atkEnemyManager.enemy.power));
-            }
-
-            // flat 디버프 시간 있을때, stop 카운트 중 아닐때
-            if (enemyAtk.flatTime > 0)
-            {
-                // print(enemyManager.enemy.enemyName + " enemy flat");
-
-                // 납작해지고 행동불능
-                StartCoroutine(FlatDebuff(enemyAtk.flatTime));
             }
         }
 
         //마법 정보 찾기
-        if (other.TryGetComponent(out MagicHolder magicHolder))
+        if (attacker.TryGetComponent(out MagicHolder magicHolder))
         {
             // 마법 정보 찾기
             MagicInfo magic = magicHolder.magic;
@@ -231,17 +170,15 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
             // 마법 파워 계산
             float power = MagicDB.Instance.MagicPower(magic);
-            // 마법 지속시간 계산
-            float duration = MagicDB.Instance.MagicDuration(magic);
-            //크리티컬 성공 여부
-            bool isCritical = MagicDB.Instance.MagicCritical(magic);
+            //크리티컬 성공 여부 계산
+            isCritical = MagicDB.Instance.MagicCritical(magic);
             //크리티컬 데미지 계산
             float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
             // print(transform.name + " : " + magic.magicName);
 
-            // 마법 데미지가 있으면
-            if (magic.power > 0)
+            // 데미지가 있으면
+            if (power > 0)
             {
                 //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
                 float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
@@ -253,65 +190,92 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                     damage = damage * criticalPower;
 
                 // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
-                if (magicHolder.poisonTime == 0)
+                if (attacker.poisonTime == 0)
                     Damage(damage, isCritical);
-
-                // 포이즌 피해 시간 있으면 도트 피해
-                if (magicHolder.poisonTime > 0)
-                {
-                    //이미 포이즌 코루틴 중이면 기존 코루틴 취소
-                    if (enemyManager.poisonCoroutine != null)
-                        StopCoroutine(enemyManager.poisonCoroutine);
-
-                    enemyManager.poisonCoroutine = PoisonDotHit(damage, duration);
-
-                    StartCoroutine(enemyManager.poisonCoroutine);
-                }
             }
+        }
 
-            // 보스가 아닐때 디버프
-            if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
-            {
-                //시간 정지
-                if (magicHolder.isStop)
-                {
-                    //몬스터 경직 카운터에 duration 만큼 추가
-                    enemyManager.stopCount = duration;
+        // 디버프 판단해서 적용
+        Debuff(attacker, isCritical);
+    }
 
-                    // 해당 위치에 고정
-                    // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-                }
+    public void Debuff(Attack attacker, bool isCritical)
+    {
+        // 보스가 아닐때 디버프
+        if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+            return;
 
-                //넉백
-                if (magicHolder.knockbackForce > 0)
-                {
-                    StartCoroutine(Knockback(other, magicHolder.knockbackForce));
-                }
+        //시간 정지
+        if (attacker.stopTime > 0)
+        {
+            //몬스터 경직 카운터에 stopTime 만큼 추가
+            enemyManager.stopCount = attacker.stopTime;
 
-                // 슬로우 디버프, 크리티컬 성공일때
-                if (magicHolder.slowTime > 0 && isCritical)
-                {
-                    //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-                    if (enemyManager.slowCoroutine != null)
-                        StopCoroutine(enemyManager.slowCoroutine);
+            // 해당 위치에 고정
+            // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
 
-                    enemyManager.slowCoroutine = SlowDebuff(magicHolder.slowTime);
+        //넉백
+        if (attacker.knockbackForce > 0)
+        {
+            StartCoroutine(Knockback(attacker, attacker.knockbackForce));
+        }
 
-                    StartCoroutine(enemyManager.slowCoroutine);
-                }
+        // 슬로우 디버프, 크리티컬 성공일때
+        if (attacker.slowTime > 0 && isCritical)
+        {
+            //이미 슬로우 코루틴 중이면 기존 코루틴 취소
+            if (enemyManager.slowCoroutine != null)
+                StopCoroutine(enemyManager.slowCoroutine);
 
-                // 감전 디버프 && 크리티컬일때
-                if (magicHolder.shockTime > 0 && isCritical)
-                {
-                    //이미 감전 코루틴 중이면 기존 코루틴 취소
-                    if (enemyManager.shockCoroutine != null)
-                        StopCoroutine(enemyManager.shockCoroutine);
+            enemyManager.slowCoroutine = SlowDebuff(attacker.slowTime);
 
-                    enemyManager.shockCoroutine = ShockDebuff(magicHolder.shockTime);
+            StartCoroutine(enemyManager.slowCoroutine);
+        }
 
-                    StartCoroutine(enemyManager.shockCoroutine);
-                }
-            }
+        // 감전 디버프 && 크리티컬일때
+        if (attacker.shockTime > 0 && isCritical)
+        {
+            //이미 감전 코루틴 중이면 기존 코루틴 취소
+            if (enemyManager.shockCoroutine != null)
+                StopCoroutine(enemyManager.shockCoroutine);
+
+            enemyManager.shockCoroutine = ShockDebuff(attacker.shockTime);
+
+            StartCoroutine(enemyManager.shockCoroutine);
+        }
+
+        // flat 디버프 있을때, flat 상태 아닐때
+        if (attacker.flatTime > 0 && enemyManager.flatCount <= 0)
+        {
+            // print("player flat");
+
+            // 납작해지고 행동불능
+            StartCoroutine(FlatDebuff(attacker.flatTime));
+        }
+
+        // 포이즌 피해 시간 있으면 도트 피해
+        if (attacker.poisonTime > 0)
+        {
+            //이미 포이즌 코루틴 중이면 기존 코루틴 취소
+            if (enemyManager.poisonCoroutine != null)
+                StopCoroutine(enemyManager.poisonCoroutine);
+
+            enemyManager.poisonCoroutine = PoisonDotHit(1, attacker.poisonTime);
+
+            StartCoroutine(enemyManager.poisonCoroutine);
+        }
+
+        // 출혈 지속시간 있으면 도트 피해
+        if (attacker.bleedTime > 0)
+        {
+            //이미 출혈 코루틴 중이면 기존 코루틴 취소
+            if (enemyManager.bleedCoroutine != null)
+                StopCoroutine(enemyManager.bleedCoroutine);
+
+            enemyManager.bleedCoroutine = BleedDotHit(1, attacker.bleedTime);
+
+            StartCoroutine(enemyManager.bleedCoroutine);
         }
     }
 
@@ -545,10 +509,10 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
     {
         // 반대 방향으로 넉백 벡터
         Vector2 knockbackDir = transform.position - attacker.transform.position;
-        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
+        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce * 2f;
 
         // 몬스터 위치에서 피격 반대방향 위치로 이동
-        enemyManager.transform.DOMove((Vector2)enemyManager.transform.position + knockbackDir, 1f)
+        enemyManager.transform.DOMove((Vector2)enemyManager.transform.position + knockbackDir, 0.1f)
         .SetEase(Ease.OutBack);
 
         // print(knockbackDir);
@@ -559,13 +523,13 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
     public IEnumerator FlatDebuff(float flatTime)
     {
         //정지 시간 추가
-        enemyManager.stopCount = flatTime;
+        enemyManager.flatCount = flatTime;
 
         //스케일 납작하게
         enemyManager.transform.localScale = new Vector2(1f, 0.5f);
 
         // stopCount 풀릴때까지 대기
-        yield return new WaitUntil(() => enemyManager.stopCount <= 0);
+        yield return new WaitUntil(() => enemyManager.flatCount <= 0);
         // yield return new WaitForSeconds(flatTime);
 
         //스케일 복구

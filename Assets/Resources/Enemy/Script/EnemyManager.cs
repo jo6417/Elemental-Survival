@@ -124,17 +124,18 @@ public class EnemyManager : Character
     // public Vector2 knockbackDir; //넉백 벡터
     // public bool isFlat; //깔려서 납작해졌을때
 
-    [Header("Debuff")]
+    [Header("Buff")]
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
     public IEnumerator poisonCoroutine = null;
     public IEnumerator bleedCoroutine = null;
     public IEnumerator slowCoroutine = null;
     public IEnumerator shockCoroutine = null;
-    public float particleHitCount = 0;
-    public float hitCount = 0;
-    public float stopCount = 0;
-    public float oppositeCount = 0;
+    public float particleHitCount = 0; // 파티클 피격 카운트
+    public float hitCount = 0; // 피격 딜레이 카운트
+    public float stopCount = 0; // 시간 정지 카운트
+    public float flatCount = 0; // 납작 디버프 카운트
+    public float oppositeCount = 0; // 스포너 반대편 이동 카운트
     public float poisonCoolCount; //독 도트뎀 남은시간
     public float bleedCoolCount; // 출혈 디버프 남은시간
 
@@ -444,6 +445,10 @@ public class EnemyManager : Character
             hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
         }
 
+        // flat 디버프 중일때 카운트 차감
+        if (flatCount > 0)
+            flatCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+
         // 멈춤 디버프 중일때 카운트 차감
         if (stopCount > 0)
             stopCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
@@ -620,7 +625,7 @@ public class EnemyManager : Character
             MagicInfo magic = magicHolder.magic;
 
             //경직 풀기
-            if (magicHolder.isStop)
+            if (magicHolder.stopTime > 0)
             {
                 // 카운터를 0으로 만들기
                 // stopCount = 0;

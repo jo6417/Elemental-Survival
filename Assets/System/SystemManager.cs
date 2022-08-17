@@ -125,7 +125,9 @@ public class SystemManager : MonoBehaviour
     public Material spriteUnLitMat; //일반 스프라이트 unLit 머터리얼
     public Material outLineMat; //아웃라인 머터리얼
     public Material hitMat; //맞았을때 단색 머터리얼
-    public Material HDR10_Mat; // HDR10 머터리얼
+    public Material HDR3_Mat; // HDR 3 머터리얼
+    public Material HDR5_Mat; // HDR 5 머터리얼
+    public Material HDR10_Mat; // HDR 10 머터리얼
     public Material ghostHDRMat; //고스팅 마법 HDR 머터리얼
     public Material verticalFillMat; // Vertical Fill Sprite 머터리얼
 
