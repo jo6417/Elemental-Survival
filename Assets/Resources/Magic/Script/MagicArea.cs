@@ -48,7 +48,7 @@ public class MagicArea : MonoBehaviour
         //플레이어 위치
         Vector3 playerPos = PlayerManager.Instance.transform.position;
         //플레이어 방향, 방향 없을때는 vector2.right 넣기
-        Vector3 playerDir = PlayerManager.Instance.lastDir != Vector3.zero ? PlayerManager.Instance.lastDir : Vector3.right;
+        Vector3 playerDir = PlayerManager.Instance.lastDir != Vector2.zero ? (Vector3)PlayerManager.Instance.lastDir : Vector3.right;
 
         //던지기 시퀀스
         if (isThrow)

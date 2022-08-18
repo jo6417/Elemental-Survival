@@ -70,15 +70,15 @@ public class PlayerManager : Character
     public float camFollowSpeed = 10f;
 
     [Header("<Input>")]
-    Vector2 nowMoveDir;
+    Vector2 inputMoveDir; // 현재 이동 입력 벡터
+    Vector2 nowMoveDir; // 현재 이동 벡터
+    public Vector2 lastDir; // 마지막 이동 벡터
     public bool isDash; //현재 대쉬중 여부
-    // public bool isFlat; //깔려서 납작해졌을때
     public float defaultDashSpeed = 1.5f; // 대쉬 속도 기본값
-    [HideInInspector]
-    public float dashSpeed; //대쉬 버프 속도
-    [HideInInspector]
+    // [HideInInspector]
+    public float dashSpeed = 1; //대쉬 버프 속도
+    // [HideInInspector]
     public float speedDeBuff = 1f; //이동속도 디버프
-    public Vector3 lastDir; //마지막 바라봤던 방향
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
@@ -87,20 +87,13 @@ public class PlayerManager : Character
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
     public SpriteRenderer sprite;
-    // public Rigidbody2D rigid;
     public Light2D playerLight;
-    // public Transform buffParent; // 버프 아이콘 부모 오브젝트
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Origin; //초기 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
 
     [Header("<State>")]
-    // public float poisonCoolCount; //독 도트뎀 남은시간
-    // float hitDelayTime = 0.2f; //피격 무적시간
-    // public float hitCoolCount = 0f; // 피격 무적시간 카운트
-    // public IEnumerator hitDelayCoroutine;
-    // public Vector2 knockbackDir; //넉백 벡터
     public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
 
@@ -139,32 +132,31 @@ public class PlayerManager : Character
     {
         playerInput = new NewInput();
 
-        // 방향키 버튼 매핑
+        // 방향키 눌렀을때
         playerInput.Player.Move.performed += val =>
         {
             //현재 이동방향 입력
-            nowMoveDir = val.ReadValue<Vector2>();
+            inputMoveDir = val.ReadValue<Vector2>();
 
             //대쉬 중 아닐때만
-            if (!isDash)
-                Move();
+            Move();
         };
 
         // 방향키 안누를때
         playerInput.Player.Move.canceled += val =>
         {
             //현재 이동방향 입력
-            nowMoveDir = val.ReadValue<Vector2>();
+            inputMoveDir = val.ReadValue<Vector2>();
 
             //대쉬 중 아닐때만
-            if (!isDash)
-                Move();
+            Move();
         };
 
         // 대쉬 버튼 매핑
         playerInput.Player.Dash.performed += val =>
         {
-            if (!isDash && nowMoveDir != Vector2.zero)
+            // 대쉬중 아닐때, 현재 이동 정지 아닐때
+            if (!isDash && inputMoveDir != Vector2.zero)
                 DashToggle();
         };
 
@@ -235,9 +227,8 @@ public class PlayerManager : Character
         if (hitBox.hitCoolCount > 0)
             hitBox.hitCoolCount -= Time.deltaTime;
 
-        //대쉬중 아닐때
-        if (!isDash)
-            Move();
+        // 플레이어 이동
+        Move();
     }
 
     public void Move()
@@ -265,21 +256,11 @@ public class PlayerManager : Character
             anim.speed = 1;
         }
 
-        //애니메이터 스피드 초기화
-        anim.speed = 1;
-
-        //이동 입력값 받기
-        float horizonInput = nowMoveDir.x;
-        float verticalInput = nowMoveDir.y;
-        dashSpeed = 1f;
-
-        // x축 이동
-        if (horizonInput != 0)
+        // x축 이동에 따라 회전
+        if (inputMoveDir.x != 0)
         {
-            nowMoveDir.x = horizonInput;
-
             //방향 따라 캐릭터 회전
-            if (horizonInput > 0)
+            if (inputMoveDir.x > 0)
             {
                 sprite.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
@@ -289,14 +270,8 @@ public class PlayerManager : Character
             }
         }
 
-        // y축 이동
-        if (verticalInput != 0)
-        {
-            nowMoveDir.y = verticalInput;
-        }
-
         // 방향키 입력에 따라 애니메이터 걷기 변수 입력
-        if (horizonInput == 0 && verticalInput == 0)
+        if (inputMoveDir == Vector2.zero)
         {
             anim.SetBool("isWalk", false);
         }
@@ -306,13 +281,18 @@ public class PlayerManager : Character
         }
 
         //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
-        if (isDash)
-        {
-            dashSpeed = defaultDashSpeed;
-        }
+        dashSpeed = isDash ? defaultDashSpeed : 1f;
+
+        // 대쉬중 아닐때
+        if (!isDash)
+            // 이동 입력값을 실제 이동 벡터에 담기
+            nowMoveDir = inputMoveDir;
+
+        // 마지막 이동 방향 기억
+        if (nowMoveDir != Vector2.zero)
+            lastDir = nowMoveDir;
 
         // 실제 오브젝트 이동해주기
-        // nowMoveDir.Normalize();
         rigid.velocity =
         PlayerStat_Now.moveSpeed //플레이어 이동속도
         * nowMoveDir //움직일 방향
@@ -321,10 +301,6 @@ public class PlayerManager : Character
         * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
         + hitBox.knockbackDir //넉백 벡터 추가
         ;
-
-        //마지막 방향 기억
-        if (nowMoveDir != Vector2.zero)
-            lastDir = nowMoveDir;
     }
 
     public void DashToggle()

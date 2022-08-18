@@ -45,6 +45,7 @@ public class Quad_AI : MonoBehaviour
     ParticleManager[] flyEffects = new ParticleManager[4]; // 비행 파티클 리스트
     ParticleManager[] pushEffects = new ParticleManager[4]; // 밀어내기 이펙트 리스트
     ParticleManager[] sparkEffects = new ParticleManager[4]; // 프로펠러 스파크 이펙트 리스트
+    ParticleManager[] chargeEffects = new ParticleManager[4]; // 프로펠러 차지 이펙트 리스트
     public List<GameObject> restEffects = new List<GameObject>();
     public SortingGroup sortingLayer; //전체 레이어
 
@@ -67,7 +68,7 @@ public class Quad_AI : MonoBehaviour
     public GameObject maskedBladePrefab; // 가로로 박히는 프로펠러 톱날 프리팹
     public GameObject dirtSlashEffect;
     public GameObject dirtLayEffect;
-    public ParticleSystem chargeEffect; // 기모으기 이펙트
+    // public ParticleSystem chargeEffect; // 기모으기 이펙트
     public ParticleSystem fanSparkEffect; // 프로펠러 스파크 이펙트
     public LineRenderer eyeLaser;
     public SpriteRenderer targetMarker;
@@ -93,11 +94,13 @@ public class Quad_AI : MonoBehaviour
             flyEffects[i] = fans[i].GetChild(1).GetComponent<ParticleManager>();
             pushEffects[i] = fans[i].GetChild(2).GetComponentInChildren<ParticleManager>(true);
             sparkEffects[i] = fans[i].GetChild(3).GetComponentInChildren<ParticleManager>(true);
+            chargeEffects[i] = fans[i].GetChild(4).GetComponentInChildren<ParticleManager>(true);
 
             // 각 파티클 초기화
             flyEffects[i].gameObject.SetActive(true);
             pushEffects[i].gameObject.SetActive(false);
             sparkEffects[i].gameObject.SetActive(false);
+            chargeEffects[i].gameObject.SetActive(false);
         }
 
         // 레이어 1로 초기화
@@ -268,7 +271,7 @@ public class Quad_AI : MonoBehaviour
         enemyManager.animList[0].enabled = false;
 
         // 랜덤 패턴 결정
-        int randomNum = Random.Range(0, 5);
+        int randomNum = Random.Range(0, 4);
 
         // print("randomNum : " + randomNum);
 
@@ -447,6 +450,9 @@ public class Quad_AI : MonoBehaviour
         Vector2 firstFanPos = sideCenterPos + Vector2.up * 12f;
         // 프로펠러 회전 각도
         Vector3 fanRotate = isLeftSide ? Vector3.forward * -90f : Vector3.forward * 90f;
+
+        // 팬 수평유지 스위치 끄기
+        fanHorizon = false;
 
         for (int i = 0; i < 4; i++)
         {
@@ -805,18 +811,18 @@ public class Quad_AI : MonoBehaviour
     IEnumerator SingleShot()
     {
         // 발사할 날개 인덱스 선정
-        int wingNum = Random.Range(0, 4);
+        int wingIndex = Random.Range(0, 4);
 
         //! 발사할 날개 고정
         // wingNum = 1;
 
-        SpriteRenderer shotWing = wings[wingNum];
+        SpriteRenderer shotWing = wings[wingIndex];
 
         // 날개 빠르게 돌리며 빨갛게 달아오름
         shotWing.DOColor(wingRageColor, aimTime);
 
-        // 기 모으는 이펙트 프로펠러 자식으로 소환
-        ParticleSystem fanCharge = LeanPool.Spawn(chargeEffect, fans[wingNum].transform.position, Quaternion.identity, fans[wingNum].transform);
+        // 해당 날개의 차지 이펙트 활성화
+        chargeEffects[wingIndex].gameObject.SetActive(true);
 
         // 조준 시간 초기화
         float aimCount = aimTime;
@@ -888,7 +894,8 @@ public class Quad_AI : MonoBehaviour
         shotWing.transform.parent.DOShakePosition(0.2f, 0.05f, 10, 90f, false, false);
 
         // 프로펠러 차지 이펙트 끄기
-        fanCharge.GetComponent<ParticleManager>().SmoothDespawn();
+        chargeEffects[wingIndex].SmoothDisable();
+
         // 프로펠러에서 불씨 파티클 생성
         LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
@@ -936,7 +943,7 @@ public class Quad_AI : MonoBehaviour
         // wing 색깔 초기화
         shotWing.color = wingDefaultColor;
         // 발사된 날개 비행 파티클 끄기
-        flyEffects[wingNum].SmoothDisable();
+        flyEffects[wingIndex].SmoothDisable();
 
         // 발사할때 위치 저장
         Vector2 shotPos = transform.position;
@@ -949,7 +956,7 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.OutBack);
 
         // 프로펠러 방향에 따라 기울기 넉백 계산
-        Vector3 knockbackRotate = wingNum == 0 || wingNum == 2
+        Vector3 knockbackRotate = wingIndex == 0 || wingIndex == 2
         ? Vector3.back * 20f
         : Vector3.forward * 20f;
 
@@ -999,7 +1006,7 @@ public class Quad_AI : MonoBehaviour
         // 블레이드 장착되며 wing 오브젝트 켜기
         shotWing.gameObject.SetActive(true);
         // 발사된 날개 비행 파티클 켜기
-        flyEffects[wingNum].gameObject.SetActive(true);
+        flyEffects[wingIndex].gameObject.SetActive(true);
 
         // 장착할때 불꽃 파티클
         LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
@@ -1009,7 +1016,7 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.OutBack);
 
         // 프로펠러 방향에 따라 기울기 넉백 계산
-        knockbackRotate = wingNum == 0 || wingNum == 2
+        knockbackRotate = wingIndex == 0 || wingIndex == 2
         ? Vector3.back * 20f
         : Vector3.forward * 20f;
 
@@ -1043,35 +1050,6 @@ public class Quad_AI : MonoBehaviour
         body.DOLocalRotate(Vector3.zero, smashReadyTime)
         .SetEase(Ease.OutCubic);
 
-        // 모든 팬 위치 정렬
-        for (int i = 0; i < 4; i++)
-        {
-            // 비행 이펙트 전부 끄기
-            flyEffects[i].SmoothDisable();
-
-            // 프로펠러 각도 정렬
-            // fans[i].DOLocalRotate(new Vector3(-70, 0, 0), smashReadyTime);
-
-            // 그룹 레이어 통일
-            fans[i].GetComponent<SortingGroup>().sortingOrder = 1;
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            int fanIndex = i;
-
-            // 프로펠러 가드 빨갛게 달궈짐
-            SpriteRenderer fanSprite = fans[i].GetComponent<SpriteRenderer>();
-            fanSprite.DOColor(fanRageColor, 1f);
-
-            wings[i].DOColor(wingRageColor, 1f)
-            .OnComplete(() =>
-            {
-                // 원형 불꽃 파티클 튀는 이펙트 켜기
-                sparkEffects[fanIndex].gameObject.SetActive(true);
-            });
-        }
-
         // 프로펠러 목표 각도
         float targetAngle = 0;
         // 가속도 초기화
@@ -1082,10 +1060,45 @@ public class Quad_AI : MonoBehaviour
         // 프로펠러 간격 빠르게 벌리기
         float fanPosX = 0;
         float fanPosY = 0;
+
         for (int i = 0; i < 4; i++)
         {
             int fanIndex = i;
 
+            // 비행 이펙트 전부 끄기
+            flyEffects[fanIndex].SmoothDisable();
+
+            // 그룹 레이어 통일
+            fans[fanIndex].GetComponent<SortingGroup>().sortingOrder = 1;
+
+            // 해당 날개의 차지 이펙트 활성화
+            chargeEffects[fanIndex].gameObject.SetActive(true);
+
+            // 프로펠러 가드 빨갛게 달궈짐
+            SpriteRenderer fanSprite = fans[fanIndex].GetComponent<SpriteRenderer>();
+            fanSprite.DOColor(fanRageColor, 1f)
+            .SetDelay(0.5f);
+
+            wings[fanIndex].DOColor(wingRageColor, 1f)
+            .SetDelay(0.5f)
+            .OnComplete(() =>
+            {
+                // 원형 불꽃 파티클 튀는 이펙트 켜기
+                sparkEffects[fanIndex].gameObject.SetActive(true);
+
+                // 해당 날개의 차지 이펙트 끄기
+                chargeEffects[fanIndex].SmoothDisable();
+            });
+        }
+
+        // 차지시간 대기
+        yield return new WaitForSeconds(1f);
+
+        for (int i = 0; i < 4; i++)
+        {
+            int fanIndex = i;
+
+            // 프로펠러 인덱스에 따라 위치 계산
             if (i == 1 || i == 3)
                 fanPosX = smashRange;
             if (i == 0 || i == 2)
@@ -1095,7 +1108,8 @@ public class Quad_AI : MonoBehaviour
             if (i == 1 || i == 2)
                 fanPosY = -smashRange;
 
-            fans[i].DOLocalMove(new Vector2(fanPosX, fanPosY), smashTime)
+            // 몸체와 프로펠러 간격 빠르게 벌렸다 좁히기
+            fans[fanIndex].DOLocalMove(new Vector2(fanPosX, fanPosY), smashTime)
             .SetLoops(2, LoopType.Yoyo)
             .SetEase(Ease.InBack)
             .SetDelay(smashReadyTime)
@@ -1114,7 +1128,7 @@ public class Quad_AI : MonoBehaviour
             });
         }
 
-        // 프로펠러 간격 벌렸다 좁히는 트랜지션 끝날때까지 반복
+        // 점점 빠르게 회전, 공격 끝나면 점점 느려짐
         while (true)
         {
             // 가속도 점점 증가 혹은 감소
@@ -1176,7 +1190,12 @@ public class Quad_AI : MonoBehaviour
             });
 
             // 프로펠러 회전값 초기화
-            fans[i].DORotate(Vector3.zero, 0.5f);
+            fans[i].DORotate(Vector3.zero, 0.5f)
+            .OnComplete(() =>
+            {
+                // 팬 수평유지 스위치 켜기
+                fanHorizon = true;
+            });
 
             // 앞,뒤 프로펠러 그룹 레이어 구분
             if (i == 0 || i == 3)

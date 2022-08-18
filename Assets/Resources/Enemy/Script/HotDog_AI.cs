@@ -8,6 +8,9 @@ using UnityEngine;
 public class HotDog_AI : MonoBehaviour
 {
     [Header("State")]
+    [SerializeField]
+    Patten patten = Patten.None;
+    enum Patten { Hellfire, Meteor, Stealth, None };
     bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch, BackStep };
@@ -451,7 +454,8 @@ public class HotDog_AI : MonoBehaviour
         print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        // randomNum = 2;
+        if (patten != Patten.None)
+            randomNum = (int)patten;
 
         switch (randomNum)
         {
