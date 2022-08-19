@@ -63,7 +63,7 @@ public class MergeMenu : MonoBehaviour
 
     [Header("Stack List")]
     public Transform stackSlots;
-    public List<GameObject> stackList = new List<GameObject>(); //각각 슬롯 오브젝트
+    public List<GameObject> stackObjSlots = new List<GameObject>(); //각각 슬롯 오브젝트
     Vector2[] stackSlotPos = new Vector2[7]; //각각 슬롯의 초기 위치
     float scrollCoolCount; //스크롤 쿨타임 카운트
     float scrollCoolTime = 0.1f; //스크롤 쿨타임
@@ -87,9 +87,9 @@ public class MergeMenu : MonoBehaviour
         for (int i = 0; i < 7; i++)
         {
             // 모든 슬롯 오브젝트 넣기
-            stackList.Add(stackSlots.transform.GetChild(i).gameObject);
+            stackObjSlots.Add(stackSlots.transform.GetChild(i).gameObject);
             // 슬롯들의 초기 위치 넣기
-            stackSlotPos[i] = stackList[i].GetComponent<RectTransform>().anchoredPosition;
+            stackSlotPos[i] = stackObjSlots[i].GetComponent<RectTransform>().anchoredPosition;
             // print(slotPos[i]);
         }
 
@@ -141,14 +141,14 @@ public class MergeMenu : MonoBehaviour
             // 왼쪽으로 스크롤하기
             if (arrowDir.x < 0)
             {
-                ScrollSlots(false);
+                StackScroll(false);
                 scrollCoolCount = scrollCoolTime;
             }
 
             // 오른쪽으로 스크롤하기
             if (arrowDir.x > 0)
             {
-                ScrollSlots(true);
+                StackScroll(true);
                 scrollCoolCount = scrollCoolTime;
             }
         }
@@ -199,7 +199,7 @@ public class MergeMenu : MonoBehaviour
         // 스택 슬롯 세팅
         SetSlots();
         // 스택 슬롯 사이즈 및 위치 정렬
-        ScrollSlots(true);
+        StackScroll(true);
 
         // 선택 아이콘 끄기
         selectedIcon.enabled = false;
@@ -264,7 +264,7 @@ public class MergeMenu : MonoBehaviour
 
         //선택된 슬롯 네비 설정
         Navigation nav = selectedSlot.navigation;
-        nav.selectOnUp = stackList[3].GetComponent<Button>().FindSelectable(Vector3.up);
+        nav.selectOnUp = stackObjSlots[3].GetComponent<Button>().FindSelectable(Vector3.up);
         selectedSlot.navigation = nav;
 
         //트윈 끝날때까지 대기
@@ -371,7 +371,7 @@ public class MergeMenu : MonoBehaviour
         if (Cursor.lockState == CursorLockMode.Locked)
             return;
 
-        Image targetImage = stackList[3].transform.Find("Icon").GetComponent<Image>();
+        Image targetImage = stackObjSlots[3].transform.Find("Icon").GetComponent<Image>();
 
         // 스택 가운데 슬롯 이미지 토글
         targetImage.enabled = !targetImage.enabled;
@@ -385,7 +385,7 @@ public class MergeMenu : MonoBehaviour
         selectedIconRect.anchoredPosition = mousePos;
     }
 
-    public void ScrollSlots(bool isLeft)
+    public void StackScroll(bool isLeft)
     {
         //마우스에 아이콘 들고 있을때 스크롤하면
         if (selectedIcon.enabled)
@@ -395,7 +395,7 @@ public class MergeMenu : MonoBehaviour
         }
 
         //모든 슬롯 domove 강제 즉시 완료
-        foreach (var slot in stackList)
+        foreach (var slot in stackObjSlots)
         {
             slot.transform.DOComplete();
         }
@@ -407,51 +407,88 @@ public class MergeMenu : MonoBehaviour
         if (!loadingPanel.activeSelf)
         {
             //슬롯 오브젝트 리스트 인덱스 계산
-            startSlotIndex = isLeft ? stackList.Count - 1 : 0;
-            endSlotIndex = isLeft ? 0 : stackList.Count - 1;
+            startSlotIndex = isLeft ? stackObjSlots.Count - 1 : 0;
+            endSlotIndex = isLeft ? 0 : stackObjSlots.Count - 1;
 
             // 마지막 슬롯을 첫번째 인덱스 자리에 넣기
-            GameObject targetSlot = stackList[startSlotIndex]; //타겟 오브젝트 얻기
-            stackList.RemoveAt(startSlotIndex); //타겟 마법 삭제
-            stackList.Insert(endSlotIndex, targetSlot); //타겟 마법 넣기
+            GameObject targetSlot = stackObjSlots[startSlotIndex]; //타겟 오브젝트 얻기
+            stackObjSlots.RemoveAt(startSlotIndex); //타겟 마법 삭제
+            stackObjSlots.Insert(endSlotIndex, targetSlot); //타겟 마법 넣기
 
-            // 마지막 슬롯은 slotPos[0] 으로 이동
+            // 마지막 슬롯은 반대편으로 즉시 이동
             targetSlot.GetComponent<RectTransform>().anchoredPosition = stackSlotPos[endSlotIndex];
         }
 
         // 모든 슬롯 오브젝트들을 slotPos 초기위치에 맞게 domove
-        for (int i = 0; i < stackList.Count; i++)
+        for (int i = 0; i < stackObjSlots.Count; i++)
         {
-            RectTransform rect = stackList[i].GetComponent<RectTransform>();
+            RectTransform stackSlotRect = stackObjSlots[i].GetComponent<RectTransform>();
+
+            Vector2 slotPos = stackSlotPos[i];
 
             //이미 domove 중이면 빠르게 움직이기
             // float moveTime = Vector2.Distance(rect.anchoredPosition, slotPos[i]) != 120f ? 0.1f : 0.5f;
             float moveTime = 0.2f;
 
-            //한칸 옆으로 위치 이동
-            if (endSlotIndex != i && endSlotIndex != -1)
-                rect.DOAnchorPos(stackSlotPos[i], moveTime)
+            // Merge 슬롯으로 옮겨서 0번 마법이 스택에서 삭제됬을때
+            if (selectedMagic != null && selectedMagic != PlayerManager.Instance.hasStackMagics[0])
+            {
+                // 왼쪽 3개는 즉시 위치이동
+                if (i == 0 || i == 1 || i == 2)
+                {
+                    // 정해진 위치로 즉시 이동
+                    stackSlotRect.anchoredPosition = slotPos;
+
+                    //자리에 맞게 사이즈 바꾸기
+                    stackSlotRect.localScale = Vector3.one * 0.7f;
+                }
+
+                // 오른쪽 3개는 그대로 DOAnchorPos
+                if (i == 3 || i == 4 || i == 5)
+                {
+                    // 한칸씩 옆으로 이동
+                    stackSlotRect.DOAnchorPos(slotPos, moveTime)
+                    .SetUpdate(true);
+
+                    //자리에 맞게 사이즈 바꾸기
+                    float scale = i == 3 ? 1f : 0.7f;
+                    stackSlotRect.DOScale(scale, moveTime)
+                    .SetUpdate(true);
+                }
+
+                //todo 가운데 애니메이션용 슬롯 활성화, 줄어들고 비활성화, 사이즈 초기화
+            }
+            else
+            {
+                // 한칸씩 옆으로 이동
+                stackSlotRect.DOAnchorPos(slotPos, moveTime)
                 .SetUpdate(true);
 
-            //자리에 맞게 사이즈 바꾸기
-            float scale = i == 3 ? 1f : 0.7f;
-            rect.DOScale(scale, moveTime)
-            .SetUpdate(true);
+                //자리에 맞게 사이즈 바꾸기
+                float scale = i == 3 ? 1f : 0.7f;
+                stackSlotRect.DOScale(scale, moveTime)
+                .SetUpdate(true);
+            }
 
             //아이콘 알파값 바꾸기
-            stackList[i].GetComponent<CanvasGroup>().alpha = i == 3 ? 1f : 0.5f;
+            stackObjSlots[i].GetComponent<CanvasGroup>().alpha = i == 3 ? 1f : 0.5f;
         }
 
         if (PlayerManager.Instance.hasStackMagics.Count > 0)
         {
-            //마법 데이터 리스트 인덱스 계산
-            int startIndex = isLeft ? PlayerManager.Instance.hasStackMagics.Count - 1 : 0;
-            int endIndex = isLeft ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
+            // 0번 마법이 삭제 되지 않았을때
+            if (selectedMagic == PlayerManager.Instance.hasStackMagics[0])
+            {
+                //마법 데이터 리스트 인덱스 계산
+                int startIndex = isLeft ? PlayerManager.Instance.hasStackMagics.Count - 1 : 0;
+                int endIndex = isLeft ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
 
-            // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
-            MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 참조
-            PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 정보 삭제
-            PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 정보 넣기
+                // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
+                MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 참조
+
+                PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 정보 삭제
+                PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 정보 넣기
+            }
 
             // 선택된 마법 입력
             selectedMagic = PlayerManager.Instance.hasStackMagics[0];
@@ -488,9 +525,9 @@ public class MergeMenu : MonoBehaviour
     void SetIcon(int objIndex, int num, int magicIndex)
     {
         //프레임 찾기
-        Image frame = stackList[objIndex].transform.Find("Frame").GetComponent<Image>();
+        Image frame = stackObjSlots[objIndex].transform.Find("Frame").GetComponent<Image>();
         //아이콘 찾기
-        Image icon = stackList[objIndex].transform.Find("Icon").GetComponent<Image>();
+        Image icon = stackObjSlots[objIndex].transform.Find("Icon").GetComponent<Image>();
         //레벨 찾기
         TextMeshProUGUI level = icon.transform.Find("Level").GetComponent<TextMeshProUGUI>();
 

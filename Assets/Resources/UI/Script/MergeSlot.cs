@@ -316,7 +316,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 선택된 마법을 스택에서 삭제
             PlayerManager.Instance.hasStackMagics.RemoveAt(0);
             // 스택 리스트 갱신
-            MergeMenu.Instance.ScrollSlots(false);
+            MergeMenu.Instance.StackScroll(false);
 
             yield break;
         }
@@ -407,7 +407,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 선택된 마법을 스택에서 삭제
             PlayerManager.Instance.hasStackMagics.RemoveAt(0);
             // 스택 리스트 갱신
-            MergeMenu.Instance.ScrollSlots(false);
+            MergeMenu.Instance.StackScroll(false);
         }
 
         //메인 UI에 스마트폰 알림 갱신
