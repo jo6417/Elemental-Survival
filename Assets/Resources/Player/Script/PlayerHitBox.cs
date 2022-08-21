@@ -531,13 +531,15 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         shockCoroutine = null;
     }
 
-    public void Dead()
+    public IEnumerator Dead()
     {
         // 시간 멈추기
         Time.timeScale = 0;
 
         //TODO 게임오버 UI 띄우기
         UIManager.Instance.GameOver();
+
+        yield return null;
     }
 
     public void DebuffRemove()

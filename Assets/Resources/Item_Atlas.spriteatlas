@@ -50,6 +50,7 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 059c5430a55224444957393387748ab7, type: 3}
+  - {fileID: 21300000, guid: 58aa3860d8bdc8c45af221c04e14a199, type: 3}
   - {fileID: 21300000, guid: 39b6fa9065575534b9b072664f0ec446, type: 3}
   - {fileID: 21300000, guid: 456ea6119be099f449e99d9e6b5aada8, type: 3}
   - {fileID: 21300000, guid: a2820b02fea81834a9552f9d501bc6c2, type: 3}
@@ -69,6 +70,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5b551ebf45165b140afd27e58dc906a7, type: 3}
   m_PackedSpriteNamesToIndex:
   - WindGem_Icon
+  - USB_Icon
   - HealthPotion_Icon
   - Heart_Heal
   - WaterGem_Icon

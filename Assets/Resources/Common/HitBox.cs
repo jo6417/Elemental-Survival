@@ -8,7 +8,7 @@ interface IHitBox
     IEnumerator HitDelay();
     void Damage(float damage, bool isCritical);
     void DamageText(float damage, bool isCritical);
-    void Dead();
+    IEnumerator Dead();
     void DebuffRemove();
 
     IEnumerator PoisonDotHit(float tickDamage, float duration);

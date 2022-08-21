@@ -245,7 +245,7 @@ public class SlotMachine : MonoBehaviour
             p = p + ", " + prizes[i].itemName;
 
             // 상품 획득하기
-            PlayerManager.Instance.GetItem(prizes[i]);
+            // PlayerManager.Instance.GetItem(prizes[i]);
         }
         print(prizes.Count + " : " + p);
 

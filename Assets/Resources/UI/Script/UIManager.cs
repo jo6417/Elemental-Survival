@@ -103,6 +103,9 @@ public class UIManager : MonoBehaviour
     {
         //입력 초기화
         InputInit();
+
+        // 시작할때 머지 캔버스 켜놓기
+        mergeMagicPanel.SetActive(true);
     }
 
     void InputInit()
@@ -1172,10 +1175,10 @@ public class UIManager : MonoBehaviour
         // 이번 게임에서 보유 했었던 마법 전부 넣기
         Transform hasMagics = gameoverScreen.Find("HasMagic");
         DestroyChildren(hasMagics); //모든 자식 제거
-        for (int i = 0; i < MagicDB.Instance.touchedMagics.Count; i++)
+        for (int i = 0; i < MagicDB.Instance.savedMagics.Count; i++)
         {
             //마법 찾기
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.touchedMagics[i]);
+            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.savedMagics[i]);
             print(magic.magicName);
             //마법 슬롯 생성
             Transform slot = LeanPool.Spawn(gameoverSlot, hasMagics.position, Quaternion.identity, hasMagics).transform;

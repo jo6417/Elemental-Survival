@@ -172,14 +172,14 @@ public class UltimateList : MonoBehaviour
         int startIndex = isLeft ? ultimateList.Count - 1 : 0;
         int endIndex = isLeft ? 0 : ultimateList.Count - 1;
 
-        // 실제 데이터도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
+        // 실제 궁극기 데이터도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
         MagicInfo targetMagic = ultimateList[startIndex]; //타겟 마법 얻기
         ultimateList.RemoveAt(startIndex); //타겟 마법 삭제
         ultimateList.Insert(endIndex, targetMagic); //타겟 마법 넣기
 
-        //hasMagic에서도 순서 바꾸기
-        PlayerManager.Instance.hasStackMagics.Remove(targetMagic);
-        PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic);
+        // 스택 리스트에서도 순서 바꾸기
+        // MergeMenu.Instance.RemoveStack(targetMagic);
+        // PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic);
 
         // 모든 아이콘 다시 넣기
         SetSlots();

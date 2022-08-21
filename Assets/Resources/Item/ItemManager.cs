@@ -15,11 +15,11 @@ public class ItemManager : MonoBehaviour
     [HideInInspector]
     public int gemTypeIndex = -1;
     public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
-    private float radius = 5;
     public float autoDespawnTime = 0; //자동 디스폰 시간
 
     [Header("Refer")]
-    public ItemInfo item;
+    public ItemInfo item; // 해당 아이템 정보
+    public MagicInfo usbMagic; // USB 아이템일때 보유한 마법 정보
     public string itemName;
     public SpriteRenderer sprite;
     public GameObject despawnEffect; //사라질때 이펙트
@@ -152,12 +152,6 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        // 원소젬 합체 범위 기즈모
-        Gizmos.DrawWireSphere(transform.position, radius);
-    }
-
     public IEnumerator GetMove(Transform Getter)
     {
         // 아이템 위치부터 플레이어 쪽으로 방향 벡터
@@ -168,7 +162,9 @@ public class ItemManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
 
-        //플레이어 이동 속도 계수
+        // 플레이어 이동 속도 계수
+        float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed;
+        // 가속도값
         float accelSpeed = 0.8f;
 
         // 플레이어 방향으로 날아가기, 아이템 사라질때까지 방향 갱신하며 반복
@@ -186,14 +182,14 @@ public class ItemManager : MonoBehaviour
                 break;
             }
 
-            //플레이어 속도 반영
-            dir = dir.normalized * PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed * accelSpeed;
+            // 플레이어 속도 및 가속도 반영
+            dir = dir.normalized * playerSpeed * accelSpeed;
 
             //해당 방향으로 날아가기
             rigid.velocity = dir;
 
             // x방향으로 회전 시키기
-            rigid.angularVelocity = dir.x * 10f;
+            rigid.angularVelocity = dir.x * 10f * Random.Range(1f, 2f);
 
             yield return new WaitForSeconds(0.05f);
         }
@@ -215,6 +211,12 @@ public class ItemManager : MonoBehaviour
         {
             PlayerManager.Instance.hitBox.Damage(-amount, false);
         }
+        //todo 아이템이 USB일때
+        else if (item.itemType == "USB")
+        {
+            // 마법 획득
+            PlayerManager.Instance.GetMagic(usbMagic);
+        }
         else
         {
             //아이템 획득
@@ -228,7 +230,7 @@ public class ItemManager : MonoBehaviour
 
         //디스폰 이펙트 있으면 생성
         if (despawnEffect)
-            LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(despawnEffect, transform.position, transform.rotation, SystemManager.Instance.effectPool);
 
         //아이템 비활성화
         LeanPool.Despawn(transform);

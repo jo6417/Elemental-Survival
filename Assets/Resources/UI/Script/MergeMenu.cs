@@ -22,11 +22,11 @@ public class MergeMenu : MonoBehaviour
                 {
                     instance = obj;
                 }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<MergeMenu>();
-                    instance = newObj;
-                }
+                // else
+                // {
+                //     var newObj = new GameObject().AddComponent<MergeMenu>();
+                //     instance = newObj;
+                // }
             }
             return instance;
         }
@@ -93,16 +93,20 @@ public class MergeMenu : MonoBehaviour
             // print(slotPos[i]);
         }
 
+        // 선택된 마법 rect 찾기
         selectedIconRect = selectedIcon.GetComponent<RectTransform>();
 
         // 키 입력 정리
-        InputInit();
+        StartCoroutine(InputInit());
     }
 
-    void InputInit()
+    IEnumerator InputInit()
     {
+        // 플레이어 초기화 대기
+        yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
+
         //플레이어 인풋 끄기
-        PlayerManager.Instance.playerInput.Disable();
+        // PlayerManager.Instance.playerInput.Disable();
 
         // 방향키 입력
         UIManager.Instance.UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
@@ -119,6 +123,11 @@ public class MergeMenu : MonoBehaviour
                 StartCoroutine(BackBtnAction());
             }
         };
+
+        // 머지 패널 끄기
+        mergePanel.SetActive(false);
+        // 머지 캔버스 끄기
+        gameObject.SetActive(false);
     }
 
     // 방향키 입력되면 실행
@@ -197,7 +206,7 @@ public class MergeMenu : MonoBehaviour
         MergeSet();
 
         // 스택 슬롯 세팅
-        SetSlots();
+        // UpdateStacks();
         // 스택 슬롯 사이즈 및 위치 정렬
         StackScroll(true);
 
@@ -207,6 +216,12 @@ public class MergeMenu : MonoBehaviour
         //Merge 인디케이터 끄기
         mergeSignal.gameObject.SetActive(false);
 
+        // 핸드폰 켜기
+        StartCoroutine(OpenPhone());
+    }
+
+    public IEnumerator OpenPhone()
+    {
         //위치 기억하기
         phonePosition = CastMagic.Instance.transform.position;
         //회전값 기억하기
@@ -309,7 +324,7 @@ public class MergeMenu : MonoBehaviour
             //아이콘 찾기
             Image icon = mergeSlot.Find("Icon").GetComponent<Image>();
             //레벨 찾기
-            TextMeshProUGUI level = icon.transform.Find("Level").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI level = mergeSlot.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
             //버튼 찾기
             Button button = mergeSlot.GetComponent<Button>();
             //툴팁 컴포넌트 찾기
@@ -323,7 +338,7 @@ public class MergeMenu : MonoBehaviour
 
                 //아이콘 및 레벨 비활성화
                 icon.enabled = false;
-                level.enabled = false;
+                level.transform.parent.gameObject.SetActive(false);
 
                 continue;
             }
@@ -331,7 +346,7 @@ public class MergeMenu : MonoBehaviour
             {
                 //아이콘 및 레벨 활성화
                 icon.enabled = true;
-                level.enabled = true;
+                level.transform.parent.gameObject.SetActive(true);
             }
 
             //등급 프레임 색 넣기
@@ -458,6 +473,7 @@ public class MergeMenu : MonoBehaviour
 
                 //todo 가운데 애니메이션용 슬롯 활성화, 줄어들고 비활성화, 사이즈 초기화
             }
+            // 0번 마법이 그대로 남아있을때
             else
             {
                 // 한칸씩 옆으로 이동
@@ -474,6 +490,7 @@ public class MergeMenu : MonoBehaviour
             stackObjSlots[i].GetComponent<CanvasGroup>().alpha = i == 3 ? 1f : 0.5f;
         }
 
+        // 스택이 비어있지 않을때
         if (PlayerManager.Instance.hasStackMagics.Count > 0)
         {
             // 0번 마법이 삭제 되지 않았을때
@@ -486,8 +503,11 @@ public class MergeMenu : MonoBehaviour
                 // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
                 MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 참조
 
-                PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex); //타겟 마법 정보 삭제
-                PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic); //타겟 마법 정보 넣기
+                // 타겟 마법 정보 삭제
+                PlayerManager.Instance.hasStackMagics.RemoveAt(startIndex);
+
+                // 타겟 마법 정보 넣기
+                PlayerManager.Instance.hasStackMagics.Insert(endIndex, targetMagic);
             }
 
             // 선택된 마법 입력
@@ -501,35 +521,37 @@ public class MergeMenu : MonoBehaviour
         }
 
         // 모든 아이콘 다시 넣기
-        SetSlots();
+        UpdateStacks();
     }
 
-    void SetSlots()
+    public void UpdateStacks()
     {
         //마지막 이전 마법
-        SetIcon(0, 4, PlayerManager.Instance.hasStackMagics.Count - 3);
+        SetStackIcon(0, 4, PlayerManager.Instance.hasStackMagics.Count - 3);
         //마지막 마법
-        SetIcon(1, 3, PlayerManager.Instance.hasStackMagics.Count - 2);
+        SetStackIcon(1, 3, PlayerManager.Instance.hasStackMagics.Count - 2);
         //0번째 마법
-        SetIcon(2, 2, PlayerManager.Instance.hasStackMagics.Count - 1);
+        SetStackIcon(2, 2, PlayerManager.Instance.hasStackMagics.Count - 1);
         //1번째 마법
-        SetIcon(3, 1, 0);
+        SetStackIcon(3, 1, 0);
         //2번째 마법
-        SetIcon(4, 2, 1);
+        SetStackIcon(4, 2, 1);
         //3번째 마법
-        SetIcon(5, 3, 2);
+        SetStackIcon(5, 3, 2);
         //4번째 마법
-        SetIcon(6, 4, 3);
+        SetStackIcon(6, 4, 3);
     }
 
-    void SetIcon(int objIndex, int num, int magicIndex)
+    void SetStackIcon(int objIndex, int num, int magicIndex)
     {
-        //프레임 찾기
+        // 프레임 찾기
         Image frame = stackObjSlots[objIndex].transform.Find("Frame").GetComponent<Image>();
-        //아이콘 찾기
+        // 아이콘 찾기
         Image icon = stackObjSlots[objIndex].transform.Find("Icon").GetComponent<Image>();
-        //레벨 찾기
-        TextMeshProUGUI level = icon.transform.Find("Level").GetComponent<TextMeshProUGUI>();
+        // 레벨 텍스트 찾기
+        TextMeshProUGUI level = stackObjSlots[objIndex].transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>();
+        // 개수 텍스트 찾기
+        TextMeshProUGUI amount = stackObjSlots[objIndex].transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>(true);
 
         // hasStackMagics의 보유 마법이 num 보다 많을때
         if (PlayerManager.Instance.hasStackMagics.Count >= num)
@@ -545,9 +567,21 @@ public class MergeMenu : MonoBehaviour
             icon.enabled = true;
             icon.sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
 
+            //todo 레벨 이미지 색에 등급색 넣기
+
             //레벨 넣기
             level.enabled = true;
             level.text = "Lv. " + magic.magicLevel;
+
+            //todo 마법 개수 1개일때, 개수 오브젝트 비활성화
+            if (magic.amount == 1)
+                amount.transform.parent.gameObject.SetActive(false);
+            else
+                amount.transform.parent.gameObject.SetActive(true);
+
+            // 마법 개수 넣기
+            amount.enabled = true;
+            amount.text = magic.amount.ToString();
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else

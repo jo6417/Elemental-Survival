@@ -65,11 +65,8 @@ public class PlayerManager : Character
     }
     #endregion
 
-    public NewInput playerInput;
-    // Sequence damageTextSeq; //데미지 텍스트 시퀀스
-    public float camFollowSpeed = 10f;
-
     [Header("<Input>")]
+    public NewInput playerInput;
     Vector2 inputMoveDir; // 현재 이동 입력 벡터
     Vector2 nowMoveDir; // 현재 이동 벡터
     public Vector2 lastDir; // 마지막 이동 벡터
@@ -94,6 +91,8 @@ public class PlayerManager : Character
     public PlayerStat PlayerStat_Now; //현재 스탯
 
     [Header("<State>")]
+    public bool initFinish = false;
+    public float camFollowSpeed = 10f; // 캠 따라오는 속도
     public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
     public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
 
@@ -172,6 +171,9 @@ public class PlayerManager : Character
             // 현재 상호작용 가능한 오브젝트 상호작용 하기
             InteractSubmit();
         };
+
+        // 초기화 완료
+        initFinish = true;
     }
 
     private void OnEnable()
@@ -325,25 +327,25 @@ public class PlayerManager : Character
     {
         // print(getItem.itemType + " : " + getItem.itemName);
 
-        // 아이템이 스크롤일때
-        if (getItem.itemType == "Scroll")
-        {
-            // 아이템 합성 메뉴 띄우기
-            // UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+        // // 아이템이 USB일때
+        // if (itemManager.item.itemType == "USB")
+        // {
+        //     // 스택에 해당 마법 넣기
+        //     AddStack(itemManager.magic);
 
-            //보유하지 않은 아이템일때
-            if (!hasItems.Exists(x => x.id == getItem.id))
-            {
-                // 플레이어 보유 아이템에 해당 아이템 추가하기
-                hasItems.Add(getItem);
-            }
+        //     // 아이템 합성 메뉴 띄우기
+        //     // UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
 
-            //보유한 아이템의 개수만 늘려주기
-            hasItems.Find(x => x.id == getItem.id).amount++;
+        //     //보유하지 않은 아이템일때
+        //     if (!hasItems.Exists(x => x.id == getItem.id))
+        //     {
+        //         // 플레이어 보유 아이템에 해당 아이템 추가하기
+        //         hasItems.Add(getItem);
+        //     }
 
-            //TODO 스크롤 획득 메시지 UI 띄우기
-            print("마법 합성이 " + getItem.amount + "회 가능합니다.");
-        }
+        //     //보유한 아이템의 개수만 늘려주기
+        //     hasItems.Find(x => x.id == getItem.id).amount++;
+        // }
 
         if (getItem.itemType == "Artifact")
         {
@@ -373,34 +375,78 @@ public class PlayerManager : Character
         // MagicInfo 인스턴스 생성
         MagicInfo magic = new MagicInfo(getMagic);
 
-        //마법의 레벨 초기화
-        magic.magicLevel = 1;
-
-        // touchedMagics에 해당 마법 id가 존재하지 않으면
-        if (!MagicDB.Instance.touchedMagics.Exists(x => x == magic.id))
-        {
-            // 보유했던 마법 리스트에 추가
-            MagicDB.Instance.touchedMagics.Add(magic.id);
-        }
-
-        // 플레이어 보유 마법에 해당 마법 추가하기
-        hasStackMagics.Add(magic);
-
         // 0등급 마법이면 원소젬이므로 스킵
         if (magic.grade == 0)
             return;
 
-        // //TODO 적이 죽으면 발동되는 마법일때 콜백에 함수포함시키기
-        // if (magic.magicName == "Life Mushroom")
-        // {
-        //     SystemManager.Instance.AddDropSeedEvent(magic);
-        // }
+        //마법의 레벨 초기화
+        magic.magicLevel = 1;
+
+        // touchedMagics에 해당 마법 id가 존재하지 않으면
+        if (!MagicDB.Instance.savedMagics.Exists(x => x == magic.id))
+        {
+            // 보유했던 마법 리스트에 추가
+            MagicDB.Instance.savedMagics.Add(magic.id);
+        }
+
+        // 플레이어 보유 마법에 해당 마법 추가하기
+        AddStack(magic);
 
         //메인 UI에 스마트폰 알림 갱신
         UIManager.Instance.PhoneNotice();
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();
+    }
+
+    public void AddStack(MagicInfo addMagic = null)
+    {
+        // id 같은 magic 스택에서 찾기
+        MagicInfo findMagic = null;
+        if (addMagic != null)
+            findMagic = hasStackMagics.Find(x => x.id == addMagic.id);
+
+        // 마법이 있으면
+        if (findMagic != null)
+            // 해당 매직 개수 올리기
+            findMagic.amount++;
+        // 마법이 없으면
+        else
+        {
+            // 리스트에 add로 넣기
+            hasStackMagics.Add(addMagic);
+            // 개수는 1로 초기화
+            addMagic.amount = 1;
+        }
+    }
+
+    public bool RemoveStack(int index = -1)
+    {
+        MagicInfo findMagic = null;
+        // 해당 인덱스 마법 찾기
+        if (index != -1)
+        {
+            findMagic = hasStackMagics[index];
+        }
+
+        // 해당 마법이 1개일때
+        if (findMagic.amount == 1)
+        {
+            // 해당 마법 리스트에서 삭제
+            hasStackMagics.Remove(findMagic);
+
+            // 완전히 삭제됬을때
+            return true;
+        }
+        // 해당 마법이 1개보다 많으면
+        else
+        {
+            // 해당 마법 개수 차감
+            findMagic.amount--;
+
+            // 개수만 차감됬을때
+            return false;
+        }
     }
 
     public void EquipUltimate()

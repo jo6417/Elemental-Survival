@@ -366,7 +366,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         {
             // print("Dead Pos : " + transform.position);
             //죽음 시작
-            Dead();
+            StartCoroutine(Dead());
         }
     }
 
@@ -638,10 +638,10 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         enemyManager.shockCoroutine = null;
     }
 
-    public void Dead()
+    public IEnumerator Dead()
     {
         if (enemyManager.enemy == null)
-            return;
+            yield break;
 
         // 경직 시간 추가
         // hitCount += 1f;
@@ -694,8 +694,8 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 });
             }
 
-            //색 변경 완료 될때까지 대기
-            // yield return new WaitUntil(() => enemyManager.spriteList[0].color == SystemManager.Instance.DeadColor);
+            // 자폭 반경 인디케이터 시간 대기
+            yield return new WaitUntil(() => enemyManager.spriteList[0].color == SystemManager.Instance.DeadColor);
         }
 
         // 고스트가 아닐때

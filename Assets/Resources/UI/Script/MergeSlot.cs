@@ -38,7 +38,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 마법 아이콘 컴포넌트 찾기
         icon = transform.Find("Icon").GetComponentInChildren<Image>(true);
         // 마법 레벨 컴포넌트 찾기
-        level = icon.transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
+        level = transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
         // 툴팁 트리거 찾기
         tooltip = transform.GetComponent<ToolTipTrigger>();
     }
@@ -313,10 +313,18 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // Merge 인디케이터 끄기
             MergeMenu.Instance.mergeSignal.gameObject.SetActive(false);
 
-            // 선택된 마법을 스택에서 삭제
-            PlayerManager.Instance.hasStackMagics.RemoveAt(0);
-            // 스택 리스트 갱신
-            MergeMenu.Instance.StackScroll(false);
+            // 선택된 마법을 스택에서 빼기
+            bool removed = PlayerManager.Instance.RemoveStack(0);
+
+            // 마법이 완전히 삭제됬을때
+            if (removed)
+                // 스택 리스트 갱신
+                MergeMenu.Instance.StackScroll(false);
+            // 마법의 개수만 차감됬을때
+            else
+                // 스택 슬롯 전체 갱신
+                MergeMenu.Instance.UpdateStacks();
+
 
             yield break;
         }
@@ -335,8 +343,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (MergeMenu.Instance.selectedMagic != null)
         {
             // 선택된 Merge 슬롯에 프레임, 아이콘은 이미 적용됨
+
             // 선택된 Merge 슬롯에 레벨 넣기
-            level.enabled = true;
+            level.transform.parent.gameObject.SetActive(true);
             level.text = "Lv. " + MergeMenu.Instance.selectedMagic.magicLevel.ToString();
 
             // 선택된 Merge 슬롯에 마법 정보 넣기
@@ -404,10 +413,17 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         //TODO 연속 합성 아닐때만
         if (!isContinue)
         {
-            // 선택된 마법을 스택에서 삭제
-            PlayerManager.Instance.hasStackMagics.RemoveAt(0);
-            // 스택 리스트 갱신
-            MergeMenu.Instance.StackScroll(false);
+            // 선택된 마법을 스택에서 빼기
+            bool removed = PlayerManager.Instance.RemoveStack(0);
+
+            // 마법이 완전히 삭제됬을때
+            if (removed)
+                // 스택 리스트 갱신
+                MergeMenu.Instance.StackScroll(false);
+            // 마법의 개수만 차감됬을때
+            else
+                // 스택 슬롯 전체 갱신
+                MergeMenu.Instance.UpdateStacks();
         }
 
         //메인 UI에 스마트폰 알림 갱신
@@ -473,7 +489,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 원래 슬롯 자리 초기화
         closeFrame.GetComponent<Image>().color = Color.white; //프레임 색 초기화
         closeIcon.GetComponent<Image>().enabled = false; //아이콘 비활성화
-        closeIcon.Find("Level").GetComponent<TextMeshProUGUI>().enabled = false; //레벨 비활성화
+        closeSlot.Find("Level").gameObject.SetActive(false); //레벨 비활성화
         closeSlot.GetComponent<ToolTipTrigger>().enabled = false; //툴팁 트리거 끄기
 
         //아이콘 이동 끝날때까지 대기

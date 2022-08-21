@@ -10,6 +10,7 @@ public class MagicInfo
     //수정 가능한 변수들
     [Header("Configurable")]
     public int magicLevel = 0; //현재 마법 레벨
+    public int amount = 0; // 해당 마법 개수 (스택 슬롯에서 사용)
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
@@ -152,7 +153,7 @@ public class MagicDB : MonoBehaviour
     public Dictionary<string, GameObject> magicPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
 
     public List<int> unlockMagics = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
-    public List<int> touchedMagics = new List<int>(); //이번 게임에서 한번이라도 소지했던 마법들
+    public List<int> savedMagics = new List<int>(); //이번 게임에서 한번이라도 소지했던 마법들
 
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
@@ -164,9 +165,9 @@ public class MagicDB : MonoBehaviour
     void Awake()
     {
         // 등급 색깔
-        Color[] _gradeColor = {SystemManager.Instance.HexToRGBA("FFFFFF"), SystemManager.Instance.HexToRGBA("4FF84C"), SystemManager.Instance.HexToRGBA("3EC1FF"), SystemManager.Instance.HexToRGBA("CD45FF"),
-        SystemManager.Instance.HexToRGBA("FF3310"), SystemManager.Instance.HexToRGBA("FF8C00"), SystemManager.Instance.HexToRGBA("FFFF00")};
-        gradeColor = _gradeColor;
+        // Color[] _gradeColor = {SystemManager.Instance.HexToRGBA("FFFFFF"), SystemManager.Instance.HexToRGBA("4FF84C"), SystemManager.Instance.HexToRGBA("3EC1FF"), SystemManager.Instance.HexToRGBA("CD45FF"),
+        // SystemManager.Instance.HexToRGBA("FF3310"), SystemManager.Instance.HexToRGBA("FF8C00"), SystemManager.Instance.HexToRGBA("FFFF00")};
+        // gradeColor = _gradeColor;
 
         // 원소젬 색깔
         Color[] _elementColor = {SystemManager.Instance.HexToRGBA("C88C5E"), SystemManager.Instance.HexToRGBA("FF5B5B"), SystemManager.Instance.HexToRGBA("5BFF64"),
@@ -360,26 +361,64 @@ public class MagicDB : MonoBehaviour
         return isExist;
     }
 
-    public MagicInfo RandomMagic()
+    public MagicInfo RandomMagic(int targetGrade = 0)
     {
-        //모든 마법 인덱스를 넣을 리스트
+        // 언락된 모든 마법 인덱스를 넣을 리스트
         List<int> unlockIDs = new List<int>();
 
-        //언락된 마법 인덱스 모두 넣기
-        for (int i = 0; i < unlockMagics.Count; i++)
+        //todo 언락된 마법 중 해당 등급 모두 넣기
+        // for (int i = 0; i < unlockMagics.Count; i++)
+        // {
+        //     int grade = GetMagicByID(unlockMagics[i]).grade;
+
+        //     // 0등급이면 넘기기
+        //     if (grade == 0)
+        //         continue;
+
+        //     // 등급을 명시했을때
+        //     if (targetGrade != 0)
+        //     {
+        //         // 해당 등급의 마법만 넣기
+        //         if (grade == targetGrade)
+        //             unlockIDs.Add(unlockMagics[i]);
+        //     }
+        //     // 등급을 명시하지 않았을때
+        //     else
+        //     {
+        //         // 모든 마법 넣기
+        //         unlockIDs.Add(unlockMagics[i]);
+        //     }
+        // }
+
+        // 모든 마법 데이터 전부 확인
+        foreach (KeyValuePair<int, MagicInfo> magic in magicDB)
         {
-            unlockIDs.Add(unlockMagics[i]);
+            int grade = GetMagicByID(magic.Value.id).grade;
+
+            // 0등급이면 넘기기
+            if (grade == 0)
+                continue;
+
+            // 등급을 명시했을때
+            if (targetGrade != 0)
+            {
+                // 해당 등급의 마법만 넣기
+                if (grade == targetGrade)
+                    unlockIDs.Add(magic.Value.id);
+            }
+            // 등급을 명시하지 않았을때
+            else
+            {
+                // 모든 마법 넣기
+                unlockIDs.Add(magic.Value.id);
+            }
         }
 
-        //TODO 등급마다 확률 다르게
-        //인덱스 리스트에서 랜덤으로 뽑기
-        int j = Random.Range(0, unlockIDs.Count);
+        // 뽑은 리스트에서 인덱스 랜덤 뽑기
+        int index = Random.Range(0, unlockIDs.Count);
 
-        //뽑은 인덱스로 마법 ID 찾기
-        int magicID = unlockIDs[j];
-
-        //마법 ID로 마법정보 불러와서 리턴
-        return GetMagicByID(magicID);
+        // 마법 ID로 마법정보 불러와서 리턴
+        return GetMagicByID(unlockIDs[index]);
     }
 
     //랜덤 마법 리스트 뽑기
