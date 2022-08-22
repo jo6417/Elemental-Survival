@@ -39,7 +39,8 @@ public class Quad_AI : MonoBehaviour
     public Color fanRageColor = new Color(1f, 30f / 255f, 0, 1f);
     public Color wingDefaultColor = new Color(30f / 255f, 1f, 1f, 10f / 255f);
     public Color wingRageColor = new Color(1f, 30f / 255f, 30f / 255f, 1f);
-    Vector3 fanDefaultRotation = new Vector3(70, 0, 0);
+    Vector3 fanParentDefaultRotation = new Vector3(70, 0, 0);
+    Vector3 fanDefaultRotation = new Vector3(-70, 0, 0);
     Transform[] fans = new Transform[4]; // 프로펠러 리스트
     SpriteRenderer[] wings = new SpriteRenderer[4]; // 프로펠러 날개 리스트
     ParticleManager[] flyEffects = new ParticleManager[4]; // 비행 파티클 리스트
@@ -408,7 +409,7 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.InOutCubic);
 
         // 프로펠러 수평으로
-        fanParent.DORotate(fanDefaultRotation, 2f);
+        fanParent.DORotate(fanParentDefaultRotation, 2f);
 
         yield return new WaitForSeconds(2f);
 
@@ -633,7 +634,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator CirclePush()
     {
         // 프로펠러 수평으로
-        fanParent.DORotate(fanDefaultRotation, 2f);
+        fanParent.DORotate(fanParentDefaultRotation, 2f);
 
         //플레이어 근처 위치로 이동
         transform.DOMove(PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle.normalized * 2, 0.5f);
@@ -1046,9 +1047,17 @@ public class Quad_AI : MonoBehaviour
             sortingLayer.sortingOrder = 1;
         });
 
-        // 몸체 각도 초기화
-        body.DOLocalRotate(Vector3.zero, smashReadyTime)
+        // 프로펠러들 각도 초기화
+        // 프로펠러 수평으로
+        fanParent.DOLocalRotate(fanParentDefaultRotation, smashReadyTime)
         .SetEase(Ease.OutCubic);
+
+        // 프로펠러들의 각도 유지
+        for (int i = 0; i < 4; i++)
+        {
+            fans[i].DOLocalRotate(fanDefaultRotation, smashReadyTime)
+            .SetEase(Ease.OutCubic);
+        }
 
         // 프로펠러 목표 각도
         float targetAngle = 0;
@@ -1142,7 +1151,7 @@ public class Quad_AI : MonoBehaviour
             accel = Mathf.Clamp(accel, 0, 10f);
 
             // 가속도 합산
-            targetAngle += accel;
+            targetAngle += accel * Time.deltaTime * 80f;
 
             // 360도 넘지않게 보정
             if (targetAngle > 360f)
@@ -1155,6 +1164,12 @@ public class Quad_AI : MonoBehaviour
 
             // 프로펠러들 회전
             fanParent.localRotation = fanRotate;
+
+            // 프로펠러들의 각도 유지
+            for (int i = 0; i < 4; i++)
+            {
+                fans[i].rotation = Quaternion.Euler(0, 0, 0);
+            }
 
             yield return new WaitForSeconds(Time.deltaTime);
         }

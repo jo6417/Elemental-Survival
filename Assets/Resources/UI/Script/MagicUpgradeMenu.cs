@@ -222,7 +222,7 @@ public class MagicUpgradeMenu : MonoBehaviour
         PlayerManager.Instance.GetMagic(magic);
 
         //지불 원소젬 이름을 인덱스로 반환
-        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == magic.priceType);
+        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == magic.priceType);
         // 가격 지불하기
         PlayerManager.Instance.PayGem(gemTypeIndex, magic.price);
 

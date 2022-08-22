@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -158,25 +159,65 @@ public class MagicDB : MonoBehaviour
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
 
-    public Color[] gradeColor = new Color[7]; //마법 등급 색깔
-    public Color[] elementColor = new Color[6]; //원소 색깔
-    public string[] elementNames = new string[6]; //기본 원소 이름
+    [SerializeField, ReadOnly]
+    Color[] gradeColor = new Color[7]; //마법 등급 색깔
+    public Color[] GradeColor
+    {
+        get { return gradeColor; }
+    }
+    [SerializeField, ReadOnly]
+    Color[] gradeHDRColor = new Color[7]; //마법 등급 HDR 색깔
+    public Color[] GradeHDRColor
+    {
+        get { return gradeHDRColor; }
+    }
+    [SerializeField, ReadOnly]
+    Color[] elementColors = new Color[6]; //원소 색깔
+    string[] elementNames = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
+    public string[] ElementNames
+    {
+        get { return elementNames; }
+    }
 
     void Awake()
     {
-        // 등급 색깔
-        // Color[] _gradeColor = {SystemManager.Instance.HexToRGBA("FFFFFF"), SystemManager.Instance.HexToRGBA("4FF84C"), SystemManager.Instance.HexToRGBA("3EC1FF"), SystemManager.Instance.HexToRGBA("CD45FF"),
-        // SystemManager.Instance.HexToRGBA("FF3310"), SystemManager.Instance.HexToRGBA("FF8C00"), SystemManager.Instance.HexToRGBA("FFFF00")};
+        #region FixedValue
+        // 등급 색깔 고정
+        // Color[] _gradeColor = {
+        //     SystemManager.Instance.HexToRGBA("FFFFFF"),
+        //     SystemManager.Instance.HexToRGBA("4FF84C"),
+        //     SystemManager.Instance.HexToRGBA("3EC1FF"),
+        //     SystemManager.Instance.HexToRGBA("CD45FF"),
+        //     SystemManager.Instance.HexToRGBA("FF3310"),
+        //     SystemManager.Instance.HexToRGBA("FF8C00"),
+        //     SystemManager.Instance.HexToRGBA("FFFF00")};
         // gradeColor = _gradeColor;
 
-        // 원소젬 색깔
-        Color[] _elementColor = {SystemManager.Instance.HexToRGBA("C88C5E"), SystemManager.Instance.HexToRGBA("FF5B5B"), SystemManager.Instance.HexToRGBA("5BFF64"),
-        SystemManager.Instance.HexToRGBA("FFF45B"), SystemManager.Instance.HexToRGBA("739CFF"), SystemManager.Instance.HexToRGBA("5BFEFF")};
-        elementColor = _elementColor;
+        // // 등급 HDR 색깔 고정
+        // Color[] _gradeHDRColor = {
+        //     SystemManager.Instance.HexToRGBA("FFFFFF"),
+        //     SystemManager.Instance.HexToRGBA("1EFF1E"),
+        //     SystemManager.Instance.HexToRGBA("1E1EFF"),
+        //     SystemManager.Instance.HexToRGBA("FF1EFF"),
+        //     SystemManager.Instance.HexToRGBA("FF1E1E"),
+        //     SystemManager.Instance.HexToRGBA("FF801E"),
+        //     SystemManager.Instance.HexToRGBA("FFFF1E")};
+        // gradeHDRColor = _gradeHDRColor;
 
-        // 원소 이름
-        string[] name = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
-        elementNames = name;
+        // // 원소젬 색깔 고정
+        // Color[] _elementColor = {
+        //     SystemManager.Instance.HexToRGBA("C88C5E"),
+        //     SystemManager.Instance.HexToRGBA("FF5B5B"),
+        //     SystemManager.Instance.HexToRGBA("5BFF64"),
+        //     SystemManager.Instance.HexToRGBA("FFF45B"),
+        //     SystemManager.Instance.HexToRGBA("739CFF"),
+        //     SystemManager.Instance.HexToRGBA("5BFEFF")};
+        // elementColors = _elementColor;
+
+        // // 원소 이름
+        // string[] name = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
+        // ElementNames = name;
+        #endregion
 
         // 아이콘, 프리팹 불러오기
         GetMagicResources();
@@ -356,7 +397,7 @@ public class MagicDB : MonoBehaviour
     public bool isBasicElement(string element)
     {
         //기본 원소 이름과 일치하는 요소가 있는지 확인
-        bool isExist = System.Array.Exists(elementNames, x => x == element);
+        bool isExist = System.Array.Exists(ElementNames, x => x == element);
 
         return isExist;
     }
@@ -458,25 +499,18 @@ public class MagicDB : MonoBehaviour
         return randomNum;
     }
 
-    public Color ElementColor(string element)
+    public Color GetElementColor(int colorIndex)
     {
-        switch (element)
-        {
-            case "Earth":
-                return elementColor[0];
-            case "Fire":
-                return elementColor[1];
-            case "Life":
-                return elementColor[2];
-            case "Lightning":
-                return elementColor[3];
-            case "Water":
-                return elementColor[4];
-            case "Wind":
-                return elementColor[5];
+        return elementColors[colorIndex];
+    }
 
-            default: return Color.white;
-        }
+    public Color GetElementColor(string elementName)
+    {
+        // 원소 색깔 리스트에서 해당 색을 가진 인덱스 찾기
+        int colorIndex = System.Array.FindIndex(ElementNames, x => x == elementName);
+
+        // 해당 인덱스의 컬러 리턴
+        return elementColors[colorIndex];
     }
 
     public float MagicPower(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)

@@ -565,7 +565,7 @@ public class PlayerManager : Character
         // print(item.itemName.Split(' ')[0]);
 
         // 가격 타입으로 젬 타입 인덱스로 반환
-        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == item.priceType);
+        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == item.priceType);
 
         // 젬 타입 인덱스로 해당 젬과 같은 마법 찾아서 획득
         // GetMagic(MagicDB.Instance.GetMagicByID(gemTypeIndex));

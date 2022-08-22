@@ -178,7 +178,6 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 10
-  isStop: 0
   poisonTime: 0
   bleedTime: 3
   slowTime: 0
@@ -187,7 +186,7 @@ MonoBehaviour:
   shockTime: 0
   freezeTime: 0
   flatTime: 0
-  knockBackDebuff: 1
+  stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
   enemyManager: {fileID: 0}
@@ -253,7 +252,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -1564529393729310769, guid: e7f9192e655a29a4fbce6e677ab172f9,
     type: 3}
-  m_Color: {r: 1, g: 0.11764706, b: 0.11764706, a: 1}
+  m_Color: {r: 0.11764706, g: 1, b: 1, a: 0.27450982}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0

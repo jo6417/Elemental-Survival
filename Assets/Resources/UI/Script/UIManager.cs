@@ -893,7 +893,7 @@ public class UIManager : MonoBehaviour
         //궁극기 마법 등급 및 아이콘 넣기
         if (ultimateMagic != null)
         {
-            frame.color = MagicDB.Instance.gradeColor[ultimateMagic.grade];
+            frame.color = MagicDB.Instance.GradeColor[ultimateMagic.grade];
             icon.sprite = MagicDB.Instance.GetMagicIcon(ultimateMagic.id);
             icon.gameObject.SetActive(true);
         }
@@ -1184,7 +1184,7 @@ public class UIManager : MonoBehaviour
             Transform slot = LeanPool.Spawn(gameoverSlot, hasMagics.position, Quaternion.identity, hasMagics).transform;
 
             //프레임 색 넣기
-            slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[magic.grade];
+            slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
             //아이콘 넣기
             slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
             //레벨 넣기

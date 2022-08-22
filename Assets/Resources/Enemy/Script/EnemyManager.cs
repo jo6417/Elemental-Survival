@@ -671,13 +671,17 @@ public class EnemyManager : Character
                 // 디스폰 이펙트 파티클 찾기
                 ParticleSystem despawnEffect = usbObj.GetComponentInChildren<ParticleSystem>(true);
 
-                // 마법 등급에 따라 색깔 변경
-                sprite.color = MagicDB.Instance.gradeColor[i];
+                // // 마법 등급에 따라 색깔 변경
+                // sprite.color = MagicDB.Instance.gradeColor[usbMagic.grade];
+                // // 파티클 색깔
+                // Color effectColor = MagicDB.Instance.gradeColor[usbMagic.grade];
 
-                // 파티클 색깔
-                Color effectColor = MagicDB.Instance.gradeColor[i];
+                // 마법 등급에 따라 색깔 변경
+                sprite.color = MagicDB.Instance.GradeColor[i + 1];
+                // 파티클 색깔 생성
+                Color effectColor = MagicDB.Instance.GradeColor[i + 1];
                 effectColor.a = 80f / 255f;
-                //todo 마법 등급에 따라 디스폰 파티클 색깔 변경
+                // 마법 등급에 따라 디스폰 파티클 색깔 변경
                 ParticleSystem.MainModule particleMain = despawnEffect.main;
                 particleMain.startColor = effectColor;
 

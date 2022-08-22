@@ -15,7 +15,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     int slotIndex; //해당 슬롯의 인덱스
     public Image frame;
     public Image icon;
-    public TextMeshProUGUI level;
+    public Image level;
     Button button; //해당 슬롯의 버튼 컴포넌트
     public bool isStackSlot = false; //스택 슬롯인지 여부
     public ToolTipTrigger tooltip;
@@ -38,7 +38,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 마법 아이콘 컴포넌트 찾기
         icon = transform.Find("Icon").GetComponentInChildren<Image>(true);
         // 마법 레벨 컴포넌트 찾기
-        level = transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
+        level = transform.Find("Level").GetComponent<Image>();
         // 툴팁 트리거 찾기
         tooltip = transform.GetComponent<ToolTipTrigger>();
     }
@@ -131,7 +131,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             return;
 
         // 프레임 색 넣기
-        frame.color = MagicDB.Instance.gradeColor[MergeMenu.Instance.selectedMagic.grade];
+        frame.color = MagicDB.Instance.GradeColor[MergeMenu.Instance.selectedMagic.grade];
         // 아이콘 활성화
         icon.enabled = true;
         // 아이콘 넣기
@@ -344,9 +344,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         {
             // 선택된 Merge 슬롯에 프레임, 아이콘은 이미 적용됨
 
-            // 선택된 Merge 슬롯에 레벨 넣기
-            level.transform.parent.gameObject.SetActive(true);
-            level.text = "Lv. " + MergeMenu.Instance.selectedMagic.magicLevel.ToString();
+            // 선택된 Merge 슬롯에 레벨 및 색상 넣기
+            level.gameObject.SetActive(true);
+            level.color = MagicDB.Instance.GradeColor[MergeMenu.Instance.selectedMagic.grade];
+            level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + MergeMenu.Instance.selectedMagic.magicLevel.ToString();
 
             // 선택된 Merge 슬롯에 마법 정보 넣기
             PlayerManager.Instance.hasMergeMagics[slotIndex] = MergeMenu.Instance.selectedMagic;
@@ -519,14 +520,14 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         MergeMenu.Instance.selectedMagic = null;
 
         // 슬롯에 합성된 마법 등급 프레임 넣기
-        mergedSlot.frame.color = MagicDB.Instance.gradeColor[PlayerManager.Instance.hasMergeMagics[mergeIndex].grade];
+        mergedSlot.frame.color = MagicDB.Instance.GradeColor[PlayerManager.Instance.hasMergeMagics[mergeIndex].grade];
         // 슬롯에 합성된 마법 아이콘 넣기
         mergedSlot.icon.sprite =
         MagicDB.Instance.GetMagicIcon(mergedMagic.id) == null
         ? SystemManager.Instance.questionMark
         : MagicDB.Instance.GetMagicIcon(mergedMagic.id);
         // 슬롯에 합성된 마법 레벨 넣기
-        mergedSlot.level.text = "Lv. " + mergedMagic.magicLevel.ToString();
+        mergedSlot.level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + mergedMagic.magicLevel.ToString();
         // 슬롯에 툴팁 넣기
         ToolTipTrigger tooltip = mergedSlot.GetComponent<ToolTipTrigger>();
         tooltip.enabled = true;

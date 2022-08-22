@@ -75,6 +75,16 @@ public class MergeMenu : MonoBehaviour
     public Image selectedIcon; //마우스 따라다닐 아이콘
     RectTransform selectedIconRect;
 
+    [Header("Recipe List")]
+    public Transform recipeSlots; // 레시피 스크롤 컨텐츠들 부모 오브젝트
+    public Transform recipePrefab; // 단일 레시피 프리팹
+    public TextMeshProUGUI newUSBNum; // 오픈하지 않은 USB 총 개수 표시 UI
+    public Transform recipeUpBtn; // 레시피 맨 위로 버튼
+    public Transform recipeDownBtn; // 레시피 맨 아래로 버튼
+
+    [Header("USB List")]
+    public Transform usbSlots; // USB 슬롯들 부모 오브젝트
+
     private void Awake()
     {
         //머지 슬롯 오브젝트 모두 저장
@@ -210,6 +220,9 @@ public class MergeMenu : MonoBehaviour
         // 스택 슬롯 사이즈 및 위치 정렬
         StackScroll(true);
 
+        //todo 레시피 리스트 세팅
+        //todo usb 리스트 세팅
+
         // 선택 아이콘 끄기
         selectedIcon.enabled = false;
 
@@ -324,7 +337,7 @@ public class MergeMenu : MonoBehaviour
             //아이콘 찾기
             Image icon = mergeSlot.Find("Icon").GetComponent<Image>();
             //레벨 찾기
-            TextMeshProUGUI level = mergeSlot.Find("Level").GetComponentInChildren<TextMeshProUGUI>(true);
+            Image level = mergeSlot.Find("Level").GetComponent<Image>();
             //버튼 찾기
             Button button = mergeSlot.GetComponent<Button>();
             //툴팁 컴포넌트 찾기
@@ -338,23 +351,23 @@ public class MergeMenu : MonoBehaviour
 
                 //아이콘 및 레벨 비활성화
                 icon.enabled = false;
-                level.transform.parent.gameObject.SetActive(false);
+                level.gameObject.SetActive(false);
 
                 continue;
             }
-            else
-            {
-                //아이콘 및 레벨 활성화
-                icon.enabled = true;
-                level.transform.parent.gameObject.SetActive(true);
-            }
+
+            //아이콘 및 레벨 활성화
+            icon.enabled = true;
+            level.gameObject.SetActive(true);
 
             //등급 프레임 색 넣기
-            frame.color = MagicDB.Instance.gradeColor[magic.grade];
+            frame.color = MagicDB.Instance.GradeColor[magic.grade];
             //아이콘 넣기
             icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(magic.id);
+            //todo 레벨 이미지 색에 등급색 넣기
+            level.color = MagicDB.Instance.GradeColor[magic.grade];
             //레벨 넣기
-            level.text = "Lv. " + magic.magicLevel.ToString();
+            level.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + magic.magicLevel.ToString();
             //TODO 슬롯에 툴팁 정보 넣기
             // tooltip.magic = magic;
         }
@@ -549,7 +562,7 @@ public class MergeMenu : MonoBehaviour
         // 아이콘 찾기
         Image icon = stackObjSlots[objIndex].transform.Find("Icon").GetComponent<Image>();
         // 레벨 텍스트 찾기
-        TextMeshProUGUI level = stackObjSlots[objIndex].transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>();
+        // TextMeshProUGUI level = stackObjSlots[objIndex].transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>();
         // 개수 텍스트 찾기
         TextMeshProUGUI amount = stackObjSlots[objIndex].transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>(true);
 
@@ -559,7 +572,7 @@ public class MergeMenu : MonoBehaviour
             MagicInfo magic = PlayerManager.Instance.hasStackMagics[magicIndex];
 
             //프레임 색 넣기
-            frame.color = MagicDB.Instance.gradeColor[magic.grade];
+            frame.color = MagicDB.Instance.GradeColor[magic.grade];
 
             //아이콘 스프라이트 찾기
             Sprite sprite = MagicDB.Instance.GetMagicIcon(magic.id);
@@ -567,11 +580,9 @@ public class MergeMenu : MonoBehaviour
             icon.enabled = true;
             icon.sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
 
-            //todo 레벨 이미지 색에 등급색 넣기
-
             //레벨 넣기
-            level.enabled = true;
-            level.text = "Lv. " + magic.magicLevel;
+            // level.enabled = true;
+            // level.text = "Lv. " + magic.magicLevel;
 
             //todo 마법 개수 1개일때, 개수 오브젝트 비활성화
             if (magic.amount == 1)
@@ -589,7 +600,7 @@ public class MergeMenu : MonoBehaviour
             // 프레임, 아이콘, 레벨, 툴팁 끄기
             frame.color = Color.white;
             icon.enabled = false;
-            level.enabled = false;
+            // level.enabled = false;
         }
     }
 

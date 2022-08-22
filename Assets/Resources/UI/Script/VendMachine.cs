@@ -163,7 +163,7 @@ public class VendMachine : MonoBehaviour
 
                 // 마법 등급 프레임 및 색깔
                 frame.sprite = magicFrame;
-                gradeColor = MagicDB.Instance.gradeColor[magic.grade];
+                gradeColor = MagicDB.Instance.GradeColor[magic.grade];
                 frame.color = gradeColor;
 
                 //마법 포함 원소 UI 켜기
@@ -216,7 +216,7 @@ public class VendMachine : MonoBehaviour
 
                 //아이템 등급 프레임 및 색깔
                 frame.sprite = itemFrame;
-                gradeColor = MagicDB.Instance.gradeColor[item.grade];
+                gradeColor = MagicDB.Instance.GradeColor[item.grade];
                 frame.color = gradeColor;
 
                 //마법 원소 UI 끄기
@@ -286,7 +286,7 @@ public class VendMachine : MonoBehaviour
     {
         // 화폐 종류 넣기, 어떤 원소젬인지
         string priceType = magic != null ? magic.priceType : item.priceType;
-        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == priceType); //지불 원소젬 이름을 인덱스로 치환
+        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == priceType); //지불 원소젬 이름을 인덱스로 치환
 
         //지불 수단 타입이 없을때
         if (gemTypeIndex == -1)
@@ -299,7 +299,7 @@ public class VendMachine : MonoBehaviour
         infoHolder.gemType = gemTypeIndex;
 
         // 화폐에 따라 색 바꾸기
-        Color color = MagicDB.Instance.elementColor[gemTypeIndex];
+        Color color = MagicDB.Instance.GetElementColor(gemTypeIndex);
         Image gem = product.transform.Find("Button/Gem").GetComponent<Image>();
         gem.color = color;
 
@@ -386,7 +386,7 @@ public class VendMachine : MonoBehaviour
         Vector2 pos = (Vector2)product.transform.position + new Vector2(product.GetComponent<RectTransform>().sizeDelta.x, -product.GetComponent<RectTransform>().sizeDelta.y);
 
         // 해당 상품의 화폐과 같은 원소젬 개수 보여주기
-        productPriceType.text = (MagicDB.Instance.elementNames[gemTypeIndex] + " Gem").ToString(); // 화폐 원소젬 이름
+        productPriceType.text = (MagicDB.Instance.ElementNames[gemTypeIndex] + " Gem").ToString(); // 화폐 원소젬 이름
         productPrice.text = PlayerManager.Instance.hasGems[gemTypeIndex].ToString(); //지불할 가격
 
         // 상품 모서리에 툴팁 띄우고 고정

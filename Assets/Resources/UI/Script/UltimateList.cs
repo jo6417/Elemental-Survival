@@ -111,7 +111,7 @@ public class UltimateList : MonoBehaviour
             ultimateSlots[objIndex].transform.Find("Icon").gameObject.SetActive(true);
             Sprite sprite = MagicDB.Instance.GetMagicIcon(ultimateList[magicIndex].id);
             ultimateSlots[objIndex].transform.Find("Icon").GetComponent<Image>().sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
-            ultimateSlots[objIndex].transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[ultimateList[magicIndex].grade];
+            ultimateSlots[objIndex].transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[ultimateList[magicIndex].grade];
         }
         //넣을 마법 없으면 아이콘 및 프레임 숨기기
         else

@@ -182,7 +182,7 @@ public class ProductToolTip : MonoBehaviour
 
         //마법 등급 프레임에 넣기
         GradeFrame.gameObject.SetActive(true);
-        GradeFrame.color = MagicDB.Instance.gradeColor[magic.grade];
+        GradeFrame.color = MagicDB.Instance.GradeColor[magic.grade];
 
         // 마법 타입 표시
         productType.text = magic.castType;
@@ -225,8 +225,8 @@ public class ProductToolTip : MonoBehaviour
             elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : SystemManager.Instance.questionMark;
 
             // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
-            elementGrade_A.color = MagicDB.Instance.gradeColor[magicA.grade];
-            elementGrade_B.color = MagicDB.Instance.gradeColor[magicB.grade];
+            elementGrade_A.color = MagicDB.Instance.GradeColor[magicA.grade];
+            elementGrade_B.color = MagicDB.Instance.GradeColor[magicB.grade];
 
             recipeObj.SetActive(true);
         }

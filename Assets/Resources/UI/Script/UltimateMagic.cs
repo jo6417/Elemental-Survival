@@ -67,7 +67,7 @@ public class UltimateMagic : MonoBehaviour
         // 마법 정보창에 모든 정보 넣기
         Transform magicIcon = magicPanel.transform.Find("NewMagic");
         //새 마법 등급 색 넣기
-        magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[newMagic.grade];
+        magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[newMagic.grade];
         //새 마법 아이콘 넣기
         magicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(newMagic.id);
 
@@ -126,12 +126,12 @@ public class UltimateMagic : MonoBehaviour
             //TODO 마법 선택창에 magicInfo 및 아이콘 바꾸기
             //새 마법 아이콘 바꾸기
             Transform newMagicIcon = chooseMagicPanel.transform.Find("NewMagic");
-            newMagicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[newMagic.grade];
+            newMagicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[newMagic.grade];
             newMagicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(newMagic.id);
 
             //기존 마법 아이콘 바꾸기
             Transform oldMagicIcon = chooseMagicPanel.transform.Find("OldMagic");
-            newMagicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.gradeColor[oldMagic.grade];
+            newMagicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[oldMagic.grade];
             newMagicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(oldMagic.id);
         }
     }

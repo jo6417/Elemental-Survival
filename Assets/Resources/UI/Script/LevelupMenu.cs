@@ -70,7 +70,7 @@ public class LevelupMenu : MonoBehaviour
 
             // 아티팩트 등급 넣기
             Image btnBackground = magicBtnObj.GetComponent<Image>();
-            btnBackground.color = MagicDB.Instance.gradeColor[item.grade];
+            btnBackground.color = MagicDB.Instance.GradeColor[item.grade];
 
             // 아티팩트 이름 넣기
             Text name = magicBtnObj.Find("Background/Descript/Name").GetComponent<Text>();
@@ -86,7 +86,7 @@ public class LevelupMenu : MonoBehaviour
     bool isBasicElement(string element)
     {
         //기본 원소 이름과 일치하는 요소가 있는지 확인
-        bool isExist = System.Array.Exists(MagicDB.Instance.elementNames, x => x == element);
+        bool isExist = System.Array.Exists(MagicDB.Instance.ElementNames, x => x == element);
 
         return isExist;
     }
