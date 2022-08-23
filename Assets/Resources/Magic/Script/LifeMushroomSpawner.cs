@@ -34,6 +34,9 @@ public class LifeMushroomSpawner : MonoBehaviour
         // 지속시간 계산
         duration = MagicDB.Instance.MagicDuration(magic);
 
+        // 독 도트뎀 지속시간에 반영
+        magicHolder.poisonTime = duration;
+
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += DropLifeSeed;
 

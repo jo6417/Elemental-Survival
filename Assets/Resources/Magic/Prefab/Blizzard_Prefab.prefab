@@ -44,23 +44,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!70 &2647893212976384798
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -385,7 +386,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1
+      scalar: 0.2
       minScalar: 0.5
       maxCurve:
         serializedVersion: 2
@@ -438,7 +439,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -555,7 +556,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.5
-      minScalar: 1
+      minScalar: 0.8
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1135,7 +1136,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 0
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1188,7 +1189,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1573,7 +1574,7 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 1}
+        key0: {r: 1, g: 1, b: 1, a: 0.5882353}
         key1: {r: 1, g: 1, b: 1, a: 0}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
@@ -1591,7 +1592,7 @@ ParticleSystem:
         ctime7: 0
         atime0: 0
         atime1: 65535
-        atime2: 0
+        atime2: 65535
         atime3: 0
         atime4: 0
         atime5: 0
@@ -5075,12 +5076,12 @@ PrefabInstance:
     - target: {fileID: 8352782153783861176, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}
       propertyPath: m_SortingLayer
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8352782153783861176, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}
       propertyPath: m_SortingLayerID
-      value: 945064743
+      value: -1861760285
       objectReference: {fileID: 0}
     - target: {fileID: 8874241045075196594, guid: a89e12cf42b0c04449af1d201e6e6b72,
         type: 3}

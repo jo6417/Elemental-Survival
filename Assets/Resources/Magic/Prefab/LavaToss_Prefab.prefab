@@ -4885,23 +4885,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!212 &2230350204605646506
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4939,9 +4940,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 945064743
-  m_SortingLayer: 6
-  m_SortingOrder: -1
+  m_SortingLayerID: -1869315837
+  m_SortingLayer: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 3414811593755899399, guid: 22ccebbd89fa70f48abd520471ee130b,
     type: 3}
   m_Color: {r: 0.9490197, g: 0.18431373, b: 0.015686275, a: 1}

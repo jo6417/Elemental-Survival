@@ -6,6 +6,8 @@ using TMPro;
 using Lean.Pool;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using DanielLochner.Assets.SimpleScrollSnap;
+using System.Linq;
 
 public class MergeMenu : MonoBehaviour
 {
@@ -36,6 +38,7 @@ public class MergeMenu : MonoBehaviour
     [Header("Refer")]
     public GameObject mergePanel; // 핸드폰 화면 패널
     public Button recipeBtn;
+    public TextMeshProUGUI usbNum; // USB 총 개수 표시 텍스트
     public Button backBtn;
     public Button homeBtn;
     public SpriteRenderer lightScreen; // 폰 스크린 전체 빛내는 HDR 이미지
@@ -83,7 +86,11 @@ public class MergeMenu : MonoBehaviour
     public Transform recipeDownBtn; // 레시피 맨 아래로 버튼
 
     [Header("USB List")]
-    public Transform usbSlots; // USB 슬롯들 부모 오브젝트
+    public SimpleScrollSnap usbScroll; // USB 슬롯 스크롤 목록
+    public Transform anim_USB_Slot; // 애니메이션용 usb 아이콘
+    public Image randomScrollScreen; // 뒷화면 가리기 위한 스크린
+    public SimpleScrollSnap randomScroll; // USB 뽑기 랜덤 스크롤
+    public Transform magicSlotPrefab; // 랜덤 마법 아이콘 프리팹
 
     private void Awake()
     {
@@ -221,7 +228,12 @@ public class MergeMenu : MonoBehaviour
         StackScroll(true);
 
         //todo 레시피 리스트 세팅
+
         //todo usb 리스트 세팅
+        Set_USB();
+
+        // 뽑기 스크린 끄기
+        randomScrollScreen.gameObject.SetActive(false);
 
         // 선택 아이콘 끄기
         selectedIcon.enabled = false;
@@ -602,6 +614,189 @@ public class MergeMenu : MonoBehaviour
             icon.enabled = false;
             // level.enabled = false;
         }
+    }
+
+    public void Scroll_USB()
+    {
+        // 선택된 아이콘은 사이즈 크게, 나머지 아이콘은 사이즈 작게
+        for (int i = 0; i < 6; i++)
+        {
+            // 선택된것만 큰 사이즈로
+            float size = i == usbScroll.CenteredPanel ? 1f : 0.7f;
+
+            // 모든 슬롯 사이즈 조절
+            usbScroll.Content.GetChild(i).DOScale(size, 0.2f)
+            .SetUpdate(true);
+        }
+
+        // 애니메이팅 아이콘에 색깔 갱신
+        anim_USB_Slot.Find("Icon").GetComponent<Image>().color = MagicDB.Instance.GradeColor[usbScroll.CenteredPanel + 1];
+        anim_USB_Slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[usbScroll.CenteredPanel + 1];
+    }
+
+    public void Set_USB()
+    {
+        // USB 슬롯들을 담고있는 부모
+        Transform usbParent = usbScroll.Content;
+
+        int allUSBNum = 0;
+
+        // 모든 USB 개수 갱신
+        for (int i = 0; i < 6; i++)
+        {
+            int usbNum = 0;
+            usbNum = PlayerManager.Instance.hasUSBList[i];
+
+            //해당 등급의 usb 개수 합산
+            allUSBNum += usbNum;
+
+            // 슬롯에서 개수 text 찾아 개수 갱신
+            usbParent.GetChild(i).Find("Amount").GetComponentInChildren<TextMeshProUGUI>().text = usbNum.ToString();
+        }
+
+        // 핸드폰 메뉴 버튼의 총 USB 개수 갱신
+        usbNum.text = allUSBNum.ToString();
+
+        // 화면 하단의 총 USB 개수 갱신
+        UIManager.Instance.PhoneNotice(allUSBNum);
+
+        // USB 슬롯들 사이즈 조절
+        Scroll_USB();
+
+        // 애니메이션용 슬롯 위치 초기화
+        anim_USB_Slot.position = usbScroll.transform.position;
+    }
+
+    public void Use_USB()
+    {
+        StartCoroutine(GetUSBMagic());
+    }
+
+    public IEnumerator GetUSBMagic()
+    {
+        // USB 등급에 해당하는 랜덤 마법 뽑기
+        // MagicInfo usbMagic = MagicDB.Instance.RandomMagic(usbGrade);
+
+        //todo 가챠 트랜지션
+
+        // 스냅 스크롤 컴포넌트 비활성화
+        randomScroll.enabled = false;
+
+        // 모든 자식 비우기
+        SystemManager.Instance.DestroyAllChild(randomScroll.Content);
+
+        // 가운데 아이콘 비활성화
+        usbScroll.Content.GetChild(usbScroll.CenteredPanel).gameObject.SetActive(false);
+
+        // 애니메이션용 아이콘 스크린 가운데로 올라가기
+        anim_USB_Slot.gameObject.SetActive(true);
+        anim_USB_Slot.DOMove(randomScrollScreen.transform.position, 0.5f)
+        .SetEase(Ease.OutSine)
+        .SetUpdate(true);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 가챠 배경 활성화
+        randomScrollScreen.gameObject.SetActive(true);
+        // 가챠 스크롤 비활성화
+        randomScroll.gameObject.SetActive(false);
+
+        // 아이콘을 제외한 뒷 화면이 어두워지고(검은 스크린 투명하게 뒀다가 투명도 올리기)
+        randomScrollScreen.color = Color.clear;
+        randomScrollScreen.DOColor(new Color(50f / 255f, 50f / 255f, 50f / 255f, 230f / 255f), 1f)
+        .SetUpdate(true);
+
+        // 랜덤 마법 리스트
+        List<MagicInfo> randomList = new List<MagicInfo>();
+
+        // 모든 마법 정보 조회
+        foreach (KeyValuePair<int, MagicInfo> value in MagicDB.Instance.magicDB)
+        {
+            // 선택된 usb와 등급이 같은 마법이면 
+            if (value.Value.grade == usbScroll.CenteredPanel + 1)
+            {
+                // 랜덤 풀에 넣기
+                randomList.Add(value.Value);
+            }
+        }
+
+        //todo 해당 등급의 언락된 마법 리스트 불러오기
+        // for (int i = 0; i < MagicDB.Instance.magicDB.Count; i++)
+        // {
+        // 언락된 마법의 id
+        // int magicId = MagicDB.Instance.unlockMagics[i];
+
+        // if (MagicDB.Instance.magicDB.TryGetValue(magicId, out MagicInfo magic))
+        // {
+        //     // 선택된 usb와 등급이 같은 마법이면 
+        //     if (magic.grade == usbScroll.CenteredPanel)
+        //     {
+        //         // 랜덤 풀에 넣기
+        //         randomList.Add(magic);
+        //     }
+        // }
+        // }
+
+        // 랜덤 마법 뽑기
+        // MagicInfo getMagic = randomList[Random.Range(0, randomList.Count)];
+
+        // softness 적용된 무한 스크롤 리스트에 모든 마법 아이콘 넣기
+
+        // 랜덤 마법 풀 개수만큼 반복
+        for (int i = 0; i < randomList.Count; i++)
+        {
+            // 랜덤 스크롤 컨텐츠 자식으로 슬롯 넣기
+            Transform magicSlot = LeanPool.Spawn(magicSlotPrefab, randomScroll.Content);
+
+            // 마법 아이콘 넣기
+            magicSlot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(randomList[i].id);
+            // 프레임 색 넣기
+            magicSlot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[randomList[i].grade];
+        }
+
+        // 모든 이미지 찾기
+        List<Image> allImage = randomScroll.Content.GetComponentsInChildren<Image>().ToList();
+
+        // 모든 이미지 알파값 투명하게
+        for (int i = 0; i < allImage.Count; i++)
+        {
+            Color originColor = allImage[i].color;
+            originColor.a = 0;
+
+            allImage[i].color = originColor;
+        }
+
+        // 스냅 스크롤 컴포넌트 활성화
+        randomScroll.enabled = true;
+
+        // 가챠 스크롤 활성화
+        randomScroll.gameObject.SetActive(true);
+
+        // 애니메이션용 usb 슬롯 비활성화
+        anim_USB_Slot.gameObject.SetActive(false);
+
+        // 모든 이미지 알파값 초기화
+        for (int i = 0; i < allImage.Count; i++)
+        {
+            Color originColor = allImage[i].color;
+            originColor.a = 1f;
+
+            allImage[i].DOColor(originColor, 1f)
+            .SetUpdate(true);
+        }
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        //todo 빠르게 스크롤 반복 내리기
+
+        //todo 일정 시간 돌린 후에 멈추고(도중에 버튼 누르면 스킵 가능하게)
+
+        //todo 랜덤풀에서 멈춘 시점 선택된 인덱스에 해당하는 마법 뽑기
+        // MagicInfo getMagic = randomList[randomScroll.CenteredPanel + 1];
+        // print(getMagic.magicName);
+
+        //todo 팡파레 이펙트
+        //todo 확인 버튼 누르면 트랜지션 종료
     }
 
     public void ChooseModeToggle()

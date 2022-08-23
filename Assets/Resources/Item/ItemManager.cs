@@ -211,12 +211,6 @@ public class ItemManager : MonoBehaviour
         {
             PlayerManager.Instance.hitBox.Damage(-amount, false);
         }
-        //todo 아이템이 USB일때
-        else if (item.itemType == "USB")
-        {
-            // 마법 획득
-            PlayerManager.Instance.GetMagic(usbMagic);
-        }
         else
         {
             //아이템 획득

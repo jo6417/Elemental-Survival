@@ -166,7 +166,7 @@ public class MagicMixMenu : MonoBehaviour
         //마법 리스트
         Transform container = isLeft ? leftContainer : rightContainer;
         // 리스트의 자식 모두 제거
-        UIManager.Instance.DestroyChildren(container);
+        SystemManager.Instance.DestroyAllChild(container);
         // 리스트 활성화
         container.gameObject.SetActive(true);
 
@@ -364,7 +364,7 @@ public class MagicMixMenu : MonoBehaviour
     bool SetRecipe()
     {
         // 리스트의 자식 모두 제거
-        UIManager.Instance.DestroyChildren(recipeContainer);
+        SystemManager.Instance.DestroyAllChild(recipeContainer);
 
         //모든 마법 리스트 불러오기
         List<MagicInfo> allMagics = MagicDB.Instance.magicDB.Values.ToList();

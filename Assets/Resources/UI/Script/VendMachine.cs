@@ -65,7 +65,7 @@ public class VendMachine : MonoBehaviour
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //상품 모두 지우기
-        UIManager.Instance.DestroyChildren(productsParent);
+        SystemManager.Instance.DestroyAllChild(productsParent);
 
         // 상품9개 = 마법 최대 6개, 최대체력, 최대마나, 랜덤박스
         List<ProductType> productTypes = new List<ProductType>();

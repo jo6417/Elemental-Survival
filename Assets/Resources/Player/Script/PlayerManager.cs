@@ -103,6 +103,7 @@ public class PlayerManager : Character
     [Header("<Pocket>")]
     public MagicInfo[] hasMergeMagics = new MagicInfo[20]; // merge 보드에 올려진 플레이어 보유 마법
     public List<MagicInfo> hasStackMagics = new List<MagicInfo>(); // 스택에 있는 플레이어 보유 마법
+    public int[] hasUSBList = new int[6]; // 플레이어 보유 USB 등급별 개수 목록
     public List<MagicInfo> ultimateList = new List<MagicInfo>(); //궁극기 마법 리스트
     // public MagicInfo ultimateMagic; //궁극기 마법
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
@@ -327,25 +328,40 @@ public class PlayerManager : Character
     {
         // print(getItem.itemType + " : " + getItem.itemName);
 
-        // // 아이템이 USB일때
-        // if (itemManager.item.itemType == "USB")
-        // {
-        //     // 스택에 해당 마법 넣기
-        //     AddStack(itemManager.magic);
+        // 아이템이 USB일때
+        if (getItem.itemType == "USB")
+        {
+            // usb 등급에 따라 개수 올리기
+            hasUSBList[getItem.grade - 1]++;
 
-        //     // 아이템 합성 메뉴 띄우기
-        //     // UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+            int allUSBNum = 0;
 
-        //     //보유하지 않은 아이템일때
-        //     if (!hasItems.Exists(x => x.id == getItem.id))
-        //     {
-        //         // 플레이어 보유 아이템에 해당 아이템 추가하기
-        //         hasItems.Add(getItem);
-        //     }
+            // 모든 USB 개수 갱신
+            for (int i = 0; i < 6; i++)
+            {
+                int usbNum = 0;
+                usbNum = PlayerManager.Instance.hasUSBList[i];
 
-        //     //보유한 아이템의 개수만 늘려주기
-        //     hasItems.Find(x => x.id == getItem.id).amount++;
-        // }
+                //해당 등급의 usb 개수 합산
+                allUSBNum += usbNum;
+            }
+
+            //todo 화면 하단의 총 USB 개수 갱신
+            UIManager.Instance.PhoneNotice(allUSBNum);
+
+            // 아이템 합성 메뉴 띄우기
+            // UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
+
+            // //보유하지 않은 아이템일때
+            // if (!hasItems.Exists(x => x.id == getItem.id))
+            // {
+            //     // 플레이어 보유 아이템에 해당 아이템 추가하기
+            //     hasItems.Add(getItem);
+            // }
+
+            // //보유한 아이템의 개수만 늘려주기
+            // hasItems.Find(x => x.id == getItem.id).amount++;
+        }
 
         if (getItem.itemType == "Artifact")
         {
@@ -393,7 +409,7 @@ public class PlayerManager : Character
         AddStack(magic);
 
         //메인 UI에 스마트폰 알림 갱신
-        UIManager.Instance.PhoneNotice();
+        // UIManager.Instance.PhoneNotice();
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();

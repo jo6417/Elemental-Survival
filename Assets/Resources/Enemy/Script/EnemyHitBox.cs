@@ -167,7 +167,6 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 // 관통 횟수 차감
                 magicHolder.pierceCount--;
 
-
             // 마법 파워 계산
             float power = MagicDB.Instance.MagicPower(magic);
             //크리티컬 성공 여부 계산
@@ -190,8 +189,8 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                     damage = damage * criticalPower;
 
                 // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
-                if (attacker.poisonTime == 0)
-                    Damage(damage, isCritical);
+                // if (attacker.poisonTime == 0)
+                Damage(damage, isCritical);
             }
         }
 
@@ -201,8 +200,8 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
     public void Debuff(Attack attacker, bool isCritical)
     {
-        // 보스가 아닐때 디버프
-        if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+        // 보스면 리턴
+        if (enemyManager.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
             return;
 
         //시간 정지

@@ -428,7 +428,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         }
 
         //메인 UI에 스마트폰 알림 갱신
-        UIManager.Instance.PhoneNotice();
+        // UIManager.Instance.PhoneNotice();
     }
 
     public IEnumerator MergeMagic(int ableDirIndex, int mergeIndex)

@@ -651,85 +651,58 @@ public class EnemyManager : Character
         // 드랍률에 따라 마법 드랍
         if (Random.value <= enemy.dropRate)
         {
-            for (int i = 0; i < 6; i++)
-            {
-                // 아이템 정보 찾기
-                ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB");
-                //아이템 프리팹 찾기
-                GameObject usbPrefab = ItemDB.Instance.GetItemPrefab(usbItem.id);
+            // 몬스터 등급에 해당하는 USB 찾기
+            ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB_" + enemy.grade);
+            // 아이템 프리팹 찾기
+            GameObject usbPrefab = ItemDB.Instance.GetItemPrefab(usbItem.id);
 
-                // 몬스터 등급에 해당하는 랜덤 마법 뽑기
-                MagicInfo usbMagic = MagicDB.Instance.RandomMagic(enemy.grade);
+            //아이템 오브젝트 소환
+            GameObject usbObj = LeanPool.Spawn(usbPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
-                //아이템 오브젝트 소환
-                GameObject usbObj = LeanPool.Spawn(usbPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            // 아이템 매니저 찾기
+            ItemManager itemManager = usbObj.GetComponent<ItemManager>();
+            //아이템 정보 넣기
+            itemManager.item = usbItem;
 
-                // 스프라이트 찾기
-                SpriteRenderer sprite = usbObj.GetComponent<SpriteRenderer>();
-                // 아이템 매니저 찾기
-                ItemManager itemManager = usbObj.GetComponent<ItemManager>();
-                // 디스폰 이펙트 파티클 찾기
-                ParticleSystem despawnEffect = usbObj.GetComponentInChildren<ParticleSystem>(true);
+            //아이템 리지드 찾기
+            Rigidbody2D itemRigid = usbObj.GetComponent<Rigidbody2D>();
 
-                // // 마법 등급에 따라 색깔 변경
-                // sprite.color = MagicDB.Instance.gradeColor[usbMagic.grade];
-                // // 파티클 색깔
-                // Color effectColor = MagicDB.Instance.gradeColor[usbMagic.grade];
+            // 랜덤 방향, 랜덤 파워로 아이템 날리기
+            itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
 
-                // 마법 등급에 따라 색깔 변경
-                sprite.color = MagicDB.Instance.GradeColor[i + 1];
-                // 파티클 색깔 생성
-                Color effectColor = MagicDB.Instance.GradeColor[i + 1];
-                effectColor.a = 80f / 255f;
-                // 마법 등급에 따라 디스폰 파티클 색깔 변경
-                ParticleSystem.MainModule particleMain = despawnEffect.main;
-                particleMain.startColor = effectColor;
-
-                //아이템 정보 넣기
-                itemManager.item = usbItem;
-                // 마법 정보 넣기
-                itemManager.usbMagic = usbMagic;
-
-                //아이템 리지드 찾기
-                Rigidbody2D itemRigid = usbObj.GetComponent<Rigidbody2D>();
-
-                // 랜덤 방향, 랜덤 파워로 아이템 날리기
-                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
-
-                // 아이템 랜덤 회전 시키기
-                float randomRotate = Random.Range(1f, 2f);
-                itemRigid.angularVelocity = randomRotate < 1.5f ? 90f * randomRotate : -90f * randomRotate;
-            }
+            // 아이템 랜덤 회전 시키기
+            float randomRotate = Random.Range(1f, 2f);
+            itemRigid.angularVelocity = randomRotate < 1.5f ? 90f * randomRotate : -90f * randomRotate;
         }
 
         //보유한 모든 아이템 드랍
-        // foreach (ItemInfo item in nowHasItem)
-        // {
-        //     // print(item.itemName + " : " + item.amount);
-        //     //해당 아이템의 amount 만큼 드랍
-        //     for (int i = 0; i < item.amount; i++)
-        //     {
-        //         //아이템 프리팹 찾기
-        //         GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
+        foreach (ItemInfo item in nowHasItem)
+        {
+            // print(item.itemName + " : " + item.amount);
+            //해당 아이템의 amount 만큼 드랍
+            for (int i = 0; i < item.amount; i++)
+            {
+                //아이템 프리팹 찾기
+                GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
 
-        //         if (prefab == null)
-        //             print(item.itemName + " : not found");
+                if (prefab == null)
+                    print(item.itemName + " : not found");
 
-        //         //아이템 오브젝트 소환
-        //         GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+                //아이템 오브젝트 소환
+                GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
-        //         //아이템 정보 넣기
-        //         itemObj.GetComponent<ItemManager>().item = item;
+                //아이템 정보 넣기
+                itemObj.GetComponent<ItemManager>().item = item;
 
-        //         //아이템 리지드 찾기
-        //         Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
+                //아이템 리지드 찾기
+                Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
 
-        //         // 랜덤 방향으로 아이템 날리기
-        //         itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+                // 랜덤 방향으로 아이템 날리기
+                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
 
-        //         // 아이템 랜덤 회전 시키기
-        //         itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;
-        //     }
-        // }
+                // 아이템 랜덤 회전 시키기
+                itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;
+            }
+        }
     }
 }

@@ -64,7 +64,8 @@ public class UIManager : MonoBehaviour
     public GameObject bossHp;
     public GameObject arrowPrefab; //적 방향 가리킬 화살표 UI
     public GameObject iconArrowPrefab; //오브젝트 방향 기리킬 아이콘 화살표 UI
-    public Image phoneScreen; //스마트폰 알람 UI
+    public Image phoneNoticeIcon; //스마트폰 알람 아이콘 UI
+    Sequence iconJumpSeq;
     public bool phoneLoading; //스마트폰 로딩중 여부
 
     //! 테스트, 선택된 UI 이름
@@ -106,6 +107,9 @@ public class UIManager : MonoBehaviour
 
         // 시작할때 머지 캔버스 켜놓기
         mergeMagicPanel.SetActive(true);
+
+        // usb 개수 알림 갱신
+        PhoneNotice(0);
     }
 
     void InputInit()
@@ -958,48 +962,60 @@ public class UIManager : MonoBehaviour
         stats[17].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.wind_atk * 100).ToString() + " %";
     }
 
-    public void PhoneNotice()
+    public void PhoneNotice(int usbNum)
     {
-        Image notice = UIManager.Instance.phoneScreen.transform.Find("Notice").GetComponent<Image>();
+        // 알람 숫자 아이콘 배경
+        Image notice = phoneNoticeIcon.transform.Find("Notice").GetComponent<Image>();
+        // 알람 개수 텍스트
         TextMeshProUGUI stackNum = notice.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-        //TODO 스택 0개일때
-        if (PlayerManager.Instance.hasStackMagics.Count == 0)
-        {
-            //화면 켜져있을때 끄기
-            if (UIManager.Instance.phoneScreen.color.a > 0f)
-            {
-                //이미 반짝이는 트윈 중이면 트윈 킬
-                if (DOTween.IsTweening(UIManager.Instance.phoneScreen))
-                {
-                    UIManager.Instance.phoneScreen.DOKill();
-                }
+        // usb 개수 넣기
+        stackNum.text = usbNum.ToString();
 
-                //화면 밝기 0으로
-                UIManager.Instance.phoneScreen.DOColor(new Color(1, 1, 1, 0), 0.5f);
-            }
+        // 아이콘 점프 트윈 생성 및 멈추기
+        if (iconJumpSeq == null)
+        {
+            iconJumpSeq = DOTween.Sequence();
+
+            // 알림 기본 위치
+            Vector3 defaultPos = notice.rectTransform.localPosition;
+
+            // 알림 아이콘 주기적으로 두번씩 튀는 트윈
+            iconJumpSeq
+            .Append(notice.rectTransform.DOLocalJump(defaultPos, 10f, 1, 0.5f))
+            .Append(notice.rectTransform.DOLocalJump(defaultPos, 10f, 1, 0.5f))
+            .AppendInterval(1f)
+            // 루프간 1초 대기
+            .SetLoops(-1)
+            .OnPause(() =>
+            {
+                // 초기 위치로 복귀
+                notice.transform.localPosition = defaultPos;
+            });
+        }
+
+        // 0개일때
+        if (usbNum == 0)
+        {
+            // 아이콘 점프 트윈 끝내기
+            iconJumpSeq.Pause();
+
+            // 화면 밝기 내려서 끄기
+            UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 1, 1, 0), 1f);
 
             //알림 아이콘 끄기
             notice.gameObject.SetActive(false);
         }
-        //TODO 스택 1개 이상일때
+        // 1개 이상일때
         else
         {
-            //이미 반짝이는 트윈 중이면 트윈 킬
-            if (DOTween.IsTweening(UIManager.Instance.phoneScreen))
-            {
-                UIManager.Instance.phoneScreen.DOKill();
-            }
+            // 스마트폰 UI 화면 밝히기
+            UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 1, 1, 0), 1f);
 
-            //스마트폰 UI 화면 밝히기
-            UIManager.Instance.phoneScreen.color = Color.white; //색 초기화
-            UIManager.Instance.phoneScreen.DOColor(new Color(1, 1, 1, 0), 1f)
-            .SetLoops(-1, LoopType.Yoyo);
-
-            //알림 아이콘 켜기
+            // 알림 아이콘 켜기
             notice.gameObject.SetActive(true);
-            //스택 개수 넣기
-            stackNum.text = PlayerManager.Instance.hasStackMagics.Count.ToString();
+
+            iconJumpSeq.Restart();
         }
     }
 
@@ -1062,21 +1078,6 @@ public class UIManager : MonoBehaviour
             //현재 열려있는 팝업 갱신
             nowOpenPopup = popup;
         }
-    }
-
-    //오브젝트의 모든 자식을 제거
-    public void DestroyChildren(Transform obj)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>();
-        //모든 자식 오브젝트 제거
-        if (children != null)
-            for (int j = 1; j < children.Length; j++)
-            {
-                if (children[j] != transform)
-                {
-                    Destroy(children[j].gameObject);
-                }
-            }
     }
 
     // 화면 밖 오브젝트 방향 표시 Nav UI
@@ -1174,7 +1175,7 @@ public class UIManager : MonoBehaviour
         //TODO id 순으로(등급순) 정렬하기
         // 이번 게임에서 보유 했었던 마법 전부 넣기
         Transform hasMagics = gameoverScreen.Find("HasMagic");
-        DestroyChildren(hasMagics); //모든 자식 제거
+        SystemManager.Instance.DestroyAllChild(hasMagics); //모든 자식 제거
         for (int i = 0; i < MagicDB.Instance.savedMagics.Count; i++)
         {
             //마법 찾기
