@@ -267,7 +267,7 @@ public class SystemManager : MonoBehaviour
     //오브젝트의 모든 자식을 제거
     public void DestroyAllChild(Transform obj)
     {
-        Transform[] children = obj.GetComponentsInChildren<Transform>();
+        Transform[] children = obj.GetComponentsInChildren<Transform>(true);
         //모든 자식 오브젝트 제거
         if (children != null)
             for (int j = 1; j < children.Length; j++)

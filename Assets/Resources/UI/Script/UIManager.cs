@@ -121,7 +121,7 @@ public class UIManager : MonoBehaviour
         // 마우스 위치 입력
         UI_Input.UI.MousePosition.performed += val => MousePos(val.ReadValue<Vector2>());
         // 확인 입력
-        UI_Input.UI.Accept.performed += val => Accept();
+        UI_Input.UI.Accept.performed += val => Submit();
         // 취소 입력
         UI_Input.UI.Cancel.performed += val => Cancel();
         // 스마트폰 버튼 입력
@@ -183,9 +183,8 @@ public class UIManager : MonoBehaviour
     }
 
     // 확인 입력
-    void Accept()
+    public void Submit()
     {
-
     }
 
     // 취소 입력

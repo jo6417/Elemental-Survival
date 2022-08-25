@@ -386,7 +386,7 @@ public class PlayerManager : Character
         }
     }
 
-    public void GetMagic(MagicInfo getMagic, bool magicReCast = true)
+    public void GetMagic(MagicInfo getMagic)
     {
         // MagicInfo 인스턴스 생성
         MagicInfo magic = new MagicInfo(getMagic);
@@ -407,9 +407,6 @@ public class PlayerManager : Character
 
         // 플레이어 보유 마법에 해당 마법 추가하기
         AddStack(magic);
-
-        //메인 UI에 스마트폰 알림 갱신
-        // UIManager.Instance.PhoneNotice();
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();
@@ -522,7 +519,7 @@ public class PlayerManager : Character
             MagicInfo magic = MagicDB.Instance.GetMagicByID(magicID);
 
             //마법 획득
-            GetMagic(magic, false);
+            GetMagic(magic);
         }
 
         // 보유한 궁극기 마법 아이콘 갱신

@@ -319,7 +319,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 마법이 완전히 삭제됬을때
             if (removed)
                 // 스택 리스트 갱신
-                MergeMenu.Instance.StackScroll(false);
+                MergeMenu.Instance.Scroll_Stack(-1);
             // 마법의 개수만 차감됬을때
             else
                 // 스택 슬롯 전체 갱신
@@ -420,7 +420,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 마법이 완전히 삭제됬을때
             if (removed)
                 // 스택 리스트 갱신
-                MergeMenu.Instance.StackScroll(false);
+                MergeMenu.Instance.Scroll_Stack(-1);
             // 마법의 개수만 차감됬을때
             else
                 // 스택 슬롯 전체 갱신

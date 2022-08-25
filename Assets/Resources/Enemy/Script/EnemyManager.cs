@@ -652,7 +652,7 @@ public class EnemyManager : Character
         if (Random.value <= enemy.dropRate)
         {
             // 몬스터 등급에 해당하는 USB 찾기
-            ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB_" + enemy.grade);
+            ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB" + enemy.grade);
             // 아이템 프리팹 찾기
             GameObject usbPrefab = ItemDB.Instance.GetItemPrefab(usbItem.id);
 

@@ -36,14 +36,15 @@ public class MergeMenu : MonoBehaviour
     #endregion
 
     [Header("Refer")]
+    public SimpleScrollSnap screenScroll; // 화면 스크롤
     public GameObject mergePanel; // 핸드폰 화면 패널
     public Button recipeBtn;
-    public TextMeshProUGUI usbNum; // USB 총 개수 표시 텍스트
     public Button backBtn;
     public Button homeBtn;
     public SpriteRenderer lightScreen; // 폰 스크린 전체 빛내는 HDR 이미지
     public Image blackScreen; // 폰 작아질때 검은 이미지로 화면 가리기
     public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
+    bool btnsInteractable = true; // 버튼 상호작용 가능 여부
 
     [Header("Effect")]
     public Vector3 phonePosition; //핸드폰일때 위치 기억
@@ -66,6 +67,7 @@ public class MergeMenu : MonoBehaviour
 
     [Header("Stack List")]
     public Transform stackSlots;
+    public TextMeshProUGUI stackAllNum; // 스택 마법 총 개수
     public List<GameObject> stackObjSlots = new List<GameObject>(); //각각 슬롯 오브젝트
     Vector2[] stackSlotPos = new Vector2[7]; //각각 슬롯의 초기 위치
     float scrollCoolCount; //스크롤 쿨타임 카운트
@@ -81,16 +83,22 @@ public class MergeMenu : MonoBehaviour
     [Header("Recipe List")]
     public Transform recipeSlots; // 레시피 스크롤 컨텐츠들 부모 오브젝트
     public Transform recipePrefab; // 단일 레시피 프리팹
-    public TextMeshProUGUI newUSBNum; // 오픈하지 않은 USB 총 개수 표시 UI
     public Transform recipeUpBtn; // 레시피 맨 위로 버튼
     public Transform recipeDownBtn; // 레시피 맨 아래로 버튼
 
     [Header("USB List")]
-    public SimpleScrollSnap usbScroll; // USB 슬롯 스크롤 목록
+    public TextMeshProUGUI usbAllNum; // USB 총 개수 표시 텍스트
+    public SimpleScrollSnap usbScroll; // USB 슬롯 스크롤
     public Transform anim_USB_Slot; // 애니메이션용 usb 아이콘
-    public Image randomScrollScreen; // 뒷화면 가리기 위한 스크린
+    public CanvasGroup randomScreen; // 뽑기 스크린
     public SimpleScrollSnap randomScroll; // USB 뽑기 랜덤 스크롤
     public Transform magicSlotPrefab; // 랜덤 마법 아이콘 프리팹
+    public Animator slotRayEffect; // 슬롯 팡파레 이펙트
+    public ParticleSystem getMagicEffect; // 뽑은 마법 획득 이펙트
+    MagicInfo getMagic = null; // 랜덤 획득 마법 정보
+    public float randomScrollSpeed = 15f; // 뽑기 스크롤 속도
+    public float minScrollTime = 3f; // 슬롯머신 최소 시간
+    public float maxScrollTime = 5f; // 슬롯머신 최대 시간
 
     private void Awake()
     {
@@ -128,7 +136,7 @@ public class MergeMenu : MonoBehaviour
         // 방향키 입력
         UIManager.Instance.UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
         // 마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => MousePos(val.ReadValue<Vector2>());
+        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => MousePos();
 
         // 스마트폰 버튼 입력
         UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
@@ -167,21 +175,21 @@ public class MergeMenu : MonoBehaviour
             // 왼쪽으로 스크롤하기
             if (arrowDir.x < 0)
             {
-                StackScroll(false);
+                Scroll_Stack(-1);
                 scrollCoolCount = scrollCoolTime;
             }
 
             // 오른쪽으로 스크롤하기
             if (arrowDir.x > 0)
             {
-                StackScroll(true);
+                Scroll_Stack(1);
                 scrollCoolCount = scrollCoolTime;
             }
         }
     }
 
     // 마우스 위치 입력되면 실행
-    void MousePos(Vector2 mousePosInput)
+    void MousePos()
     {
         // 머지 패널 꺼져있으면 리턴
         if (!gameObject.activeSelf)
@@ -191,10 +199,11 @@ public class MergeMenu : MonoBehaviour
 
         if (selectedIcon.enabled)
         {
-            //선택된 마법 아이콘 마우스 따라다니기
-            Vector3 mousePos = mousePosInput;
+            // 캔버스 스케일을 해상도로 나눈 비율을 곱해서 마우스 위치값 보정
+            Vector3 mousePos = UIManager.Instance.nowMousePos * (GetComponent<CanvasScaler>().referenceResolution.x / Screen.width);
             mousePos.z = 0;
 
+            // 선택된 마법 아이콘 마우스 따라다니기
             selectedIconRect.anchoredPosition = mousePos;
         }
     }
@@ -225,15 +234,30 @@ public class MergeMenu : MonoBehaviour
         // 스택 슬롯 세팅
         // UpdateStacks();
         // 스택 슬롯 사이즈 및 위치 정렬
-        StackScroll(true);
+        Scroll_Stack(0);
+
+        // 총 스택 개수 갱신
+        stackAllNum.text = StackAmount().ToString();
 
         //todo 레시피 리스트 세팅
 
-        //todo usb 리스트 세팅
+        // usb 리스트 세팅
         Set_USB();
 
+        // 애니메이션용 슬롯 위치 초기화
+        anim_USB_Slot.position = usbScroll.transform.position;
+
+        // 팡파레 이펙트 끄기
+        slotRayEffect.gameObject.SetActive(false);
+
+        // 뽑기 슬롯 이펙트 끄기
+        getMagicEffect.gameObject.SetActive(false);
+
+        // 뽑기 스크린 투명하게 숨기기
+        randomScreen.alpha = 0f;
+
         // 뽑기 스크린 끄기
-        randomScrollScreen.gameObject.SetActive(false);
+        randomScreen.gameObject.SetActive(false);
 
         // 선택 아이콘 끄기
         selectedIcon.enabled = false;
@@ -243,6 +267,22 @@ public class MergeMenu : MonoBehaviour
 
         // 핸드폰 켜기
         StartCoroutine(OpenPhone());
+
+        // 총 USB 개수 활성화
+        usbAllNum.transform.parent.gameObject.SetActive(true);
+        // 총 스택 개수 비활성화
+        stackAllNum.transform.parent.gameObject.SetActive(false);
+    }
+
+    public int StackAmount()
+    {
+        int stackAmount = 0;
+        foreach (MagicInfo magic in PlayerManager.Instance.hasStackMagics)
+        {
+            stackAmount += magic.amount;
+        }
+
+        return stackAmount;
     }
 
     public IEnumerator OpenPhone()
@@ -311,14 +351,14 @@ public class MergeMenu : MonoBehaviour
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
 
         //모든 슬롯 shiny 효과 순차적으로 켜기
-        for (int i = 0; i < mergeSlots.childCount; i++)
-        {
-            GameObject shinyObj = mergeList[i].transform.Find("ShinyMask").gameObject;
-            shinyObj.SetActive(false);
-            shinyObj.SetActive(true);
+        // for (int i = 0; i < mergeSlots.childCount; i++)
+        // {
+        //     GameObject shinyObj = mergeList[i].transform.Find("ShinyMask").gameObject;
+        //     shinyObj.SetActive(false);
+        //     shinyObj.SetActive(true);
 
-            yield return new WaitForSecondsRealtime(0.01f);
-        }
+        //     yield return new WaitForSecondsRealtime(0.01f);
+        // }
 
         // 휴대폰 로딩 화면 끄기
         LoadingToggle(false);
@@ -376,7 +416,7 @@ public class MergeMenu : MonoBehaviour
             frame.color = MagicDB.Instance.GradeColor[magic.grade];
             //아이콘 넣기
             icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id) == null ? SystemManager.Instance.questionMark : MagicDB.Instance.GetMagicIcon(magic.id);
-            //todo 레벨 이미지 색에 등급색 넣기
+            // 레벨 이미지 색에 등급색 넣기
             level.color = MagicDB.Instance.GradeColor[magic.grade];
             //레벨 넣기
             level.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + magic.magicLevel.ToString();
@@ -420,12 +460,10 @@ public class MergeMenu : MonoBehaviour
         selectedIcon.enabled = !targetImage.enabled;
 
         //선택된 마법 아이콘 마우스 위치로 이동
-        Vector3 mousePos = UIManager.Instance.nowMousePos;
-        mousePos.z = 0;
-        selectedIconRect.anchoredPosition = mousePos;
+        MousePos();
     }
 
-    public void StackScroll(bool isLeft)
+    public void Scroll_Stack(int direction)
     {
         //마우스에 아이콘 들고 있을때 스크롤하면
         if (selectedIcon.enabled)
@@ -443,21 +481,23 @@ public class MergeMenu : MonoBehaviour
         int startSlotIndex = -1;
         int endSlotIndex = -1;
 
-        // 처음 로딩이 아닐때는 슬롯 인덱스 이동
-        if (!loadingPanel.activeSelf)
-        {
-            //슬롯 오브젝트 리스트 인덱스 계산
-            startSlotIndex = isLeft ? stackObjSlots.Count - 1 : 0;
-            endSlotIndex = isLeft ? 0 : stackObjSlots.Count - 1;
+        // 방향이 있을때
+        if (direction != 0)
+            // 처음 로딩이 아닐때는 슬롯 인덱스 이동
+            if (!loadingPanel.activeSelf)
+            {
+                //슬롯 오브젝트 리스트 인덱스 계산
+                startSlotIndex = direction > 0 ? stackObjSlots.Count - 1 : 0;
+                endSlotIndex = direction > 0 ? 0 : stackObjSlots.Count - 1;
 
-            // 마지막 슬롯을 첫번째 인덱스 자리에 넣기
-            GameObject targetSlot = stackObjSlots[startSlotIndex]; //타겟 오브젝트 얻기
-            stackObjSlots.RemoveAt(startSlotIndex); //타겟 마법 삭제
-            stackObjSlots.Insert(endSlotIndex, targetSlot); //타겟 마법 넣기
+                // 마지막 슬롯을 첫번째 인덱스 자리에 넣기
+                GameObject targetSlot = stackObjSlots[startSlotIndex]; //타겟 오브젝트 얻기
+                stackObjSlots.RemoveAt(startSlotIndex); //타겟 마법 삭제
+                stackObjSlots.Insert(endSlotIndex, targetSlot); //타겟 마법 넣기
 
-            // 마지막 슬롯은 반대편으로 즉시 이동
-            targetSlot.GetComponent<RectTransform>().anchoredPosition = stackSlotPos[endSlotIndex];
-        }
+                // 마지막 슬롯은 반대편으로 즉시 이동
+                targetSlot.GetComponent<RectTransform>().anchoredPosition = stackSlotPos[endSlotIndex];
+            }
 
         // 모든 슬롯 오브젝트들을 slotPos 초기위치에 맞게 domove
         for (int i = 0; i < stackObjSlots.Count; i++)
@@ -471,7 +511,7 @@ public class MergeMenu : MonoBehaviour
             float moveTime = 0.2f;
 
             // Merge 슬롯으로 옮겨서 0번 마법이 스택에서 삭제됬을때
-            if (selectedMagic != null && selectedMagic != PlayerManager.Instance.hasStackMagics[0])
+            if (selectedMagic != null && selectedMagic != PlayerManager.Instance.hasStackMagics[0] && direction != 0)
             {
                 // 왼쪽 3개는 즉시 위치이동
                 if (i == 0 || i == 1 || i == 2)
@@ -519,11 +559,11 @@ public class MergeMenu : MonoBehaviour
         if (PlayerManager.Instance.hasStackMagics.Count > 0)
         {
             // 0번 마법이 삭제 되지 않았을때
-            if (selectedMagic == PlayerManager.Instance.hasStackMagics[0])
+            if (selectedMagic == PlayerManager.Instance.hasStackMagics[0] && direction != 0)
             {
                 //마법 데이터 리스트 인덱스 계산
-                int startIndex = isLeft ? PlayerManager.Instance.hasStackMagics.Count - 1 : 0;
-                int endIndex = isLeft ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
+                int startIndex = direction > 0 ? PlayerManager.Instance.hasStackMagics.Count - 1 : 0;
+                int endIndex = direction > 0 ? 0 : PlayerManager.Instance.hasStackMagics.Count - 1;
 
                 // 실제 데이터 hasStackMagics도 마지막 슬롯을 첫번째 인덱스 자리에 넣기
                 MagicInfo targetMagic = PlayerManager.Instance.hasStackMagics[startIndex]; //타겟 마법 참조
@@ -565,6 +605,9 @@ public class MergeMenu : MonoBehaviour
         SetStackIcon(5, 3, 2);
         //4번째 마법
         SetStackIcon(6, 4, 3);
+
+        // 총 스택 개수 갱신
+        stackAllNum.text = StackAmount().ToString();
     }
 
     void SetStackIcon(int objIndex, int num, int magicIndex)
@@ -655,16 +698,13 @@ public class MergeMenu : MonoBehaviour
         }
 
         // 핸드폰 메뉴 버튼의 총 USB 개수 갱신
-        usbNum.text = allUSBNum.ToString();
+        usbAllNum.text = allUSBNum.ToString();
 
         // 화면 하단의 총 USB 개수 갱신
         UIManager.Instance.PhoneNotice(allUSBNum);
 
         // USB 슬롯들 사이즈 조절
         Scroll_USB();
-
-        // 애니메이션용 슬롯 위치 초기화
-        anim_USB_Slot.position = usbScroll.transform.position;
     }
 
     public void Use_USB()
@@ -674,37 +714,61 @@ public class MergeMenu : MonoBehaviour
 
     public IEnumerator GetUSBMagic()
     {
-        // USB 등급에 해당하는 랜덤 마법 뽑기
-        // MagicInfo usbMagic = MagicDB.Instance.RandomMagic(usbGrade);
+        // usb 개수 부족하면 리턴
+        if (PlayerManager.Instance.hasUSBList[usbScroll.CenteredPanel] <= 0)
+        {
+            // 아이콘 찾기 및 트윈 정지
+            Transform icon = usbScroll.Content.GetChild(usbScroll.CenteredPanel).Find("Icon");
+            icon.DOPause();
 
-        //todo 가챠 트랜지션
+            // 원래 위치 저장
+            Vector2 originPos = icon.localPosition;
 
-        // 스냅 스크롤 컴포넌트 비활성화
+            // usb 아이콘 떨림 트윈
+            icon.DOPunchPosition(Vector2.right * 30f, 1f, 10, 1)
+            .SetEase(Ease.Linear)
+            .OnPause(() =>
+            {
+                icon.localPosition = originPos;
+            })
+            .SetUpdate(true);
+
+            yield break;
+        }
+
+        //! todo 나중에 메뉴 버튼도 단축키 대응 되면 뽑기 도중에 화면 스크롤 못하게 막아야함
+        // 메뉴, 백 버튼 상호작용 및 키입력 막기
+        ToggleBtnsInteract(false);
+
+        // 뽑기 화면 전체 투명하게
+        randomScreen.alpha = 0;
+        // 뽑기 배경 활성화, 가려서 핸드폰 입력 막기
+        randomScreen.gameObject.SetActive(true);
+
+        // 뽑기 스크롤 그룹 투명하게
+        CanvasGroup randomScrollGroup = randomScroll.GetComponent<CanvasGroup>();
+        randomScrollGroup.alpha = 0;
+        // 뽑기 스크롤 비활성화
+        randomScroll.gameObject.SetActive(false);
+        // 뽑기 스크롤 컴포넌트 비활성화
         randomScroll.enabled = false;
+
+        // 해당 usb 개수 차감
+        PlayerManager.Instance.hasUSBList[usbScroll.CenteredPanel]--;
+
+        // 선택된 usb 개수, usb 총 개수, 화면 하단 usb 총 개수 UI 갱신
+        Set_USB();
 
         // 모든 자식 비우기
         SystemManager.Instance.DestroyAllChild(randomScroll.Content);
 
-        // 가운데 아이콘 비활성화
-        usbScroll.Content.GetChild(usbScroll.CenteredPanel).gameObject.SetActive(false);
-
         // 애니메이션용 아이콘 스크린 가운데로 올라가기
         anim_USB_Slot.gameObject.SetActive(true);
-        anim_USB_Slot.DOMove(randomScrollScreen.transform.position, 0.5f)
+        anim_USB_Slot.DOMove(randomScroll.transform.position, 0.5f)
         .SetEase(Ease.OutSine)
         .SetUpdate(true);
 
         yield return new WaitForSecondsRealtime(0.5f);
-
-        // 가챠 배경 활성화
-        randomScrollScreen.gameObject.SetActive(true);
-        // 가챠 스크롤 비활성화
-        randomScroll.gameObject.SetActive(false);
-
-        // 아이콘을 제외한 뒷 화면이 어두워지고(검은 스크린 투명하게 뒀다가 투명도 올리기)
-        randomScrollScreen.color = Color.clear;
-        randomScrollScreen.DOColor(new Color(50f / 255f, 50f / 255f, 50f / 255f, 230f / 255f), 1f)
-        .SetUpdate(true);
 
         // 랜덤 마법 리스트
         List<MagicInfo> randomList = new List<MagicInfo>();
@@ -737,11 +801,6 @@ public class MergeMenu : MonoBehaviour
         // }
         // }
 
-        // 랜덤 마법 뽑기
-        // MagicInfo getMagic = randomList[Random.Range(0, randomList.Count)];
-
-        // softness 적용된 무한 스크롤 리스트에 모든 마법 아이콘 넣기
-
         // 랜덤 마법 풀 개수만큼 반복
         for (int i = 0; i < randomList.Count; i++)
         {
@@ -754,49 +813,126 @@ public class MergeMenu : MonoBehaviour
             magicSlot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[randomList[i].grade];
         }
 
-        // 모든 이미지 찾기
-        List<Image> allImage = randomScroll.Content.GetComponentsInChildren<Image>().ToList();
-
-        // 모든 이미지 알파값 투명하게
-        for (int i = 0; i < allImage.Count; i++)
-        {
-            Color originColor = allImage[i].color;
-            originColor.a = 0;
-
-            allImage[i].color = originColor;
-        }
+        // 뽑기 화면 전체 나타내기
+        DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 1f, 0.5f)
+        .SetUpdate(true);
 
         // 스냅 스크롤 컴포넌트 활성화
         randomScroll.enabled = true;
-
-        // 가챠 스크롤 활성화
+        // 뽑기 스크롤 활성화
         randomScroll.gameObject.SetActive(true);
 
-        // 애니메이션용 usb 슬롯 비활성화
+        // 한번 굴려서 무한 스크롤 위치 초기화
+        randomScroll.GoToNextPanel();
+
+        // 애니메이션용 usb 슬롯 비활성화 및 위치 초기화
         anim_USB_Slot.gameObject.SetActive(false);
+        anim_USB_Slot.position = usbScroll.transform.position;
 
-        // 모든 이미지 알파값 초기화
-        for (int i = 0; i < allImage.Count; i++)
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 뽑기 스크롤 그룹 알파값 초기화
+        DOTween.To(() => randomScrollGroup.alpha, x => randomScrollGroup.alpha = x, 1f, 0.5f)
+        .SetUpdate(true);
+
+        // 스크롤 끝나는 시간 계산
+        float stopTime = Time.unscaledTime + Random.Range(minScrollTime, maxScrollTime);
+        // 타이머 끝날때까지 빠르게 스크롤 반복 내리기
+        while (stopTime > Time.unscaledTime)
         {
-            Color originColor = allImage[i].color;
-            originColor.a = 1f;
+            // 끝날때쯤 점점 느려짐
+            if (stopTime <= Time.unscaledTime + 1f)
+            {
+                // 스냅 스피드 계산
+                float scrollSpeed = (stopTime - Time.unscaledTime) * randomScrollSpeed;
+                scrollSpeed = Mathf.Clamp(scrollSpeed, 5f, randomScrollSpeed);
 
-            allImage[i].DOColor(originColor, 1f)
-            .SetUpdate(true);
+                randomScroll.SnapSpeed = scrollSpeed;
+            }
+            else
+                randomScroll.SnapSpeed = randomScrollSpeed;
+
+            randomScroll.GoToNextPanel();
+
+            // 남은시간 1초 이상일때 1초로 만들기 (피지컬로 슬롯 맞추기 가능)
+            if (UIManager.Instance.UI_Input.UI.Accept.triggered)
+            {
+                if (stopTime >= 1f)
+                {
+                    stopTime = Time.unscaledTime + 1f;
+                    print("Skip : " + (stopTime - Time.unscaledTime));
+                }
+            }
+
+            print(stopTime - Time.unscaledTime);
+
+            yield return new WaitForSecondsRealtime(0.01f);
         }
+
+        // 멈춘 후 딜레이
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 랜덤풀에서 멈춘 시점 선택된 인덱스에 해당하는 마법 뽑기
+        getMagic = randomList[randomScroll.CenteredPanel];
+        print(getMagic.magicName);
+
+        // 획득한 마법 스택에 넣기
+        PlayerManager.Instance.GetMagic(getMagic);
+
+        // 스택 개수 UI 갱신
+        stackAllNum.text = StackAmount().ToString();
+
+        // 팡파레 이펙트 켜기
+        slotRayEffect.gameObject.SetActive(true);
+        // 애니메이터 속도 느리게
+        slotRayEffect.speed = 0.1f;
+        // 팡파레 이펙트 등급색으로 변경
+        Image raySprite = slotRayEffect.GetComponent<Image>();
+        raySprite.color = MagicDB.Instance.GradeColor[getMagic.grade];
+        // 사이즈 키우기
+        slotRayEffect.transform.localScale = Vector2.zero;
+        slotRayEffect.transform.DOScale(Vector3.one * 2f, 0.2f)
+        .SetUpdate(true);
+
+        // 획득 파티클 색 변경
+        ParticleSystem.MainModule particleMain = getMagicEffect.main;
+        particleMain.startColor = MagicDB.Instance.GradeColor[getMagic.grade];
+
+        // 획득 마법 초기화
+        getMagic = null;
+
+        // 끝난 후 아무키 누르거나 클릭하면 트랜지션 종료
+        yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
+
+        // 팡파레 이펙트 끄기
+        slotRayEffect.gameObject.SetActive(false);
+
+        // 뽑힌 슬롯 끄기
+        GameObject getSlot = randomScroll.Content.GetChild(randomScroll.CenteredPanel).gameObject;
+        getSlot.SetActive(false);
+
+        // 마법 획득 이펙트 켜기
+        getMagicEffect.gameObject.SetActive(true);
 
         yield return new WaitForSecondsRealtime(1f);
 
-        //todo 빠르게 스크롤 반복 내리기
+        // 뽑기 스크린 전체 투명하게
+        DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 0f, 1f)
+        .SetUpdate(true);
 
-        //todo 일정 시간 돌린 후에 멈추고(도중에 버튼 누르면 스킵 가능하게)
+        yield return new WaitForSecondsRealtime(1f);
 
-        //todo 랜덤풀에서 멈춘 시점 선택된 인덱스에 해당하는 마법 뽑기
-        // MagicInfo getMagic = randomList[randomScroll.CenteredPanel + 1];
-        // print(getMagic.magicName);
+        // 마법 획득 이펙트 끄기
+        getMagicEffect.gameObject.SetActive(false);
 
-        //todo 팡파레 이펙트
-        //todo 확인 버튼 누르면 트랜지션 종료
+        // 뽑기 스크린 비활성화
+        randomScreen.gameObject.SetActive(false);
+
+        // 뽑힌 슬롯 다시 켜기
+        getSlot.SetActive(true);
+
+        // 메뉴, 백 버튼 상호작용 및 키입력 막기 해제
+        ToggleBtnsInteract(true);
     }
 
     public void ChooseModeToggle()
@@ -943,15 +1079,56 @@ public class MergeMenu : MonoBehaviour
         }
     }
 
-    // Back 버튼 누르면
+    void ToggleBtnsInteract(bool able)
+    {
+        // 키 입력 막기 변수 토글
+        btnsInteractable = able;
+
+        // 메뉴 버튼 상호작용 토글
+        recipeBtn.interactable = able;
+        // 백 버튼 상호작용 토글
+        backBtn.interactable = able;
+    }
+
+    public void ScreenScrollBtn()
+    {
+        // 키 입력 막기
+        if (!btnsInteractable)
+            return;
+
+        // 선택된게 머지 스크린일때
+        if (screenScroll.CenteredPanel == 0)
+        {
+            // 총 USB 개수 활성화
+            usbAllNum.transform.parent.gameObject.SetActive(true);
+            // 총 스택 개수 비활성화
+            stackAllNum.transform.parent.gameObject.SetActive(false);
+        }
+        // 선택된게 레시피 스크린일때
+        else
+        {
+            // 총 USB 개수 비활성화
+            usbAllNum.transform.parent.gameObject.SetActive(false);
+            // 총 스택 개수 활성화
+            stackAllNum.transform.parent.gameObject.SetActive(true);
+        }
+    }
+
+    public void BackBtn()
+    {
+        //백 버튼 액션 실행
+        StartCoroutine(BackBtnAction());
+    }
+
     public IEnumerator BackBtnAction()
     {
         // 머지 패널 꺼져있으면 리턴
         if (!mergePanel.activeSelf)
             yield break;
 
-        //TODO 레시피 화면일때
-        //TODO 메인화면으로 전환
+        // 키 입력 막기
+        if (!btnsInteractable)
+            yield break;
 
         // MergeChoose 모드일때
         // if (mergeChooseMode)
