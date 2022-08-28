@@ -81,10 +81,9 @@ public class MergeMenu : MonoBehaviour
     RectTransform selectedIconRect;
 
     [Header("Recipe List")]
-    public Transform recipeSlots; // 레시피 스크롤 컨텐츠들 부모 오브젝트
-    public Transform recipePrefab; // 단일 레시피 프리팹
-    public Transform recipeUpBtn; // 레시피 맨 위로 버튼
-    public Transform recipeDownBtn; // 레시피 맨 아래로 버튼
+    public SimpleScrollSnap recipeScroll; // 레시피 슬롯 스크롤
+    public GameObject recipePrefab; // 단일 레시피 프리팹
+    public bool recipeInit = false;
 
     [Header("USB List")]
     public TextMeshProUGUI usbAllNum; // USB 총 개수 표시 텍스트
@@ -123,6 +122,9 @@ public class MergeMenu : MonoBehaviour
 
         // 키 입력 정리
         StartCoroutine(InputInit());
+
+        // 스크롤 컨텐츠 모두 비우기
+        SystemManager.Instance.DestroyAllChild(recipeScroll.Content);
     }
 
     IEnumerator InputInit()
@@ -224,15 +226,14 @@ public class MergeMenu : MonoBehaviour
 
         // 휴대폰 로딩 화면으로 가리기
         LoadingToggle(true);
+        blackScreen.color = new Color(70f / 255f, 70f / 255f, 70f / 255f, 1);
 
         //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //머지 보드 세팅
-        MergeSet();
+        Set_Merge();
 
-        // 스택 슬롯 세팅
-        // UpdateStacks();
         // 스택 슬롯 사이즈 및 위치 정렬
         Scroll_Stack(0);
 
@@ -240,6 +241,7 @@ public class MergeMenu : MonoBehaviour
         stackAllNum.text = StackAmount().ToString();
 
         //todo 레시피 리스트 세팅
+        Set_Recipe();
 
         // usb 리스트 세팅
         Set_USB();
@@ -318,7 +320,14 @@ public class MergeMenu : MonoBehaviour
 
         // 검은화면 투명하게
         blackScreen.DOColor(Color.clear, 0.2f)
-        .SetUpdate(true);
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            // 휴대폰 로딩 화면 끄기
+            LoadingToggle(false);
+        });
+
+        #region Interact_On
 
         // merge 슬롯 모두 켜기
         foreach (Button mergeSlot in mergeList)
@@ -347,8 +356,10 @@ public class MergeMenu : MonoBehaviour
         nav.selectOnUp = stackObjSlots[3].GetComponent<Button>().FindSelectable(Vector3.up);
         selectedSlot.navigation = nav;
 
+        #endregion
+
         //트윈 끝날때까지 대기
-        yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
+        // yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
 
         //모든 슬롯 shiny 효과 순차적으로 켜기
         // for (int i = 0; i < mergeSlots.childCount; i++)
@@ -359,9 +370,6 @@ public class MergeMenu : MonoBehaviour
 
         //     yield return new WaitForSecondsRealtime(0.01f);
         // }
-
-        // 휴대폰 로딩 화면 끄기
-        LoadingToggle(false);
 
         // TODO 게임 시작할때는 기본 마법 1개 어느 슬롯에 놓을지 선택
         // TODO 선택하면 배경 사라지고, 휴대폰 플레이어 위로 작아지며 날아간 후에 게임 시작
@@ -374,7 +382,7 @@ public class MergeMenu : MonoBehaviour
         loadingPanel.SetActive(isLoading);
     }
 
-    void MergeSet()
+    void Set_Merge()
     {
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
         for (int i = 0; i < mergeSlots.childCount; i++)
@@ -659,22 +667,96 @@ public class MergeMenu : MonoBehaviour
         }
     }
 
-    public void Scroll_USB()
+    void Set_Recipe()
     {
-        // 선택된 아이콘은 사이즈 크게, 나머지 아이콘은 사이즈 작게
-        for (int i = 0; i < 6; i++)
-        {
-            // 선택된것만 큰 사이즈로
-            float size = i == usbScroll.CenteredPanel ? 1f : 0.7f;
+        // 레시피 스크롤 컴포넌트 끄기
+        recipeScroll.enabled = false;
 
-            // 모든 슬롯 사이즈 조절
-            usbScroll.Content.GetChild(i).DOScale(size, 0.2f)
-            .SetUpdate(true);
+        // 처음에만 오브젝트 생성
+        if (!recipeInit)
+            // 레시피 목록에 모든 마법 표시
+            for (int i = 0; i < MagicDB.Instance.magicDB.Count; i++)
+            {
+                // 마법 정보 찾기
+                MagicInfo magic = MagicDB.Instance.magicDB[i];
+
+                // 0등급이면 넘기기
+                if (magic.grade == 0)
+                    continue;
+
+                // 레시피 프리팹 생성
+                LeanPool.Spawn(recipePrefab, recipeScroll.Content.transform);
+            }
+
+        // 레시피 목록에 모든 마법 표시
+        for (int i = 0; i < recipeScroll.Content.childCount; i++)
+        {
+            // 마법 정보 찾기
+            MagicInfo magic = MagicDB.Instance.magicDB[i + 6];
+
+            // 레시피 아이템 찾기
+            Transform recipe = recipeScroll.Content.GetChild(i);
+
+            // 해당 마법 언락 여부 판단
+            bool unlocked = MagicDB.Instance.unlockMagics.Exists(x => x == magic.id);
+
+            // 재료들 정보 찾기
+            MagicInfo elementA = MagicDB.Instance.GetMagicByName(magic.element_A);
+            MagicInfo elementB = MagicDB.Instance.GetMagicByName(magic.element_B);
+
+            // 메인 아이콘 및 프레임 찾기
+            Image main_Icon = recipe.transform.Find("MagicSlot/Icon").GetComponent<Image>();
+            Image main_Frame = recipe.transform.Find("MagicSlot/Frame").GetComponent<Image>();
+            // 재료 아이콘 A,B 및 프레임 찾기
+            Image elementA_Icon = recipe.transform.Find("Element_A/Icon").GetComponent<Image>();
+            Image elementA_Frame = recipe.transform.Find("Element_A/Frame").GetComponent<Image>();
+            Image elementB_Icon = recipe.transform.Find("Element_B/Icon").GetComponent<Image>();
+            Image elementB_Frame = recipe.transform.Find("Element_B/Frame").GetComponent<Image>();
+
+            // 메인 아이콘 컬러 초기화
+            main_Icon.color = unlocked ? Color.white : Color.black;
+
+            // 메인 아이콘 표시
+            main_Icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            // 재료 아이콘 해금됬으면 표시, 아니면 물음표
+            elementA_Icon.sprite = unlocked && elementA != null ? MagicDB.Instance.GetMagicIcon(elementA.id) : SystemManager.Instance.questionMark;
+            elementB_Icon.sprite = unlocked && elementB != null ? MagicDB.Instance.GetMagicIcon(elementB.id) : SystemManager.Instance.questionMark;
+
+            // 메인 아이콘 프레임 색 넣기
+            main_Frame.color = MagicDB.Instance.GradeColor[magic.grade];
+            // 재료 아이콘 해금됬으면 프레임 색 넣기
+            elementA_Frame.color = unlocked && elementA != null ? MagicDB.Instance.GradeColor[elementA.grade] : Color.white;
+            elementB_Frame.color = unlocked && elementB != null ? MagicDB.Instance.GradeColor[elementB.grade] : Color.white;
+
+            // 메인 아이콘에 툴팁 넣기
+            if (unlocked)
+            {
+                ToolTipTrigger main_tooltip = main_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
+                ToolTipTrigger elementA_tooltip = elementA_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
+                ToolTipTrigger elementB_tooltip = elementB_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
+
+                main_tooltip.Magic = magic;
+                main_tooltip.enabled = true;
+
+                if (elementA != null && elementB != null)
+                {
+                    elementA_tooltip.Magic = elementA;
+                    elementA_tooltip.enabled = true;
+                    elementB_tooltip.Magic = elementB;
+                    elementB_tooltip.enabled = true;
+                }
+            }
         }
 
-        // 애니메이팅 아이콘에 색깔 갱신
-        anim_USB_Slot.Find("Icon").GetComponent<Image>().color = MagicDB.Instance.GradeColor[usbScroll.CenteredPanel + 1];
-        anim_USB_Slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[usbScroll.CenteredPanel + 1];
+        // 레시피 스크롤 컴포넌트 켜기
+        recipeScroll.enabled = true;
+
+        // 레시피 스크롤 위치 초기화
+        recipeScroll.Content.localPosition = Vector2.zero;
+        recipeScroll.GoToPanel(0);
+
+        // 레시피 초기화 완료
+        recipeInit = true;
     }
 
     public void Set_USB()
@@ -707,6 +789,24 @@ public class MergeMenu : MonoBehaviour
         Scroll_USB();
     }
 
+    public void Scroll_USB()
+    {
+        // 선택된 아이콘은 사이즈 크게, 나머지 아이콘은 사이즈 작게
+        for (int i = 0; i < 6; i++)
+        {
+            // 선택된것만 큰 사이즈로
+            float size = i == usbScroll.CenteredPanel ? 1f : 0.7f;
+
+            // 모든 슬롯 사이즈 조절
+            usbScroll.Content.GetChild(i).DOScale(size, 0.2f)
+            .SetUpdate(true);
+        }
+
+        // 애니메이팅 아이콘에 색깔 갱신
+        anim_USB_Slot.Find("Icon").GetComponent<Image>().color = MagicDB.Instance.GradeColor[usbScroll.CenteredPanel + 1];
+        anim_USB_Slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[usbScroll.CenteredPanel + 1];
+    }
+
     public void Use_USB()
     {
         StartCoroutine(GetUSBMagic());
@@ -714,11 +814,15 @@ public class MergeMenu : MonoBehaviour
 
     public IEnumerator GetUSBMagic()
     {
+        // 아이콘 찾기
+        Transform icon = usbScroll.Content.GetChild(usbScroll.CenteredPanel).Find("Icon");
+        // 아이콘 이미지 찾기
+        Image iconImage = icon.GetComponent<Image>();
+
         // usb 개수 부족하면 리턴
         if (PlayerManager.Instance.hasUSBList[usbScroll.CenteredPanel] <= 0)
         {
-            // 아이콘 찾기 및 트윈 정지
-            Transform icon = usbScroll.Content.GetChild(usbScroll.CenteredPanel).Find("Icon");
+            // 아이콘 트윈 정지            
             icon.DOPause();
 
             // 원래 위치 저장
@@ -761,6 +865,12 @@ public class MergeMenu : MonoBehaviour
 
         // 모든 자식 비우기
         SystemManager.Instance.DestroyAllChild(randomScroll.Content);
+
+        // 사용된 usb 아이콘 숨기기
+        Color usbColor = iconImage.color;
+        usbColor.a = 0;
+        iconImage.DOColor(usbColor, 0.5f)
+        .SetUpdate(true);
 
         // 애니메이션용 아이콘 스크린 가운데로 올라가기
         anim_USB_Slot.gameObject.SetActive(true);
@@ -879,9 +989,6 @@ public class MergeMenu : MonoBehaviour
         // 획득한 마법 스택에 넣기
         PlayerManager.Instance.GetMagic(getMagic);
 
-        // 스택 개수 UI 갱신
-        stackAllNum.text = StackAmount().ToString();
-
         // 팡파레 이펙트 켜기
         slotRayEffect.gameObject.SetActive(true);
         // 애니메이터 속도 느리게
@@ -914,7 +1021,15 @@ public class MergeMenu : MonoBehaviour
         // 마법 획득 이펙트 켜기
         getMagicEffect.gameObject.SetActive(true);
 
+        // 사용된 usb 아이콘 색깔 초기화
+        usbColor.a = 1;
+        iconImage.DOColor(usbColor, 0.5f)
+        .SetUpdate(true);
+
         yield return new WaitForSecondsRealtime(1f);
+
+        // 스택 개수 UI 갱신
+        stackAllNum.text = StackAmount().ToString();
 
         // 뽑기 스크린 전체 투명하게
         DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 0f, 1f)
@@ -1111,6 +1226,9 @@ public class MergeMenu : MonoBehaviour
             usbAllNum.transform.parent.gameObject.SetActive(false);
             // 총 스택 개수 활성화
             stackAllNum.transform.parent.gameObject.SetActive(true);
+
+            // 레시피 갱신
+            Set_Recipe();
         }
     }
 

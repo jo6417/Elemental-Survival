@@ -12,7 +12,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
     {
         #region Fields
         private bool showMovementAndLayoutSettings = true, showNavigationSettings = true, showSnapSettings = true, showTransitionEffects = true, showEvents = false;
-        private SerializedProperty movementType, movementAxis, useAutomaticLayout, sizeControl, size, automaticLayoutSpacing, automaticLayoutMargins, useInfiniteScrolling, infiniteScrollingSpacing, useOcclusionCulling, startingPanel, useSwipeGestures, minimumSwipeSpeed, previousButton, nextButton, pagination, useToggleNavigation, snapTarget, snapSpeed, thresholdSpeedToSnap, useHardSnapping, useUnscaledTime, onTransitionEffects, onPanelSelecting, onPanelSelected, onPanelCentering, onPanelCentered;
+        private SerializedProperty movementType, movementAxis, useAutomaticLayout, sizeControl, size, automaticLayoutSpacing, automaticLayoutMargins, reverseSort, useInfiniteScrolling, infiniteScrollingSpacing, useOcclusionCulling, startingPanel, clampRange, useSwipeGestures, minimumSwipeSpeed, previousButton, nextButton, pagination, useToggleNavigation, snapTarget, snapSpeed, thresholdSpeedToSnap, useHardSnapping, useUnscaledTime, onTransitionEffects, onPanelSelecting, onPanelSelected, onPanelCentering, onPanelCentered;
         private SimpleScrollSnap scrollSnap;
         #endregion
 
@@ -30,10 +30,12 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             size = serializedObject.FindProperty("size");
             automaticLayoutSpacing = serializedObject.FindProperty("automaticLayoutSpacing");
             automaticLayoutMargins = serializedObject.FindProperty("automaticLayoutMargins");
+            reverseSort = serializedObject.FindProperty("reverseSort");
             useInfiniteScrolling = serializedObject.FindProperty("useInfiniteScrolling");
             infiniteScrollingSpacing = serializedObject.FindProperty("infiniteScrollingSpacing");
             useOcclusionCulling = serializedObject.FindProperty("useOcclusionCulling");
             startingPanel = serializedObject.FindProperty("startingPanel");
+            clampRange = serializedObject.FindProperty("clampRange");
 
             // Navigation Settings
             useSwipeGestures = serializedObject.FindProperty("useSwipeGestures");
@@ -71,7 +73,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             serializedObject.ApplyModifiedProperties();
             PrefabUtility.RecordPrefabInstancePropertyModifications(scrollSnap);
         }
-        
+
         private void ShowMovementAndLayoutSettings()
         {
             EditorGUILayout.Space();
@@ -80,6 +82,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             if (showMovementAndLayoutSettings)
             {
                 ShowStartingPanel();
+                ShowClampRange();
                 ShowMovementType();
             }
             EditorGUILayout.Space();
@@ -87,6 +90,10 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         private void ShowStartingPanel()
         {
             EditorGUILayout.IntSlider(startingPanel, 0, scrollSnap.NumberOfPanels - 1, new GUIContent("Starting Panel", "The number of the panel that will be displayed first, based on a 0-indexed array."));
+        }
+        private void ShowClampRange()
+        {
+            EditorGUILayout.PropertyField(clampRange, new GUIContent("Clamp Range", "The amount by which scrolling will not go out of bounds."));
         }
         private void ShowMovementType()
         {
@@ -97,6 +104,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
 
                 ShowMovementAxis();
                 ShowUseAutomaticLayout();
+                ShowReverseSort();
                 ShowUseInfiniteScrolling();
                 ShowUseOcclusionCulling();
 
@@ -124,6 +132,10 @@ namespace DanielLochner.Assets.SimpleScrollSnap
                 EditorGUILayout.PropertyField(automaticLayoutMargins, new GUIContent("Margins"));
                 EditorGUI.indentLevel--;
             }
+        }
+        private void ShowReverseSort()
+        {
+            EditorGUILayout.PropertyField(reverseSort, new GUIContent("Reverse Sort", "Sort content in reverse order"));
         }
         private void ShowUseInfiniteScrolling()
         {

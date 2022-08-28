@@ -67,8 +67,10 @@ public class SaveManager : MonoBehaviour
 
     public IEnumerator Save()
     {
-        isSaving = true; //저장 시작
-        // StartCoroutine(Saving()); //저장 중일때 저장 아이콘
+        //저장 시작
+        isSaving = true;
+        //저장 중일때 저장 아이콘 띄우기
+        StartCoroutine(Saving());
 
         //해금 마법 목록
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
@@ -91,21 +93,13 @@ public class SaveManager : MonoBehaviour
         // 저장 아이콘 켜기
         saveIcon.SetActive(true);
 
-        // 최소 저장 시간 선 대기
-        yield return new WaitForSecondsRealtime(1.5f);
+        // 최소 저장 시간 대기
+        yield return new WaitForSecondsRealtime(1f);
+        // 저장 끝날때까지 대기
+        yield return new WaitUntil(() => !isSaving);
 
-        // 저장 아이콘 켜져 있으면 반복
-        while (saveIcon.activeSelf)
-        {
-            // 저장 끝났으면
-            if (!isSaving)
-            {
-                //저장 아이콘 끄기
-                saveIcon.SetActive(false);
-            }
-
-            yield return null;
-        }
+        //저장 아이콘 끄기
+        saveIcon.SetActive(false);
     }
 
     public IEnumerator LoadData()
@@ -125,8 +119,6 @@ public class SaveManager : MonoBehaviour
 
     public void LoadSet()
     {
-        //해금 마법 목록 불러오기
-        MagicDB.Instance.unlockMagics = localSaveData.unlockMagics.ToList();
         //TODO 해금 캐릭터 목록
         //TODO 소지금 불러오기
     }

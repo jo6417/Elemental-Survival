@@ -45,16 +45,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   activeAngleOffset: 0
-  alwaysOnCollider: 1
+  defaultCollOn: 1
   enemyManager: {fileID: 7247921042507206276}
   enemyName: 
   atkColl: {fileID: 2771087719256695769}
   dashEffect: {fileID: 0}
   activeObj: {fileID: 0}
-  flatTime: 0
-  knockBackDebuff: 0
-  poisonDebuff: 0
 --- !u!61 &2771087719256695769
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -208,7 +217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3190824627126303488
 Transform:
   m_ObjectHideFlags: 0
@@ -239,12 +248,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hpNow: 0
+  hpMax: 0
+  rigid: {fileID: 3190824627126303489}
+  anim: {fileID: 0}
   initialStart: 1
   initialFinish: 0
   lookLeft: 0
   defaultHasItem: ffffffff
   targetResetTime: 3
   targetResetCount: 0
+  movePos: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  targetDir: {x: 0, y: 0, z: 0}
   nowState: 0
   nowAction: 0
   moveType: 1
@@ -267,20 +283,19 @@ MonoBehaviour:
   originColorList: []
   animList:
   - {fileID: 3190824627126303490}
-  rigid: {fileID: 3190824627126303489}
   physicsColl: {fileID: 8756922079018869723}
   hitBoxList: []
-  buffParent: {fileID: 0}
-  hpMax: 0
-  HpNow: 1
   power: 0
   speed: 0
   range: 0
+  buffParent: {fileID: 0}
   particleHitCount: 0
   hitCount: 0
   stopCount: 0
+  flatCount: 0
   oppositeCount: 0
   poisonCoolCount: 0
+  bleedCoolCount: 0
   enemyName: 
   enemyType: 
   velocity: {x: 0, y: 0, z: 0}
@@ -296,11 +311,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetDir: {x: 0, y: 0, z: 0}
   moveSpeedDebuff: 1
   enemyManager: {fileID: 7247921042507206276}
-  moveResetTime: 3
-  moveResetCount: 0
+  targetDir: {x: 0, y: 0, z: 0}
+  moveCoolTime: 1
+  moveCoolCount: 0
+  directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
@@ -562,7 +578,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyManager: {fileID: 7247921042507206276}
-  knockbackDir: {x: 0, y: 0}
 --- !u!61 &420655774949045804
 BoxCollider2D:
   m_ObjectHideFlags: 0

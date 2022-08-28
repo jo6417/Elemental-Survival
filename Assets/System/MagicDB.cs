@@ -263,7 +263,7 @@ public class MagicDB : MonoBehaviour
                 "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
         ));
 
-        // 로컬 마법DB 데이터에 웹에서 가져온 마법DB 데이터를 덮어쓰기
+        // 웹에서 가져온 마법DB 데이터를 로컬 마법DB 데이터에 덮어쓰기
         SaveManager.Instance.localSaveData.magicDBJson = SaveManager.Instance.webSaveData.magicDBJson;
 
         // 마법DB 수정된 로컬 데이터를 저장, 완료시까지 대기
@@ -271,6 +271,9 @@ public class MagicDB : MonoBehaviour
 
         // 로컬 데이터에서 파싱해서 마법DB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetMagicDB());
+
+        // 로컬 세이브에서 언락된 마법들 불러오기
+        LoadUnlockMagics();
 
         // 동기화 여부 다시 검사
         yield return StartCoroutine(
@@ -303,18 +306,46 @@ public class MagicDB : MonoBehaviour
                 magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["projectile"], magic["coolTime"],
                 magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["projectilePerLev"], magic["coolTimePerLev"]
                 ));
+                yield return null;
             }
 
             //모든 마법 초기화
             InitialMagic();
         }
 
+        // 로컬 세이브에서 언락된 마법들 불러오기
+        LoadUnlockMagics();
+
         loadDone = true;
         print("MagicDB Loaded!");
 
-        yield return null;
     }
 
+    public void LoadUnlockMagics()
+    {
+        List<int> savedMagics = new List<int>();
+
+        // 세이브 데이터에서 언락된 마법 받아오기
+        savedMagics = SaveManager.Instance.localSaveData.unlockMagics.ToList();
+
+        // 기본적으로 1등급 마법은 언락시키기
+        for (int i = 0; i < magicDB.Count; i++)
+        {
+            MagicInfo magic = magicDB[i];
+
+            // 1등급 마법이고, 세이브 데이터에 해당 마법이 없을때
+            if (magic.grade == 1 && !savedMagics.Exists(x => x == magic.id))
+            {
+                // print(magic.id + " : " + magic.magicName + " : " + magic.grade);
+
+                // 해당 마법 넣어주기
+                savedMagics.Add(magic.id);
+            }
+        }
+
+        // 해금 마법 목록 초기화
+        unlockMagics = savedMagics;
+    }
     public MagicInfo GetMagicByName(string name)
     {
         MagicInfo magic = null;

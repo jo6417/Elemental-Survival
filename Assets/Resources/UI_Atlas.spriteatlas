@@ -590,6 +590,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e141d0426e9f66c41a07be1010809c2a, type: 3}
   - {fileID: 21300000, guid: f788e14211718ee41886d353396f7ccd, type: 3}
   - {fileID: 21300000, guid: 95933342c9f21d943a23c76c228c3533, type: 3}
+  - {fileID: 21300000, guid: 8a007542aba99a44fa04ab00a89fd431, type: 3}
   - {fileID: 21300000, guid: 22c9d6429059c2346a6258b4cab65a12, type: 3}
   - {fileID: 21300000, guid: eddd084282e8b0142bf88c545e7de8a8, type: 3}
   - {fileID: 21300000, guid: fc8e6842783eb1043a628834e365285e, type: 3}
@@ -4279,6 +4280,7 @@ SpriteAtlas:
   - shape026_style03_color01
   - shape086_style03_color01
   - shape054_style03_color12
+  - Arrow_Triangle
   - shape061_style03_color12
   - shape002_style02_color06
   - shape034_style01_color02

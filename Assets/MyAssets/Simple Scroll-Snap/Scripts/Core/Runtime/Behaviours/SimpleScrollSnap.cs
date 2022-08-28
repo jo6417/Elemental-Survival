@@ -23,10 +23,12 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         [SerializeField] private SizeControl sizeControl = SizeControl.Fit;
         [SerializeField] private Vector2 size = new Vector2(400, 250);
         [SerializeField] private Margins automaticLayoutMargins = new Margins(0);
+        [SerializeField] private bool reverseSort = false;
         [SerializeField] private bool useInfiniteScrolling = false;
         [SerializeField] private float infiniteScrollingSpacing = 0.25f;
         [SerializeField] private bool useOcclusionCulling = false;
         [SerializeField] private int startingPanel = 0;
+        [SerializeField] private int clampRange = 0;
 
         // Navigation Settings
         [SerializeField] private bool useSwipeGestures = true;
@@ -93,6 +95,11 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             get => automaticLayoutMargins;
             set => automaticLayoutMargins = value;
         }
+        public bool ReverseSort
+        {
+            get => reverseSort;
+            set => reverseSort = value;
+        }
         public bool UseInfiniteScrolling
         {
             get => useInfiniteScrolling;
@@ -112,6 +119,11 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         {
             get => startingPanel;
             set => startingPanel = value;
+        }
+        public int ClampRange
+        {
+            get => clampRange;
+            set => clampRange = value;
         }
         public bool UseSwipeGestures
         {
@@ -265,10 +277,18 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             get;
             private set;
         }
+        private int centeredPanel;
         public int CenteredPanel
         {
-            get;
-            private set;
+            get
+            {
+                // 스크롤이 범위 벗어나지 않게
+                if (clampRange > 0)
+                    centeredPanel = Mathf.Clamp(centeredPanel, clampRange, NumberOfPanels - 1 - clampRange);
+
+                return centeredPanel;
+            }
+            private set { centeredPanel = value; }
         }
         #endregion
 
@@ -378,8 +398,8 @@ namespace DanielLochner.Assets.SimpleScrollSnap
                     Panels[i].pivot = new Vector2(0.5f, 0.5f) + marginOffset;
                     Panels[i].sizeDelta = size - new Vector2(automaticLayoutMargins.Left + automaticLayoutMargins.Right, automaticLayoutMargins.Top + automaticLayoutMargins.Bottom);
 
-                    float panelPosX = (movementAxis == MovementAxis.Horizontal) ? i * (automaticLayoutSpacing + 1f) * size.x + (size.x / 2f) : 0f;
-                    float panelPosY = (movementAxis == MovementAxis.Vertical) ? i * (automaticLayoutSpacing + 1f) * size.y + (size.y / 2f) : 0f;
+                    float panelPosX = (movementAxis == MovementAxis.Horizontal) ? (reverseSort ? 1f : -1f) * i * (automaticLayoutSpacing + 1f) * size.x + (size.x / 2f) : 0f;
+                    float panelPosY = (movementAxis == MovementAxis.Vertical) ? (reverseSort ? 1f : -1f) * i * (automaticLayoutSpacing + 1f) * size.y + (size.y / 2f) : 0f;
                     Panels[i].anchoredPosition = new Vector2(panelPosX, panelPosY);
                 }
             }
@@ -622,6 +642,11 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         public void GoToPanel(int panelNumber)
         {
             CenteredPanel = panelNumber;
+
+            // // 스크롤이 범위 벗어나지 않게
+            // if (clampRange > 0)
+            //     CenteredPanel = Mathf.Clamp(panelNumber, clampRange, NumberOfPanels - 1 - clampRange);
+
             isSelected = true;
             onPanelSelected.Invoke(SelectedPanel);
 

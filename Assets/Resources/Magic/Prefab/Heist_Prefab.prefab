@@ -46,23 +46,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 1
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!114 &5657517877285718282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,9 +77,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 5657517877285718283}
+  ringSprite: {fileID: 5657517877285718389}
   electroTrail: {fileID: 4711092629807490430, guid: e446a00d3e20b0048aef83366a477d8d,
     type: 3}
   ghostPrefab: {fileID: 6164809114435850960, guid: fd1936ed9e7a3a94c8e7440f1159e955,
+    type: 3}
+  dustPrefab: {fileID: 8530843955890818610, guid: b3f098acb5e6b3d4b9068193319c4396,
     type: 3}
   ghostList: []
   ghostStartColor: {r: 0.30980393, g: 1, b: 0.9607843, a: 0.5882353}

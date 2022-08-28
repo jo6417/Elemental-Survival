@@ -83,7 +83,8 @@ public class PlayerManager : Character
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
-    public SpriteRenderer sprite;
+    public SpriteRenderer sprite; // 몸체 스프라이트
+    public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Light2D playerLight;
 
     [Header("<Stat>")] //플레이어 스탯

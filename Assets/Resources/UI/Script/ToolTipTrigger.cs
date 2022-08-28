@@ -7,7 +7,7 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     public enum ToolTipType { ProductTip, HasStuffTip };
     public ToolTipType toolTipType;
-    public MagicInfo magic;
+    private MagicInfo magic;
     public MagicInfo Magic
     {
         get { return magic; }
@@ -15,10 +15,13 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             magic = value;
 
-            magicName = Magic.magicName;
+            if (magic != null)
+            {
+                magicName = Magic.magicName;
+            }
         }
     }
-    public ItemInfo item;
+    private ItemInfo item;
     public ItemInfo Item
     {
         get { return item; }
@@ -26,28 +29,37 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             item = value;
 
-            itemName = Item.itemName;
+            if (item != null)
+            {
+                itemName = Item.itemName;
+            }
         }
     }
     public string magicName;
     public string itemName;
 
-    // private void OnEnable()
-    // {
-    //     StartCoroutine(Init());
-    // }
+    private void OnEnable()
+    {
+        StartCoroutine(Init());
+    }
 
-    // IEnumerator Init()
-    // {
-    //     // 마법,아이템 정보 들어올때까지 대기
-    //     yield return new WaitUntil(() => Magic != null || Item != null);
+    IEnumerator Init()
+    {
+        yield return null;
 
-    //     if (Magic != null)
-    //         magicName = Magic.magicName;
+        // 마법,아이템 정보 들어올때까지 대기
+        // yield return new WaitUntil(() => Magic != null || Item != null);
 
-    //     if (Item != null)
-    //         itemName = Item.itemName;
-    // }
+        // if (Magic != null)
+        //     magicName = Magic.magicName;
+
+        // if (Item != null)
+        //     itemName = Item.itemName;
+
+        // 마법 아이템 정보 없으면 컴포넌트 끄기
+        if (Magic == null && Item == null)
+            this.enabled = false;
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

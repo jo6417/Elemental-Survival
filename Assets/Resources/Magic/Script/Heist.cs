@@ -9,8 +9,10 @@ public class Heist : MonoBehaviour
     [Header("Refer")]
     private MagicInfo magic;
     public MagicHolder magicHolder;
+    public SpriteRenderer ringSprite; // 헤이스트 자체 링모양 스프라이트
     public GameObject electroTrail;
-    public GameObject ghostPrefab; // 잔상 효과 프리팹
+    public GameObject ghostPrefab; // 잔상 이펙트 프리팹
+    public GameObject dustPrefab; // 증발 먼지 이펙트 프리팹
     public List<GameObject> ghostList = new List<GameObject>(); // 소환된 잔상 리스트
 
     int magicLevel = 0;
@@ -68,12 +70,52 @@ public class Heist : MonoBehaviour
 
     private void Update()
     {
-        //잔상 남기기
-        GhostTrail();
+        //대쉬 할때
+        if (PlayerManager.Instance.isDash)
+        {
+            // 일정 거리마다 전기 이펙트 남기기
+            if (Vector2.Distance(lastEffectPos, PlayerManager.Instance.transform.position) > effectDistance)
+                ShockTrail();
 
-        //대쉬 할때 전기 이펙트 남기기
-        if (PlayerManager.Instance.isDash && Vector2.Distance(lastEffectPos, PlayerManager.Instance.transform.position) > effectDistance)
-            ShockTrail();
+            // 플레이어 스프라이트 켜져있을때 1회
+            if (PlayerManager.Instance.sprite.color == Color.white)
+            {
+                // 헤이스트 스프라이트 끄기
+                ringSprite.enabled = false;
+
+                // 먼지 이펙트 생성
+                LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+                // 플레이어 스프라이트 끄기
+                PlayerManager.Instance.sprite.DOColor(new Color(1, 1, 1, 0), 0.2f);
+                // 플레이어 그림자 끄기
+                PlayerManager.Instance.shadowSprite.DOColor(new Color(0, 0, 0, 0f), 0.2f);
+                // 플레이어 라이트 끄기
+                DOTween.To(x => PlayerManager.Instance.playerLight.intensity = x, PlayerManager.Instance.playerLight.intensity, 0, 0.2f);
+            }
+        }
+        else
+        {
+            //잔상 남기기
+            GhostTrail();
+
+            // 플레이어 스프라이트 꺼져있을때 1회
+            if (PlayerManager.Instance.sprite.color == new Color(1, 1, 1, 0))
+            {
+                // 헤이스트 스프라이트 켜기
+                ringSprite.enabled = true;
+
+                // 먼지 이펙트 생성
+                // LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+                // 플레이어 스프라이트 켜기
+                PlayerManager.Instance.sprite.DOColor(new Color(1, 1, 1, 1), 0.2f);
+                // 플레이어 그림자 켜기
+                PlayerManager.Instance.shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.2f);
+                // 플레이어 라이트 켜기
+                DOTween.To(x => PlayerManager.Instance.playerLight.intensity = x, PlayerManager.Instance.playerLight.intensity, 0.5f, 0.2f);
+            }
+        }
     }
 
     void GhostTrail()

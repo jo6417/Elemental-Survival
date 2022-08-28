@@ -672,7 +672,12 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
                 // 색깔 점점 흰색으로
                 sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
-                .SetEase(Ease.OutQuad);
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() =>
+                {
+                    // 머터리얼 초기화
+                    sprite.material = SystemManager.Instance.spriteLitMat;
+                });
             }
 
             // 자폭 몬스터일때

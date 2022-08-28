@@ -263,16 +263,15 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
-  isStop: 0
   poisonTime: 0
+  bleedTime: 0
   slowTime: 0
   burnTime: 0
   wetTime: 0
-  bleedTime: 0
   shockTime: 0
   freezeTime: 0
   flatTime: 0
-  knockBackDebuff: 0
+  stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
   enemyManager: {fileID: 2609816229949297132}
@@ -5256,7 +5255,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8165655979838027244
 Transform:
   m_ObjectHideFlags: 0
@@ -5289,6 +5288,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hpNow: 0
+  hpMax: 0
+  rigid: {fileID: 8165655979838027218}
+  anim: {fileID: 0}
   initialStart: 1
   initialFinish: 0
   lookLeft: 0
@@ -5321,20 +5324,19 @@ MonoBehaviour:
   originColorList: []
   animList:
   - {fileID: 8703031671437433962}
-  rigid: {fileID: 8165655979838027218}
   physicsColl: {fileID: 8165655979838027219}
   hitBoxList: []
-  buffParent: {fileID: 4592455895541119263}
-  hpMax: 0
-  HpNow: 1
   power: 0
   speed: 0
   range: 0
+  buffParent: {fileID: 4592455895541119263}
   particleHitCount: 0
   hitCount: 0
   stopCount: 0
+  flatCount: 0
   oppositeCount: 0
   poisonCoolCount: 0
+  bleedCoolCount: 0
   enemyName: 
   enemyType: 
   velocity: {x: 0, y: 0, z: 0}

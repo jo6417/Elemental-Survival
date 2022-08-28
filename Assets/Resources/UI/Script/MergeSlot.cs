@@ -502,6 +502,17 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 합성된 마법 새로 인스턴스 생성
         MagicInfo mergedMagic = new MagicInfo(MagicDB.Instance.GetMagicByID(MergeMenu.Instance.mergeResultMagics[ableDirIndex]));
 
+        //todo 해금 리스트에 없는 마법일때
+        if (!MagicDB.Instance.unlockMagics.Exists(x => x == mergedMagic.id))
+        {
+            //todo 해금 리스트에 id 넣기
+            MagicDB.Instance.unlockMagics.Add(mergedMagic.id);
+            // 세이브
+            StartCoroutine(SaveManager.Instance.Save());
+
+            //todo 합성된 마법에 New 표시
+        }
+
         // 합치기 전에 미리 레벨 합산해놓기
         int totalLevel = PlayerManager.Instance.hasMergeMagics[mergeIndex].magicLevel + PlayerManager.Instance.hasMergeMagics[ableSlotIndex].magicLevel;
 

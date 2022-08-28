@@ -45,9 +45,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_LightType: 3
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.8
   m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_Intensity: 2
+  m_Intensity: 5
   m_LightVolumeOpacity: 0
   m_ApplyToSortingLayers: 0000000003819490
   m_LightCookieSprite: {fileID: 0}
@@ -57,9 +57,9 @@ MonoBehaviour:
   m_ShadowIntensity: 0
   m_ShadowVolumeIntensity: 0
   m_PointLightInnerAngle: 0
-  m_PointLightOuterAngle: 300
+  m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 0.5
+  m_PointLightOuterRadius: 1
   m_PointLightDistance: 3
   m_PointLightQuality: 1
   m_ShapeLightParametricSides: 5
@@ -121,23 +121,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 0
+  targetType: 1
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!114 &1322037193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,8 +153,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 0}
   state: 0
-  headLight: {fileID: 1664592822}
+  tailLight: {fileID: 1664592822}
   atkMark: {fileID: 7984764804097638933, guid: 67cc1c359101f084992a55b1ae8df2d7, type: 3}
+  bloodParticle: {fileID: 7270752582382140515, guid: a92307ad55ba66b46acb5a1d9b806ae7,
+    type: 3}
+  targetList: []
+  coolCount: 0
+  speed: 0
+  coolTime: 0
+  aimTime: -1
 --- !u!212 &1472842765302339234
 SpriteRenderer:
   m_ObjectHideFlags: 0

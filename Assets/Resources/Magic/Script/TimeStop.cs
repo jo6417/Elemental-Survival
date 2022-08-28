@@ -51,6 +51,9 @@ public class TimeStop : MonoBehaviour
         // 마법 성공여부 = 크리티컬 성공여부
         isSuccess = MagicDB.Instance.MagicCritical(magic);
 
+        // 정지 지속시간 넣기
+        magicHolder.stopTime = duration;
+
         // 시간정지 영역 전개
         StartCoroutine(ExpandMagic());
     }

@@ -365,8 +365,10 @@ public class CastMagic : MonoBehaviour
                 // print(col.transform.name + col.transform.position);
             }
 
-            // 적 오브젝트 변수에 담기
-            enemyObj.Add(Obj);
+            // null 체크
+            if (Obj != null)
+                // 적 오브젝트 변수에 담기
+                enemyObj.Add(Obj);
         }
 
         //적의 위치 리스트 리턴
