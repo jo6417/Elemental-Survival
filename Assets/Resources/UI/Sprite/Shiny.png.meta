@@ -35,6 +35,9 @@ TextureImporter:
   - first:
       213: 5811226740261156932
     second: Shiny_5
+  - first:
+      213: 3618884627034358321
+    second: Shiny_6
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -245,6 +248,27 @@ TextureImporter:
       bones: []
       spriteID: 448748a5eef95a050800000000000000
       internalID: 5811226740261156932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shiny_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1324185056cd83230800000000000000
+      internalID: 3618884627034358321
       vertices: []
       indices: 
       edges: []

@@ -118,7 +118,7 @@ public class MergeMenu : MonoBehaviour
         }
 
         // 선택된 마법 rect 찾기
-        selectedIconRect = selectedIcon.GetComponent<RectTransform>();
+        selectedIconRect = selectedIcon.transform.parent.GetComponent<RectTransform>();
 
         // 키 입력 정리
         StartCoroutine(InputInit());
@@ -139,6 +139,16 @@ public class MergeMenu : MonoBehaviour
         UIManager.Instance.UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
         // 마우스 위치 입력
         UIManager.Instance.UI_Input.UI.MousePosition.performed += val => MousePos();
+        // 마우스 클릭
+        // UIManager.Instance.UI_Input.UI.Click.performed += val =>
+        // {
+        //     //마우스에 아이콘 들고 있을때
+        //     if (selectedIcon.enabled)
+        //     {
+        //         //커서 및 빈 스택 슬롯 초기화 하기
+        //         ToggleStackSlot();
+        //     }
+        // };
 
         // 스마트폰 버튼 입력
         UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
@@ -240,7 +250,7 @@ public class MergeMenu : MonoBehaviour
         // 총 스택 개수 갱신
         stackAllNum.text = StackAmount().ToString();
 
-        //todo 레시피 리스트 세팅
+        // 레시피 리스트 세팅
         Set_Recipe();
 
         // usb 리스트 세팅
@@ -624,8 +634,6 @@ public class MergeMenu : MonoBehaviour
         Image frame = stackObjSlots[objIndex].transform.Find("Frame").GetComponent<Image>();
         // 아이콘 찾기
         Image icon = stackObjSlots[objIndex].transform.Find("Icon").GetComponent<Image>();
-        // 레벨 텍스트 찾기
-        // TextMeshProUGUI level = stackObjSlots[objIndex].transform.Find("Level").GetComponentInChildren<TextMeshProUGUI>();
         // 개수 텍스트 찾기
         TextMeshProUGUI amount = stackObjSlots[objIndex].transform.Find("Amount").GetComponentInChildren<TextMeshProUGUI>(true);
 
@@ -643,11 +651,7 @@ public class MergeMenu : MonoBehaviour
             icon.enabled = true;
             icon.sprite = sprite == null ? SystemManager.Instance.questionMark : sprite;
 
-            //레벨 넣기
-            // level.enabled = true;
-            // level.text = "Lv. " + magic.magicLevel;
-
-            //todo 마법 개수 1개일때, 개수 오브젝트 비활성화
+            // 마법 개수 1개일때, 개수 오브젝트 비활성화
             if (magic.amount == 1)
                 amount.transform.parent.gameObject.SetActive(false);
             else
@@ -842,7 +846,7 @@ public class MergeMenu : MonoBehaviour
 
         //! todo 나중에 메뉴 버튼도 단축키 대응 되면 뽑기 도중에 화면 스크롤 못하게 막아야함
         // 메뉴, 백 버튼 상호작용 및 키입력 막기
-        ToggleBtnsInteract(false);
+        InteractToggleBtns(false);
 
         // 뽑기 화면 전체 투명하게
         randomScreen.alpha = 0;
@@ -1047,7 +1051,7 @@ public class MergeMenu : MonoBehaviour
         getSlot.SetActive(true);
 
         // 메뉴, 백 버튼 상호작용 및 키입력 막기 해제
-        ToggleBtnsInteract(true);
+        InteractToggleBtns(true);
     }
 
     public void ChooseModeToggle()
@@ -1194,7 +1198,7 @@ public class MergeMenu : MonoBehaviour
         }
     }
 
-    void ToggleBtnsInteract(bool able)
+    void InteractToggleBtns(bool able)
     {
         // 키 입력 막기 변수 토글
         btnsInteractable = able;
