@@ -36,8 +36,12 @@ public class MergeMenu : MonoBehaviour
     #endregion
 
     [Header("Refer")]
+    [SerializeField] Sprite itemFrame;
+    [SerializeField] Sprite magicFrame;
     public SimpleScrollSnap screenScroll; // 화면 스크롤
-    public GameObject mergePanel; // 핸드폰 화면 패널
+    public GameObject phonePanel; // 핸드폰 화면 패널
+    [SerializeField] GameObject mergeScreen; // 머지 페이지
+    [SerializeField] GameObject recipeScreen; // 레시피 페이지
     public Button recipeBtn;
     public Button backBtn;
     public Button homeBtn;
@@ -54,7 +58,7 @@ public class MergeMenu : MonoBehaviour
     public SlicedFilledImage backBtnFill; //뒤로가기 버튼
     float backBtnCount; //백버튼 더블클릭 카운트
 
-    [Header("Merge Board")]
+    [Header("Merge List")]
     public Transform mergeSlots;
     public List<Button> mergeList = new List<Button>(); //각각 슬롯 오브젝트
     public MergeSlot nowSelectSlot; //현재 선택된 슬롯
@@ -162,7 +166,7 @@ public class MergeMenu : MonoBehaviour
         };
 
         // 머지 패널 끄기
-        mergePanel.SetActive(false);
+        phonePanel.SetActive(false);
         // 머지 캔버스 끄기
         gameObject.SetActive(false);
     }
@@ -326,7 +330,7 @@ public class MergeMenu : MonoBehaviour
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
 
         // 핸드폰 화면 패널 켜기
-        mergePanel.SetActive(true);
+        phonePanel.SetActive(true);
 
         // 검은화면 투명하게
         blackScreen.DOColor(Color.clear, 0.2f)
@@ -604,10 +608,10 @@ public class MergeMenu : MonoBehaviour
         }
 
         // 모든 아이콘 다시 넣기
-        UpdateStacks();
+        Set_Stack();
     }
 
-    public void UpdateStacks()
+    public void Set_Stack()
     {
         //마지막 이전 마법
         SetStackIcon(0, 4, PlayerManager.Instance.hasStackMagics.Count - 3);
@@ -642,6 +646,8 @@ public class MergeMenu : MonoBehaviour
         {
             MagicInfo magic = PlayerManager.Instance.hasStackMagics[magicIndex];
 
+            // 프레임 이미지 바꾸기, 0등급이면 아이템이므로 아이템 프레임
+            frame.sprite = magic.grade == 0 ? itemFrame : magicFrame;
             //프레임 색 넣기
             frame.color = MagicDB.Instance.GradeColor[magic.grade];
 
@@ -1245,7 +1251,7 @@ public class MergeMenu : MonoBehaviour
     public IEnumerator BackBtnAction()
     {
         // 머지 패널 꺼져있으면 리턴
-        if (!mergePanel.activeSelf)
+        if (!phonePanel.activeSelf)
             yield break;
 
         // 키 입력 막기
@@ -1320,7 +1326,7 @@ public class MergeMenu : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.2f);
 
             // 핸드폰 화면 패널 끄기
-            mergePanel.SetActive(false);
+            phonePanel.SetActive(false);
 
             float moveTime = 0.8f;
 
@@ -1348,7 +1354,7 @@ public class MergeMenu : MonoBehaviour
             Time.timeScale = 1f;
 
             //스마트폰 캔버스 종료
-            UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
+            UIManager.Instance.PopupUI(UIManager.Instance.phoneCanvas);
 
             // Merge 리스트에서 확인해서 필요한 마법 시전하기
             CastMagic.Instance.CastCheck();

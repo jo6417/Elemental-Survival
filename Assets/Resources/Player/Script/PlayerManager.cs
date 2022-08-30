@@ -393,8 +393,8 @@ public class PlayerManager : Character
         MagicInfo magic = new MagicInfo(getMagic);
 
         // 0등급 마법이면 원소젬이므로 스킵
-        if (magic.grade == 0)
-            return;
+        // if (magic.grade == 0)
+        //     return;
 
         //마법의 레벨 초기화
         magic.magicLevel = 1;

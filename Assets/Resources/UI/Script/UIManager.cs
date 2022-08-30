@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviour
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
     public GameObject mixMagicPanel;
-    public GameObject mergeMagicPanel;
+    public GameObject phoneCanvas;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
     public GameObject slotMachinePanel;
@@ -106,7 +106,7 @@ public class UIManager : MonoBehaviour
         InputInit();
 
         // 시작할때 머지 캔버스 켜놓기
-        mergeMagicPanel.SetActive(true);
+        phoneCanvas.SetActive(true);
 
         // usb 개수 알림 갱신
         PhoneNotice(0);
@@ -197,8 +197,8 @@ public class UIManager : MonoBehaviour
     void PhoneOpen()
     {
         //스마트폰 패널 꺼져있을때
-        if (!mergeMagicPanel.activeSelf)
-            PopupUI(mergeMagicPanel);
+        if (!phoneCanvas.activeSelf)
+            PopupUI(phoneCanvas);
     }
 
     private void Start()
