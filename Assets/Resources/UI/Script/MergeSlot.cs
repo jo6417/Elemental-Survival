@@ -216,6 +216,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         // print(slotIndex + " : OnSelect");
 
+        // 선택된 마법이 0등급이면, 아이템이면 리턴
+        if (MergeMenu.Instance.selectedMagic.grade == 0)
+            return;
+
         // 스택 가운데 선택된 마법 참조
         Image selectedIcon = MergeMenu.Instance.selectedIcon;
         MagicInfo selectedMagic = MergeMenu.Instance.selectedMagic;
@@ -260,261 +264,204 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         frame.color = Color.white;
         // 아이콘 비활성화
         icon.enabled = false;
-
-        //선택 모드 아닐때만
-        // if (!MergeMenu.Instance.mergeChooseMode)
-        // {
-        //     // 모든 주변 아이콘 무브 트윈 멈추기
-        //     MergeMenu.Instance.IconMoveStop();
-        // }
     }
 
     public void OnPointerClick(PointerEventData eventData)
-    {
+    { // 클릭했을때
         //마법 넣기
-        StartCoroutine(PutMagic());
+        StartCoroutine(PutMagic(MergeMenu.Instance.selectedMagic));
     }
 
     public void OnSubmit(BaseEventData eventData)
-    {
+    { // 버튼 확인 눌렀을때
         //마법 넣기
-        StartCoroutine(PutMagic());
+        StartCoroutine(PutMagic(MergeMenu.Instance.selectedMagic));
     }
 
-    public IEnumerator PutMagic(bool isContinue = false)
+    public IEnumerator PutMagic(MagicInfo magicInfo)
     {
-        #region MergeMode
-        // 머지 선택모드 켜져있을때 눌렀으면
-        // if (MergeMenu.Instance.mergeChooseMode)
-        // {
-        //     // 모든 주변 아이콘 무브 트윈 멈추기
-        //     MergeMenu.Instance.IconMoveStop();
-
-        //     //이 슬롯의 방향 인덱스 구하기
-        //     int dirIndex = Array.IndexOf(MergeMenu.Instance.closeSlots, slotIndex);
-
-        //     // 방향 인덱스 쪽에 있는 슬롯, 합성 대기중인 슬롯 들의 인덱스 넣어서 합성
-        //     StartCoroutine(MergeMagic(dirIndex, MergeMenu.Instance.mergeWaitSlot.transform.GetSiblingIndex()));
-
-        //     // 머지 선택 모드 종료
-        //     MergeMenu.Instance.ChooseModeToggle();
-
-        //     // Merge 인디케이터 끄기
-        //     MergeMenu.Instance.mergeSignal.gameObject.SetActive(false);
-
-        //     // 선택된 마법을 스택에서 빼기
-        //     bool removed = PlayerManager.Instance.RemoveStack(0);
-
-        //     // 마법이 완전히 삭제됬을때
-        //     if (removed)
-        //         // 스택 리스트 갱신
-        //         MergeMenu.Instance.Scroll_Stack(-1);
-        //     // 마법의 개수만 차감됬을때
-        //     else
-        //         // 스택 슬롯 전체 갱신
-        //         MergeMenu.Instance.UpdateStacks();
-
-        //     yield break;
-        // }
-        #endregion
-
         // 스택 가운데 선택된 마법 참조
         Image selectedIcon = MergeMenu.Instance.selectedIcon;
 
         // 새롭게 마법 정보 인스턴스 생성
-        MagicInfo selectedMagic = new MagicInfo(MergeMenu.Instance.selectedMagic);
+        MagicInfo selectedMagic = new MagicInfo(magicInfo);
 
         // 스택 마법 들고있지 않으면 리턴
         if (isMouseSelect && !selectedIcon.enabled)
             yield break;
 
-        // 모든 주변 아이콘 무브 트윈 멈추기
-        // MergeMenu.Instance.IconMoveStop();
-
-        // 현재 슬롯이 빈칸일때
-        if (mergeMagics[slotIndex] == null)
+        // 현재 들고 있는 게 아이템일때
+        if (selectedMagic.grade == 0)
         {
-            // 마우스 아이콘 비활성화
-            selectedIcon.enabled = false;
+            // 현재 슬롯이 빈칸이면, 마법 이동중 아닐때
+            if (mergeMagics[slotIndex] == null && MergeMenu.Instance.moveMagicIndex == -1)
+            {
+                //todo 메시지 띄우기
+                print("빈칸에 사용할 수 없습니다.");
 
-            // 선택된 Merge 슬롯에 프레임, 아이콘은 이미 적용됨
+                yield break;
+            }
 
-            // 선택된 Merge 슬롯에 레벨 및 색상 넣기
-            level.gameObject.SetActive(true);
-            level.color = MagicDB.Instance.GradeColor[selectedMagic.grade];
-            level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + selectedMagic.magicLevel.ToString();
+            switch (selectedMagic.magicName)
+            {
+                case "Slot Move":
+                    StartCoroutine(SlotMove());
+                    break;
+                case "Slot Delete":
+                    // 현재 슬롯의 마법 지우기
+                    StartCoroutine(SlotDelete());
+                    break;
+                case "Slot Levelup":
+                    StartCoroutine(SlotLevelup());
+                    break;
+                case "Slot Replace":
+                    StartCoroutine(SlotReplace());
+                    break;
+            }
 
-            // 선택된 Merge 슬롯에 마법 정보 넣기
-            mergeMagics[slotIndex] = selectedMagic;
-
-            // 툴팁 트리거에 마법 정보 넣기
-            tooltip.Magic = selectedMagic;
-            tooltip.enabled = true;
-
-            // 선택된 스택의 마법 개수 차감
-            PlayerManager.Instance.RemoveStack(0);
-            // 스택 UI 갱신
-            MergeMenu.Instance.Scroll_Stack(0);
-
-            // 슬롯 샤이니 이펙트 켜기
-            shinyEffect.gameObject.SetActive(false);
-            shinyEffect.gameObject.SetActive(true);
+            yield break;
         }
-        // 현재 슬롯에 마법이 있을때
         else
         {
-            // 두가지 마법 재료 참조
-            MagicInfo elementA = selectedMagic;
-            MagicInfo elementB = mergeMagics[slotIndex];
-
-            // 스택의 마법과 현재 마법이 같은 마법일때
-            if (elementA.id == elementB.id)
+            // 현재 슬롯이 빈칸일때
+            if (mergeMagics[slotIndex] == null)
             {
-                // 스택 마법 차감
+                // 마우스 아이콘 비활성화
+                selectedIcon.enabled = false;
+
+                // 슬롯 하얗게 가리기
+                WhiteSlotToggle(true);
+                yield return new WaitForSecondsRealtime(0.5f);
+
+                print(selectedMagic.magicName);
+
+                // 프레임 색 넣기
+                frame.color = MagicDB.Instance.GradeColor[selectedMagic.grade];
+                // 아이콘 활성화
+                icon.enabled = true;
+                // 아이콘 넣기
+                icon.sprite = selectedIcon.sprite == null ? SystemManager.Instance.questionMark : selectedIcon.sprite;
+
+                // 선택된 Merge 슬롯에 레벨 및 색상 넣기
+                level.gameObject.SetActive(true);
+                level.color = MagicDB.Instance.GradeColor[selectedMagic.grade];
+                level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + selectedMagic.magicLevel.ToString();
+
+                // 선택된 Merge 슬롯에 마법 정보 넣기
+                mergeMagics[slotIndex] = selectedMagic;
+
+                // 툴팁 트리거에 마법 정보 넣기
+                tooltip.Magic = selectedMagic;
+                tooltip.enabled = true;
+
+                // 선택된 스택의 마법 개수 차감
                 PlayerManager.Instance.RemoveStack(0);
-
-                // 현재 슬롯 마법 레벨 업
-                mergeMagics[slotIndex].magicLevel++;
-                level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + mergeMagics[slotIndex].magicLevel.ToString();
-
                 // 스택 UI 갱신
                 MergeMenu.Instance.Scroll_Stack(0);
+
+                // 슬롯 가림막 제거
+                WhiteSlotToggle(false);
+                // 가림막 제거 시간 대기
+                yield return new WaitForSecondsRealtime(0.5f);
 
                 // 슬롯 샤이니 이펙트 켜기
                 shinyEffect.gameObject.SetActive(false);
                 shinyEffect.gameObject.SetActive(true);
             }
+            // 현재 슬롯에 마법이 있을때
             else
             {
-                //두 재료 모두 갖고 있는 마법 찾기
-                MagicInfo mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementA.magicName && x.element_B == elementB.magicName);
+                // 두가지 마법 재료 참조
+                MagicInfo elementA = selectedMagic;
+                MagicInfo elementB = mergeMagics[slotIndex];
 
-                // null이면 재료 순서 바꿔서 재검사
-                if (mergedMagic == null)
+                // 스택의 마법과 현재 마법이 같은 마법일때
+                if (elementA.id == elementB.id)
                 {
-                    mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementB.magicName && x.element_B == elementA.magicName);
+                    // 마우스 아이콘 비활성화
+                    selectedIcon.enabled = false;
+
+                    // 슬롯 하얗게 가리기
+                    WhiteSlotToggle(true);
+                    yield return new WaitForSecondsRealtime(0.5f);
+
+                    // 스택 마법 차감
+                    PlayerManager.Instance.RemoveStack(0);
+
+                    // 현재 슬롯 마법 레벨 업
+                    mergeMagics[slotIndex].magicLevel++;
+                    level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + mergeMagics[slotIndex].magicLevel.ToString();
+
+                    // 스택 UI 갱신
+                    MergeMenu.Instance.Scroll_Stack(0);
+
+                    // 슬롯 가림막 제거
+                    WhiteSlotToggle(false);
+                    // 가림막 제거 시간 대기
+                    yield return new WaitForSecondsRealtime(0.5f);
+
+                    // 슬롯 샤이니 이펙트 켜기
+                    shinyEffect.gameObject.SetActive(false);
+                    shinyEffect.gameObject.SetActive(true);
                 }
-
-                // 스택의 마법과 현재 마법이 합성 가능할때
-                if (mergedMagic != null)
-                {
-                    // 합성된 마법 새로 인스턴스 생성
-                    MagicInfo magic = new MagicInfo(mergedMagic);
-
-                    // 두 마법의 레벨 합쳐서 넣기
-                    magic.magicLevel = elementA.magicLevel + elementB.magicLevel;
-
-                    // 현재 슬롯 합성된 마법으로 교체
-                    StartCoroutine(MergeMagic(magic));
-                }
-                // 스택의 마법과 현재 마법이 합성 불가능
                 else
                 {
-                    // 마우스의 아이콘 흔들기
-                    MergeMenu.Instance.selectedIcon.transform.DOPunchPosition(Vector2.right * 30f, 0.8f, 10, 1)
-                    .SetUpdate(true);
+                    //두 재료 모두 갖고 있는 마법 찾기
+                    MagicInfo mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementA.magicName && x.element_B == elementB.magicName);
 
-                    // 마스크 이미지 표시
-                    shinyEffect.GetComponent<Mask>().showMaskGraphic = true;
-                    // 해당 슬롯 빨갛게 2회 깜빡이기
-                    shinyEffect.color = Color.clear;
-                    shinyEffect.DOColor(new Color(1, 0, 0, 100f / 255f), 0.2f)
-                    .SetLoops(4, LoopType.Yoyo)
-                    .SetUpdate(true)
-                    .OnComplete(() =>
+                    // null이면 재료 순서 바꿔서 재검사
+                    if (mergedMagic == null)
                     {
-                        // 하얀색으로 초기화
-                        shinyEffect.color = Color.white;
+                        mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementB.magicName && x.element_B == elementA.magicName);
+                    }
 
-                        // 마스크 이미지 숨기기
-                        shinyEffect.GetComponent<Mask>().showMaskGraphic = false;
-                    });
+                    // 스택의 마법과 현재 마법이 합성 가능할때
+                    if (mergedMagic != null)
+                    {
+                        // 합성된 마법 새로 인스턴스 생성
+                        MagicInfo magic = new MagicInfo(mergedMagic);
+
+                        // 두 마법의 레벨 합쳐서 넣기
+                        magic.magicLevel = elementA.magicLevel + elementB.magicLevel;
+
+                        // 현재 슬롯 합성된 마법으로 교체
+                        StartCoroutine(MergeMagic(magic));
+                    }
+                    // 스택의 마법과 현재 마법이 합성 불가능
+                    else
+                    {
+                        // 마우스의 아이콘 흔들기
+                        MergeMenu.Instance.selectedIcon.transform.DOPunchPosition(Vector2.right * 30f, 0.8f, 10, 1)
+                        .SetUpdate(true);
+
+                        // 마스크 이미지 표시
+                        shinyEffect.GetComponent<Mask>().showMaskGraphic = true;
+                        // 해당 슬롯 빨갛게 2회 깜빡이기
+                        shinyEffect.color = Color.clear;
+                        shinyEffect.DOColor(new Color(1, 0, 0, 100f / 255f), 0.2f)
+                        .SetLoops(4, LoopType.Yoyo)
+                        .SetUpdate(true)
+                        .OnComplete(() =>
+                        {
+                            // 하얀색으로 초기화
+                            shinyEffect.color = Color.white;
+
+                            // 마스크 이미지 숨기기
+                            shinyEffect.GetComponent<Mask>().showMaskGraphic = false;
+                        });
+                    }
                 }
             }
         }
-
-        #region MultiMerge
-
-        // int ableDirIndex = -1; //합성 가능한 방향 인덱스
-        // int ableNum = 0; //합성 가능한 개수
-
-        // //합성 가능성 개수 검사
-        // for (int i = 0; i < MergeMenu.Instance.closeSlots.Length; i++)
-        // {
-        //     //값이 -1이 아니면 합성 가능
-        //     if (MergeMenu.Instance.closeSlots[i] != -1)
-        //     {
-        //         //합성 가능 방향 인덱스 넣기
-        //         ableDirIndex = i;
-
-        //         //합성 가능 개수 추가
-        //         ableNum++;
-        //     }
-        // }
-
-        // //합성 없이 그냥 마법 입력일때
-        // if (ableNum == 0)
-        // {
-        //     // 슬롯 입력 후 반짝이는 이펙트 발생
-        //     GameObject effect = transform.Find("ShinyMask").gameObject;
-        //     effect.SetActive(false);
-        //     effect.SetActive(true);
-        // }
-
-        // // closeSlots 배열에서 합성 가능성 하나면 - 가능성 슬롯 마법 삭제, 합성된 마법 이 슬롯에 배치
-        // if (ableNum == 1)
-        // {
-        //     // 플레이어 조작 못하게 막기
-        //     MergeMenu.Instance.loadingPanel.SetActive(true);
-
-        //     // 실제 마법 합성하기
-        //     StartCoroutine(MergeMagic(ableDirIndex, slotIndex));
-        // }
-
-        // // closeSlots 배열에서 합성 가능성 2개 이상이면 - 모든 슬롯 상호작용 금지 및 가능성 슬롯들만 반짝이기
-        // if (ableNum > 1)
-        // {
-        //     // 합성 대기중 슬롯 변수에 이 슬롯 넣기
-        //     MergeMenu.Instance.mergeWaitSlot = this;
-
-        //     // 주변의 합성 가능한 슬롯 중 선택하기
-        //     MergeMenu.Instance.ChooseModeToggle();
-
-        //     yield break;
-        // }
-
-        // // Merge 인디케이터 끄기
-        // MergeMenu.Instance.mergeSignal.gameObject.SetActive(false);
-
-        // //마법 합성 로딩 끝날때까지 대기
-        // yield return new WaitUntil(() => !MergeMenu.Instance.loadingPanel.activeSelf);
-
-        // //TODO 연속 합성 아닐때만
-        // if (!isContinue)
-        // {
-        //     // 선택된 마법을 스택에서 빼기
-        //     bool removed = PlayerManager.Instance.RemoveStack(0);
-
-        //     // 마법이 완전히 삭제됬을때
-        //     if (removed)
-        //         // 스택 리스트 갱신
-        //         MergeMenu.Instance.Scroll_Stack(-1);
-        //     // 마법의 개수만 차감됬을때
-        //     else
-        //         // 스택 슬롯 전체 갱신
-        //         MergeMenu.Instance.UpdateStacks();
-        // }
-
-        //메인 UI에 스마트폰 알림 갱신
-        // UIManager.Instance.PhoneNotice();
-
-        #endregion
     }
 
     public IEnumerator MergeMagic(MagicInfo mergedMagic)
     {
-        // 플레이어 조작 못하게 막기
-        MergeMenu.Instance.loadingPanel.SetActive(true);
+        // 마우스 아이콘 비활성화
+        MergeMenu.Instance.selectedIcon.enabled = false;
+
+        // 슬롯 하얗게 가리기
+        WhiteSlotToggle(true);
 
         // 현재 슬롯의 마법 데이터 교체
         mergeMagics[slotIndex] = mergedMagic;
@@ -535,13 +482,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             newSign.SetActive(true);
         }
 
-        // 마스크 이미지 표시
-        shinyEffect.GetComponent<Mask>().showMaskGraphic = true;
-        // 하얀색으로 슬롯 가리기
-        shinyEffect.color = new Color(1, 1, 1, 1f / 255f);
-        shinyEffect.DOColor(Color.white, 0.5f)
-        .SetUpdate(true);
-
         // 화이트 컬러 시간 대기
         yield return new WaitForSecondsRealtime(0.5f);
 
@@ -557,20 +497,197 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         tooltip.Magic = mergedMagic;
 
         // 슬롯 가림막 제거
-        shinyEffect.DOColor(new Color(1, 1, 1, 1f / 255f), 0.5f)
-        .SetUpdate(true);
-
+        WhiteSlotToggle(false);
         // 가림막 제거 시간 대기
         yield return new WaitForSecondsRealtime(0.5f);
-
-        // 마스크 이미지 숨기기
-        shinyEffect.GetComponent<Mask>().showMaskGraphic = false;
 
         // 슬롯 샤이니 이펙트 켜기
         shinyEffect.gameObject.SetActive(false);
         shinyEffect.gameObject.SetActive(true);
 
         // 상호작용 막기 해제
-        MergeMenu.Instance.loadingPanel.SetActive(false);
+        // MergeMenu.Instance.loadingPanel.SetActive(false);
+    }
+
+    public void WhiteSlotToggle(bool isWhite)
+    {
+        if (isWhite)
+        {
+            // 플레이어 조작 막기
+            MergeMenu.Instance.loadingPanel.SetActive(true);
+
+            // 마스크 이미지 표시
+            shinyEffect.GetComponent<Mask>().showMaskGraphic = true;
+            // 하얀색으로 슬롯 가리기
+            shinyEffect.color = new Color(1, 1, 1, 1f / 255f);
+            shinyEffect.DOColor(Color.white, 0.5f)
+            .SetUpdate(true);
+        }
+        else
+        {
+            // 슬롯 가림막 제거
+            shinyEffect.DOColor(new Color(1, 1, 1, 1f / 255f), 0.5f)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                // 마스크 이미지 숨기기
+                shinyEffect.GetComponent<Mask>().showMaskGraphic = false;
+
+                // 플레이어 조작 막기 해제
+                MergeMenu.Instance.loadingPanel.SetActive(false);
+            });
+        }
+    }
+
+    IEnumerator SlotMove()
+    {
+        yield return null;
+        //todo 슬롯 아이콘을 들었을때 취소 가능해야함
+
+        // 이동할 마법이 없을때, 현재 슬롯 마법 집어 들기
+        if (MergeMenu.Instance.moveMagicIndex == -1)
+        {
+            // 이동시킬 마법 인덱스에 현재 인덱스 저장
+            MergeMenu.Instance.moveMagicIndex = slotIndex;
+
+            // 현재 슬롯 아이콘 끄기
+            icon.enabled = false;
+
+            // 마우스 아이콘을 현재 슬롯 아이콘으로 변경
+            MergeMenu.Instance.selectedIcon.sprite = icon.sprite;
+        }
+        // 이동 시킬 마법이 있을때, 현재 슬롯으로 마법 이동
+        else
+        {
+            // 마우스 아이콘 비활성화
+            // MergeMenu.Instance.selectedIcon.enabled = false;
+
+            // 이전 슬롯 찾기
+            MergeSlot slot = MergeMenu.Instance.mergeList[MergeMenu.Instance.moveMagicIndex].GetComponent<MergeSlot>();
+
+            // 이전 슬롯 하얗게 가리기
+            slot.WhiteSlotToggle(true);
+            // 슬롯 하얗게 가리기
+            // WhiteSlotToggle(true);
+
+            // 현재 슬롯에 마우스가 들고있는 마법 넣기
+            StartCoroutine(PutMagic(mergeMagics[MergeMenu.Instance.moveMagicIndex]));
+
+            yield return new WaitForSecondsRealtime(0.5f);
+
+            // 같은 슬롯에 넣지 않았을때
+            if (MergeMenu.Instance.moveMagicIndex != slotIndex)
+            {
+                // 해당 슬롯의 마법 데이터 삭제
+                mergeMagics[MergeMenu.Instance.moveMagicIndex] = null;
+
+                // 해당 슬롯 UI 초기화
+                slot.icon.enabled = false;
+                slot.frame.color = Color.white;
+                slot.level.gameObject.SetActive(false);
+                newSign.SetActive(false);
+
+                // 이동 마법 인덱스 초기화
+                MergeMenu.Instance.moveMagicIndex = -1;
+            }
+
+            // 이전 슬롯 가림막 해제
+            slot.WhiteSlotToggle(false);
+            // 슬롯 가림막 해제
+            // WhiteSlotToggle(false);
+        }
+    }
+
+    IEnumerator SlotDelete()
+    {
+        // 해당 슬롯 하얗게 만들기
+        WhiteSlotToggle(true);
+
+        // 마우스 아이콘 비활성화
+        MergeMenu.Instance.selectedIcon.enabled = false;
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 해당 슬롯의 마법 데이터 삭제
+        mergeMagics[slotIndex] = null;
+
+        // 해당 슬롯 UI 초기화
+        icon.enabled = false;
+        frame.color = Color.white;
+        level.gameObject.SetActive(false);
+        newSign.SetActive(false);
+
+        // 선택된 스택의 마법 개수 차감
+        PlayerManager.Instance.RemoveStack(0);
+        // 스택 UI 갱신
+        MergeMenu.Instance.Scroll_Stack(0);
+
+        // 슬롯 가림막 초기화
+        WhiteSlotToggle(false);
+    }
+
+    IEnumerator SlotLevelup()
+    {
+        // 해당 슬롯 하얗게 만들기
+        WhiteSlotToggle(true);
+
+        // 마우스 아이콘 비활성화
+        MergeMenu.Instance.selectedIcon.enabled = false;
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 마법 레벨 올리기
+        mergeMagics[slotIndex].magicLevel++;
+        level.GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + mergeMagics[slotIndex].magicLevel.ToString();
+
+        // 슬롯 가림막 초기화
+        WhiteSlotToggle(false);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 선택된 스택의 마법 개수 차감
+        PlayerManager.Instance.RemoveStack(0);
+        // 스택 UI 갱신
+        MergeMenu.Instance.Scroll_Stack(0);
+    }
+
+    IEnumerator SlotReplace()
+    {
+        // 해당 슬롯 하얗게 만들기
+        WhiteSlotToggle(true);
+
+        // 마우스 아이콘 비활성화
+        MergeMenu.Instance.selectedIcon.enabled = false;
+
+        // 기존 슬롯 마법의 레벨
+        int originLevel = mergeMagics[slotIndex].magicLevel;
+
+        // 이 슬롯의 마법과 동급의 랜덤 마법 뽑기
+        MagicInfo randomMagic = new MagicInfo(MagicDB.Instance.RandomMagic(mergeMagics[slotIndex].grade));
+        // 레벨은 유지 시키기
+        randomMagic.magicLevel = originLevel;
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 뽑은 마법 넣어주기
+        mergeMagics[slotIndex] = randomMagic;
+
+        // 합쳐진 마법 아이콘 넣기
+        icon.sprite = MagicDB.Instance.GetMagicIcon(randomMagic.id);
+        // new 사인 끄기
+        newSign.SetActive(false);
+
+        // 툴팁 정보 갱신
+        tooltip.Magic = randomMagic;
+
+        // 슬롯 가림막 초기화
+        WhiteSlotToggle(false);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 선택된 스택의 마법 개수 차감
+        PlayerManager.Instance.RemoveStack(0);
+        // 스택 UI 갱신
+        MergeMenu.Instance.Scroll_Stack(0);
     }
 }

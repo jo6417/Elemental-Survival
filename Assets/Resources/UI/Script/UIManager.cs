@@ -126,6 +126,16 @@ public class UIManager : MonoBehaviour
         UI_Input.UI.Cancel.performed += val => Cancel();
         // 스마트폰 버튼 입력
         UI_Input.UI.PhoneMenu.performed += val => PhoneOpen();
+        // 마우스 클릭
+        UI_Input.UI.Click.performed += val =>
+        {
+            // // 선택된 오브젝트 넣기
+            // if (EventSystem.current.currentSelectedGameObject != null
+            // && EventSystem.current.currentSelectedGameObject.TryGetComponent(out Selectable selectable))
+            //     lastSelected = selectable;
+
+            Click();
+        };
     }
 
     private void OnEnable()
@@ -183,8 +193,22 @@ public class UIManager : MonoBehaviour
     }
 
     // 확인 입력
+    public void Click()
+    {
+        // null이 아닐때
+        if (!EventSystem.current.currentSelectedGameObject && EventSystem.current.currentSelectedGameObject != null)
+            //! 클릭된 오브젝트 이름 표시
+            nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
+        // null 선택했을때
+        else
+            nowSelectUI.text = "Last Select : null";
+    }
+
+    // 확인 입력
     public void Submit()
     {
+        //선택된 UI 따라다니기
+        // FollowUICursor();
     }
 
     // 취소 입력
@@ -282,6 +306,8 @@ public class UIManager : MonoBehaviour
                 //원본 컬러 기억하기
                 targetOriginColor = lastSelected.targetGraphic.color;
             }
+
+            nowSelectUI.text = "Last Select : null";
         }
         //선택된 버튼이 바뀌었을때
         else
@@ -307,27 +333,36 @@ public class UIManager : MonoBehaviour
 
     public void UICursorToggle(bool setToggle)
     {
-        // 커서 켜져있을때
+        // 커서 켜져있을때 끄기
         if (!setToggle && UI_Cursor.activeSelf)
-        {
-            //UI커서 비활성화
-            UI_Cursor.SetActive(false);
-        }
-
-        // 커서 꺼져있을때
-        if (setToggle && !UI_Cursor.activeSelf)
         {
             //UI커서 크기 및 위치 초기화
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            cursorRect.sizeDelta = cursorCanvasRect.sizeDelta;
+            cursorRect.DOSizeDelta(cursorCanvasRect.sizeDelta, 0.3f)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                //UI커서 비활성화
+                UI_Cursor.SetActive(false);
+            });
+
+            cursorRect.DOMove(cursorCanvasRect.position, 0.3f)
+            .SetUpdate(true);
+        }
+
+        // 커서 꺼져있을때 켜기
+        if (setToggle && !UI_Cursor.activeSelf)
+        {
+            //UI커서 크기 및 위치 초기화
+            // RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+            // cursorRect.sizeDelta = cursorCanvasRect.sizeDelta;
             // print("cursorCanvasRect.sizeDelta : " + cursorCanvasRect.sizeDelta);
 
-            cursorRect.position = Vector2.zero;
+            // cursorRect.position = Vector2.zero;
 
             //UI커서 활성화
             UI_Cursor.SetActive(true);
         }
-
     }
 
     IEnumerator NewCursorAnim()
@@ -458,150 +493,152 @@ public class UIManager : MonoBehaviour
         });
     }
 
-    void CursorAnim()
-    {
-        Image image = lastSelected.targetGraphic.GetComponent<Image>();
-        RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
+    #region CursorAnim
+    // void CursorAnim()
+    // {
+    //     Image image = lastSelected.targetGraphic.GetComponent<Image>();
+    //     RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
 
-        //깜빡일 시간
-        float flickTime = 0.3f;
-        //깜빡일 컬러 강조 비율
-        float colorRate = 1.4f;
-        //깜빡일 컬러
-        Color flickColor = new Color(targetOriginColor.r * colorRate, targetOriginColor.g * colorRate, targetOriginColor.b * colorRate, 1f);
-        //이동할 버튼 위치
-        Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
+    //     //깜빡일 시간
+    //     float flickTime = 0.3f;
+    //     //깜빡일 컬러 강조 비율
+    //     float colorRate = 1.4f;
+    //     //깜빡일 컬러
+    //     Color flickColor = new Color(targetOriginColor.r * colorRate, targetOriginColor.g * colorRate, targetOriginColor.b * colorRate, 1f);
+    //     //이동할 버튼 위치
+    //     Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
 
-        //커서 사이즈 + 여백 추가
-        Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
+    //     //커서 사이즈 + 여백 추가
+    //     Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
 
-        //마지막 선택된 버튼의 캔버스
-        Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
+    //     //마지막 선택된 버튼의 캔버스
+    //     Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
 
-        // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
-        if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
-        {
-            //렌더 모드 일치 시키기
-            UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
+    //     // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
+    //     if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
+    //     {
+    //         //렌더 모드 일치 시키기
+    //         UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
 
-            // 바뀐 렌더모드에 따라 커서 스케일 정의
-            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                cursorCanvasRect.localScale = Vector2.one;
-            }
-            else
-            {
-                cursorCanvasRect.localScale = Vector2.one / 64f;
+    //         // 바뀐 렌더모드에 따라 커서 스케일 정의
+    //         RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+    //         if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+    //         {
+    //             cursorCanvasRect.localScale = Vector2.one;
+    //         }
+    //         else
+    //         {
+    //             cursorCanvasRect.localScale = Vector2.one / 64f;
 
-                //캔버스 z축을 선택된 캔버스에 맞추기
-                Vector3 canvasPos = cursorCanvasRect.position;
-                canvasPos.z = selectedCanvas.transform.position.z;
-                cursorCanvasRect.position = canvasPos;
-            }
-        }
+    //             //캔버스 z축을 선택된 캔버스에 맞추기
+    //             Vector3 canvasPos = cursorCanvasRect.position;
+    //             canvasPos.z = selectedCanvas.transform.position.z;
+    //             cursorCanvasRect.position = canvasPos;
+    //         }
+    //     }
 
-        //UI 커서 활성화
-        UICursorToggle(true);
-        // UI_Cursor.SetActive(true);
+    //     //UI 커서 활성화
+    //     UICursorToggle(true);
+    //     // UI_Cursor.SetActive(true);
 
-        //원래 트윈 있으면 죽이기
-        if (image != null && DOTween.IsTweening(image))
-            image.DOKill();
+    //     //원래 트윈 있으면 죽이기
+    //     if (image != null && DOTween.IsTweening(image))
+    //         image.DOKill();
 
-        if (UI_Cursor.transform != null && DOTween.IsTweening(UI_Cursor.transform))
-            UI_Cursor.transform.DOKill();
+    //     if (UI_Cursor.transform != null && DOTween.IsTweening(UI_Cursor.transform))
+    //         UI_Cursor.transform.DOKill();
 
-        if (cursorRect != null && DOTween.IsTweening(cursorRect))
-            cursorRect.DOKill();
+    //     if (cursorRect != null && DOTween.IsTweening(cursorRect))
+    //         cursorRect.DOKill();
 
-        if (cursorSeq.IsActive())
-            cursorSeq.Kill();
+    //     if (cursorSeq.IsActive())
+    //         cursorSeq.Kill();
 
-        //이동 시간 카운트
-        float moveCount = 0f;
-        //버튼 위치로 UI커서 이동
-        UI_Cursor.transform.DOMove(btnPos, flickTime)
-        .OnStart(() =>
-        {
-            //커서 애니메이션 시작
-            isFlicking = true;
-            isMove = true;
+    //     //이동 시간 카운트
+    //     float moveCount = 0f;
+    //     //버튼 위치로 UI커서 이동
+    //     UI_Cursor.transform.DOMove(btnPos, flickTime)
+    //     .OnStart(() =>
+    //     {
+    //         //커서 애니메이션 시작
+    //         isFlicking = true;
+    //         isMove = true;
 
-            float moveCount = flickTime;
-        })
-        .OnUpdate(() =>
-        {
-            //남은 이동 시간
-            moveCount -= Time.deltaTime;
+    //         float moveCount = flickTime;
+    //     })
+    //     .OnUpdate(() =>
+    //     {
+    //         //남은 이동 시간
+    //         moveCount -= Time.deltaTime;
 
-            //이동 중 버튼 위치가 바뀌면
-            if (btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
-            {
-                //버튼 위치 갱신
-                btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
+    //         //이동 중 버튼 위치가 바뀌면
+    //         if (btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
+    //         {
+    //             //버튼 위치 갱신
+    //             btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
 
-                // 남은 이동시간동안 새로운 위치로 재이동
-                UI_Cursor.transform.DOMove(btnPos, moveCount)
-                .SetUpdate(true);
-            }
-        })
-        .SetUpdate(true)
-        .OnComplete(() =>
-        {
-            //커서 이동 끝
-            isMove = false;
+    //             // 남은 이동시간동안 새로운 위치로 재이동
+    //             UI_Cursor.transform.DOMove(btnPos, moveCount)
+    //             .SetUpdate(true);
+    //         }
+    //     })
+    //     .SetUpdate(true)
+    //     .OnComplete(() =>
+    //     {
+    //         //커서 이동 끝
+    //         isMove = false;
 
-            cursorSeq = DOTween.Sequence();
-            cursorSeq
-            .OnStart(() =>
-            {
-                //커서 애니메이션 시작
-                isFlicking = true;
-                isMove = true;
-            })
-            .SetLoops(-1)
-            .PrependCallback(() =>
-            {
-                // 선택된 버튼과 커서 크기 맞추기
-                cursorRect.sizeDelta = size;
-            })
-            // 깜빡이는 색으로 변경, 해당 버튼 사이즈보다 확대
-            .Append(
-                image.DOColor(flickColor, flickTime)
-                .OnKill(() =>
-                {
-                    image.color = targetOriginColor;
-                })
-            )
-            .Join(
-                cursorRect.DOSizeDelta(size + size * 0.1f, flickTime)
-            )
-            // 원본 색깔로 복구, 해당 버튼 사이즈 원본 사이즈 복구
-            .Append(
-                image.DOColor(targetOriginColor, flickTime)
-                .OnKill(() =>
-                {
-                    image.color = targetOriginColor;
-                })
-            )
-            .Join(
-                cursorRect.DOSizeDelta(size, flickTime)
-            )
-            .OnKill(() =>
-            {
-                image.DOKill();
-                UI_Cursor.transform.DOKill();
-                cursorRect.DOKill();
-                image.color = targetOriginColor;
-            })
-            .SetUpdate(true);
-        });
+    //         cursorSeq = DOTween.Sequence();
+    //         cursorSeq
+    //         .OnStart(() =>
+    //         {
+    //             //커서 애니메이션 시작
+    //             isFlicking = true;
+    //             isMove = true;
+    //         })
+    //         .SetLoops(-1)
+    //         .PrependCallback(() =>
+    //         {
+    //             // 선택된 버튼과 커서 크기 맞추기
+    //             cursorRect.sizeDelta = size;
+    //         })
+    //         // 깜빡이는 색으로 변경, 해당 버튼 사이즈보다 확대
+    //         .Append(
+    //             image.DOColor(flickColor, flickTime)
+    //             .OnKill(() =>
+    //             {
+    //                 image.color = targetOriginColor;
+    //             })
+    //         )
+    //         .Join(
+    //             cursorRect.DOSizeDelta(size + size * 0.1f, flickTime)
+    //         )
+    //         // 원본 색깔로 복구, 해당 버튼 사이즈 원본 사이즈 복구
+    //         .Append(
+    //             image.DOColor(targetOriginColor, flickTime)
+    //             .OnKill(() =>
+    //             {
+    //                 image.color = targetOriginColor;
+    //             })
+    //         )
+    //         .Join(
+    //             cursorRect.DOSizeDelta(size, flickTime)
+    //         )
+    //         .OnKill(() =>
+    //         {
+    //             image.DOKill();
+    //             UI_Cursor.transform.DOKill();
+    //             cursorRect.DOKill();
+    //             image.color = targetOriginColor;
+    //         })
+    //         .SetUpdate(true);
+    //     });
 
-        // 선택된 버튼과 커서 크기 맞추기
-        cursorRect.DOSizeDelta(size, flickTime)
-        .SetUpdate(true);
-    }
+    //     // 선택된 버튼과 커서 크기 맞추기
+    //     cursorRect.DOSizeDelta(size, flickTime)
+    //     .SetUpdate(true);
+    // }
+    #endregion
 
     public void QuitMainMenu()
     {

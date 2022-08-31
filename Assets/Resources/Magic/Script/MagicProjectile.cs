@@ -13,13 +13,13 @@ public class MagicProjectile : MonoBehaviour
 
     [Header("Refer")]
     public MagicInfo magic;
-    MagicHolder magicHolder;
+    [SerializeField] MagicHolder magicHolder;
     public ParticleManager particleManager;
     public GameObject[] shatters; //파편들
     public GameObject hitEffect; //타겟에 적중했을때 이펙트
     public Rigidbody2D rigid;
-    Collider2D coll;
-    SpriteRenderer sprite;
+    [SerializeField] Collider2D coll;
+    [SerializeField] SpriteRenderer sprite;
 
     [Header("Status")]
     float speed = 0;
@@ -28,11 +28,12 @@ public class MagicProjectile : MonoBehaviour
 
     private void Awake()
     {
-        magicHolder = GetComponent<MagicHolder>();
-        rigid = GetComponent<Rigidbody2D>();
+        magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
+        rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
+        coll = coll == null ? GetComponent<Collider2D>() : coll;
+        sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
+
         velocity = rigid.velocity;
-        coll = GetComponent<Collider2D>();
-        sprite = GetComponent<SpriteRenderer>();
 
         // particleManager = particleManager == null ? GetComponentInChildren<ParticleManager>() : particleManager;
     }

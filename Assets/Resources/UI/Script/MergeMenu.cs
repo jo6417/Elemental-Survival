@@ -67,7 +67,7 @@ public class MergeMenu : MonoBehaviour
     public int[] mergeResultMagics = new int[4]; //합성 가능한 마법 id
     public Transform mergeSignal;
     public Transform mergeIcon; //Merge domove 할때 대신 날아갈 아이콘 (슬롯간 레이어 문제로 사용)
-    public bool mergeChooseMode = false; //마법 놓았을때 합성 가능성이 여러개일때, 선택모드 켜기
+    public int moveMagicIndex = -1; // 옮겨질 마법
 
     [Header("Stack List")]
     public Transform stackSlots;
@@ -158,7 +158,7 @@ public class MergeMenu : MonoBehaviour
         UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
         {
             // 로딩 패널 꺼져있을때, 머지 선택 모드 아닐때
-            if (!loadingPanel.activeSelf && !mergeChooseMode)
+            if (!loadingPanel.activeSelf)
             {
                 //백 버튼 액션 실행
                 StartCoroutine(BackBtnAction());
@@ -182,7 +182,7 @@ public class MergeMenu : MonoBehaviour
         if (selectedIcon.enabled)
         {
             //커서 및 빈 스택 슬롯 초기화 하기
-            ToggleStackSlot();
+            SelectSlotToggle();
         }
 
         //쿨타임 가능할때, 스택 슬롯 Select 됬을때
@@ -463,7 +463,7 @@ public class MergeMenu : MonoBehaviour
             scrollCoolCount -= Time.unscaledDeltaTime;
     }
 
-    public void ToggleStackSlot()
+    public void SelectSlotToggle()
     {
         //빈 슬롯이면 리턴
         if (PlayerManager.Instance.hasStackMagics.Count == 0)
@@ -491,7 +491,7 @@ public class MergeMenu : MonoBehaviour
         if (selectedIcon.enabled)
         {
             //커서 및 빈 스택 슬롯 초기화 하기
-            ToggleStackSlot();
+            SelectSlotToggle();
         }
 
         //모든 슬롯 domove 강제 즉시 완료
@@ -1060,134 +1060,136 @@ public class MergeMenu : MonoBehaviour
         InteractToggleBtns(true);
     }
 
-    public void ChooseModeToggle()
-    {
-        //merge 선택 모드 토글
-        mergeChooseMode = !mergeChooseMode;
+    #region ChooseModeToggle
+    // public void ChooseModeToggle()
+    // {
+    //     //merge 선택 모드 토글
+    //     mergeChooseMode = !mergeChooseMode;
 
-        // 선택모드로 전환
-        if (mergeChooseMode)
-        {
-            // 합성 가능한 슬롯 빼고 모두 상호작용 끄기
-            for (int i = 0; i < mergeSlots.childCount; i++)
-            {
-                //버튼 찾기
-                Button btn = mergeList[i].GetComponent<Button>();
-                // 상호작용 끄기
-                btn.interactable = false;
+    //     // 선택모드로 전환
+    //     if (mergeChooseMode)
+    //     {
+    //         // 합성 가능한 슬롯 빼고 모두 상호작용 끄기
+    //         for (int i = 0; i < mergeSlots.childCount; i++)
+    //         {
+    //             //버튼 찾기
+    //             Button btn = mergeList[i].GetComponent<Button>();
+    //             // 상호작용 끄기
+    //             btn.interactable = false;
 
-                foreach (int closeIndex in closeSlots)
-                {
-                    //주변 슬롯 인덱스와 같으면
-                    if (closeIndex == i)
-                    {
-                        // 상호작용 켜기
-                        btn.interactable = true;
+    //             foreach (int closeIndex in closeSlots)
+    //             {
+    //                 //주변 슬롯 인덱스와 같으면
+    //                 if (closeIndex == i)
+    //                 {
+    //                     // 상호작용 켜기
+    //                     btn.interactable = true;
 
-                        // 배열 범위 내 인덱스일때
-                        if (closeIndex >= 0 && closeIndex < PlayerManager.Instance.hasMergeMagics.Length)
-                        {
-                            //해당 방향의 슬롯 찾기
-                            Transform closeSlot = mergeList[closeIndex].transform;
-                            Transform closeIcon = closeSlot.Find("Icon");
-                            Vector2 moveDir = mergeWaitSlot.transform.position - closeIcon.position;
+    //                     // 배열 범위 내 인덱스일때
+    //                     if (closeIndex >= 0 && closeIndex < PlayerManager.Instance.hasMergeMagics.Length)
+    //                     {
+    //                         //해당 방향의 슬롯 찾기
+    //                         Transform closeSlot = mergeList[closeIndex].transform;
+    //                         Transform closeIcon = closeSlot.Find("Icon");
+    //                         Vector2 moveDir = mergeWaitSlot.transform.position - closeIcon.position;
 
-                            // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈
-                            closeIcon.DOLocalMove(moveDir.normalized * 20f, 0.5f)
-                            .OnKill(() =>
-                            {
-                                closeIcon.localPosition = Vector2.zero;
-                            })
-                            .SetEase(Ease.InOutSine)
-                            .SetLoops(-1, LoopType.Yoyo)
-                            .SetUpdate(true);
+    //                         // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈
+    //                         closeIcon.DOLocalMove(moveDir.normalized * 20f, 0.5f)
+    //                         .OnKill(() =>
+    //                         {
+    //                             closeIcon.localPosition = Vector2.zero;
+    //                         })
+    //                         .SetEase(Ease.InOutSine)
+    //                         .SetLoops(-1, LoopType.Yoyo)
+    //                         .SetUpdate(true);
 
-                            // 해당 슬롯들 반짝이기
-                            Image backImg = closeSlot.GetComponent<Image>();
-                            Color originColor = backImg.color;
-                            backImg.DOColor(Color.white, 0.5f)
-                            .SetUpdate(true)
-                            .SetLoops(-1, LoopType.Yoyo)
-                            .SetEase(Ease.InOutBack)
-                            .OnKill(() =>
-                            {
-                                backImg.color = originColor;
-                            });
-                        }
-                    }
-                }
-            }
-            // 뒤로 버튼 반짝이기
-            // Image backBtnImg = backBtn.GetComponent<Image>();
-            // Color originBackColor = backBtnImg.color;
-            // backBtnImg.DOColor(new Color(originBackColor.r, originBackColor.g * 2f, originBackColor.b * 2f, originBackColor.a), 0.5f)
-            // .SetUpdate(true)
-            // .SetLoops(-1, LoopType.Yoyo)
-            // .SetEase(Ease.InOutBack)
-            // .OnKill(() =>
-            // {
-            //     backBtnImg.color = originBackColor;
-            // });
+    //                         // 해당 슬롯들 반짝이기
+    //                         Image backImg = closeSlot.GetComponent<Image>();
+    //                         Color originColor = backImg.color;
+    //                         backImg.DOColor(Color.white, 0.5f)
+    //                         .SetUpdate(true)
+    //                         .SetLoops(-1, LoopType.Yoyo)
+    //                         .SetEase(Ease.InOutBack)
+    //                         .OnKill(() =>
+    //                         {
+    //                             backImg.color = originColor;
+    //                         });
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         // 뒤로 버튼 반짝이기
+    //         // Image backBtnImg = backBtn.GetComponent<Image>();
+    //         // Color originBackColor = backBtnImg.color;
+    //         // backBtnImg.DOColor(new Color(originBackColor.r, originBackColor.g * 2f, originBackColor.b * 2f, originBackColor.a), 0.5f)
+    //         // .SetUpdate(true)
+    //         // .SetLoops(-1, LoopType.Yoyo)
+    //         // .SetEase(Ease.InOutBack)
+    //         // .OnKill(() =>
+    //         // {
+    //         //     backBtnImg.color = originBackColor;
+    //         // });
 
-            // 백 버튼 상호작용 끄기
-            backBtn.interactable = false;
-            // 레시피 버튼 상호작용 끄기
-            recipeBtn.interactable = false;
-            // 홈 버튼 상호작용 끄기
-            homeBtn.interactable = false;
-            // 스택 가운데 버튼 상호작용 끄기
-            selectedSlot.interactable = false;
-            // 스택 좌우 스크롤 버튼 상호작용 끄기
-            leftScrollBtn.interactable = false;
-            rightScrollBtn.interactable = false;
-        }
-        // 선택모드 취소
-        else
-        {
-            // 모든 Merge 슬롯 상호작용 켜기
-            foreach (Transform slot in mergeSlots)
-            {
-                slot.GetComponent<Button>().interactable = true;
-            }
+    //         // 백 버튼 상호작용 끄기
+    //         backBtn.interactable = false;
+    //         // 레시피 버튼 상호작용 끄기
+    //         recipeBtn.interactable = false;
+    //         // 홈 버튼 상호작용 끄기
+    //         homeBtn.interactable = false;
+    //         // 스택 가운데 버튼 상호작용 끄기
+    //         selectedSlot.interactable = false;
+    //         // 스택 좌우 스크롤 버튼 상호작용 끄기
+    //         leftScrollBtn.interactable = false;
+    //         rightScrollBtn.interactable = false;
+    //     }
+    //     // 선택모드 취소
+    //     else
+    //     {
+    //         // 모든 Merge 슬롯 상호작용 켜기
+    //         foreach (Transform slot in mergeSlots)
+    //         {
+    //             slot.GetComponent<Button>().interactable = true;
+    //         }
 
-            // 백 버튼 상호작용 켜기
-            backBtn.interactable = true;
-            // 레시피 버튼 상호작용 켜기
-            recipeBtn.interactable = true;
-            // 홈 버튼 상호작용 켜기
-            homeBtn.interactable = true;
-            //스택 가운데 버튼 상호작용 켜기
-            selectedSlot.interactable = true;
-            // 스택 좌우 스크롤 버튼 상호작용 끄기
-            leftScrollBtn.interactable = true;
-            rightScrollBtn.interactable = true;
+    //         // 백 버튼 상호작용 켜기
+    //         backBtn.interactable = true;
+    //         // 레시피 버튼 상호작용 켜기
+    //         recipeBtn.interactable = true;
+    //         // 홈 버튼 상호작용 켜기
+    //         homeBtn.interactable = true;
+    //         //스택 가운데 버튼 상호작용 켜기
+    //         selectedSlot.interactable = true;
+    //         // 스택 좌우 스크롤 버튼 상호작용 끄기
+    //         leftScrollBtn.interactable = true;
+    //         rightScrollBtn.interactable = true;
 
-            // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
-            foreach (int index in closeSlots)
-            {
-                // 배열 범위 내 인덱스일때
-                if (index >= 0 && index < PlayerManager.Instance.hasMergeMagics.Length)
-                {
-                    // 해당 방향의 슬롯 찾기
-                    Transform closeSlot = mergeList[index].transform;
+    //         // 아이콘이 타겟 슬롯 방향으로 조금씩 움직이려는 트윈 종료
+    //         foreach (int index in closeSlots)
+    //         {
+    //             // 배열 범위 내 인덱스일때
+    //             if (index >= 0 && index < PlayerManager.Instance.hasMergeMagics.Length)
+    //             {
+    //                 // 해당 방향의 슬롯 찾기
+    //                 Transform closeSlot = mergeList[index].transform;
 
-                    // 슬롯 배경 찾아 트윈 멈추기
-                    Image closeBack = closeSlot.GetComponent<Image>();
-                    closeBack.DOKill();
+    //                 // 슬롯 배경 찾아 트윈 멈추기
+    //                 Image closeBack = closeSlot.GetComponent<Image>();
+    //                 closeBack.DOKill();
 
-                    Transform dirIcon = mergeSlots.GetChild(index).Find("Icon");
-                    dirIcon.DOKill();
-                }
-            }
+    //                 Transform dirIcon = mergeSlots.GetChild(index).Find("Icon");
+    //                 dirIcon.DOKill();
+    //             }
+    //         }
 
-            // 스택 슬롯 초기화
-            ToggleStackSlot();
+    //         // 스택 슬롯 초기화
+    //         SelectSlotToggle();
 
-            //백 버튼 깜빡임 종료
-            // Image backBtnImg = backBtn.GetComponent<Image>();
-            // backBtnImg.DOKill();
-        }
-    }
+    //         //백 버튼 깜빡임 종료
+    //         // Image backBtnImg = backBtn.GetComponent<Image>();
+    //         // backBtnImg.DOKill();
+    //     }
+    // }
+    #endregion
 
     public void IconMoveStop()
     {
@@ -1306,7 +1308,7 @@ public class MergeMenu : MonoBehaviour
 
             //마우스로 아이콘 들고 있으면 복귀시키기
             if (selectedIcon.enabled)
-                ToggleStackSlot();
+                SelectSlotToggle();
 
             // UI 커서 미리 끄기
             UIManager.Instance.UICursorToggle(false);

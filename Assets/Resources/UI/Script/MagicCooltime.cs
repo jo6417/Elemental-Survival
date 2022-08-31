@@ -8,6 +8,7 @@ public class MagicCooltime : MonoBehaviour
     ToolTipTrigger toolTipTrigger;
     MagicInfo magic;
     Image cooltimeImg;
+    float coolCount;
 
     private void Awake()
     {
@@ -39,10 +40,13 @@ public class MagicCooltime : MonoBehaviour
 
     void UpdateCool()
     {
-        //쿨타임 계산해서 불러오기
+        // 쿨타임 시간 계산해서 불러오기
         float coolMax = MagicDB.Instance.MagicCoolTime(magic);
 
-        //현재 남은 쿨타임 이미지에 반영해서 채우기
-        cooltimeImg.fillAmount = magic.coolCount / coolMax;
+        // 마법의 잔여 쿨타임
+        coolCount = magic.coolCount;
+
+        // 현재 남은 쿨타임 이미지에 반영해서 채우기
+        cooltimeImg.fillAmount = coolCount / coolMax;
     }
 }

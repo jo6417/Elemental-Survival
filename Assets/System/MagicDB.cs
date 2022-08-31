@@ -494,7 +494,7 @@ public class MagicDB : MonoBehaviour
     }
 
     //랜덤 마법 리스트 뽑기
-    public int[] RandomMagicIndex(int amount)
+    public int[] RandomMagicList(int amount)
     {
         //모든 마법 인덱스를 넣을 리스트
         List<int> magicIndex = new List<int>();

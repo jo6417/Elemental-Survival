@@ -86,7 +86,7 @@ public class VendMachine : MonoBehaviour
         }
 
         // 중복제거된 랜덤 마법 id 뽑기
-        int[] magicIDs = MagicDB.Instance.RandomMagicIndex(magicNum);
+        int[] magicIDs = MagicDB.Instance.RandomMagicList(magicNum);
         magics.Clear();
         for (int i = 0; i < magicIDs.Length; i++)
         {
