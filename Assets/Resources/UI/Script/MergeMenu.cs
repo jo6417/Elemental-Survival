@@ -58,6 +58,12 @@ public class MergeMenu : MonoBehaviour
     public SlicedFilledImage backBtnFill; //뒤로가기 버튼
     float backBtnCount; //백버튼 더블클릭 카운트
 
+    [Header("Chat List")]
+    public GameObject chatPrefab; // 채팅 프리팹
+    public ScrollRect chatScroll; // 채팅 스냅 스크롤
+    [SerializeField] private RectTransform chatContentRect;
+    public float sumChatHeights; // 채팅 스크롤 content의 높이
+
     [Header("Merge List")]
     public Transform mergeSlots;
     public List<Button> mergeList = new List<Button>(); //각각 슬롯 오브젝트
@@ -144,15 +150,11 @@ public class MergeMenu : MonoBehaviour
         // 마우스 위치 입력
         UIManager.Instance.UI_Input.UI.MousePosition.performed += val => MousePos();
         // 마우스 클릭
-        // UIManager.Instance.UI_Input.UI.Click.performed += val =>
-        // {
-        //     //마우스에 아이콘 들고 있을때
-        //     if (selectedIcon.enabled)
-        //     {
-        //         //커서 및 빈 스택 슬롯 초기화 하기
-        //         ToggleStackSlot();
-        //     }
-        // };
+        UIManager.Instance.UI_Input.UI.Click.performed += val =>
+        {
+            if (gameObject.activeSelf)
+                StartCoroutine(Click());
+        };
 
         // 스마트폰 버튼 입력
         UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
@@ -171,6 +173,39 @@ public class MergeMenu : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    IEnumerator Click()
+    {
+        // 클릭시 select 오브젝트 바뀔때까지 1프레임 대기
+        yield return new WaitForSeconds(Time.deltaTime);
+
+        //마우스에 아이콘 들고 있을때
+        if (selectedIcon.enabled)
+        {
+            // null 선택했을때, 메뉴버튼, 백버튼, 홈버튼 클릭했을때
+            if (EventSystem.current.currentSelectedGameObject == null
+            || EventSystem.current.currentSelectedGameObject == recipeBtn.gameObject
+            || EventSystem.current.currentSelectedGameObject == backBtn.gameObject
+            || EventSystem.current.currentSelectedGameObject == homeBtn.gameObject)
+            {
+                //커서 및 빈 스택 슬롯 초기화 하기
+                SelectSlotToggle();
+
+                // 마법 이동 중이었으면
+                if (moveMagicIndex != -1)
+                {
+                    // 마우스에 선택된 마법 아이콘 다시 넣기
+                    selectedIcon.sprite = MagicDB.Instance.GetMagicIcon(selectedMagic.id);
+
+                    // 이동중이던 마법 슬롯 다시 켜기
+                    mergeList[moveMagicIndex].transform.Find("Icon").GetComponent<Image>().enabled = true;
+
+                    // 이동중 마법 인덱스 초기화
+                    moveMagicIndex = -1;
+                }
+            }
+        }
+    }
+
     // 방향키 입력되면 실행
     void NavControl(Vector2 arrowDir)
     {
@@ -180,10 +215,8 @@ public class MergeMenu : MonoBehaviour
 
         //마우스에 아이콘 들고 있을때
         if (selectedIcon.enabled)
-        {
             //커서 및 빈 스택 슬롯 초기화 하기
             SelectSlotToggle();
-        }
 
         //쿨타임 가능할때, 스택 슬롯 Select 됬을때
         if (scrollCoolCount <= 0f && nowSelectSlot != null && UIManager.Instance.lastSelected.gameObject == selectedSlot.gameObject)
@@ -461,6 +494,54 @@ public class MergeMenu : MonoBehaviour
         //스택 스크롤 시간 카운트
         if (scrollCoolCount > 0)
             scrollCoolCount -= Time.unscaledDeltaTime;
+
+        //todo 채팅 스크롤의 컨텐츠 오브젝트 사이즈를 자식 모두의 높이 총합만큼 lerp로 설정
+
+        // 
+        if (sumChatHeights == 0)
+            sumChatHeights = chatContentRect.sizeDelta.y;
+
+        // Lerp로 사이즈 반영        
+        chatContentRect.sizeDelta = new Vector2(chatContentRect.sizeDelta.x, Mathf.Lerp(chatContentRect.sizeDelta.y, sumChatHeights, Time.unscaledDeltaTime * 5f));
+    }
+
+    public IEnumerator ChatAdd(string message)
+    {
+        // 메시지 생성
+        GameObject chat = LeanPool.Spawn(MergeMenu.Instance.chatPrefab,
+        MergeMenu.Instance.chatScroll.content.rect.position - new Vector2(0, -10f),
+        Quaternion.identity, MergeMenu.Instance.chatScroll.content);
+
+        // 캔버스 그룹 찾고 알파값 0으로 낮춰서 숨기기
+        CanvasGroup canvasGroup = chat.GetComponent<CanvasGroup>();
+        canvasGroup.alpha = 0;
+
+        // 채팅 컬러 및 메시지 적용
+        chat.GetComponent<Image>().color = new Color(1, 50f / 255f, 50f / 255f, 1);
+        chat.GetComponentInChildren<TextMeshProUGUI>().text = message;
+
+        // 1프레임 대기
+        yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
+
+        float sumHeights = 0;
+
+        // 메시지들의 총합 높이 갱신
+        for (int i = 0; i < MergeMenu.Instance.chatScroll.content.childCount; i++)
+        {
+            RectTransform rect = MergeMenu.Instance.chatScroll.content.GetChild(i).GetComponent<RectTransform>();
+
+            // 여백 합산
+            sumHeights += 10;
+            // 높이 합산
+            sumHeights += rect.sizeDelta.y;
+
+            print(i + " : " + rect.sizeDelta.y);
+        }
+
+        MergeMenu.Instance.sumChatHeights = sumHeights;
+
+        // 알파값 높여서 표시
+        canvasGroup.alpha = 1;
     }
 
     public void SelectSlotToggle()
@@ -473,7 +554,22 @@ public class MergeMenu : MonoBehaviour
         if (Cursor.lockState == CursorLockMode.Locked)
             return;
 
+        // 마법 이동 중이었으면
+        if (moveMagicIndex != -1)
+        {
+            // 이동중이던 마법 슬롯 다시 켜기
+            mergeList[moveMagicIndex].transform.Find("Icon").GetComponent<Image>().enabled = true;
+
+            // 이동중 마법 인덱스 초기화
+            moveMagicIndex = -1;
+        }
+
+        // 가운데 슬롯 아이콘 찾기
         Image targetImage = stackObjSlots[3].transform.Find("Icon").GetComponent<Image>();
+
+        // 마우스에 현재 선택된 마법 아이콘 넣기
+        if (selectedMagic != null)
+            selectedIcon.sprite = targetImage.sprite;
 
         // 스택 가운데 슬롯 이미지 토글
         targetImage.enabled = !targetImage.enabled;
@@ -492,6 +588,16 @@ public class MergeMenu : MonoBehaviour
         {
             //커서 및 빈 스택 슬롯 초기화 하기
             SelectSlotToggle();
+        }
+
+        // 마법 이동 중이었으면
+        if (moveMagicIndex != -1)
+        {
+            // 이동중이던 마법 슬롯 다시 켜기
+            mergeList[moveMagicIndex].transform.Find("Icon").GetComponent<Image>().enabled = true;
+
+            // 이동중 마법 인덱스 초기화
+            moveMagicIndex = -1;
         }
 
         //모든 슬롯 domove 강제 즉시 완료

@@ -11,6 +11,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
     {
         #region Fields
         [SerializeField] private GameObject panelPrefab;
+        [SerializeField] private bool useTogglePagenation;
         [SerializeField] private Toggle togglePrefab;
         [SerializeField] private ToggleGroup toggleGroup;
         [SerializeField] private InputField addInputField, removeInputField;
@@ -22,31 +23,38 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         #region Methods
         private void Awake()
         {
-            toggleWidth = (togglePrefab.transform as RectTransform).sizeDelta.x * (Screen.width / 2048f); ;
+            if (useTogglePagenation)
+                toggleWidth = (togglePrefab.transform as RectTransform).sizeDelta.x * (Screen.width / 2048f); ;
         }
 
-        public void Add(int index)
+        public GameObject Add(int index)
         {
             // Pagination
-            Toggle toggle = Instantiate(togglePrefab, scrollSnap.Pagination.transform.position + new Vector3(toggleWidth * (scrollSnap.NumberOfPanels + 1), 0, 0), Quaternion.identity, scrollSnap.Pagination.transform);
-            toggle.group = toggleGroup;
-            scrollSnap.Pagination.transform.position -= new Vector3(toggleWidth / 2f, 0, 0);
+            if (useTogglePagenation)
+            {
+                Toggle toggle = Instantiate(togglePrefab, scrollSnap.Pagination.transform.position + new Vector3(toggleWidth * (scrollSnap.NumberOfPanels + 1), 0, 0), Quaternion.identity, scrollSnap.Pagination.transform);
+                toggle.group = toggleGroup;
+                scrollSnap.Pagination.transform.position -= new Vector3(toggleWidth / 2f, 0, 0);
+            }
 
             // Panel
             panelPrefab.GetComponent<Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-            scrollSnap.Add(panelPrefab, index);
+            GameObject panel = scrollSnap.Add(panelPrefab, index);
+
+            // 생성한 패널 오브젝트를 반환
+            return panel;
         }
-        public void AddAtIndex()
+        public GameObject AddAtIndex()
         {
-            Add(Convert.ToInt32(addInputField.text));
+            return Add(Convert.ToInt32(addInputField.text));
         }
-        public void AddToFront()
+        public GameObject AddToFront()
         {
-            Add(0);
+            return Add(0);
         }
-        public void AddToBack()
+        public GameObject AddToBack()
         {
-            Add(scrollSnap.NumberOfPanels);
+            return Add(scrollSnap.NumberOfPanels);
         }
 
         public void Remove(int index)

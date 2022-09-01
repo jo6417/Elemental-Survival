@@ -307,13 +307,19 @@ public class UIManager : MonoBehaviour
                 targetOriginColor = lastSelected.targetGraphic.color;
             }
 
-            nowSelectUI.text = "Last Select : null";
+            if (EventSystem.current.currentSelectedGameObject == null)
+                nowSelectUI.text = "Last Select : null";
+            else
+                nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
         }
         //선택된 버튼이 바뀌었을때
         else
         {
             //! 테스트, 현재 선택된 UI 이름 표시
-            nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
+            if (EventSystem.current.currentSelectedGameObject == null)
+                nowSelectUI.text = "Last Select : null";
+            else
+                nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
 
             if (!isFlicking)
             {
