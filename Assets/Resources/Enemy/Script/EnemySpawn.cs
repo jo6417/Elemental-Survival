@@ -73,19 +73,19 @@ public class EnemySpawn : MonoBehaviour
         // 쿨타임마다 실행하기, 스폰중 아닐때
         if (spawnCoolCount <= 0 && !nowSpawning)
         {
-            // //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
-            // float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
+            //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
+            float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
 
-            // // 스폰 횟수 범위 제한
-            // maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
+            // 스폰 횟수 범위 제한
+            maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
 
-            // // 1~3번 중 랜덤으로 반복
-            // int spawnNum = Random.Range(1, (int)maxSpawnNum);
+            // 1~3번 중 랜덤으로 반복
+            int spawnNum = Random.Range(1, (int)maxSpawnNum);
 
-            // print(spawnCoolTime + " / " + spawnNum + " 번 스폰");
+            // print(spawnCoolCount + " / " + spawnNum + " 번 스폰");
 
             //! 테스트를 위해 하나씩소환
-            int spawnNum = 1;
+            // int spawnNum = 1;
 
             for (int i = 0; i < spawnNum; i++)
             {
@@ -112,12 +112,12 @@ public class EnemySpawn : MonoBehaviour
         if (!spawnSwitch)
             yield break;
 
-        //총 누적시간 30초로 나눴을때의 몫
+        // 30초 단위로 시간 계수 증가
         float time = SystemManager.Instance.time_current;
-        int timePower = Mathf.FloorToInt(time / 30f);
+        float timePower = time / 30f;
 
         //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수
-        MaxEnemyPower = PlayerManager.Instance.PlayerStat_Now.playerPower + timePower + modifyEnemyPower;
+        MaxEnemyPower = PlayerManager.Instance.PlayerStat_Now.playerPower + Mathf.FloorToInt(timePower) + modifyEnemyPower;
 
         //max 전투력 넘었으면 중단
         if (MaxEnemyPower <= NowEnemyPower)
@@ -172,11 +172,14 @@ public class EnemySpawn : MonoBehaviour
             enemyId = enemy.id;
         }
 
-        //엘리트 출현 유무 (시간에 따라 엘리트 출현율 상승)
-        bool isElite = Random.value < timePower / 100f; //3000초=50분 이상이면 100% 엘리트
+        //todo 난이도 계수 곱하기 난이도 높을수록 출현율 증가 (난이도 시스템 구현 후)
+        // 엘리트 출현 유무 (시간 및 총 전투력에 따라 엘리트 출현율 상승)
+        bool isElite =
+        Random.value < timePower / 100f // 30초마다 1%씩 출현율 상승 (3000초=50분 이상이면 100% 엘리트)
+        + MaxEnemyPower / 10f / 100f; // 파워 10마다 1%씩 출현율 상승
 
         //! 테스트, 무조건 엘리트 몬스터 스폰
-        isElite = true;
+        // isElite = true;
 
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;
@@ -244,42 +247,42 @@ public class EnemySpawn : MonoBehaviour
         {
             enemyManager.isElite = true;
 
-            // //엘리트 종류 뽑아서 매니저에 전달
-            // int eliteClass = Random.Range(1, 4);
-            // enemyManager.eliteClass = eliteClass;
+            //엘리트 종류 뽑아서 매니저에 전달
+            int eliteClass = Random.Range(1, 4);
+            enemyManager.eliteClass = eliteClass;
 
-            // //엘리트 종류마다 색깔 및 능력치 적용
-            // switch (eliteClass)
-            // {
-            //     case 1:
-            //         //체력 1.5배
-            //         enemyInfo.hpMax = enemyInfo.hpMax * 1.5f;
-            //         // 초록 아웃라인 머터리얼
-            //         enemySprite.material = SystemManager.Instance.outLineMat;
-            //         enemySprite.material.color = Color.green;
-            //         break;
+            //엘리트 종류마다 색깔 및 능력치 적용
+            switch (eliteClass)
+            {
+                case 1:
+                    //체력 1.5배
+                    enemyInfo.hpMax = enemyInfo.hpMax * 1.5f;
+                    // 초록 아웃라인 머터리얼
+                    enemySprite.material = SystemManager.Instance.outLineMat;
+                    enemySprite.material.color = Color.green;
+                    break;
 
-            //     case 2:
-            //         //공격력 1.5배
-            //         enemyInfo.power = enemyInfo.power * 1.5f;
-            //         // 빨강 아웃라인 머터리얼
-            //         enemySprite.material = SystemManager.Instance.outLineMat;
-            //         enemySprite.material.color = Color.red;
-            //         break;
+                case 2:
+                    //공격력 1.5배
+                    enemyInfo.power = enemyInfo.power * 1.5f;
+                    // 빨강 아웃라인 머터리얼
+                    enemySprite.material = SystemManager.Instance.outLineMat;
+                    enemySprite.material.color = Color.red;
+                    break;
 
-            //     case 3:
-            //         //속도 1.5배
-            //         enemyInfo.speed = enemyInfo.speed * 1.5f;
-            //         // 하늘색 아웃라인 머터리얼
-            //         enemySprite.material = SystemManager.Instance.outLineMat;
-            //         enemySprite.material.color = Color.cyan;
-            //         break;
+                case 3:
+                    //속도 1.5배
+                    enemyInfo.speed = enemyInfo.speed * 1.5f;
+                    // 하늘색 아웃라인 머터리얼
+                    enemySprite.material = SystemManager.Instance.outLineMat;
+                    enemySprite.material.color = Color.cyan;
+                    break;
 
-            //     case 4:
-            //         //쉴드
-            //         //TODO 포스쉴드 오브젝트 추가
-            //         break;
-            // }
+                case 4:
+                    //쉴드
+                    //TODO 포스쉴드 오브젝트 추가
+                    break;
+            }
         }
         else
         {

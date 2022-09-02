@@ -423,7 +423,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
                         //todo 메시지 띄우기
                         StartCoroutine(MergeMenu.Instance.ChatAdd(message));
-                        print(message);
+                        // print(message);
 
                         // 마우스의 아이콘 흔들기
                         MergeMenu.Instance.selectedIcon.transform.DOPunchPosition(Vector2.right * 30f, 0.8f, 10, 1)

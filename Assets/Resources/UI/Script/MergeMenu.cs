@@ -321,6 +321,10 @@ public class MergeMenu : MonoBehaviour
         usbAllNum.transform.parent.gameObject.SetActive(true);
         // 총 스택 개수 비활성화
         stackAllNum.transform.parent.gameObject.SetActive(false);
+
+        // 각각 스크린 켜기
+        mergeScreen.SetActive(true);
+        recipeScreen.SetActive(true);
     }
 
     public int StackAmount()
@@ -535,7 +539,7 @@ public class MergeMenu : MonoBehaviour
             // 높이 합산
             sumHeights += rect.sizeDelta.y;
 
-            print(i + " : " + rect.sizeDelta.y);
+            // print(i + " : " + rect.sizeDelta.y);
         }
 
         MergeMenu.Instance.sumChatHeights = sumHeights;

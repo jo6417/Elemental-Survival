@@ -347,44 +347,38 @@ public class PlayerManager : Character
                 allUSBNum += usbNum;
             }
 
-            //todo 화면 하단의 총 USB 개수 갱신
+            // 화면 하단의 총 USB 개수 갱신
             UIManager.Instance.PhoneNotice(allUSBNum);
-
-            // 아이템 합성 메뉴 띄우기
-            // UIManager.Instance.PopupUI(UIManager.Instance.magicMixUI);
-
-            // //보유하지 않은 아이템일때
-            // if (!hasItems.Exists(x => x.id == getItem.id))
-            // {
-            //     // 플레이어 보유 아이템에 해당 아이템 추가하기
-            //     hasItems.Add(getItem);
-            // }
-
-            // //보유한 아이템의 개수만 늘려주기
-            // hasItems.Find(x => x.id == getItem.id).amount++;
         }
 
-        if (getItem.itemType == "Artifact")
+        // 아이템이 SlotMagic 일때 (Merge 슬롯 조작 마법)
+        if (getItem.itemType == "SlotMagic")
         {
-            // print("아티팩트 획득");
-
-            //보유하지 않은 아이템일때
-            if (!hasItems.Exists(x => x.id == getItem.id))
-            {
-                // 플레이어 보유 아이템에 해당 아이템 추가하기
-                hasItems.Add(getItem);
-            }
-
-            //보유한 아이템의 개수만 늘려주기
-            hasItems.Find(x => x.id == getItem.id).amount++;
-            // getItem.hasNum++;
-
-            // 보유한 모든 아이템 아이콘 갱신
-            // UIManager.Instance.UpdateItems();
-
-            // 모든 아이템 버프 갱신
-            BuffUpdate();
+            // stack에 해당 아이템 이름과 같은 마법 찾아서 넣기
+            AddStack(MagicDB.Instance.GetMagicByName(getItem.itemName));
         }
+
+        // if (getItem.itemType == "Artifact")
+        // {
+        //     // print("아티팩트 획득");
+
+        //     //보유하지 않은 아이템일때
+        //     if (!hasItems.Exists(x => x.id == getItem.id))
+        //     {
+        //         // 플레이어 보유 아이템에 해당 아이템 추가하기
+        //         hasItems.Add(getItem);
+        //     }
+
+        //     //보유한 아이템의 개수만 늘려주기
+        //     hasItems.Find(x => x.id == getItem.id).amount++;
+        //     // getItem.hasNum++;
+
+        //     // 보유한 모든 아이템 아이콘 갱신
+        //     // UIManager.Instance.UpdateItems();
+
+        //     // 모든 아이템 버프 갱신
+        //     BuffUpdate();
+        // }
     }
 
     public void GetMagic(MagicInfo getMagic)

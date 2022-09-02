@@ -463,26 +463,24 @@ public class MagicDB : MonoBehaviour
         // }
 
         // 모든 마법 데이터 전부 확인
-        foreach (KeyValuePair<int, MagicInfo> magic in magicDB)
+        foreach (MagicInfo magic in magicDB.Values)
         {
-            int grade = GetMagicByID(magic.Value.id).grade;
-
-            // 0등급이면 넘기기
-            if (grade == 0)
+            // Slot 마법이 아닌 0등급 마법은 넘기기
+            if (!magic.magicName.Contains("Slot") && magic.grade == 0)
                 continue;
 
             // 등급을 명시했을때
             if (targetGrade != 0)
             {
                 // 해당 등급의 마법만 넣기
-                if (grade == targetGrade)
-                    unlockIDs.Add(magic.Value.id);
+                if (magic.grade == targetGrade)
+                    unlockIDs.Add(magic.id);
             }
             // 등급을 명시하지 않았을때
             else
             {
                 // 모든 마법 넣기
-                unlockIDs.Add(magic.Value.id);
+                unlockIDs.Add(magic.id);
             }
         }
 

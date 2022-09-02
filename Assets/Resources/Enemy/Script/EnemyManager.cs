@@ -267,9 +267,11 @@ public class EnemyManager : Character
             // rigid, sprite, 트윈, 애니메이션 상태 초기화
             for (int i = 0; i < spriteList.Count; i++)
             {
+                // 고스트 여부에 따라 색깔 초기화
+                spriteList[i].color = new Color(0, 1, 1, 0.5f);
+
                 // 고스트 여부에 따라 복구 머터리얼 바꾸기
                 spriteList[i].material = SystemManager.Instance.outLineMat;
-                spriteList[i].color = new Color(0, 1, 1, 0.5f);
             }
 
             // 그림자 더 투명하게
@@ -296,13 +298,15 @@ public class EnemyManager : Character
             // 물리 콜라이더 켜기
             physicsColl.enabled = true;
 
-            // rigid, sprite, 트윈, 애니메이션 상태 초기화
-            for (int i = 0; i < spriteList.Count; i++)
-            {
-                // 고스트 여부에 따라 복구 머터리얼 바꾸기
-                spriteList[i].material = originMatList[i];
-                spriteList[i].color = originColorList[i];
-            }
+            // 엘리트 몬스터 아닐때
+            if (!isElite)
+                // rigid, sprite, 트윈, 애니메이션 상태 초기화
+                for (int i = 0; i < spriteList.Count; i++)
+                {
+                    // 고스트 여부에 따라 색깔 초기화
+                    spriteList[i].color = originColorList[i];
+                    spriteList[i].material = originMatList[i];
+                }
 
             // 그림자 색 초기화
             if (shadow)
@@ -524,7 +528,7 @@ public class EnemyManager : Character
             //시간 멈춤 머터리얼 및 색으로 바꾸기
             for (int i = 0; i < spriteList.Count; i++)
             {
-                spriteList[i].material = originMatList[i];
+                // spriteList[i].material = originMatList[i];
                 spriteList[i].color = SystemManager.Instance.stopColor;
             }
 
@@ -573,22 +577,26 @@ public class EnemyManager : Character
         // 모든 문제 없으면 idle 상태로 전환
         // state = State.Idle;
 
-        // 고스트 여부에 따라 복구 머터리얼 바꾸기
+        // 고스트일때
         if (IsGhost)
             // rigid, sprite, 트윈, 애니메이션 상태 초기화
             for (int i = 0; i < spriteList.Count; i++)
             {
-                // 고스트 여부에 따라 복구 머터리얼 바꾸기
+                // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
                 spriteList[i].material = SystemManager.Instance.outLineMat;
                 spriteList[i].color = new Color(0, 1, 1, 0.5f);
             }
+        // 고스트 아닐때
         else
             // rigid, sprite, 트윈, 애니메이션 상태 초기화
             for (int i = 0; i < spriteList.Count; i++)
             {
-                // 고스트 여부에 따라 복구 머터리얼 바꾸기
-                spriteList[i].material = originMatList[i];
+                // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
                 spriteList[i].color = originColorList[i];
+
+                // 엘리트 아닐때
+                if (!isElite)
+                    spriteList[i].material = originMatList[i];
             }
 
         // transform.DOPlay();
@@ -648,33 +656,6 @@ public class EnemyManager : Character
             nowHasItem.Add(gem);
         }
 
-        // 드랍률에 따라 마법 드랍
-        if (Random.value <= enemy.dropRate)
-        {
-            // 몬스터 등급에 해당하는 USB 찾기
-            ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB" + enemy.grade);
-            // 아이템 프리팹 찾기
-            GameObject usbPrefab = ItemDB.Instance.GetItemPrefab(usbItem.id);
-
-            //아이템 오브젝트 소환
-            GameObject usbObj = LeanPool.Spawn(usbPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
-
-            // 아이템 매니저 찾기
-            ItemManager itemManager = usbObj.GetComponent<ItemManager>();
-            //아이템 정보 넣기
-            itemManager.item = usbItem;
-
-            //아이템 리지드 찾기
-            Rigidbody2D itemRigid = usbObj.GetComponent<Rigidbody2D>();
-
-            // 랜덤 방향, 랜덤 파워로 아이템 날리기
-            itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
-
-            // 아이템 랜덤 회전 시키기
-            float randomRotate = Random.Range(1f, 2f);
-            itemRigid.angularVelocity = randomRotate < 1.5f ? 90f * randomRotate : -90f * randomRotate;
-        }
-
         //보유한 모든 아이템 드랍
         foreach (ItemInfo item in nowHasItem)
         {
@@ -703,6 +684,89 @@ public class EnemyManager : Character
                 // 아이템 랜덤 회전 시키기
                 itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;
             }
+        }
+
+        // 엘리트 몬스터가 아닐때
+        if (!isElite)
+        {
+            // 드랍률에 따라 마법 드랍
+            if (Random.value <= enemy.dropRate)
+            {
+                // 몬스터 등급에 해당하는 USB 찾기
+                ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB" + enemy.grade);
+                // 아이템 프리팹 찾기
+                GameObject usbPrefab = ItemDB.Instance.GetItemPrefab(usbItem.id);
+
+                //아이템 오브젝트 소환
+                GameObject usbObj = LeanPool.Spawn(usbPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+
+                // 아이템 매니저 찾기
+                ItemManager itemManager = usbObj.GetComponent<ItemManager>();
+                //아이템 정보 넣기
+                itemManager.item = usbItem;
+
+                //아이템 리지드 찾기
+                Rigidbody2D itemRigid = usbObj.GetComponent<Rigidbody2D>();
+
+                // 랜덤 방향, 랜덤 파워로 아이템 날리기
+                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+
+                // 아이템 랜덤 회전 시키기
+                float randomRotate = Random.Range(1f, 2f);
+                itemRigid.angularVelocity = randomRotate < 1.5f ? 90f * randomRotate : -90f * randomRotate;
+            }
+        }
+        // 엘리트 몬스터면 마법 확정 드랍
+        else
+        {
+            ItemInfo itemInfo = null;
+            GameObject itemObj = null;
+            string itemName = "";
+
+            // 랜덤 등급 뽑기
+            int randomGrade = Random.Range(0, 7);
+            // 뽑은 등급으로 랜덤 마법 뽑기
+            MagicInfo randomMagic = MagicDB.Instance.RandomMagic(randomGrade);
+
+            // 0등급일때 마법 이름으로 아이템 이름 짓기
+            if (randomMagic.grade == 0)
+            {
+                // 아이템 이름 짓기
+                itemName = randomMagic.magicName;
+            }
+            // 0등급 아닐때는 몬스터 등급으로 USB 이름 짓기
+            else
+            {
+                // 소환할 USB 등급 랜덤하게 레벨업 (1~6 사이로 고정)
+                int itemGrade = Mathf.Clamp(enemy.grade + Random.Range(0, 2), 1, 6);
+
+                // 아이템 이름 짓기
+                itemName = "Magic USB" + itemGrade;
+            }
+
+            // 몬스터 등급에 해당하는 USB 찾기
+            itemInfo = ItemDB.Instance.GetItemByName(itemName);
+
+            // 아이템 프리팹 찾기
+            GameObject itemPrefab = ItemDB.Instance.GetItemPrefab(itemInfo.id);
+
+            //아이템 오브젝트 소환
+            itemObj = LeanPool.Spawn(itemPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+
+            // 아이템 매니저 찾기
+            ItemManager itemManager = itemObj.GetComponent<ItemManager>();
+            //아이템 정보 넣기
+            itemManager.item = itemInfo;
+
+            //아이템 리지드 찾기
+            Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
+
+            // 랜덤 방향, 랜덤 파워로 아이템 날리기
+            itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+
+            // 아이템 랜덤 회전 시키기
+            float randomRotate = Random.Range(1f, 2f);
+            itemRigid.angularVelocity = randomRotate < 1.5f ? 90f * randomRotate : -90f * randomRotate;
         }
     }
 }

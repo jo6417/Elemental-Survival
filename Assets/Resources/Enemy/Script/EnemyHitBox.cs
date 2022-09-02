@@ -313,6 +313,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             {
                 enemyManager.spriteList[i].material = enemyManager.originMatList[i];
                 enemyManager.spriteList[i].color = enemyManager.originColorList[i];
+                enemyManager.spriteList[i].material.color = enemyManager.originMatColorList[i];
             }
 
         // 코루틴 변수 초기화

@@ -189,7 +189,7 @@ public class ItemManager : MonoBehaviour
             rigid.velocity = dir;
 
             // x방향으로 회전 시키기
-            rigid.angularVelocity = dir.x * 10f * Random.Range(1f, 2f);
+            rigid.angularVelocity = -dir.x * 10f * Random.Range(1f, 2f);
 
             yield return new WaitForSeconds(0.05f);
         }
