@@ -163,7 +163,7 @@ public class WaterSlimeAtk : MonoBehaviour
             bubbleMagic.SetTarget(MagicHolder.Target.Player);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
 
         //애니메이터 켜기
         enemyManager.animList[0].enabled = true;

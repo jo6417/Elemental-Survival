@@ -242,54 +242,23 @@ public class EnemySpawn : MonoBehaviour
         //몬스터 리스트에 넣기
         spawnEnemyList.Add(enemyManager);
 
+        // 엘리트 종류 기본값 None
+        int eliteClass = 0;
         // 몬스터 랜덤 스킬 뽑기
         if (isElite)
         {
-            enemyManager.isElite = true;
-
-            //엘리트 종류 뽑아서 매니저에 전달
-            int eliteClass = Random.Range(1, 4);
-            enemyManager.eliteClass = eliteClass;
-
-            //엘리트 종류마다 색깔 및 능력치 적용
-            switch (eliteClass)
-            {
-                case 1:
-                    //체력 1.5배
-                    enemyInfo.hpMax = enemyInfo.hpMax * 1.5f;
-                    // 초록 아웃라인 머터리얼
-                    enemySprite.material = SystemManager.Instance.outLineMat;
-                    enemySprite.material.color = Color.green;
-                    break;
-
-                case 2:
-                    //공격력 1.5배
-                    enemyInfo.power = enemyInfo.power * 1.5f;
-                    // 빨강 아웃라인 머터리얼
-                    enemySprite.material = SystemManager.Instance.outLineMat;
-                    enemySprite.material.color = Color.red;
-                    break;
-
-                case 3:
-                    //속도 1.5배
-                    enemyInfo.speed = enemyInfo.speed * 1.5f;
-                    // 하늘색 아웃라인 머터리얼
-                    enemySprite.material = SystemManager.Instance.outLineMat;
-                    enemySprite.material.color = Color.cyan;
-                    break;
-
-                case 4:
-                    //쉴드
-                    //TODO 포스쉴드 오브젝트 추가
-                    break;
-            }
+            // 엘리트 종류 선정
+            eliteClass = Random.Range(1, 4);
+            // 엘리트 종류 매니저에 전달
+            enemyManager.eliteClass = (EnemyManager.EliteClass)eliteClass;
         }
         else
         {
             //일반 스프라이트 머터리얼
             enemySprite.material = SystemManager.Instance.spriteLitMat;
-            enemyManager.isElite = false;
         }
+        // 엘리트 종류를 매니저에 전달
+        enemyManager.eliteClass = (EnemyManager.EliteClass)eliteClass;
 
         //EnemyInfo 정보 넣기
         enemyManager.enemy = enemyInfo;

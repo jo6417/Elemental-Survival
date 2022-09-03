@@ -196,7 +196,7 @@ public class EnemyAttack : Attack
         enemyManager.targetResetCount = 0f;
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
 
@@ -222,7 +222,7 @@ public class EnemyAttack : Attack
         activeObj.SetActive(false);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
 

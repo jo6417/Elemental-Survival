@@ -14,7 +14,7 @@ public class EnemyInfo
     public float spawnCool;
     public string description;
 
-    [Header("Spec")]
+    [Header("Stat")]
     public float power;
     public float speed;
     public float range;

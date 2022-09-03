@@ -37,6 +37,11 @@ public class CastMagic : MonoBehaviour
     public bool testAllMagic; //! 모든 마법 테스트
     // public bool noMagic; //! 마법 없이 테스트
 
+    [Header("Refer")]
+    [SerializeField] ParticleSystem activeMagicCastEffect; // 액티브 마법 사용시 파티클 실행
+    // [SerializeField] ParticleSystem passiveMagicCastEffect; // 패시브 마법 사용시 파티클 실행
+    [SerializeField] ParticleSystem ultimateMagicCastEffect; // 궁극기 마법 사용시 파티클 실행
+
     [Header("Phone Move")]
     public float spinSpeed = 1f; // 자전하는 속도
     float orbitAngle = 0f; // 현재 자전 각도
@@ -232,6 +237,9 @@ public class CastMagic : MonoBehaviour
     //액티브 마법 소환
     public IEnumerator ActiveCast(MagicInfo magic)
     {
+        // 핸드폰 마법 시전 이펙트 플레이
+        activeMagicCastEffect.Play();
+
         //마법 프리팹 찾기
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
 
@@ -389,8 +397,9 @@ public class CastMagic : MonoBehaviour
 
         //! Test
         // magic = MagicDB.Instance.GetMagicByID(48);
+        ultimateMagicCastEffect.Play();
 
-        //궁극기 없을때, 쿨타임중일때
+        // 궁극기 없을때, 쿨타임중일때
         if (magic == null || PlayerManager.Instance.ultimateCoolCount > 0)
         {
             UIManager.Instance.ultimateIndicator.DOKill();

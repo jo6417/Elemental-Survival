@@ -10,6 +10,8 @@ using System.Linq;
 public class EnemyManager : Character
 {
     [Header("Initial")]
+    public EliteClass eliteClass = EliteClass.None; // 엘리트 여부
+    public enum EliteClass { None, Power, Speed, Heal };
     public EnemyInfo enemy;
     public bool initialStart = false;
     public bool initialFinish = false;
@@ -78,8 +80,8 @@ public class EnemyManager : Character
     };
 
     public float portalSize = 1f; //포탈 사이즈 지정값
-    public bool isElite; //엘리트 몬스터 여부
-    public int eliteClass; //엘리트 클래스 종류
+    // public bool isElite; //엘리트 몬스터 여부
+    // public int eliteClass; //엘리트 클래스 종류
 
     public bool afterEffect = false; // 상태이상 여부
     public bool isDead; //죽음 코루틴 진행중 여부
@@ -114,11 +116,10 @@ public class EnemyManager : Character
     public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
 
     [Header("Stat")]
-    // public float hpMax = 0;
-    // public float hpNow = 0;
     public float power;
     public float speed;
     public float range;
+    public float cooltime;
 
     // [Header("<Buff>")]
     // public Vector2 knockbackDir; //넉백 벡터
@@ -229,8 +230,50 @@ public class EnemyManager : Character
         // 몬스터 정보 인스턴싱, 몬스터 오브젝트마다 따로 EnemyInfo 갖기
         enemy = new EnemyInfo(enemy);
 
-        // enemy 정보 들어올때까지 대기
-        yield return new WaitUntil(() => enemy != null);
+        // 스탯 초기화
+        enemyName = enemy.enemyName;
+        enemyType = enemy.enemyType;
+        hpMax = enemy.hpMax;
+        power = enemy.power;
+        speed = enemy.speed;
+        range = enemy.range;
+        cooltime = enemy.cooltime;
+
+        //엘리트 종류마다 색깔 및 능력치 적용
+        switch ((int)eliteClass)
+        {
+            case 1:
+                //체력 상승
+                hpMax = hpMax * 2f;
+                // 초록 아웃라인 머터리얼
+                spriteList[0].material = SystemManager.Instance.outLineMat;
+                spriteList[0].material.color = Color.green;
+                break;
+
+            case 2:
+                //공격력 상승
+                power = power * 2f;
+                // 빨강 아웃라인 머터리얼
+                spriteList[0].material = SystemManager.Instance.outLineMat;
+                spriteList[0].material.color = Color.red;
+                break;
+
+            case 3:
+                //속도 상승
+                speed = speed * 2f;
+                // 쿨타임 빠르게
+                cooltime = cooltime / 2f;
+
+                // 하늘색 아웃라인 머터리얼
+                spriteList[0].material = SystemManager.Instance.outLineMat;
+                spriteList[0].material.color = Color.cyan;
+                break;
+
+            case 4:
+                //쉴드
+                //TODO 포스쉴드 오브젝트 추가
+                break;
+        }
 
         //ItemDB 로드 될때까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
@@ -262,7 +305,7 @@ public class EnemyManager : Character
         if (IsGhost)
         {
             //체력 절반으로 초기화
-            hpNow = enemy.hpMax / 2f;
+            hpNow = hpMax / 2f;
 
             // rigid, sprite, 트윈, 애니메이션 상태 초기화
             for (int i = 0; i < spriteList.Count; i++)
@@ -293,13 +336,13 @@ public class EnemyManager : Character
         else
         {
             // 맥스 체력으로 초기화
-            hpNow = enemy.hpMax;
+            hpNow = hpMax;
 
             // 물리 콜라이더 켜기
             physicsColl.enabled = true;
 
             // 엘리트 몬스터 아닐때
-            if (!isElite)
+            if (eliteClass == EliteClass.None)
                 // rigid, sprite, 트윈, 애니메이션 상태 초기화
                 for (int i = 0; i < spriteList.Count; i++)
                 {
@@ -338,17 +381,11 @@ public class EnemyManager : Character
         {
             // 애니메이터 켜기
             animList[i].enabled = true;
-            // 애니메이션 속도 초기화
-            animList[i].speed = 1f;
-        }
 
-        //! 테스트 확인용
-        enemyName = enemy.enemyName;
-        enemyType = enemy.enemyType;
-        hpMax = enemy.hpMax;
-        power = enemy.power;
-        speed = enemy.speed;
-        range = enemy.range;
+            // 애니메이션 속도 초기화
+            // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
+            animList[i].speed = 1f * speed / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
+        }
 
         //보스면 체력 UI 띄우기
         if (enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
@@ -595,7 +632,7 @@ public class EnemyManager : Character
                 spriteList[i].color = originColorList[i];
 
                 // 엘리트 아닐때
-                if (!isElite)
+                if (eliteClass == EliteClass.None)
                     spriteList[i].material = originMatList[i];
             }
 
@@ -606,7 +643,7 @@ public class EnemyManager : Character
         {
             foreach (Animator anim in animList)
             {
-                anim.speed = 1f;
+                anim.speed = 1f * speed / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
             }
         }
 
@@ -687,7 +724,7 @@ public class EnemyManager : Character
         }
 
         // 엘리트 몬스터가 아닐때
-        if (!isElite)
+        if (eliteClass == EliteClass.None)
         {
             // 드랍률에 따라 마법 드랍
             if (Random.value <= enemy.dropRate)
