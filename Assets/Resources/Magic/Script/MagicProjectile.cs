@@ -44,6 +44,12 @@ public class MagicProjectile : MonoBehaviour
         StartCoroutine(Init());
     }
 
+    private void OnDisable()
+    {
+        //타겟 위치 초기화
+        magicHolder.targetPos = Vector2.zero;
+    }
+
     IEnumerator Init()
     {
         //콜라이더 끄기
@@ -78,6 +84,7 @@ public class MagicProjectile : MonoBehaviour
     {
         yield return new WaitUntil(() => magic != null);
 
+        // 목표 위치 캐싱
         Vector2 targetPos = magicHolder.targetPos;
 
         // 벡터값이 입력되지 않았으면 랜덤 방향 설정
@@ -86,7 +93,7 @@ public class MagicProjectile : MonoBehaviour
             targetPos = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
         }
 
-        //투사체 날릴 방향
+        // 투사체 날릴 방향
         Vector2 dir = targetPos - (Vector2)transform.position;
 
         // 해당 방향으로 날리기
@@ -96,11 +103,28 @@ public class MagicProjectile : MonoBehaviour
         if (isSpin)
             rigid.angularVelocity = dir.x > 0 ? -speed * 30f : speed * 30f;
 
-        //타겟 위치 초기화
-        targetPos = Vector2.zero;
+        // 목표 위치까지 거리가 가까워지면 파괴
+        float lastDistance = -1;
+        while (gameObject.activeSelf)
+        {
+            // 현재 목표 위치와의 거리 산출
+            float nowDistance = (targetPos - (Vector2)transform.position).magnitude;
 
-        //마법 자동 디스폰
-        StartCoroutine(DespawnMagic(duration));
+            // 목표위치와 거리가 이전 보다 멀어졌으면
+            if (lastDistance != -1 && nowDistance > lastDistance)
+            {
+                //마법 자동 디스폰
+                StartCoroutine(DespawnMagic());
+
+                break;
+            }
+            // 이전보다 가까워졌으면
+            else
+                // 이전 거리를 현재 거리로 갱신
+                lastDistance = nowDistance;
+
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
     }
 
     private void Update()

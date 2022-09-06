@@ -212,7 +212,7 @@ public class VendMachine : MonoBehaviour
 
                 //아이템 아이콘 찾기
                 productSprite = ItemDB.Instance.itemIcon.Find(
-                    x => x.name == item.itemName.Replace(" ", "") + "_Icon");
+                    x => x.name == item.name.Replace(" ", "") + "_Icon");
 
                 //아이템 등급 프레임 및 색깔
                 frame.sprite = itemFrame;

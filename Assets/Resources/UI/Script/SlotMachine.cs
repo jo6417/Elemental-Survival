@@ -94,7 +94,7 @@ public class SlotMachine : MonoBehaviour
                 infoHolder.id = itemIDs[i];
 
                 //아이템 아이콘 넣기
-                Sprite itemIcon = ItemDB.Instance.itemIcon.Find(x => x.name == item.itemName.Replace(" ", "") + "_Icon");
+                Sprite itemIcon = ItemDB.Instance.itemIcon.Find(x => x.name == item.name.Replace(" ", "") + "_Icon");
 
                 //아이콘 못찾으면 넣을 기본 이미지
                 if (itemIcon == null)
@@ -242,7 +242,7 @@ public class SlotMachine : MonoBehaviour
         string p = "";
         for (int i = 0; i < prizes.Count; i++)
         {
-            p = p + ", " + prizes[i].itemName;
+            p = p + ", " + prizes[i].name;
 
             // 상품 획득하기
             // PlayerManager.Instance.GetItem(prizes[i]);

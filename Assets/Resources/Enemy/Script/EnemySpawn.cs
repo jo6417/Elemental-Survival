@@ -31,9 +31,12 @@ public class EnemySpawn : MonoBehaviour
     }
     #endregion
 
+    [Header("Debug")]
     public bool spawnSwitch; //몬스터 스폰 ON/OFF
     public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
     public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
+    public bool allEliteSwitch; // 모든 적이 엘리트
+
     Collider2D fenceColl; // 스포너 테두리 콜라이더
     public int modifyEnemyPower; //! 전투력 임의 수정값
     public int MaxEnemyPower; //최대 몬스터 전투력
@@ -48,6 +51,7 @@ public class EnemySpawn : MonoBehaviour
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
+    public GameObject healRange; // Heal 엘리트 몬스터의 힐 범위
 
     private void Awake()
     {
@@ -179,7 +183,7 @@ public class EnemySpawn : MonoBehaviour
         + MaxEnemyPower / 10f / 100f; // 파워 10마다 1%씩 출현율 상승
 
         //! 테스트, 무조건 엘리트 몬스터 스폰
-        // isElite = true;
+        isElite = allEliteSwitch;
 
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;
@@ -249,8 +253,6 @@ public class EnemySpawn : MonoBehaviour
         {
             // 엘리트 종류 선정
             eliteClass = Random.Range(1, 4);
-            // 엘리트 종류 매니저에 전달
-            enemyManager.eliteClass = (EnemyManager.EliteClass)eliteClass;
         }
         else
         {

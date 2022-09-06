@@ -40,7 +40,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6868239028010460962}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
@@ -48,6 +48,8 @@ MonoBehaviour:
   particle: {fileID: 0}
   autoDespawn: 1
   collOverTime: 0.2
+  modify_startLife: 0
+  autoPlay: 1
 --- !u!198 &6868239028010460961
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4865,7 +4867,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0

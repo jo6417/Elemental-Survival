@@ -80,14 +80,11 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
                 StopCoroutine(hitDelayCoroutine);
 
             //피격 딜레이 무적시간 시작
-            hitDelayCoroutine = HitDelay();
+            hitDelayCoroutine = HitDelay(enemyAtk.enemyManager.powerNow);
             StartCoroutine(hitDelayCoroutine);
 
-            yield return new WaitUntil(() => enemyAtk.enemy != null);
-            EnemyInfo enemy = enemyAtk.enemy;
-
             // 데미지 적용
-            Damage(enemy.power, false);
+            Damage(enemyAtk.enemyManager.powerNow, false);
         }
 
         //마법 정보 찾기
@@ -126,10 +123,6 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             if (hitDelayCoroutine != null)
                 StopCoroutine(hitDelayCoroutine);
 
-            //피격 딜레이 무적
-            hitDelayCoroutine = HitDelay();
-            StartCoroutine(hitDelayCoroutine);
-
             // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
             float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
             // 고정 데미지에 확률 계산
@@ -141,6 +134,10 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
             //데미지 입기
             Damage(damage, false);
+
+            //피격 딜레이 무적
+            hitDelayCoroutine = HitDelay(damage);
+            StartCoroutine(hitDelayCoroutine);
         }
 
         // 디버프 판단해서 적용
@@ -243,7 +240,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             LeanPool.Spawn(PlayerManager.Instance.bloodPrefab, transform.position, Quaternion.identity);
 
         //데미지 UI 띄우기
-        DamageText(damage, false);
+        StartCoroutine(DamageText(damage, false));
 
         UIManager.Instance.UpdateHp(); //체력 UI 업데이트
 
@@ -255,15 +252,16 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         }
     }
 
-    public void DamageText(float damage, bool isCritical)
+    public IEnumerator DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
-        // 크리티컬 떴을때 추가 강조효과 UI
+        // 데미지 있을때
         if (damage > 0)
         {
+            // 크리티컬 떴을때 추가 강조효과 UI
             if (isCritical)
             {
                 // dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
@@ -288,36 +286,31 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             dmgTxt.text = "+" + (-damage).ToString();
         }
 
-        //데미지 UI 애니메이션
-        damageTextSeq = DOTween.Sequence();
-        damageTextSeq
-        .PrependCallback(() =>
-        {
-            //제로 사이즈로 시작
-            damageUI.transform.localScale = Vector3.zero;
-        })
-        .Append(
-            //위로 살짝 올리기
-            // damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 1f, 1f)
-            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.left * 2f, 1f, 1, 1f)
-            .SetEase(Ease.OutBounce)
-        )
-        .Join(
-            //원래 크기로 늘리기
-            damageUI.transform.DOScale(Vector3.one, 0.5f)
-        )
-        .Append(
-            //줄어들어 사라지기
-            damageUI.transform.DOScale(Vector3.zero, 0.5f)
-        )
-        .OnComplete(() =>
-        {
-            LeanPool.Despawn(damageUI);
-        });
+        // 데미지 양수일때
+        if (damage > 0)
+            // 오른쪽으로 DOJump
+            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
+            .SetEase(Ease.OutBounce);
+        // 데미지 음수일때
+        else
+            // 위로 DoMove
+            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 1f)
+            .SetEase(Ease.OutSine);
+
+        //원래 크기로 늘리기
+        damageUI.transform.DOScale(Vector3.one, 0.5f);
+        yield return new WaitForSeconds(0.5f);
+
+        //줄어들어 사라지기
+        damageUI.transform.DOScale(Vector3.zero, 0.5f);
+        yield return new WaitForSeconds(0.5f);
+
+        // 데미지 텍스트 디스폰
+        LeanPool.Despawn(damageUI);
     }
 
     //HitDelay만큼 시간 지난후 피격무적시간 끝내기
-    public IEnumerator HitDelay()
+    public IEnumerator HitDelay(float damage)
     {
         hitCoolCount = hitDelayTime;
 

@@ -112,8 +112,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             EnemyManager atkEnemyManager = enemyAtk.enemyManager;
 
             // 공격한 몹의 정보 찾기
-            yield return new WaitUntil(() => enemyAtk.enemy != null);
-            EnemyInfo atkEnemy = enemyAtk.enemy;
+            yield return new WaitUntil(() => enemyAtk.enemyManager.enemy != null);
 
             // other가 본인일때 리턴
             if (atkEnemyManager == this)
@@ -126,19 +125,25 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             // if (!hitEnemyManager.enabled)
             //     return;
 
+            // 고정 데미지가 있으면 아군 피격이라도 적용
+            if (enemyAtk.fixedPower < 0)
+            {
+                Damage(enemyAtk.fixedPower, false);
+            }
+
             // 피격 대상이 고스트일때
             if (enemyManager.IsGhost)
             {
                 //고스트 아닌 적이 때렸을때만 데미지
                 if (!atkEnemyManager.IsGhost)
-                    Damage(atkEnemy.power, false);
+                    Damage(enemyAtk.enemyManager.powerNow, false);
             }
             // 피격 대상이 고스트 아닐때
             else
             {
                 //고스트가 때렸으면 데미지
                 if (atkEnemyManager.IsGhost)
-                    Damage(atkEnemy.power, false);
+                    Damage(enemyAtk.enemyManager.powerNow, false);
             }
         }
 
@@ -278,7 +283,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         }
     }
 
-    public IEnumerator HitDelay()
+    public IEnumerator HitDelay(float damage)
     {
         // Hit 상태로 변경
         enemyManager.nowState = EnemyManager.State.Hit;
@@ -289,7 +294,11 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         for (int i = 0; i < enemyManager.spriteList.Count; i++)
         {
             enemyManager.spriteList[i].material = SystemManager.Instance.hitMat;
-            enemyManager.spriteList[i].color = SystemManager.Instance.hitColor;
+
+            if (damage > 0)
+                enemyManager.spriteList[i].color = SystemManager.Instance.hitColor;
+            else
+                enemyManager.spriteList[i].color = SystemManager.Instance.healColor;
         }
 
         yield return new WaitUntil(() => enemyManager.hitCount <= 0);
@@ -331,7 +340,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             return;
 
         //피격 딜레이 무적시간 시작
-        enemyManager.hitCoroutine = HitDelay();
+        enemyManager.hitCoroutine = HitDelay(damage);
         StartCoroutine(enemyManager.hitCoroutine);
 
         //데미지 int로 바꾸기
@@ -348,7 +357,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             enemyManager.hitCount = enemyManager.enemy.hitDelay;
 
         //데미지 UI 띄우기
-        DamageText(damage, isCritical);
+        StartCoroutine(DamageText(damage, isCritical));
 
         //보스면 체력 UI 띄우기
         if (enemyManager.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
@@ -370,7 +379,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         }
     }
 
-    public void DamageText(float damage, bool isCritical)
+    public IEnumerator DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
@@ -399,35 +408,38 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 데미지가 마이너스일때 (체력회복일때)
         else if (damage < 0)
         {
-            dmgTxt.color = new Color(0, 100f / 255f, 1);
+            dmgTxt.color = Color.green;
             dmgTxt.text = "+" + (-damage).ToString();
         }
 
-        //데미지 UI 애니메이션
-        enemyManager.damageTextSeq = DOTween.Sequence();
-        enemyManager.damageTextSeq
-        .PrependCallback(() =>
-        {
-            //제로 사이즈로 시작
-            damageUI.transform.localScale = Vector3.zero;
-        })
-        .Append(
-            //오른쪽으로 dojump
+        //제로 사이즈로 시작
+        damageUI.transform.localScale = Vector3.zero;
+
+        // 데미지 양수일때
+        if (damage > 0)
+            // 오른쪽으로 DOJump
             damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
-            .SetEase(Ease.OutBounce)
-        )
-        .Join(
-            //원래 크기로 늘리기
-            damageUI.transform.DOScale(Vector3.one, 0.5f)
-        )
-        .Append(
-            //줄어들어 사라지기
-            damageUI.transform.DOScale(Vector3.zero, 0.5f)
-        )
-        .OnComplete(() =>
-        {
-            LeanPool.Despawn(damageUI);
-        });
+            .SetEase(Ease.OutBounce);
+        // 데미지 음수일때
+        else
+            // 위로 DoMove
+            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 1f)
+            .SetEase(Ease.OutSine);
+
+        yield return new WaitForSeconds(0.5f);
+
+        //원래 크기로 늘리기
+        damageUI.transform.DOScale(Vector3.one, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        //줄어들어 사라지기
+        damageUI.transform.DOScale(Vector3.zero, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 데미지 텍스트 디스폰
+        LeanPool.Despawn(damageUI);
     }
 
     public IEnumerator PoisonDotHit(float tickDamage, float duration)

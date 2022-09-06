@@ -17,7 +17,7 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
             if (magic != null)
             {
-                magicName = Magic.magicName;
+                magicName = Magic.name;
             }
         }
     }
@@ -31,7 +31,7 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
             if (item != null)
             {
-                itemName = Item.itemName;
+                itemName = Item.name;
             }
         }
     }

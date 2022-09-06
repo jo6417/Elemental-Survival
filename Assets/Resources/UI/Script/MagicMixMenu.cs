@@ -267,7 +267,7 @@ public class MagicMixMenu : MonoBehaviour
                         title.gameObject.SetActive(true);
                         title.GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
                         //이름 넣기
-                        title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.magicName;
+                        title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.name;
 
                         //아이콘 찾기
                         Transform infoIcon = selectInfoPanel.Find("MagicIcon");
@@ -490,7 +490,7 @@ public class MagicMixMenu : MonoBehaviour
                         //마법 등급 색깔 넣기
                         title.GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
                         //마법 이름 넣기
-                        title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.magicName;
+                        title.Find("Title").GetComponent<TextMeshProUGUI>().text = magic.name;
 
                         //마법 아이콘 찾기
                         Transform magicIcon = recipeInfoPanel.Find("MagicIcon");
@@ -535,10 +535,10 @@ public class MagicMixMenu : MonoBehaviour
         }
 
         //두 재료 모든 갖고 있는 마법 찾기
-        mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(y => y.element_A == leftMagic.magicName && y.element_B == rightMagic.magicName);
+        mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(y => y.element_A == leftMagic.name && y.element_B == rightMagic.name);
 
         if (mixedMagic == null)
-            mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(y => y.element_A == rightMagic.magicName && y.element_B == leftMagic.magicName);
+            mixedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(y => y.element_A == rightMagic.name && y.element_B == leftMagic.name);
 
         // 합성 실패
         if (scrollAmount == 0 || mixedMagic == null)
@@ -600,7 +600,7 @@ public class MagicMixMenu : MonoBehaviour
             return;
         }
 
-        print("합성 성공 : " + mixedMagic.magicName);
+        print("합성 성공 : " + mixedMagic.name);
 
         // 양쪽 마법 정보 비우기
         leftMagic = null;
@@ -632,7 +632,7 @@ public class MagicMixMenu : MonoBehaviour
         Transform title = effectMask.Find("TitleFrame");
         title.GetComponent<Image>().color = MagicDB.Instance.GradeColor[mixedMagic.grade];
         //이름 넣기
-        title.Find("Title").GetComponent<TextMeshProUGUI>().text = mixedMagic.magicName;
+        title.Find("Title").GetComponent<TextMeshProUGUI>().text = mixedMagic.name;
 
         //아이콘 및 등급색 넣기
         Transform mixedIcon = effectMask.Find("MagicIcon");
@@ -667,7 +667,7 @@ public class MagicMixMenu : MonoBehaviour
             rightIcon.gameObject.SetActive(false);
 
             //궁극기일때
-            if (mixedMagic.castType == "ultimate")
+            if (mixedMagic.castType == MagicDB.MagicType.ultimate.ToString())
             {
                 //궁극기 팝업창 열기
                 UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicPanel);

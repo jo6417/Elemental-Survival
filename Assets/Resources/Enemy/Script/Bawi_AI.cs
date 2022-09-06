@@ -219,7 +219,7 @@ public class Bawi_AI : MonoBehaviour
         drillPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = dir.normalized * enemyManager.speed * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = dir.normalized * enemyManager.speedNow * SystemManager.Instance.globalTimeScale;
 
         enemyManager.nowAction = EnemyManager.Action.Idle;
     }

@@ -6,6 +6,7 @@ using DG.Tweening;
 using System.Linq;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
+using UnityEngine.InputSystem;
 
 public class PlayerStat
 {
@@ -70,16 +71,16 @@ public class PlayerManager : Character
     Vector2 inputMoveDir; // 현재 이동 입력 벡터
     Vector2 nowMoveDir; // 현재 이동 벡터
     public Vector2 lastDir; // 마지막 이동 벡터
+    public Vector3 mouseWorldPos; // 현재 마우스 위치
     public bool isDash; //현재 대쉬중 여부
     public float defaultDashSpeed = 1.5f; // 대쉬 속도 기본값
-    // [HideInInspector]
     public float dashSpeed = 1; //대쉬 버프 속도
-    // [HideInInspector]
     public float speedDeBuff = 1f; //이동속도 디버프
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
-    // public Animator anim;
+    public Camera mainCam;
+    public GameObject marker; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
@@ -102,6 +103,7 @@ public class PlayerManager : Character
     // public float ShakeIntensity;
 
     [Header("<Pocket>")]
+    public SlotInfo[] inventory = new SlotInfo[20]; // 플레이어 인벤토리
     public MagicInfo[] hasMergeMagics = new MagicInfo[20]; // merge 보드에 올려진 플레이어 보유 마법
     public List<MagicInfo> hasStackMagics = new List<MagicInfo>(); // 스택에 있는 플레이어 보유 마법
     public int[] hasUSBList = new int[6]; // 플레이어 보유 USB 등급별 개수 목록
@@ -109,6 +111,10 @@ public class PlayerManager : Character
     // public MagicInfo ultimateMagic; //궁극기 마법
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
+
+    //! 테스트용 액티브 마법 슬롯
+    public MagicInfo magicA;
+    public MagicInfo magicB;
 
     private void Awake()
     {
@@ -174,6 +180,27 @@ public class PlayerManager : Character
             InteractSubmit();
         };
 
+        // 마우스 위치 입력
+        playerInput.Player.MousePosition.performed += val =>
+        {
+            mouseWorldPos = Camera.main.ScreenToWorldPoint(val.ReadValue<Vector2>());
+            mouseWorldPos.z = 0;
+
+            // print(mouseWorldPos);
+        };
+
+        // 마법 시전 버튼 매핑
+        playerInput.Player.L_Mouse.performed += val =>
+        {
+            // 수동 마법 시전
+            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeMagicSlot_A, magicA));
+        };
+        playerInput.Player.R_Mouse.performed += val =>
+        {
+            // 수동 마법 시전
+            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeMagicSlot_B, magicB));
+        };
+
         // 초기화 완료
         initFinish = true;
     }
@@ -233,6 +260,9 @@ public class PlayerManager : Character
 
         // 플레이어 이동
         Move();
+
+        //! 테스트용 마커 이동
+        marker.transform.position = mouseWorldPos;
     }
 
     public void Move()
@@ -355,7 +385,7 @@ public class PlayerManager : Character
         if (getItem.itemType == "SlotMagic")
         {
             // stack에 해당 아이템 이름과 같은 마법 찾아서 넣기
-            AddStack(MagicDB.Instance.GetMagicByName(getItem.itemName));
+            AddStack(MagicDB.Instance.GetMagicByName(getItem.name));
         }
 
         // if (getItem.itemType == "Artifact")
@@ -520,6 +550,10 @@ public class PlayerManager : Character
         // 보유한 궁극기 마법 아이콘 갱신
         UIManager.Instance.UpdateUltimateIcon();
         UIManager.Instance.UltimateCooltime();
+
+        //todo 액티브 마법 슬롯 테스트
+        magicA = MagicDB.Instance.GetMagicByID(10);
+        magicB = MagicDB.Instance.GetMagicByID(11);
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();

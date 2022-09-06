@@ -6,7 +6,7 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class MagicInfo
+public class MagicInfo : SlotInfo
 {
     //수정 가능한 변수들
     [Header("Configurable")]
@@ -16,17 +16,16 @@ public class MagicInfo
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
     [Header("Info")]
-    public int id; //고유 아이디
-    public int grade; //마법 등급
-    public string magicName; //마법 이름
+    // public int id; //고유 아이디
+    // public int grade; //마법 등급
+    // public string description; //마법 설명
+    // public int price; //마법 구매시 가격
+    // public string name; //마법 이름
     public string element_A; //해당 마법을 만들 재료 A
     public string element_B; //해당 마법을 만들 재료 B
     public string castType; //시전 타입
-    public string description; //마법 설명
     public string priceType; //마법 구매시 화폐
     public bool multiHit; //다단 히트 여부
-    public int price; //마법 구매시 가격
-    // public bool onlyOne = false; //1이면 다중 발사 금지
 
     [Header("Spec")]
     public float power = 1; //데미지
@@ -55,7 +54,7 @@ public class MagicInfo
         this.id = magic.id;
         this.magicLevel = magic.magicLevel;
         this.grade = magic.grade;
-        this.magicName = magic.magicName;
+        this.name = magic.name;
         this.element_A = magic.element_A;
         this.element_B = magic.element_B;
         this.castType = magic.castType;
@@ -89,7 +88,7 @@ public class MagicInfo
     {
         this.id = id;
         this.grade = grade;
-        this.magicName = magicName;
+        this.name = magicName;
         this.element_A = element_A;
         this.element_B = element_B;
         this.castType = castType;
@@ -353,7 +352,7 @@ public class MagicDB : MonoBehaviour
         foreach (KeyValuePair<int, MagicInfo> value in magicDB)
         {
             // print(value.Value.id + " : " + value.Value.magicName.Replace(" ", "") + " : " + name.Replace(" ", ""));
-            if (value.Value.magicName.Replace(" ", "") == name.Replace(" ", ""))
+            if (value.Value.name.Replace(" ", "") == name.Replace(" ", ""))
             {
                 magic = value.Value;
                 break;
@@ -374,7 +373,7 @@ public class MagicDB : MonoBehaviour
     public Sprite GetMagicIcon(int id)
     {
         //아이콘의 이름
-        string magicName = GetMagicByID(id).magicName.Replace(" ", "") + "_Icon";
+        string magicName = GetMagicByID(id).name.Replace(" ", "") + "_Icon";
 
         if (magicIcon.TryGetValue(magicName, out Sprite icon))
             return icon;
@@ -385,7 +384,7 @@ public class MagicDB : MonoBehaviour
     public GameObject GetMagicPrefab(int id)
     {
         //프리팹의 이름
-        string magicName = GetMagicByID(id).magicName.Replace(" ", "") + "_Prefab";
+        string magicName = GetMagicByID(id).name.Replace(" ", "") + "_Prefab";
 
         if (magicPrefab.TryGetValue(magicName, out GameObject prefab))
             return prefab;
@@ -466,7 +465,7 @@ public class MagicDB : MonoBehaviour
         foreach (MagicInfo magic in magicDB.Values)
         {
             // Slot 마법이 아닌 0등급 마법은 넘기기
-            if (!magic.magicName.Contains("Slot") && magic.grade == 0)
+            if (!magic.name.Contains("Slot") && magic.grade == 0)
                 continue;
 
             // 등급을 명시했을때

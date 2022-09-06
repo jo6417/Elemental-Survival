@@ -66,7 +66,7 @@ public class LevelupMenu : MonoBehaviour
             // 아티팩트 아이콘 넣기
             Image icon = magicBtnObj.Find("Background/Icon").GetComponent<Image>();
             //! 마법 아이콘 스프라이트 그려지면 0에서 num으로 바꾸기
-            icon.sprite = ItemDB.Instance.itemIcon.Find(x => x.name == item.itemName.Replace(" ", "") + "_Icon");
+            icon.sprite = ItemDB.Instance.itemIcon.Find(x => x.name == item.name.Replace(" ", "") + "_Icon");
 
             // 아티팩트 등급 넣기
             Image btnBackground = magicBtnObj.GetComponent<Image>();
@@ -74,7 +74,7 @@ public class LevelupMenu : MonoBehaviour
 
             // 아티팩트 이름 넣기
             Text name = magicBtnObj.Find("Background/Descript/Name").GetComponent<Text>();
-            name.text = item.itemName;
+            name.text = item.name;
 
             // 아티팩트 설명 넣기
             Text descript = magicBtnObj.Find("Background/Descript/Descript").GetComponent<Text>();

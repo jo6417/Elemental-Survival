@@ -24,8 +24,8 @@ public class MainMenuBtn : MonoBehaviour
     IEnumerator Init()
     {
         // 기본값 선택 대상을 preSelectedObj 에 넣기
-        if (EventSystem.current.firstSelectedGameObject.TryGetComponent(out Button btn))
-            preSelectedObj = btn;
+        // if (EventSystem.current.firstSelectedGameObject.TryGetComponent(out Button btn))
+        //     preSelectedObj = btn;
 
         yield return null;
     }
@@ -33,32 +33,32 @@ public class MainMenuBtn : MonoBehaviour
     private void Update()
     {
         //선택된 대상을 저장하기
-        SelectSave();
+        // SelectSave();
     }
 
-    void SelectSave()
-    {
-        // 아무 대상이나 선택 되었을때 preSelectedObj 에 저장
-        if (Input.anyKey)
-        {
-            //선택된 대상이 있을때
-            if (EventSystem.current.currentSelectedGameObject != null)
-            {
-                // 선택된 대상을 preSelectedObj 에 넣기
-                if (EventSystem.current.currentSelectedGameObject.TryGetComponent(out Button btn))
-                    preSelectedObj = btn;
-            }
-            //선택된 대상이 null 일때
-            else
-            {
-                //방향키 인풋 들어오면 preSelectedObj를 선택
-                float horizonInput = Input.GetAxisRaw("Horizontal");
-                float verticalInput = Input.GetAxisRaw("Vertical");
-                if (horizonInput != 0 || verticalInput != 0)
-                    preSelectedObj.Select();
-            }
-        }
-    }
+    // void SelectSave()
+    // {
+    //     // 아무 대상이나 선택 되었을때 preSelectedObj 에 저장
+    //     if (Input.anyKey)
+    //     {
+    //         //선택된 대상이 있을때
+    //         if (EventSystem.current.currentSelectedGameObject != null)
+    //         {
+    //             // 선택된 대상을 preSelectedObj 에 넣기
+    //             if (EventSystem.current.currentSelectedGameObject.TryGetComponent(out Button btn))
+    //                 preSelectedObj = btn;
+    //         }
+    //         //선택된 대상이 null 일때
+    //         else
+    //         {
+    //             //방향키 인풋 들어오면 preSelectedObj를 선택
+    //             float horizonInput = Input.GetAxisRaw("Horizontal");
+    //             float verticalInput = Input.GetAxisRaw("Vertical");
+    //             if (horizonInput != 0 || verticalInput != 0)
+    //                 preSelectedObj.Select();
+    //         }
+    //     }
+    // }
 
     public void CharacterSelect()
     {

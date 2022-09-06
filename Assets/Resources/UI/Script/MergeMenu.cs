@@ -1104,7 +1104,7 @@ public class MergeMenu : MonoBehaviour
 
         // 랜덤풀에서 멈춘 시점 선택된 인덱스에 해당하는 마법 뽑기
         getMagic = randomList[randomScroll.CenteredPanel];
-        print(getMagic.magicName);
+        print(getMagic.name);
 
         // 획득한 마법 스택에 넣기
         PlayerManager.Instance.GetMagic(getMagic);

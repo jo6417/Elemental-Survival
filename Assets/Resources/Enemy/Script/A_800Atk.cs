@@ -83,7 +83,7 @@ public class A_800Atk : MonoBehaviour
         enemyManager.animList[0].SetBool("isAttack", true);
 
         // 쿨타임만큼 대기
-        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
 
         // Idle 애니메이션으로 초기화
         enemyManager.animList[0].SetBool("isAttack", false);

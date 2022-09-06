@@ -345,7 +345,7 @@ public class Quad_AI : MonoBehaviour
         //해당 방향으로 가속
         enemyManager.rigid.velocity =
         enemyManager.targetDir.normalized
-        * enemyManager.speed
+        * enemyManager.speedNow
         * SystemManager.Instance.globalTimeScale
         * nearSpeed;
 

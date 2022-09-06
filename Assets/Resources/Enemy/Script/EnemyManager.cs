@@ -80,14 +80,12 @@ public class EnemyManager : Character
     };
 
     public float portalSize = 1f; //포탈 사이즈 지정값
-    // public bool isElite; //엘리트 몬스터 여부
-    // public int eliteClass; //엘리트 클래스 종류
-
     public bool afterEffect = false; // 상태이상 여부
     public bool isDead; //죽음 코루틴 진행중 여부
     public bool selfExplosion = false; //죽을때 자폭 여부
     public float attackRange; // 공격범위
     public bool changeGhost = false;
+    float healCount; // Heal 엘리트몹 아군 힐 카운트
     private bool isGhost = false; // 마법으로 소환된 고스트 몬스터인지 여부
     public bool IsGhost
     {
@@ -99,31 +97,25 @@ public class EnemyManager : Character
 
     [Header("Refer")]
     public EnemyAI enemyAI;
-    // public EnemyHitBox hitBox;
     public EnemyAtkTrigger enemyAtkTrigger;
-    // public EnemyAttack enemyAtkList;
     public List<EnemyAttack> enemyAtkList = new List<EnemyAttack>(); // 공격 콜라이더 리스트
     public Transform spriteObj;
     public SpriteRenderer shadow; // 해당 몬스터 그림자
+    public CircleCollider2D healRange; // Heal 엘리트 몬스터의 힐 범위
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
-    public List<Material> originMatList = new List<Material>(); //변형 전 머터리얼
-    public List<Color> originMatColorList = new List<Color>(); //변형 전 머터리얼 색
-    public List<Color> originColorList = new List<Color>(); // 변형 전 스프라이트 색
-    public List<Animator> animList = new List<Animator>();
-    // public Rigidbody2D rigid;
+    public List<Material> originMatList = new List<Material>(); // 초기 머터리얼
+    public List<Color> originMatColorList = new List<Color>(); // 초기 머터리얼 색
+    public List<Color> originColorList = new List<Color>(); // 초기 스프라이트 색
+    public List<Animator> animList = new List<Animator>(); // 초기 애니메이터
     public Collider2D physicsColl; // 물리용 콜라이더
     public List<EnemyHitBox> hitBoxList; // 히트박스 리스트
     public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
 
     [Header("Stat")]
-    public float power;
-    public float speed;
-    public float range;
-    public float cooltime;
-
-    // [Header("<Buff>")]
-    // public Vector2 knockbackDir; //넉백 벡터
-    // public bool isFlat; //깔려서 납작해졌을때
+    public float powerNow;
+    public float speedNow;
+    public float rangeNow;
+    public float cooltimeNow;
 
     [Header("Buff")]
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
@@ -194,6 +186,13 @@ public class EnemyManager : Character
         StartCoroutine(Init());
     }
 
+    private void OnDisable()
+    {
+        // 힐 범위 오브젝트가 있을때 디스폰
+        if (healRange != null)
+            LeanPool.Despawn(healRange.gameObject);
+    }
+
     IEnumerator Init()
     {
         // 히트박스 전부 끄기
@@ -234,10 +233,10 @@ public class EnemyManager : Character
         enemyName = enemy.enemyName;
         enemyType = enemy.enemyType;
         hpMax = enemy.hpMax;
-        power = enemy.power;
-        speed = enemy.speed;
-        range = enemy.range;
-        cooltime = enemy.cooltime;
+        powerNow = enemy.power;
+        speedNow = enemy.speed;
+        rangeNow = enemy.range;
+        cooltimeNow = enemy.cooltime;
 
         //엘리트 종류마다 색깔 및 능력치 적용
         switch ((int)eliteClass)
@@ -245,6 +244,14 @@ public class EnemyManager : Character
             case 1:
                 //체력 상승
                 hpMax = hpMax * 2f;
+
+                //힐 오브젝트 소환
+                healRange = LeanPool.Spawn(EnemySpawn.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
+                // 힐 오브젝트 크기 초기화
+                healRange.transform.localScale = Vector2.one * portalSize;
+                // enemyManager 넣어주기
+                healRange.GetComponent<EnemyAttack>().enemyManager = this;
+
                 // 초록 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
                 spriteList[0].material.color = Color.green;
@@ -252,7 +259,7 @@ public class EnemyManager : Character
 
             case 2:
                 //공격력 상승
-                power = power * 2f;
+                powerNow = powerNow * 2f;
                 // 빨강 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
                 spriteList[0].material.color = Color.red;
@@ -260,9 +267,9 @@ public class EnemyManager : Character
 
             case 3:
                 //속도 상승
-                speed = speed * 2f;
+                speedNow = speedNow * 2f;
                 // 쿨타임 빠르게
-                cooltime = cooltime / 2f;
+                cooltimeNow = cooltimeNow / 2f;
 
                 // 하늘색 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
@@ -270,8 +277,10 @@ public class EnemyManager : Character
                 break;
 
             case 4:
-                //쉴드
-                //TODO 포스쉴드 오브젝트 추가
+                // 일정 범위 만큼 마법 차단하는 파란색 쉴드 생성
+                // 해당 범위내 몬스터들은 무적, 맞으면 Miss
+                // 콜라이더 stay 함수로 구현, 무적쉴드 충돌이면 무적 설정, 없으면 무적 해제
+                //TODO 포스쉴드 프리팹 생성
                 break;
         }
 
@@ -384,7 +393,7 @@ public class EnemyManager : Character
 
             // 애니메이션 속도 초기화
             // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
-            animList[i].speed = 1f * speed / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
+            animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
         }
 
         //보스면 체력 UI 띄우기
@@ -497,6 +506,42 @@ public class EnemyManager : Character
         // 반대편 보내질때 행동 멈추기
         if (oppositeCount > 0)
             oppositeCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+
+        // 힐 오브젝트가 있을때
+        if (healRange != null)
+        {
+            // 쿨타임 중일때
+            if (healCount > 0)
+            {
+                // 힐 콜라이더 끄기
+                healRange.enabled = false;
+
+                // 힐 쿨타임 차감
+                healCount -= Time.deltaTime;
+            }
+            // 쿨타임 끝났을때
+            else
+            {
+                // 힐 콜라이더 켜기
+                healRange.enabled = true;
+
+                Transform healEffect = healRange.transform.GetChild(0);
+                // 이펙트 오브젝트 켜기
+                healEffect.gameObject.SetActive(true);
+                // 사이즈 제로로 초기화
+                healEffect.localScale = Vector2.zero;
+                //todo 힐 이펙트 사이즈 키우기
+                healEffect.DOScale(Vector2.one, cooltimeNow)
+                .OnComplete(() =>
+                {
+                    // 이펙트 오브젝트 끄기
+                    healEffect.gameObject.SetActive(false);
+                });
+
+                // 힐 쿨타임을 몬스터 쿨타임으로 갱신
+                healCount = cooltimeNow;
+            }
+        }
     }
 
     public bool ManageState()
@@ -643,7 +688,7 @@ public class EnemyManager : Character
         {
             foreach (Animator anim in animList)
             {
-                anim.speed = 1f * speed / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
+                anim.speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
             }
         }
 
@@ -704,7 +749,7 @@ public class EnemyManager : Character
                 GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
 
                 if (prefab == null)
-                    print(item.itemName + " : not found");
+                    print(item.name + " : not found");
 
                 //아이템 오브젝트 소환
                 GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
@@ -769,7 +814,7 @@ public class EnemyManager : Character
             if (randomMagic.grade == 0)
             {
                 // 아이템 이름 짓기
-                itemName = randomMagic.magicName;
+                itemName = randomMagic.name;
             }
             // 0등급 아닐때는 몬스터 등급으로 USB 이름 짓기
             else

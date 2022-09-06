@@ -5,26 +5,13 @@ using UnityEngine.UI;
 
 public class MagicCooltime : MonoBehaviour
 {
-    ToolTipTrigger toolTipTrigger;
-    MagicInfo magic;
-    Image cooltimeImg;
-    float coolCount;
+    public MagicInfo magic;
+    [SerializeField, ReadOnly] Image cooltimeImg;
+    [SerializeField, ReadOnly] float coolCount;
 
     private void Awake()
     {
-        toolTipTrigger = GetComponent<ToolTipTrigger>();
         cooltimeImg = transform.Find("Cooltime").GetComponent<Image>();
-    }
-
-    private void OnEnable()
-    {
-        StartCoroutine(Init());
-    }
-
-    IEnumerator Init()
-    {
-        yield return new WaitUntil(() => toolTipTrigger.Magic != null);
-        magic = toolTipTrigger.Magic;
     }
 
     private void Update()

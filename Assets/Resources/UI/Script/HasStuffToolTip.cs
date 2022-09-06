@@ -99,14 +99,14 @@ public class HasStuffToolTip : MonoBehaviour
         // 마법 정보가 있을때
         if (magic != null)
         {
-            name = magic.magicName;
+            name = magic.name;
             description = magic.description;
         }
 
         // 아이템 정보가 있을때
         if (item != null)
         {
-            name = item.itemName;
+            name = item.name;
             description = item.description;
         }
 

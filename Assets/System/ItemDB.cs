@@ -5,17 +5,18 @@ using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ItemInfo
+public class ItemInfo : SlotInfo
 {
     public int amount = 0; //몇개 갖고 있는지
 
-    public int id; //고유 아이디
-    public int grade; //아이템 등급
-    public string itemName; //아이템 이름
+    [Header("Info")]
+    // public int id; //고유 아이디
+    // public int grade; //아이템 등급
+    // public string description; //아이템 설명
+    // public int price; //아이템 가격
+    // public string name; //아이템 이름
     public string itemType; //아이템 타입 (Gem, Heart, Scroll, Artifact, etc)
-    public string description; //아이템 설명
     public string priceType; //지불 원소 종류
-    public int price; //아이템 가격
 
     [Header("Buff")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
     public int projectileNum = 0; // 투사체 개수
@@ -43,7 +44,7 @@ public class ItemInfo
     {
         this.id = id;
         this.grade = grade;
-        this.itemName = itemName;
+        this.name = itemName;
         this.itemType = itemType;
         this.description = description;
         this.priceType = priceType;
@@ -74,7 +75,7 @@ public class ItemInfo
     {
         this.id = item.id;
         this.grade = item.grade;
-        this.itemName = item.itemName;
+        this.name = item.name;
         this.itemType = item.itemType;
         this.description = item.description;
         this.priceType = item.priceType;
@@ -276,7 +277,7 @@ public class ItemDB : MonoBehaviour
     public string GetItemNameByID(int id)
     {
         ItemInfo item = itemDB.Find(x => x.id == id);
-        return item.itemName;
+        return item.name;
     }
 
     public string GetTypeByID(int id)
@@ -287,7 +288,7 @@ public class ItemDB : MonoBehaviour
 
     public ItemInfo GetItemByName(string name)
     {
-        ItemInfo item = itemDB.Find(x => x.itemName.Replace(" ", "") == name.Replace(" ", ""));
+        ItemInfo item = itemDB.Find(x => x.name.Replace(" ", "") == name.Replace(" ", ""));
         // print(item.itemName.Replace(" ", "") + " : " + name.Replace(" ", ""));
         return item;
     }
@@ -295,7 +296,7 @@ public class ItemDB : MonoBehaviour
     public GameObject GetItemPrefab(int id)
     {
         //프리팹의 이름
-        string itemName = GetItemByID(id).itemName.Replace(" ", "") + "_Prefab";
+        string itemName = GetItemByID(id).name.Replace(" ", "") + "_Prefab";
 
         GameObject prefab = null;
 

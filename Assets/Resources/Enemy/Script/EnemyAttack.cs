@@ -12,14 +12,15 @@ public class EnemyAttack : Attack
     public float activeAngleOffset; // 액티브 공격 오브젝트 방향 오프셋
     bool attackReady; //공격 준비중
     public bool defaultCollOn = true; //항상 콜라이더 켜기 옵션
+    public float cooltime; // 주기적 자동 공격일때 쿨타임
+    [SerializeField, ReadOnly] private float coolCount; // 주기적 자동 공격일때 현재 쿨타임 카운트
 
     [Header("Refer")]
     public EnemyManager enemyManager;
-    public EnemyInfo enemy;
     public string enemyName;
     public Collider2D atkColl; //공격 콜라이더
     public GameObject dashEffect;
-    public GameObject activeObj; //공격시 활성화할 오브젝트
+    public GameObject rangeObj; //공격시 활성화할 오브젝트
 
     private void Awake()
     {
@@ -42,8 +43,6 @@ public class EnemyAttack : Attack
 
         yield return new WaitUntil(() => enemyManager != null && enemyManager.enemy != null);
 
-        enemy = enemyManager.enemy;
-
         // 대쉬 범위 초기화
         enemyManager.attackRange = enemyManager.enemy.range;
 
@@ -55,8 +54,8 @@ public class EnemyAttack : Attack
             dashEffect.SetActive(false);
 
         // 공격 오브젝트 있으면 끄기
-        if (activeObj != null)
-            activeObj.SetActive(false);
+        if (rangeObj != null)
+            rangeObj.SetActive(false);
 
         //공격 준비 해제
         attackReady = false;
@@ -71,7 +70,7 @@ public class EnemyAttack : Attack
     private void Update()
     {
         //공격 오브젝트 아무것도 없으면 리턴
-        if (activeObj == null && dashEffect == null)
+        if (rangeObj == null && dashEffect == null)
             return;
 
         // 초기화 안됬으면 리턴
@@ -135,13 +134,46 @@ public class EnemyAttack : Attack
             yield return new WaitUntil(() => enemyManager.nowAction == EnemyManager.Action.Idle);
         }
 
+        // 쿨타임 있으면 주기적으로 켜기
+        if (cooltime > 0)
+        {
+            CooltimeAttack();
+            yield break;
+        }
         // 액티브 공격 오브젝트 있으면 해당 공격 함수 실행
-        if (activeObj != null)
+        else if (rangeObj != null)
+        {
             StartCoroutine(RangeAttack());
-
+            yield break;
+        }
         // 돌진 이펙트 있으면 해당 공격 함수 실행
-        if (dashEffect != null)
+        else if (dashEffect != null)
+        {
             StartCoroutine(DashAttack());
+            yield break;
+        }
+    }
+
+    public void CooltimeAttack()
+    {
+        // 쿨타임 중일때
+        if (coolCount > 0)
+        {
+            // 공격 오브젝트 끄기
+            rangeObj.SetActive(false);
+
+            // 힐 쿨타임 차감
+            coolCount -= Time.deltaTime;
+        }
+        // 쿨타임 끝났을때
+        else
+        {
+            // 공격 오브젝트 켜기
+            rangeObj.SetActive(true);
+
+            // 힐 쿨타임을 몬스터 쿨타임으로 갱신
+            coolCount = cooltime;
+        }
     }
 
     public IEnumerator DashAttack()
@@ -196,7 +228,7 @@ public class EnemyAttack : Attack
         enemyManager.targetResetCount = 0f;
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
 
@@ -214,15 +246,15 @@ public class EnemyAttack : Attack
         enemyManager.nowAction = EnemyManager.Action.Attack;
 
         // 공격 오브젝트 활성화
-        activeObj.SetActive(true);
+        rangeObj.SetActive(true);
 
         yield return new WaitForSeconds(0.2f);
 
         // 공격 오브젝트 비활성화
-        activeObj.SetActive(false);
+        rangeObj.SetActive(false);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
 

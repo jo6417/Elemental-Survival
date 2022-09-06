@@ -399,7 +399,7 @@ public class HotDog_AI : MonoBehaviour
             //해당 방향으로 가속
             enemyManager.rigid.velocity =
             moveDir.normalized // 이동 방향
-            * enemyManager.speed //몬스터 정보 속도
+            * enemyManager.speedNow //몬스터 정보 속도
             * SystemManager.Instance.globalTimeScale //시간 비율 계산
             * runSpeed //달리기 속도 배율
             * speedMultiple; // 페이즈별로 속도 배율

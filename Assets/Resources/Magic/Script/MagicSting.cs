@@ -48,7 +48,7 @@ public class MagicSting : MonoBehaviour
         if (magic == null)
         {
             magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
-            magicName = magic.magicName;
+            magicName = magic.name;
         }
 
         //magic 못찾으면 코루틴 종료

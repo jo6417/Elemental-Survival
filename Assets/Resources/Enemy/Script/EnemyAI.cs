@@ -169,7 +169,7 @@ public class EnemyAI : MonoBehaviour
         else
         {
             //해당 방향으로 가속
-            enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speed * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+            enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speedNow * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
             //움직일 방향에따라 회전
             float leftAngle = enemyManager.lookLeft ? 180f : 0f;
@@ -227,7 +227,7 @@ public class EnemyAI : MonoBehaviour
             enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = targetDir.magnitude > enemyManager.speed ? enemyManager.speed : targetDir.magnitude;
+        float distance = targetDir.magnitude > enemyManager.speedNow ? enemyManager.speedNow : targetDir.magnitude;
 
         // print(targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
 

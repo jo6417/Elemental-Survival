@@ -95,12 +95,16 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     public void OnSelect(BaseEventData eventData)
     {
-        OnSelectSlot();
+        // 버튼이 상호작용 가능할때만
+        if (button.interactable)
+            OnSelectSlot();
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        OnDeSelectSlot();
+        // 버튼이 상호작용 가능할때만
+        if (button.interactable)
+            OnDeSelectSlot();
     }
 
     IEnumerator MergeCheck(bool isContinue = false)
@@ -305,7 +309,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 return false;
             }
 
-            switch (selectedMagic.magicName)
+            switch (selectedMagic.name)
             {
                 case "Slot Move":
                     StartCoroutine(SlotMove());
@@ -394,12 +398,12 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 else
                 {
                     //두 재료 모두 갖고 있는 마법 찾기
-                    MagicInfo mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementA.magicName && x.element_B == elementB.magicName);
+                    MagicInfo mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementA.name && x.element_B == elementB.name);
 
                     // null이면 재료 순서 바꿔서 재검사
                     if (mergedMagic == null)
                     {
-                        mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementB.magicName && x.element_B == elementA.magicName);
+                        mergedMagic = MagicDB.Instance.magicDB.Values.ToList().Find(x => x.element_A == elementB.name && x.element_B == elementA.name);
                     }
 
                     // 스택의 마법과 현재 마법이 합성 가능할때

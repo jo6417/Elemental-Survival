@@ -79,7 +79,7 @@ public class MagicHolder : Attack
             coll.enabled = true;
 
         //! 마법 이름 확인
-        magicName = magic.magicName;
+        magicName = magic.name;
 
         // 초기화 완료
         initDone = true;

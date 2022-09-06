@@ -94,7 +94,7 @@ public class KingSlime_AI : MonoBehaviour
             if (absorbCoolCount <= 0f)
             {
                 // 고정 데미지에 확률 계산
-                float damage = Random.Range(enemyManager.power * 0.8f, enemyManager.power * 1.2f);
+                float damage = Random.Range(enemyManager.powerNow * 0.8f, enemyManager.powerNow * 1.2f);
 
                 // 플레이어 체력 깎기
                 PlayerManager.Instance.hitBox.Damage(damage, false);
@@ -170,7 +170,7 @@ public class KingSlime_AI : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = dir.magnitude > enemyManager.range ? enemyManager.range : dir.magnitude;
+        float distance = dir.magnitude > enemyManager.rangeNow ? enemyManager.rangeNow : dir.magnitude;
 
         //착지 위치 변수에 저장
         jumpLandPos = transform.position + dir.normalized * distance;

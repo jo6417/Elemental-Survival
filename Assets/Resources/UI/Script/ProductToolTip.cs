@@ -187,23 +187,23 @@ public class ProductToolTip : MonoBehaviour
         // 마법 타입 표시
         productType.text = magic.castType;
         // 마법 타입에 따라 색 바꾸기
-        switch (magic.castType)
-        {
-            case "passive":
-                productType.color = Color.cyan;
-                break;
+        // switch (magic.castType)
+        // {
+        //     case MagicDB.MagicType.passive.ToString():
+        //         productType.color = Color.cyan;
+        //         break;
 
-            case "active":
-                productType.color = Color.red;
-                break;
+        //     case MagicDB.MagicType.active.ToString():
+        //         productType.color = Color.red;
+        //         break;
 
-            case "ultimate":
-                productType.color = Color.magenta;
-                break;
-        }
+        //     case MagicDB.MagicType.ultimate.ToString():
+        //         productType.color = Color.magenta;
+        //         break;
+        // }
 
         //마법 이름, 설명 넣기
-        productName.text = magic.magicName;
+        productName.text = magic.name;
         productDescript.text = magic.description;
 
         //해당 마법 언락 여부
@@ -245,7 +245,7 @@ public class ProductToolTip : MonoBehaviour
         productType.text = item.itemType;
 
         // 아이템 이름, 설명 넣기
-        productName.text = item.itemName;
+        productName.text = item.name;
         productDescript.text = item.description;
 
         return true;

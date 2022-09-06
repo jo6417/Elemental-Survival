@@ -97,7 +97,9 @@ public class UIManager : MonoBehaviour
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
     public GridLayoutUI hasMagicGrid; //플레이어 현재 소지한 모든 마법 UI
-    public Transform ultimateMagicIcon; //궁극기 마법 슬롯 UI
+    public Transform activeMagicSlot_A; // 액티브 마법 슬롯 A
+    public Transform activeMagicSlot_B; // 액티브 마법 슬롯 B
+    public Transform ultimateMagicSlot; //궁극기 마법 슬롯 UI
     public Image ultimateIndicator; //궁극기 슬롯 인디케이터 이미지
 
     private void Awake()
@@ -153,16 +155,18 @@ public class UIManager : MonoBehaviour
     {
         // print(arrowDir);
 
-        //마우스 잠겨있지않을때
-        if (Cursor.lockState == CursorLockMode.None)
-        {
-            //모든 툴팁 끄기
-            HasStuffToolTip.Instance.QuitTooltip();
-            ProductToolTip.Instance.QuitTooltip();
+        // 시간 멈춰있을때만
+        if (Time.timeScale == 0)
+            //마우스 잠겨있지않을때
+            if (Cursor.lockState == CursorLockMode.None)
+            {
+                //모든 툴팁 끄기
+                HasStuffToolTip.Instance.QuitTooltip();
+                ProductToolTip.Instance.QuitTooltip();
 
-            //마우스 숨기기
-            Cursor.lockState = CursorLockMode.Locked;
-        }
+                //마우스 숨기기
+                Cursor.lockState = CursorLockMode.Locked;
+            }
 
         // UI 커서 컨트롤
         // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
@@ -815,7 +819,7 @@ public class UIManager : MonoBehaviour
 
             //스프라이트 넣기
             itemIcon.GetComponent<Image>().sprite =
-            ItemDB.Instance.itemIcon.Find(x => x.name == item.itemName.Replace(" ", "") + "_Icon");
+            ItemDB.Instance.itemIcon.Find(x => x.name == item.name.Replace(" ", "") + "_Icon");
 
             //아이템 개수 넣기, 2개 이상부터 표시
             Text amount = itemIcon.GetComponentInChildren<Text>(true);
@@ -847,7 +851,7 @@ public class UIManager : MonoBehaviour
                 continue;
 
             //궁극기는 표시 안함
-            if (magic.castType == "ultimate")
+            if (magic.castType == MagicDB.MagicType.ultimate.ToString())
                 continue;
 
             //마법 아이콘 오브젝트 생성
@@ -895,7 +899,7 @@ public class UIManager : MonoBehaviour
                 return;
 
             //궁극기는 표시 안함
-            if (magic.castType == "ultimate")
+            if (magic.castType == MagicDB.MagicType.ultimate.ToString())
                 return;
 
             //마법 아이콘 오브젝트 생성
@@ -933,8 +937,8 @@ public class UIManager : MonoBehaviour
         if (PlayerManager.Instance.ultimateList.Count > 0)
             ultimateMagic = PlayerManager.Instance.ultimateList[0];
 
-        Image frame = ultimateMagicIcon.Find("Frame").GetComponent<Image>();
-        Image icon = ultimateMagicIcon.Find("Icon").GetComponent<Image>();
+        Image frame = ultimateMagicSlot.Find("Frame").GetComponent<Image>();
+        Image icon = ultimateMagicSlot.Find("Icon").GetComponent<Image>();
 
         //궁극기 마법 등급 및 아이콘 넣기
         if (ultimateMagic != null)
@@ -956,7 +960,7 @@ public class UIManager : MonoBehaviour
         float coolTimeRate = 0f;
 
         // 쿨타임 이미지 불러오기
-        Image coolTimeImg = ultimateMagicIcon.Find("CoolTime").GetComponent<Image>();
+        Image coolTimeImg = ultimateMagicSlot.Find("CoolTime").GetComponent<Image>();
 
         // 마법이 없으면 쿨타임 이미지 비우기
         if (PlayerManager.Instance.ultimateList.Count <= 0)
@@ -1222,7 +1226,7 @@ public class UIManager : MonoBehaviour
         {
             //마법 찾기
             MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.savedMagics[i]);
-            print(magic.magicName);
+            print(magic.name);
             //마법 슬롯 생성
             Transform slot = LeanPool.Spawn(gameoverSlot, hasMagics.position, Quaternion.identity, hasMagics).transform;
 

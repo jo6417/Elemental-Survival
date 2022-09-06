@@ -128,10 +128,10 @@ public class ParticleTrigger : MonoBehaviour
             print("particle damage");
 
             // 피격 딜레이 갱신
-            StartCoroutine(PlayerManager.Instance.hitBox.HitDelay());
+            StartCoroutine(PlayerManager.Instance.hitBox.HitDelay(enemyManager.powerNow));
 
             // 플레이어에게 몬스터 파워만큼 데미지 주기
-            PlayerManager.Instance.hitBox.Damage(enemyManager.enemy.power, false);
+            PlayerManager.Instance.hitBox.Damage(enemyManager.powerNow, false);
         }
     }
 }

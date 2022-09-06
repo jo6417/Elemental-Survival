@@ -69,7 +69,7 @@ public class StoneGolem_AI : MonoBehaviour
         yield return new WaitUntil(() => !smashColl.enabled);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltime / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
         // Idle로 전환
         enemyManager.nowAction = EnemyManager.Action.Idle;
 

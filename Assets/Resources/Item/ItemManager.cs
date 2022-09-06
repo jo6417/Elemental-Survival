@@ -57,7 +57,7 @@ public class ItemManager : MonoBehaviour
         {
             item = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
         }
-        itemName = item.itemName;
+        itemName = item.name;
         // print(itemName + " : " + item.itemName);
 
         //지불 원소젬 이름을 인덱스로 반환
@@ -123,7 +123,7 @@ public class ItemManager : MonoBehaviour
             // 같은 타입 원소젬 개수가 본인포함 10개 이상일때
             if (ItemDB.Instance.outGemNum[gemTypeIndex] >= 9)
             {
-                print(item.itemName + " : " + ItemDB.Instance.outGemNum[gemTypeIndex]);
+                print(item.name + " : " + ItemDB.Instance.outGemNum[gemTypeIndex]);
 
                 // 해당 원소젬 사이즈 키우고 개수 늘리기
                 transform.localScale = Vector2.one * 2;

@@ -72,7 +72,7 @@ public class UltimateMagic : MonoBehaviour
         magicIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(newMagic.id);
 
         //새 마법 이름,설명 넣기
-        magicPanel.transform.Find("MagicName").GetComponent<TextMeshProUGUI>().text = newMagic.magicName;
+        magicPanel.transform.Find("MagicName").GetComponent<TextMeshProUGUI>().text = newMagic.name;
         magicPanel.transform.Find("MagicDescript").GetComponent<TextMeshProUGUI>().text = newMagic.description;
 
         //마법 스탯 리스트화 하기

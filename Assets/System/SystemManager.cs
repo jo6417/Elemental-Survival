@@ -133,7 +133,8 @@ public class SystemManager : MonoBehaviour
 
     [Header("Color")]
     public Color stopColor; //시간 멈췄을때 컬러
-    public Color hitColor; //맞았을때 flash 컬러
+    public Color hitColor; // 맞았을때 flash 컬러
+    public Color healColor; // 체력 회복시 컬러
     public Color poisonColor; //독 데미지 flash 컬러
     public Color DeadColor; //죽을때 서서히 변할 컬러
 
