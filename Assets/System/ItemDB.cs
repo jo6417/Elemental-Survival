@@ -42,6 +42,7 @@ public class ItemInfo : SlotInfo
 
     public ItemInfo(int id, int grade, string itemName, string itemType, string description, string priceType, int price, int projectileNum, float hpMax, float power, float armor, float moveSpeed, float rateFire, float coolTime, float duration, float range, float luck, float expGain, float moneyGain, float earth, float fire, float life, float lightning, float water, float wind)
     {
+        this.slotType = SlotType.Item;
         this.id = id;
         this.grade = grade;
         this.name = itemName;
@@ -291,6 +292,17 @@ public class ItemDB : MonoBehaviour
         ItemInfo item = itemDB.Find(x => x.name.Replace(" ", "") == name.Replace(" ", ""));
         // print(item.itemName.Replace(" ", "") + " : " + name.Replace(" ", ""));
         return item;
+    }
+
+    public Sprite GetItemIcon(int id)
+    {
+        //프리팹의 이름
+        string itemName = GetItemByID(id).name.Replace(" ", "") + "_Icon";
+
+        Sprite sprite = null;
+
+        sprite = itemIcon.Find(x => x.name == itemName);
+        return sprite;
     }
 
     public GameObject GetItemPrefab(int id)

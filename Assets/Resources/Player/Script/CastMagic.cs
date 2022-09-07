@@ -99,9 +99,9 @@ public class CastMagic : MonoBehaviour
         }
 
         // 마우스 위치에 마커 찍기
-        LeanPool.Spawn(SystemManager.Instance.markPrefab, PlayerManager.Instance.mouseWorldPos, Quaternion.identity);
+        // LeanPool.Spawn(SystemManager.Instance.markPrefab, PlayerManager.Instance.mouseWorldPos, Quaternion.identity);
         // 시전위치, 마법 이름
-        print(PlayerManager.Instance.mouseWorldPos);
+        // print(PlayerManager.Instance.mouseWorldPos);
 
         //해당 마법 투사체 개수 불러오기
         float projectileNum = MagicDB.Instance.MagicProjectile(magic);

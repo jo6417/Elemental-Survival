@@ -52,9 +52,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 059c5430a55224444957393387748ab7, type: 3}
   - {fileID: 21300000, guid: 58aa3860d8bdc8c45af221c04e14a199, type: 3}
   - {fileID: 21300000, guid: 39b6fa9065575534b9b072664f0ec446, type: 3}
+  - {fileID: 21300000, guid: 3a1e33b07139fc94baa47b37b4402524, type: 3}
   - {fileID: 21300000, guid: 2d1dd5c080e064c46beac822c0d0bcd3, type: 3}
   - {fileID: 21300000, guid: 456ea6119be099f449e99d9e6b5aada8, type: 3}
+  - {fileID: 21300000, guid: ce24672168a17a741a211a373544c5a5, type: 3}
   - {fileID: 21300000, guid: a2820b02fea81834a9552f9d501bc6c2, type: 3}
+  - {fileID: 21300000, guid: f85cd6848431d7d46af9d57f5a1e5ba2, type: 3}
+  - {fileID: 21300000, guid: 3bfb4875cb9d96e40b10b0eaeb99bb66, type: 3}
   - {fileID: 21300000, guid: b0022dc553ac3e4489dbd46fa39b850f, type: 3}
   - {fileID: 21300000, guid: 2c16f176fb0b84446a2d913acee08eeb, type: 3}
   - {fileID: 21300000, guid: 15e86fd8bfa5e3249a1e01c7fe9e8a2b, type: 3}
@@ -66,19 +70,25 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b709b26af2999864cbd51c4a6d9f86f7, type: 3}
   - {fileID: 21300000, guid: f1ec966a398d8424497fd9ec3d859591, type: 3}
   - {fileID: 21300000, guid: 8d21bbea9ef384445a20348a7a119c97, type: 3}
+  - {fileID: 21300000, guid: 2299700c3d3fabd44bb8c0e8e8e42f22, type: 3}
   - {fileID: 21300000, guid: e8e8838caaefac449a5086e015d4e1b1, type: 3}
   - {fileID: 21300000, guid: 005095ec08d80a249b6f7b7aafab8bc8, type: 3}
   - {fileID: 21300000, guid: 2b592ffc665dadf47bef324f68d60283, type: 3}
   - {fileID: 21300000, guid: 7dce8a1d79d2ce74ebd25871d2d51296, type: 3}
   - {fileID: 21300000, guid: 9a82dfad901c07646a76021fb0e4b1a7, type: 3}
   - {fileID: 21300000, guid: 5b551ebf45165b140afd27e58dc906a7, type: 3}
+  - {fileID: 21300000, guid: 47013ebfeaf3f5a4cb641592e7046e45, type: 3}
   m_PackedSpriteNamesToIndex:
   - WindGem_Icon
   - USB_Icon
   - HealthPotion_Icon
+  - MagicUSB6_Icon
   - SlotReplace_Icon
   - Heart_Heal
+  - MagicUSB2_Icon
   - WaterGem_Icon
+  - MagicUSB3_Icon
+  - MagicUSB1_Icon
   - SurtrLantern_Icon
   - SlotMove_Icon
   - _ManaGem
@@ -90,12 +100,14 @@ SpriteAtlas:
   - BreezeNecklace_Icon
   - SlotLevelup_Icon
   - SlotDelete_Icon
+  - MagicUSB4_Icon
   - FireGem_Icon
   - LightningGem_Icon
   - LifeGem_Icon
   - BlessingWater_Icon
   - EarthGem_Icon
   - EmptyScroll_Icon
+  - MagicUSB5_Icon
   m_RenderDataMap: {}
   m_Tag: Item_Atlas
   m_IsVariant: 0

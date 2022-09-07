@@ -507,7 +507,7 @@ public class PlayerManager : Character
         UIManager.Instance.UltimateCooltime();
 
         // 궁극기 UI 업데이트
-        UIManager.Instance.UpdateUltimateIcon();
+        // UIManager.Instance.UpdateUltimateIcon();
     }
 
     IEnumerator CastDefaultMagics()
@@ -515,7 +515,19 @@ public class PlayerManager : Character
         // MagicDB 로드 완료까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        //TODO 캐릭터에 따라 defaultMagic 기본마법 넣고 시작
+        //!테스트용 인벤토리 채우기
+        inventory[0] = MagicDB.Instance.GetMagicByID(10);
+        inventory[3] = MagicDB.Instance.GetMagicByID(11);
+        inventory[4] = ItemDB.Instance.GetItemByID(8);
+        inventory[5] = ItemDB.Instance.GetItemByID(9);
+        // 아이템인지 마법인지 확인
+        // for (int i = 0; i < inventory.Length; i++)
+        // {
+        //     if (inventory[i] != null)
+        //         print(i + " : " + inventory[i].GetType());
+        // }
+
+        //TODO 캐릭터에 따라 defaultMagic 기본마법 하나를 액티브 슬롯에 착용 후 시작
         List<int> defaultStacks = new List<int>();
 
         //! 마법 없이 테스트
@@ -548,12 +560,14 @@ public class PlayerManager : Character
         }
 
         // 보유한 궁극기 마법 아이콘 갱신
-        UIManager.Instance.UpdateUltimateIcon();
-        UIManager.Instance.UltimateCooltime();
+        // UIManager.Instance.UpdateUltimateIcon();
+        // UIManager.Instance.UltimateCooltime();
 
-        //todo 액티브 마법 슬롯 테스트
+        //! 액티브 마법 슬롯 테스트
         magicA = MagicDB.Instance.GetMagicByID(10);
         magicB = MagicDB.Instance.GetMagicByID(11);
+
+        //todo 액티브 마법 슬롯 초기화
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();

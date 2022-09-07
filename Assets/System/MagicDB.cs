@@ -51,6 +51,7 @@ public class MagicInfo : SlotInfo
 
     public MagicInfo(MagicInfo magic)
     {
+        this.slotType = SlotType.Magic;
         this.id = magic.id;
         this.magicLevel = magic.magicLevel;
         this.grade = magic.grade;

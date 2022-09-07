@@ -488,7 +488,11 @@ public class MergeMenu : MonoBehaviour
     {
         //뒤로가기 시간 카운트
         if (backBtnCount > 0)
+        {
             backBtnCount -= Time.unscaledDeltaTime;
+
+            print(backBtnCount);
+        }
         else
         {
             DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 0f, 0.2f)
@@ -1369,21 +1373,6 @@ public class MergeMenu : MonoBehaviour
         // 키 입력 막기
         if (!btnsInteractable)
             yield break;
-
-        // MergeChoose 모드일때
-        // if (mergeChooseMode)
-        // {
-        //     // 선택했던 Merge 슬롯 비우기
-        //     mergeWaitSlot.frame.color = Color.white;
-        //     mergeWaitSlot.icon.enabled = false;
-        //     mergeWaitSlot.level.enabled = false;
-        //     mergeWaitSlot.tooltip.enabled = false;
-        //     PlayerManager.Instance.hasMergeMagics[mergeWaitSlot.transform.GetSiblingIndex()] = null;
-
-        //     // 선택 모드 취소하기
-        //     ChooseModeToggle();
-        //     return;
-        // }
 
         // 메인 Merge 화면일때
         if (backBtnCount <= 0)
