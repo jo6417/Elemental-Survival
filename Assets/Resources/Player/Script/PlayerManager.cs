@@ -7,6 +7,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerStat
 {
@@ -79,7 +80,7 @@ public class PlayerManager : Character
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
-    public Camera mainCam;
+    public Transform activeParent; // 액티브 슬롯들 부모 오브젝트
     public GameObject marker; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
@@ -95,26 +96,20 @@ public class PlayerManager : Character
     [Header("<State>")]
     public bool initFinish = false;
     public float camFollowSpeed = 10f; // 캠 따라오는 속도
-    public float ultimateCoolTime; //궁극기 마법 쿨타임 값 저장
-    public float ultimateCoolCount; //궁극기 마법 쿨타임 카운트
 
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;
     // public float ShakeIntensity;
 
     [Header("<Pocket>")]
-    public SlotInfo[] inventory = new SlotInfo[20]; // 플레이어 인벤토리
-    public MagicInfo[] hasMergeMagics = new MagicInfo[20]; // merge 보드에 올려진 플레이어 보유 마법
-    public List<MagicInfo> hasStackMagics = new List<MagicInfo>(); // 스택에 있는 플레이어 보유 마법
+    public SlotInfo[] inventory = new SlotInfo[23]; // 플레이어 인벤토리
+    // public MagicInfo[] hasMergeMagics = new MagicInfo[20]; // merge 보드에 올려진 플레이어 보유 마법
+    // public List<MagicInfo> hasStackMagics = new List<MagicInfo>(); // 스택에 있는 플레이어 보유 마법
     public int[] hasUSBList = new int[6]; // 플레이어 보유 USB 등급별 개수 목록
-    public List<MagicInfo> ultimateList = new List<MagicInfo>(); //궁극기 마법 리스트
+    // public List<MagicInfo> ultimateList = new List<MagicInfo>(); //궁극기 마법 리스트
     // public MagicInfo ultimateMagic; //궁극기 마법
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
-
-    //! 테스트용 액티브 마법 슬롯
-    public MagicInfo magicA;
-    public MagicInfo magicB;
 
     private void Awake()
     {
@@ -167,12 +162,6 @@ public class PlayerManager : Character
                 DashToggle();
         };
 
-        // 궁극기 버튼 매핑
-        playerInput.Player.Ultimate.performed += val =>
-        {
-            StartCoroutine(CastMagic.Instance.UseUltimateMagic());
-        };
-
         // 상호작용 버튼 매핑
         playerInput.Player.Interact.performed += val =>
         {
@@ -190,15 +179,38 @@ public class PlayerManager : Character
         };
 
         // 마법 시전 버튼 매핑
-        playerInput.Player.L_Mouse.performed += val =>
+        playerInput.Player.ActiveMagic_A.performed += val =>
         {
+            // 0번째 액티브 슬롯 마법 불러오기
+            MagicInfo magic = inventory[20] as MagicInfo;
+
+            // 해당 액티브 슬롯 실패 인디케이터 찾기
+            InventorySlot invenSlot = PlayerManager.Instance.activeParent.GetChild(0).GetComponent<InventorySlot>();
+
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeMagicSlot_A, magicA));
+            StartCoroutine(CastMagic.Instance.ManualCast(invenSlot, magic));
         };
-        playerInput.Player.R_Mouse.performed += val =>
+        playerInput.Player.ActiveMagic_B.performed += val =>
         {
+            // 1번째 액티브 슬롯 마법 불러오기
+            MagicInfo magic = inventory[21] as MagicInfo;
+
+            // 해당 액티브 슬롯 실패 인디케이터 찾기
+            InventorySlot invenSlot = PlayerManager.Instance.activeParent.GetChild(1).GetComponent<InventorySlot>();
+
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeMagicSlot_B, magicB));
+            StartCoroutine(CastMagic.Instance.ManualCast(invenSlot, magic));
+        };
+        playerInput.Player.ActiveMagic_C.performed += val =>
+        {
+            // 2번째 액티브 슬롯 마법 불러오기
+            MagicInfo magic = inventory[22] as MagicInfo;
+
+            // 해당 액티브 슬롯 실패 인디케이터 찾기
+            InventorySlot invenSlot = PlayerManager.Instance.activeParent.GetChild(2).GetComponent<InventorySlot>();
+
+            // 수동 마법 시전
+            StartCoroutine(CastMagic.Instance.ManualCast(invenSlot, magic));
         };
 
         // 초기화 완료
@@ -245,14 +257,6 @@ public class PlayerManager : Character
         //몬스터 스포너 따라오기
         if (mobSpawner.activeSelf)
             mobSpawner.transform.position = transform.position;
-
-        if (ultimateCoolCount > 0)
-        {
-            //궁극기 쿨타임 카운트 감소
-            ultimateCoolCount -= Time.deltaTime;
-            //쿨타임 UI 업데이트
-            UIManager.Instance.UltimateCooltime();
-        }
 
         //히트 카운트 감소
         if (hitBox.hitCoolCount > 0)
@@ -355,38 +359,63 @@ public class PlayerManager : Character
             playerInteracter.nearInteracter.interactSubmitCallback();
     }
 
+    public int GetEmptyInven()
+    {
+        int invenIndex = -1;
+
+        // 빈칸 찾기
+        for (int i = 0; i < inventory.Length; i++)
+        {
+            // 빈칸 찾으면
+            if (inventory[i] == null)
+            {
+                // 빈칸 인덱스 기록
+                invenIndex = i;
+
+                break;
+            }
+        }
+
+        // 빈칸 인덱스 리턴
+        return invenIndex;
+    }
+
     public void GetItem(ItemInfo getItem)
     {
         // print(getItem.itemType + " : " + getItem.itemName);
 
         // 아이템이 USB일때
-        if (getItem.itemType == "USB")
-        {
-            // usb 등급에 따라 개수 올리기
-            hasUSBList[getItem.grade - 1]++;
-
-            int allUSBNum = 0;
-
-            // 모든 USB 개수 갱신
-            for (int i = 0; i < 6; i++)
-            {
-                int usbNum = 0;
-                usbNum = PlayerManager.Instance.hasUSBList[i];
-
-                //해당 등급의 usb 개수 합산
-                allUSBNum += usbNum;
-            }
-
-            // 화면 하단의 총 USB 개수 갱신
-            UIManager.Instance.PhoneNotice(allUSBNum);
-        }
-
+        if (getItem.itemType == "USB"
         // 아이템이 SlotMagic 일때 (Merge 슬롯 조작 마법)
-        if (getItem.itemType == "SlotMagic")
+         || getItem.itemType == "SlotMagic")
         {
-            // stack에 해당 아이템 이름과 같은 마법 찾아서 넣기
-            AddStack(MagicDB.Instance.GetMagicByName(getItem.name));
+            // 인벤토리 빈칸 찾기
+            int emptyIndex = GetEmptyInven();
+
+            // 빈 슬롯에 해당 아이템 넣기
+            inventory[emptyIndex] = getItem;
         }
+
+        // if (getItem.itemType == "USB")
+        // {
+        //     // usb 등급에 따라 개수 올리기
+        //     hasUSBList[getItem.grade - 1]++;
+
+        //     int allUSBNum = 0;
+
+        //     // 모든 USB 개수 갱신
+        //     for (int i = 0; i < 6; i++)
+        //     {
+        //         int usbNum = 0;
+        //         usbNum = PlayerManager.Instance.hasUSBList[i];
+
+        //         //해당 등급의 usb 개수 합산
+        //         allUSBNum += usbNum;
+        //     }
+
+        //     // 화면 하단의 총 USB 개수 갱신
+        //     UIManager.Instance.PhoneNotice(allUSBNum);
+        // }
 
         // if (getItem.itemType == "Artifact")
         // {
@@ -430,85 +459,76 @@ public class PlayerManager : Character
             MagicDB.Instance.savedMagics.Add(magic.id);
         }
 
-        // 플레이어 보유 마법에 해당 마법 추가하기
-        AddStack(magic);
+        //todo 인벤토리 빈칸 찾기
+        int emptyIndex = GetEmptyInven();
+
+        // 빈칸 있을때
+        if (emptyIndex != -1)
+        {
+            // 해당 빈 슬롯에 마법 넣기
+            inventory[emptyIndex] = getMagic;
+
+            //todo 인벤토리 자동 마법 갱신
+            CastMagic.Instance.CastCheck();
+        }
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();
     }
 
-    public void AddStack(MagicInfo addMagic = null)
-    {
-        // id 같은 magic 스택에서 찾기
-        MagicInfo findMagic = null;
-        if (addMagic != null)
-            findMagic = hasStackMagics.Find(x => x.id == addMagic.id);
+    // public bool RemoveStack(int index = -1)
+    // {
+    //     MagicInfo findMagic = null;
+    //     // 해당 인덱스 마법 찾기
+    //     if (index != -1)
+    //     {
+    //         findMagic = hasStackMagics[index];
+    //     }
 
-        // 마법이 있으면
-        if (findMagic != null)
-            // 해당 매직 개수 올리기
-            findMagic.amount++;
-        // 마법이 없으면
-        else
-        {
-            // 리스트에 add로 넣기
-            hasStackMagics.Add(addMagic);
-            // 개수는 1로 초기화
-            addMagic.amount = 1;
-        }
-    }
+    //     // 해당 마법이 1개일때
+    //     if (findMagic.amount == 1)
+    //     {
+    //         // 해당 마법 리스트에서 삭제
+    //         hasStackMagics.Remove(findMagic);
 
-    public bool RemoveStack(int index = -1)
-    {
-        MagicInfo findMagic = null;
-        // 해당 인덱스 마법 찾기
-        if (index != -1)
-        {
-            findMagic = hasStackMagics[index];
-        }
+    //         // 완전히 삭제됬을때
+    //         return true;
+    //     }
+    //     // 해당 마법이 1개보다 많으면
+    //     else
+    //     {
+    //         // 해당 마법 개수 차감
+    //         findMagic.amount--;
 
-        // 해당 마법이 1개일때
-        if (findMagic.amount == 1)
-        {
-            // 해당 마법 리스트에서 삭제
-            hasStackMagics.Remove(findMagic);
+    //         // 개수만 차감됬을때
+    //         return false;
+    //     }
+    // }
 
-            // 완전히 삭제됬을때
-            return true;
-        }
-        // 해당 마법이 1개보다 많으면
-        else
-        {
-            // 해당 마법 개수 차감
-            findMagic.amount--;
+    #region EquipUltimate
+    // public void EquipUltimate()
+    // {
+    //     // 궁극기 없으면 리턴
+    //     if (ultimateList.Count <= 0)
+    //         return;
 
-            // 개수만 차감됬을때
-            return false;
-        }
-    }
+    //     //해당 마법을 장착
+    //     MagicInfo ultimateMagic = ultimateList[0];
+    //     // print("ultimate : " + ultimateMagic.magicName);
 
-    public void EquipUltimate()
-    {
-        // 궁극기 없으면 리턴
-        if (ultimateList.Count <= 0)
-            return;
+    //     // 해당 궁극기 쿨타임 저장
+    //     ultimateCoolTime = MagicDB.Instance.MagicCoolTime(ultimateMagic, MagicHolder.Target.Enemy);
 
-        //해당 마법을 장착
-        MagicInfo ultimateMagic = ultimateList[0];
-        // print("ultimate : " + ultimateMagic.magicName);
+    //     // 해당 마법 쿨타임 카운트 초기화
+    //     ultimateCoolCount = ultimateCoolTime;
 
-        // 해당 궁극기 쿨타임 저장
-        ultimateCoolTime = MagicDB.Instance.MagicCoolTime(ultimateMagic, MagicHolder.Target.Enemy);
+    //     //쿨타임 이미지 갱신
+    //     UIManager.Instance.UltimateCooltime();
 
-        // 해당 마법 쿨타임 카운트 초기화
-        ultimateCoolCount = ultimateCoolTime;
-
-        //쿨타임 이미지 갱신
-        UIManager.Instance.UltimateCooltime();
-
-        // 궁극기 UI 업데이트
-        // UIManager.Instance.UpdateUltimateIcon();
-    }
+    //     // 궁극기 UI 업데이트
+    //     // UIManager.Instance.UpdateUltimateIcon();
+    // }
+    #endregion
 
     IEnumerator CastDefaultMagics()
     {
@@ -520,54 +540,9 @@ public class PlayerManager : Character
         inventory[3] = MagicDB.Instance.GetMagicByID(11);
         inventory[4] = ItemDB.Instance.GetItemByID(8);
         inventory[5] = ItemDB.Instance.GetItemByID(9);
-        // 아이템인지 마법인지 확인
-        // for (int i = 0; i < inventory.Length; i++)
-        // {
-        //     if (inventory[i] != null)
-        //         print(i + " : " + inventory[i].GetType());
-        // }
 
-        //TODO 캐릭터에 따라 defaultMagic 기본마법 하나를 액티브 슬롯에 착용 후 시작
-        List<int> defaultStacks = new List<int>();
-
-        //! 마법 없이 테스트
-        // if (CastMagic.Instance.noMagic)
-        //     yield break;
-
-        //! 모든 마법 테스트
-        if (CastMagic.Instance.testAllMagic)
-        {
-            foreach (var value in MagicDB.Instance.magicDB.Values)
-            {
-                // 프리팹 있는 마법들만 스택에 넣기
-                if (MagicDB.Instance.GetMagicPrefab(value.id))
-                    defaultStacks.Add(value.id);
-            }
-        }
-        else
-        {
-            defaultStacks = CastMagic.Instance.defaultMagic;
-        }
-
-        // 캐릭터 기본 마법 추가
-        foreach (int magicID in defaultStacks)
-        {
-            // 마법 찾기
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(magicID);
-
-            //마법 획득
-            GetMagic(magic);
-        }
-
-        // 보유한 궁극기 마법 아이콘 갱신
-        // UIManager.Instance.UpdateUltimateIcon();
-        // UIManager.Instance.UltimateCooltime();
-
-        //! 액티브 마법 슬롯 테스트
-        magicA = MagicDB.Instance.GetMagicByID(10);
-        magicB = MagicDB.Instance.GetMagicByID(11);
-
-        //todo 액티브 마법 슬롯 초기화
+        // 인벤토리에서 마법 찾아 자동 시전하기
+        CastMagic.Instance.CastCheck();
 
         //플레이어 총 전투력 업데이트
         PlayerStat_Now.playerPower = GetPlayerPower();
@@ -674,8 +649,15 @@ public class PlayerManager : Character
         //플레이어의 총 전투력
         int magicPower = 0;
 
-        foreach (var magic in hasStackMagics)
+        foreach (SlotInfo slotInfo in inventory)
         {
+            // 마법 찾기
+            MagicInfo magic = slotInfo as MagicInfo;
+
+            // 마법 정보 없으면 리턴
+            if (magic == null)
+                continue;
+
             //총전투력에 해당 마법의 등급*레벨 더하기
             magicPower += magic.grade * magic.magicLevel;
 

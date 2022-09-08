@@ -10,7 +10,7 @@ public class MagicInfo : SlotInfo
 {
     //수정 가능한 변수들
     [Header("Configurable")]
-    public int magicLevel = 0; //현재 마법 레벨
+    public int magicLevel = 1; //현재 마법 레벨
     public int amount = 0; // 해당 마법 개수 (스택 슬롯에서 사용)
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
@@ -87,6 +87,7 @@ public class MagicInfo : SlotInfo
     float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime,
     float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
     {
+        this.slotType = SlotType.Magic;
         this.id = id;
         this.grade = grade;
         this.name = magicName;
@@ -146,7 +147,7 @@ public class MagicDB : MonoBehaviour
     }
     #endregion
 
-    public enum MagicType { active, passive, ultimate };
+    public enum MagicType { active, passive };
 
     public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
     // public List<Sprite> magicIcon = null; //마법 아이콘 리스트
@@ -397,7 +398,7 @@ public class MagicDB : MonoBehaviour
     {
         foreach (KeyValuePair<int, MagicInfo> magic in magicDB)
         {
-            magic.Value.magicLevel = 0;
+            magic.Value.magicLevel = 1;
         }
     }
 

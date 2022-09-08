@@ -41,13 +41,18 @@ public class CastMagic : MonoBehaviour
     [Header("Refer")]
     [SerializeField] ParticleSystem activeMagicCastEffect; // 액티브 마법 사용시 파티클 실행
     // [SerializeField] ParticleSystem passiveMagicCastEffect; // 패시브 마법 사용시 파티클 실행
-    [SerializeField] ParticleSystem ultimateMagicCastEffect; // 궁극기 마법 사용시 파티클 실행
+    // [SerializeField] ParticleSystem ultimateMagicCastEffect; // 궁극기 마법 사용시 파티클 실행
 
     [Header("Phone Move")]
     public float spinSpeed = 1f; // 자전하는 속도
     float orbitAngle = 0f; // 현재 자전 각도
     public float hoverSpeed = 5f; //둥둥 떠서 오르락내리락 하는 속도
     public float hoverRange = 0.5f; // 오르락내리락 하는 범위
+
+    // [Header("Active Slot")]
+    // public Transform activeMagicSlot_A; // 액티브 마법 슬롯 A
+    // public Transform activeMagicSlot_B; // 액티브 마법 슬롯 B
+    // public Transform activeMagicSlot_C; // 액티브 마법 슬롯 C
 
     private void OnEnable()
     {
@@ -73,35 +78,16 @@ public class CastMagic : MonoBehaviour
         transform.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange, 0);
     }
 
-    public IEnumerator ManualCast(Transform magicSlot, MagicInfo magic)
+    public IEnumerator ManualCast(InventorySlot invenSlot, MagicInfo magic)
     {
-        // 마법 정보 없으면 리턴
-        if (magic == null)
-            yield break;
-
-        // 전역 마법 정보 쿨타임 중이면 취소
-        if (MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
+        // 마법 정보가 없거나 쿨타임 중이면 실패 인디케이터 실행
+        if (magic == null || MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
         {
-            // 해당 마법 슬롯 사용불가 인디케이터 재생
-            Image IndicatorSprite = magicSlot.Find("Indicator").GetComponent<Image>();
-            Color color = IndicatorSprite.color;
-            color.a = 0;
-            // 컬러 투명하게 초기화
-            IndicatorSprite.color = color;
-            color.a = 1;
-            // 기존 트윈 있다면 끄기
-            IndicatorSprite.DOKill();
             // 스프라이트 2회 켜기
-            IndicatorSprite.DOColor(color, 0.2f)
-            .SetLoops(4, LoopType.Yoyo);
+            invenSlot.FailBlink(2);
 
             yield break;
         }
-
-        // 마우스 위치에 마커 찍기
-        // LeanPool.Spawn(SystemManager.Instance.markPrefab, PlayerManager.Instance.mouseWorldPos, Quaternion.identity);
-        // 시전위치, 마법 이름
-        // print(PlayerManager.Instance.mouseWorldPos);
 
         //해당 마법 투사체 개수 불러오기
         float projectileNum = MagicDB.Instance.MagicProjectile(magic);
@@ -158,27 +144,35 @@ public class CastMagic : MonoBehaviour
         }
 
         // 해당 마법의 전역 쿨타임 갱신
-        // magic.coolCount = coolTime;
+        MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
+        sharedMagic.coolCount = coolTime;
+
         // 해당 마법 전역 쿨타임 카운트 감소
-        // while (magic.coolCount > 0)
-        // {
-        //     //카운트 차감, 플레이어 자체속도 반영
-        //     magic.coolCount -= Time.deltaTime;
+        while (sharedMagic.coolCount > 0)
+        {
+            //카운트 차감, 플레이어 자체속도 반영
+            sharedMagic.coolCount -= Time.deltaTime;
 
-        //     //todo 마법 착용시 해당 슬롯 TooltipTrigger에 magic 넣고 MagicCooltime 컴포넌트 껐다켜서 쿨타임 표시
-        //     //todo 마법 착용 해제시 MagicCooltime 마법 빼기
-
-        //     yield return null;
-        // }
+            yield return null;
+        }
     }
 
     public void CastCheck()
     {
-        // Merge 마법에서 레벨 합산해서 리스트 만들기
+        // 인벤토리에서 레벨 합산해서 리스트 만들기
         List<MagicInfo> castList = new List<MagicInfo>();
         castList.Clear(); //리스트 비우기
-        foreach (MagicInfo magic in PlayerManager.Instance.hasMergeMagics)
+
+        // 인벤토리에서 마법 찾기
+        for (int i = 0; i < PlayerManager.Instance.inventory.Length; i++)
         {
+            // 액티브 마법이면 넘기기
+            if (i >= 20)
+                continue;
+
+            // 마법 정보 불러오기
+            MagicInfo magic = PlayerManager.Instance.inventory[i] as MagicInfo;
+
             //마법이 null이면 넘기기
             if (magic == null)
                 continue;
@@ -212,22 +206,6 @@ public class CastMagic : MonoBehaviour
         {
             MagicInfo tempMagic = null;
 
-            // 궁극기 마법일때
-            if (magic.castType == MagicDB.MagicType.ultimate.ToString())
-            {
-                //ID 같은 궁극기 마법 찾기
-                tempMagic = PlayerManager.Instance.ultimateList.Find(x => x.id == magic.id);
-
-                // 마법이 현재 궁극기 리스트에 없으면, 신규 마법이면
-                if (tempMagic == null)
-                {
-                    // 궁극기 리스트에 추가
-                    PlayerManager.Instance.ultimateList.Add(magic);
-                }
-
-                continue;
-            }
-
             // 일반 마법일때
             if (magic.castType == MagicDB.MagicType.passive.ToString()
             || magic.castType == MagicDB.MagicType.active.ToString())
@@ -249,7 +227,7 @@ public class CastMagic : MonoBehaviour
                         }
                     }
 
-                    // 자동 시전 마법일때
+                    // 액티브 마법일때
                     if (magic.castType == MagicDB.MagicType.active.ToString())
                     {
                         //nowCastMagics에 해당 마법 추가
@@ -284,21 +262,6 @@ public class CastMagic : MonoBehaviour
             }
         }
 
-        // 사라진 궁극기 마법 리스트에서 없에기
-        foreach (MagicInfo magic in PlayerManager.Instance.ultimateList)
-        {
-            //ID 같은 마법 찾기
-            MagicInfo tempMagic = null;
-            tempMagic = castList.Find(x => x.id == magic.id);
-
-            // castList에서 같은 마법을 못찾으면
-            if (tempMagic == null)
-            {
-                // ultimateList에서 해당 마법 제거
-                PlayerManager.Instance.ultimateList.Remove(magic);
-            }
-        }
-
         // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 일반 마법 찾아서 중단시키기
         for (int i = 0; i < nowCastMagics.Count; i++)
         {
@@ -326,10 +289,6 @@ public class CastMagic : MonoBehaviour
                 nowCastMagics.Remove(nowCastMagics[i]);
             }
         }
-
-        //! 궁극기 삭제중
-        // 궁극기 장착
-        // PlayerManager.Instance.EquipUltimate();
 
         // 인게임 화면 하단에 사용중인 마법 아이콘 나열하기
         UIManager.Instance.UpdateMagics(castList);
@@ -377,30 +336,41 @@ public class CastMagic : MonoBehaviour
             //적 위치 넣기, 있어도 새로 갱신
             magicHolder.targetObj = enemyObj[i];
 
-            //적 오브젝트 넣기, (유도 기능 등에 사용)
+            // 적 오브젝트가 null이 아닐때
             if (enemyObj[i] != null)
+                //적 오브젝트 위치 넣기, (유도 기능 등에 사용)
                 magicHolder.targetPos = enemyObj[i].transform.position;
             else
+                // 오브젝트 없으면 범위내 랜덤 위치 넣기
                 magicHolder.targetPos =
-                (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magic);
+                (Vector2)transform.position + Random.insideUnitCircle.normalized * MagicDB.Instance.MagicRange(magic);
 
             yield return new WaitForSeconds(0.1f);
         }
 
-        magic.coolCount = coolTime;
-        while (magic.coolCount > 0)
+        // 해당 마법의 전역 쿨타임 갱신
+        MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
+        sharedMagic.coolCount = coolTime;
+
+        while (sharedMagic.coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            magic.coolCount -= Time.deltaTime;
+            sharedMagic.coolCount -= Time.deltaTime;
 
-            yield return null;
+            yield return new WaitForSeconds(Time.deltaTime);
         }
 
-        //쿨타임 만큼 대기
-        // yield return new WaitUntil(() => cooltimeCount <= 0);
+        // 인벤토리에서 해당 마법이 있는 인덱스 찾기
+        int slotIndex = -1;
+        slotIndex = System.Array.FindIndex(PlayerManager.Instance.inventory,
+        x => x != null &&
+        // 마법인지 검사
+        x.slotType == SlotInfo.SlotType.Magic &&
+        // 해당 마법과 같은 id를 가진 마법 있는지 검사
+        x.id == magic.id);
 
-        // Merge 목록에 마법 있는지 검사
-        if (System.Array.Exists(PlayerManager.Instance.hasMergeMagics, x => x != null && x.id == magic.id))
+        // 액티브 슬롯이 아닌 인벤토리에 있을때
+        if (slotIndex < 20 && slotIndex != -1)
         {
             //코루틴 재실행
             StartCoroutine(ActiveCast(magic));
@@ -480,89 +450,91 @@ public class CastMagic : MonoBehaviour
             }
 
             // null 체크
-            if (Obj != null)
-                // 적 오브젝트 변수에 담기
-                enemyObj.Add(Obj);
+            // if (Obj != null)
+            // 적 오브젝트 변수에 담기
+            enemyObj.Add(Obj);
         }
 
         //적의 위치 리스트 리턴
         return enemyObj;
     }
 
-    public IEnumerator UseUltimateMagic()
-    {
-        //마법 참조
-        MagicInfo magic = null;
-        if (PlayerManager.Instance.ultimateList.Count > 0)
-            magic = PlayerManager.Instance.ultimateList[0];
+    #region UseUltimateMagic
+    // public IEnumerator UseUltimateMagic()
+    // {
+    //     //마법 참조
+    //     MagicInfo magic = null;
+    //     if (PlayerManager.Instance.ultimateList.Count > 0)
+    //         magic = PlayerManager.Instance.ultimateList[0];
 
-        //! Test
-        // magic = MagicDB.Instance.GetMagicByID(48);
-        ultimateMagicCastEffect.Play();
+    //     // Test
+    //     // magic = MagicDB.Instance.GetMagicByID(48);
+    //     ultimateMagicCastEffect.Play();
 
-        // 궁극기 없을때, 쿨타임중일때
-        if (magic == null || PlayerManager.Instance.ultimateCoolCount > 0)
-        {
-            UIManager.Instance.ultimateIndicator.DOKill();
+    //     // 궁극기 없을때, 쿨타임중일때
+    //     if (magic == null || PlayerManager.Instance.ultimateCoolCount > 0)
+    //     {
+    //         UIManager.Instance.ultimateIndicator.DOKill();
 
-            //궁극기 아이콘 인디케이터
-            Color baseColor = UIManager.Instance.ultimateIndicator.color;
-            Color onColor = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
-            Color offColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
+    //         //궁극기 아이콘 인디케이터
+    //         Color baseColor = UIManager.Instance.ultimateIndicator.color;
+    //         Color onColor = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
+    //         Color offColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
 
-            //인디케이터 2번 밝히기
-            Sequence seq = DOTween.Sequence();
-            seq.Append(
-                UIManager.Instance.ultimateIndicator.DOColor(onColor, 0.2f)
-            )
-            .Append(
-                UIManager.Instance.ultimateIndicator.DOColor(offColor, 0.2f)
-            )
-            .SetLoops(2)
-            .OnComplete(() =>
-            {
-                UIManager.Instance.ultimateIndicator.color = offColor;
-            });
-            seq.Restart();
+    //         //인디케이터 2번 밝히기
+    //         Sequence seq = DOTween.Sequence();
+    //         seq.Append(
+    //             UIManager.Instance.ultimateIndicator.DOColor(onColor, 0.2f)
+    //         )
+    //         .Append(
+    //             UIManager.Instance.ultimateIndicator.DOColor(offColor, 0.2f)
+    //         )
+    //         .SetLoops(2)
+    //         .OnComplete(() =>
+    //         {
+    //             UIManager.Instance.ultimateIndicator.color = offColor;
+    //         });
+    //         seq.Restart();
 
-            yield break;
-        }
+    //         yield break;
+    //     }
 
-        //해당 마법 쿨타임 카운트 시작
-        PlayerManager.Instance.ultimateCoolCount = PlayerManager.Instance.ultimateCoolTime;
+    //     //해당 마법 쿨타임 카운트 시작
+    //     PlayerManager.Instance.ultimateCoolCount = PlayerManager.Instance.ultimateCoolTime;
 
-        //프리팹 찾기
-        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
+    //     //프리팹 찾기
+    //     GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
 
-        // 랜덤 적 찾기, 투사체 수 이하로
-        List<GameObject> enemyObj = MarkEnemyObj(magic);
+    //     // 랜덤 적 찾기, 투사체 수 이하로
+    //     List<GameObject> enemyObj = MarkEnemyObj(magic);
 
-        for (int i = 0; i < enemyObj.Count; i++)
-        {
-            // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+    //     for (int i = 0; i < enemyObj.Count; i++)
+    //     {
+    //         // 마법 오브젝트 생성
+    //         GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
-            //매직 홀더 찾기
-            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+    //         //매직 홀더 찾기
+    //         MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
 
-            //타겟 정보 넣기
-            magicHolder.SetTarget(MagicHolder.Target.Enemy);
+    //         //타겟 정보 넣기
+    //         magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
-            //마법 정보 넣기
-            if (magicHolder.magic == null)
-                magicHolder.magic = magic;
+    //         //마법 정보 넣기
+    //         if (magicHolder.magic == null)
+    //             magicHolder.magic = magic;
 
-            //적 위치 넣기, 있어도 새로 갱신
-            magicHolder.targetObj = enemyObj[i];
+    //         //적 위치 넣기, 있어도 새로 갱신
+    //         magicHolder.targetObj = enemyObj[i];
 
-            //적 오브젝트 넣기, (유도 기능 등에 사용)
-            if (enemyObj[i] != null)
-                magicHolder.targetPos = enemyObj[i].transform.position;
-            else
-                magicHolder.targetPos =
-                (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magic);
+    //         //적 오브젝트 넣기, (유도 기능 등에 사용)
+    //         if (enemyObj[i] != null)
+    //             magicHolder.targetPos = enemyObj[i].transform.position;
+    //         else
+    //             magicHolder.targetPos =
+    //             (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magic);
 
-            yield return new WaitForSeconds(0.1f);
-        }
-    }
+    //         yield return new WaitForSeconds(0.1f);
+    //     }
+    // }
+    #endregion
 }

@@ -52,7 +52,6 @@ public class UIManager : MonoBehaviour
     public GameObject vendMachinePanel;
     public GameObject slotMachinePanel;
     public GameObject magicUpgradePanel;
-    public GameObject ultimateMagicPanel;
     public GameObject pausePanel;
     public GameObject gameoverPanel;
 
@@ -97,8 +96,7 @@ public class UIManager : MonoBehaviour
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
     public Transform hasItemsUI; //플레이어 현재 소지한 모든 아이템 UI
     public GridLayoutUI hasMagicGrid; //플레이어 현재 소지한 모든 마법 UI
-    public Transform activeMagicSlot_A; // 액티브 마법 슬롯 A
-    public Transform activeMagicSlot_B; // 액티브 마법 슬롯 B
+
     public Transform ultimateMagicSlot; //궁극기 마법 슬롯 UI
     public Image ultimateIndicator; //궁극기 슬롯 인디케이터 이미지
 
@@ -850,9 +848,8 @@ public class UIManager : MonoBehaviour
             if (magic.grade == 0)
                 continue;
 
-            //궁극기는 표시 안함
-            if (magic.castType == MagicDB.MagicType.ultimate.ToString())
-                continue;
+            // 전역 마법 정보 찾기
+            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
 
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicGrid.transform.position, Quaternion.identity, hasMagicGrid.transform);
@@ -860,16 +857,20 @@ public class UIManager : MonoBehaviour
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.Magic = magic;
+            toolTipTrigger.Magic = sharedMagic;
+
+            // 쿨타임 보여주기
+            ShowMagicCooltime showCool = magicIcon.GetComponent<ShowMagicCooltime>();
+            showCool.magic = sharedMagic;
 
             //아이콘 넣기
-            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(sharedMagic.id);
             // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.magicLevel.ToString();
+            amount.text = "Lev." + sharedMagic.magicLevel.ToString();
         }
 
         //그리드 업데이트 명령하기
@@ -896,10 +897,6 @@ public class UIManager : MonoBehaviour
         {
             //0등급은 원소젬이므로 표시 안함
             if (magic.grade == 0)
-                return;
-
-            //궁극기는 표시 안함
-            if (magic.castType == MagicDB.MagicType.ultimate.ToString())
                 return;
 
             //마법 아이콘 오브젝트 생성
@@ -930,52 +927,54 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void UpdateUltimateIcon()
-    {
-        //현재 보유중인 궁극기 마법 불러오기
-        MagicInfo ultimateMagic = null;
-        if (PlayerManager.Instance.ultimateList.Count > 0)
-            ultimateMagic = PlayerManager.Instance.ultimateList[0];
+    #region Ultimate
+    // public void UpdateUltimateIcon()
+    // {
+    //     //현재 보유중인 궁극기 마법 불러오기
+    //     MagicInfo ultimateMagic = null;
+    //     if (PlayerManager.Instance.ultimateList.Count > 0)
+    //         ultimateMagic = PlayerManager.Instance.ultimateList[0];
 
-        Image frame = ultimateMagicSlot.Find("Frame").GetComponent<Image>();
-        Image icon = ultimateMagicSlot.Find("Icon").GetComponent<Image>();
+    //     Image frame = ultimateMagicSlot.Find("Frame").GetComponent<Image>();
+    //     Image icon = ultimateMagicSlot.Find("Icon").GetComponent<Image>();
 
-        //궁극기 마법 등급 및 아이콘 넣기
-        if (ultimateMagic != null)
-        {
-            frame.color = MagicDB.Instance.GradeColor[ultimateMagic.grade];
-            icon.sprite = MagicDB.Instance.GetMagicIcon(ultimateMagic.id);
-            icon.gameObject.SetActive(true);
-        }
-        else
-        {
-            frame.color = Color.white;
-            icon.gameObject.SetActive(false);
-        }
-    }
+    //     //궁극기 마법 등급 및 아이콘 넣기
+    //     if (ultimateMagic != null)
+    //     {
+    //         frame.color = MagicDB.Instance.GradeColor[ultimateMagic.grade];
+    //         icon.sprite = MagicDB.Instance.GetMagicIcon(ultimateMagic.id);
+    //         icon.gameObject.SetActive(true);
+    //     }
+    //     else
+    //     {
+    //         frame.color = Color.white;
+    //         icon.gameObject.SetActive(false);
+    //     }
+    // }
 
-    public void UltimateCooltime()
-    {
-        // 남은 쿨타임
-        float coolTimeRate = 0f;
+    // public void UltimateCooltime()
+    // {
+    //     // 남은 쿨타임
+    //     float coolTimeRate = 0f;
 
-        // 쿨타임 이미지 불러오기
-        Image coolTimeImg = ultimateMagicSlot.Find("CoolTime").GetComponent<Image>();
+    //     // 쿨타임 이미지 불러오기
+    //     Image coolTimeImg = ultimateMagicSlot.Find("CoolTime").GetComponent<Image>();
 
-        // 마법이 없으면 쿨타임 이미지 비우기
-        if (PlayerManager.Instance.ultimateList.Count <= 0)
-            coolTimeImg.fillAmount = 0;
-        //마법이 있으면 쿨타임만큼 채우기
-        else
-        {
-            coolTimeRate
-            = PlayerManager.Instance.ultimateList[0] != null
-            ? PlayerManager.Instance.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(PlayerManager.Instance.ultimateList[0])
-            : 0;
+    //     // 마법이 없으면 쿨타임 이미지 비우기
+    //     if (PlayerManager.Instance.ultimateList.Count <= 0)
+    //         coolTimeImg.fillAmount = 0;
+    //     //마법이 있으면 쿨타임만큼 채우기
+    //     else
+    //     {
+    //         coolTimeRate
+    //         = PlayerManager.Instance.ultimateList[0] != null
+    //         ? PlayerManager.Instance.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(PlayerManager.Instance.ultimateList[0])
+    //         : 0;
 
-            coolTimeImg.fillAmount = coolTimeRate;
-        }
-    }
+    //         coolTimeImg.fillAmount = coolTimeRate;
+    //     }
+    // }
+    #endregion
 
     public void UpdateStat()
     {

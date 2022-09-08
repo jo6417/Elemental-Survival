@@ -37,7 +37,7 @@ public class PhoneMenu : MonoBehaviour
     [Header("Refer")]
     public SimpleScrollSnap screenScroll; // 화면 스크롤
     public GameObject phonePanel; // 핸드폰 화면 패널
-    [SerializeField] GameObject mergeScreen; // 머지 페이지
+    [SerializeField] GameObject invenScreen; // 머지 페이지
     [SerializeField] GameObject recipeScreen; // 레시피 페이지
     public Button recipeBtn;
     public Button backBtn;
@@ -62,15 +62,9 @@ public class PhoneMenu : MonoBehaviour
     public float sumChatHeights; // 채팅 스크롤 content의 높이
 
     [Header("Inventory")]
-    [SerializeField] private SlotInfo[] inventory;
-    public Transform invenParent;
+    public Transform invenParent; // 인벤토리 슬롯들 부모 오브젝트
+    private SlotInfo[] inventory;
     public List<InventorySlot> invenSlots = new List<InventorySlot>(); //각각 슬롯 오브젝트
-    // public MergeSlot nowSelectSlot; //현재 선택된 슬롯
-    // public MergeSlot mergeWaitSlot; // 합성 대기중인 슬롯
-    public int[] closeSlots = new int[4]; //선택된 슬롯 주변의 인덱스
-    public int[] mergeResultMagics = new int[4]; //합성 가능한 마법 id
-    public Transform mergeSignal;
-    // public Transform mergeIcon; //Merge domove 할때 대신 날아갈 아이콘 (슬롯간 레이어 문제로 사용)
     public int nowSelectIndex = -1; // 현재 선택된 슬롯 인덱스
     public SlotInfo nowSelectSlotInfo; // 현재 선택된 슬롯 정보
     public Image nowSelectIcon; //마우스 따라다닐 아이콘
@@ -115,6 +109,12 @@ public class PhoneMenu : MonoBehaviour
             invenSlots.Add(invenParent.GetChild(i).GetComponent<InventorySlot>());
         }
 
+        // 액티브 슬롯 오브제트 모두 저장
+        for (int i = 0; i < PlayerManager.Instance.activeParent.childCount; i++)
+        {
+            invenSlots.Add(PlayerManager.Instance.activeParent.GetChild(i).GetComponent<InventorySlot>());
+        }
+
         // 선택된 마법 rect 찾기
         nowSelectIconRect = nowSelectIcon.transform.parent.GetComponent<RectTransform>();
 
@@ -123,6 +123,9 @@ public class PhoneMenu : MonoBehaviour
 
         // 스크롤 컨텐츠 모두 비우기
         SystemManager.Instance.DestroyAllChild(recipeScroll.Content);
+
+        // 인벤토리 슬롯들 배열 참조
+        inventory = PlayerManager.Instance.inventory;
     }
 
     IEnumerator InputInit()
@@ -173,7 +176,7 @@ public class PhoneMenu : MonoBehaviour
             || EventSystem.current.currentSelectedGameObject == homeBtn.gameObject)
             {
                 //커서 및 빈 스택 슬롯 초기화 하기
-                SelectSlotToggle();
+                CancelSelectSlot();
             }
         }
     }
@@ -188,7 +191,7 @@ public class PhoneMenu : MonoBehaviour
         //마우스에 아이콘 들고 있을때
         if (nowSelectIcon.enabled)
             //커서 및 빈 스택 슬롯 초기화 하기
-            SelectSlotToggle();
+            CancelSelectSlot();
     }
 
     // 마우스 위치 입력되면 실행
@@ -253,14 +256,11 @@ public class PhoneMenu : MonoBehaviour
         // 선택 아이콘 끄기
         nowSelectIcon.enabled = false;
 
-        //Merge 인디케이터 끄기
-        mergeSignal.gameObject.SetActive(false);
-
         // 핸드폰 켜기
         StartCoroutine(OpenPhone());
 
         // 각각 스크린 켜기
-        mergeScreen.SetActive(true);
+        invenScreen.SetActive(true);
         recipeScreen.SetActive(true);
     }
 
@@ -311,11 +311,6 @@ public class PhoneMenu : MonoBehaviour
         {
             invenSlot.slotButton.interactable = true;
         }
-        // //스택 가운데 버튼 켜기
-        // selectedSlot.interactable = true;
-        // //스택 좌,우 버튼 켜기
-        // leftScrollBtn.interactable = true;
-        // rightScrollBtn.interactable = true;
 
         //레시피 버튼 켜기
         recipeBtn.interactable = true;
@@ -327,7 +322,6 @@ public class PhoneMenu : MonoBehaviour
         // 첫번째 인벤 슬롯 선택하기
         UIManager.Instance.lastSelected = invenSlots[0].slotButton;
         UIManager.Instance.targetOriginColor = invenSlots[0].GetComponent<Image>().color;
-        // mergeList[0].GetComponent<Button>().Select();
 
         // //선택된 슬롯 네비 설정
         // Navigation nav = selectedSlot.navigation;
@@ -349,88 +343,11 @@ public class PhoneMenu : MonoBehaviour
     void Set_Inventory()
     {
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
-        for (int i = 0; i < invenParent.childCount; i++)
+        for (int i = 0; i < invenSlots.Count; i++)
         {
             // 각 슬롯 세팅
-            Set_InvenSlot(i);
+            invenSlots[i].Set_Slot();
         }
-    }
-
-    public void Set_InvenSlot(int slotIndex)
-    {
-        // 슬롯 오브젝트 찾기
-        InventorySlot invenSlot = invenSlots[slotIndex];
-        // 슬롯 정보 찾기
-        SlotInfo slotInfo = PlayerManager.Instance.inventory[slotIndex];
-
-        //마법 정보 없으면 넘기기
-        if (slotInfo == null)
-        {
-            //프레임 색 초기화
-            invenSlot.slotFrame.color = Color.white;
-
-            //아이콘 및 레벨 비활성화
-            invenSlot.slotIcon.enabled = false;
-            invenSlot.slotLevel.gameObject.SetActive(false);
-            // 툴팁 끄기
-            invenSlot.slotTooltip.enabled = false;
-
-            return;
-        }
-
-        int grade = 0;
-        Sprite iconSprite = null;
-        int level = 0;
-
-        // 각각 마법 및 아이템으로 형변환
-        MagicInfo magic = slotInfo as MagicInfo;
-        ItemInfo item = slotInfo as ItemInfo;
-
-        // 아이템인지 마법인지 판단
-        if (magic != null)
-        {
-            // 등급 초기화
-            grade = magic.grade;
-            // 레벨 초기화
-            level = magic.magicLevel;
-            // 아이콘 찾기
-            iconSprite = MagicDB.Instance.GetMagicIcon(magic.id);
-
-            // 레벨 활성화
-            invenSlot.slotLevel.gameObject.SetActive(true);
-            // 레벨 이미지 색에 등급색 넣기
-            invenSlot.slotLevel.color = MagicDB.Instance.GradeColor[grade];
-            //레벨 넣기
-            invenSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + level.ToString();
-
-            // 슬롯에 툴팁 정보 넣기
-            invenSlot.slotTooltip.Magic = magic;
-            invenSlot.slotTooltip.Item = null;
-        }
-
-        if (item != null)
-        {
-            // 등급 초기화
-            grade = item.grade;
-            // 아이콘 찾기
-            iconSprite = ItemDB.Instance.GetItemIcon(item.id);
-
-            // 레벨 비활성화
-            invenSlot.slotLevel.gameObject.SetActive(false);
-
-            // 슬롯에 툴팁 정보 넣기
-            invenSlot.slotTooltip.Item = item;
-            invenSlot.slotTooltip.Magic = null;
-        }
-
-        // 등급 프레임 색 넣기
-        invenSlot.slotFrame.color = MagicDB.Instance.GradeColor[slotInfo.grade];
-        //아이콘 활성화
-        invenSlot.slotIcon.enabled = true;
-        //아이콘 넣기
-        invenSlot.slotIcon.sprite = iconSprite == null ? SystemManager.Instance.questionMark : iconSprite;
-        // 툴팁 켜기
-        invenSlot.slotTooltip.enabled = true;
     }
 
     private void Update()
@@ -461,9 +378,9 @@ public class PhoneMenu : MonoBehaviour
     public IEnumerator ChatAdd(string message)
     {
         // 메시지 생성
-        GameObject chat = LeanPool.Spawn(MergeMenu.Instance.chatPrefab,
-        MergeMenu.Instance.chatScroll.content.rect.position - new Vector2(0, -10f),
-        Quaternion.identity, MergeMenu.Instance.chatScroll.content);
+        GameObject chat = LeanPool.Spawn(chatPrefab,
+        chatScroll.content.rect.position - new Vector2(0, -10f),
+        Quaternion.identity, chatScroll.content);
 
         // 캔버스 그룹 찾고 알파값 0으로 낮춰서 숨기기
         CanvasGroup canvasGroup = chat.GetComponent<CanvasGroup>();
@@ -479,9 +396,9 @@ public class PhoneMenu : MonoBehaviour
         float sumHeights = 0;
 
         // 메시지들의 총합 높이 갱신
-        for (int i = 0; i < MergeMenu.Instance.chatScroll.content.childCount; i++)
+        for (int i = 0; i < chatScroll.content.childCount; i++)
         {
-            RectTransform rect = MergeMenu.Instance.chatScroll.content.GetChild(i).GetComponent<RectTransform>();
+            RectTransform rect = chatScroll.content.GetChild(i).GetComponent<RectTransform>();
 
             // 여백 합산
             sumHeights += 10;
@@ -491,13 +408,13 @@ public class PhoneMenu : MonoBehaviour
             // print(i + " : " + rect.sizeDelta.y);
         }
 
-        MergeMenu.Instance.sumChatHeights = sumHeights;
+        sumChatHeights = sumHeights;
 
         // 알파값 높여서 표시
         canvasGroup.alpha = 1;
     }
 
-    public void SelectSlotToggle()
+    public void CancelSelectSlot()
     {
         //마우스 꺼져있으면 리턴
         if (Cursor.lockState == CursorLockMode.Locked)
@@ -506,15 +423,43 @@ public class PhoneMenu : MonoBehaviour
         // 마우스의 아이콘 끄기
         nowSelectIcon.enabled = false;
 
-        // 마우스에 선택된 아이콘 다시 켜기
-        invenSlots[nowSelectIndex].slotIcon.enabled = true;
+        // 선택된 슬롯에 슬롯 정보 넣기
+        inventory[nowSelectIndex] = nowSelectSlotInfo;
+        // 선택된 슬롯 UI 갱신
+        invenSlots[nowSelectIndex].Set_Slot();
+
+        // 선택된 슬롯 shiny 이펙트 켜기
+        invenSlots[nowSelectIndex].shinyEffect.gameObject.SetActive(false);
+        invenSlots[nowSelectIndex].shinyEffect.gameObject.SetActive(true);
 
         // 현재 선택된 마법 인덱스 초기화
         nowSelectIndex = -1;
 
+        // 폰 하단 버튼 상호작용 허용
+        PhoneMenu.Instance.InteractToggleBtns(true);
+
         //선택된 마법 아이콘 마우스 위치로 이동
         MousePos();
     }
+
+    public void ShakeMouseIcon()
+    {
+        // 현재 트윈 멈추기
+        nowSelectIcon.transform.DOPause();
+
+        // 원래 위치 저장
+        Vector2 originPos = nowSelectIcon.transform.localPosition;
+
+        // 마우스 아이콘 흔들기
+        nowSelectIcon.transform.DOPunchPosition(Vector2.right * 30f, 1f, 10, 1)
+        .SetEase(Ease.Linear)
+        .OnPause(() =>
+        {
+            nowSelectIcon.transform.localPosition = originPos;
+        })
+        .SetUpdate(true);
+    }
+
     void Set_Recipe()
     {
         // 레시피 스크롤 컴포넌트 끄기
@@ -783,7 +728,7 @@ public class PhoneMenu : MonoBehaviour
         getMagic = randomList[randomScroll.CenteredPanel];
         print(getMagic.name);
 
-        // 획득한 마법 스택에 넣기
+        // 획득한 마법 인벤에 넣기
         PlayerManager.Instance.GetMagic(getMagic);
 
         // 팡파레 이펙트 켜기
@@ -848,7 +793,7 @@ public class PhoneMenu : MonoBehaviour
         InteractToggleBtns(true);
     }
 
-    void InteractToggleBtns(bool able)
+    public void InteractToggleBtns(bool able)
     {
         // 키 입력 막기 변수 토글
         btnsInteractable = able;
@@ -902,7 +847,7 @@ public class PhoneMenu : MonoBehaviour
         if (!btnsInteractable)
             yield break;
 
-        // 메인 Merge 화면일때
+        // 메인 인벤토리 화면일때
         if (backBtnCount <= 0)
         {
             //버튼 시간 카운트 시작
@@ -915,17 +860,11 @@ public class PhoneMenu : MonoBehaviour
         // 시간 내에 한번 더 누르면 팝업 종료
         else
         {
-            //TODO 모든 버튼 상호작용 끄기
-            // merge 슬롯 모두 끄기
-            foreach (InventorySlot mergeSlot in invenSlots)
+            // 인벤 슬롯 상호작용 모두 끄기
+            foreach (InventorySlot invenSlot in invenSlots)
             {
-                mergeSlot.slotButton.interactable = false;
+                invenSlot.slotButton.interactable = false;
             }
-            //스택 가운데 버튼 끄기
-            // selectedSlot.interactable = false;
-            // //스택 좌,우 버튼 끄기
-            // leftScrollBtn.interactable = false;
-            // rightScrollBtn.interactable = false;
             //레시피 버튼 끄기
             recipeBtn.interactable = false;
             //뒤로 버튼 끄기
@@ -935,7 +874,7 @@ public class PhoneMenu : MonoBehaviour
 
             //마우스로 아이콘 들고 있으면 복귀시키기
             if (nowSelectIcon.enabled)
-                SelectSlotToggle();
+                CancelSelectSlot();
 
             // UI 커서 미리 끄기
             UIManager.Instance.UICursorToggle(false);
@@ -985,7 +924,7 @@ public class PhoneMenu : MonoBehaviour
             //스마트폰 캔버스 종료
             UIManager.Instance.PopupUI(UIManager.Instance.phoneCanvas);
 
-            // Merge 리스트에서 확인해서 필요한 마법 시전하기
+            // 인벤토리에서 마법 찾아 자동 시전하기
             CastMagic.Instance.CastCheck();
         }
     }

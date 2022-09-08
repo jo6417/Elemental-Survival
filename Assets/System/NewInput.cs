@@ -46,15 +46,6 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Ultimate"",
-                    ""type"": ""Button"",
-                    ""id"": ""e36a7d3f-fefa-4880-8ef2-73458031fe2a"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""04da89c9-a8a4-431d-bec8-64e93e105274"",
@@ -64,7 +55,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""L_Mouse"",
+                    ""name"": ""ActiveMagic_A"",
                     ""type"": ""Button"",
                     ""id"": ""04566402-5795-4fd5-83b2-3b26f2aac585"",
                     ""expectedControlType"": ""Button"",
@@ -73,7 +64,16 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""R_Mouse"",
+                    ""name"": ""ActiveMagic_B"",
+                    ""type"": ""Button"",
+                    ""id"": ""e36a7d3f-fefa-4880-8ef2-73458031fe2a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ActiveMagic_C"",
                     ""type"": ""Button"",
                     ""id"": ""e25e63d2-acf8-4616-abd8-7209abf88f31"",
                     ""expectedControlType"": ""Button"",
@@ -224,17 +224,6 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""d408536d-33d5-414a-a67a-d8a8457b3dd1"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard"",
-                    ""action"": ""Ultimate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""a517f8de-feef-44af-8dc9-103d1841d337"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
@@ -251,7 +240,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""L_Mouse"",
+                    ""action"": ""ActiveMagic_A"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -262,7 +251,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""R_Mouse"",
+                    ""action"": ""ActiveMagic_C"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -285,6 +274,17 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MouseMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d408536d-33d5-414a-a67a-d8a8457b3dd1"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""ActiveMagic_B"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -567,10 +567,10 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
-        m_Player_Ultimate = m_Player.FindAction("Ultimate", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
-        m_Player_L_Mouse = m_Player.FindAction("L_Mouse", throwIfNotFound: true);
-        m_Player_R_Mouse = m_Player.FindAction("R_Mouse", throwIfNotFound: true);
+        m_Player_ActiveMagic_A = m_Player.FindAction("ActiveMagic_A", throwIfNotFound: true);
+        m_Player_ActiveMagic_B = m_Player.FindAction("ActiveMagic_B", throwIfNotFound: true);
+        m_Player_ActiveMagic_C = m_Player.FindAction("ActiveMagic_C", throwIfNotFound: true);
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_MouseMove = m_Player.FindAction("MouseMove", throwIfNotFound: true);
         // UI
@@ -643,10 +643,10 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Dash;
-    private readonly InputAction m_Player_Ultimate;
     private readonly InputAction m_Player_Interact;
-    private readonly InputAction m_Player_L_Mouse;
-    private readonly InputAction m_Player_R_Mouse;
+    private readonly InputAction m_Player_ActiveMagic_A;
+    private readonly InputAction m_Player_ActiveMagic_B;
+    private readonly InputAction m_Player_ActiveMagic_C;
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_MouseMove;
     public struct PlayerActions
@@ -655,10 +655,10 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         public PlayerActions(@NewInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
-        public InputAction @Ultimate => m_Wrapper.m_Player_Ultimate;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
-        public InputAction @L_Mouse => m_Wrapper.m_Player_L_Mouse;
-        public InputAction @R_Mouse => m_Wrapper.m_Player_R_Mouse;
+        public InputAction @ActiveMagic_A => m_Wrapper.m_Player_ActiveMagic_A;
+        public InputAction @ActiveMagic_B => m_Wrapper.m_Player_ActiveMagic_B;
+        public InputAction @ActiveMagic_C => m_Wrapper.m_Player_ActiveMagic_C;
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @MouseMove => m_Wrapper.m_Player_MouseMove;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -676,18 +676,18 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
-                @Ultimate.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUltimate;
-                @Ultimate.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUltimate;
-                @Ultimate.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnUltimate;
                 @Interact.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInteract;
-                @L_Mouse.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnL_Mouse;
-                @L_Mouse.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnL_Mouse;
-                @L_Mouse.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnL_Mouse;
-                @R_Mouse.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnR_Mouse;
-                @R_Mouse.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnR_Mouse;
-                @R_Mouse.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnR_Mouse;
+                @ActiveMagic_A.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_A;
+                @ActiveMagic_A.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_A;
+                @ActiveMagic_A.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_A;
+                @ActiveMagic_B.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_B;
+                @ActiveMagic_B.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_B;
+                @ActiveMagic_B.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_B;
+                @ActiveMagic_C.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_C;
+                @ActiveMagic_C.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_C;
+                @ActiveMagic_C.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnActiveMagic_C;
                 @MousePosition.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
                 @MousePosition.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
                 @MousePosition.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
@@ -704,18 +704,18 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
-                @Ultimate.started += instance.OnUltimate;
-                @Ultimate.performed += instance.OnUltimate;
-                @Ultimate.canceled += instance.OnUltimate;
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
-                @L_Mouse.started += instance.OnL_Mouse;
-                @L_Mouse.performed += instance.OnL_Mouse;
-                @L_Mouse.canceled += instance.OnL_Mouse;
-                @R_Mouse.started += instance.OnR_Mouse;
-                @R_Mouse.performed += instance.OnR_Mouse;
-                @R_Mouse.canceled += instance.OnR_Mouse;
+                @ActiveMagic_A.started += instance.OnActiveMagic_A;
+                @ActiveMagic_A.performed += instance.OnActiveMagic_A;
+                @ActiveMagic_A.canceled += instance.OnActiveMagic_A;
+                @ActiveMagic_B.started += instance.OnActiveMagic_B;
+                @ActiveMagic_B.performed += instance.OnActiveMagic_B;
+                @ActiveMagic_B.canceled += instance.OnActiveMagic_B;
+                @ActiveMagic_C.started += instance.OnActiveMagic_C;
+                @ActiveMagic_C.performed += instance.OnActiveMagic_C;
+                @ActiveMagic_C.canceled += instance.OnActiveMagic_C;
                 @MousePosition.started += instance.OnMousePosition;
                 @MousePosition.performed += instance.OnMousePosition;
                 @MousePosition.canceled += instance.OnMousePosition;
@@ -820,10 +820,10 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
-        void OnUltimate(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
-        void OnL_Mouse(InputAction.CallbackContext context);
-        void OnR_Mouse(InputAction.CallbackContext context);
+        void OnActiveMagic_A(InputAction.CallbackContext context);
+        void OnActiveMagic_B(InputAction.CallbackContext context);
+        void OnActiveMagic_C(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
         void OnMouseMove(InputAction.CallbackContext context);
     }

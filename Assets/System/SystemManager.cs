@@ -279,4 +279,34 @@ public class SystemManager : MonoBehaviour
                 }
             }
     }
+
+    public SlotInfo SortInfo(SlotInfo slotInfo)
+    {
+        // 각각 마법 및 아이템으로 형변환
+        MagicInfo magic = slotInfo as MagicInfo;
+        ItemInfo item = slotInfo as ItemInfo;
+
+        // null 이 아닌 정보를 반환
+        if (magic != null)
+            return magic;
+        else if (item != null)
+            return item;
+        else
+            return null;
+    }
+
+    public bool IsMagic(SlotInfo slotInfo)
+    {
+        // 각각 마법 및 아이템으로 형변환
+        MagicInfo magic = slotInfo as MagicInfo;
+        ItemInfo item = slotInfo as ItemInfo;
+
+        // null 이 아닌 정보를 반환
+        if (magic != null)
+            return true;
+        else if (item != null)
+            return false;
+        else
+            return false;
+    }
 }

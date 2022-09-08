@@ -24,15 +24,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Ultimate",
-                    "type": "Button",
-                    "id": "e36a7d3f-fefa-4880-8ef2-73458031fe2a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Interact",
                     "type": "Button",
                     "id": "04da89c9-a8a4-431d-bec8-64e93e105274",
@@ -42,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "L_Mouse",
+                    "name": "ActiveMagic_A",
                     "type": "Button",
                     "id": "04566402-5795-4fd5-83b2-3b26f2aac585",
                     "expectedControlType": "Button",
@@ -51,7 +42,16 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "R_Mouse",
+                    "name": "ActiveMagic_B",
+                    "type": "Button",
+                    "id": "e36a7d3f-fefa-4880-8ef2-73458031fe2a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ActiveMagic_C",
                     "type": "Button",
                     "id": "e25e63d2-acf8-4616-abd8-7209abf88f31",
                     "expectedControlType": "Button",
@@ -202,17 +202,6 @@
                 },
                 {
                     "name": "",
-                    "id": "d408536d-33d5-414a-a67a-d8a8457b3dd1",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "Ultimate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "a517f8de-feef-44af-8dc9-103d1841d337",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -229,7 +218,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "L_Mouse",
+                    "action": "ActiveMagic_A",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -240,7 +229,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "R_Mouse",
+                    "action": "ActiveMagic_C",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -263,6 +252,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "MouseMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d408536d-33d5-414a-a67a-d8a8457b3dd1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "ActiveMagic_B",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

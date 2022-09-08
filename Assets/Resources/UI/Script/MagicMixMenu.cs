@@ -179,7 +179,8 @@ public class MagicMixMenu : MonoBehaviour
         // mixedMagic = null;
 
         // 플레이어 보유중인 마법 참조
-        List<MagicInfo> playerMagics = PlayerManager.Instance.hasStackMagics;
+        // List<MagicInfo> playerMagics = PlayerManager.Instance.hasStackMagics;
+        List<MagicInfo> playerMagics = new List<MagicInfo>();
 
         //최상단 첫번째 마법 아이콘 선택하기
         // Button firstIcon = null;
@@ -666,35 +667,32 @@ public class MagicMixMenu : MonoBehaviour
             leftIcon.gameObject.SetActive(false);
             rightIcon.gameObject.SetActive(false);
 
-            //궁극기일때
-            if (mixedMagic.castType == MagicDB.MagicType.ultimate.ToString())
-            {
-                //궁극기 팝업창 열기
-                UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicPanel);
+            // //궁극기일때
+            // if (mixedMagic.castType == MagicDB.MagicType.ultimate.ToString())
+            // {
+            //     //궁극기 팝업창 열기
+            //     UIManager.Instance.PopupUI(UIManager.Instance.ultimateMagicPanel);
 
-                //마법 정보 넣기
-                UltimateMagic.Instance.newMagic = mixedMagic;
+            //     //아이콘 숨기기
+            //     mixedIcon.DOScale(Vector3.zero, 0.5f);
+            // }
+            // //일반 마법일때
+            // else
+            // {
+            //     //합성된 마법 정보창 활성화
+            //     mixInfoPanel.gameObject.SetActive(true);
 
-                //아이콘 숨기기
-                mixedIcon.DOScale(Vector3.zero, 0.5f);
-            }
-            //일반 마법일때
-            else
-            {
-                //합성된 마법 정보창 활성화
-                mixInfoPanel.gameObject.SetActive(true);
+            //     // Accept 버튼 선택하기
+            //     acceptBtn.Select();
 
-                // Accept 버튼 선택하기
-                acceptBtn.Select();
+            //     //아이콘 커지면서 등장
+            //     mixedIcon.DOScale(Vector3.one * 2f, 0.5f)
+            //         .SetEase(Ease.OutBack)
+            //         .SetUpdate(true);
 
-                //아이콘 커지면서 등장
-                mixedIcon.DOScale(Vector3.one * 2f, 0.5f)
-                    .SetEase(Ease.OutBack)
-                    .SetUpdate(true);
-
-                // 마법 획득하기
-                PlayerManager.Instance.GetMagic(mixedMagic);
-            }
+            //     // 마법 획득하기
+            //     PlayerManager.Instance.GetMagic(mixedMagic);
+            // }
 
             // 마법 도감에 없으면 추가
             if (!MagicDB.Instance.unlockMagics.Exists(x => x == mixedMagic.id))

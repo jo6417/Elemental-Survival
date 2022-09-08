@@ -74,6 +74,7 @@ public class ItemInfo : SlotInfo
 
     public ItemInfo(ItemInfo item)
     {
+        this.slotType = SlotType.Item;
         this.id = item.id;
         this.grade = item.grade;
         this.name = item.name;
