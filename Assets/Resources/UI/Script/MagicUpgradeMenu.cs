@@ -219,7 +219,7 @@ public class MagicUpgradeMenu : MonoBehaviour
         // magic.projectile = stats[5];
 
         // 마법 획득 및 언락
-        PlayerManager.Instance.GetMagic(magic);
+        // PlayerManager.Instance.GetMagic(magic);
 
         //지불 원소젬 이름을 인덱스로 반환
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == magic.priceType);

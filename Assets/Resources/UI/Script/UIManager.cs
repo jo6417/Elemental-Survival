@@ -47,7 +47,7 @@ public class UIManager : MonoBehaviour
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
     public GameObject mixMagicPanel;
-    public GameObject phoneCanvas;
+    public GameObject phonePanel;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
     public GameObject slotMachinePanel;
@@ -106,7 +106,7 @@ public class UIManager : MonoBehaviour
         InputInit();
 
         // 시작할때 머지 캔버스 켜놓기
-        phoneCanvas.SetActive(true);
+        phonePanel.SetActive(true);
 
         // usb 개수 알림 갱신
         PhoneNotice(0);
@@ -223,8 +223,16 @@ public class UIManager : MonoBehaviour
     void PhoneOpen()
     {
         //스마트폰 패널 꺼져있을때
-        if (!phoneCanvas.activeSelf)
-            PopupUI(phoneCanvas);
+        if (!phonePanel.activeSelf)
+        {
+            StartCoroutine(PhoneMenu.Instance.OpenPhone());
+
+            //플레이어 입력 끄기
+            PlayerManager.Instance.playerInput.Disable();
+
+            //현재 열려있는 팝업 갱신
+            nowOpenPopup = phonePanel;
+        }
     }
 
     private void Start()
@@ -848,29 +856,27 @@ public class UIManager : MonoBehaviour
             if (magic.grade == 0)
                 continue;
 
-            // 전역 마법 정보 찾기
-            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
-
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicGrid.transform.position, Quaternion.identity, hasMagicGrid.transform);
 
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.Magic = sharedMagic;
+            toolTipTrigger.Magic = magic;
 
-            // 쿨타임 보여주기
+            // 전역 마법 정보 찾기
+            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
+            // 전역 마법 정보의 쿨타임 보여주기
             ShowMagicCooltime showCool = magicIcon.GetComponent<ShowMagicCooltime>();
             showCool.magic = sharedMagic;
 
             //아이콘 넣기
-            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(sharedMagic.id);
-            // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
 
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + sharedMagic.magicLevel.ToString();
+            amount.text = "Lev." + magic.magicLevel.ToString();
         }
 
         //그리드 업데이트 명령하기

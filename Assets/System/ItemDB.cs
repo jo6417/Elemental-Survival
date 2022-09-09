@@ -42,7 +42,6 @@ public class ItemInfo : SlotInfo
 
     public ItemInfo(int id, int grade, string itemName, string itemType, string description, string priceType, int price, int projectileNum, float hpMax, float power, float armor, float moveSpeed, float rateFire, float coolTime, float duration, float range, float luck, float expGain, float moneyGain, float earth, float fire, float life, float lightning, float water, float wind)
     {
-        this.slotType = SlotType.Item;
         this.id = id;
         this.grade = grade;
         this.name = itemName;
@@ -74,7 +73,6 @@ public class ItemInfo : SlotInfo
 
     public ItemInfo(ItemInfo item)
     {
-        this.slotType = SlotType.Item;
         this.id = item.id;
         this.grade = item.grade;
         this.name = item.name;

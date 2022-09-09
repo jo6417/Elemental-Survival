@@ -51,7 +51,6 @@ public class MagicInfo : SlotInfo
 
     public MagicInfo(MagicInfo magic)
     {
-        this.slotType = SlotType.Magic;
         this.id = magic.id;
         this.magicLevel = magic.magicLevel;
         this.grade = magic.grade;
@@ -87,7 +86,6 @@ public class MagicInfo : SlotInfo
     float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime,
     float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
     {
-        this.slotType = SlotType.Magic;
         this.id = id;
         this.grade = grade;
         this.name = magicName;

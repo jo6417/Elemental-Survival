@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class SlotInfo
 {
-    public SlotType slotType;
-    public enum SlotType { Magic, Item };
     public int id; //고유 아이디
     public string name; // 이름
     public int grade; // 등급

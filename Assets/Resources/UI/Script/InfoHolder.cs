@@ -27,7 +27,7 @@ public class InfoHolder : MonoBehaviour
             MagicInfo magic = new MagicInfo(MagicDB.Instance.GetMagicByID(id));
 
             // 마법 획득 및 언락
-            PlayerManager.Instance.GetMagic(magic);
+            PhoneMenu.Instance.GetMagic(magic);
         }
 
         if (PopupQuit)

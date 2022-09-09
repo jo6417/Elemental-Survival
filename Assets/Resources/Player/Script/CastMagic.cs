@@ -164,14 +164,14 @@ public class CastMagic : MonoBehaviour
         castList.Clear(); //리스트 비우기
 
         // 인벤토리에서 마법 찾기
-        for (int i = 0; i < PlayerManager.Instance.inventory.Length; i++)
+        for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
         {
             // 액티브 마법이면 넘기기
             if (i >= 20)
                 continue;
 
             // 마법 정보 불러오기
-            MagicInfo magic = PlayerManager.Instance.inventory[i] as MagicInfo;
+            MagicInfo magic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
 
             //마법이 null이면 넘기기
             if (magic == null)
@@ -362,15 +362,15 @@ public class CastMagic : MonoBehaviour
 
         // 인벤토리에서 해당 마법이 있는 인덱스 찾기
         int slotIndex = -1;
-        slotIndex = System.Array.FindIndex(PlayerManager.Instance.inventory,
+        slotIndex = PhoneMenu.Instance.invenSlots.FindIndex(
         x => x != null &&
         // 마법인지 검사
-        x.slotType == SlotInfo.SlotType.Magic &&
+        x.slotInfo as MagicInfo != null &&
         // 해당 마법과 같은 id를 가진 마법 있는지 검사
-        x.id == magic.id);
+        x.slotInfo.id == magic.id);
 
-        // 액티브 슬롯이 아닌 인벤토리에 있을때
-        if (slotIndex < 20 && slotIndex != -1)
+        // 인벤토리에 있을때
+        if (slotIndex != -1)
         {
             //코루틴 재실행
             StartCoroutine(ActiveCast(magic));

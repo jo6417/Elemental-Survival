@@ -214,7 +214,7 @@ public class ItemManager : MonoBehaviour
         else
         {
             //아이템 획득
-            PlayerManager.Instance.GetItem(item);
+            PhoneMenu.Instance.GetItem(item);
         }
 
         //아이템 속도 초기화
