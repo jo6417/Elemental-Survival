@@ -322,10 +322,10 @@ public class MagicDB : MonoBehaviour
 
     public void LoadUnlockMagics()
     {
-        List<int> savedMagics = new List<int>();
+        List<int> savedUnlockMagics = new List<int>();
 
         // 세이브 데이터에서 언락된 마법 받아오기
-        savedMagics = SaveManager.Instance.localSaveData.unlockMagics.ToList();
+        savedUnlockMagics = SaveManager.Instance.localSaveData.unlockMagics.ToList();
 
         // 기본적으로 1등급 마법은 언락시키기
         for (int i = 0; i < magicDB.Count; i++)
@@ -333,17 +333,19 @@ public class MagicDB : MonoBehaviour
             MagicInfo magic = magicDB[i];
 
             // 1등급 마법이고, 세이브 데이터에 해당 마법이 없을때
-            if (magic.grade == 1 && !savedMagics.Exists(x => x == magic.id))
+            if (magic.grade == 1 && !savedUnlockMagics.Exists(x => x == magic.id))
             {
                 // print(magic.id + " : " + magic.magicName + " : " + magic.grade);
 
                 // 해당 마법 넣어주기
-                savedMagics.Add(magic.id);
+                savedUnlockMagics.Add(magic.id);
             }
         }
 
+        // 정렬
+        savedUnlockMagics.Sort();
         // 해금 마법 목록 초기화
-        unlockMagics = savedMagics;
+        unlockMagics = savedUnlockMagics;
     }
     public MagicInfo GetMagicByName(string name)
     {

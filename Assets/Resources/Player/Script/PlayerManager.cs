@@ -398,6 +398,8 @@ public class PlayerManager : Character
         PhoneMenu.Instance.invenSlots[3].slotInfo = MagicDB.Instance.GetMagicByID(11);
         PhoneMenu.Instance.invenSlots[5].slotInfo = ItemDB.Instance.GetItemByID(8);
         PhoneMenu.Instance.invenSlots[6].slotInfo = ItemDB.Instance.GetItemByID(9);
+        PhoneMenu.Instance.invenSlots[16].slotInfo = MagicDB.Instance.GetMagicByID(36);
+        PhoneMenu.Instance.invenSlots[17].slotInfo = MagicDB.Instance.GetMagicByID(34);
         PhoneMenu.Instance.invenSlots[18].slotInfo = MagicDB.Instance.GetMagicByID(41);
         PhoneMenu.Instance.invenSlots[19].slotInfo = MagicDB.Instance.GetMagicByID(44);
 

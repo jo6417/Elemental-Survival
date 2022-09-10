@@ -58,11 +58,11 @@ public class SystemManager : MonoBehaviour
                 {
                     instance = obj;
                 }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<SystemManager>();
-                    instance = newObj;
-                }
+                // else
+                // {
+                //     var newObj = new GameObject().AddComponent<SystemManager>();
+                //     instance = newObj;
+                // }
             }
             return instance;
         }

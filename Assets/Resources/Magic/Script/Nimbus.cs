@@ -110,8 +110,16 @@ public class Nimbus : MonoBehaviour
         // 마크된 적 순서대로 위치 따라가기
         for (int i = 0; i < enemyObj.Count; i++)
         {
-            //목표 위치
-            GameObject targetObj = enemyObj[i];
+            // 타겟 위치
+            Vector2 targetPos;
+
+            // 적 오브젝트가 null이 아닐때
+            if (enemyObj[i] != null)
+                //적 오브젝트 위치 넣기, (유도 기능 등에 사용)
+                targetPos = enemyObj[i].transform.position;
+            else
+                // 오브젝트 없으면 범위내 랜덤 위치 넣기
+                targetPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * MagicDB.Instance.MagicRange(magic);
 
             //적의 위치에 마커 생성
             // mark = LeanPool.Spawn(atkMark, targetObj, Quaternion.identity);
@@ -124,7 +132,7 @@ public class Nimbus : MonoBehaviour
             while (aimCount > 0)
             {
                 // 위치 이동
-                Vector2 movePos = Vector2.Lerp(transform.position, targetObj.transform.position, Time.deltaTime * 10f);
+                Vector2 movePos = Vector2.Lerp(transform.position, targetPos, Time.deltaTime * 10f);
                 transform.position = movePos;
 
                 // 시간 차감 후 대기

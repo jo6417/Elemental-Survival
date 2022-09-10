@@ -275,8 +275,10 @@ public class CastMagic : MonoBehaviour
                 // 패시브 마법이면 컴포넌트 찾아서 디스폰
                 if (nowCastMagics[i].castType == MagicDB.MagicType.passive.ToString())
                 {
+                    print(nowCastMagics[i].name);
+
                     // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-                    GameObject passiveMagic = passiveObjs.Find(x => x.GetComponent<MagicHolder>().magic.id == nowCastMagics[i].id);
+                    GameObject passiveMagic = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == nowCastMagics[i].id);
 
                     // 찾은 오브젝트 디스폰
                     LeanPool.Despawn(passiveMagic);
@@ -285,12 +287,12 @@ public class CastMagic : MonoBehaviour
                     passiveObjs.Remove(passiveMagic);
                 }
 
-                // nowCastMagics에서 제거, Active 마법은 자동 중단됨
+                // 패시브 마법을 nowCastMagics에서 제거, Active 마법은 자동 중단됨
                 nowCastMagics.Remove(nowCastMagics[i]);
             }
         }
 
-        // 인게임 화면 하단에 사용중인 마법 아이콘 나열하기
+        // 인게임 화면 하단에 사용중인 마법 아이콘 리스트 갱신
         UIManager.Instance.UpdateMagics(castList);
     }
 

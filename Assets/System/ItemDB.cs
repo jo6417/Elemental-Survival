@@ -127,6 +127,8 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
+    public enum ItemType { Gem, Heal, Shard }; // 아이템 타입 정의
+
     public List<ItemInfo> itemDB = new List<ItemInfo>(); //아이템 정보 DB
     public List<Sprite> itemIcon = null; //아이템 아이콘 리스트
     public List<GameObject> itemPrefab = null; //아이템 프리팹 리스트

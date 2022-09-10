@@ -1100,7 +1100,7 @@ public class UIManager : MonoBehaviour
         PopupSet(popup);
     }
 
-    void PopupSet(GameObject popup)
+    public void PopupSet(GameObject popup)
     {
         // 시간 정지 토글
         Time.timeScale = popup.activeSelf ? 0 : 1;
