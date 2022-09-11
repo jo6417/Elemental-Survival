@@ -6,7 +6,6 @@ using DG.Tweening;
 
 public class ItemManager : MonoBehaviour
 {
-    public bool isCollision = false; // 충돌되어서 획득중이면 true
     bool isGet = false; //플레이어가 획득했는지
     [HideInInspector]
     public int amount = 1; //아이템 개수
@@ -19,11 +18,10 @@ public class ItemManager : MonoBehaviour
 
     [Header("Refer")]
     public ItemInfo item; // 해당 아이템 정보
-    public MagicInfo usbMagic; // USB 아이템일때 보유한 마법 정보
     public string itemName;
     public SpriteRenderer sprite;
     public GameObject despawnEffect; //사라질때 이펙트
-    Collider2D coll;
+    public Collider2D coll;
     Rigidbody2D rigid;
     Vector3 velocity;
 
@@ -75,18 +73,15 @@ public class ItemManager : MonoBehaviour
         // 콜라이더 초기화
         coll.enabled = true;
 
-        // 획득 여부 초기화
-        isCollision = false;
-
         // 자동 디스폰 실행
         if (autoDespawnTime > 0)
             AutoDespawn();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         // 원소젬이고 리스폰 콜라이더 안에 들어왔을때
-        if (item != null && item.itemType == "Gem" && other.CompareTag("Respawn") && !isBundle)
+        if (item != null && item.itemType == "Gem" && other.gameObject.CompareTag("Respawn") && !isBundle)
         {
             //해당 타입 원소젬 개수 -1
             if (ItemDB.Instance.outGemNum[gemTypeIndex] > 0)
@@ -97,21 +92,37 @@ public class ItemManager : MonoBehaviour
         }
 
         // 플레이어와 충돌 했을때
-        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             // print("플레이어 아이템 획득");
 
-            //이중 충돌 방지
-            coll.enabled = false;
+            // 샤드일때는 인벤토리에 빈칸 있을때, 다른 아이템이면 그냥 획득
+            if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptyInven() != -1)
+            || item.itemType == "Gem"
+            || item.itemType == "Heal")
+            {
+                //이중 충돌 방지
+                coll.enabled = false;
 
-            // 획득 여부 갱신, 중복 획득 방지
-            isCollision = true;
+                // 자동 디스폰 중지
+                sprite.DOKill();
 
-            // 자동 디스폰 중지
-            sprite.DOKill();
-
-            // 플레이어에게 날아가기
-            StartCoroutine(GetMove(PlayerManager.Instance.transform));
+                // 플레이어에게 날아가기
+                StartCoroutine(GetMove(PlayerManager.Instance.transform));
+            }
+            // 인벤토리에 빈칸 없을때
+            else
+            {
+                // 화면의 핸드폰 아이콘 빨간불 점멸
+                UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 20f / 255f, 20f / 255f, 1f), 0.2f)
+                .SetLoops(4, LoopType.Yoyo)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    // 흰색으로 초기화
+                    UIManager.Instance.phoneNoticeIcon.color = Color.white;
+                });
+            }
         }
     }
 
@@ -198,6 +209,14 @@ public class ItemManager : MonoBehaviour
     void GainItem()
     {
         isGet = true;
+
+        // 샤드일때는 인벤토리에 빈칸 없을때 리턴
+        if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptyInven() == -1))
+        {
+            coll.enabled = true;
+
+            return;
+        }
 
         // 아이템이 젬 타입일때
         if (item.itemType == "Gem")

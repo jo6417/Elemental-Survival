@@ -102,7 +102,7 @@ public class Nimbus : MonoBehaviour
     IEnumerator StartAttack()
     {
         // 투사체 수만큼 주변의 적 마크
-        List<GameObject> enemyObj = CastMagic.Instance.MarkEnemyObj(magic);
+        List<EnemyManager> enemyObj = CastMagic.Instance.MarkEnemies(magic);
 
         //목표 위치
         // Vector2 targetObj;

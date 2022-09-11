@@ -40,6 +40,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         slotTooltip = slotTooltip == null ? transform.GetComponent<ToolTipTrigger>() : slotTooltip;
         // 버튼 컴포넌트 찾기
         slotButton = slotButton == null ? transform.GetComponent<Button>() : slotButton;
+
+        // New 표시 끄기
+        newSign.SetActive(false);
     }
 
     private void OnEnable()
@@ -69,9 +72,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 마스크 이미지 숨기기
         shinyEffect.GetComponent<Mask>().showMaskGraphic = false;
 
-        // New 표시 끄기
-        newSign.SetActive(false);
-
         // 해당 슬롯 UI 세팅
         Set_Slot();
     }
@@ -97,12 +97,16 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 coolTimeIndicator.magic = null;
             }
 
+            // new 표시 끄기
+            newSign.SetActive(false);
+
             return;
         }
 
         int grade = 0;
         Sprite iconSprite = null;
         int level = 0;
+        Color frameColor = Color.white;
 
         // 각각 마법 및 아이템으로 형변환
         MagicInfo magic = slotInfo as MagicInfo;
@@ -125,6 +129,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             //레벨 넣기
             slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + level.ToString();
 
+            // 등급 프레임 색
+            frameColor = MagicDB.Instance.GradeColor[slotInfo.grade];
+
             // 슬롯에 툴팁 정보 넣기
             slotTooltip.Magic = magic;
             slotTooltip.Item = null;
@@ -146,7 +153,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         }
 
         // 등급 프레임 색 넣기
-        slotFrame.color = MagicDB.Instance.GradeColor[slotInfo.grade];
+        slotFrame.color = frameColor;
         //아이콘 활성화
         slotIcon.enabled = true;
         //아이콘 넣기
@@ -164,7 +171,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             MagicInfo coolMagic = slotInfo as MagicInfo;
 
             // 쿨타임 보여줄 마법 정보 넣기
-            coolTimeIndicator.magic = MagicDB.Instance.GetMagicByID(coolMagic.id);
+            coolTimeIndicator.magic = MagicDB.Instance.GetActiveMagicByID(coolMagic.id);
         }
 
         // 슬롯 갱신 이펙트

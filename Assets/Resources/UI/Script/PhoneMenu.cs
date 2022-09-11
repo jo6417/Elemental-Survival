@@ -84,9 +84,9 @@ public class PhoneMenu : MonoBehaviour
     public bool recipeInit = false;
 
     [Header("Random Panel")]
-    public Transform animSlot; // 애니메이션용 usb 아이콘
+    public Transform animSlot; // 애니메이션용 슬롯
     public CanvasGroup randomScreen; // 뽑기 스크린
-    public SimpleScrollSnap randomScroll; // USB 뽑기 랜덤 스크롤
+    public SimpleScrollSnap randomScroll; // 마법 뽑기 랜덤 스크롤
     public Transform magicSlotPrefab; // 랜덤 마법 아이콘 프리팹
     public Animator slotRayEffect; // 슬롯 팡파레 이펙트
     public ParticleSystem rankUpEffect; // 등급 업 직전 이펙트
@@ -94,7 +94,7 @@ public class PhoneMenu : MonoBehaviour
     public GameObject particleAttractor; // getMagicEffect 파티클 빨아들이는 오브젝트
     public ParticleSystem rankUpSuccessEffect; // 랭크업 성공 이펙트
     public ParticleSystem rankUpFailEffect; // 랭크업 실패 이펙트
-    public float randomScrollSpeed = 15f; // 뽑기 스크롤 속도
+    public float randomScroll_Speed = 15f; // 뽑기 스크롤 속도
     public float minScrollTime = 3f; // 슬롯머신 최소 시간
     public float maxScrollTime = 5f; // 슬롯머신 최대 시간
 
@@ -233,7 +233,7 @@ public class PhoneMenu : MonoBehaviour
         // 레시피 리스트 세팅
         Set_Recipe();
 
-        // USB 애니메이션용 슬롯 위치 초기화
+        // 애니메이션용 슬롯 위치 초기화
         animSlot.position = mergePanel.transform.position;
         animSlot.gameObject.SetActive(false);
 
@@ -247,7 +247,7 @@ public class PhoneMenu : MonoBehaviour
         //홈 버튼 상호작용 켜기
         homeBtn.interactable = true;
 
-        //todo 액티브 슬롯 3개 상호작용 켜기
+        // 액티브 슬롯 3개 상호작용 켜기
         PlayerManager.Instance.activeSlot_A.slotButton.interactable = true;
         PlayerManager.Instance.activeSlot_B.slotButton.interactable = true;
         PlayerManager.Instance.activeSlot_C.slotButton.interactable = true;
@@ -531,6 +531,13 @@ public class PhoneMenu : MonoBehaviour
         // 메뉴, 백 버튼 상호작용 및 키입력 막기
         InteractBtnsToggle(false);
 
+        // 애니메이션용 슬롯 컴포넌트 찾기
+        Image animIcon = animSlot.Find("Icon").GetComponent<Image>();
+        Image animFrame = animSlot.Find("Frame").GetComponent<Image>();
+        Mask shinyMask = animSlot.Find("ShinyMask").GetComponent<Mask>();
+        Image shinyMaskImg = animSlot.Find("ShinyMask").GetComponent<Image>();
+        Color maskColor = shinyMaskImg.color;
+
         int randomGrade = grade;
 
         // 뽑기 화면 전체 투명하게
@@ -549,16 +556,53 @@ public class PhoneMenu : MonoBehaviour
         // 모든 자식 비우기
         SystemManager.Instance.DestroyAllChild(randomScroll.Content);
 
-        Image animIcon = animSlot.Find("Icon").GetComponent<Image>();
-        Image animFrame = animSlot.Find("Frame").GetComponent<Image>();
-
         // 애니메이션용 아이콘 색 넣기
         animIcon.color = MagicDB.Instance.GradeColor[randomGrade];
         // 애니메이션용 프레임 색 넣기
         animFrame.color = MagicDB.Instance.GradeColor[randomGrade];
 
-        // 애니메이션용 아이콘 스크린 가운데로 올라가기
+        // 마스크 이미지 켜기
+        shinyMask.showMaskGraphic = true;
+        // 마스크 이미지 알파값 초기화
+        maskColor.a = 1f / 255f;
+        shinyMaskImg.color = maskColor;
+        maskColor.a = 1f;
+        // 마스크 이미지 알파값 올리기
+        shinyMaskImg.DOColor(maskColor, 0.5f)
+        .SetEase(Ease.InCirc)
+        .SetUpdate(true);
+
+        // 등급 업 파티클 이펙트 켜기
+        rankUpEffect.Play();
+
+        // 애니메이션용 슬롯 켜기
         animSlot.gameObject.SetActive(true);
+
+        // 애니메이션 슬롯 사이즈 키워서 나타내기
+        animSlot.transform.localScale = Vector2.zero;
+        animSlot.DOScale(Vector3.one, 0.5f)
+        .SetEase(Ease.OutBack)
+        .SetUpdate(true);
+
+        // animSlot 커지는 시간 대기
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 등급 업 파티클 이펙트 끄기
+        rankUpEffect.Stop();
+
+        // 마스크 이미지 알파값 낮추기
+        maskColor.a = 1f / 255f;
+        shinyMaskImg.DOColor(maskColor, 1f)
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            // 마스크 이미지 끄기
+            shinyMask.showMaskGraphic = false;
+        });
+        // 첫 등급 오픈 시간 대기
+        yield return new WaitForSecondsRealtime(1f);
+
+        // 애니메이션용 아이콘 스크린 가운데로 올라가기
         animSlot.DOMove(randomScroll.transform.position, 0.5f)
         .SetEase(Ease.OutSine)
         .SetUpdate(true);
@@ -593,26 +637,20 @@ public class PhoneMenu : MonoBehaviour
                         rankUp = false;
                 }
 
-            // 빛 파티클 이펙트 켜기
+            // 등급 업 파티클 이펙트 켜기
             rankUpEffect.Play();
 
-            // 슬롯 하얀색으로 가리기
             // 마스크 이미지 켜기
-            Mask shinyMask = animSlot.Find("ShinyMask").GetComponent<Mask>();
             shinyMask.showMaskGraphic = true;
-
             // 마스크 이미지 알파값 초기화
-            Image shinyMaskImg = animSlot.Find("ShinyMask").GetComponent<Image>();
-            Color maskColor = shinyMaskImg.color;
             maskColor.a = 1f / 255f;
             shinyMaskImg.color = maskColor;
             maskColor.a = 1f;
-
             // 마스크 이미지 알파값 올리기
             shinyMaskImg.DOColor(maskColor, 0.5f)
+            .SetEase(Ease.InCirc)
             .SetUpdate(true);
 
-            //todo 자연스럽게 흔들기, 현재 모션이 뚝뚝 끊김
             // 슬롯 각도를 흔들기
             animSlot.DOShakeRotation(1.5f, Vector3.forward * 10f, 50, 90, true)
             .SetEase(Ease.InOutCirc)
@@ -621,7 +659,7 @@ public class PhoneMenu : MonoBehaviour
             // 슬롯 흔드는 시간 대기
             yield return new WaitForSecondsRealtime(1f);
 
-            // 빛 파티클 이펙트 끄기
+            // 등급 업 파티클 이펙트 끄기
             rankUpEffect.Stop();
 
             yield return new WaitForSecondsRealtime(1f);
@@ -655,7 +693,7 @@ public class PhoneMenu : MonoBehaviour
                 // 마스크 이미지 끄기
                 shinyMask.showMaskGraphic = false;
             });
-            yield return new WaitForSecondsRealtime(2f);
+            yield return new WaitForSecondsRealtime(1f);
 
             // 등급 상승 실패시
             if (!rankUp)
@@ -712,8 +750,10 @@ public class PhoneMenu : MonoBehaviour
             // 랜덤 스크롤 컨텐츠 자식으로 슬롯 넣기
             Transform magicSlot = LeanPool.Spawn(magicSlotPrefab, randomScroll.Content);
 
+            Sprite icon = MagicDB.Instance.GetMagicIcon(randomList[i].id);
+
             // 마법 아이콘 넣기
-            magicSlot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(randomList[i].id);
+            magicSlot.Find("Icon").GetComponent<Image>().sprite = icon == null ? SystemManager.Instance.questionMark : icon;
             // 프레임 색 넣기
             magicSlot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[randomList[i].grade];
         }
@@ -726,11 +766,17 @@ public class PhoneMenu : MonoBehaviour
         // 한번 굴려서 무한 스크롤 위치 초기화
         randomScroll.GoToNextPanel();
 
-        // 애니메이션용 슬롯 비활성화 및 위치 초기화
-        animSlot.gameObject.SetActive(false);
-        animSlot.position = mergePanel.transform.position;
+        // 애니메이션용 슬롯 줄어들어 사라지기
+        animSlot.DOScale(Vector3.zero, 0.5f)
+        .SetEase(Ease.InBack)
+        .SetUpdate(true);
 
         yield return new WaitForSecondsRealtime(0.5f);
+
+        // 애니메이션용 슬롯 초기화
+        animSlot.gameObject.SetActive(false);
+        animSlot.position = mergePanel.transform.position;
+        animSlot.localScale = Vector3.one;
 
         // 뽑기 스크롤 그룹 알파값 초기화
         DOTween.To(() => randomScrollGroup.alpha, x => randomScrollGroup.alpha = x, 1f, 0.5f)
@@ -745,13 +791,13 @@ public class PhoneMenu : MonoBehaviour
             if (stopTime <= Time.unscaledTime + 1f)
             {
                 // 스냅 스피드 계산
-                float scrollSpeed = (stopTime - Time.unscaledTime) * randomScrollSpeed;
-                scrollSpeed = Mathf.Clamp(scrollSpeed, 5f, randomScrollSpeed);
+                float scrollSpeed = (stopTime - Time.unscaledTime) * randomScroll_Speed;
+                scrollSpeed = Mathf.Clamp(scrollSpeed, 5f, randomScroll_Speed);
 
                 randomScroll.SnapSpeed = scrollSpeed;
             }
             else
-                randomScroll.SnapSpeed = randomScrollSpeed;
+                randomScroll.SnapSpeed = randomScroll_Speed;
 
             randomScroll.GoToNextPanel();
 
@@ -816,10 +862,12 @@ public class PhoneMenu : MonoBehaviour
         DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 0f, 1f)
         .SetUpdate(true);
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         // 획득한 마법 인벤에 넣기
         GetMagic(getMagic);
+
+        yield return new WaitForSecondsRealtime(0.5f);
 
         // 마법 획득 이펙트 끄기
         getMagicEffect.gameObject.SetActive(false);
@@ -859,17 +907,22 @@ public class PhoneMenu : MonoBehaviour
     {
         // print(getItem.itemType + " : " + getItem.itemName);
 
-        // 아이템이 USB일때
-        if (getItem.itemType == "USB"
-        // 아이템이 SlotMagic 일때 (Merge 슬롯 조작 마법)
-         || getItem.itemType == "SlotMagic")
-        {
-            // 인벤토리 빈칸 찾기
-            int emptyIndex = GetEmptyInven();
+        // 인벤토리 빈칸 찾기
+        int emptyIndex = GetEmptyInven();
 
-            // 빈 슬롯에 해당 아이템 넣기
-            invenSlots[emptyIndex].slotInfo = getItem;
-        }
+        // 빈 슬롯에 해당 아이템 넣기
+        invenSlots[emptyIndex].slotInfo = getItem;
+
+        // New 표시 켜기
+        invenSlots[emptyIndex].newSign.SetActive(true);
+
+        // 핸드폰 열려있으면
+        if (gameObject.activeSelf)
+            // 해당 칸 UI 갱신
+            invenSlots[emptyIndex].Set_Slot(true);
+
+        // 핸드폰 알림 개수 추가
+        UIManager.Instance.PhoneNotice();
     }
 
     public void GetMagic(MagicInfo getMagic)
@@ -896,8 +949,16 @@ public class PhoneMenu : MonoBehaviour
             // 해당 빈 슬롯에 마법 넣기
             invenSlots[emptyIndex].slotInfo = getMagic;
 
-            // 해당 칸 UI 갱신
-            invenSlots[emptyIndex].Set_Slot(true);
+            // New 표시 켜기
+            invenSlots[emptyIndex].newSign.SetActive(true);
+
+            // 핸드폰 열려있으면
+            if (gameObject.activeSelf)
+                // 해당 칸 UI 갱신
+                invenSlots[emptyIndex].Set_Slot(true);
+
+            // 핸드폰 알림 개수 추가
+            UIManager.Instance.PhoneNotice();
         }
 
         //플레이어 총 전투력 업데이트
@@ -1211,7 +1272,7 @@ public class PhoneMenu : MonoBehaviour
             //홈 버튼 끄기
             homeBtn.interactable = false;
 
-            //todo 액티브 슬롯 3개 상호작용 막기
+            // 액티브 슬롯 3개 상호작용 막기
             PlayerManager.Instance.activeSlot_A.slotButton.interactable = false;
             PlayerManager.Instance.activeSlot_B.slotButton.interactable = false;
             PlayerManager.Instance.activeSlot_C.slotButton.interactable = false;
@@ -1239,6 +1300,15 @@ public class PhoneMenu : MonoBehaviour
 
             // 핸드폰 화면 패널 끄기
             phonePanel.SetActive(false);
+
+            // 핸드폰 알림 개수 초기화
+            UIManager.Instance.PhoneNotice(0);
+
+            // 인벤토리 new 표시 모두 끄기
+            for (int i = 0; i < invenSlots.Count; i++)
+            {
+                invenSlots[i].newSign.SetActive(false);
+            }
 
             float moveTime = 0.8f;
 

@@ -78,16 +78,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   activeAngleOffset: 0
-  alwaysOnCollider: 0
+  defaultCollOn: 1
+  cooltime: 0
+  coolCount: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
-  flatTime: 0
-  knockBackDebuff: 0
-  poisonDebuff: 0
+  rangeObj: {fileID: 0}
 --- !u!212 &1117852762
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -242,16 +253,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   activeAngleOffset: 0
-  alwaysOnCollider: 0
+  defaultCollOn: 1
+  cooltime: 0
+  coolCount: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
-  flatTime: 0
-  knockBackDebuff: 0
-  poisonDebuff: 0
+  rangeObj: {fileID: 0}
 --- !u!212 &1169140570
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5249,6 +5271,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hpNow: 0
+  hpMax: 0
+  rigid: {fileID: 5731709546891530442}
+  anim: {fileID: 0}
+  eliteClass: 0
   initialStart: 1
   initialFinish: 0
   lookLeft: 0
@@ -5262,8 +5289,6 @@ MonoBehaviour:
   nowAction: 0
   moveType: 0
   portalSize: 1.2
-  isElite: 0
-  eliteClass: 0
   afterEffect: 0
   isDead: 0
   selfExplosion: 0
@@ -5274,6 +5299,7 @@ MonoBehaviour:
   enemyAtkList: []
   spriteObj: {fileID: 6348597076793159104}
   shadow: {fileID: 4450725897239236901}
+  healRange: {fileID: 0}
   spriteList:
   - {fileID: 2142261907023557570}
   originMatList: []
@@ -5282,20 +5308,20 @@ MonoBehaviour:
   animList:
   - {fileID: 1169140569}
   - {fileID: 1117852761}
-  rigid: {fileID: 5731709546891530442}
   physicsColl: {fileID: 1921554375}
   hitBoxList: []
+  powerNow: 0
+  speedNow: 0
+  rangeNow: 0
+  cooltimeNow: 0
   buffParent: {fileID: 0}
-  hpMax: 0
-  HpNow: 1
-  power: 0
-  speed: 0
-  range: 0
   particleHitCount: 0
   hitCount: 0
   stopCount: 0
+  flatCount: 0
   oppositeCount: 0
   poisonCoolCount: 0
+  bleedCoolCount: 0
   enemyName: 
   enemyType: 
   velocity: {x: 0, y: 0, z: 0}
@@ -5502,16 +5528,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  burnTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   activeAngleOffset: 0
-  alwaysOnCollider: 0
+  defaultCollOn: 1
+  cooltime: 0
+  coolCount: 0
   enemyManager: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 7146421470627484963}
   dashEffect: {fileID: 2245917149986370186}
-  activeObj: {fileID: 0}
-  flatTime: 0
-  knockBackDebuff: 1
-  poisonDebuff: 0
+  rangeObj: {fileID: 0}
 --- !u!70 &7146421470627484963
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5560,7 +5597,7 @@ GameObject:
   - component: {fileID: 8494887417607790291}
   - component: {fileID: 8494887417607790289}
   - component: {fileID: 8494887417607790288}
-  m_Layer: 7
+  m_Layer: 15
   m_Name: Absorber
   m_TagString: Untagged
   m_Icon: {fileID: 0}

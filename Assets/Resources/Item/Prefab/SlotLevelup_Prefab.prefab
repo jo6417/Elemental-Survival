@@ -4927,7 +4927,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ccb3a946fc21b4b9bf703f552b66a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isCollision: 0
   amount: 1
   isBundle: 0
   gemTypeIndex: -1
@@ -4936,6 +4935,7 @@ MonoBehaviour:
   itemName: 
   sprite: {fileID: 9207893739345460325}
   despawnEffect: {fileID: 2703798339193748056}
+  coll: {fileID: 0}
 --- !u!212 &9207893739345460325
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4999,8 +4999,8 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 1
+  m_Mass: 0.0001
+  m_LinearDrag: 5
   m_AngularDrag: 1
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -5018,7 +5018,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

@@ -64,6 +64,7 @@ public class UIManager : MonoBehaviour
     public GameObject arrowPrefab; //적 방향 가리킬 화살표 UI
     public GameObject iconArrowPrefab; //오브젝트 방향 기리킬 아이콘 화살표 UI
     public Image phoneNoticeIcon; //스마트폰 알람 아이콘 UI
+    int noticeNum; // 현재 스마트폰 알림 개수
     Sequence iconJumpSeq;
     public bool phoneLoading; //스마트폰 로딩중 여부
 
@@ -108,7 +109,7 @@ public class UIManager : MonoBehaviour
         // 시작할때 머지 캔버스 켜놓기
         phonePanel.SetActive(true);
 
-        // usb 개수 알림 갱신
+        // 새 아이템 개수 알림 갱신
         PhoneNotice(0);
     }
 
@@ -443,11 +444,11 @@ public class UIManager : MonoBehaviour
         if (cursorSeq.IsActive())
             cursorSeq.Kill();
 
-        //TODO 타겟 위치로 이동
+        // 타겟 위치로 이동
         UI_Cursor.transform.DOMove(btnPos, flickTime)
         .SetUpdate(true);
 
-        //TODO 타겟과 사이즈 맞추기
+        // 타겟과 사이즈 맞추기
         cursorRect.DOSizeDelta(size, flickTime)
         .SetUpdate(true);
 
@@ -1013,15 +1014,22 @@ public class UIManager : MonoBehaviour
         stats[17].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.wind_atk * 100).ToString() + " %";
     }
 
-    public void PhoneNotice(int usbNum)
+    public void PhoneNotice(int fixNum = -1)
     {
         // 알람 숫자 아이콘 배경
         Image notice = phoneNoticeIcon.transform.Find("Notice").GetComponent<Image>();
         // 알람 개수 텍스트
         TextMeshProUGUI stackNum = notice.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-        // usb 개수 넣기
-        stackNum.text = usbNum.ToString();
+        // noticeNum 입력이 들어오면 해당 개수로 갱신
+        if (fixNum >= 0)
+            noticeNum = fixNum;
+        else
+            // 알림 개수 1개 높여서 갱신
+            noticeNum++;
+
+        //  개수 넣기
+        stackNum.text = noticeNum.ToString();
 
         // 아이콘 점프 트윈 생성 및 멈추기
         if (iconJumpSeq == null)
@@ -1046,13 +1054,13 @@ public class UIManager : MonoBehaviour
         }
 
         // 0개일때
-        if (usbNum == 0)
+        if (noticeNum == 0)
         {
             // 아이콘 점프 트윈 끝내기
             iconJumpSeq.Pause();
 
             // 화면 밝기 내려서 끄기
-            UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 1, 1, 0), 1f);
+            phoneNoticeIcon.DOColor(new Color(1, 1, 1, 0), 1f);
 
             //알림 아이콘 끄기
             notice.gameObject.SetActive(false);
@@ -1061,7 +1069,7 @@ public class UIManager : MonoBehaviour
         else
         {
             // 스마트폰 UI 화면 밝히기
-            UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 1, 1, 0), 1f);
+            phoneNoticeIcon.DOColor(new Color(1, 1, 1, 1), 1f);
 
             // 알림 아이콘 켜기
             notice.gameObject.SetActive(true);

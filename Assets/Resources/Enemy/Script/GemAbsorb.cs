@@ -24,7 +24,7 @@ public class GemAbsorb : MonoBehaviour
             ItemManager itemManager = other.GetComponent<ItemManager>();
 
             //해당 아이템 획득 여부 갱신, 중복 획득 방지
-            itemManager.isCollision = true;
+            itemManager.coll.enabled = false;
 
             // 자동 디스폰 중지, 색깔 초기화
             itemManager.sprite.DOKill();

@@ -148,6 +148,7 @@ public class MagicDB : MonoBehaviour
     public enum MagicType { active, passive };
 
     public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
+    public Dictionary<int, MagicInfo> activeMagicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
     // public List<Sprite> magicIcon = null; //마법 아이콘 리스트
     public Dictionary<string, Sprite> magicIcon = new Dictionary<string, Sprite>();
     public Dictionary<string, GameObject> magicPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
@@ -308,6 +309,12 @@ public class MagicDB : MonoBehaviour
                 yield return null;
             }
 
+            // 모든 마법 딕셔너리를 액티브 쿨타임용 딕셔너리에 복사
+            foreach (MagicInfo magic in magicDB.Values)
+            {
+                activeMagicDB[magic.id] = new MagicInfo(magic);
+            }
+
             //모든 마법 초기화
             InitialMagic();
         }
@@ -367,6 +374,14 @@ public class MagicDB : MonoBehaviour
     public MagicInfo GetMagicByID(int id)
     {
         if (magicDB.TryGetValue(id, out MagicInfo value))
+            return value;
+        else
+            return null;
+    }
+
+    public MagicInfo GetActiveMagicByID(int id)
+    {
+        if (activeMagicDB.TryGetValue(id, out MagicInfo value))
             return value;
         else
             return null;

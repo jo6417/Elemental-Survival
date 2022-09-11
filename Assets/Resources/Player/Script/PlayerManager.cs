@@ -103,7 +103,6 @@ public class PlayerManager : Character
 
     [Header("<Pocket>")]
     // public SlotInfo[] inventory = new SlotInfo[23]; // 플레이어 인벤토리
-    public int[] hasUSBList = new int[6]; // 플레이어 보유 USB 등급별 개수 목록
     public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
     public InventorySlot activeSlot_A;
@@ -392,16 +391,16 @@ public class PlayerManager : Character
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //!테스트용 인벤토리 채우기
-        PhoneMenu.Instance.invenSlots[0].slotInfo = MagicDB.Instance.GetMagicByID(10);
-        PhoneMenu.Instance.invenSlots[1].slotInfo = MagicDB.Instance.GetMagicByID(11);
-        PhoneMenu.Instance.invenSlots[2].slotInfo = MagicDB.Instance.GetMagicByID(10);
-        PhoneMenu.Instance.invenSlots[3].slotInfo = MagicDB.Instance.GetMagicByID(11);
+        // PhoneMenu.Instance.invenSlots[0].slotInfo = MagicDB.Instance.GetMagicByID(10);
+        // PhoneMenu.Instance.invenSlots[1].slotInfo = MagicDB.Instance.GetMagicByID(11);
+        // PhoneMenu.Instance.invenSlots[2].slotInfo = MagicDB.Instance.GetMagicByID(10);
+        // PhoneMenu.Instance.invenSlots[3].slotInfo = MagicDB.Instance.GetMagicByID(11);
         PhoneMenu.Instance.invenSlots[5].slotInfo = ItemDB.Instance.GetItemByID(8);
         PhoneMenu.Instance.invenSlots[6].slotInfo = ItemDB.Instance.GetItemByID(9);
         PhoneMenu.Instance.invenSlots[16].slotInfo = MagicDB.Instance.GetMagicByID(36);
-        PhoneMenu.Instance.invenSlots[17].slotInfo = MagicDB.Instance.GetMagicByID(34);
-        PhoneMenu.Instance.invenSlots[18].slotInfo = MagicDB.Instance.GetMagicByID(41);
-        PhoneMenu.Instance.invenSlots[19].slotInfo = MagicDB.Instance.GetMagicByID(44);
+        // PhoneMenu.Instance.invenSlots[17].slotInfo = MagicDB.Instance.GetMagicByID(34);
+        // PhoneMenu.Instance.invenSlots[18].slotInfo = MagicDB.Instance.GetMagicByID(41);
+        // PhoneMenu.Instance.invenSlots[19].slotInfo = MagicDB.Instance.GetMagicByID(44);
 
         // 인벤토리에서 마법 찾아 자동 시전하기
         CastMagic.Instance.CastCheck();

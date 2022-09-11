@@ -161,8 +161,6 @@ GameObject:
   - component: {fileID: 9025383428282566692}
   - component: {fileID: 1074812755544910094}
   - component: {fileID: 6285465381041843293}
-  - component: {fileID: 1096557191176949829}
-  - component: {fileID: 2600214116672794989}
   m_Layer: 14
   m_Name: New
   m_TagString: Untagged
@@ -188,7 +186,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 20}
+  m_SizeDelta: {x: 35, y: 20}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1074812755544910094
 CanvasRenderer:
@@ -228,46 +226,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
---- !u!114 &1096557191176949829
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2490218681394111088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 0
---- !u!114 &2600214116672794989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2490218681394111088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1 &3139607002244221774
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,8 +877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7368e1dc6708024396ce8f45ec373ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActiveSlot: 0
-  slotIndex: 0
+  slotType: 0
   slotBack: {fileID: 7428778236925871268}
   slotFrame: {fileID: 3965526800493705668}
   slotIcon: {fileID: 4769376366172046134}
@@ -1087,10 +1044,10 @@ RectTransform:
   m_Father: {fileID: 9025383428282566692}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 18.15, y: -10}
+  m_SizeDelta: {x: 36.3, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5247059842526743459
 CanvasRenderer:
@@ -1164,7 +1121,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 1
+  m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 2
   m_linkedTextComponent: {fileID: 0}

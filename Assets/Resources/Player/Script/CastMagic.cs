@@ -81,7 +81,7 @@ public class CastMagic : MonoBehaviour
     public IEnumerator ManualCast(InventorySlot invenSlot, MagicInfo magic)
     {
         // 마법 정보가 없거나 쿨타임 중이면 실패 인디케이터 실행
-        if (magic == null || MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
+        if (magic == null || MagicDB.Instance.GetActiveMagicByID(magic.id).coolCount > 0)
         {
             // 스프라이트 2회 켜기
             invenSlot.FailBlink(2);
@@ -144,14 +144,14 @@ public class CastMagic : MonoBehaviour
         }
 
         // 해당 마법의 전역 쿨타임 갱신
-        MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
-        sharedMagic.coolCount = coolTime;
+        MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
+        activeMagic.coolCount = coolTime;
 
         // 해당 마법 전역 쿨타임 카운트 감소
-        while (sharedMagic.coolCount > 0)
+        while (activeMagic.coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            sharedMagic.coolCount -= Time.deltaTime;
+            activeMagic.coolCount -= Time.deltaTime;
 
             yield return null;
         }
@@ -247,7 +247,7 @@ public class CastMagic : MonoBehaviour
                 //최근 갱신된 레벨 넣어주기
                 tempMagic.magicLevel = magic.magicLevel;
 
-                print($"Name : {tempMagic.name} / Level : {tempMagic.magicLevel}");
+                // print($"Name : {tempMagic.name} / Level : {tempMagic.magicLevel}");
 
                 // 패시브 마법이면
                 if (tempMagic.castType == MagicDB.MagicType.passive.ToString())
@@ -310,7 +310,7 @@ public class CastMagic : MonoBehaviour
             yield break;
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<GameObject> enemyObj = MarkEnemyObj(magic);
+        List<EnemyManager> enemyObj = MarkEnemies(magic);
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
@@ -335,13 +335,15 @@ public class CastMagic : MonoBehaviour
             if (magicHolder.magic == null)
                 magicHolder.magic = magic;
 
-            //적 위치 넣기, 있어도 새로 갱신
-            magicHolder.targetObj = enemyObj[i];
-
             // 적 오브젝트가 null이 아닐때
             if (enemyObj[i] != null)
+            {
+                //적 위치 넣기, 있어도 새로 갱신
+                magicHolder.targetObj = enemyObj[i].gameObject;
+
                 //적 오브젝트 위치 넣기, (유도 기능 등에 사용)
                 magicHolder.targetPos = enemyObj[i].transform.position;
+            }
             else
                 // 오브젝트 없으면 범위내 랜덤 위치 넣기
                 magicHolder.targetPos =
@@ -351,13 +353,13 @@ public class CastMagic : MonoBehaviour
         }
 
         // 해당 마법의 전역 쿨타임 갱신
-        MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
-        sharedMagic.coolCount = coolTime;
+        MagicInfo avtiveMagic = MagicDB.Instance.GetMagicByID(magic.id);
+        avtiveMagic.coolCount = coolTime;
 
-        while (sharedMagic.coolCount > 0)
+        while (avtiveMagic.coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            sharedMagic.coolCount -= Time.deltaTime;
+            avtiveMagic.coolCount -= Time.deltaTime;
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
@@ -417,7 +419,7 @@ public class CastMagic : MonoBehaviour
         nowCastMagics.Add(magic);
     }
 
-    public List<GameObject> MarkEnemyObj(MagicInfo magic)
+    public List<EnemyManager> MarkEnemies(MagicInfo magic)
     {
         // 마법 범위 계산
         float range = MagicDB.Instance.MagicRange(magic);
@@ -425,40 +427,57 @@ public class CastMagic : MonoBehaviour
         int atkNum = MagicDB.Instance.MagicProjectile(magic);
 
         //리턴할 적 오브젝트 리스트
-        List<GameObject> enemyObj = new List<GameObject>();
+        List<EnemyManager> enemyObjs = new List<EnemyManager>();
 
         //범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
         enemyCollList.Clear();
         enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
-        // 적 위치 리스트에 넣기
-        for (int i = 0; i < atkNum; i++)
+        // 찾은 적과 투사체 개수 중 많은 쪽만큼 반복
+        int findNum = Mathf.Max(enemyCollList.Count, atkNum);
+        for (int i = 0; i < findNum; i++)
         {
-            // 오브젝트 변수 생성
-            GameObject Obj = null;
+            // 투사체 개수만큼 채워지면 반복문 끝내기
+            if (enemyObjs.Count >= atkNum)
+                break;
 
-            // 적 콜라이더 리스트가 비어있지않으면
+            EnemyManager enemyManager = null;
+            Collider2D targetColl = null;
+
             if (enemyCollList.Count > 0)
             {
                 // 리스트 내에서 랜덤으로 선택
-                Collider2D col = enemyCollList[Random.Range(0, enemyCollList.Count)];
-                Obj = col.gameObject;
+                targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
+                // 적 히트박스 찾기
+                EnemyHitBox targetHitBox = targetColl.GetComponent<EnemyHitBox>();
+                if (targetHitBox != null)
+                    // 적 매니저 찾기
+                    enemyManager = targetHitBox.enemyManager;
 
-                //임시 리스트에서 지우기
-                enemyCollList.Remove(col);
+                // 이미 들어있는 오브젝트일때
+                if (enemyObjs.Exists(x => x == enemyManager)
+                // 해당 몬스터가 유령일때
+                || enemyManager.IsGhost)
+                {
+                    // 임시 리스트에서 지우기
+                    enemyCollList.Remove(targetColl);
 
-                // print(col.transform.name + col.transform.position);
+                    // 넘기기
+                    continue;
+                }
             }
 
-            // null 체크
-            // if (Obj != null)
             // 적 오브젝트 변수에 담기
-            enemyObj.Add(Obj);
+            enemyObjs.Add(enemyManager);
+
+            // 임시 리스트에서 지우기
+            if (targetColl != null)
+                enemyCollList.Remove(targetColl);
         }
 
         //적의 위치 리스트 리턴
-        return enemyObj;
+        return enemyObjs;
     }
 
     #region UseUltimateMagic

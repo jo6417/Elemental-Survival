@@ -774,21 +774,21 @@ public class EnemyManager : Character
             // 드랍률에 따라 마법 드랍
             if (Random.value <= enemy.dropRate)
             {
-                // 몬스터 등급에 해당하는 USB 찾기
-                ItemInfo usbItem = ItemDB.Instance.GetItemByName("Magic USB" + enemy.grade);
+                // 몬스터 등급에 해당하는 shard 찾기
+                ItemInfo shardItem = ItemDB.Instance.GetItemByName("Magic Shard" + enemy.grade);
                 // 아이템 프리팹 찾기
-                GameObject usbPrefab = ItemDB.Instance.GetItemPrefab(usbItem.id);
+                GameObject shardPrefab = ItemDB.Instance.GetItemPrefab(shardItem.id);
 
                 //아이템 오브젝트 소환
-                GameObject usbObj = LeanPool.Spawn(usbPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+                GameObject shardObj = LeanPool.Spawn(shardPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
                 // 아이템 매니저 찾기
-                ItemManager itemManager = usbObj.GetComponent<ItemManager>();
+                ItemManager itemManager = shardObj.GetComponent<ItemManager>();
                 //아이템 정보 넣기
-                itemManager.item = usbItem;
+                itemManager.item = shardItem;
 
                 //아이템 리지드 찾기
-                Rigidbody2D itemRigid = usbObj.GetComponent<Rigidbody2D>();
+                Rigidbody2D itemRigid = shardObj.GetComponent<Rigidbody2D>();
 
                 // 랜덤 방향, 랜덤 파워로 아이템 날리기
                 itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
@@ -816,17 +816,17 @@ public class EnemyManager : Character
                 // 아이템 이름 짓기
                 itemName = randomMagic.name;
             }
-            // 0등급 아닐때는 몬스터 등급으로 USB 이름 짓기
+            // 0등급 아닐때는 몬스터 등급으로 shard 이름 짓기
             else
             {
-                // 소환할 USB 등급 랜덤하게 레벨업 (1~6 사이로 고정)
+                // 소환할 shard 등급 랜덤하게 레벨업 (1~6 사이로 고정)
                 int itemGrade = Mathf.Clamp(enemy.grade + Random.Range(0, 2), 1, 6);
 
                 // 아이템 이름 짓기
-                itemName = "Magic USB" + itemGrade;
+                itemName = "Magic Shard" + itemGrade;
             }
 
-            // 몬스터 등급에 해당하는 USB 찾기
+            // 몬스터 등급에 해당하는 shard 찾기
             itemInfo = ItemDB.Instance.GetItemByName(itemName);
 
             // 아이템 프리팹 찾기
