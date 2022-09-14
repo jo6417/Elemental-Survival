@@ -56,6 +56,7 @@ public class UIManager : MonoBehaviour
     public GameObject gameoverPanel;
 
     [Header("ReferUI")]
+    public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
     public GameObject gameoverSlot; //게임 오버 창에 들어갈 마법 슬롯
     public TextMeshProUGUI timer;
@@ -223,8 +224,8 @@ public class UIManager : MonoBehaviour
 
     void PhoneOpen()
     {
-        //스마트폰 패널 꺼져있을때
-        if (!phonePanel.activeSelf)
+        // 시간 멈추지 않았을때
+        if (Time.timeScale > 0)
         {
             StartCoroutine(PhoneMenu.Instance.OpenPhone());
 

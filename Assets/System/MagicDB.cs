@@ -718,9 +718,9 @@ public class MagicDB : MonoBehaviour
         Mathf.FloorToInt(magic.projectilePerLev * (level - 1));
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
-            // 플레이어 투사체 개수 추가 계산
-            projectile += PlayerManager.Instance.PlayerStat_Now.projectileNum;
+        // if (target == MagicHolder.Target.Enemy)
+        //     // 플레이어 투사체 개수 추가 계산
+        //     projectile += PlayerManager.Instance.PlayerStat_Now.projectileNum;
 
         //최소값 1 제한
         projectile = Mathf.Clamp(projectile, 1, projectile);

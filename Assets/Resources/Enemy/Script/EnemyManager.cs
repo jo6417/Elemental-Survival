@@ -125,7 +125,7 @@ public class EnemyManager : Character
     public IEnumerator slowCoroutine = null;
     public IEnumerator shockCoroutine = null;
     public float particleHitCount = 0; // 파티클 피격 카운트
-    public float hitCount = 0; // 피격 딜레이 카운트
+    public float hitDelayCount = 0; // 피격 딜레이 카운트
     public float stopCount = 0; // 시간 정지 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
@@ -306,7 +306,7 @@ public class EnemyManager : Character
             nowHasItem.Add(item);
         }
 
-        hitCount = 0; //데미지 카운트 초기화
+        hitDelayCount = 0; //데미지 카운트 초기화
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
 
@@ -488,11 +488,11 @@ public class EnemyManager : Character
         }
 
         // 히트 딜레이 차감
-        if (hitCount > 0)
+        if (hitDelayCount > 0)
         {
             // state = State.Hit;
 
-            hitCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
+            hitDelayCount -= Time.deltaTime * SystemManager.Instance.globalTimeScale;
         }
 
         // flat 디버프 중일때 카운트 차감
@@ -630,7 +630,7 @@ public class EnemyManager : Character
         }
 
         // 피격 했을때
-        if (hitCount > 0)
+        if (hitDelayCount > 0)
         {
             return false;
         }
@@ -846,9 +846,10 @@ public class EnemyManager : Character
             // 랜덤 방향, 랜덤 파워로 아이템 날리기
             itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
 
-            // 아이템 랜덤 회전 시키기
-            float randomRotate = Random.Range(1f, 2f);
-            itemRigid.angularVelocity = randomRotate < 1.5f ? 90f * randomRotate : -90f * randomRotate;
+            // 랜덤으로 방향 및 속도 결정
+            float randomRotate = Random.Range(1f, 3f);
+            // 아이템 랜덤 속도로 회전 시키기
+            itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
         }
     }
 }

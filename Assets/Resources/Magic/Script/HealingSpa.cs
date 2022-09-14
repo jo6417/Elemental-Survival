@@ -9,122 +9,36 @@ public class HealingSpa : MonoBehaviour
     public float MaxTime; // 최종 제한시간
     public float bubbleDelay;
     public float reduceDelay = 3f; //딜레이마다 연못 크기가 줄어듬
-    float pulseCount;
-    float reduceCoolCount;
-    bool healTrigger = false;
-    Vector2 originScale;
-    MagicHolder magicHolder;
+    float reduceCoolCount; // 연못 줄이기 쿨타임
+    float healCoolCount; // 플레이어 힐 쿨타임
+    [SerializeField] MagicHolder magicHolder;
     MagicInfo magic;
-    Collider2D coll;
-    public List<GameObject> effectObjs = new List<GameObject>(); //거품, 물결 효과
 
     [Header("Refer")]
-    public GameObject bubblePrefab;
-    public GameObject pulsePrefab;
-    public ParticleSystem smokeParticle;
+    [SerializeField] Transform effectParent; // 펄스 이펙트 부모 오브젝트
+    [SerializeField] SpriteRenderer pondSprite; // 연못 스프라이트
+    public GameObject pulsePrefab; // 캐릭터 밑에 펄스 이펙트
+    public GameObject dustEffect; // 디스폰 이펙트
+    public List<GameObject> pulseCharacterList = new List<GameObject>(); // 연못 내부에 들어온 오브젝트
 
     [Header("Magic Stat")]
     float range;
     float duration;
-    int healPower;
+    int healPower = -1;
     float coolTime;
     float speed;
-
-    private void Awake()
-    {
-        magicHolder = GetComponent<MagicHolder>();
-        coll = GetComponent<Collider2D>();
-        originScale = transform.localScale;
-    }
 
     private void OnEnable()
     {
         //초기화
         StartCoroutine(Init());
-
-        //딜레이마다 거품 생성
-        StartCoroutine(BubbleCycle());
-
-        //플레이어 들어오면 체력 회복
-        StartCoroutine(HealPlayer());
-    }
-
-    private void Update()
-    {
-        // 오브젝트 크기에 맞춰 파티클 범위 갱신
-        ParticleSystem.ShapeModule shape = smokeParticle.shape;
-        shape.radius = 10 * transform.localScale.x / originScale.x;
-    }
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        // 적이 닿으면 연못 크기 늘리기, 쿨타임 지났을때, 살아있는 적일때
-        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
-        && Time.time - reduceCoolCount >= 0.2f
-        && !other.GetComponentInChildren<EnemyManager>().isDead)
-        {
-            // print(transform.localScale);
-            transform.localScale += new Vector3(0.01f, 0.01f, 0);
-
-            reduceCoolCount = Time.time;
-        }
-
-        if (Time.time - pulseCount >= 0.5f)
-        {
-            Vector2 pulsePos = (Vector2)other.transform.position + Vector2.down * other.GetComponentInChildren<SpriteRenderer>().bounds.size.y / 2f;
-
-            //물결 소환 몇초후 삭제
-            GameObject pulse = LeanPool.Spawn(pulsePrefab, pulsePos, Quaternion.identity);
-
-            //리스트에 물결 추가
-            effectObjs.Add(pulse);
-
-            //점점 투명하게
-            SpriteRenderer sprite = pulse.GetComponent<SpriteRenderer>();
-            sprite.color = Color.white;
-            sprite.DOColor(new Color(sprite.color.r, sprite.color.g, sprite.color.b, 0), 1f)
-            .SetEase(Ease.InCubic);
-
-            //사이즈 제로부터 점점 키우기
-            pulse.transform.localScale = Vector2.zero;
-            pulse.transform.DOScale(Vector2.one * 2f, 1f)
-            .OnComplete(() =>
-            {
-                //디스폰
-                LeanPool.Despawn(pulse);
-
-                //리스트에서 물결 오브젝트 제거
-                effectObjs.Remove(pulse);
-            });
-
-            pulseCount = Time.time;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // 플레이어 들어오면 HealOn
-        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
-            healTrigger = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        // 플레이어 나가면 HealOff
-        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
-            healTrigger = false;
-
-        //이펙트가 콜라이더 벗어나면 디스폰 시키기
-        if (effectObjs.Find(x => x == other.gameObject))
-        {
-            print("이펙트 삭제");
-            LeanPool.Despawn(other.gameObject);
-            effectObjs.Remove(other.gameObject);
-        }
     }
 
     IEnumerator Init()
     {
+        // 연못 이미지 숨기기
+        pondSprite.enabled = false;
+
         //마법 정보 불러올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
@@ -135,110 +49,133 @@ public class HealingSpa : MonoBehaviour
         coolTime = MagicDB.Instance.MagicCoolTime(magic);
         speed = MagicDB.Instance.MagicSpeed(magic, false);
 
-        //딜레이 초기화
+        // 딜레이 초기화
         reduceDelay = duration;
 
-        //제로 사이즈에서 크기 키우기
+        // 타겟 위치로 이동
+        transform.position = magicHolder.targetPos;
+
+        // 제로 사이즈로 초기화
         transform.localScale = Vector2.zero;
+
+        // 연못 이미지 나타내기
+        pondSprite.enabled = true;
+
+        //제로 사이즈에서 크기 키우기
         transform.DOScale(Vector2.one * range, 0.5f)
         .SetEase(Ease.OutBack);
 
-        //시간마다 사이즈 줄이기
-        while (gameObject.activeSelf)
+        // 플레이어 및 몬스터 피직스와 충돌하게 충돌 레이어 초기화
+        gameObject.layer = SystemManager.Instance.layerList.Object_Layer;
+    }
+
+    private void Update()
+    {
+        // 쿨타임 중일때
+        if (Time.time - reduceCoolCount >= reduceDelay)
         {
-            //딜레이만큼 대기
-            yield return new WaitForSeconds(reduceDelay);
+            // 연못 스케일 줄이기
+            ReduceScale();
 
-            // 연못 크기 줄이기, 점점 빠르게
-            if (transform.localScale.x > 0)
-                transform.localScale -= new Vector3(0.01f, 0.01f, 0);
+            // 사이즈 감소 쿨타임 초기화
+            reduceCoolCount = Time.time;
+        }
+    }
 
-            //딜레이는 점점 줄어듬
-            reduceDelay -= 0.005f;
+    void ReduceScale()
+    {
+        // 연못 크기 줄이기
+        if (transform.localScale.x > 0)
+            transform.localScale -= new Vector3(0.01f, 0.01f, 0);
 
-            //최소 딜레이 제한
-            if (reduceDelay <= 0.01f)
-                reduceDelay = 0.01f;
+        // 줄이기 딜레이는 점점 줄어듬
+        reduceDelay -= 0.01f;
 
-            //제로 사이즈까지 완전히 줄어들면 디스폰
-            if (transform.localScale.x <= 0)
+        // 최소 딜레이 제한
+        if (reduceDelay <= 0.01f)
+            reduceDelay = 0.01f;
+
+        //제로 사이즈까지 완전히 줄어들면 디스폰
+        if (transform.localScale.x <= 0)
+        {
+            // 먼지 퍼지는 이펙트 소환
+            LeanPool.Spawn(dustEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            // 연못 디스폰
+            LeanPool.Despawn(gameObject);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        // 적이 닿으면
+        if (other.TryGetComponent(out EnemyManager enemyManager))
+        {
+            // 해당 몬스터 히트 쿨타임 끝났을때
+            if (enemyManager.hitDelayCount <= 0)
             {
-                //체력 회복 끄기
-                healTrigger = false;
+                // 죽은 적이면 취소
+                if (enemyManager.isDead)
+                    return;
 
-                //모든 이펙트 제거
-                foreach (var effect in effectObjs)
-                {
-                    LeanPool.Despawn(effect);
-                }
-                effectObjs.RemoveAll(x => x);
+                // 닿은 적에게 데미지 주기
+                StartCoroutine(enemyManager.hitBoxList[0].Hit(magicHolder));
 
-                LeanPool.Despawn(gameObject, 5f);
+                // 스케일 늘리기
+                transform.localScale += new Vector3(0.01f, 0.01f, 0);
             }
         }
 
-        // 최종 제한시간 지난 후 줄어들어 사라짐
-        transform.DOScale(Vector2.zero, 1f)
-        .SetEase(Ease.InBack)
-        .SetDelay(MaxTime)
+        // 플레이어가 닿으면 연못 크기 줄이기, 힐 수치 초기화 됬을때
+        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && healPower != -1)
+        {
+            // 쿨타임 끝났을때
+            if (Time.time - healCoolCount >= 0.2f)
+            {
+                //체력 회복
+                PlayerManager.Instance.hitBox.Damage(-healPower, false);
+
+                // 연못 크기 줄이기
+                if (transform.localScale.x >= 0)
+                    transform.localScale -= new Vector3(0.01f, 0.01f, 0);
+
+                // 플레이어 힐 쿨타임 초기화
+                healCoolCount = Time.time;
+            }
+        }
+
+        // 충돌한 캐릭터 발밑에 물결 일으키기
+        WaterPulse(other.gameObject);
+    }
+
+    void WaterPulse(GameObject pulseCharacter)
+    {
+        // 이미 물결 일으키는 중인 캐릭터면 리턴
+        if (pulseCharacterList.Exists(x => x == pulseCharacter))
+            return;
+
+        // 캐릭터 발밑에 물결 이펙트 소환
+        GameObject pulse = LeanPool.Spawn(pulsePrefab, pulseCharacter.transform.position, Quaternion.identity, effectParent);
+
+        // 리스트에 물결 일으킨 캐릭터 추가
+        pulseCharacterList.Add(pulseCharacter);
+
+        //점점 투명하게
+        SpriteRenderer sprite = pulse.GetComponent<SpriteRenderer>();
+        sprite.color = Color.white;
+        sprite.DOColor(new Color(sprite.color.r, sprite.color.g, sprite.color.b, 0), 1f)
+        .SetEase(Ease.InCubic);
+
+        //사이즈 제로부터 점점 키우기
+        pulse.transform.localScale = Vector2.zero;
+        pulse.transform.DOScale(Vector2.one, 1f)
         .OnComplete(() =>
         {
-            LeanPool.Despawn(gameObject, 5f);
+            // 리스트에서 물결 일으킨 캐릭터 제거
+            pulseCharacterList.Remove(pulseCharacter);
+
+            // 믈결 디스폰
+            LeanPool.Despawn(pulse);
         });
-    }
-
-    IEnumerator HealPlayer()
-    {
-        //마법 정보 불러올때까지 대기
-        yield return new WaitUntil(() => magic != null);
-
-        while (healTrigger)
-        {
-            // print("heal : " + healPower);
-
-            //체력 회복
-            PlayerManager.Instance.hitBox.Damage(-healPower, false);
-
-            // 연못 크기 줄이기
-            if (transform.localScale.x >= 0)
-                transform.localScale -= new Vector3(0.01f, 0.01f, 0);
-
-            //speed 마다 회복
-            yield return new WaitForSeconds(speed);
-        }
-    }
-
-    IEnumerator BubbleCycle()
-    {
-        //마법 정보 불러올때까지 대기
-        yield return new WaitUntil(() => magic != null);
-
-        range = MagicDB.Instance.MagicRange(magic);
-
-        while (gameObject.activeSelf)
-        {
-            //쿨타임마다 반복
-            yield return new WaitForSeconds(bubbleDelay + 1f);
-
-            //거품 생성 위치
-            Vector2 bubblePos = (Vector2)transform.position + Random.insideUnitCircle * transform.localScale.x;
-            //거품 이동할 방향
-            Vector2 bubbleDir = bubblePos + Random.insideUnitCircle.normalized;
-
-            //거품 소환 몇초후 삭제
-            GameObject bubble = LeanPool.Spawn(bubblePrefab, bubblePos, Quaternion.identity);
-            //리스트에 거품 추가
-            effectObjs.Add(bubble);
-
-            bubble.transform.DOMove(bubbleDir, bubbleDelay)
-            .SetEase(Ease.Linear)
-            .OnComplete(() =>
-            {
-                LeanPool.Despawn(bubble);
-
-                //리스트에 거품 제거
-                effectObjs.Remove(bubble);
-            });
-        }
     }
 }

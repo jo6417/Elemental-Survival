@@ -22,6 +22,7 @@ public class Meteor : MonoBehaviour
 
     [Header("Magic Stat")]
     float speed;
+    float range;
 
     private void Awake()
     {
@@ -55,6 +56,8 @@ public class Meteor : MonoBehaviour
     {
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
         speed = MagicDB.Instance.MagicSpeed(magic, false);
+        // 해당 마법 범위 불러오기
+        range = MagicDB.Instance.MagicRange(magic);
 
         //시작 위치
         Vector2 startPos = startOffset + (Vector2)magicHolder.targetPos;
@@ -118,16 +121,20 @@ public class Meteor : MonoBehaviour
         // 폭발 이펙트 오브젝트 생성
         GameObject explosionEffect = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-        // 폭발 이펙트에도 타겟 정보 물려주기
         if (explosionEffect.TryGetComponent(out MagicHolder explosionHolder))
         {
+            // 폭발 이펙트에 마법 정보 입력
+            explosionHolder.magic = magic;
+
+            // 폭발 이펙트에 타겟 정보 입력
             explosionHolder.SetTarget(magicHolder.GetTarget());
         }
 
         // 흙 튀는 파티클 생성
         LeanPool.Spawn(dirtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-        //TODO 용암 균열 장판 남기기
+        //TODO 일정 레벨 이상이면
+        // 용암 균열 장판 남기기
         // LeanPool.Spawn(lavaPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         //스프라이트 끄기

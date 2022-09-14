@@ -59,7 +59,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             return;
 
         // 피격 딜레이 중이면 리턴
-        if (enemyManager.hitCount > 0)
+        if (enemyManager.hitDelayCount > 0)
             return;
 
         // 죽었으면 리턴
@@ -288,7 +288,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // Hit 상태로 변경
         enemyManager.nowState = EnemyManager.State.Hit;
 
-        enemyManager.hitCount = enemyManager.enemy.hitDelay;
+        enemyManager.hitDelayCount = enemyManager.enemy.hitDelay;
 
         // 히트 머터리얼 및 색으로 변경
         for (int i = 0; i < enemyManager.spriteList.Count; i++)
@@ -301,7 +301,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 enemyManager.spriteList[i].color = SystemManager.Instance.healColor;
         }
 
-        yield return new WaitUntil(() => enemyManager.hitCount <= 0);
+        yield return new WaitUntil(() => enemyManager.hitDelayCount <= 0);
 
         // 죽었으면 복구하지않고 리턴
         if (enemyManager.isDead)
@@ -354,7 +354,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
         // 경직 시간 추가
         if (damage > 0)
-            enemyManager.hitCount = enemyManager.enemy.hitDelay;
+            enemyManager.hitDelayCount = enemyManager.enemy.hitDelay;
 
         //데미지 UI 띄우기
         StartCoroutine(DamageText(damage, isCritical));
@@ -382,7 +382,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
     public IEnumerator DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
         // 크리티컬 떴을때 추가 강조효과 UI
@@ -412,31 +412,27 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             dmgTxt.text = "+" + (-damage).ToString();
         }
 
-        //제로 사이즈로 시작
-        damageUI.transform.localScale = Vector3.zero;
-
         // 데미지 양수일때
         if (damage > 0)
             // 오른쪽으로 DOJump
-            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
+            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 0.5f)
             .SetEase(Ease.OutBounce);
         // 데미지 음수일때
         else
             // 위로 DoMove
-            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 1f)
+            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 0.5f)
             .SetEase(Ease.OutSine);
 
-        yield return new WaitForSeconds(0.5f);
+        //제로 사이즈로 시작
+        damageUI.transform.localScale = Vector3.zero;
 
         //원래 크기로 늘리기
         damageUI.transform.DOScale(Vector3.one, 0.5f);
-
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.8f);
 
         //줄어들어 사라지기
-        damageUI.transform.DOScale(Vector3.zero, 0.5f);
-
-        yield return new WaitForSeconds(0.5f);
+        damageUI.transform.DOScale(Vector3.zero, 0.2f);
+        yield return new WaitForSeconds(0.2f);
 
         // 데미지 텍스트 디스폰
         LeanPool.Despawn(damageUI);

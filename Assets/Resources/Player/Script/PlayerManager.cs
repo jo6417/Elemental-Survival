@@ -292,7 +292,7 @@ public class PlayerManager : Character
         }
         else
         {
-            anim.speed = 1;
+            anim.speed = 1 * SystemManager.Instance.playerTimeScale;
         }
 
         // x축 이동에 따라 회전
@@ -360,47 +360,26 @@ public class PlayerManager : Character
             playerInteracter.nearInteracter.interactSubmitCallback();
     }
 
-    #region EquipUltimate
-    // public void EquipUltimate()
-    // {
-    //     // 궁극기 없으면 리턴
-    //     if (ultimateList.Count <= 0)
-    //         return;
-
-    //     //해당 마법을 장착
-    //     MagicInfo ultimateMagic = ultimateList[0];
-    //     // print("ultimate : " + ultimateMagic.magicName);
-
-    //     // 해당 궁극기 쿨타임 저장
-    //     ultimateCoolTime = MagicDB.Instance.MagicCoolTime(ultimateMagic, MagicHolder.Target.Enemy);
-
-    //     // 해당 마법 쿨타임 카운트 초기화
-    //     ultimateCoolCount = ultimateCoolTime;
-
-    //     //쿨타임 이미지 갱신
-    //     UIManager.Instance.UltimateCooltime();
-
-    //     // 궁극기 UI 업데이트
-    //     // UIManager.Instance.UpdateUltimateIcon();
-    // }
-    #endregion
-
     IEnumerator CastDefaultMagics()
     {
         // MagicDB 로드 완료까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        //!테스트용 인벤토리 채우기
-        // PhoneMenu.Instance.invenSlots[0].slotInfo = MagicDB.Instance.GetMagicByID(10);
-        // PhoneMenu.Instance.invenSlots[1].slotInfo = MagicDB.Instance.GetMagicByID(11);
-        // PhoneMenu.Instance.invenSlots[2].slotInfo = MagicDB.Instance.GetMagicByID(10);
-        // PhoneMenu.Instance.invenSlots[3].slotInfo = MagicDB.Instance.GetMagicByID(11);
-        PhoneMenu.Instance.invenSlots[5].slotInfo = ItemDB.Instance.GetItemByID(8);
-        PhoneMenu.Instance.invenSlots[6].slotInfo = ItemDB.Instance.GetItemByID(9);
-        PhoneMenu.Instance.invenSlots[16].slotInfo = MagicDB.Instance.GetMagicByID(36);
-        // PhoneMenu.Instance.invenSlots[17].slotInfo = MagicDB.Instance.GetMagicByID(34);
-        // PhoneMenu.Instance.invenSlots[18].slotInfo = MagicDB.Instance.GetMagicByID(41);
-        // PhoneMenu.Instance.invenSlots[19].slotInfo = MagicDB.Instance.GetMagicByID(44);
+        //! 인스펙터의 테스트 마법 획득
+        for (int i = 0; i < CastMagic.Instance.testMagics.Count; i++)
+        {
+            int id = CastMagic.Instance.testMagics[i];
+            MagicInfo magic = MagicDB.Instance.GetMagicByID(id);
+            PhoneMenu.Instance.GetMagic(magic);
+        }
+
+        //! 인스펙터의 테스트 아이템 획득
+        for (int i = 0; i < CastMagic.Instance.testItems.Count; i++)
+        {
+            int id = CastMagic.Instance.testItems[i];
+            ItemInfo item = ItemDB.Instance.GetItemByID(id);
+            PhoneMenu.Instance.GetItem(item);
+        }
 
         // 인벤토리에서 마법 찾아 자동 시전하기
         CastMagic.Instance.CastCheck();

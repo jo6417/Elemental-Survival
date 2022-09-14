@@ -189,6 +189,15 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // button.Select();
     }
 
+    public void OnSelect(BaseEventData eventData)
+    {
+        // 버튼이 상호작용 가능할때만
+        if (slotButton.interactable)
+        {
+            // select 했을때 툴팁 띄우기 - 툴팁트리거에서 하기
+        }
+    }
+
     public void OnPointerExit(PointerEventData eventData)
     {
         // 마우스 나가면 Deselect 하기
@@ -199,16 +208,21 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
         // 버튼이 상호작용 가능할때만
         if (slotButton.interactable)
-            // 마법 넣기
-            ClickSlot();
-    }
-
-    public void OnSelect(BaseEventData eventData)
-    {
-        // 버튼이 상호작용 가능할때만
-        if (slotButton.interactable)
         {
-            // select 했을때 툴팁 띄우기 - 툴팁트리거에서 하기
+            int secondInput = -1;
+
+            // 쉬프트 누른채로 클릭했을때
+            if (UIManager.Instance.UI_Input.UI.Shift.IsPressed())
+                // 머지 슬롯으로 변수 넣기
+                secondInput = (int)SlotType.Active;
+
+            // 컨트롤 누른채로 클릭했을때
+            if (UIManager.Instance.UI_Input.UI.Ctrl.IsPressed())
+                // 액티브 슬롯으로 변수 넣기
+                secondInput = (int)SlotType.Merge;
+
+            // 마법 넣기
+            ClickSlot(secondInput);
         }
     }
 
@@ -229,7 +243,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             ClickSlot();
     }
 
-    void ClickSlot()
+    void ClickSlot(int secondInput = -1)
     {
         // 선택된 슬롯 없을때
         if (PhoneMenu.Instance.nowSelectSlot == null)
@@ -238,23 +252,165 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (slotInfo == null)
                 return;
 
-            // 마우스 아이콘에 해당 슬롯 아이콘 넣기
-            PhoneMenu.Instance.nowSelectIcon.enabled = true;
-            PhoneMenu.Instance.nowSelectIcon.sprite = slotIcon.sprite;
+            // 머지 슬롯 단축키 누른채로 클릭했을때
+            if (secondInput == 1)
+            {
+                // 현재 슬롯이 액티브나 머지 슬롯일때
+                if (slotType == SlotType.Active
+                || slotType == SlotType.Merge)
+                {
+                    //비어있는 인벤 슬롯 찾기
+                    int emptyIndex = PhoneMenu.Instance.GetEmptySlot();
 
-            // 아이콘 마우스 위치로 이동
-            PhoneMenu.Instance.MousePos();
+                    // 비어있는 인벤 슬롯 있을때
+                    if (emptyIndex != -1)
+                    {
+                        // 현재 슬롯의 아이템 넣기
+                        PhoneMenu.Instance.invenSlots[emptyIndex].slotInfo = slotInfo;
 
-            // 현재 슬롯 기억하기
-            PhoneMenu.Instance.nowSelectSlot = this;
-            // 선택된 슬롯 정보 갱신
-            PhoneMenu.Instance.nowSelectSlotInfo = slotInfo;
+                        // 현재 슬롯 정보 삭제
+                        slotInfo = null;
 
-            // 해당 슬롯 아이템 삭제
-            slotInfo = null;
+                        // 각 슬롯 UI 갱신
+                        PhoneMenu.Instance.invenSlots[emptyIndex].Set_Slot(true);
+                        Set_Slot(true);
 
-            // 폰 하단 버튼 상호작용 막기
-            PhoneMenu.Instance.InteractBtnsToggle(false);
+                        return;
+                    }
+                    // 비어있는 인벤 슬롯 없을때
+                    else
+                    {
+                        // 현재 슬롯 빨갛게 인디케이터 점등
+                        FailBlink(2);
+                        return;
+                    }
+                }
+
+                // 비어있는 머지 슬롯
+                InventorySlot emptyMergeSlot = null;
+
+                // 좌측 슬롯이 비었을때
+                if (PhoneMenu.Instance.L_MergeSlot.slotInfo == null)
+                    emptyMergeSlot = PhoneMenu.Instance.L_MergeSlot;
+                // 우측 슬롯이 비었을때
+                else if (PhoneMenu.Instance.R_MergeSlot.slotInfo == null)
+                    emptyMergeSlot = PhoneMenu.Instance.R_MergeSlot;
+
+                // 비어있는 머지 슬롯이 있을때
+                if (emptyMergeSlot != null)
+                {
+                    // 현재 슬롯의 아이템 넣기
+                    emptyMergeSlot.slotInfo = slotInfo;
+
+                    // 현재 슬롯 정보 삭제
+                    slotInfo = null;
+
+                    // 각 슬롯 UI 갱신
+                    emptyMergeSlot.Set_Slot(true);
+                    Set_Slot(true);
+
+                    // 합성 가능 여부 체크하기
+                    MergeCheck();
+
+                    return;
+                }
+            }
+
+            // 액티브 슬롯 단축키 누른채로 클릭했을때
+            if (secondInput == 2)
+            {
+                // 현재 슬롯이 액티브나 머지 슬롯일때
+                if (slotType == SlotType.Active
+                || slotType == SlotType.Merge)
+                {
+                    //비어있는 인벤 슬롯 찾기
+                    int emptyIndex = PhoneMenu.Instance.GetEmptySlot();
+
+                    // 비어있는 인벤 슬롯 있을때
+                    if (emptyIndex != -1)
+                    {
+                        // 현재 슬롯의 아이템 넣기
+                        PhoneMenu.Instance.invenSlots[emptyIndex].slotInfo = slotInfo;
+
+                        // 현재 슬롯 정보 삭제
+                        slotInfo = null;
+
+                        // 각 슬롯 UI 갱신
+                        PhoneMenu.Instance.invenSlots[emptyIndex].Set_Slot(true);
+                        Set_Slot(true);
+
+                        return;
+                    }
+                    // 비어있는 인벤 슬롯 없을때
+                    else
+                    {
+                        // 현재 슬롯 빨갛게 인디케이터 점등
+                        FailBlink(2);
+                        return;
+                    }
+                }
+
+                // 슬롯정보가 마법이 아닐때
+                if (slotInfo as MagicInfo == null)
+                {
+                    // 현재 슬롯 빨갛게 인디케이터 점등
+                    FailBlink(2);
+                    return;
+                }
+
+                // 비어있는 액티브 슬롯
+                InventorySlot emptyActiveSlot = null;
+
+                // 비어있는 액티브 슬롯 찾기
+                if (PlayerManager.Instance.activeSlot_A.slotInfo == null)
+                    emptyActiveSlot = PlayerManager.Instance.activeSlot_A;
+                else if (PlayerManager.Instance.activeSlot_B.slotInfo == null)
+                    emptyActiveSlot = PlayerManager.Instance.activeSlot_B;
+                else if (PlayerManager.Instance.activeSlot_C.slotInfo == null)
+                    emptyActiveSlot = PlayerManager.Instance.activeSlot_C;
+
+                // 비어있는 액티브 슬롯이 있을때
+                if (emptyActiveSlot != null)
+                {
+                    // 현재 슬롯의 아이템 넣기
+                    emptyActiveSlot.slotInfo = slotInfo;
+
+                    // 현재 슬롯 정보 삭제
+                    slotInfo = null;
+
+                    // 각 슬롯 UI 갱신
+                    emptyActiveSlot.Set_Slot(true);
+                    Set_Slot(true);
+
+                    return;
+                }
+            }
+
+            // 그냥 클릭했을때
+            if (secondInput == -1)
+            {
+                // 마우스 아이콘에 해당 슬롯 아이콘 넣기
+                PhoneMenu.Instance.nowSelectIcon.enabled = true;
+                PhoneMenu.Instance.nowSelectIcon.sprite = slotIcon.sprite;
+
+                // 아이콘 마우스 위치로 이동
+                PhoneMenu.Instance.MousePos();
+
+                // 현재 슬롯 기억하기
+                PhoneMenu.Instance.nowSelectSlot = this;
+                // 선택된 슬롯 정보 갱신
+                PhoneMenu.Instance.nowSelectSlotInfo = slotInfo;
+
+                // 해당 슬롯 아이템 삭제
+                slotInfo = null;
+
+                // 키 입력 막기 변수 토글
+                PhoneMenu.Instance.btnsInteractable = false;
+                // 메뉴 버튼 상호작용 토글
+                PhoneMenu.Instance.recipeBtn.interactable = false;
+                // 백 버튼 상호작용 토글
+                PhoneMenu.Instance.backBtn.interactable = false;
+            }
         }
         // 아이템 들고 click 했을때
         else
@@ -318,97 +474,16 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 해당 슬롯이 Merge 슬롯일때
             if (slotType == SlotType.Merge)
             {
-                // 양쪽 슬롯 찾기
-                InventorySlot L_MergeSlot = PhoneMenu.Instance.L_MergeSlotRect.GetComponent<InventorySlot>();
-                InventorySlot R_MergeSlot = PhoneMenu.Instance.R_MergeSlotRect.GetComponent<InventorySlot>();
-
-                // 양쪽 슬롯 다 들어있으면
-                if (L_MergeSlot.slotInfo != null
-                && R_MergeSlot.slotInfo != null)
-                {
-                    // 양쪽 마법 정보 찾기
-                    MagicInfo L_Magic = L_MergeSlot.slotInfo as MagicInfo;
-                    MagicInfo R_Magic = R_MergeSlot.slotInfo as MagicInfo;
-
-                    // 양쪽 아이템 정보 찾기
-                    ItemInfo L_Item = L_MergeSlot.slotInfo as ItemInfo;
-                    ItemInfo R_Item = R_MergeSlot.slotInfo as ItemInfo;
-
-                    // 두 슬롯 모두 마법 들었을때
-                    if (L_Magic != null
-                    && R_Magic != null)
-                    {
-                        // 두 슬롯의 마법으로 합성 가능한지 판단
-                        MagicInfo mergeMagic = null;
-
-                        // 같은 마법일때
-                        if (L_Magic.id == R_Magic.id)
-                        {
-                            // 기존 마법 정보로 새 마법 인스턴싱
-                            mergeMagic = new MagicInfo(L_Magic);
-                            // 레벨 합산해서 넣기
-                            mergeMagic.magicLevel = L_Magic.magicLevel + R_Magic.magicLevel;
-                            // 마법 합성 트랜지션
-                            StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));
-                        }
-                        // 다른 마법일때
-                        else
-                        {
-                            //두 재료 모두 갖고 있는 마법 찾기
-                            mergeMagic = MagicDB.Instance.magicDB.Values.ToList().Find(
-                                y => y.element_A == L_Magic.name && y.element_B == R_Magic.name);
-
-                            // 레시피 못찾으면 재료 순서 바꿔서 다시 찾기
-                            if (mergeMagic == null)
-                                mergeMagic = MagicDB.Instance.magicDB.Values.ToList().Find(
-                                    y => y.element_A == R_Magic.name && y.element_B == L_Magic.name);
-
-                            // 합성 가능한 마법 없을때
-                            if (mergeMagic == null)
-                            {
-                                // 양쪽 슬롯 깜빡이기
-                                L_MergeSlot.FailBlink();
-                                R_MergeSlot.FailBlink();
-
-                                // 양쪽 슬롯 아이콘 떨기
-                                L_MergeSlot.ShakeIcon();
-                                R_MergeSlot.ShakeIcon();
-                            }
-                            // 합성 가능한 마법 있을때
-                            else
-                            {
-                                // 새로운 마법 정보로 인스턴싱
-                                mergeMagic = new MagicInfo(mergeMagic);
-                                // 레벨 합산해서 넣기
-                                mergeMagic.magicLevel = L_Magic.magicLevel + R_Magic.magicLevel;
-
-                                // 마법 합성 트랜지션
-                                StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));
-                            }
-                        }
-
-                    }
-
-                    // 슬롯 둘중 하나라도 샤드가 들었을때
-                    if (L_Item != null && L_Item.itemType == ItemDB.ItemType.Shard.ToString()
-                    || R_Item != null && R_Item.itemType == ItemDB.ItemType.Shard.ToString())
-                    {
-                        // 양쪽 등급 사이의 등급 산출
-                        int L_Grade = L_Magic == null ? L_Item.grade : L_Magic.grade;
-                        int R_Grade = R_Magic == null ? R_Item.grade : R_Magic.grade;
-                        // 최소 최대값 산출
-                        int min = Mathf.Min(L_Grade, R_Grade);
-                        int max = Mathf.Max(L_Grade, R_Grade);
-                        // 등급 사잇값 산출
-                        int get_Grade = Random.Range(min, max + 1);
-
-                        StartCoroutine(PhoneMenu.Instance.MergeMagic(null, get_Grade));
-                    }
-                }
+                // 합성 가능 여부 체크하기
+                MergeCheck();
             }
 
-            // 폰 하단 버튼 상호작용 허용
-            PhoneMenu.Instance.InteractBtnsToggle(true);
+            // 키 입력 막기 변수 토글
+            PhoneMenu.Instance.btnsInteractable = true;
+            // 메뉴 버튼 상호작용 토글
+            PhoneMenu.Instance.recipeBtn.interactable = true;
+            // 백 버튼 상호작용 토글
+            PhoneMenu.Instance.backBtn.interactable = true;
         }
 
         // 현재 슬롯 UI 갱신
@@ -450,5 +525,87 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             slotIcon.transform.localPosition = originPos;
         })
         .SetUpdate(true);
+    }
+
+    void MergeCheck()
+    {
+        // 양쪽 슬롯 다 들어있으면
+        if (PhoneMenu.Instance.L_MergeSlot.slotInfo != null
+        && PhoneMenu.Instance.R_MergeSlot.slotInfo != null)
+        {
+            // 양쪽 마법 정보 찾기
+            MagicInfo L_Magic = PhoneMenu.Instance.L_MergeSlot.slotInfo as MagicInfo;
+            MagicInfo R_Magic = PhoneMenu.Instance.R_MergeSlot.slotInfo as MagicInfo;
+
+            // 양쪽 아이템 정보 찾기
+            ItemInfo L_Item = PhoneMenu.Instance.L_MergeSlot.slotInfo as ItemInfo;
+            ItemInfo R_Item = PhoneMenu.Instance.R_MergeSlot.slotInfo as ItemInfo;
+
+            // 두 슬롯 모두 마법 들었을때
+            if (L_Magic != null
+            && R_Magic != null)
+            {
+                // 두 슬롯의 마법으로 합성 가능한지 판단
+                MagicInfo mergeMagic = null;
+
+                // 같은 마법일때
+                if (L_Magic.id == R_Magic.id)
+                {
+                    // 기존 마법 정보로 새 마법 인스턴싱
+                    mergeMagic = new MagicInfo(L_Magic);
+                    // 레벨 합산해서 넣기
+                    mergeMagic.magicLevel = L_Magic.magicLevel + R_Magic.magicLevel;
+                    // 마법 합성 트랜지션
+                    StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));
+                }
+                // 다른 마법일때
+                else
+                {
+                    //두 재료 모두 갖고 있는 마법 찾기
+                    mergeMagic = MagicDB.Instance.magicDB.Values.ToList().Find(
+                        y => y.element_A == L_Magic.name && y.element_B == R_Magic.name);
+
+                    // 레시피 못찾으면 재료 순서 바꿔서 다시 찾기
+                    if (mergeMagic == null)
+                        mergeMagic = MagicDB.Instance.magicDB.Values.ToList().Find(
+                            y => y.element_A == R_Magic.name && y.element_B == L_Magic.name);
+
+                    // 합성 가능한 마법 없을때
+                    if (mergeMagic == null)
+                    {
+                        // 합성 실패 트랜지션
+                        StartCoroutine(PhoneMenu.Instance.MergeFail(PhoneMenu.Instance.L_MergeSlot, PhoneMenu.Instance.R_MergeSlot));
+                    }
+                    // 합성 가능한 마법 있을때
+                    else
+                    {
+                        // 새로운 마법 정보로 인스턴싱
+                        mergeMagic = new MagicInfo(mergeMagic);
+                        // 레벨 합산해서 넣기
+                        mergeMagic.magicLevel = L_Magic.magicLevel + R_Magic.magicLevel;
+
+                        // 마법 합성 트랜지션
+                        StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));
+                    }
+                }
+
+            }
+
+            // 슬롯 둘중 하나라도 샤드가 들었을때
+            if (L_Item != null && L_Item.itemType == ItemDB.ItemType.Shard.ToString()
+            || R_Item != null && R_Item.itemType == ItemDB.ItemType.Shard.ToString())
+            {
+                // 양쪽 등급 사이의 등급 산출
+                int L_Grade = L_Magic == null ? L_Item.grade : L_Magic.grade;
+                int R_Grade = R_Magic == null ? R_Item.grade : R_Magic.grade;
+                // 최소 최대값 산출
+                int min = Mathf.Min(L_Grade, R_Grade);
+                int max = Mathf.Max(L_Grade, R_Grade);
+                // 등급 사잇값 산출
+                int get_Grade = Random.Range(min, max + 1);
+
+                StartCoroutine(PhoneMenu.Instance.MergeMagic(null, get_Grade));
+            }
+        }
     }
 }

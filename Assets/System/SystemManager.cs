@@ -114,7 +114,6 @@ public class SystemManager : MonoBehaviour
 
     [Header("Prefab")]
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
-    public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
     public GameObject poisonDebuffEffect; // 캐릭터 몸에 붙는 포이즌 디버프 이펙트
     public GameObject bleedDebuffUI; // 캐릭터 머리위에 붙는 출혈 디버프 아이콘

@@ -45,7 +45,7 @@ public class PhoneMenu : MonoBehaviour
     public SpriteRenderer lightScreen; // 폰 스크린 전체 빛내는 HDR 이미지
     public Image blackScreen; // 폰 작아질때 검은 이미지로 화면 가리기
     public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
-    bool btnsInteractable = true; // 버튼 상호작용 가능 여부
+    public bool btnsInteractable = true; // 버튼 상호작용 가능 여부
 
     [Header("Effect")]
     public Vector3 phonePosition; //핸드폰일때 위치 기억
@@ -71,11 +71,12 @@ public class PhoneMenu : MonoBehaviour
 
     [Header("Merge Panel")]
     public Transform mergePanel;
-    public RectTransform L_MergeSlotRect; // 왼쪽 재료 슬롯
-    public RectTransform R_MergeSlotRect; // 오른쪽 재료 슬롯
+    public InventorySlot L_MergeSlot; // 왼쪽 재료 슬롯
+    public InventorySlot R_MergeSlot; // 오른쪽 재료 슬롯
     public InventorySlot mergedSlot; // 합성된 마법 슬롯
     public GameObject plusIcon; // 가운데 플러스 아이콘
     public ParticleSystem mergeBeforeEffect; // 합성 준비 이펙트
+    public ParticleSystem mergeFailEffect; // 합성 실패 이펙트
     public Image mergeAfterEffect; // 합성 완료 이펙트
 
     [Header("Recipe List")]
@@ -146,7 +147,7 @@ public class PhoneMenu : MonoBehaviour
         // 스마트폰 버튼 입력
         UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
         {
-            // 로딩 패널 꺼져있을때, 머지 선택 모드 아닐때
+            // 로딩 패널 꺼져있을때
             if (!loadingPanel.activeSelf)
             {
                 //백 버튼 액션 실행
@@ -364,6 +365,10 @@ public class PhoneMenu : MonoBehaviour
         // 상호작용 비활성화
         InteractBtnsToggle(false);
 
+        // 머지슬롯 Rect 찾기
+        RectTransform L_MergeSlotRect = L_MergeSlot.GetComponent<RectTransform>();
+        RectTransform R_MergeSlotRect = R_MergeSlot.GetComponent<RectTransform>();
+
         // 좌측 슬롯 원래 위치 저장
         Vector3 L_originPos = L_MergeSlotRect.anchoredPosition;
         // 우측 슬롯 원래 위치 저장
@@ -371,7 +376,7 @@ public class PhoneMenu : MonoBehaviour
         // 가운데 합성된 슬롯 위치
         Vector3 centerPos = mergedSlot.GetComponent<RectTransform>().anchoredPosition;
         // 슬롯 원래 사이즈 저장
-        Vector3 originScale = L_MergeSlotRect.transform.localScale;
+        Vector3 originScale = L_MergeSlot.transform.localScale;
 
         // 합성 준비 이펙트 재생
         mergeBeforeEffect.Play();
@@ -389,28 +394,24 @@ public class PhoneMenu : MonoBehaviour
         .SetUpdate(true);
 
         // 좌측 슬롯 작아지기
-        L_MergeSlotRect.DOScale(Vector3.zero, 1f)
-        .SetDelay(0.4f)
+        L_MergeSlotRect.DOScale(Vector3.zero, 0.5f)
+        .SetEase(Ease.InQuad)
+        .SetDelay(0.5f)
         .SetUpdate(true)
         .OnComplete(() =>
         {
-            // 슬롯 컴포넌트 찾기
-            InventorySlot L_MergeSlot = L_MergeSlotRect.GetComponent<InventorySlot>();
             // 슬롯 비우기
             L_MergeSlot.slotInfo = null;
             // 슬롯 UI 초기화
             L_MergeSlot.Set_Slot();
-
         });
-
         // 우측 슬롯 작아지기
-        R_MergeSlotRect.DOScale(Vector3.zero, 1f)
-        .SetDelay(0.4f)
+        R_MergeSlotRect.DOScale(Vector3.zero, 0.5f)
+        .SetEase(Ease.InQuad)
+        .SetDelay(0.5f)
         .SetUpdate(true)
         .OnComplete(() =>
         {
-            // 슬롯 컴포넌트 찾기
-            InventorySlot R_MergeSlot = R_MergeSlotRect.GetComponent<InventorySlot>();
             // 슬롯 비우기
             R_MergeSlot.slotInfo = null;
             // 슬롯 UI 초기화
@@ -462,15 +463,18 @@ public class PhoneMenu : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(0.5f);
 
+            // 합성된 슬롯 켜기
+            mergedSlot.gameObject.SetActive(true);
+
             // 합성된 슬롯 사이즈 제로
             mergedSlot.transform.localScale = Vector3.zero;
 
             // 합성된 슬롯 사이즈 키우기
-            mergedSlot.transform.DOScale(originScale, 1f)
+            mergedSlot.transform.DOScale(originScale, 0.5f)
             .SetEase(Ease.OutBack)
             .SetUpdate(true);
 
-            yield return new WaitForSecondsRealtime(1f);
+            yield return new WaitForSecondsRealtime(0.5f);
 
             // 합성 완료 이펙트 켜기
             mergeAfterEffect.transform.localScale = Vector3.zero;
@@ -521,6 +525,74 @@ public class PhoneMenu : MonoBehaviour
         plusIcon.transform.DOScale(Vector3.one, 0.2f)
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
+
+        // 상호작용 활성화
+        InteractBtnsToggle(true);
+    }
+
+    public IEnumerator MergeFail(InventorySlot L_MergeSlot, InventorySlot R_MergeSlot)
+    {
+        // 상호작용 비활성화
+        InteractBtnsToggle(false);
+
+        // 머지슬롯 Rect 찾기
+        RectTransform L_MergeSlotRect = L_MergeSlot.GetComponent<RectTransform>();
+        RectTransform R_MergeSlotRect = R_MergeSlot.GetComponent<RectTransform>();
+
+        // 좌측 슬롯 원래 위치 저장
+        Vector3 L_originPos = L_MergeSlotRect.anchoredPosition;
+        // 우측 슬롯 원래 위치 저장
+        Vector3 R_originPos = R_MergeSlotRect.anchoredPosition;
+        // 가운데 합성된 슬롯 위치
+        Vector3 centerPos = mergedSlot.GetComponent<RectTransform>().anchoredPosition;
+
+        // 합성 준비 이펙트 재생
+        mergeBeforeEffect.Play();
+
+        // 플러스 아이콘 줄이기
+        plusIcon.transform.localScale = Vector3.zero;
+
+        // 좌측 슬롯 가운데로 절반만 이동
+        L_MergeSlotRect.DOAnchorPos((centerPos + L_originPos) / 2f, 1f)
+        .SetEase(Ease.InBack)
+        .SetUpdate(true);
+        // 우측 슬롯 가운데로 절반만 이동
+        R_MergeSlotRect.DOAnchorPos((centerPos + R_originPos) / 2f, 1f)
+        .SetEase(Ease.InBack)
+        .SetUpdate(true);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 합성 준비 이펙트 끄기
+        mergeBeforeEffect.Stop();
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 실패 이펙트 재생
+        mergeFailEffect.Play();
+
+        // 좌측 슬롯 위치 복귀
+        L_MergeSlotRect.DOAnchorPos(L_originPos, 1f)
+        .SetEase(Ease.OutBack)
+        .SetUpdate(true);
+        // 우측 슬롯 위치 복귀
+        R_MergeSlotRect.DOAnchorPos(R_originPos, 1f)
+        .SetEase(Ease.OutBack)
+        .SetUpdate(true);
+
+        // 플러스 아이콘 커지기
+        plusIcon.transform.DOScale(Vector3.one, 1f)
+        .SetUpdate(true);
+
+        // 양쪽 슬롯 깜빡이기
+        L_MergeSlot.FailBlink();
+        R_MergeSlot.FailBlink();
+
+        // 양쪽 슬롯 아이콘 떨기
+        L_MergeSlot.ShakeIcon();
+        R_MergeSlot.ShakeIcon();
+
+        yield return new WaitForSecondsRealtime(1f);
 
         // 상호작용 활성화
         InteractBtnsToggle(true);
@@ -686,14 +758,14 @@ public class PhoneMenu : MonoBehaviour
 
             // 마스크 이미지 알파값 낮추기
             maskColor.a = 1f / 255f;
-            shinyMaskImg.DOColor(maskColor, 1f)
+            shinyMaskImg.DOColor(maskColor, 0.5f)
             .SetUpdate(true)
             .OnComplete(() =>
             {
                 // 마스크 이미지 끄기
                 shinyMask.showMaskGraphic = false;
             });
-            yield return new WaitForSecondsRealtime(1f);
+            yield return new WaitForSecondsRealtime(0.5f);
 
             // 등급 상승 실패시
             if (!rankUp)
@@ -851,12 +923,12 @@ public class PhoneMenu : MonoBehaviour
         getSlot.SetActive(false);
 
         // 빈칸 위치에 Attractor 오브젝트 옮기기
-        particleAttractor.transform.position = invenSlots[GetEmptyInven()].transform.position;
+        particleAttractor.transform.position = invenSlots[GetEmptySlot()].transform.position;
 
         // 마법 획득 이펙트 켜기
         getMagicEffect.gameObject.SetActive(true);
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         // 뽑기 스크린 전체 투명하게
         DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 0f, 1f)
@@ -882,7 +954,7 @@ public class PhoneMenu : MonoBehaviour
         InteractBtnsToggle(true);
     }
 
-    public int GetEmptyInven()
+    public int GetEmptySlot()
     {
         int emptyIndex = -1;
 
@@ -908,7 +980,7 @@ public class PhoneMenu : MonoBehaviour
         // print(getItem.itemType + " : " + getItem.itemName);
 
         // 인벤토리 빈칸 찾기
-        int emptyIndex = GetEmptyInven();
+        int emptyIndex = GetEmptySlot();
 
         // 빈 슬롯에 해당 아이템 넣기
         invenSlots[emptyIndex].slotInfo = getItem;
@@ -941,7 +1013,7 @@ public class PhoneMenu : MonoBehaviour
         }
 
         // 인벤토리 빈칸 찾기
-        int emptyIndex = GetEmptyInven();
+        int emptyIndex = GetEmptySlot();
 
         // 빈칸 있을때
         if (emptyIndex != -1)
@@ -1173,6 +1245,10 @@ public class PhoneMenu : MonoBehaviour
         // 키 입력 막기 변수 토글
         btnsInteractable = able;
 
+        // 머지슬롯 상호작용 토글
+        L_MergeSlot.slotButton.interactable = able;
+        R_MergeSlot.slotButton.interactable = able;
+
         // 메뉴 버튼 상호작용 토글
         recipeBtn.interactable = able;
         // 백 버튼 상호작용 토글
@@ -1224,12 +1300,10 @@ public class PhoneMenu : MonoBehaviour
             .SetUpdate(true);
 
             // Merge 슬롯의 아이템 전부 인벤에 넣기
-            InventorySlot L_MergeSlot = L_MergeSlotRect.GetComponent<InventorySlot>();
-            InventorySlot R_MergeSlot = R_MergeSlotRect.GetComponent<InventorySlot>();
             if (L_MergeSlot.slotInfo != null)
             {
                 // 인벤 빈칸 찾기
-                int emptyIndex = GetEmptyInven();
+                int emptyIndex = GetEmptySlot();
 
                 // 빈칸에 마법 넣기
                 invenSlots[emptyIndex].slotInfo = L_MergeSlot.slotInfo;
@@ -1244,7 +1318,7 @@ public class PhoneMenu : MonoBehaviour
             if (R_MergeSlot.slotInfo != null)
             {
                 // 인벤 빈칸 찾기
-                int emptyIndex = GetEmptyInven();
+                int emptyIndex = GetEmptySlot();
 
                 // 빈칸에 마법 넣기
                 invenSlots[emptyIndex].slotInfo = R_MergeSlot.slotInfo;

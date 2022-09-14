@@ -59,11 +59,13 @@ MonoBehaviour:
   stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
+  cooltime: 0
+  coolCount: 0
   enemyManager: {fileID: 7247921042507206276}
   enemyName: 
   atkColl: {fileID: 2771087719256695769}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
+  rangeObj: {fileID: 0}
 --- !u!61 &2771087719256695769
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -217,7 +219,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3190824627126303488
 Transform:
   m_ObjectHideFlags: 0
@@ -252,6 +254,7 @@ MonoBehaviour:
   hpMax: 0
   rigid: {fileID: 3190824627126303489}
   anim: {fileID: 0}
+  eliteClass: 0
   initialStart: 1
   initialFinish: 0
   lookLeft: 0
@@ -265,8 +268,6 @@ MonoBehaviour:
   nowAction: 0
   moveType: 1
   portalSize: 1
-  isElite: 0
-  eliteClass: 0
   afterEffect: 0
   isDead: 0
   selfExplosion: 0
@@ -277,6 +278,7 @@ MonoBehaviour:
   enemyAtkList: []
   spriteObj: {fileID: 3190824626787221340}
   shadow: {fileID: 3277673327859450767}
+  healRange: {fileID: 0}
   spriteList: []
   originMatList: []
   originMatColorList: []
@@ -285,12 +287,13 @@ MonoBehaviour:
   - {fileID: 3190824627126303490}
   physicsColl: {fileID: 8756922079018869723}
   hitBoxList: []
-  power: 0
-  speed: 0
-  range: 0
+  powerNow: 0
+  speedNow: 0
+  rangeNow: 0
+  cooltimeNow: 0
   buffParent: {fileID: 0}
   particleHitCount: 0
-  hitCount: 0
+  hitDelayCount: 0
   stopCount: 0
   flatCount: 0
   oppositeCount: 0

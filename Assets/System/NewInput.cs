@@ -356,6 +356,24 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Shift"",
+                    ""type"": ""Button"",
+                    ""id"": ""ed0a9286-dc6b-48ae-b6af-d962a0b83d9b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Ctrl"",
+                    ""type"": ""Button"",
+                    ""id"": ""6744c22d-1b9a-4e4e-a22f-52ae715a3b0a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -545,6 +563,28 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""action"": ""NavControl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""edff7706-b033-4705-94ee-cfad7f7b8ec6"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""de9c1860-99a4-43cb-9e58-aba8e16bf088"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Ctrl"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -582,6 +622,8 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         m_UI_PhoneMenu = m_UI.FindAction("PhoneMenu", throwIfNotFound: true);
         m_UI_Click = m_UI.FindAction("Click", throwIfNotFound: true);
         m_UI_NavControl = m_UI.FindAction("NavControl", throwIfNotFound: true);
+        m_UI_Shift = m_UI.FindAction("Shift", throwIfNotFound: true);
+        m_UI_Ctrl = m_UI.FindAction("Ctrl", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -737,6 +779,8 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_PhoneMenu;
     private readonly InputAction m_UI_Click;
     private readonly InputAction m_UI_NavControl;
+    private readonly InputAction m_UI_Shift;
+    private readonly InputAction m_UI_Ctrl;
     public struct UIActions
     {
         private @NewInput m_Wrapper;
@@ -748,6 +792,8 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         public InputAction @PhoneMenu => m_Wrapper.m_UI_PhoneMenu;
         public InputAction @Click => m_Wrapper.m_UI_Click;
         public InputAction @NavControl => m_Wrapper.m_UI_NavControl;
+        public InputAction @Shift => m_Wrapper.m_UI_Shift;
+        public InputAction @Ctrl => m_Wrapper.m_UI_Ctrl;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -778,6 +824,12 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @NavControl.started -= m_Wrapper.m_UIActionsCallbackInterface.OnNavControl;
                 @NavControl.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnNavControl;
                 @NavControl.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnNavControl;
+                @Shift.started -= m_Wrapper.m_UIActionsCallbackInterface.OnShift;
+                @Shift.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnShift;
+                @Shift.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnShift;
+                @Ctrl.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @Ctrl.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @Ctrl.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -803,6 +855,12 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @NavControl.started += instance.OnNavControl;
                 @NavControl.performed += instance.OnNavControl;
                 @NavControl.canceled += instance.OnNavControl;
+                @Shift.started += instance.OnShift;
+                @Shift.performed += instance.OnShift;
+                @Shift.canceled += instance.OnShift;
+                @Ctrl.started += instance.OnCtrl;
+                @Ctrl.performed += instance.OnCtrl;
+                @Ctrl.canceled += instance.OnCtrl;
             }
         }
     }
@@ -836,5 +894,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         void OnPhoneMenu(InputAction.CallbackContext context);
         void OnClick(InputAction.CallbackContext context);
         void OnNavControl(InputAction.CallbackContext context);
+        void OnShift(InputAction.CallbackContext context);
+        void OnCtrl(InputAction.CallbackContext context);
     }
 }

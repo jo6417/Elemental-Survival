@@ -97,7 +97,7 @@ public class ItemManager : MonoBehaviour
             // print("플레이어 아이템 획득");
 
             // 샤드일때는 인벤토리에 빈칸 있을때, 다른 아이템이면 그냥 획득
-            if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptyInven() != -1)
+            if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptySlot() != -1)
             || item.itemType == "Gem"
             || item.itemType == "Heal")
             {
@@ -211,7 +211,7 @@ public class ItemManager : MonoBehaviour
         isGet = true;
 
         // 샤드일때는 인벤토리에 빈칸 없을때 리턴
-        if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptyInven() == -1))
+        if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptySlot() == -1))
         {
             coll.enabled = true;
 

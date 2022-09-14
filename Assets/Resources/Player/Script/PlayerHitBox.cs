@@ -79,10 +79,6 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             if (hitDelayCoroutine != null)
                 StopCoroutine(hitDelayCoroutine);
 
-            //피격 딜레이 무적시간 시작
-            hitDelayCoroutine = HitDelay(enemyAtk.enemyManager.powerNow);
-            StartCoroutine(hitDelayCoroutine);
-
             // 데미지 적용
             Damage(enemyAtk.enemyManager.powerNow, false);
         }
@@ -134,10 +130,6 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
             //데미지 입기
             Damage(damage, false);
-
-            //피격 딜레이 무적
-            hitDelayCoroutine = HitDelay(damage);
-            StartCoroutine(hitDelayCoroutine);
         }
 
         // 디버프 판단해서 적용
@@ -222,6 +214,10 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
     public void Damage(float damage, bool isCritical)
     {
+        //피격 딜레이 무적시간 시작
+        hitDelayCoroutine = HitDelay(damage);
+        StartCoroutine(hitDelayCoroutine);
+
         //! 갓모드 켜져 있으면 데미지 0
         if (SystemManager.Instance.godMod && damage > 0)
             damage = 0;
@@ -237,7 +233,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
         //혈흔 파티클 생성
         if (damage > 0)
-            LeanPool.Spawn(PlayerManager.Instance.bloodPrefab, transform.position, Quaternion.identity);
+            LeanPool.Spawn(PlayerManager.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         //데미지 UI 띄우기
         StartCoroutine(DamageText(damage, false));
@@ -255,7 +251,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
     public IEnumerator DamageText(float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(SystemManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
         // 데미지 있을때
@@ -264,7 +260,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             // 크리티컬 떴을때 추가 강조효과 UI
             if (isCritical)
             {
-                // dmgTxt.color = new Color(200f/255f, 30f/255f, 30f/255f);
+                // dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
             }
             else
             {
@@ -288,8 +284,8 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
         // 데미지 양수일때
         if (damage > 0)
-            // 오른쪽으로 DOJump
-            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 1f)
+            // 왼쪽으로 DOJump
+            damageUI.transform.DOJump((Vector2)damageUI.transform.position - Vector2.right * 2f, 1f, 1, 1f)
             .SetEase(Ease.OutBounce);
         // 데미지 음수일때
         else
@@ -297,9 +293,12 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 1f)
             .SetEase(Ease.OutSine);
 
+        //제로 사이즈로 시작
+        damageUI.transform.localScale = Vector3.zero;
+
         //원래 크기로 늘리기
         damageUI.transform.DOScale(Vector3.one, 0.5f);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         //줄어들어 사라지기
         damageUI.transform.DOScale(Vector3.zero, 0.5f);
@@ -318,7 +317,10 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         PlayerManager.Instance.sprite.material = SystemManager.Instance.hitMat;
 
         //스프라이트 색 변환
-        PlayerManager.Instance.sprite.color = SystemManager.Instance.hitColor;
+        if (damage > 0)
+            PlayerManager.Instance.sprite.color = SystemManager.Instance.hitColor;
+        else
+            PlayerManager.Instance.sprite.color = SystemManager.Instance.healColor;
 
         yield return new WaitUntil(() => hitCoolCount <= 0);
 

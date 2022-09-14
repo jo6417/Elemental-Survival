@@ -34,25 +34,21 @@ public class CastMagic : MonoBehaviour
 
     public List<GameObject> passiveObjs = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
     public List<MagicInfo> nowCastMagics = new List<MagicInfo>(); //현재 사용중인 마법
-    public List<int> defaultMagic = new List<int>(); //기본 마법
-    public bool testAllMagic; //! 모든 마법 테스트
-    // public bool noMagic; //! 마법 없이 테스트
+    public bool noMagic; // 마법 없이 테스트
+    public List<int> testMagics = new List<int>(); // 테스트용 마법 리스트
+    public bool noItem; // 아이템 없이 테스트
+    public List<int> testItems = new List<int>(); // 테스트용 아이템 리스트
 
     [Header("Refer")]
-    [SerializeField] ParticleSystem activeMagicCastEffect; // 액티브 마법 사용시 파티클 실행
-    // [SerializeField] ParticleSystem passiveMagicCastEffect; // 패시브 마법 사용시 파티클 실행
-    // [SerializeField] ParticleSystem ultimateMagicCastEffect; // 궁극기 마법 사용시 파티클 실행
+    [SerializeField] ParticleSystem playerMagicCastEffect; // 플레이어가 마법 사용시 파티클 실행
+    [SerializeField] ParticleSystem phoneMagicCastEffect; // 핸드폰이 마법 사용시 파티클 실행
 
     [Header("Phone Move")]
-    public float spinSpeed = 1f; // 자전하는 속도
-    float orbitAngle = 0f; // 현재 자전 각도
-    public float hoverSpeed = 5f; //둥둥 떠서 오르락내리락 하는 속도
-    public float hoverRange = 0.5f; // 오르락내리락 하는 범위
-
-    // [Header("Active Slot")]
-    // public Transform activeMagicSlot_A; // 액티브 마법 슬롯 A
-    // public Transform activeMagicSlot_B; // 액티브 마법 슬롯 B
-    // public Transform activeMagicSlot_C; // 액티브 마법 슬롯 C
+    [SerializeField] float spinSpeed = 1f; // 자전하는 속도
+    [SerializeField] float orbitAngle = 0f; // 현재 자전 각도
+    [SerializeField] float hoverSpeed = 5f; //둥둥 떠서 오르락내리락 하는 속도
+    [SerializeField] float hoverRange = 0.5f; // 오르락내리락 하는 범위
+    [SerializeField] float hoverHeight = 2f; // 핸드폰이 떠있는 높이
 
     private void OnEnable()
     {
@@ -75,7 +71,7 @@ public class CastMagic : MonoBehaviour
         transform.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
 
         // 오르락내리락 하는 호버링 무빙
-        transform.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange, 0);
+        transform.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange + hoverHeight, -0.5f);
     }
 
     public IEnumerator ManualCast(InventorySlot invenSlot, MagicInfo magic)
@@ -89,13 +85,15 @@ public class CastMagic : MonoBehaviour
             yield break;
         }
 
-        //해당 마법 투사체 개수 불러오기
+        // 해당 마법 투사체 개수 불러오기
         float projectileNum = MagicDB.Instance.MagicProjectile(magic);
-        //해당 마법 쿨타임 불러오기
+        // 해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+        // 해당 마법 범위 불러오기
+        float range = MagicDB.Instance.MagicRange(magic);
 
-        // 핸드폰 마법 시전 이펙트 플레이
-        activeMagicCastEffect.Play();
+        // 플레이어 마법 시전 이펙트 플레이
+        playerMagicCastEffect.Play();
 
         //마법 프리팹 찾기
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
@@ -110,7 +108,7 @@ public class CastMagic : MonoBehaviour
         // 투사체 개수만큼 마우스 근처 포지션 지정
         for (int i = 0; i < projectileNum; i++)
         {
-            Vector3 atkPos = PlayerManager.Instance.mouseWorldPos + (Vector3)Random.insideUnitCircle;
+            Vector3 atkPos = PlayerManager.Instance.mouseWorldPos + (Vector3)Random.insideUnitCircle * range;
             attackPos.Add(atkPos);
         }
 
@@ -216,6 +214,10 @@ public class CastMagic : MonoBehaviour
                 // 마법이 현재 실행 마법 리스트에 없으면, 신규 마법이면
                 if (tempMagic == null)
                 {
+                    // 해당 마법이 쿨타임 중일때 넘기기 (이미 반복 코루틴 실행중이므로)
+                    if (MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
+                        continue;
+
                     // 패시브 마법일때
                     if (magic.castType == MagicDB.MagicType.passive.ToString())
                     {
@@ -300,7 +302,7 @@ public class CastMagic : MonoBehaviour
     public IEnumerator ActiveCast(MagicInfo magic)
     {
         // 핸드폰 마법 시전 이펙트 플레이
-        activeMagicCastEffect.Play();
+        phoneMagicCastEffect.Play();
 
         //마법 프리팹 찾기
         GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
@@ -352,14 +354,15 @@ public class CastMagic : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
+        // 쿨타임 체크를 위한 전역 마법 정보 불러오기
+        MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
         // 해당 마법의 전역 쿨타임 갱신
-        MagicInfo avtiveMagic = MagicDB.Instance.GetMagicByID(magic.id);
-        avtiveMagic.coolCount = coolTime;
+        globalMagic.coolCount = coolTime;
 
-        while (avtiveMagic.coolCount > 0)
+        while (globalMagic.coolCount > 0)
         {
             //카운트 차감, 플레이어 자체속도 반영
-            avtiveMagic.coolCount -= Time.deltaTime;
+            globalMagic.coolCount -= Time.deltaTime;
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
@@ -385,7 +388,6 @@ public class CastMagic : MonoBehaviour
             // 더이상 재실행 하지않고, 현재 사용중 목록에서 제거
             nowCastMagics.Remove(magic);
         }
-
     }
 
     void PassiveCast(MagicInfo magic)
@@ -458,7 +460,7 @@ public class CastMagic : MonoBehaviour
                 // 이미 들어있는 오브젝트일때
                 if (enemyObjs.Exists(x => x == enemyManager)
                 // 해당 몬스터가 유령일때
-                || enemyManager.IsGhost)
+                || (enemyManager && enemyManager.IsGhost))
                 {
                     // 임시 리스트에서 지우기
                     enemyCollList.Remove(targetColl);
