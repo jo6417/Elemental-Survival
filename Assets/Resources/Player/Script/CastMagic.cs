@@ -108,7 +108,10 @@ public class CastMagic : MonoBehaviour
         // 투사체 개수만큼 마우스 근처 포지션 지정
         for (int i = 0; i < projectileNum; i++)
         {
-            Vector3 atkPos = PlayerManager.Instance.mouseWorldPos + (Vector3)Random.insideUnitCircle * range;
+            Vector3 atkPos =
+            Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>())
+            + (Vector3)Random.insideUnitCircle * Mathf.Clamp(range, 0, 3f);
+
             attackPos.Add(atkPos);
         }
 

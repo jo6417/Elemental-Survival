@@ -7,22 +7,32 @@ using UnityEngine;
 
 public class PlayerHitBox : MonoBehaviour, IHitBox
 {
-    [Header("<State>")]
-    float hitDelayTime = 0.2f; //피격 무적시간
-    public float hitCoolCount = 0f; // 피격 무적시간 카운트
     public IEnumerator hitDelayCoroutine;
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
 
-    [Header("<Buff>")]
-    public Transform buffParent; // 버프 아이콘 부모 오브젝트
+    [Header("<State>")]
+    float hitDelayTime = 0.2f; //피격 무적시간
+    public float hitCoolCount = 0f; // 피격 무적시간 카운트
     public Vector2 knockbackDir; //넉백 벡터
     public bool isFlat; //깔려서 납작해졌을때
-    public float poisonCoolCount; // 독 디버프 남은시간
+    public float particleHitCount = 0; // 파티클 피격 카운트
+    public float hitDelayCount = 0; // 피격 딜레이 카운트
+    public float stopCount = 0; // 시간 정지 카운트
+    public float flatCount = 0; // 납작 디버프 카운트
+    public float oppositeCount = 0; // 스포너 반대편 이동 카운트
+    public float burnCoolCount; // 화상 도트뎀 남은시간
+    public float poisonCoolCount; //독 도트뎀 남은시간
     public float bleedCoolCount; // 출혈 디버프 남은시간
-    public IEnumerator poisonCoroutine;
-    public IEnumerator bleedCoroutine;
-    public IEnumerator slowCoroutine;
-    public IEnumerator shockCoroutine;
+
+    [Header("<Buff>")]
+    public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
+    public IEnumerator hitCoroutine;
+    public IEnumerator burnCoroutine = null;
+    public IEnumerator poisonCoroutine = null;
+    public IEnumerator bleedCoroutine = null;
+    public IEnumerator slowCoroutine = null;
+    public IEnumerator shockCoroutine = null;
+
 
     private void OnCollisionStay2D(Collision2D other)
     {
@@ -187,6 +197,18 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             StartCoroutine(FlatDebuff(attacker.flatTime));
         }
 
+        // 화상 피해 시간 있으면 도트 피해
+        if (attacker.burnTime > 0)
+        {
+            //이미 화상 코루틴 중이면 기존 코루틴 취소
+            if (burnCoroutine != null)
+                StopCoroutine(burnCoroutine);
+
+            burnCoroutine = BurnDotHit(1, attacker.burnTime);
+
+            StartCoroutine(burnCoroutine);
+        }
+
         // 포이즌 피해 시간 있으면 도트 피해
         if (attacker.poisonTime > 0)
         {
@@ -334,38 +356,78 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         hitDelayCoroutine = null;
     }
 
+    public IEnumerator BurnDotHit(float tickDamage, float duration)
+    {
+        // 화상 데미지 지속시간 넣기
+        burnCoolCount = duration;
+
+        // 화상 디버프 아이콘
+        Transform burnEffect = null;
+
+        // 이미 화상 디버프 중 아닐때
+        if (!transform.Find(SystemManager.Instance.burnDebuffEffect.name))
+        {
+            // 화상 디버프 이펙트 붙이기
+            burnEffect = LeanPool.Spawn(SystemManager.Instance.burnDebuffEffect, transform.position, Quaternion.identity, transform).transform;
+        }
+
+        // 도트 데미지 지속시간이 1초 이상 남았을때
+        while (burnCoolCount >= 1)
+        {
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 도트 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 남은 지속시간에서 한틱 차감
+            burnCoolCount -= 1f;
+        }
+
+        // 화상 이펙트 없에기
+        burnEffect = transform.Find(SystemManager.Instance.burnDebuffEffect.name);
+        if (burnEffect != null)
+            LeanPool.Despawn(burnEffect);
+
+        // 화상 코루틴 변수 초기화
+        burnCoroutine = null;
+    }
+
     public IEnumerator PoisonDotHit(float tickDamage, float duration)
     {
         //독 데미지 지속시간 넣기
         poisonCoolCount = duration;
 
-        // 한 틱동안 대기
-        yield return new WaitForSeconds(1f);
+        // 포이즌 디버프 이펙트
+        Transform poisonEffect = null;
 
-        // 독 데미지 지속시간 남았을때 진행
-        while (poisonCoolCount > 0)
+        // 이미 포이즌 디버프 중 아닐때
+        if (!transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
         {
-            // 포이즌 머터리얼로 변환
-            PlayerManager.Instance.sprite.material = SystemManager.Instance.outLineMat;
-
-            // 보라색으로 스프라이트 색 변환
-            PlayerManager.Instance.sprite.color = SystemManager.Instance.poisonColor;
-
-            // 독 데미지 입히기
-            Damage(tickDamage, false);
-
-            // 독 데미지 지속시간에서 한틱 차감
-            poisonCoolCount -= 1f;
-
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
+            //포이즌 디버프 이펙트 붙이기
+            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, transform.position, Quaternion.identity, transform).transform;
         }
 
-        //원래 머터리얼로 복구
-        PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteLitMat;
+        // 도트 데미지 지속시간이 1초 이상 남았을때
+        while (poisonCoolCount >= 1)
+        {
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
 
-        //원래 색으로 복구
-        PlayerManager.Instance.sprite.color = Color.white;
+            // 도트 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 남은 지속시간에서 한틱 차감
+            poisonCoolCount -= 1f;
+        }
+
+        // 포이즌 이펙트 없에기
+        poisonEffect = transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
+        if (poisonEffect != null)
+            LeanPool.Despawn(poisonEffect);
+
+        // 포이즌 코루틴 변수 초기화
+        poisonCoroutine = null;
     }
 
     public IEnumerator BleedDotHit(float tickDamage, float duration)

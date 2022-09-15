@@ -48,6 +48,10 @@ public class HotDog_AI : MonoBehaviour
     public ParticleSystem smokeEffect; // 안개 생성시 입에서 나오는 연기
     public EnemyAttack dashAtk;
     public SpriteRenderer shadowSprite; //그림자 스프라이트
+    MagicInfo flameMagic; // 플레임 마법 정보
+    GameObject flamePrefab; // 플레임 마법 프리팹
+    [SerializeField, ReadOnly] Vector2 flameLastPos;
+    [SerializeField] float flameInverval = 1f;
 
     [Header("HellFire")]
     public ParticleSystem leakFireEffect; //차지 후 불꽃 새는 이펙트
@@ -119,6 +123,19 @@ public class HotDog_AI : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
+        // 플레임 마법 데이터 찾기
+        if (flameMagic == null)
+        {
+            // 찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
+            flameMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Flame"));
+
+            // 데미지 고정
+            flameMagic.power = 3f;
+
+            // 플레임 프리팹 찾기
+            flamePrefab = MagicDB.Instance.GetMagicPrefab(flameMagic.id);
+        }
+
         // 헬파이어 마법 데이터 찾기
         if (hellFireMagic == null)
         {
@@ -128,7 +145,7 @@ public class HotDog_AI : MonoBehaviour
             // 강력한 데미지로 고정
             hellFireMagic.power = 10f;
 
-            // 메테오 프리팹 찾기
+            // 헬파이어 프리팹 찾기
             hellFirePrefab = MagicDB.Instance.GetMagicPrefab(hellFireMagic.id);
         }
 
@@ -269,6 +286,9 @@ public class HotDog_AI : MonoBehaviour
         {
             //! 거리 확인용
             stateText.text = "Bite : " + playerDistance;
+
+            // 플레이어 마지막 위치 갱신
+            lastPlayerDir = PlayerManager.Instance.transform.position - transform.position;
 
             // 속도 초기화
             enemyManager.rigid.velocity = Vector3.zero;
@@ -792,8 +812,32 @@ public class HotDog_AI : MonoBehaviour
             // 돌진 시간 계산
             float moveSpeed = 1.5f / speedMultiple;
 
-            // 엔드 포지션으로 트윈
+            // 플레임 소환 위치 초기화
+            flameLastPos = transform.position;
+
+            // 엔드 포지션으로 달리기
             transform.DOMove(dashEndPos, moveSpeed)
+            .OnUpdate(() =>
+            {
+                //일정 거리마다 Flame 마법 생성
+                if (Vector2.Distance(flameLastPos, transform.position) > flameInverval)
+                {
+                    // 마법 오브젝트 생성
+                    GameObject magicObj = LeanPool.Spawn(flamePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+                    // 매직홀더 찾기
+                    MagicHolder flameHolder = magicObj.GetComponent<MagicHolder>();
+                    // 마법 정보 넣기
+                    flameHolder.magic = flameMagic;
+                    // 마법 타겟 지정
+                    flameHolder.SetTarget(MagicHolder.Target.Player);
+                    // 타겟 위치 지정
+                    flameHolder.targetPos = transform.position;
+
+                    // 마지막 소환 위치 갱신
+                    flameLastPos = magicObj.transform.position;
+                }
+            })
             .OnComplete(() =>
             {
                 // 아이 트레일 부모 바꾸기
@@ -806,12 +850,12 @@ public class HotDog_AI : MonoBehaviour
             // 돌진시간 대기
             yield return new WaitForSeconds(moveSpeed - 0.5f);
 
-            // 스프라이트 색 초기화
+            // 스프라이트 색 투명하게
             foreach (SpriteRenderer sprite in enemyManager.spriteList)
             {
                 sprite.DOColor(Color.clear, 0.2f);
             }
-            //그림자 색 초기화
+            // 그림자 색 투명하게
             shadowSprite.DOColor(Color.clear, 0.2f);
 
             // 눈빛 끄기

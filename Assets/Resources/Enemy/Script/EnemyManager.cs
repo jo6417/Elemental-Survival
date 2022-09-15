@@ -120,6 +120,7 @@ public class EnemyManager : Character
     [Header("Buff")]
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
+    public IEnumerator burnCoroutine = null;
     public IEnumerator poisonCoroutine = null;
     public IEnumerator bleedCoroutine = null;
     public IEnumerator slowCoroutine = null;
@@ -129,6 +130,7 @@ public class EnemyManager : Character
     public float stopCount = 0; // 시간 정지 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
+    public float burnCoolCount; // 화상 도트뎀 남은시간
     public float poisonCoolCount; //독 도트뎀 남은시간
     public float bleedCoolCount; // 출혈 디버프 남은시간
 

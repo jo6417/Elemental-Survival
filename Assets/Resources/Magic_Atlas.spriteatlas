@@ -87,6 +87,7 @@ SpriteAtlas:
   - {fileID: 1322016553150096466, guid: c34c339337b25c449a0d0ccbd6858f73, type: 3}
   - {fileID: 21300000, guid: 41ae42c3b0c093f48931fc9372a3e4e2, type: 3}
   - {fileID: 21300000, guid: 98b8b4143e8dc4b40847213d626ae78f, type: 3}
+  - {fileID: 21300000, guid: 233f6394c486a9a4684cb23740d1b130, type: 3}
   - {fileID: -6973035357185448733, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: 4052886725512566304, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: -2435822838769587993, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
@@ -266,6 +267,7 @@ SpriteAtlas:
   - Lava_Sheet_2
   - Dust
   - Blizzard_Icon
+  - Flame_Icon
   - SlingShot-Sheet_1
   - SlingShot-Sheet_0
   - SlingShot-Sheet_3

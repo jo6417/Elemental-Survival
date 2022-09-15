@@ -7,7 +7,7 @@ public class MagicHolder : Attack
     [Header("Refer")]
     public MagicInfo magic; //보유한 마법 데이터
     public Collider2D coll;
-    public GameObject targetObj = null; //목표 오브젝트
+    [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
 
     [Header("Status")]
     public string magicName; //마법 이름 확인
@@ -27,22 +27,10 @@ public class MagicHolder : Attack
         set { multipleSpeed = value; }
     }
     public bool initDone = false; //초기화 완료 여부
-    // public int pierceCount = 0; // 실시간 관통 횟수 카운트
-
-    // [Header("After Effect")]
-    // public float fixedPower = 0f; // 고정된 데미지
-    // public float knockbackForce = 0; //넉백 파워
-    // public bool isStop; //정지 여부
-    // public float poisonTime = 0; // 독 도트 데미지 지속시간
-    // public float slowTime = 0; //슬로우 지속시간
-    // public float burnTime = 0; //화상 지속시간
-    // public float wetTime = 0; //젖음 지속시간
-    // public float bleedTime = 0; //출혈 지속시간
-    // public float shockTime = 0; //감전 지속시간
-    // public float freezeTime = 0; //빙결 지속시간
 
     private void Awake()
     {
+        // 변수 없으면 찾기
         coll = coll == null ? GetComponentInChildren<Collider2D>() : coll;
     }
 

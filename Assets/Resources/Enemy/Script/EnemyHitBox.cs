@@ -102,8 +102,10 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         if (enemyManager.isDead)
             yield break;
 
-        //크리티컬 성공 여부
+        // 크리티컬 성공 여부
         bool isCritical = false;
+        // 데미지
+        float damage = 0;
 
         // 활성화 되어있는 EnemyAtk 컴포넌트 찾기
         if (attacker.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
@@ -185,7 +187,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             if (power > 0)
             {
                 //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
+                damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
@@ -193,79 +195,97 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 if (isCritical)
                     damage = damage * criticalPower;
 
-                // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈, 감전)
-                // if (attacker.poisonTime == 0)
-                Damage(damage, isCritical);
+                // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈)
+                if (attacker.poisonTime == 0
+                && attacker.burnTime == 0
+                && attacker.bleedTime == 0)
+                    Damage(damage, isCritical);
             }
         }
 
         // 디버프 판단해서 적용
-        Debuff(attacker, isCritical);
+        Debuff(attacker, isCritical, damage);
     }
 
-    public void Debuff(Attack attacker, bool isCritical)
+    public void Debuff(Attack attacker, bool isCritical, float damage = 0)
     {
-        // 보스면 리턴
-        if (enemyManager.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
-            return;
+        // // 보스면 리턴
+        // if (enemyManager.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
+        //     return;
 
-        //시간 정지
-        if (attacker.stopTime > 0)
+        // 보스가 아닌적들만 디버프
+        if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
         {
-            //몬스터 경직 카운터에 stopTime 만큼 추가
-            enemyManager.stopCount = attacker.stopTime;
+            //넉백
+            if (attacker.knockbackForce > 0)
+            {
+                StartCoroutine(Knockback(attacker, attacker.knockbackForce));
+            }
 
-            // 해당 위치에 고정
-            // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            // 슬로우 디버프, 크리티컬 성공일때
+            if (attacker.slowTime > 0 && isCritical)
+            {
+                //이미 슬로우 코루틴 실행중이면 기존 코루틴 취소
+                if (enemyManager.slowCoroutine != null)
+                    StopCoroutine(enemyManager.slowCoroutine);
+
+                enemyManager.slowCoroutine = SlowDebuff(attacker.slowTime);
+
+                StartCoroutine(enemyManager.slowCoroutine);
+            }
+
+            //시간 정지
+            if (attacker.stopTime > 0)
+            {
+                //몬스터 경직 카운터에 stopTime 만큼 추가
+                enemyManager.stopCount = attacker.stopTime;
+
+                // 해당 위치에 고정
+                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+            }
+
+            // 감전 디버프 && 크리티컬일때
+            if (attacker.shockTime > 0 && isCritical)
+            {
+                //이미 감전 코루틴 실행중이면 기존 코루틴 취소
+                if (enemyManager.shockCoroutine != null)
+                    StopCoroutine(enemyManager.shockCoroutine);
+
+                enemyManager.shockCoroutine = ShockDebuff(attacker.shockTime);
+
+                StartCoroutine(enemyManager.shockCoroutine);
+            }
+
+            // flat 디버프 있을때, flat 상태 아닐때
+            if (attacker.flatTime > 0 && enemyManager.flatCount <= 0)
+            {
+                // print("player flat");
+
+                // 납작해지고 행동불능
+                StartCoroutine(FlatDebuff(attacker.flatTime));
+            }
         }
 
-        //넉백
-        if (attacker.knockbackForce > 0)
+        // 화상 피해 시간 있을때
+        if (attacker.burnTime > 0)
         {
-            StartCoroutine(Knockback(attacker, attacker.knockbackForce));
-        }
+            //이미 화상 코루틴 실행중이면 기존 코루틴 취소
+            if (enemyManager.burnCoroutine != null)
+                StopCoroutine(enemyManager.burnCoroutine);
 
-        // 슬로우 디버프, 크리티컬 성공일때
-        if (attacker.slowTime > 0 && isCritical)
-        {
-            //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-            if (enemyManager.slowCoroutine != null)
-                StopCoroutine(enemyManager.slowCoroutine);
+            enemyManager.burnCoroutine = BurnDotHit(damage, attacker.burnTime);
 
-            enemyManager.slowCoroutine = SlowDebuff(attacker.slowTime);
-
-            StartCoroutine(enemyManager.slowCoroutine);
-        }
-
-        // 감전 디버프 && 크리티컬일때
-        if (attacker.shockTime > 0 && isCritical)
-        {
-            //이미 감전 코루틴 중이면 기존 코루틴 취소
-            if (enemyManager.shockCoroutine != null)
-                StopCoroutine(enemyManager.shockCoroutine);
-
-            enemyManager.shockCoroutine = ShockDebuff(attacker.shockTime);
-
-            StartCoroutine(enemyManager.shockCoroutine);
-        }
-
-        // flat 디버프 있을때, flat 상태 아닐때
-        if (attacker.flatTime > 0 && enemyManager.flatCount <= 0)
-        {
-            // print("player flat");
-
-            // 납작해지고 행동불능
-            StartCoroutine(FlatDebuff(attacker.flatTime));
+            StartCoroutine(enemyManager.burnCoroutine);
         }
 
         // 포이즌 피해 시간 있으면 도트 피해
         if (attacker.poisonTime > 0)
         {
-            //이미 포이즌 코루틴 중이면 기존 코루틴 취소
+            //이미 포이즌 코루틴 실행중이면 기존 코루틴 취소
             if (enemyManager.poisonCoroutine != null)
                 StopCoroutine(enemyManager.poisonCoroutine);
 
-            enemyManager.poisonCoroutine = PoisonDotHit(1, attacker.poisonTime);
+            enemyManager.poisonCoroutine = PoisonDotHit(damage, attacker.poisonTime);
 
             StartCoroutine(enemyManager.poisonCoroutine);
         }
@@ -273,11 +293,11 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 출혈 지속시간 있으면 도트 피해
         if (attacker.bleedTime > 0)
         {
-            //이미 출혈 코루틴 중이면 기존 코루틴 취소
+            //이미 출혈 코루틴 실행중이면 기존 코루틴 취소
             if (enemyManager.bleedCoroutine != null)
                 StopCoroutine(enemyManager.bleedCoroutine);
 
-            enemyManager.bleedCoroutine = BleedDotHit(1, attacker.bleedTime);
+            enemyManager.bleedCoroutine = BleedDotHit(damage, attacker.bleedTime);
 
             StartCoroutine(enemyManager.bleedCoroutine);
         }
@@ -438,12 +458,52 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         LeanPool.Despawn(damageUI);
     }
 
+    public IEnumerator BurnDotHit(float tickDamage, float duration)
+    {
+        // 화상 데미지 지속시간 넣기
+        enemyManager.burnCoolCount = duration;
+
+        // 화상 디버프 아이콘
+        Transform burnEffect = null;
+
+        // 이미 화상 디버프 중 아닐때
+        if (!enemyManager.transform.Find(SystemManager.Instance.burnDebuffEffect.name))
+        {
+            // 화상 디버프 이펙트 붙이기
+            burnEffect = LeanPool.Spawn(SystemManager.Instance.burnDebuffEffect, enemyManager.transform.position, Quaternion.identity, enemyManager.transform).transform;
+
+            // 포탈 사이즈 배율만큼 이펙트 배율 키우기
+            burnEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
+        }
+
+        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
+        while (enemyManager.burnCoolCount >= 1 && !enemyManager.isDead)
+        {
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 도트 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 남은 지속시간에서 한틱 차감
+            enemyManager.burnCoolCount -= 1f;
+        }
+
+        // 화상 이펙트 없에기
+        burnEffect = enemyManager.transform.Find(SystemManager.Instance.burnDebuffEffect.name);
+        if (burnEffect != null)
+            LeanPool.Despawn(burnEffect);
+
+        // 화상 코루틴 변수 초기화
+        enemyManager.burnCoroutine = null;
+    }
+
     public IEnumerator PoisonDotHit(float tickDamage, float duration)
     {
         //독 데미지 지속시간 넣기
         enemyManager.poisonCoolCount = duration;
 
-        // 포이즌 디버프 아이콘
+        // 포이즌 디버프 이펙트
         Transform poisonEffect = null;
 
         // 이미 포이즌 디버프 중 아닐때
@@ -456,20 +516,20 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             poisonEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
         }
 
-        // 독 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
-        while (enemyManager.poisonCoolCount > 1 && !enemyManager.isDead)
+        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
+        while (enemyManager.poisonCoolCount >= 1 && !enemyManager.isDead)
         {
             // 한 틱동안 대기
             yield return new WaitForSeconds(1f);
 
-            // 독 데미지 입히기
+            // 도트 데미지 입히기
             Damage(tickDamage, false);
 
-            // 독 데미지 지속시간에서 한틱 차감
+            // 남은 지속시간에서 한틱 차감
             enemyManager.poisonCoolCount -= 1f;
         }
 
-        // 포이즌 아이콘 없에기
+        // 포이즌 이펙트 없에기
         poisonEffect = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
         if (poisonEffect != null)
             LeanPool.Despawn(poisonEffect);
@@ -491,16 +551,16 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 출혈 데미지 지속시간 넣기
         enemyManager.bleedCoolCount = duration;
 
-        // 출혈 데미지 지속시간 남았을때 진행
-        while (enemyManager.bleedCoolCount > 0)
+        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
+        while (enemyManager.bleedCoolCount >= 1 && !enemyManager.isDead)
         {
             // 한 틱동안 대기
             yield return new WaitForSeconds(1f);
 
-            // 출혈 데미지 입히기
+            // 도트 데미지 입히기
             Damage(tickDamage, false);
 
-            // 출혈 데미지 지속시간에서 한틱 차감
+            // 남은 지속시간에서 한틱 차감
             enemyManager.bleedCoolCount -= 1f;
         }
 
