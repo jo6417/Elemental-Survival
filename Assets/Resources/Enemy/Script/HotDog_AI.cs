@@ -10,13 +10,14 @@ public class HotDog_AI : MonoBehaviour
     [Header("State")]
     [SerializeField]
     Patten patten = Patten.None;
-    enum Patten { Hellfire, Meteor, Stealth, None };
+    enum Patten { None, Hellfire, Meteor, Stealth };
     bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch, BackStep };
     public EnemyManager enemyManager;
     public EnemyAtkTrigger biteTrigger;
     public int nowPhase = 1;
+    public int nextPhase = 1;
     float damageMultiple = 1;
     float speedMultiple = 1;
     float projectileMultiple = 1;
@@ -27,19 +28,18 @@ public class HotDog_AI : MonoBehaviour
     public SpriteRenderer eyeGlow; // 빛나는 눈 오브젝트
     public List<SpriteRenderer> glowObj = new List<SpriteRenderer>(); // 빛나는 오브젝트들
     public Material glowMat; //몸에서 빛나는 부분들 머터리얼
-    Color hdrRed = new Color(191, 0, 0, 0) * 10f;
+    Color hdrRed = new Color(191, 1, 1, 0) * 10f;
     Color hdrYellow = new Color(191, 20, 0, 0) * 10f;
     Color hdrBlue = new Color(0, 8, 191, 0) * 10f;
 
     [Header("Move")]
     public float farDistance = 15f;
-    public float closeDistance = 8f;
+    public float closeDistance = 5f;
     public ParticleManager breathEffect; //숨쉴때 입에서 나오는 불꽃
     public ParticleSystem handDust;
     public ParticleSystem footDust;
     public Vector2 moveToPos; // 목표 위치
     public float moveResetCount; // 목표위치 갱신 시간 카운트
-    Vector2 lastPlayerDir; //마지막 관측된 플레이어 위치
 
     [Header("Stealth Atk")]
     public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
@@ -54,6 +54,8 @@ public class HotDog_AI : MonoBehaviour
     [SerializeField] float flameInverval = 1f;
 
     [Header("HellFire")]
+    [SerializeField] Transform jawUp; // 윗턱 오브젝트
+    public ParticleSystem mouthSparkEffect; // 에너지볼 먹을때 입에서 스파크 튀는 이펙트
     public ParticleSystem leakFireEffect; //차지 후 불꽃 새는 이펙트
     int jumpCount = -1;
     MagicInfo hellFireMagic;
@@ -172,14 +174,62 @@ public class HotDog_AI : MonoBehaviour
         initDone = true;
     }
 
-    void PhaseChange(int phase)
+    IEnumerator PhaseChange(int phase)
     {
-        print(nowPhase + " -> " + phase);
-        // 페이즈 숫자 올리기
-        nowPhase = phase;
+        // print(nowPhase + " -> " + phase);
+
+        //todo 기모으고 몸으로 땅울림 애니메이션 1회
+
+        yield return new WaitForSeconds(3f);
+
+        //todo 바닥 범위 표시하며 플레이어 강하게 밀어내기
+
+
+        yield return new WaitForSeconds(1f);
+
+        // 한번에 소환할 개수
+        int summonNum = 20;
+
+        // 각 Flame 위치 저장할 배열
+        Vector3[] lastPos = new Vector3[summonNum];
+
+        //todo 범위만큼 주변에 Flame 원형으로 점점 크게 여러번 생성
+        for (int j = 0; j < 3; j++)
+        {
+            //todo Flame 원형으로 생성
+            for (int i = 0; i < 20; i++)
+            {
+                // 소환할 각도를 벡터로 바꾸기
+                float angle = 360f * i / summonNum;
+                Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
+                // print(angle + " : " + summonDir);
+
+                // Flame 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
+                Vector3 targetPos = transform.position + summonDir * (1f + 3f * j);
+
+                // 각 Flame 소환 위치 저장
+                lastPos[i] = targetPos;
+
+                // Flame 생성
+                GameObject magicObj = LeanPool.Spawn(flamePrefab, lastPos[i], Quaternion.identity, SystemManager.Instance.magicPool);
+
+                // 매직홀더 찾기
+                MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+                // magic 데이터 넣기
+                magicHolder.magic = flameMagic;
+
+                // 타겟을 플레이어로 전환
+                magicHolder.SetTarget(MagicHolder.Target.Player);
+
+                // Flame 목표지점 넣기
+                magicHolder.targetPos = lastPos[i];
+            }
+
+            // 다음 사이즈 전개까지 대기
+            yield return new WaitForSeconds(0.5f);
+        }
 
         Color changeColor = default;
-
         // 페이즈별로 머터리얼의 색 바꾸기
         switch (phase)
         {
@@ -242,6 +292,10 @@ public class HotDog_AI : MonoBehaviour
                 }
             }
         });
+
+        // 다음 및 현재 페이즈 숫자 동일하게
+        nextPhase = phase;
+        nowPhase = phase;
     }
 
     void Update()
@@ -275,6 +329,10 @@ public class HotDog_AI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
+        //todo 페이즈 올리는중이면 리턴
+        if (nextPhase > nowPhase)
+            return;
+
         // 플레이어 방향
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
 
@@ -282,13 +340,10 @@ public class HotDog_AI : MonoBehaviour
         float playerDistance = playerDir.magnitude;
 
         // 물기 콜라이더에 플레이어 닿으면 bite 패턴
-        if (biteTrigger.atkTrigger && coolCount <= 0)
+        if (biteTrigger.atkTrigger)
         {
             //! 거리 확인용
             stateText.text = "Bite : " + playerDistance;
-
-            // 플레이어 마지막 위치 갱신
-            lastPlayerDir = PlayerManager.Instance.transform.position - transform.position;
 
             // 속도 초기화
             enemyManager.rigid.velocity = Vector3.zero;
@@ -313,7 +368,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 공격 범위내에 있고 공격 쿨타임 됬을때
-        if (playerDistance <= farDistance && playerDistance >= closeDistance && coolCount <= 0)
+        if (playerDistance <= farDistance && coolCount <= 0)
         {
             //! 거리 확인용
             stateText.text = "Attack : " + playerDistance;
@@ -385,7 +440,6 @@ public class HotDog_AI : MonoBehaviour
             // 방향에 거리 곱해서 목표 위치 벡터 갱신
             moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(closeDistance, farDistance);
 
-            // LeanPool.Spawn(SystemManager.Instance.markPrefab, moveToPos, Quaternion.identity);
             // print(moveToPos);
         }
 
@@ -440,9 +494,6 @@ public class HotDog_AI : MonoBehaviour
         enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
-        // 플레이어 마지막 위치 갱신
-        lastPlayerDir = PlayerManager.Instance.transform.position - transform.position;
-
         // 백스텝 애니메이션 실행 후 대기
         enemyManager.animList[0].SetTrigger(AnimState.BackStep.ToString());
 
@@ -479,17 +530,17 @@ public class HotDog_AI : MonoBehaviour
 
         switch (randomNum)
         {
-            case 0:
+            case (int)Patten.Hellfire:
                 // 근거리 및 중거리 헬파이어 패턴
                 StartCoroutine(HellfireAtk());
                 coolCount = hellfireCooltime;
                 break;
-            case 1:
+            case (int)Patten.Meteor:
                 // 원거리 메테오 쿨타임 아닐때 meteor 패턴 코루틴
                 MeteorAtk();
                 coolCount = meteorCooltime;
                 break;
-            case 2:
+            case (int)Patten.Stealth:
                 // 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
                 StartCoroutine(StealthAtk());
                 coolCount = stealthCooltime;
@@ -513,8 +564,13 @@ public class HotDog_AI : MonoBehaviour
 
     void BackStepMove()
     {
+        // 백스텝으로 이동할 위치
+        float dirX = transform.rotation.eulerAngles.y == 180f ? -10f : 10f;
+        float dirY = Random.Range(-1, 1) * Random.Range(-10f, 10f);
+        Vector2 backStepPos = (Vector2)transform.position + new Vector2(dirX, dirY);
+
         // 마지막 플레이어 위치 반대 방향으로 이동
-        enemyManager.rigid.DOMove((Vector2)transform.position - lastPlayerDir.normalized * 10f, 1f);
+        enemyManager.rigid.DOMove(backStepPos, 0.5f);
     }
 
     void StartChargeEffect()
@@ -583,6 +639,17 @@ public class HotDog_AI : MonoBehaviour
 
         // 불꽃 호흡 이펙트 켜기
         breathEffect.gameObject.SetActive(true);
+
+        // // 불꽃 호흡 이펙트 소환
+        // ParticleManager breath = LeanPool.Spawn(breathEffect, jawUp.transform.position, Quaternion.Euler(Vector3.zero), jawUp);
+        // breath.transform.localPosition = new Vector2(1.5f, 0.4f);
+        // breath.particle.Play();
+    }
+
+    void FinishEat()
+    {
+        // 입에 스파크 이펙트 소환
+        LeanPool.Spawn(mouthSparkEffect, breathEffect.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 
     void SummonHellfire()
@@ -599,7 +666,7 @@ public class HotDog_AI : MonoBehaviour
                 break;
             case 2:
                 // 직선 및 유도 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 4, 30));
+                StartCoroutine(CastHellfire(jumpCount, 1, 50));
                 break;
         }
     }
@@ -619,20 +686,14 @@ public class HotDog_AI : MonoBehaviour
             // 헬파이어 개수만큼 반복
             for (int i = 0; i < summonNum; i++)
             {
-                // 유도 헬파이어일때, 5회차 이상이면 유도로 전환
-                if (_jumpCount == 2 && j > 4)
+                // 3번째 공격일때
+                if (_jumpCount == 2)
                 {
-                    // 플레이어까지 방향 벡터 계산
-                    Vector3 moveDir = PlayerManager.Instance.transform.position - lastPos[i];
+                    // 헬파이어 소환 위치, 플레이어 주변 범위내 랜덤
+                    Vector3 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(1f, 30f);
 
-                    // 플레이어 방향으로 0~5만큼 이동된 벡터 계산, 점점 거리 늘어남
-                    moveDir = moveDir.normalized * 5f * (float)j / (float)loopNum;
-
-                    // 5 보다 플레이어까지 거리가 가까울때 벡터 거리 제한
-                    moveDir = Vector3.ClampMagnitude(moveDir, moveDir.magnitude);
-
-                    // 마지막 저장된 위치에서 플레이어 위치까지 보정된 위치 저장
-                    lastPos[i] = lastPos[i] + moveDir;
+                    // 각 헬파이어의 소환 위치 저장
+                    lastPos[i] = targetPos;
                 }
                 else
                 {
@@ -1010,17 +1071,23 @@ public class HotDog_AI : MonoBehaviour
         // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
         if (nowPhase == 1 && enemyManager.hpNow / enemyManager.hpMax <= 2f / 3f)
         {
-            // 페이즈2 색으로 노란색 HDR 넣기
-            if (glowMat.color != hdrYellow)
-                PhaseChange(2);
+            // 다음 페이즈 예약
+            StartCoroutine(PhaseChange(2));
+
+            // // 페이즈2 색으로 노란색 HDR 넣기
+            // if (glowMat.color != hdrYellow)
+            //     PhaseChange(2);
         }
 
         // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
         if (nowPhase == 2 && enemyManager.hpNow / enemyManager.hpMax <= 1f / 3f)
         {
-            // 페이즈3 색으로 파란색 HDR 넣기
-            if (glowMat.color != hdrBlue)
-                PhaseChange(3);
+            // 다음 페이즈 예약
+            StartCoroutine(PhaseChange(3));
+
+            // // 페이즈3 색으로 파란색 HDR 넣기
+            // if (glowMat.color != hdrBlue)
+            //     PhaseChange(3);
         }
 
         // 체력이 0 이하일때, 죽었을때
