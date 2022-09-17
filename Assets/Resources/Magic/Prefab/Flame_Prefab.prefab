@@ -82,6 +82,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particleManager: {fileID: 8924197724212575983}
   magicHolder: {fileID: 4641395756389376504}
+  fireColor: {r: 0, g: 0, b: 0, a: 0}
+  fireMaterial: {fileID: 0}
 --- !u!114 &8924197724212575983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +117,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -5015,6 +5017,11 @@ PrefabInstance:
         type: 3}
       propertyPath: lengthInSec
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6442235028907615747, guid: c96300d623f4b8241aecb7866e656ba7,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6442235028907615747, guid: c96300d623f4b8241aecb7866e656ba7,
         type: 3}

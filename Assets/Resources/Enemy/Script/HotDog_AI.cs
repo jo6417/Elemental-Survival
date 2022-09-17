@@ -13,24 +13,36 @@ public class HotDog_AI : MonoBehaviour
     enum Patten { None, Hellfire, Meteor, Stealth };
     bool initDone = false;
     AnimState animState;
-    enum AnimState { isWalk, isRun, isBark, Jump, Bite, Charge, Eat, Launch, BackStep };
+    enum AnimState { isWalk, isRun, isBark, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
     public EnemyManager enemyManager;
     public EnemyAtkTrigger biteTrigger;
-    public int nowPhase = 1;
-    public int nextPhase = 1;
-    float damageMultiple = 1;
-    float speedMultiple = 1;
-    float projectileMultiple = 1;
+
+    [Header("Phase")]
+    [SerializeField] Collider2D pushRange; // 페이즈 상승시 플레이어 밀어내는 범위
+    int nowPhase = 0;
+    int nextPhase = 1;
+    float damageMultiple = 1; // 페이즈에 따른 데미지 배율
+    float speedMultiple = 1; // 페이즈에 따른 속도 배율
+    float projectileMultiple = 1; // 페이즈에 따른 투사체 배율
 
     [Header("Effect Control")]
     public ParticleManager chargeEffect;
     public ParticleManager tailEffect; //꼬리 화염 파티클
     public SpriteRenderer eyeGlow; // 빛나는 눈 오브젝트
     public List<SpriteRenderer> glowObj = new List<SpriteRenderer>(); // 빛나는 오브젝트들
-    public Material glowMat; //몸에서 빛나는 부분들 머터리얼
-    Color hdrRed = new Color(191, 1, 1, 0) * 10f;
-    Color hdrYellow = new Color(191, 20, 0, 0) * 10f;
-    Color hdrBlue = new Color(0, 8, 191, 0) * 10f;
+    public Material hdrMat; //몸에서 빛나는 부분들 머터리얼
+    public Color[] phaseHDRColor = {
+        new Color(1f, 1f, 1f, 0) * 10f,
+        new Color(191f, 1f, 1f, 0) * 10f,
+        new Color(191f, 20f, 0, 0) * 10f,
+        new Color(0, 8f, 191f, 0) * 10f
+        };
+    public Color[] phaseColor = {
+        new Color(1f, 1f, 1f, 1f),
+        new Color(1f, 0, 0, 1f),
+        new Color(1f, 1f, 0, 1f),
+        new Color(0, 1f, 1f, 1f)
+        };
 
     [Header("Move")]
     public float farDistance = 15f;
@@ -99,8 +111,13 @@ public class HotDog_AI : MonoBehaviour
         // 눈 번쩍하는 이펙트 끄기
         eyeFlash.gameObject.SetActive(false);
 
-        // 페이즈1 색으로 빨간 HDR 넣기
-        glowMat.color = hdrRed;
+        // 페이즈0 색으로 흰색 HDR 넣기
+        hdrMat.color = phaseHDRColor[0];
+
+        // 페이즈 변화시 밀어내기 이펙트 초기화
+        pushRange.gameObject.SetActive(false);
+        pushRange.enabled = false; // 밀어내는 콜라이더 끄기
+        pushRange.transform.GetChild(0).localScale = Vector2.zero; // 채우기 오브젝트 크기 초기화
 
         // 발 먼지 이펙트 끄기
         handDust.Stop();
@@ -172,70 +189,88 @@ public class HotDog_AI : MonoBehaviour
 
         // 초기화 완료
         initDone = true;
+
+        nowPhase = 0;
+        nextPhase = 1;
+        // 0번 페이즈 트랜지션
+        StartCoroutine(PhaseChange());
     }
 
-    IEnumerator PhaseChange(int phase)
+    IEnumerator PhaseChange()
     {
-        // print(nowPhase + " -> " + phase);
+        // 무적 상태로 전환
+        SwitchInvinsible(true);
 
-        //todo 기모으고 몸으로 땅울림 애니메이션 1회
+        // Idle 상태가 될때까지 대기
+        yield return new WaitUntil(() => enemyManager.nowAction == EnemyManager.Action.Idle);
 
-        yield return new WaitForSeconds(3f);
+        // 현재 페이즈 컬러
+        Color _nowColor = phaseColor[nowPhase];
+        // 다음 페이즈 컬러
+        Color _nextColor = phaseColor[nextPhase];
 
-        //todo 바닥 범위 표시하며 플레이어 강하게 밀어내기
+        // 푸쉬 범위 나타내기
+        pushRange.gameObject.SetActive(true);
+        pushRange.enabled = false; // 밀어내는 콜라이더 끄기
+        Transform pushRangeFill = pushRange.transform.GetChild(0); // 범위 채우는 오브젝트 찾기
+        SpriteRenderer pushSprite = pushRange.GetComponent<SpriteRenderer>();
+        SpriteRenderer pushFillSprite = pushRangeFill.GetComponent<SpriteRenderer>();
 
+        pushRange.transform.localScale = Vector2.zero; // 범위 크기 제로로 초기화
+        pushRangeFill.localScale = Vector2.zero; // 채우기 범위 크기 제로로 초기화
 
+        pushSprite.color = _nowColor; // 범위 컬러를 현재 페이즈 컬러로
+        pushFillSprite.color = _nextColor; // 채우기 컬러를 다음 페이즈 컬러로
+
+        // 푸쉬 범위 스케일 키우기
+        pushRange.transform.DOScale(Vector2.one * 5.5f, 1f)
+        .SetEase(Ease.Linear);
+
+        // 짖기 애니메이션 재생
+        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), true);
+
+        // 짖으며 범위 표시되는 시간 대기
         yield return new WaitForSeconds(1f);
 
-        // 한번에 소환할 개수
-        int summonNum = 20;
+        // 범위 오브젝트 투명해지며 끄기
+        pushSprite.DOColor(Color.clear, 2f);
 
-        // 각 Flame 위치 저장할 배열
-        Vector3[] lastPos = new Vector3[summonNum];
+        // 채우기 범위 스케일 키우기
+        pushRangeFill.DOScale(Vector2.one, 1f)
+        .SetEase(Ease.Linear);
 
-        //todo 범위만큼 주변에 Flame 원형으로 점점 크게 여러번 생성
-        for (int j = 0; j < 3; j++)
+        // 밀어내기 콜라이더 켜기
+        pushRange.enabled = true;
+        yield return new WaitForSeconds(0.1f);
+        // 밀어내기 콜라이더 끄기
+        pushRange.enabled = false;
+
+        // 범위 채우는 시간 대기
+        yield return new WaitForSeconds(1f);
+
+        // 온몸에서 불꽃 뿜기 이펙트 재생
+        LeakFire();
+
+        // 밀어내는 시간 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 범위 오브젝트 투명해지며 끄기
+        pushFillSprite.DOColor(Color.clear, 0.5f)
+        .OnComplete(() =>
         {
-            //todo Flame 원형으로 생성
-            for (int i = 0; i < 20; i++)
-            {
-                // 소환할 각도를 벡터로 바꾸기
-                float angle = 360f * i / summonNum;
-                Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
-                // print(angle + " : " + summonDir);
-
-                // Flame 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
-                Vector3 targetPos = transform.position + summonDir * (1f + 3f * j);
-
-                // 각 Flame 소환 위치 저장
-                lastPos[i] = targetPos;
-
-                // Flame 생성
-                GameObject magicObj = LeanPool.Spawn(flamePrefab, lastPos[i], Quaternion.identity, SystemManager.Instance.magicPool);
-
-                // 매직홀더 찾기
-                MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
-                // magic 데이터 넣기
-                magicHolder.magic = flameMagic;
-
-                // 타겟을 플레이어로 전환
-                magicHolder.SetTarget(MagicHolder.Target.Player);
-
-                // Flame 목표지점 넣기
-                magicHolder.targetPos = lastPos[i];
-            }
-
-            // 다음 사이즈 전개까지 대기
-            yield return new WaitForSeconds(0.5f);
-        }
+            // 범위 오브젝트 끄기
+            pushRange.gameObject.SetActive(false);
+            // 채우기 콜라이더 크기 초기화
+            pushRangeFill.localScale = Vector2.zero;
+        });
 
         Color changeColor = default;
         // 페이즈별로 머터리얼의 색 바꾸기
-        switch (phase)
+        switch (nextPhase)
         {
             case 1:
                 // 빨간 HDR 넣기
-                changeColor = hdrRed;
+                changeColor = phaseHDRColor[1];
 
                 // 데미지 배율, 이속 배율, 투사체 개수 배율 적용
                 damageMultiple = 1f;
@@ -245,7 +280,7 @@ public class HotDog_AI : MonoBehaviour
                 break;
             case 2:
                 // 노란 HDR 넣기
-                changeColor = hdrYellow;
+                changeColor = phaseHDRColor[2];
 
                 // 데미지 배율, 이속 배율, 투사체 개수 배율 적용
                 damageMultiple = 1.2f;
@@ -255,7 +290,7 @@ public class HotDog_AI : MonoBehaviour
                 break;
             case 3:
                 // 파란 HDR 넣기
-                changeColor = hdrBlue;
+                changeColor = phaseHDRColor[3];
 
                 // 데미지 배율, 이속 배율, 투사체 개수 배율 적용
                 damageMultiple = 1.5f;
@@ -271,31 +306,105 @@ public class HotDog_AI : MonoBehaviour
         // 데미지 갱신
         enemyManager.enemy.power = originEnemy.power * damageMultiple;
 
-        // 모든 glow 오브젝트에 glow 머터리얼 다시 넣기
-        foreach (SpriteRenderer glow in glowObj)
-        {
-            // 머터리얼 넣기
-            glow.material = glowMat;
-        }
-
         // HDR 색으로 변화
-        glowMat.DOColor(changeColor, 1f)
+        hdrMat.DOColor(changeColor, 0.5f)
         .OnUpdate(() =>
         {
             // OriginMat 에서 HDR 머터리얼 컬러 전부 교체해주기
             for (int i = 0; i < enemyManager.originMatList.Count; i++)
             {
-                // glowMat 과 이름 같은 머터리얼 찾으면
-                if (enemyManager.originMatList[i].name.Contains(glowMat.name))
+                // originMatList에서 glowMat과 이름 같은 머터리얼 찾으면
+                if (enemyManager.originMatList[i].name.Contains(hdrMat.name))
                 {
-                    enemyManager.originMatList[i] = glowMat;
+                    enemyManager.originMatList[i] = hdrMat;
                 }
+            }
+
+            // OriginMat 에서 HDR 머터리얼 컬러 전부 교체해주기
+            for (int i = 0; i < enemyManager.originMatColorList.Count; i++)
+            {
+                enemyManager.originMatColorList[i] = hdrMat.color;
             }
         });
 
-        // 다음 및 현재 페이즈 숫자 동일하게
-        nextPhase = phase;
-        nowPhase = phase;
+        // 한번에 소환할 개수
+        int summonNum = 20;
+        // 소환 최대 범위
+        float maxDistance = 18f;
+        // 각 Flame 위치 저장할 배열
+        Vector3[] lastPos = new Vector3[summonNum];
+        // // Flame 에 넣을 머터리얼 인스턴싱
+        // Material flameMat = new Material(hdrMat);
+
+        // 범위만큼 주변에 Flame 원형으로 점점 크게 여러번 생성
+        for (int j = 0; j < 5; j++)
+        {
+            // Flame 원형으로 생성
+            for (int i = 0; i < 20; i++)
+            {
+                // 소환할 각도를 벡터로 바꾸기
+                float angle = 360f * i / summonNum;
+                Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
+                // print(angle + " : " + summonDir);
+
+                // 소환 반경 계산
+                float radius = maxDistance / 5 * (j + 1);
+                radius = Mathf.Clamp(radius, 1f, radius);
+
+                // Flame 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
+                Vector3 targetPos = transform.position + summonDir * radius;
+
+                // 각 Flame 소환 위치 저장
+                lastPos[i] = targetPos;
+
+                // Flame 생성
+                GameObject magicObj = LeanPool.Spawn(flamePrefab, lastPos[i], Quaternion.identity, SystemManager.Instance.magicPool);
+
+                // Flame 색깔 및 머터리얼 바꾸기
+                Flame flame = magicObj.GetComponent<Flame>();
+                flame.fireColor = new Color(1, 1, 1, 20f / 255f);
+                flame.fireMaterial = hdrMat;
+
+                // 매직홀더 찾기
+                MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+                // magic 데이터 넣기
+                magicHolder.magic = flameMagic;
+
+                // 타겟을 플레이어로 전환
+                magicHolder.SetTarget(MagicHolder.Target.Player);
+
+                // Flame 목표지점 넣기
+                magicHolder.targetPos = lastPos[i];
+            }
+
+            // 다음 사이즈 전개까지 대기
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // Flame 마법 전개, 색 변화 시간 대기
+        yield return new WaitForSeconds(1f);
+
+        // 짖기 애니메이션 끄기
+        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
+
+        print(nowPhase + " -> " + nextPhase);
+
+        // 현재 페이즈 숫자 올리기        
+        nowPhase = nextPhase;
+
+        // 무적 상태 해제
+        SwitchInvinsible(false);
+    }
+
+    void SwitchInvinsible(bool state)
+    {
+        // 무적 상태 갱신
+        enemyManager.invinsible = state;
+
+        if (state)
+        {
+            //todo 무적임을 나타내기 위한 쉴드 켜기
+        }
     }
 
     void Update()
@@ -329,9 +438,21 @@ public class HotDog_AI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
-        //todo 페이즈 올리는중이면 리턴
+        // 페이즈 올리는중이면 리턴
         if (nextPhase > nowPhase)
+        {
+            // 상태값 Idle로 초기화
+            enemyManager.nowAction = EnemyManager.Action.Idle;
+
+            // 속도 초기화
+            enemyManager.rigid.velocity = Vector3.zero;
+
+            // Idle 애니메이션 진행
+            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+
             return;
+        }
 
         // 플레이어 방향
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
@@ -609,7 +730,7 @@ public class HotDog_AI : MonoBehaviour
     IEnumerator HellfireAtk()
     {
         // 차지 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
+        enemyManager.animList[0].SetTrigger(AnimState.ChargeBall.ToString());
         // 차지 끝나면 에너지볼 먹는 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Eat.ToString());
 
@@ -639,11 +760,6 @@ public class HotDog_AI : MonoBehaviour
 
         // 불꽃 호흡 이펙트 켜기
         breathEffect.gameObject.SetActive(true);
-
-        // // 불꽃 호흡 이펙트 소환
-        // ParticleManager breath = LeanPool.Spawn(breathEffect, jawUp.transform.position, Quaternion.Euler(Vector3.zero), jawUp);
-        // breath.transform.localPosition = new Vector2(1.5f, 0.4f);
-        // breath.particle.Play();
     }
 
     void FinishEat()
@@ -741,7 +857,7 @@ public class HotDog_AI : MonoBehaviour
     void MeteorAtk()
     {
         // 차지 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.Charge.ToString());
+        enemyManager.animList[0].SetTrigger(AnimState.ChargeBall.ToString());
         // 에너지볼 발사 애니메이션 재생
         enemyManager.animList[0].SetTrigger(AnimState.Launch.ToString());
     }
@@ -792,6 +908,12 @@ public class HotDog_AI : MonoBehaviour
         {
             enemyManager.hitBoxList[i].enabled = false;
         }
+
+        // 짖기 애니메이션 대기
+        yield return new WaitForSeconds(2f);
+
+        // 안개 생성
+        MakeFog();
 
         // 투명해질때까지 대기
         yield return new WaitUntil(() => enemyManager.spriteList[0].color == Color.clear);
@@ -1071,23 +1193,29 @@ public class HotDog_AI : MonoBehaviour
         // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
         if (nowPhase == 1 && enemyManager.hpNow / enemyManager.hpMax <= 2f / 3f)
         {
-            // 다음 페이즈 예약
-            StartCoroutine(PhaseChange(2));
+            // 페이즈업 함수 실행 안됬을때
+            if (nowPhase == nextPhase)
+            {
+                // 다음 페이스 숫자 올리기
+                nextPhase = 2;
 
-            // // 페이즈2 색으로 노란색 HDR 넣기
-            // if (glowMat.color != hdrYellow)
-            //     PhaseChange(2);
+                // 다음 페이즈 예약
+                StartCoroutine(PhaseChange());
+            }
         }
 
         // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
         if (nowPhase == 2 && enemyManager.hpNow / enemyManager.hpMax <= 1f / 3f)
         {
-            // 다음 페이즈 예약
-            StartCoroutine(PhaseChange(3));
+            // 페이즈업 함수 실행 안됬을때
+            if (nowPhase == nextPhase)
+            {
+                // 다음 페이스 숫자 올리기
+                nextPhase = 3;
 
-            // // 페이즈3 색으로 파란색 HDR 넣기
-            // if (glowMat.color != hdrBlue)
-            //     PhaseChange(3);
+                // 다음 페이즈 예약
+                StartCoroutine(PhaseChange());
+            }
         }
 
         // 체력이 0 이하일때, 죽었을때

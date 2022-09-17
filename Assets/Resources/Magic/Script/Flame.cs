@@ -9,10 +9,20 @@ public class Flame : MonoBehaviour
     [Header("Refer")]
     [SerializeField] ParticleManager particleManager;
     [SerializeField] MagicHolder magicHolder;
+    public Color fireColor;
+    public Material fireMaterial;
 
     [Header("Spec")]
     float range;
     float duration;
+
+    private void Awake()
+    {
+        // 파티클 기본 색깔
+        fireColor = new Color(1f, 80f / 255f, 30f / 255f, 1f);
+        // 파티클 기본 머터리얼
+        fireMaterial = SystemManager.Instance.HDR3_Mat;
+    }
 
     private void OnEnable()
     {
@@ -29,6 +39,13 @@ public class Flame : MonoBehaviour
         range = MagicDB.Instance.MagicRange(magicHolder.magic);
         duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
 
+        // 파티클 색 초기화
+        ParticleSystem.MainModule particleMain = particleManager.particle.main;
+        particleMain.startColor = fireColor;
+        // 파티클 머터리얼 초기화
+        ParticleSystemRenderer particleRenderer = particleManager.particle.GetComponent<ParticleSystemRenderer>();
+        particleRenderer.material = fireMaterial;
+
         // magicHolder에서 targetPos 받아와서 해당 위치로 이동
         transform.position = magicHolder.targetPos;
 
@@ -37,6 +54,9 @@ public class Flame : MonoBehaviour
 
         // 콜라이더 켜기
         magicHolder.coll.enabled = true;
+
+        // 화염 파티클 재생
+        particleManager.particle.Play();
 
         // duration 만큼 시간 지나면 디스폰 시작
         yield return new WaitForSeconds(duration);
@@ -49,5 +69,13 @@ public class Flame : MonoBehaviour
 
         // 콜라이더 끄기
         magicHolder.coll.enabled = false;
+    }
+
+    private void OnDisable()
+    {
+        // 파티클 기본 색깔
+        fireColor = new Color(1f, 80f / 255f, 30f / 255f, 1f);
+        // 파티클 기본 머터리얼
+        fireMaterial = SystemManager.Instance.HDR3_Mat;
     }
 }

@@ -79,6 +79,9 @@ public class MagicHolder : Attack
         addDuration = 0;
         multipleSpeed = 1;
         fixedPower = 0f;
+
+        // 마법정보 초기화
+        magic = null;
     }
 
     public Target GetTarget()

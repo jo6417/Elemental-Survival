@@ -82,6 +82,7 @@ public class EnemyManager : Character
     public float portalSize = 1f; //포탈 사이즈 지정값
     public bool afterEffect = false; // 상태이상 여부
     public bool isDead; //죽음 코루틴 진행중 여부
+    public bool invinsible = false; //현재 무적 여부
     public bool selfExplosion = false; //죽을때 자폭 여부
     public float attackRange; // 공격범위
     public bool changeGhost = false;

@@ -2775,7 +2775,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2/Tail_3
+    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2785,7 +2785,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2/Tail_3
+    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2795,7 +2795,97 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2/Tail_3
+    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: HotDog_Variant/Body_1/Front_Arm_0/Front_Arm_1/Front_Hand
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: HotDog_Variant/Body_1/Front_Arm_0/Front_Arm_1/Front_Hand
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: HotDog_Variant/Body_1/Front_Arm_0/Front_Arm_1/Front_Hand
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: HotDog_Variant/Body_1/Tail_0
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: HotDog_Variant/Body_1/Tail_0
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: HotDog_Variant/Body_1/Tail_0
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.z
+    path: HotDog_Variant/Body_1/Back_Arm_0/Back_Arm_1/Back_Hand
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.y
+    path: HotDog_Variant/Body_1/Back_Arm_0/Back_Arm_1/Back_Hand
+    classID: 4
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_LocalEulerAngles.x
+    path: HotDog_Variant/Body_1/Back_Arm_0/Back_Arm_1/Back_Hand
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2894,8 +2984,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: HotDog_Variant/Body_1/Tail_0
+    attribute: m_LocalEulerAngles.x
+    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2/Tail_3
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2905,17 +2995,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: HotDog_Variant/Body_1/Tail_0
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: HotDog_Variant/Body_1/Tail_0
+    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2/Tail_3
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -2925,87 +3005,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: HotDog_Variant/Body_1/Back_Arm_0/Back_Arm_1/Back_Hand
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: HotDog_Variant/Body_1/Back_Arm_0/Back_Arm_1/Back_Hand
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: HotDog_Variant/Body_1/Back_Arm_0/Back_Arm_1/Back_Hand
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: HotDog_Variant/Body_1/Front_Arm_0/Front_Arm_1/Front_Hand
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: HotDog_Variant/Body_1/Front_Arm_0/Front_Arm_1/Front_Hand
-    classID: 4
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: HotDog_Variant/Body_1/Front_Arm_0/Front_Arm_1/Front_Hand
+    path: HotDog_Variant/Body_1/Tail_0/Tail_1/Tail_2/Tail_3
     classID: 4
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

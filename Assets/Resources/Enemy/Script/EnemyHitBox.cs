@@ -114,7 +114,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             EnemyManager atkEnemyManager = enemyAtk.enemyManager;
 
             // 공격한 몹의 정보 찾기
-            yield return new WaitUntil(() => enemyAtk.enemyManager.enemy != null);
+            // yield return new WaitUntil(() => enemyAtk.enemyManager.enemy != null);
 
             // other가 본인일때 리턴
             if (atkEnemyManager == this)
@@ -205,14 +205,14 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
         // 디버프 판단해서 적용
         Debuff(attacker, isCritical, damage);
+
+        //피격 딜레이 무적시간 시작
+        enemyManager.hitCoroutine = HitDelay(damage);
+        StartCoroutine(enemyManager.hitCoroutine);
     }
 
     public void Debuff(Attack attacker, bool isCritical, float damage = 0)
     {
-        // // 보스면 리턴
-        // if (enemyManager.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
-        //     return;
-
         // 보스가 아닌적들만 디버프
         if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
         {
@@ -359,9 +359,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         if (enemyManager.isDead)
             return;
 
-        //피격 딜레이 무적시간 시작
-        enemyManager.hitCoroutine = HitDelay(damage);
-        StartCoroutine(enemyManager.hitCoroutine);
+        // 무적 상태면 리턴
+        if (enemyManager.invinsible)
+            return;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
