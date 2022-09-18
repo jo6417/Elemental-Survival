@@ -109,12 +109,6 @@ public class PhoneMenu : MonoBehaviour
             invenSlots.Add(invenSlot);
         }
 
-        // // 액티브 슬롯 오브제트 모두 저장
-        // for (int i = 0; i < PlayerManager.Instance.activeParent.childCount; i++)
-        // {
-        //     invenSlots.Add(PlayerManager.Instance.activeParent.GetChild(i).GetComponent<InventorySlot>());
-        // }
-
         // 선택된 마법 rect 찾기
         nowSelectIconRect = nowSelectIcon.transform.parent.GetComponent<RectTransform>();
 
@@ -123,9 +117,6 @@ public class PhoneMenu : MonoBehaviour
 
         // 스크롤 컨텐츠 모두 비우기
         SystemManager.Instance.DestroyAllChild(recipeScroll.Content);
-
-        // 인벤토리 슬롯들 배열 참조
-        // inventory = PlayerManager.Instance.inventory;
     }
 
     IEnumerator InputInit()
@@ -157,8 +148,6 @@ public class PhoneMenu : MonoBehaviour
 
         // 핸드폰 패널 끄기
         phonePanel.SetActive(false);
-        // 핸드폰 캔버스 끄기
-        // gameObject.SetActive(false);
     }
 
     IEnumerator CancelMoveItem()
@@ -248,11 +237,6 @@ public class PhoneMenu : MonoBehaviour
         //홈 버튼 상호작용 켜기
         homeBtn.interactable = true;
 
-        // 액티브 슬롯 3개 상호작용 켜기
-        PlayerManager.Instance.activeSlot_A.slotButton.interactable = true;
-        PlayerManager.Instance.activeSlot_B.slotButton.interactable = true;
-        PlayerManager.Instance.activeSlot_C.slotButton.interactable = true;
-
         // 팡파레 이펙트 끄기
         slotRayEffect.gameObject.SetActive(false);
 
@@ -309,6 +293,11 @@ public class PhoneMenu : MonoBehaviour
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
 
+        // 액티브 슬롯 3개 상호작용 켜기
+        PlayerManager.Instance.activeSlot_A.slotButton.interactable = true;
+        PlayerManager.Instance.activeSlot_B.slotButton.interactable = true;
+        PlayerManager.Instance.activeSlot_C.slotButton.interactable = true;
+
         // 핸드폰 화면 패널 켜기
         phonePanel.SetActive(true);
 
@@ -339,8 +328,6 @@ public class PhoneMenu : MonoBehaviour
         // selectedSlot.navigation = nav;
 
         #endregion
-
-        // TODO 게임 시작할때 액티브 슬롯에 스킬 이미 들어간채로 시작
     }
 
     void LoadingToggle(bool isLoading)
@@ -553,11 +540,11 @@ public class PhoneMenu : MonoBehaviour
         plusIcon.transform.localScale = Vector3.zero;
 
         // 좌측 슬롯 가운데로 절반만 이동
-        L_MergeSlotRect.DOAnchorPos((centerPos + L_originPos) / 2f, 1f)
+        L_MergeSlotRect.DOAnchorPos((centerPos + L_originPos) / 2f, 0.5f)
         .SetEase(Ease.InBack)
         .SetUpdate(true);
         // 우측 슬롯 가운데로 절반만 이동
-        R_MergeSlotRect.DOAnchorPos((centerPos + R_originPos) / 2f, 1f)
+        R_MergeSlotRect.DOAnchorPos((centerPos + R_originPos) / 2f, 0.5f)
         .SetEase(Ease.InBack)
         .SetUpdate(true);
 
@@ -566,22 +553,20 @@ public class PhoneMenu : MonoBehaviour
         // 합성 준비 이펙트 끄기
         mergeBeforeEffect.Stop();
 
-        yield return new WaitForSecondsRealtime(0.5f);
-
         // 실패 이펙트 재생
         mergeFailEffect.Play();
 
         // 좌측 슬롯 위치 복귀
-        L_MergeSlotRect.DOAnchorPos(L_originPos, 1f)
+        L_MergeSlotRect.DOAnchorPos(L_originPos, 0.5f)
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
         // 우측 슬롯 위치 복귀
-        R_MergeSlotRect.DOAnchorPos(R_originPos, 1f)
+        R_MergeSlotRect.DOAnchorPos(R_originPos, 0.5f)
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
 
         // 플러스 아이콘 커지기
-        plusIcon.transform.DOScale(Vector3.one, 1f)
+        plusIcon.transform.DOScale(Vector3.one, 0.5f)
         .SetUpdate(true);
 
         // 양쪽 슬롯 깜빡이기
@@ -592,7 +577,7 @@ public class PhoneMenu : MonoBehaviour
         L_MergeSlot.ShakeIcon();
         R_MergeSlot.ShakeIcon();
 
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         // 상호작용 활성화
         InteractBtnsToggle(true);
@@ -1048,17 +1033,7 @@ public class PhoneMenu : MonoBehaviour
             .SetUpdate(true);
         }
 
-        //스택 스크롤 시간 카운트
-        // if (scrollCoolCount > 0)
-        //     scrollCoolCount -= Time.unscaledDeltaTime;
-
-        //todo 채팅 스크롤의 컨텐츠 오브젝트 사이즈를 자식 모두의 높이 총합만큼 lerp로 설정
-
-        // 채팅 패널 높이 계산
-        if (sumChatHeights == 0)
-            sumChatHeights = chatContentRect.sizeDelta.y;
-
-        // 채팅패널 Lerp로 사이즈 반영        
+        // 채팅패널 Lerp로 사이즈 반영해서 lerp로 늘어나기
         chatContentRect.sizeDelta = new Vector2(chatContentRect.sizeDelta.x, Mathf.Lerp(chatContentRect.sizeDelta.y, sumChatHeights, Time.unscaledDeltaTime * 5f));
     }
 
@@ -1079,6 +1054,11 @@ public class PhoneMenu : MonoBehaviour
 
         // 1프레임 대기
         yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
+
+        // 컴포넌트 껐다켜서 레이아웃 정렬하기
+        VerticalLayoutGroup layoutGroup = chatScroll.content.GetComponent<VerticalLayoutGroup>();
+        layoutGroup.enabled = false;
+        layoutGroup.enabled = true;
 
         float sumHeights = 0;
 

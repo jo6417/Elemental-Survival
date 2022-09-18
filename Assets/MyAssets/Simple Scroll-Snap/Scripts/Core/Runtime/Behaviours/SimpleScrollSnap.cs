@@ -616,7 +616,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
                 }
             }
         }
-        private void SnapToPanel()
+        public void SnapToPanel()
         {
             float xOffset = (movementType == MovementType.Free || movementAxis == MovementAxis.Horizontal) ? Viewport.rect.width / 2f : 0f;
             float yOffset = (movementType == MovementType.Free || movementAxis == MovementAxis.Vertical) ? Viewport.rect.height / 2f : 0f;

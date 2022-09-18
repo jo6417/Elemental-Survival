@@ -176,39 +176,29 @@ public class PlayerManager : Character
             // print(mouseWorldPos);
         };
 
-        // 마법 시전 버튼 매핑
+        // A슬롯 마법 시전
         playerInput.Player.ActiveMagic_A.performed += val =>
         {
             // 0번째 액티브 슬롯 마법 불러오기
-            // MagicInfo magic = inventory[20] as MagicInfo;
             MagicInfo magic = activeSlot_A.slotInfo as MagicInfo;
-
-            // // 해당 액티브 슬롯 실패 인디케이터 찾기
-            // InventorySlot invenSlot = PlayerManager.Instance.activeParent.GetChild(0).GetComponent<InventorySlot>();
 
             // 수동 마법 시전
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_A, magic));
         };
+        // B슬롯 마법 시전
         playerInput.Player.ActiveMagic_B.performed += val =>
         {
             // 1번째 액티브 슬롯 마법 불러오기
-            // MagicInfo magic = inventory[21] as MagicInfo;
             MagicInfo magic = activeSlot_B.slotInfo as MagicInfo;
-
-            // // 해당 액티브 슬롯 실패 인디케이터 찾기
-            // InventorySlot invenSlot = PlayerManager.Instance.activeParent.GetChild(1).GetComponent<InventorySlot>();
 
             // 수동 마법 시전
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_B, magic));
         };
+        // C슬롯 마법 시전
         playerInput.Player.ActiveMagic_C.performed += val =>
         {
             // 2번째 액티브 슬롯 마법 불러오기
-            // MagicInfo magic = inventory[22] as MagicInfo;
             MagicInfo magic = activeSlot_C.slotInfo as MagicInfo;
-
-            // // 해당 액티브 슬롯 실패 인디케이터 찾기
-            // InventorySlot invenSlot = PlayerManager.Instance.activeParent.GetChild(2).GetComponent<InventorySlot>();
 
             // 수동 마법 시전
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_C, magic));

@@ -4914,10 +4914,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 1
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -14742,10 +14742,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -14776,6 +14776,8 @@ MonoBehaviour:
   effectColl: {fileID: 890574463894873209}
   laserLine: {fileID: 6558328931824545046}
   explosion: {fileID: 515477353108599136}
+  scorchEffect: {fileID: 7508863931233613228, guid: 25c3703bc0cc5d7418489c816358538b,
+    type: 3}
 --- !u!120 &6558328931824545046
 LineRenderer:
   m_ObjectHideFlags: 0

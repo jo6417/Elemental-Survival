@@ -8,16 +8,12 @@ public class DeathMine : MonoBehaviour
 {
     MagicHolder magicHolder;
     MagicInfo magic;
-    [SerializeField]
-    GameObject explosionPrefab;
-    [SerializeField]
-    SpriteRenderer bombLight;
-    [SerializeField]
-    ParticleSystem runeLaser;
-    [SerializeField]
-    ParticleSystem landEffect;
-    [SerializeField]
-    Collider2D coll;
+    [SerializeField] GameObject scorchPrefab; // 그을음 프리팹
+    [SerializeField] GameObject explosionPrefab;
+    [SerializeField] SpriteRenderer bombLight;
+    [SerializeField] ParticleSystem runeLaser;
+    [SerializeField] ParticleSystem landEffect;
+    [SerializeField] Collider2D coll;
 
 
     private void Awake()
@@ -121,6 +117,9 @@ public class DeathMine : MonoBehaviour
 
         // 폭발 활성화
         effect.SetActive(true);
+
+        // 그을음 남기기
+        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 지뢰 디스폰
         LeanPool.Despawn(transform);

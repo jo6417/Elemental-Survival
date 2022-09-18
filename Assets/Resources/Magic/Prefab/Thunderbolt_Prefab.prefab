@@ -50,10 +50,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -80,6 +80,8 @@ MonoBehaviour:
   atkStartEffect: {fileID: 198435890141970726, guid: 8333d50130027574ca8b4e0268fdd047,
     type: 3}
   despawnEffect: {fileID: 0}
+  scorchEffect: {fileID: 4133829067401401885, guid: ef4ed984596cba541b9d89624c3a337a,
+    type: 3}
   anim: {fileID: 0}
 --- !u!212 &8422792374676327901
 SpriteRenderer:

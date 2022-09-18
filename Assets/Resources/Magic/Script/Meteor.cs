@@ -17,8 +17,9 @@ public class Meteor : MonoBehaviour
     public MagicHolder magicHolder;
     public GameObject explosionPrefab; // 폭발 파티클
     public GameObject dirtPrefab; // 흙 튀는 파티클
-    public GameObject lavaPrefab; // 용암 장판 프리팹
+    public GameObject scorchPrefab; // 그을음 프리팹
     public GameObject indicator; // 운석 떨어질 장소 표시
+    [SerializeField] CircleCollider2D coll;
 
     [Header("Magic Stat")]
     float speed;
@@ -78,8 +79,8 @@ public class Meteor : MonoBehaviour
         //인디케이터 사이즈 0,0으로 초기화
         shadow.transform.localScale = Vector3.zero;
 
-        //끝나는 위치
-        Vector2 endPos = magicHolder.targetPos;
+        // 끝나는 위치, 타겟 위치 + 반지름만큼 위에
+        Vector2 endPos = (Vector2)magicHolder.targetPos + new Vector2(0, coll.radius);
 
         //시작 위치로 올려보내기
         transform.position = startPos;
@@ -133,9 +134,10 @@ public class Meteor : MonoBehaviour
         // 흙 튀는 파티클 생성
         LeanPool.Spawn(dirtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-        //TODO 일정 레벨 이상이면
-        // 용암 균열 장판 남기기
-        // LeanPool.Spawn(lavaPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        //TODO 일정 레벨 이상이면 용암 장판 남기기?
+
+        // 그을음 남기기
+        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         //스프라이트 끄기
         rockSprite.enabled = false;

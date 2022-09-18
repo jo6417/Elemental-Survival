@@ -53,8 +53,7 @@ MonoBehaviour:
 --- !u!198 &1161387252916033998
 ParticleSystem:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 3222180882172883119, guid: 857e027e861f7f241bc702a0ea89ef2a,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1161387252916034000}
@@ -4932,23 +4931,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!114 &2691994544499633472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4961,6 +4961,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222f8bfec38cf4a429ef5932223d441e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scorchPrefab: {fileID: 7508863931233613228, guid: 25c3703bc0cc5d7418489c816358538b,
+    type: 3}
   explosionPrefab: {fileID: 4361769515971435773, guid: bd0d5f09ede166f4a85768cd3003f6d2,
     type: 3}
   bombLight: {fileID: 2691994544547851243}

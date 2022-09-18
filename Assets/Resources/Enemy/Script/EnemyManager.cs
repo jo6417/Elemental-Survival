@@ -811,7 +811,7 @@ public class EnemyManager : Character
             // 랜덤 등급 뽑기
             int randomGrade = Random.Range(0, 7);
             // 뽑은 등급으로 랜덤 마법 뽑기
-            MagicInfo randomMagic = MagicDB.Instance.RandomMagic(randomGrade);
+            MagicInfo randomMagic = MagicDB.Instance.GetRandomMagic(randomGrade);
 
             // 0등급일때 마법 이름으로 아이템 이름 짓기
             if (randomMagic.grade == 0)

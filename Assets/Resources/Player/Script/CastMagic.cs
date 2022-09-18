@@ -110,7 +110,8 @@ public class CastMagic : MonoBehaviour
         {
             Vector3 atkPos =
             Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>())
-            + (Vector3)Random.insideUnitCircle * Mathf.Clamp(range, 0, 3f);
+            + (Vector3)Random.insideUnitCircle
+            * range / 10f;
 
             attackPos.Add(atkPos);
         }
@@ -208,8 +209,8 @@ public class CastMagic : MonoBehaviour
             MagicInfo tempMagic = null;
 
             // 일반 마법일때
-            if (magic.castType == MagicDB.MagicType.passive.ToString()
-            || magic.castType == MagicDB.MagicType.active.ToString())
+            if (magic.castType == MagicDB.CastType.passive.ToString()
+            || magic.castType == MagicDB.CastType.active.ToString())
             {
                 //ID 같은 일반 마법 찾기
                 tempMagic = nowCastMagics.Find(x => x.id == magic.id);
@@ -222,7 +223,7 @@ public class CastMagic : MonoBehaviour
                         continue;
 
                     // 패시브 마법일때
-                    if (magic.castType == MagicDB.MagicType.passive.ToString())
+                    if (magic.castType == MagicDB.CastType.passive.ToString())
                     {
                         //이미 소환되지 않았을때
                         if (!magic.exist)
@@ -233,7 +234,7 @@ public class CastMagic : MonoBehaviour
                     }
 
                     // 액티브 마법일때
-                    if (magic.castType == MagicDB.MagicType.active.ToString())
+                    if (magic.castType == MagicDB.CastType.active.ToString())
                     {
                         //nowCastMagics에 해당 마법 추가
                         nowCastMagics.Add(magic);
@@ -255,7 +256,7 @@ public class CastMagic : MonoBehaviour
                 // print($"Name : {tempMagic.name} / Level : {tempMagic.magicLevel}");
 
                 // 패시브 마법이면
-                if (tempMagic.castType == MagicDB.MagicType.passive.ToString())
+                if (tempMagic.castType == MagicDB.CastType.passive.ToString())
                 {
                     // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
                     GameObject passiveObj = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>().magic.id == tempMagic.id);
@@ -278,7 +279,7 @@ public class CastMagic : MonoBehaviour
             if (tempMagic == null)
             {
                 // 패시브 마법이면 컴포넌트 찾아서 디스폰
-                if (nowCastMagics[i].castType == MagicDB.MagicType.passive.ToString())
+                if (nowCastMagics[i].castType == MagicDB.CastType.passive.ToString())
                 {
                     print(nowCastMagics[i].name);
 
@@ -343,10 +344,10 @@ public class CastMagic : MonoBehaviour
             // 적 오브젝트가 null이 아닐때
             if (enemyObj[i] != null)
             {
-                //적 위치 넣기, 있어도 새로 갱신
+                //적 오브젝트 넣기, (유도 기능 등에 사용)
                 magicHolder.targetObj = enemyObj[i].gameObject;
 
-                //적 오브젝트 위치 넣기, (유도 기능 등에 사용)
+                //적 위치 넣기
                 magicHolder.targetPos = enemyObj[i].transform.position;
             }
             else

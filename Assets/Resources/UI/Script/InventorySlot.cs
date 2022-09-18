@@ -53,7 +53,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     IEnumerator Init()
     {
         //버튼 상호작용 풀릴때까지 대기
-        yield return new WaitUntil(() => slotButton.interactable);
+        // yield return new WaitUntil(() => slotButton.interactable);
+        yield return null;
 
         // 버튼 이미지 컴포넌트 켜기
         slotButton.image.enabled = true;
@@ -350,11 +351,27 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     }
                 }
 
-                // 슬롯정보가 마법이 아닐때
-                if (slotInfo as MagicInfo == null)
+                // 슬롯정보가 마법이 아닐때, 액티브 마법이 아닐때
+                MagicInfo magicInfo = slotInfo as MagicInfo;
+                if (magicInfo == null)
                 {
                     // 현재 슬롯 빨갛게 인디케이터 점등
                     FailBlink(2);
+
+                    //todo 메시지
+                    StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 슬롯에는 마법만 장착 가능합니다."));
+
+                    return;
+                }
+
+                if (magicInfo.castType != MagicDB.CastType.active.ToString())
+                {
+                    // 현재 슬롯 빨갛게 인디케이터 점등
+                    FailBlink(2);
+
+                    //todo 메시지
+                    StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 마법만 장착 가능합니다."));
+
                     return;
                 }
 
@@ -426,7 +443,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 ItemInfo item = selectSlotInfo as ItemInfo;
 
                 // 마법이 아니거나, 액티브 마법이 아닐때
-                if (magic == null || magic.castType != MagicDB.MagicType.active.ToString())
+                if (magic == null || magic.castType != MagicDB.CastType.active.ToString())
                 {
                     // 마우스 아이콘 떨리기
                     PhoneMenu.Instance.ShakeMouseIcon();
@@ -575,6 +592,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     {
                         // 합성 실패 트랜지션
                         StartCoroutine(PhoneMenu.Instance.MergeFail(PhoneMenu.Instance.L_MergeSlot, PhoneMenu.Instance.R_MergeSlot));
+
+                        // 핸드폰 옆에 메시지 띄우기
+                        StartCoroutine(PhoneMenu.Instance.ChatAdd("합성 가능한 마법이 없습니다."));
                     }
                     // 합성 가능한 마법 있을때
                     else
@@ -588,7 +608,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                         StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));
                     }
                 }
-
             }
 
             // 슬롯 둘중 하나라도 샤드가 들었을때
@@ -598,11 +617,57 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 // 양쪽 등급 사이의 등급 산출
                 int L_Grade = L_Magic == null ? L_Item.grade : L_Magic.grade;
                 int R_Grade = R_Magic == null ? R_Item.grade : R_Magic.grade;
-                // 최소 최대값 산출
+                // 두 등급중에 최소 최대값 산출
                 int min = Mathf.Min(L_Grade, R_Grade);
                 int max = Mathf.Max(L_Grade, R_Grade);
-                // 등급 사잇값 산출
-                int get_Grade = Random.Range(min, max + 1);
+
+                // 랜덤으로 뽑을 등급 숫자를 저장하는 리스트
+                List<int> gradePool = new List<int>();
+                // min 부터 max 까지 모든 등급 숫자를 리스트에 넣기
+                for (int i = min; i < max + 1; i++)
+                {
+                    // 등급을 풀에 넣기
+                    gradePool.Add(i);
+                }
+
+                int get_Grade = -1;
+                for (int i = 0; i < gradePool.Count; i++)
+                {
+                    // 등급 풀에서 인덱스 하나 뽑기
+                    int gradeIndex = Random.Range(0, gradePool.Count);
+                    // 해당 인덱스로 등급 산출
+                    get_Grade = gradePool[gradeIndex];
+
+                    print($"min : {min} / max : {max} / gradeIndex : {gradeIndex} / get_Grade : {get_Grade}");
+
+                    // 언락된 마법 중 해당 등급의 마법이 하나라도 있으면
+                    if (MagicDB.Instance.GetRandomMagic(get_Grade) != null)
+                        // 해당 등급으로 결정하고 반복문 끝내기
+                        break;
+                    else
+                    {
+                        // 등급 변수 초기화
+                        get_Grade = -1;
+
+                        // 현재 뽑은 등급은 풀에서 삭제
+                        gradePool.RemoveAt(gradeIndex);
+
+                        // 랜덤 등급 풀에서 다시 뽑기
+                        continue;
+                    }
+                }
+
+                //todo 등급 풀을 전부 다 조회했는데 언락된 마법이 하나도 없을때
+                if (get_Grade == -1)
+                {
+                    // 핸드폰 옆에 메시지 띄우기
+                    StartCoroutine(PhoneMenu.Instance.ChatAdd("뽑을 수 있는 마법이 없습니다."));
+
+                    // 합성 실패 트랜지션 실행
+                    StartCoroutine(PhoneMenu.Instance.MergeFail(PhoneMenu.Instance.L_MergeSlot, PhoneMenu.Instance.R_MergeSlot));
+
+                    return;
+                }
 
                 StartCoroutine(PhoneMenu.Instance.MergeMagic(null, get_Grade));
             }

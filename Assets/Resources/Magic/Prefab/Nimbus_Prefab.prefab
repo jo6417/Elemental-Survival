@@ -48,23 +48,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  wetTime: 0
+  shockTime: 2
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 2
-  freezeTime: 0
 --- !u!114 &7103772506411635269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,6 +84,8 @@ MonoBehaviour:
   magicColl: {fileID: 7046983277784329218}
   hitbox: {fileID: 7103772506791767061}
   atkMark: {fileID: 7984764804097638933, guid: 67cc1c359101f084992a55b1ae8df2d7, type: 3}
+  scorchPrefab: {fileID: 4133829067401401885, guid: ef4ed984596cba541b9d89624c3a337a,
+    type: 3}
 --- !u!212 &7103772506411635385
 SpriteRenderer:
   m_ObjectHideFlags: 0

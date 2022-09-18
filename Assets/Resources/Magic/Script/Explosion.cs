@@ -18,6 +18,7 @@ public class Explosion : MonoBehaviour
     public Collider2D effectColl; //폭발 콜라이더
     public LineRenderer laserLine; //레이저 이펙트
     public GameObject explosion; //레이저 타격 지점에 폭발 이펙트
+    public GameObject scorchEffect; // 그을음 이펙트
     EdgeCollider2D coll;
     List<Vector2> collPoints = new List<Vector2>();
 
@@ -212,6 +213,9 @@ public class Explosion : MonoBehaviour
 
         // 폭발 콜라이더 켜기
         effectColl.enabled = true;
+
+        // 그을음 이펙트 남기기
+        LeanPool.Spawn(scorchEffect, explosion.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         yield return new WaitForSeconds(0.1f);
 

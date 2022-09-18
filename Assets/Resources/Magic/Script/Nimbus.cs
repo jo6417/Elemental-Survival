@@ -20,6 +20,7 @@ public class Nimbus : MonoBehaviour
     public Collider2D magicColl; //마법 데미지용 콜라이더
     public SpriteRenderer hitbox; //마법 타격 지점 인디케이터
     public GameObject atkMark; //공격 위치 표시 마커
+    public GameObject scorchPrefab; // 그을음 프리팹
     GameObject spinObj = null;
 
     private void OnEnable()
@@ -158,6 +159,9 @@ public class Nimbus : MonoBehaviour
     {
         //콜라이더 켜기
         magicColl.enabled = true;
+
+        // 그을음 남기기
+        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 
     public void ColliderOff()

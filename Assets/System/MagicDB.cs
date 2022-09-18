@@ -145,7 +145,7 @@ public class MagicDB : MonoBehaviour
     }
     #endregion
 
-    public enum MagicType { active, passive };
+    public enum CastType { active, passive };
 
     public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
     public Dictionary<int, MagicInfo> activeMagicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
@@ -449,62 +449,70 @@ public class MagicDB : MonoBehaviour
         return isExist;
     }
 
-    public MagicInfo RandomMagic(int targetGrade = 0)
+    public MagicInfo GetRandomMagic(int targetGrade = 0)
     {
         // 언락된 모든 마법 인덱스를 넣을 리스트
-        List<int> unlockIDs = new List<int>();
+        List<int> randomMagicPool = new List<int>();
 
         //todo 언락된 마법 중 해당 등급 모두 넣기
-        // for (int i = 0; i < unlockMagics.Count; i++)
-        // {
-        //     int grade = GetMagicByID(unlockMagics[i]).grade;
-
-        //     // 0등급이면 넘기기
-        //     if (grade == 0)
-        //         continue;
-
-        //     // 등급을 명시했을때
-        //     if (targetGrade != 0)
-        //     {
-        //         // 해당 등급의 마법만 넣기
-        //         if (grade == targetGrade)
-        //             unlockIDs.Add(unlockMagics[i]);
-        //     }
-        //     // 등급을 명시하지 않았을때
-        //     else
-        //     {
-        //         // 모든 마법 넣기
-        //         unlockIDs.Add(unlockMagics[i]);
-        //     }
-        // }
-
-        // 모든 마법 데이터 전부 확인
-        foreach (MagicInfo magic in magicDB.Values)
+        for (int i = 0; i < unlockMagics.Count; i++)
         {
-            // Slot 마법이 아닌 0등급 마법은 넘기기
-            if (!magic.name.Contains("Slot") && magic.grade == 0)
+            int grade = GetMagicByID(unlockMagics[i]).grade;
+
+            // 0등급이면 넘기기
+            if (grade == 0)
                 continue;
 
             // 등급을 명시했을때
             if (targetGrade != 0)
             {
                 // 해당 등급의 마법만 넣기
-                if (magic.grade == targetGrade)
-                    unlockIDs.Add(magic.id);
+                if (grade == targetGrade)
+                    randomMagicPool.Add(unlockMagics[i]);
             }
             // 등급을 명시하지 않았을때
             else
             {
                 // 모든 마법 넣기
-                unlockIDs.Add(magic.id);
+                randomMagicPool.Add(unlockMagics[i]);
             }
         }
 
-        // 뽑은 리스트에서 인덱스 랜덤 뽑기
-        int index = Random.Range(0, unlockIDs.Count);
+        // 모든 마법 데이터 전부 확인
+        // foreach (MagicInfo magic in magicDB.Values)
+        // {
+        //     // Slot 마법이 아닌 0등급 마법은 넘기기
+        //     if (!magic.name.Contains("Slot") && magic.grade == 0)
+        //         continue;
 
-        // 마법 ID로 마법정보 불러와서 리턴
-        return GetMagicByID(unlockIDs[index]);
+        //     // 등급을 명시했을때
+        //     if (targetGrade != 0)
+        //     {
+        //         // 해당 등급의 마법만 넣기
+        //         if (magic.grade == targetGrade)
+        //             randomMagicPool.Add(magic.id);
+        //     }
+        //     // 등급을 명시하지 않았을때
+        //     else
+        //     {
+        //         // 모든 마법 넣기
+        //         randomMagicPool.Add(magic.id);
+        //     }
+        // }
+
+        // 등급 지정을 해줬는데, 해당 등급의 마법이 하나도 없을때
+        if (targetGrade != 0 && randomMagicPool.Count == 0)
+        {
+            return null;
+        }
+        else
+        {
+            // 뽑은 리스트에서 인덱스 랜덤 뽑기
+            int index = Random.Range(0, randomMagicPool.Count);
+
+            // 마법 ID로 마법정보 불러와서 리턴
+            return GetMagicByID(randomMagicPool[index]);
+        }
     }
 
     //랜덤 마법 리스트 뽑기

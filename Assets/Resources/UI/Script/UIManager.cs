@@ -199,13 +199,11 @@ public class UIManager : MonoBehaviour
     // 확인 입력
     public void Click()
     {
-        // null이 아닐때
-        if (!EventSystem.current.currentSelectedGameObject && EventSystem.current.currentSelectedGameObject != null)
-            //! 클릭된 오브젝트 이름 표시
-            nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
-        // null 선택했을때
-        else
+        //! 테스트, 현재 선택된 UI 이름 표시
+        if (EventSystem.current.currentSelectedGameObject == null)
             nowSelectUI.text = "Last Select : null";
+        else
+            nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
     }
 
     // 확인 입력
@@ -319,6 +317,7 @@ public class UIManager : MonoBehaviour
                 targetOriginColor = lastSelected.targetGraphic.color;
             }
 
+            //! 테스트, 현재 선택된 UI 이름 표시
             if (EventSystem.current.currentSelectedGameObject == null)
                 nowSelectUI.text = "Last Select : null";
             else

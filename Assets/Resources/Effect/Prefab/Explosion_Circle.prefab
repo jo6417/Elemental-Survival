@@ -14617,7 +14617,7 @@ Transform:
   m_GameObject: {fileID: 4361769515971435773}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 9.28, y: 2.94, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 0}
   m_Children:
   - {fileID: 4361769515750901971}
   - {fileID: 4361769514966177608}
@@ -14654,23 +14654,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!58 &4361769515971435771
 CircleCollider2D:
   m_ObjectHideFlags: 0
