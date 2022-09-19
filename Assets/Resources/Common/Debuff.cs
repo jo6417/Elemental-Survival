@@ -5,14 +5,18 @@
 
 // public class Debuff : MonoBehaviour
 // {
+//     [Header("Refer")]
+//     [SerializeField] Character character;
+//     [SerializeField] Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
+//     public float buffSize;
+
 //     [Header("Buff")]
-//     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
-//     public IEnumerator hitCoroutine;
-//     public IEnumerator burnCoroutine = null;
-//     public IEnumerator poisonCoroutine = null;
-//     public IEnumerator bleedCoroutine = null;
-//     public IEnumerator slowCoroutine = null;
-//     public IEnumerator shockCoroutine = null;
+//     IEnumerator hitCoroutine;
+//     IEnumerator burnCoroutine = null;
+//     IEnumerator poisonCoroutine = null;
+//     IEnumerator bleedCoroutine = null;
+//     IEnumerator slowCoroutine = null;
+//     IEnumerator shockCoroutine = null;
 
 //     [Header("CoolTime")]
 //     public float particleHitCount = 0; // 파티클 피격 카운트
@@ -23,6 +27,11 @@
 //     public float burnCoolCount; // 화상 도트뎀 남은시간
 //     public float poisonCoolCount; //독 도트뎀 남은시간
 //     public float bleedCoolCount; // 출혈 디버프 남은시간
+
+//     private void Awake()
+//     {
+//         character = character == null ? GetComponent<Character>() : character;
+//     }
 
 //     public IEnumerator BurnDotHit(float tickDamage, float duration)
 //     {
@@ -39,11 +48,11 @@
 //             burnEffect = LeanPool.Spawn(SystemManager.Instance.burnDebuffEffect, transform.position, Quaternion.identity, transform).transform;
 
 //             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-//             burnEffect.transform.localScale = Vector3.one * portalSize;
+//             burnEffect.transform.localScale = Vector3.one * buffSize;
 //         }
 
-//         // 화상 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
-//         while (burnCoolCount > 1 && !isDead)
+//         // 화상 데미지 지속시간이 1초 이상 남았을때, 살아있을때
+//         while (burnCoolCount > 1 && character.hpNow > 0)
 //         {
 //             // 한 틱동안 대기
 //             yield return new WaitForSeconds(1f);

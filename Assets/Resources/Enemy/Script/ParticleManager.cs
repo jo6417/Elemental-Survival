@@ -12,7 +12,7 @@ public class ParticleManager : MonoBehaviour
     public bool autoDespawn = false; //자동 디스폰 여부
     public float collOverTime = 0f;
     public float modify_startLife;
-    public bool autoPlay = true;
+    // public bool autoPlay = true;
 
     private void Awake()
     {
@@ -33,9 +33,9 @@ public class ParticleManager : MonoBehaviour
 
         ParticleSystem.MainModule main = particle.main;
 
-        // 자동시작 아니면 playOnAwake 옵션 끄기
-        if (!autoPlay)
-            main.playOnAwake = false;
+        // // 자동시작 아니면 playOnAwake 옵션 끄기
+        // if (!autoPlay)
+        //     main.playOnAwake = false;
 
         //todo 파티클 지속시간 수정
         if (modify_startLife > 0)
@@ -58,9 +58,9 @@ public class ParticleManager : MonoBehaviour
             }
         }
 
-        // 자동 시작 아니면 초기화 끝나고 시작
-        if (!autoPlay)
-            particle.Play();
+        // // 자동 시작 아니면 초기화 끝나고 시작
+        // if (!autoPlay)
+        //     particle.Play();
 
         //자동 디스폰일때
         if (autoDespawn)

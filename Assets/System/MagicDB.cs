@@ -35,7 +35,7 @@ public class MagicInfo : SlotInfo
     public float critical = 1f; //크리티컬 확률
     public float criticalPower = 1f; //크리티컬 데미지 증가율
     public int pierce = 0; //관통 횟수 및 넉백 계수
-    public int projectile = 0; //투사체 수
+    public int atkNum = 0; //투사체 수
     public int coolTime = 0; //쿨타임
 
     [Header("LevUp")]
@@ -46,7 +46,7 @@ public class MagicInfo : SlotInfo
     public float criticalPerLev;
     public float criticalPowerPerLev;
     public float piercePerLev;
-    public float projectilePerLev;
+    public float atkNumPerLev;
     public float coolTimePerLev;
 
     public MagicInfo(MagicInfo magic)
@@ -69,7 +69,7 @@ public class MagicInfo : SlotInfo
         this.critical = magic.critical;
         this.criticalPower = magic.criticalPower;
         this.pierce = magic.pierce;
-        this.projectile = magic.projectile;
+        this.atkNum = magic.atkNum;
         this.coolTime = magic.coolTime;
         this.powerPerLev = magic.powerPerLev;
         this.speedPerLev = magic.speedPerLev;
@@ -78,13 +78,13 @@ public class MagicInfo : SlotInfo
         this.criticalPerLev = magic.criticalPerLev;
         this.criticalPowerPerLev = magic.criticalPowerPerLev;
         this.piercePerLev = magic.piercePerLev;
-        this.projectilePerLev = magic.projectilePerLev;
+        this.atkNumPerLev = magic.atkNumPerLev;
         this.coolTimePerLev = magic.coolTimePerLev;
     }
 
     public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price,
-    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int projectile, int coolTime,
-    float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float projectilePerLev, float coolTimePerLev)
+    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int atkNum, int coolTime,
+    float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float atkNumPerLev, float coolTimePerLev)
     {
         this.id = id;
         this.grade = grade;
@@ -104,7 +104,7 @@ public class MagicInfo : SlotInfo
         this.critical = critical;
         this.criticalPower = criticalPower;
         this.pierce = pierce;
-        this.projectile = projectile;
+        this.atkNum = atkNum;
         this.coolTime = coolTime;
 
         this.powerPerLev = powerPerLev;
@@ -114,7 +114,7 @@ public class MagicInfo : SlotInfo
         this.criticalPerLev = criticalPerLev;
         this.criticalPowerPerLev = criticalPowerPerLev;
         this.piercePerLev = piercePerLev;
-        this.projectilePerLev = projectilePerLev;
+        this.atkNumPerLev = atkNumPerLev;
         this.coolTimePerLev = coolTimePerLev;
     }
 }
@@ -303,8 +303,8 @@ public class MagicDB : MonoBehaviour
                 //받아온 데이터를 id를 키값으로 MagicInfo 딕셔너리에 넣기
                 magicDB[magic["id"]] = (new MagicInfo(
                 magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["multiHit"], magic["price"],
-                magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["projectile"], magic["coolTime"],
-                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["projectilePerLev"], magic["coolTimePerLev"]
+                magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["atkNum"], magic["coolTime"],
+                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["atkNumPerLev"], magic["coolTimePerLev"]
                 ));
                 yield return null;
             }
@@ -714,26 +714,26 @@ public class MagicDB : MonoBehaviour
         return pierce;
     }
 
-    public int MagicProjectile(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public int MagicAtkNum(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
-        int projectile = 0;
+        int atkNum = 0;
 
         //마법 투사체 개수 및 레벨당 증가량 계산
-        projectile =
-        magic.projectile +
-        Mathf.FloorToInt(magic.projectilePerLev * (level - 1));
+        atkNum =
+        magic.atkNum +
+        Mathf.FloorToInt(magic.atkNumPerLev * (level - 1));
 
         // 플레이어가 쓰는 마법일때
         // if (target == MagicHolder.Target.Enemy)
         //     // 플레이어 투사체 개수 추가 계산
-        //     projectile += PlayerManager.Instance.PlayerStat_Now.projectileNum;
+        //     atkNum += PlayerManager.Instance.PlayerStat_Now.atkNumNum;
 
         //최소값 1 제한
-        projectile = Mathf.Clamp(projectile, 1, projectile);
+        atkNum = Mathf.Clamp(atkNum, 1, atkNum);
 
-        return projectile;
+        return atkNum;
     }
 
     public float MagicCoolTime(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)

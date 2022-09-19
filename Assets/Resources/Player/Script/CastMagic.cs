@@ -86,7 +86,7 @@ public class CastMagic : MonoBehaviour
         }
 
         // 해당 마법 투사체 개수 불러오기
-        float projectileNum = MagicDB.Instance.MagicProjectile(magic);
+        float atkNum = MagicDB.Instance.MagicAtkNum(magic);
         // 해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
         // 해당 마법 범위 불러오기
@@ -106,7 +106,7 @@ public class CastMagic : MonoBehaviour
         List<Vector2> attackPos = new List<Vector2>();
 
         // 투사체 개수만큼 마우스 근처 포지션 지정
-        for (int i = 0; i < projectileNum; i++)
+        for (int i = 0; i < atkNum; i++)
         {
             Vector3 atkPos =
             Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>())
@@ -430,7 +430,7 @@ public class CastMagic : MonoBehaviour
         // 마법 범위 계산
         float range = MagicDB.Instance.MagicRange(magic);
         // 투사체 개수 계산
-        int atkNum = MagicDB.Instance.MagicProjectile(magic);
+        int atkNum = MagicDB.Instance.MagicAtkNum(magic);
 
         //리턴할 적 오브젝트 리스트
         List<EnemyManager> enemyObjs = new List<EnemyManager>();

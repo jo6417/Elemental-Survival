@@ -273,7 +273,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             if (enemyManager.burnCoroutine != null)
                 StopCoroutine(enemyManager.burnCoroutine);
 
-            enemyManager.burnCoroutine = BurnDotHit(damage, attacker.burnTime);
+            enemyManager.burnCoroutine = BurnDebuff(damage, attacker.burnTime);
 
             StartCoroutine(enemyManager.burnCoroutine);
         }
@@ -372,9 +372,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         //체력 범위 제한
         enemyManager.hpNow = Mathf.Clamp(enemyManager.hpNow, 0, enemyManager.hpMax);
 
-        // 경직 시간 추가
-        if (damage > 0)
-            enemyManager.hitDelayCount = enemyManager.enemy.hitDelay;
+        // // 경직 시간 추가
+        // if (damage > 0)
+        //     enemyManager.hitDelayCount = enemyManager.enemy.hitDelay;
 
         //데미지 UI 띄우기
         StartCoroutine(DamageText(damage, isCritical));
@@ -458,15 +458,30 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         LeanPool.Despawn(damageUI);
     }
 
-    public IEnumerator BurnDotHit(float tickDamage, float duration)
+    public IEnumerator DotHit(float tickDamage, float duration)
     {
-        // 화상 데미지 지속시간 넣기
-        enemyManager.burnCoolCount = duration;
+        float damageDuration = duration;
 
+        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
+        while (damageDuration >= 1 && !enemyManager.isDead)
+        {
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
+
+            // 도트 데미지 입히기
+            Damage(tickDamage, false);
+
+            // 남은 지속시간에서 한틱 차감
+            damageDuration -= 1f;
+        }
+    }
+
+    public IEnumerator BurnDebuff(float tickDamage, float duration)
+    {
         // 화상 디버프 아이콘
         Transform burnEffect = null;
 
-        // 이미 화상 디버프 중 아닐때
+        // 해당 디버프 아이콘이 없을때
         if (!enemyManager.transform.Find(SystemManager.Instance.burnDebuffEffect.name))
         {
             // 화상 디버프 이펙트 붙이기
@@ -476,18 +491,8 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             burnEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
         }
 
-        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
-        while (enemyManager.burnCoolCount >= 1 && !enemyManager.isDead)
-        {
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
-
-            // 도트 데미지 입히기
-            Damage(tickDamage, false);
-
-            // 남은 지속시간에서 한틱 차감
-            enemyManager.burnCoolCount -= 1f;
-        }
+        // 도트 데미지 입히기
+        yield return StartCoroutine(DotHit(tickDamage, duration));
 
         // 화상 이펙트 없에기
         burnEffect = enemyManager.transform.Find(SystemManager.Instance.burnDebuffEffect.name);
@@ -500,13 +505,10 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
     public IEnumerator PoisonDotHit(float tickDamage, float duration)
     {
-        //독 데미지 지속시간 넣기
-        enemyManager.poisonCoolCount = duration;
-
         // 포이즌 디버프 이펙트
         Transform poisonEffect = null;
 
-        // 이미 포이즌 디버프 중 아닐때
+        // 해당 디버프 아이콘이 없을때
         if (!enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
         {
             //포이즌 디버프 이펙트 붙이기
@@ -516,18 +518,8 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             poisonEffect.transform.localScale = Vector3.one * enemyManager.portalSize;
         }
 
-        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
-        while (enemyManager.poisonCoolCount >= 1 && !enemyManager.isDead)
-        {
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
-
-            // 도트 데미지 입히기
-            Damage(tickDamage, false);
-
-            // 남은 지속시간에서 한틱 차감
-            enemyManager.poisonCoolCount -= 1f;
-        }
+        // 도트 데미지 입히기
+        yield return StartCoroutine(DotHit(tickDamage, duration));
 
         // 포이즌 이펙트 없에기
         poisonEffect = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
@@ -543,26 +535,18 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 출혈 디버프 아이콘
         GameObject bleedIcon = null;
 
-        // 이미 출혈 디버프 중 아닐때
-        if (enemyManager.bleedCoolCount <= 0)
-            //출혈 디버프 아이콘 붙이기
+        // 해당 디버프 아이콘이 없을때
+        if (!enemyManager.transform.Find(SystemManager.Instance.bleedDebuffUI.name))
+        {
+            //출혈 디버프 이펙트 붙이기
             bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, enemyManager.buffParent.position, Quaternion.identity, enemyManager.buffParent);
 
-        // 출혈 데미지 지속시간 넣기
-        enemyManager.bleedCoolCount = duration;
-
-        // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
-        while (enemyManager.bleedCoolCount >= 1 && !enemyManager.isDead)
-        {
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
-
-            // 도트 데미지 입히기
-            Damage(tickDamage, false);
-
-            // 남은 지속시간에서 한틱 차감
-            enemyManager.bleedCoolCount -= 1f;
+            // 포탈 사이즈 배율만큼 이펙트 배율 키우기
+            bleedIcon.transform.localScale = Vector3.one * enemyManager.portalSize;
         }
+
+        // 도트 데미지 입히기
+        yield return StartCoroutine(DotHit(tickDamage, duration));
 
         // 출혈 아이콘 없에기
         bleedIcon = enemyManager.buffParent.Find(SystemManager.Instance.bleedDebuffUI.name).gameObject;
@@ -586,22 +570,6 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // print(knockbackDir);
 
         yield return null;
-    }
-
-    public IEnumerator FlatDebuff(float flatTime)
-    {
-        //정지 시간 추가
-        enemyManager.flatCount = flatTime;
-
-        //스케일 납작하게
-        enemyManager.transform.localScale = new Vector2(1f, 0.5f);
-
-        // stopCount 풀릴때까지 대기
-        yield return new WaitUntil(() => enemyManager.flatCount <= 0);
-        // yield return new WaitForSeconds(flatTime);
-
-        //스케일 복구
-        enemyManager.transform.localScale = Vector2.one;
     }
 
     public IEnumerator SlowDebuff(float slowDuration)
@@ -650,6 +618,22 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
         // 코루틴 변수 초기화
         enemyManager.slowCoroutine = null;
+    }
+
+    public IEnumerator FlatDebuff(float flatTime)
+    {
+        //정지 시간 추가
+        enemyManager.flatCount = flatTime;
+
+        //스케일 납작하게
+        enemyManager.transform.localScale = new Vector2(1f, 0.5f);
+
+        // stopCount 풀릴때까지 대기
+        yield return new WaitUntil(() => enemyManager.flatCount <= 0);
+        // yield return new WaitForSeconds(flatTime);
+
+        //스케일 복구
+        enemyManager.transform.localScale = Vector2.one;
     }
 
     public IEnumerator ShockDebuff(float shockDuration)
@@ -815,8 +799,8 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         }
 
         // 모든 디버프 해제
-        if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
-            DebuffRemove();
+        // if (enemyManager.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+        DebuffRemove();
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
@@ -837,6 +821,11 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 이동 속도 저하 디버프 초기화
         enemyManager.enemyAI.moveSpeedDebuff = 1f;
 
+        // 플랫 디버프 초기화
+        enemyManager.flatCount = 0f;
+        //스케일 복구
+        enemyManager.transform.localScale = Vector2.one;
+
         //슬로우 디버프 해제
         // 슬로우 아이콘 없에기
         Transform slowIcon = enemyManager.buffParent.Find(SystemManager.Instance.slowDebuffUI.name);
@@ -853,11 +842,29 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 감전 코루틴 변수 초기화
         enemyManager.shockCoroutine = null;
 
-        // 포이즌 아이콘 없에기
+        #region DotHit
+
+        // 화상 이펙트 없에기
+        Transform burnEffect = enemyManager.transform.Find(SystemManager.Instance.burnDebuffEffect.name);
+        if (burnEffect != null)
+            LeanPool.Despawn(burnEffect);
+        // 화상 코루틴 변수 초기화
+        enemyManager.burnCoroutine = null;
+
+        // 포이즌 이펙트 없에기
         Transform poisonIcon = enemyManager.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
         if (poisonIcon != null)
             LeanPool.Despawn(poisonIcon);
         // 포이즌 코루틴 변수 초기화
         enemyManager.poisonCoroutine = null;
+
+        // 출혈 이펙트 없에기
+        Transform bleedIcon = enemyManager.transform.Find(SystemManager.Instance.bleedDebuffUI.name);
+        if (bleedIcon != null)
+            LeanPool.Despawn(bleedIcon);
+        // 출혈 코루틴 변수 초기화
+        enemyManager.bleedCoroutine = null;
+
+        #endregion
     }
 }

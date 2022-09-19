@@ -78,7 +78,7 @@ public class LifeMushroomSpawner : MonoBehaviour
         // print(MagicDB.Instance.MagicCritical(magic));
 
         // 독 데미지 받는중에만 진행
-        if (enemyManager.poisonCoolCount <= 0)
+        if (enemyManager.poisonCoroutine != null)
             return;
 
         // 크리티컬 확률 = 드랍 확률

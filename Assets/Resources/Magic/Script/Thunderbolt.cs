@@ -6,16 +6,14 @@ using UnityEngine;
 public class Thunderbolt : MonoBehaviour
 {
     MagicHolder magicHolder;
-    public ParticleSystem atkStartEffect; // 전기 파티클 이펙트
-    public ParticleSystem despawnEffect;
-    [SerializeField] GameObject scorchEffect; // 그을음 이펙트
+    [SerializeField] ParticleManager particleManager;
+    [SerializeField] Collider2D atkColl; // 공격용 콜라이더
 
-    public Animator anim;
+    float range;
 
     private void Awake()
     {
         magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
-        anim = anim == null ? GetComponent<Animator>() : anim;
     }
 
     private void OnEnable()
@@ -25,52 +23,36 @@ public class Thunderbolt : MonoBehaviour
 
     IEnumerator Init()
     {
-        //애니메이션 멈추기
-        anim.speed = 0f;
+        // 공격용 콜라이더 끄기
+        atkColl.enabled = false;
 
         yield return new WaitUntil(() => magicHolder.magic != null);
+        // 스탯 불러오기
+        range = MagicDB.Instance.MagicRange(magicHolder.magic);
+
+        // 범위만큼 스케일 반영
+        transform.localScale = Vector3.one * range / 10f;
 
         // 타겟 위치로 이동
         transform.position = magicHolder.targetPos;
 
-        //애니메이션 재생
-        anim.speed = 1f;
-    }
+        // 파티클 재생
+        particleManager.particle.Play();
 
-    public void StartAtk()
-    {
-        // 콜라이더 켜기
-        ColliderTrigger(true);
+        // 공격용 콜라이더 켜기
+        atkColl.enabled = true;
 
-        // 이펙트 오브젝트 생성
-        if (atkStartEffect)
-            LeanPool.Spawn(atkStartEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        yield return new WaitForSeconds(Time.deltaTime);
 
-        // 그을음 생성
-        if (scorchEffect)
-            LeanPool.Spawn(scorchEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
-    }
+        // 공격용 콜라이더 끄기
+        atkColl.enabled = false;
 
-    //애니메이션 끝날때 이벤트 함수
-    public void EndMagic()
-    {
-        if (gameObject.activeSelf)
-            StartCoroutine(AutoDespawn());
-    }
-
-    public void ColliderTrigger(bool magicTrigger = true)
-    {
-        // 마법 트리거 발동 됬을때 (적 데미지 입히기, 마법 효과 발동)
-        if (magicTrigger)
-        {
-            //콜라이더 켜기
-            magicHolder.coll.enabled = true;
-        }
-        else
-        {
-            //콜라이더 끄기
-            magicHolder.coll.enabled = false;
-        }
+        // 파티클 끝날때까지 대기
+        yield return new WaitUntil(() => particleManager.particle.isStopped);
+        // 그을음 파티클 끝날때까지 대기
+        yield return new WaitForSeconds(5f);
+        // 디스폰
+        StartCoroutine(AutoDespawn());
     }
 
     IEnumerator AutoDespawn(float delay = 0)
@@ -82,13 +64,6 @@ public class Thunderbolt : MonoBehaviour
             delayCount -= Time.deltaTime;
             yield return null;
         }
-
-        //콜라이더 끄고 종료
-        ColliderTrigger(false);
-
-        // 이펙트 오브젝트 생성
-        if (despawnEffect)
-            LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 오브젝트 디스폰하기
         LeanPool.Despawn(transform);

@@ -229,6 +229,8 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 17518c2f753425743ac1fe29b0915f73, type: 3}
   - {fileID: 21300000, guid: 31b0367f8da80be479dd56f1245191dd, type: 3}
   - {fileID: 21300000, guid: e2ef8ecf2e08b4743a22185d1b6d1bbb, type: 3}
+  - {fileID: -1940797720717528354, guid: ee217affa7f48c948aec1b24ba897e88, type: 3}
+  - {fileID: -7536790541032447284, guid: ee217affa7f48c948aec1b24ba897e88, type: 3}
   m_PackedSpriteNamesToIndex:
   - IceHit_Sheet_2
   - IceHit_Sheet_3
@@ -409,6 +411,8 @@ SpriteAtlas:
   - Ghosting_Icon
   - WindGem_Icon
   - Icicle_Icon
+  - LightningRod_Sheet_1
+  - LightningRod_Sheet_0
   m_RenderDataMap: {}
   m_Tag: Magic_Atlas
   m_IsVariant: 0

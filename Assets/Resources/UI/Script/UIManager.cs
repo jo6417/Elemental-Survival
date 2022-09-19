@@ -997,7 +997,7 @@ public class UIManager : MonoBehaviour
         stats[1].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.power * 100).ToString() + " %";
         stats[2].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.armor * 100).ToString() + " %";
         stats[3].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.moveSpeed * 100).ToString() + " %";
-        stats[4].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.projectileNum * 100).ToString() + " %";
+        stats[4].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.atkNum * 100).ToString() + " %";
         stats[5].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.speed * 100).ToString() + " %";
         stats[6].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.coolTime * 100).ToString() + " %";
         stats[7].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.duration * 100).ToString() + " %";

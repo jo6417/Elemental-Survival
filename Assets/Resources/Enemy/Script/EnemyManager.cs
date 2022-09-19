@@ -131,9 +131,9 @@ public class EnemyManager : Character
     public float stopCount = 0; // 시간 정지 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
-    public float burnCoolCount; // 화상 도트뎀 남은시간
-    public float poisonCoolCount; //독 도트뎀 남은시간
-    public float bleedCoolCount; // 출혈 디버프 남은시간
+    // public float burnCoolCount; // 화상 도트뎀 남은시간
+    // public float poisonCoolCount; //독 도트뎀 남은시간
+    // public float bleedCoolCount; // 출혈 디버프 남은시간
 
     [Header("Debug")]
     [SerializeField]

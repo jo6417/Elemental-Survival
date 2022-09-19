@@ -19,7 +19,7 @@ public class PlayerStat
     public float ExpNow = 0; // 현재 경험치
     public float moveSpeed = 10; //이동속도
 
-    public int projectileNum = 0; // 투사체 개수
+    public int atkNum = 0; // 공격 횟수
     public int pierce = 0; // 관통 횟수
     public float power = 1; //마법 공격력
     public float armor = 1; //방어력
@@ -387,7 +387,7 @@ public class PlayerManager : Character
         //임시 스탯에 현재 아이템의 모든 버프 넣기
         foreach (var item in hasItems)
         {
-            PlayerStat_Temp.projectileNum += item.projectileNum * item.amount; // 투사체 개수 버프
+            PlayerStat_Temp.atkNum += item.projectileNum * item.amount; // 투사체 개수 버프
             PlayerStat_Temp.hpMax += item.hpMax * item.amount; //최대체력 버프
             PlayerStat_Temp.power += item.power * item.amount; //마법 공격력 버프
             PlayerStat_Temp.armor += item.armor * item.amount; //방어력 버프

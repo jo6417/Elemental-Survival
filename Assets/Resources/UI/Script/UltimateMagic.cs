@@ -84,7 +84,7 @@ public class UltimateMagic : MonoBehaviour
     //     statAmounts.Add(newMagic.critical.ToString());
     //     statAmounts.Add(newMagic.criticalPower.ToString());
     //     statAmounts.Add(newMagic.pierce.ToString());
-    //     statAmounts.Add(newMagic.projectile.ToString());
+    //     statAmounts.Add(newMagic.atkNum.ToString());
     //     statAmounts.Add(newMagic.coolTime.ToString());
 
     //     //모든 마법 스탯 넣기
