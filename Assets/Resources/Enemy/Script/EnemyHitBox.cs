@@ -191,8 +191,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 // 고정 데미지에 확률 계산
                 damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-                // 크리티컬이면 크리티컬 데미지 배율 반영
-                if (isCritical)
+                // 크리티컬이면, 크리티컬 배율 반영시 기존 데미지보다 크면
+                if (isCritical && damage * criticalPower > damage)
+                    // 크리티컬 데미지 배율 반영
                     damage = damage * criticalPower;
 
                 // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈)

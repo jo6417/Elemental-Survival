@@ -88,7 +88,7 @@ namespace DigitalRuby.LightningBolt
         [System.NonSerialized]
         public System.Random RandomGenerator = new System.Random();
 
-        private LineRenderer lineRenderer;
+        public LineRenderer lineRenderer;
         private List<KeyValuePair<Vector3, Vector3>> segments = new List<KeyValuePair<Vector3, Vector3>>();
         private int startIndex;
         private Vector2 size;

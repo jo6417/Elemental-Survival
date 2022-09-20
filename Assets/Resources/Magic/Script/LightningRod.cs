@@ -1,21 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
+using Lean.Pool;
 using UnityEngine;
+using DigitalRuby.LightningBolt;
 
 public class LightningRod : MonoBehaviour
 {
     [Header("Refer")]
-    [SerializeField] LineRenderer lightningLinePrefab;
+    [SerializeField] EdgeCollider2D coll;
+    [SerializeField] Transform lightningRodObj; // 피뢰침 오브젝트
+    [SerializeField] ParticleManager electroBallPrefab; // 전기 구체 오브젝트
+    [SerializeField] LineRenderer electroLinePrefab; // 각 포인트 사이 전기 라인 오브젝트
     [SerializeField] ParticleManager spikeSpark;
     [SerializeField] MagicHolder magicHolder;
-    List<ParticleSystem> electroBalls = new List<ParticleSystem>(); // 적의 위치에 생성될 전기 구체 리스트
-    List<LineRenderer> electroLines = new List<LineRenderer>(); // 전기 구체 사이마다 들어갈 전기 라인
+    List<ParticleManager> electroBallList = new List<ParticleManager>(); // 적의 위치에 생성될 전기 구체 리스트
+    List<LineRenderer> electroLineList = new List<LineRenderer>(); // 전기 구체 사이마다 들어갈 전기 라인
 
     [Header("Spec")]
     float range;
     float duration;
-    float atkNum;
+    int pierceNum;
 
     private void OnEnable()
     {
@@ -24,51 +30,219 @@ public class LightningRod : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 콜라이더 끄기
-        magicHolder.coll.enabled = false;
+        // 피뢰침 오브젝트 활성화
+        lightningRodObj.gameObject.SetActive(false);
 
         //magic 불러올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         range = MagicDB.Instance.MagicRange(magicHolder.magic);
         duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
-        atkNum = MagicDB.Instance.MagicAtkNum(magicHolder.magic);
+        pierceNum = MagicDB.Instance.MagicPierce(magicHolder.magic);
 
-        // magicHolder에서 targetPos 받아와서 해당 위치로 이동
-        transform.position = magicHolder.targetPos;
+        // 타겟 위치 위쪽으로 이동
+        transform.position = magicHolder.targetPos + Vector3.up * 3f;
 
-        //todo 해당 위치에 못박기
+        // 구체 및 라인 리스트 초기화
+        electroBallList.Clear();
+        electroLineList.Clear();
+
+        // 콜라이더 끄기
+        coll.enabled = false;
+
+        // 해당 위치에 못박기
         StartCoroutine(SpikeRod());
     }
 
     IEnumerator SpikeRod()
     {
-        transform.localScale = Vector3.zero;
-        transform.DOScale(Vector3.one, 0.5f);
+        // 피뢰침 오브젝트 활성화
+        lightningRodObj.gameObject.SetActive(true);
 
-        //todo 한번 반짝 빛나는 이펙트 - 로컬
+        transform.localScale = Vector3.zero;
+        transform.DOScale(Vector3.one, 0.2f);
 
         // 못 회전하기
-        transform.DORotate(Vector3.up * 360f, 1f, RotateMode.LocalAxisAdd);
+        lightningRodObj.rotation = Quaternion.Euler(Vector3.zero);
+        lightningRodObj.DORotate(Vector3.up * 360f, 0.5f, RotateMode.LocalAxisAdd);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
 
         // 못 domove inback으로 박기
-        transform.DOMove(magicHolder.targetPos, 1f)
-        .SetEase(Ease.InBack);
+        transform.DOMove(magicHolder.targetPos, 0.3f)
+        .SetEase(Ease.InBack)
+        .OnComplete(() =>
+        {
+            // 박힐때 흙 튀기기
+            // 바닥에 꽂힐때 전기 파티클 재생
+            spikeSpark.particle.Play();
+        });
 
-        // 박힐때 흙 튀기기
-        // 바닥에 꽂힐때 전기 파티클 재생
-        spikeSpark.particle.Play();
+        yield return new WaitForSeconds(0.5f);
 
-        //todo 범위 내 적 모두 찾아서 리스트업
+        // 플레이어 현재 위치
+        Vector2 playerPos = PlayerManager.Instance.transform.position;
+
+        // 범위 내 적 모두 찾아서 리스트업
+        List<Vector2> atkPosList = MarkEnemyPos(magicHolder.magic);
+
+        if (atkPosList.Count > 0)
+            // 플레이어와 가까운 순으로 정렬
+            atkPosList = atkPosList.OrderBy(x => Vector2.Distance(x, playerPos)).ToList();
 
         // 리스트 개수만큼 반복
-        //todo 리스트중 가장 가까운적 찾아서 새 리스트에 넣기
-        //todo 리스트에서 마지막 찾은 적과 가장 가까운적 찾아서 리스트에 넣기
+        for (int i = 0; i < atkPosList.Count; i++)
+        {
+            // 리스트의 모든 적 위치마다 전기 구체 소환
+            ParticleManager electroBall = LeanPool.Spawn(electroBallPrefab, atkPosList[i], Quaternion.identity, SystemManager.Instance.magicPool);
+            electroBallList.Add(electroBall);
 
-        //todo 리스트의 모든 적 위치마다 전기 구체 소환
-        //todo 각 포인트 사이마다 전기 라인 프리팹 소환하고 전기라인 리스트에 추가
-        //todo 전기 라인 렌더러의 시작,끝 지점 옮기기
-        //todo 라인 렌더러 포인트대로 엣지 콜라이더 포인트 갱신
+            // 마지막 인덱스 아닐때
+            if (i < atkPosList.Count - 1)
+            {
+                // 각 포인트 사이마다 전기 라인 프리팹 소환하고 전기라인 리스트에 추가
+                LineRenderer electroLine = LeanPool.Spawn(electroLinePrefab, atkPosList[i], Quaternion.identity, SystemManager.Instance.magicPool);
+                electroLineList.Add(electroLine);
+
+                // 전기 라인 컴포넌트 찾기
+                LightningBoltScript lightningLine = electroLine.GetComponent<LightningBoltScript>();
+                // 전기 라인 렌더러의 시작,끝 지점 옮기기
+                lightningLine.StartObject.transform.position = atkPosList[i];
+                lightningLine.EndObject.transform.position = atkPosList[i + 1];
+
+                //todo 전기 라인 주변부 서브 전기 파티클 추가하기
+                //todo 전기 라인 길이만큼 길이 늘리기
+                //todo 길이만큼 파티클 개수 조정
+                //todo 리스트에 넣고 마지막에 디스폰
+            }
+        }
+
+        // 현재 피뢰침 위치값을 빼서 월드 좌표를 상대 좌표로 전환
+        for (int i = 0; i < atkPosList.Count; i++)
+        {
+            atkPosList[i] -= (Vector2)transform.position;
+        }
+
+        // 엣지 콜라이더 포인트 초기화
+        coll.SetPoints(atkPosList);
+        coll.enabled = true;
+
+        // duration 동안 콜라이더 껐다 켰다 반복
+        StartCoroutine(FlickerColl(0.03f));
+
+        // duration 만큼 대기
+        yield return new WaitForSeconds(duration);
+
+        // 피뢰침 끄기
+        lightningRodObj.gameObject.SetActive(false);
+
+        // 콜라이더 끄기
+        coll.enabled = false;
+
+        // 모든 전기구체,전기라인 디스폰
+        for (int i = 0; i < electroBallList.Count; i++)
+        {
+            electroBallList[i].SmoothDespawn();
+        }
+        // duration 만큼 대기
+        yield return new WaitForSeconds(0.2f / 3f);
+
+        for (int i = 0; i < electroLineList.Count; i++)
+        {
+            // 라인 렌더러 먼저 끄기
+            electroLineList[i].positionCount = 0;
+
+            // 전기 라인 디스폰
+            LeanPool.Despawn(electroLineList[i]);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 셀프 디스폰
+        LeanPool.Despawn(transform);
+    }
+
+    IEnumerator FlickerColl(float flickTime)
+    {
+        // 깜빡일 시간 받기
+        float flickCount = duration;
+        while (flickCount > 0)
+        {
+            // 콜라이더 토글
+            coll.enabled = !coll.enabled;
+
+            // 잠깐 대기
+            flickCount -= Time.deltaTime;
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+    }
+
+    public List<Vector2> MarkEnemyPos(MagicInfo magic)
+    {
+        // 공격 위치 리스트
+        List<Vector2> atkPosList = new List<Vector2>();
+
+        //리턴할 적 오브젝트 리스트
+        List<EnemyManager> enemyObjs = new List<EnemyManager>();
+
+        //범위 안의 모든 적 콜라이더 리스트에 담기
+        List<Collider2D> enemyCollList = new List<Collider2D>();
+        enemyCollList.Clear();
+        enemyCollList = Physics2D.OverlapCircleAll(transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
+
+        // 찾은 적과 관통 개수 중 많은 쪽만큼 반복
+        int findNum = Mathf.Max(enemyCollList.Count, pierceNum);
+        for (int i = 0; i < findNum; i++)
+        {
+            // 관통 개수만큼 채워지면 반복문 끝내기
+            if (enemyObjs.Count >= pierceNum)
+                break;
+
+            EnemyManager enemyManager = null;
+            Collider2D targetColl = null;
+
+            if (enemyCollList.Count > 0)
+            {
+                // 리스트 내에서 랜덤으로 선택
+                targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
+                // 적 히트박스 찾기
+                EnemyHitBox targetHitBox = targetColl.GetComponent<EnemyHitBox>();
+                if (targetHitBox != null)
+                    // 적 매니저 찾기
+                    enemyManager = targetHitBox.enemyManager;
+
+                // 이미 들어있는 오브젝트일때
+                if (enemyObjs.Exists(x => x == enemyManager)
+                // 해당 몬스터가 유령일때
+                || (enemyManager && enemyManager.IsGhost))
+                {
+                    // 넣을 몬스터 정보 다시 초기화
+                    enemyManager = null;
+                }
+            }
+
+            // 적 오브젝트 변수에 담기
+            enemyObjs.Add(enemyManager);
+
+            // 임시 리스트에서 지우기
+            if (targetColl != null)
+                enemyCollList.Remove(targetColl);
+        }
+
+        for (int i = 0; i < enemyObjs.Count; i++)
+        {
+            Vector2 targetPos = default;
+
+            // 몬스터가 있으면 위치 넣기
+            if (enemyObjs[i] != null)
+                targetPos = enemyObjs[i].transform.position;
+            else
+                // 오브젝트 없으면 범위내 랜덤 위치 넣기
+                targetPos = (Vector2)transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magicHolder.magic);
+
+            atkPosList.Add(targetPos);
+        }
+
+        //적의 위치 리스트 리턴
+        return atkPosList;
     }
 }

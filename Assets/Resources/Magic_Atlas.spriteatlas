@@ -76,6 +76,7 @@ SpriteAtlas:
   - {fileID: 8954982405313846772, guid: 310c99627639f2b42936f2def20e62c2, type: 3}
   - {fileID: 21300000, guid: a12cfe82c771ae040bad4ffd5030f64f, type: 3}
   - {fileID: 21300000, guid: 63524fa2c4b4ba045abd287ded7bb51b, type: 3}
+  - {fileID: 21300000, guid: fde42df2f89eb1b4cb84654bdea8c330, type: 3}
   - {fileID: 21300000, guid: d517c663e7a7bb148be8c6c70e34247f, type: 3}
   - {fileID: 4117335768061151153, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: 769383347276963491, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
@@ -258,6 +259,7 @@ SpriteAtlas:
   - LavaWalk_Sheet_0
   - SuperSerum_Icon
   - Nimbus_Icon
+  - LightningRod
   - WaterGem_
   - RuneLine_0
   - RuneLine_1

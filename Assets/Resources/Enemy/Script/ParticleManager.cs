@@ -85,7 +85,7 @@ public class ParticleManager : MonoBehaviour
         particle.Stop();
 
         // 남은 파티클 전부 사라질때까지 대기
-        yield return new WaitForSeconds(particle.main.duration);
+        yield return new WaitForSeconds(particle.main.startLifetime.constantMax);
 
         // 디스폰
         LeanPool.Despawn(transform);

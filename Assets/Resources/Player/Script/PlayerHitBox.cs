@@ -273,7 +273,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
-        // 데미지 있을때
+        // 데미지가 양수일때
         if (damage > 0)
         {
             // 크리티컬 떴을때 추가 강조효과 UI
@@ -294,7 +294,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
             dmgTxt.text = "MISS";
         }
-        // 데미지가 마이너스일때 (체력회복일때)
+        // 데미지가 음수일때 (체력회복일때)
         else if (damage < 0)
         {
             dmgTxt.color = Color.green;
@@ -306,7 +306,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             // 왼쪽으로 DOJump
             damageUI.transform.DOJump((Vector2)damageUI.transform.position - Vector2.right * 2f, 1f, 1, 1f)
             .SetEase(Ease.OutBounce);
-        // 데미지 음수일때
+        // 데미지 없거나 음수일때(체력회복일때)
         else
             // 위로 DoMove
             damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 1f)
