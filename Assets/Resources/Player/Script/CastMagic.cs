@@ -92,6 +92,10 @@ public class CastMagic : MonoBehaviour
         // 해당 마법 범위 불러오기
         float range = MagicDB.Instance.MagicRange(magic);
 
+        // 해당 마법의 전역 쿨타임 갱신
+        MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
+        activeMagic.coolCount = coolTime;
+
         // 플레이어 마법 시전 이펙트 플레이
         playerMagicCastEffect.Play();
 
@@ -144,10 +148,6 @@ public class CastMagic : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
-
-        // 해당 마법의 전역 쿨타임 갱신
-        MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
-        activeMagic.coolCount = coolTime;
 
         // 해당 마법 전역 쿨타임 카운트 감소
         while (activeMagic.coolCount > 0)

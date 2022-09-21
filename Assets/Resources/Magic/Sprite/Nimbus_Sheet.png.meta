@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 57870d8e521eef145801111270879442
+guid: b6822fb46b51b774c98aae460d8f5792
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -8,30 +8,6 @@ TextureImporter:
   - first:
       213: -4622714332243487470
     second: Nimbus_Sheet_1
-  - first:
-      213: -168894184789902300
-    second: Nimbus_Sheet_2
-  - first:
-      213: -8391853416514649465
-    second: Nimbus_Sheet_3
-  - first:
-      213: 5112280428559345770
-    second: Nimbus_Sheet_4
-  - first:
-      213: 4351972778460142468
-    second: Nimbus_Sheet_5
-  - first:
-      213: 173199709879682316
-    second: Nimbus_Sheet_6
-  - first:
-      213: 2655877056598905303
-    second: Nimbus_Sheet_7
-  - first:
-      213: -2366385105781249481
-    second: Nimbus_Sheet_8
-  - first:
-      213: 4185719524831961608
-    second: Nimbus_Sheet_9
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -126,10 +102,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -145,12 +121,12 @@ TextureImporter:
       name: Nimbus_Sheet_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 32
         y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -158,174 +134,6 @@ TextureImporter:
       bones: []
       spriteID: 21515889ec1d8dfb0800000000000000
       internalID: -4622714332243487470
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_2
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 42cf7fe32a7f7adf0800000000000000
-      internalID: -168894184789902300
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_3
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7820f7597c52a8b80800000000000000
-      internalID: -8391853416514649465
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_4
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a682678b6f772f640800000000000000
-      internalID: 5112280428559345770
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_5
-      rect:
-        serializedVersion: 2
-        x: 320
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 48b594c2f20556c30800000000000000
-      internalID: 4351972778460142468
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_6
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c05449ee734576200800000000000000
-      internalID: 173199709879682316
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_7
-      rect:
-        serializedVersion: 2
-        x: 448
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7d110bd8c129bd420800000000000000
-      internalID: 2655877056598905303
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_8
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 73a2220b849e82fd0800000000000000
-      internalID: -2366385105781249481
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Nimbus_Sheet_9
-      rect:
-        serializedVersion: 2
-        x: 576
-        y: 0
-        width: 64
-        height: 128
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 802a60f1bb9a61a30800000000000000
-      internalID: 4185719524831961608
       vertices: []
       indices: 
       edges: []

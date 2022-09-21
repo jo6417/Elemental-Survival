@@ -13,10 +13,12 @@ public class LightningRod : MonoBehaviour
     [SerializeField] Transform lightningRodObj; // 피뢰침 오브젝트
     [SerializeField] ParticleManager electroBallPrefab; // 전기 구체 오브젝트
     [SerializeField] LineRenderer electroLinePrefab; // 각 포인트 사이 전기 라인 오브젝트
+    [SerializeField] ParticleManager subLightPrefab; // 전기 라인 주변 전기 이펙트
     [SerializeField] ParticleManager spikeSpark;
     [SerializeField] MagicHolder magicHolder;
-    List<ParticleManager> electroBallList = new List<ParticleManager>(); // 적의 위치에 생성될 전기 구체 리스트
-    List<LineRenderer> electroLineList = new List<LineRenderer>(); // 전기 구체 사이마다 들어갈 전기 라인
+    List<ParticleManager> ballList = new List<ParticleManager>(); // 적의 위치에 생성될 전기 구체 리스트
+    List<LineRenderer> lineList = new List<LineRenderer>(); // 전기 구체 사이마다 들어갈 전기 라인
+    List<ParticleManager> lineSubEffectList = new List<ParticleManager>(); // 전기 라인 주변의 파티클
 
     [Header("Spec")]
     float range;
@@ -43,8 +45,9 @@ public class LightningRod : MonoBehaviour
         transform.position = magicHolder.targetPos + Vector3.up * 3f;
 
         // 구체 및 라인 리스트 초기화
-        electroBallList.Clear();
-        electroLineList.Clear();
+        ballList.Clear();
+        lineList.Clear();
+        lineSubEffectList.Clear();
 
         // 콜라이더 끄기
         coll.enabled = false;
@@ -94,14 +97,14 @@ public class LightningRod : MonoBehaviour
         {
             // 리스트의 모든 적 위치마다 전기 구체 소환
             ParticleManager electroBall = LeanPool.Spawn(electroBallPrefab, atkPosList[i], Quaternion.identity, SystemManager.Instance.magicPool);
-            electroBallList.Add(electroBall);
+            ballList.Add(electroBall);
 
             // 마지막 인덱스 아닐때
             if (i < atkPosList.Count - 1)
             {
                 // 각 포인트 사이마다 전기 라인 프리팹 소환하고 전기라인 리스트에 추가
                 LineRenderer electroLine = LeanPool.Spawn(electroLinePrefab, atkPosList[i], Quaternion.identity, SystemManager.Instance.magicPool);
-                electroLineList.Add(electroLine);
+                lineList.Add(electroLine);
 
                 // 전기 라인 컴포넌트 찾기
                 LightningBoltScript lightningLine = electroLine.GetComponent<LightningBoltScript>();
@@ -109,10 +112,27 @@ public class LightningRod : MonoBehaviour
                 lightningLine.StartObject.transform.position = atkPosList[i];
                 lightningLine.EndObject.transform.position = atkPosList[i + 1];
 
-                //todo 전기 라인 주변부 서브 전기 파티클 추가하기
-                //todo 전기 라인 길이만큼 길이 늘리기
-                //todo 길이만큼 파티클 개수 조정
-                //todo 리스트에 넣고 마지막에 디스폰
+                // 서브 라이팅 위치 - 라인의 시작,끝 지점 중간 지점
+                Vector2 subPos = (lightningLine.StartObject.transform.position + lightningLine.EndObject.transform.position) / 2f;
+                // 서브 라이팅의 각도 - 라인의 시작 부분을 바라보게
+                Vector2 subRotation = (Vector2)lightningLine.StartObject.transform.position - subPos;
+                float rotation = Mathf.Atan2(subRotation.y, subRotation.x) * Mathf.Rad2Deg;
+                // 서브 라이팅의 길이 - 시작,끝 부분 사이 길이
+                float subDistance = Vector2.Distance(lightningLine.StartObject.transform.position, lightningLine.EndObject.transform.position);
+
+                // 전기 라인 주변부 서브 전기 파티클 추가하기
+                ParticleManager subLight = LeanPool.Spawn(subLightPrefab, subPos, Quaternion.identity, SystemManager.Instance.magicPool);
+                lineSubEffectList.Add(subLight);
+
+                // 시작,끝 부분 사이 거리만큼 Y 스케일 늘리기
+                subLight.transform.localScale = new Vector3(subDistance, 1, 1);
+
+                // 길이에 비례해서 파티클 개수 갱신
+                ParticleSystem.EmissionModule subEmission = subLight.particle.emission;
+                subEmission.rateOverTime = subDistance * 40f;
+
+                // 각도 수정
+                subLight.transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
             }
         }
 
@@ -127,7 +147,7 @@ public class LightningRod : MonoBehaviour
         coll.enabled = true;
 
         // duration 동안 콜라이더 껐다 켰다 반복
-        StartCoroutine(FlickerColl(0.03f));
+        StartCoroutine(FlickerColl());
 
         // duration 만큼 대기
         yield return new WaitForSeconds(duration);
@@ -138,30 +158,31 @@ public class LightningRod : MonoBehaviour
         // 콜라이더 끄기
         coll.enabled = false;
 
-        // 모든 전기구체,전기라인 디스폰
-        for (int i = 0; i < electroBallList.Count; i++)
+        // 모든 전기 구체 디스폰
+        for (int i = 0; i < ballList.Count; i++)
         {
-            electroBallList[i].SmoothDespawn();
+            ballList[i].SmoothDespawn();
         }
-        // duration 만큼 대기
-        yield return new WaitForSeconds(0.2f / 3f);
-
-        for (int i = 0; i < electroLineList.Count; i++)
+        // 모든 전기 라인 서브 이펙트 디스폰
+        for (int i = 0; i < lineSubEffectList.Count; i++)
+        {
+            lineSubEffectList[i].SmoothDespawn();
+        }
+        // 모든 전기 라인 디스폰
+        for (int i = 0; i < lineList.Count; i++)
         {
             // 라인 렌더러 먼저 끄기
-            electroLineList[i].positionCount = 0;
+            lineList[i].positionCount = 0;
 
             // 전기 라인 디스폰
-            LeanPool.Despawn(electroLineList[i]);
+            LeanPool.Despawn(lineList[i]);
         }
-
-        yield return new WaitForSeconds(0.5f);
 
         // 셀프 디스폰
         LeanPool.Despawn(transform);
     }
 
-    IEnumerator FlickerColl(float flickTime)
+    IEnumerator FlickerColl()
     {
         // 깜빡일 시간 받기
         float flickCount = duration;

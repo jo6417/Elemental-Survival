@@ -4896,11 +4896,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5312836890224762090}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 5312836890631344843}
+  m_Father: {fileID: 5312836890986501861}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &5312836890224762095
@@ -4911,7 +4911,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5312836890224762090}
   serializedVersion: 7
-  lengthInSec: 2
+  lengthInSec: 0.3
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 1
@@ -5093,7 +5093,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0.6773369, g: 0.5896226, b: 1, a: 1}
+      maxColor: {r: 0.44025153, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5155,8 +5155,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.5
-      minScalar: 0.3
+      scalar: 1
+      minScalar: 0.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -5536,9 +5536,9 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0.2, z: 0}
-    m_Rotation: {x: 0, y: 0, z: 90}
-    m_Scale: {x: 1, y: 1, z: 1}
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Rotation: {x: 0, y: 0, z: 0}
+    m_Scale: {x: 0.5, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -5615,9 +5615,9 @@ ParticleSystem:
     m_TextureBilinearFiltering: 0
     randomDirectionAmount: 0
     sphericalDirectionAmount: 0
-    randomPositionAmount: 0.2
+    randomPositionAmount: 1
     radius:
-      value: 0.5
+      value: 1
       mode: 0
       spread: 0
       speed:
@@ -14580,7 +14580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5312836890631344843
 Transform:
   m_ObjectHideFlags: 0
@@ -14594,7 +14594,6 @@ Transform:
   m_Children:
   - {fileID: 5312836889304726640}
   - {fileID: 5312836890986501861}
-  - {fileID: 5312836890224762089}
   - {fileID: 6987907665698497620}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -14646,6 +14645,8 @@ MonoBehaviour:
   electroBallPrefab: {fileID: 6005218518282025611, guid: 93947ebb557dfab47a9eabb9214e30e1,
     type: 3}
   electroLinePrefab: {fileID: 707274312505759310, guid: 9dde478b5e43bb94794012b5da03cc31,
+    type: 3}
+  subLightPrefab: {fileID: 7720524573374866468, guid: 2007cb29ce2b40e439190b1ed9f3959f,
     type: 3}
   spikeSpark: {fileID: 2882744141422504031}
   magicHolder: {fileID: 5312836890631344841}
@@ -19763,6 +19764,7 @@ Transform:
   m_Children:
   - {fileID: 5312836890856143152}
   - {fileID: 1318368742127716600}
+  - {fileID: 5312836890224762089}
   m_Father: {fileID: 5312836890631344843}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19869,7 +19871,7 @@ PrefabInstance:
     - target: {fileID: 2972646230323080807, guid: a36db5dd1db5820409c1c51be57271ec,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2972646230323080807, guid: a36db5dd1db5820409c1c51be57271ec,
         type: 3}

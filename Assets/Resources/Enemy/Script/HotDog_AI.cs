@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Lean.Pool;
 using TMPro;
@@ -18,7 +19,8 @@ public class HotDog_AI : MonoBehaviour
     public EnemyAtkTrigger biteTrigger;
 
     [Header("Phase")]
-    [SerializeField] Collider2D pushRange; // 페이즈 상승시 플레이어 밀어내는 범위
+    [SerializeField] Transform pushRange; // 페이즈 상승시 플레이어 밀어내는 범위
+    [SerializeField] ParticleManager shield; // 쉴드 이펙트
     int nowPhase = 0;
     int nextPhase = 1;
     float damageMultiple = 1; // 페이즈에 따른 데미지 배율
@@ -116,7 +118,7 @@ public class HotDog_AI : MonoBehaviour
 
         // 페이즈 변화시 밀어내기 이펙트 초기화
         pushRange.gameObject.SetActive(false);
-        pushRange.enabled = false; // 밀어내는 콜라이더 끄기
+        pushRange.GetComponentInChildren<Collider2D>().enabled = false; // 밀어내는 콜라이더 끄기
         pushRange.transform.GetChild(0).localScale = Vector2.zero; // 채우기 오브젝트 크기 초기화
 
         // 발 먼지 이펙트 끄기
@@ -198,9 +200,6 @@ public class HotDog_AI : MonoBehaviour
 
     IEnumerator PhaseChange()
     {
-        // 무적 상태로 전환
-        SwitchInvinsible(true);
-
         // Idle 상태가 될때까지 대기
         yield return new WaitUntil(() => enemyManager.nowAction == EnemyManager.Action.Idle);
 
@@ -209,12 +208,18 @@ public class HotDog_AI : MonoBehaviour
         // 다음 페이즈 컬러
         Color _nextColor = phaseColor[nextPhase];
 
+        // 무적 상태로 전환
+        SwitchInvinsible(true);
+
         // 푸쉬 범위 나타내기
         pushRange.gameObject.SetActive(true);
-        pushRange.enabled = false; // 밀어내는 콜라이더 끄기
+        Collider2D pushColl = pushRange.GetComponentInChildren<Collider2D>();
         Transform pushRangeFill = pushRange.transform.GetChild(0); // 범위 채우는 오브젝트 찾기
         SpriteRenderer pushSprite = pushRange.GetComponent<SpriteRenderer>();
         SpriteRenderer pushFillSprite = pushRangeFill.GetComponent<SpriteRenderer>();
+
+        // 밀어내는 콜라이더 끄기
+        pushColl.enabled = false;
 
         pushRange.transform.localScale = Vector2.zero; // 범위 크기 제로로 초기화
         pushRangeFill.localScale = Vector2.zero; // 채우기 범위 크기 제로로 초기화
@@ -235,15 +240,11 @@ public class HotDog_AI : MonoBehaviour
         // 범위 오브젝트 투명해지며 끄기
         pushSprite.DOColor(Color.clear, 2f);
 
+        // 밀어내기 콜라이더 켜기
+        pushColl.enabled = true;
         // 채우기 범위 스케일 키우기
         pushRangeFill.DOScale(Vector2.one, 1f)
         .SetEase(Ease.Linear);
-
-        // 밀어내기 콜라이더 켜기
-        pushRange.enabled = true;
-        yield return new WaitForSeconds(0.1f);
-        // 밀어내기 콜라이더 끄기
-        pushRange.enabled = false;
 
         // 범위 채우는 시간 대기
         yield return new WaitForSeconds(1f);
@@ -327,14 +328,22 @@ public class HotDog_AI : MonoBehaviour
             }
         });
 
+        // 쉴드 하위 파티클 모두 색 변경
+        List<ParticleSystem> shieldParticles = shield.GetComponentsInChildren<ParticleSystem>().ToList();
+        for (int i = 0; i < shieldParticles.Count; i++)
+        {
+            ParticleSystem.MainModule particleMain = shieldParticles[i].main;
+            particleMain.startColor = phaseColor[nextPhase] / 2f;
+        }
+        shield.particle.Stop();
+        shield.particle.Play();
+
         // 한번에 소환할 개수
         int summonNum = 20;
         // 소환 최대 범위
         float maxDistance = 18f;
         // 각 Flame 위치 저장할 배열
         Vector3[] lastPos = new Vector3[summonNum];
-        // // Flame 에 넣을 머터리얼 인스턴싱
-        // Material flameMat = new Material(hdrMat);
 
         // 범위만큼 주변에 Flame 원형으로 점점 크게 여러번 생성
         for (int j = 0; j < 5; j++)
@@ -389,11 +398,14 @@ public class HotDog_AI : MonoBehaviour
 
         print(nowPhase + " -> " + nextPhase);
 
-        // 현재 페이즈 숫자 올리기        
-        nowPhase = nextPhase;
-
         // 무적 상태 해제
         SwitchInvinsible(false);
+
+        // 쉴드 해제 시간 대기
+        yield return new WaitForSeconds(2f);
+
+        // 현재 페이즈 숫자 올리기        
+        nowPhase = nextPhase;
     }
 
     void SwitchInvinsible(bool state)
@@ -401,10 +413,21 @@ public class HotDog_AI : MonoBehaviour
         // 무적 상태 갱신
         enemyManager.invinsible = state;
 
+        // 무적임을 나타내기 위한 쉴드 토글
         if (state)
         {
-            //todo 무적임을 나타내기 위한 쉴드 켜기
+            // 쉴드 하위 파티클 모두 색 변경
+            List<ParticleSystem> shieldParticles = shield.GetComponentsInChildren<ParticleSystem>().ToList();
+            for (int i = 0; i < shieldParticles.Count; i++)
+            {
+                ParticleSystem.MainModule particleMain = shieldParticles[i].main;
+                particleMain.startColor = phaseColor[nowPhase] / 2f;
+            }
+
+            shield.particle.Play();
         }
+        else
+            shield.particle.Stop();
     }
 
     void Update()

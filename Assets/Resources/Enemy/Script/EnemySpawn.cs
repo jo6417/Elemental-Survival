@@ -183,7 +183,8 @@ public class EnemySpawn : MonoBehaviour
         + MaxEnemyPower / 10f / 100f; // 파워 10마다 1%씩 출현율 상승
 
         //! 테스트, 무조건 엘리트 몬스터 스폰
-        isElite = allEliteSwitch;
+        if (allEliteSwitch)
+            isElite = allEliteSwitch;
 
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;

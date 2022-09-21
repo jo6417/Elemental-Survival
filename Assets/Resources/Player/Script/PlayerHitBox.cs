@@ -133,7 +133,16 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
             // 크리티컬이면 크리티컬 데미지 배율 반영
             if (isCritical)
-                damage = damage * criticalPower;
+            {
+                // 크리티컬 파워를 곱해도 데미지가 같으면
+                if (damage == damage * criticalPower)
+                    // 데미지 1 상승
+                    damage++;
+                // 데미지가 높아진다면
+                else
+                    // 크리티컬 배율 곱한것으로 데미지 결정
+                    damage = damage * criticalPower;
+            }
 
             //데미지 입기
             Damage(damage, false);

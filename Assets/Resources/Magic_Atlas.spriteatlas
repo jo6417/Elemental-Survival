@@ -94,6 +94,8 @@ SpriteAtlas:
   - {fileID: -2435822838769587993, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: -4898178295380021446, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: 21300000, guid: f23731a414aaf034caf50232c22b79e1, type: 3}
+  - {fileID: 9069452203224602429, guid: b6822fb46b51b774c98aae460d8f5792, type: 3}
+  - {fileID: -4622714332243487470, guid: b6822fb46b51b774c98aae460d8f5792, type: 3}
   - {fileID: 5746233912124084476, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 3778720162359076472, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 4114527289033214467, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
@@ -277,6 +279,8 @@ SpriteAtlas:
   - SlingShot-Sheet_3
   - SlingShot-Sheet_2
   - LightningGem_
+  - Nimbus_Sheet_0
+  - Nimbus_Sheet_1
   - StompDust_Sheet_5
   - StompDust_Sheet_4
   - StompDust_Sheet_3
@@ -330,7 +334,7 @@ SpriteAtlas:
   - Portal_Sheet_8
   - SlotLevelup_Icon
   - Meteor
-  - Thunderbolt_Icon
+  - ElectroBolt_Icon
   - LifeMushroom_Icon
   - BabyArrow
   - SlotReplace_Icon
