@@ -100,7 +100,7 @@ public class KingSlime_AI : MonoBehaviour
                 PlayerManager.Instance.hitBox.Damage(damage, false);
 
                 // 플레이어가 입은 데미지만큼 보스 회복
-                enemyManager.hitBoxList[0].Damage(-damage, false);
+                enemyManager.hitBoxList[0].Damage(-damage, false, transform.position);
 
                 // 쿨타임 갱신
                 absorbCoolCount = 1f;

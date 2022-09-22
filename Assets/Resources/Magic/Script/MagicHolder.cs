@@ -10,6 +10,7 @@ public class MagicHolder : Attack
     [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
 
     [Header("Status")]
+    public bool isManualCast = false; //수동으로 시전한 마법인지 여부
     public string magicName; //마법 이름 확인
     public Vector3 targetPos = default(Vector3); //목표 위치
     public enum Target { None, Enemy, Player, Both };

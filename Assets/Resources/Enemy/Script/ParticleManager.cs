@@ -43,19 +43,16 @@ public class ParticleManager : MonoBehaviour
             main.startLifetime = modify_startLife;
         }
 
-        //콜라이더 켜기
-        if (coll)
+        // 콜라이더 있고, 콜라이더 제한시간 있을때
+        if (coll != null && collOverTime > 0)
         {
+            //콜라이더 켜기
             coll.enabled = true;
 
-            // 콜라이더 대기시간 0 이상일때
-            if (collOverTime > 0)
-            {
-                // collOverTime 만큼 대기후 콜라이더 끄기
-                yield return new WaitForSeconds(collOverTime);
+            // collOverTime 만큼 대기후 콜라이더 끄기
+            yield return new WaitForSeconds(collOverTime);
 
-                coll.enabled = false;
-            }
+            coll.enabled = false;
         }
 
         // // 자동 시작 아니면 초기화 끝나고 시작

@@ -7,8 +7,10 @@ using UnityEngine;
 
 public class PlayerHitBox : MonoBehaviour, IHitBox
 {
+    [Header("Refer")]
     public IEnumerator hitDelayCoroutine;
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
+    [SerializeField] GameObject hitEffect;
 
     [Header("<State>")]
     float hitDelayTime = 0.2f; //피격 무적시간
@@ -62,6 +64,9 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
     public IEnumerator Hit(Attack attacker)
     {
+        //todo 피격 위치 산출
+        Vector2 hitPos = attacker.GetComponent<Collider2D>().ClosestPoint(transform.position);
+
         //크리티컬 성공 여부
         bool isCritical = false;
 
@@ -87,7 +92,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
                 StopCoroutine(hitDelayCoroutine);
 
             // 데미지 적용
-            Damage(enemyAtk.enemyManager.powerNow, false);
+            Damage(enemyAtk.enemyManager.powerNow, false, hitPos);
         }
 
         //마법 정보 찾기
@@ -145,11 +150,31 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
             }
 
             //데미지 입기
-            Damage(damage, false);
+            Damage(damage, false, hitPos);
         }
 
         // 디버프 판단해서 적용
         Debuff(attacker, isCritical);
+    }
+
+    void HitEffect(Vector2 hitPos = default)
+    {
+        GameObject hitEffect = null;
+
+        // 피격 지점이 기본값으로 들어오면, 히트박스 중심 위치로 지정
+        if (hitPos == (Vector2)default)
+            hitPos = transform.position;
+
+        // 플레이어 피격 이펙트 갖고 있을때
+        if (this.hitEffect != null)
+            hitEffect = this.hitEffect;
+
+        // // 공격자가 타격 이펙트 갖고 있을때
+        // if (attack.atkEffect != null)
+        //     hitEffect = attack.atkEffect;
+
+        // 피격 지점에 히트 이펙트 소환
+        LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 
     public void Debuff(Attack attacker, bool isCritical)
@@ -240,8 +265,11 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         }
     }
 
-    public void Damage(float damage, bool isCritical)
+    public void Damage(float damage, bool isCritical, Vector2 hitPos = default)
     {
+        // 피격 이펙트 재생
+        HitEffect(hitPos);
+
         //피격 딜레이 무적시간 시작
         hitDelayCoroutine = HitDelay(damage);
         StartCoroutine(hitDelayCoroutine);

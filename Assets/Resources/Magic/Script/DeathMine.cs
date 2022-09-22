@@ -8,13 +8,14 @@ public class DeathMine : MonoBehaviour
 {
     MagicHolder magicHolder;
     MagicInfo magic;
+    [SerializeField] GameObject bombSprite; //폭탄 이미지
     [SerializeField] GameObject scorchPrefab; // 그을음 프리팹
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] SpriteRenderer bombLight;
     [SerializeField] ParticleSystem runeLaser;
     [SerializeField] ParticleSystem landEffect;
     [SerializeField] Collider2D coll;
-
+    [SerializeField] Transform shadow;
 
     private void Awake()
     {
@@ -48,17 +49,17 @@ public class DeathMine : MonoBehaviour
         ParticleSystem.ColorOverLifetimeModule particleColor = runeLaser.colorOverLifetime;
         particleColor.enabled = false;
 
-        // 마법 range 만큼 감지 및 폭발 범위 적용
-        explosionPrefab.transform.localScale = Vector2.one * MagicDB.Instance.MagicRange(magic);
-
         // targetPos 들어올때까지 대기
         yield return new WaitUntil(() => magicHolder.targetPos != null);
 
-        // 타겟 위치보다 위에서 소환
-        transform.position = magicHolder.targetPos + Vector3.up * 2f;
+        // 타겟 위치로 이동
+        transform.position = magicHolder.targetPos;
+
+        // 위로 폭탄 이미지 올리기
+        bombSprite.transform.localPosition = Vector3.up * 2f;
 
         // 아래로 이동
-        transform.DOMove(magicHolder.targetPos, 1f)
+        bombSprite.transform.DOLocalMove(Vector3.zero, 1f)
         .SetEase(Ease.InBack)
         .OnComplete(() =>
         {
@@ -76,6 +77,12 @@ public class DeathMine : MonoBehaviour
 
         // 콜라이더 켜기
         coll.enabled = true;
+    }
+
+    private void FixedUpdate()
+    {
+        // 그림자 회전값 고정
+        shadow.rotation = Quaternion.Euler(Vector3.zero);
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -105,18 +112,21 @@ public class DeathMine : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // 폭발 이펙트 스폰
-        GameObject effect = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject explosionHit = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 일단 비활성화
-        effect.SetActive(false);
+        explosionHit.SetActive(false);
+
+        // 마법 range 만큼 감지 및 폭발 범위 적용
+        explosionHit.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic);
 
         //폭발에 마법 정보 넣기
-        MagicHolder effectHolder = effect.GetComponent<MagicHolder>();
+        MagicHolder effectHolder = explosionHit.GetComponent<MagicHolder>();
         effectHolder.magic = magic;
         effectHolder.targetType = MagicHolder.Target.Enemy;
 
         // 폭발 활성화
-        effect.SetActive(true);
+        explosionHit.SetActive(true);
 
         // 그을음 남기기
         LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);

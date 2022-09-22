@@ -167,14 +167,14 @@ public class PlayerManager : Character
             InteractSubmit();
         };
 
-        // 마우스 위치 입력
-        playerInput.Player.MousePosition.performed += val =>
-        {
-            mouseWorldPos = Camera.main.ScreenToWorldPoint(val.ReadValue<Vector2>());
-            mouseWorldPos.z = 0;
+        // // 마우스 위치 입력
+        // playerInput.Player.MousePosition.performed += val =>
+        // {
+        //     mouseWorldPos = Camera.main.ScreenToWorldPoint(val.ReadValue<Vector2>());
+        //     mouseWorldPos.z = 0;
 
-            // print(mouseWorldPos);
-        };
+        //     // print(mouseWorldPos);
+        // };
 
         // A슬롯 마법 시전
         playerInput.Player.ActiveMagic_A.performed += val =>
@@ -206,6 +206,11 @@ public class PlayerManager : Character
 
         // 초기화 완료
         initFinish = true;
+    }
+
+    public Vector2 GetMousePos()
+    {
+        return Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>());
     }
 
     private void OnEnable()
@@ -257,7 +262,7 @@ public class PlayerManager : Character
         Move();
 
         //! 테스트용 마커 이동
-        marker.transform.position = mouseWorldPos;
+        marker.transform.position = GetMousePos();
     }
 
     public void Move()

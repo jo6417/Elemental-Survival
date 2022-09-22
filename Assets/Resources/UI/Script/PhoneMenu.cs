@@ -327,6 +327,9 @@ public class PhoneMenu : MonoBehaviour
         // nav.selectOnUp = stackObjSlots[3].GetComponent<Button>().FindSelectable(Vector3.up);
         // selectedSlot.navigation = nav;
 
+        // 핸드폰 알림 개수 초기화
+        UIManager.Instance.PhoneNotice(0);
+
         #endregion
     }
 
@@ -861,8 +864,8 @@ public class PhoneMenu : MonoBehaviour
             // 확인 키 눌렀을때
             if (UIManager.Instance.UI_Input.UI.Accept.triggered)
             {
-                // 남은시간 1초 이상일때 1초로 만들기 (피지컬로 슬롯 맞추기 가능)
-                if (stopTime >= 1f)
+                // 남은시간 1초 이상일때 1초 후에 멈추게 하기 (피지컬로 슬롯 맞추기 가능)
+                if (stopTime >= Time.unscaledTime + 1f)
                 {
                     stopTime = Time.unscaledTime + 1f;
                     print("Skip : " + (stopTime - Time.unscaledTime));

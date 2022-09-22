@@ -66,6 +66,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         if (enemyManager.isDead)
             return;
 
+
         // 공격 오브젝트와 충돌 했을때
         if (other.TryGetComponent(out Attack attack))
         {
@@ -83,17 +84,19 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         if (enemyManager.isDead)
             return;
 
-        // 마법 공격 오브젝트와 충돌 했을때
-        if (other.TryGetComponent(out MagicHolder magicHolder))
-        {
-            // 마법 정보 없으면 리턴
-            if (magicHolder.magic == null)
-                return;
+        // 공격 오브젝트와 충돌 했을때
+        if (other.TryGetComponent(out Attack attack))
+            // 마법 공격 오브젝트와 충돌 했을때
+            if (other.TryGetComponent(out MagicHolder magicHolder))
+            {
+                // 마법 정보 없으면 리턴
+                if (magicHolder.magic == null)
+                    return;
 
-            // 다단히트 마법일때만
-            if (magicHolder.magic.multiHit)
-                StartCoroutine(Hit(magicHolder));
-        }
+                // 다단히트 마법일때만
+                if (magicHolder.magic.multiHit)
+                    StartCoroutine(Hit(magicHolder));
+            }
     }
 
     public IEnumerator Hit(Attack attacker)
@@ -101,6 +104,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 죽었으면 리턴
         if (enemyManager.isDead)
             yield break;
+
+        //todo 피격 위치 산출
+        Vector2 hitPos = attacker.GetComponent<Collider2D>().ClosestPoint(transform.position);
 
         // 크리티컬 성공 여부
         bool isCritical = false;
@@ -130,7 +136,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             // 고정 데미지가 있으면 아군 피격이라도 적용
             if (enemyAtk.fixedPower < 0)
             {
-                Damage(enemyAtk.fixedPower, false);
+                Damage(enemyAtk.fixedPower, false, hitPos);
             }
 
             // 피격 대상이 고스트일때
@@ -138,14 +144,14 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             {
                 //고스트 아닌 적이 때렸을때만 데미지
                 if (!atkEnemyManager.IsGhost)
-                    Damage(enemyAtk.enemyManager.powerNow, false);
+                    Damage(enemyAtk.enemyManager.powerNow, false, hitPos);
             }
             // 피격 대상이 고스트 아닐때
             else
             {
                 //고스트가 때렸으면 데미지
                 if (atkEnemyManager.IsGhost)
-                    Damage(enemyAtk.enemyManager.powerNow, false);
+                    Damage(enemyAtk.enemyManager.powerNow, false, hitPos);
             }
         }
 
@@ -208,7 +214,7 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 if (attacker.poisonTime == 0
                 && attacker.burnTime == 0
                 && attacker.bleedTime == 0)
-                    Damage(damage, isCritical);
+                    Damage(damage, isCritical, hitPos);
             }
         }
 
@@ -218,6 +224,26 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         //피격 딜레이 무적시간 시작
         enemyManager.hitCoroutine = HitDelay(damage);
         StartCoroutine(enemyManager.hitCoroutine);
+    }
+
+    void HitEffect(Vector2 hitPos = default)
+    {
+        GameObject hitEffect = null;
+
+        // 피격 지점이 기본값으로 들어오면, 히트박스 중심 위치로 지정
+        if (hitPos == (Vector2)default)
+            hitPos = transform.position;
+
+        // 피격대상이 피격 이펙트 갖고 있을때
+        if (enemyManager.hitEffect != null)
+            hitEffect = enemyManager.hitEffect;
+
+        // // 공격자가 타격 이펙트 갖고 있을때
+        // if (attack.atkEffect != null)
+        //     hitEffect = attack.atkEffect;
+
+        // 피격 지점에 히트 이펙트 소환
+        LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 
     public void Debuff(Attack attacker, bool isCritical, float damage = 0)
@@ -325,7 +351,13 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
             enemyManager.spriteList[i].material = SystemManager.Instance.hitMat;
 
             if (damage > 0)
-                enemyManager.spriteList[i].color = SystemManager.Instance.hitColor;
+            {
+                // 현재 체력이 max에 가까울수록 빨간색, 0에 가까울수록 흰색
+                Color hitColor = Color.Lerp(SystemManager.Instance.hitColor, SystemManager.Instance.DeadColor, enemyManager.hpNow / enemyManager.hpMax);
+
+                // 체력 비율에 따라 히트 컬러 넣기
+                enemyManager.spriteList[i].color = hitColor;
+            }
             else
                 enemyManager.spriteList[i].color = SystemManager.Instance.healColor;
         }
@@ -336,29 +368,57 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         if (enemyManager.isDead)
             yield break;
 
+        // 초기화할 컬러, 머터리얼, 머터리얼 컬러
+        Color originColor = default;
+        Material originMat = null;
+        Color originMatColor = default;
+
+        // 엘리트 몹일때
+        if (enemyManager.eliteClass != EnemyManager.EliteClass.None)
+        {
+            originMat = SystemManager.Instance.outLineMat;
+
+            //엘리트 종류마다 다른 아웃라인 컬러 적용
+            switch ((int)enemyManager.eliteClass)
+            {
+                case 1:
+                    originMatColor = Color.green;
+                    break;
+                case 2:
+                    originMatColor = Color.red;
+                    break;
+                case 3:
+                    originMatColor = Color.cyan;
+                    break;
+                case 4:
+                    break;
+            }
+        }
         // 고스트일때
         if (enemyManager.IsGhost)
-            // 유령 머터리얼 및 색으로 초기화
-            for (int i = 0; i < enemyManager.spriteList.Count; i++)
-            {
-                enemyManager.spriteList[i].material = SystemManager.Instance.outLineMat;
-                enemyManager.spriteList[i].color = new Color(0, 1, 1, 0.5f);
-            }
-        // 일반 몹일때
-        else
-            // 일반몹 머터리얼 및 색으로 초기화
-            for (int i = 0; i < enemyManager.spriteList.Count; i++)
-            {
-                enemyManager.spriteList[i].material = enemyManager.originMatList[i];
-                enemyManager.spriteList[i].color = enemyManager.originColorList[i];
-                enemyManager.spriteList[i].material.color = enemyManager.originMatColorList[i];
-            }
+        {
+            originMat = SystemManager.Instance.outLineMat;
+            originColor = new Color(0, 1, 1, 0.5f);
+        }
+
+        // 머터리얼 및 색 초기화
+        for (int i = 0; i < enemyManager.spriteList.Count; i++)
+        {
+            enemyManager.spriteList[i].material = enemyManager.originMatList[i];
+            enemyManager.spriteList[i].color = enemyManager.originColorList[i];
+            enemyManager.spriteList[i].material.color = enemyManager.originMatColorList[i];
+        }
+
+        // 엘리트나 고스트 색 들어왔으면 넣기
+        enemyManager.spriteList[0].material = originMat != null ? originMat : enemyManager.originMatList[0];
+        enemyManager.spriteList[0].color = originColor != default ? originColor : enemyManager.originColorList[0];
+        enemyManager.spriteList[0].material.color = originMatColor != default ? originMatColor : enemyManager.originMatColorList[0];
 
         // 코루틴 변수 초기화
         enemyManager.hitCoroutine = null;
     }
 
-    public void Damage(float damage, bool isCritical)
+    public void Damage(float damage, bool isCritical, Vector2 hitPos = default)
     {
         // 적 정보 없으면 리턴
         if (enemyManager == null || enemyManager.enemy == null)
@@ -371,6 +431,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         // 무적 상태면 리턴
         if (enemyManager.invinsible)
             return;
+
+        // 피격 이펙트 재생
+        HitEffect(hitPos);
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
@@ -710,6 +773,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
 
         enemyManager.rigid.velocity = Vector2.zero; //이동 초기화
 
+        // 물리 콜라이더 끄기
+        enemyManager.physicsColl.enabled = false;
+
         enemyManager.isDead = true;
 
         // 초기화 완료 취소
@@ -720,6 +786,10 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
         {
             enemyManager.animList[i].speed = 0f;
         }
+
+        // 힐 범위 오브젝트가 있을때 디스폰
+        if (enemyManager.healRange != null)
+            LeanPool.Despawn(enemyManager.healRange.gameObject);
 
         // 트윈 멈추기
         transform.DOPause();
@@ -760,8 +830,9 @@ public class EnemyHitBox : MonoBehaviour, IHitBox
                 });
             }
 
-            // 자폭 반경 인디케이터 시간 대기
-            yield return new WaitUntil(() => enemyManager.spriteList[0].color == SystemManager.Instance.DeadColor);
+            // 흰색으로 변하는 시간 대기
+            yield return new WaitForSeconds(1f);
+            // yield return new WaitUntil(() => enemyManager.spriteList[0].color == SystemManager.Instance.DeadColor);
         }
 
         // 고스트가 아닐때

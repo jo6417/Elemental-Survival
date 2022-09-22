@@ -112,10 +112,9 @@ public class CastMagic : MonoBehaviour
         // 투사체 개수만큼 마우스 근처 포지션 지정
         for (int i = 0; i < atkNum; i++)
         {
-            Vector3 atkPos =
-            Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>())
-            + (Vector3)Random.insideUnitCircle
-            * range / 10f;
+            Vector2 atkPos =
+            PlayerManager.Instance.GetMousePos();
+            // + Random.insideUnitCircle * range;
 
             attackPos.Add(atkPos);
         }
@@ -131,6 +130,9 @@ public class CastMagic : MonoBehaviour
 
             //매직 홀더 찾기
             MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+            // 수동 시전 여부 넣기
+            magicHolder.isManualCast = true;
 
             //타겟 정보 넣기
             magicHolder.SetTarget(MagicHolder.Target.Enemy);
@@ -320,6 +322,8 @@ public class CastMagic : MonoBehaviour
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+        // 해당 마법 범위 불러오기
+        float range = MagicDB.Instance.MagicRange(magic);
 
         // print(magic.magicName + " : " + coolTime);
 
@@ -353,7 +357,8 @@ public class CastMagic : MonoBehaviour
             else
                 // 오브젝트 없으면 범위내 랜덤 위치 넣기
                 magicHolder.targetPos =
-                (Vector2)transform.position + Random.insideUnitCircle.normalized * MagicDB.Instance.MagicRange(magic);
+                PlayerManager.Instance.GetMousePos()
+                + Random.insideUnitCircle.normalized * range;
 
             yield return new WaitForSeconds(0.1f);
         }
@@ -507,10 +512,10 @@ public class CastMagic : MonoBehaviour
         //리턴할 적 오브젝트 리스트
         List<EnemyManager> enemyObjs = new List<EnemyManager>();
 
-        //범위 안의 모든 적 콜라이더 리스트에 담기
+        // 마우스를 중심으로 범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
         enemyCollList.Clear();
-        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
+        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.GetMousePos(), range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
         // 찾은 적과 투사체 개수 중 많은 쪽만큼 반복
         int findNum = Mathf.Max(enemyCollList.Count, atkNum);
@@ -557,83 +562,4 @@ public class CastMagic : MonoBehaviour
         //적의 위치 리스트 리턴
         return enemyObjs;
     }
-
-    #region UseUltimateMagic
-    // public IEnumerator UseUltimateMagic()
-    // {
-    //     //마법 참조
-    //     MagicInfo magic = null;
-    //     if (PlayerManager.Instance.ultimateList.Count > 0)
-    //         magic = PlayerManager.Instance.ultimateList[0];
-
-    //     // Test
-    //     // magic = MagicDB.Instance.GetMagicByID(48);
-    //     ultimateMagicCastEffect.Play();
-
-    //     // 궁극기 없을때, 쿨타임중일때
-    //     if (magic == null || PlayerManager.Instance.ultimateCoolCount > 0)
-    //     {
-    //         UIManager.Instance.ultimateIndicator.DOKill();
-
-    //         //궁극기 아이콘 인디케이터
-    //         Color baseColor = UIManager.Instance.ultimateIndicator.color;
-    //         Color onColor = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
-    //         Color offColor = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
-
-    //         //인디케이터 2번 밝히기
-    //         Sequence seq = DOTween.Sequence();
-    //         seq.Append(
-    //             UIManager.Instance.ultimateIndicator.DOColor(onColor, 0.2f)
-    //         )
-    //         .Append(
-    //             UIManager.Instance.ultimateIndicator.DOColor(offColor, 0.2f)
-    //         )
-    //         .SetLoops(2)
-    //         .OnComplete(() =>
-    //         {
-    //             UIManager.Instance.ultimateIndicator.color = offColor;
-    //         });
-    //         seq.Restart();
-
-    //         yield break;
-    //     }
-
-    //     //해당 마법 쿨타임 카운트 시작
-    //     PlayerManager.Instance.ultimateCoolCount = PlayerManager.Instance.ultimateCoolTime;
-
-    //     //프리팹 찾기
-    //     GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
-
-    //     // 랜덤 적 찾기, 투사체 수 이하로
-    //     List<GameObject> enemyObj = MarkEnemyObj(magic);
-
-    //     for (int i = 0; i < enemyObj.Count; i++)
-    //     {
-    //         // 마법 오브젝트 생성
-    //         GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
-
-    //         //매직 홀더 찾기
-    //         MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
-
-    //         //타겟 정보 넣기
-    //         magicHolder.SetTarget(MagicHolder.Target.Enemy);
-
-    //         //마법 정보 넣기
-    //         if (magicHolder.magic == null)
-    //             magicHolder.magic = magic;
-
-    //         //적 위치 넣기, 있어도 새로 갱신
-    //         magicHolder.targetObj = enemyObj[i];
-
-    //         //적 오브젝트 넣기, (유도 기능 등에 사용)
-    //         if (enemyObj[i] != null)
-    //             magicHolder.targetPos = enemyObj[i].transform.position;
-    //         else
-    //             magicHolder.targetPos =
-    //             (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * MagicDB.Instance.MagicRange(magic);
-
-    //         yield return new WaitForSeconds(0.1f);
-    //     }
-    // }
-    #endregion
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
+    [Header("Refer")]
+    // public GameObject atkEffect; // 타격시 타격지점에서 발생할 이펙트
+
     [Header("State")]
     public int pierceCount = 0; // 남은 관통 횟수
 

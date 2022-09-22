@@ -52,6 +52,7 @@ public class EnemySpawn : MonoBehaviour
     public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
     public GameObject healRange; // Heal 엘리트 몬스터의 힐 범위
+    public GameObject hitEffect; // 몬스터 피격시 이펙트
 
     private void Awake()
     {

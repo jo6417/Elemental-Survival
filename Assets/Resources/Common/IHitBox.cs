@@ -6,7 +6,7 @@ interface IHitBox
 {
     IEnumerator Hit(Attack other);
     IEnumerator HitDelay(float damage);
-    void Damage(float damage, bool isCritical);
+    void Damage(float damage, bool isCritical, Vector2 hitPos);
     IEnumerator Dead();
     void DebuffRemove();
 

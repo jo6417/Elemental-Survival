@@ -14,6 +14,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     // [SerializeField, ReadOnly] private int slotIndex = -1; //해당 슬롯의 인덱스
     public SlotInfo slotInfo = null;
 
+    [SerializeField] bool allowInit = true;
+
     public SlotType slotType;
     public enum SlotType { inventory, Merge, Active };
     public Image slotBack; // 슬롯 배경 이미지
@@ -74,7 +76,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         shinyEffect.GetComponent<Mask>().showMaskGraphic = false;
 
         // 해당 슬롯 UI 세팅
-        Set_Slot();
+        if (allowInit)
+            Set_Slot();
     }
 
     public void Set_Slot(bool shiny = false)
@@ -630,15 +633,17 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     gradePool.Add(i);
                 }
 
+                // 등급 개수만큼 반복
+                int poolCount = gradePool.Count;
                 int get_Grade = -1;
-                for (int i = 0; i < gradePool.Count; i++)
+                for (int i = 0; i < poolCount; i++)
                 {
                     // 등급 풀에서 인덱스 하나 뽑기
                     int gradeIndex = Random.Range(0, gradePool.Count);
                     // 해당 인덱스로 등급 산출
                     get_Grade = gradePool[gradeIndex];
 
-                    print($"min : {min} / max : {max} / gradeIndex : {gradeIndex} / get_Grade : {get_Grade}");
+                    // print($"min : {min} / max : {max} / gradeIndex : {gradeIndex} / get_Grade : {get_Grade}");
 
                     // 언락된 마법 중 해당 등급의 마법이 하나라도 있으면
                     if (MagicDB.Instance.GetRandomMagic(get_Grade) != null)
@@ -656,6 +661,25 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                         continue;
                     }
                 }
+
+                // 등급 풀을 전부 다 조회했는데 언락된 마법이 하나도 없을때
+                while (get_Grade < 1)
+                    // min 등급이 1등급 이상이라면
+                    if (min > 1)
+                    {
+                        // min 등급을 1단계 낮추기
+                        min--;
+
+                        // min보다 1등급 낮춘 등급으로 다시 조회
+                        MagicInfo getMagic = MagicDB.Instance.GetRandomMagic(min);
+                        // 뽑기 가능한 마법이 있으면
+                        if (getMagic != null)
+                            // 현재 뽑은 등급을 넣기
+                            get_Grade = min;
+                    }
+                    // 이하 모든 등급 조회했으면 탈출
+                    else
+                        break;
 
                 //todo 등급 풀을 전부 다 조회했는데 언락된 마법이 하나도 없을때
                 if (get_Grade == -1)

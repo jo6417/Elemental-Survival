@@ -116,7 +116,7 @@ public class LightningRod : MonoBehaviour
                 Vector2 subPos = (lightningLine.StartObject.transform.position + lightningLine.EndObject.transform.position) / 2f;
                 // 서브 라이팅의 각도 - 라인의 시작 부분을 바라보게
                 Vector2 subRotation = (Vector2)lightningLine.StartObject.transform.position - subPos;
-                float rotation = Mathf.Atan2(subRotation.y, subRotation.x) * Mathf.Rad2Deg;
+                float angle = Mathf.Atan2(subRotation.y, subRotation.x) * Mathf.Rad2Deg;
                 // 서브 라이팅의 길이 - 시작,끝 부분 사이 길이
                 float subDistance = Vector2.Distance(lightningLine.StartObject.transform.position, lightningLine.EndObject.transform.position);
 
@@ -132,7 +132,7 @@ public class LightningRod : MonoBehaviour
                 subEmission.rateOverTime = subDistance * 40f;
 
                 // 각도 수정
-                subLight.transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
+                subLight.transform.rotation = Quaternion.Euler(Vector3.forward * angle);
             }
         }
 

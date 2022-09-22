@@ -104,13 +104,17 @@ public class EnemyManager : Character
     public SpriteRenderer shadow; // 해당 몬스터 그림자
     public CircleCollider2D healRange; // Heal 엘리트 몬스터의 힐 범위
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
+    public List<Animator> animList = new List<Animator>(); // 보유한 모든 애니메이터
+    // public List<Collider2D> collList = new List<Collider2D>(); // 보유한 모든 애니메이터
+    public Collider2D physicsColl; // 물리용 콜라이더
+
+    [Header("Hit")]
+    public GameObject hitEffect; // 피격시 피격지점에서 발생할 이펙트
+    public List<EnemyHitBox> hitBoxList; // 보유한 모든 히트박스 리스트
+    public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
     public List<Material> originMatList = new List<Material>(); // 초기 머터리얼
     public List<Color> originMatColorList = new List<Color>(); // 초기 머터리얼 색
     public List<Color> originColorList = new List<Color>(); // 초기 스프라이트 색
-    public List<Animator> animList = new List<Animator>(); // 초기 애니메이터
-    public Collider2D physicsColl; // 물리용 콜라이더
-    public List<EnemyHitBox> hitBoxList; // 히트박스 리스트
-    public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
 
     [Header("Stat")]
     public float powerNow;
@@ -151,7 +155,7 @@ public class EnemyManager : Character
         rigid = rigid == null ? spriteObj.GetComponentInChildren<Rigidbody2D>(true) : rigid;
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
 
-        // 히트 박스 찾기
+        // 히트 박스 모두 찾기
         hitBoxList = hitBoxList.Count == 0 ? GetComponentsInChildren<EnemyHitBox>().ToList() : hitBoxList;
 
         // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
@@ -176,6 +180,10 @@ public class EnemyManager : Character
         // 공격 콜라이더 찾기
         enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
 
+        // 히트 이펙트가 없으면 기본 이펙트 가져오기
+        if (hitEffect == null)
+            hitEffect = EnemySpawn.Instance.hitEffect;
+
         // 초기화 시작 및 완료 변수 초기화
         // initialStart = false;
         initialFinish = false;
@@ -187,13 +195,6 @@ public class EnemyManager : Character
         initialFinish = false;
 
         StartCoroutine(Init());
-    }
-
-    private void OnDisable()
-    {
-        // 힐 범위 오브젝트가 있을때 디스폰
-        if (healRange != null)
-            LeanPool.Despawn(healRange.gameObject);
     }
 
     IEnumerator Init()
@@ -281,7 +282,8 @@ public class EnemyManager : Character
 
             case 4:
                 // 일정 범위 만큼 마법 차단하는 파란색 쉴드 생성
-                // 해당 범위내 몬스터들은 무적, 맞으면 Miss
+                // 해당 범위내 몬스터들은 무적(맞으면 Miss) 스위치 켜기, 범위 나가면 무적 끄기
+                // 이 엘리트 몹을 잡으면 쉴드 사라짐
                 // 콜라이더 stay 함수로 구현, 무적쉴드 충돌이면 무적 설정, 없으면 무적 해제
                 //TODO 포스쉴드 프리팹 생성
                 break;
@@ -383,12 +385,6 @@ public class EnemyManager : Character
         // idle 상태로 전환
         nowState = State.Idle;
 
-        // 히트박스 전부 켜기
-        for (int i = 0; i < hitBoxList.Count; i++)
-        {
-            hitBoxList[i].enabled = true;
-        }
-
         for (int i = 0; i < animList.Count; i++)
         {
             // 애니메이터 켜기
@@ -403,6 +399,12 @@ public class EnemyManager : Character
         if (enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
         {
             StartCoroutine(UIManager.Instance.UpdateBossHp(this));
+        }
+
+        // 히트박스 전부 켜기
+        for (int i = 0; i < hitBoxList.Count; i++)
+        {
+            hitBoxList[i].enabled = true;
         }
 
         // Idle로 초기화
@@ -533,7 +535,7 @@ public class EnemyManager : Character
                 healEffect.gameObject.SetActive(true);
                 // 사이즈 제로로 초기화
                 healEffect.localScale = Vector2.zero;
-                //todo 힐 이펙트 사이즈 키우기
+                // 힐 이펙트 사이즈 키우기
                 healEffect.DOScale(Vector2.one, cooltimeNow)
                 .OnComplete(() =>
                 {
@@ -610,12 +612,14 @@ public class EnemyManager : Character
                 }
             }
 
-            //시간 멈춤 머터리얼 및 색으로 바꾸기
-            for (int i = 0; i < spriteList.Count; i++)
-            {
-                // spriteList[i].material = originMatList[i];
-                spriteList[i].color = SystemManager.Instance.stopColor;
-            }
+            // 히트 딜레이중 아닐때
+            if (hitDelayCount <= 0)
+                //시간 멈춤 머터리얼 및 색으로 바꾸기
+                for (int i = 0; i < spriteList.Count; i++)
+                {
+                    // spriteList[i].material = originMatList[i];
+                    spriteList[i].color = SystemManager.Instance.stopColor;
+                }
 
             transform.DOPause();
 
@@ -809,50 +813,73 @@ public class EnemyManager : Character
             string itemName = "";
 
             // 랜덤 등급 뽑기
-            int randomGrade = Random.Range(0, 7);
-            // 뽑은 등급으로 랜덤 마법 뽑기
-            MagicInfo randomMagic = MagicDB.Instance.GetRandomMagic(randomGrade);
+            // int randomGrade = Random.Range(0, 7);
+            // 해당 몬스터 등급으로 뽑기 등급 산출
+            int grade = enemy.grade;
+            // 해당 몬스터 등급으로 랜덤 마법 뽑기
+            MagicInfo randomMagic = MagicDB.Instance.GetRandomMagic(enemy.grade);
 
-            // 0등급일때 마법 이름으로 아이템 이름 짓기
-            if (randomMagic.grade == 0)
+            // 뽑았는데 랜덤이면 하위 등급으로 다시 뽑기
+            while (randomMagic == null)
             {
-                // 아이템 이름 짓기
-                itemName = randomMagic.name;
+                if (grade > 1)
+                    // 등급을 한단계 낮추기
+                    grade--;
+                // 1등급 이하면 중단
+                else
+                    break;
+
+                // 해당 몬스터 등급으로 랜덤 마법 뽑기
+                randomMagic = MagicDB.Instance.GetRandomMagic(enemy.grade);
+
+                if (randomMagic != null)
+                    print(grade + " : " + randomMagic.name);
             }
-            // 0등급 아닐때는 몬스터 등급으로 shard 이름 짓기
-            else
+
+            // 해당 등급의 마법을 뽑는데 성공했을때
+            if (randomMagic != null)
             {
-                // 소환할 shard 등급 랜덤하게 레벨업 (1~6 사이로 고정)
-                int itemGrade = Mathf.Clamp(enemy.grade + Random.Range(0, 2), 1, 6);
+                // 0등급일때 마법 이름으로 아이템 이름 짓기
+                if (randomMagic.grade == 0)
+                {
+                    // 아이템 이름 짓기
+                    itemName = randomMagic.name;
+                }
+                // 0등급 아닐때는 몬스터 등급으로 shard 이름 짓기
+                else
+                {
+                    // 소환할 shard 등급 랜덤하게 레벨업 (1~6 사이로 고정)
+                    int itemGrade = Mathf.Clamp(enemy.grade + Random.Range(0, 2), 1, 6);
 
-                // 아이템 이름 짓기
-                itemName = "Magic Shard" + itemGrade;
+                    // 아이템 이름 짓기
+                    itemName = "Magic Shard" + itemGrade;
+                }
+
+                // 몬스터 등급에 해당하는 shard 찾기
+                itemInfo = ItemDB.Instance.GetItemByName(itemName);
+
+                // 아이템 프리팹 찾기
+                GameObject itemPrefab = ItemDB.Instance.GetItemPrefab(itemInfo.id);
+
+                //아이템 오브젝트 소환
+                itemObj = LeanPool.Spawn(itemPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+
+                // 아이템 매니저 찾기
+                ItemManager itemManager = itemObj.GetComponent<ItemManager>();
+                //아이템 정보 넣기
+                itemManager.item = itemInfo;
+
+                //아이템 리지드 찾기
+                Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
+
+                // 랜덤 방향, 랜덤 파워로 아이템 날리기
+                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+
+                // 랜덤으로 방향 및 속도 결정
+                float randomRotate = Random.Range(1f, 3f);
+                // 아이템 랜덤 속도로 회전 시키기
+                itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
             }
-
-            // 몬스터 등급에 해당하는 shard 찾기
-            itemInfo = ItemDB.Instance.GetItemByName(itemName);
-
-            // 아이템 프리팹 찾기
-            GameObject itemPrefab = ItemDB.Instance.GetItemPrefab(itemInfo.id);
-
-            //아이템 오브젝트 소환
-            itemObj = LeanPool.Spawn(itemPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
-
-            // 아이템 매니저 찾기
-            ItemManager itemManager = itemObj.GetComponent<ItemManager>();
-            //아이템 정보 넣기
-            itemManager.item = itemInfo;
-
-            //아이템 리지드 찾기
-            Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
-
-            // 랜덤 방향, 랜덤 파워로 아이템 날리기
-            itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
-
-            // 랜덤으로 방향 및 속도 결정
-            float randomRotate = Random.Range(1f, 3f);
-            // 아이템 랜덤 속도로 회전 시키기
-            itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
         }
     }
 }
