@@ -9,7 +9,7 @@ public class Character : MonoBehaviour
 
     [Header("Refer")]
     public Rigidbody2D rigid;
-    // HitBox hitBox;
     public Animator anim;
+    // HitBox hitBox;
     // public SpriteRenderer sprite;
 }

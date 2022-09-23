@@ -105,13 +105,12 @@ public class EnemyManager : Character
     public CircleCollider2D healRange; // Heal 엘리트 몬스터의 힐 범위
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
     public List<Animator> animList = new List<Animator>(); // 보유한 모든 애니메이터
-    // public List<Collider2D> collList = new List<Collider2D>(); // 보유한 모든 애니메이터
     public Collider2D physicsColl; // 물리용 콜라이더
 
     [Header("Hit")]
     public GameObject hitEffect; // 피격시 피격지점에서 발생할 이펙트
     public List<EnemyHitBox> hitBoxList; // 보유한 모든 히트박스 리스트
-    public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
+    // public Sequence damageTextSeq; // 데미지 텍스트 시퀀스
     public List<Material> originMatList = new List<Material>(); // 초기 머터리얼
     public List<Color> originMatColorList = new List<Color>(); // 초기 머터리얼 색
     public List<Color> originColorList = new List<Color>(); // 초기 스프라이트 색
@@ -135,17 +134,11 @@ public class EnemyManager : Character
     public float stopCount = 0; // 시간 정지 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
-    // public float burnCoolCount; // 화상 도트뎀 남은시간
-    // public float poisonCoolCount; //독 도트뎀 남은시간
-    // public float bleedCoolCount; // 출혈 디버프 남은시간
 
     [Header("Debug")]
-    [SerializeField]
-    string enemyName;
-    [SerializeField]
-    string enemyType;
-    [SerializeField]
-    Vector3 velocity;
+    [SerializeField] string enemyName;
+    [SerializeField] string enemyType;
+    // [SerializeField] Vector3 velocity;
 
     void Awake()
     {
@@ -708,29 +701,6 @@ public class EnemyManager : Character
 
         // 행동가능이므로 true 리턴
         return true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (isDead)
-            return;
-
-        if (other.transform.CompareTag(SystemManager.TagNameList.Magic.ToString()))
-        {
-            // 마법 정보 찾기
-            MagicHolder magicHolder = other.GetComponent<MagicHolder>();
-            MagicInfo magic = magicHolder.magic;
-
-            //경직 풀기
-            if (magicHolder.stopTime > 0)
-            {
-                // 카운터를 0으로 만들기
-                // stopCount = 0;
-
-                // 위치 고정 해제
-                // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
-            }
-        }
     }
 
     // 갖고있는 아이템 드랍

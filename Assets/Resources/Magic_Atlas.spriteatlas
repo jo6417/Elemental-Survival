@@ -50,6 +50,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 9a9a63309c0a02541ba78e0b9fe27c72, type: 3}
   - {fileID: 7250274903276048285, guid: 8bb10c403c5a5db4d89d27d2a2c0121a, type: 3}
   - {fileID: 6167062077403619445, guid: 8bb10c403c5a5db4d89d27d2a2c0121a, type: 3}
   - {fileID: 2954389762237533529, guid: 8bb10c403c5a5db4d89d27d2a2c0121a, type: 3}
@@ -111,6 +112,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ded3a7563ccccbf4b94e3fa3e13146bd, type: 3}
   - {fileID: 21300000, guid: fe793b17594220349accfc1346ead8be, type: 3}
   - {fileID: 21300000, guid: 37d6a05717b3f4f478e3a1b83b19b6b2, type: 3}
+  - {fileID: 21300000, guid: 63c51377007af4943bb56dc7fcd238f0, type: 3}
   - {fileID: 21300000, guid: b69a18771fd84ae47a880e5a518d982c, type: 3}
   - {fileID: 21300000, guid: d7d6f8871854dac4fa0445ae76154ebc, type: 3}
   - {fileID: 21300000, guid: 5dd34ac761dc4674fa1407b88644f50e, type: 3}
@@ -235,6 +237,7 @@ SpriteAtlas:
   - {fileID: -1940797720717528354, guid: ee217affa7f48c948aec1b24ba897e88, type: 3}
   - {fileID: -7536790541032447284, guid: ee217affa7f48c948aec1b24ba897e88, type: 3}
   m_PackedSpriteNamesToIndex:
+  - MetalSword_Icon
   - IceHit_Sheet_2
   - IceHit_Sheet_3
   - IceHit_Sheet_0
@@ -296,6 +299,7 @@ SpriteAtlas:
   - EarthGem_Icon
   - IceThorn
   - IceSpear_Icon
+  - Kamaitachi_Icon
   - IceSpear
   - WaterDrop
   - Meteor_Icon

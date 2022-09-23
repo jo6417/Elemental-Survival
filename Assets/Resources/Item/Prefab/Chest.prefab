@@ -103,7 +103,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1613252783085365155
 Transform:
   m_ObjectHideFlags: 0
@@ -131,8 +131,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78249568c5beb5c47b27996f42c2c85c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 5346713223538836836}
-  col: {fileID: 4512880338924512487}
+  hpNow: 0
+  hpMax: 0
+  rigid: {fileID: 0}
+  anim: {fileID: 0}
+  coll: {fileID: 0}
 --- !u!212 &2763911419529871901
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -202,14 +205,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 8, y: 8}
+    oldSize: {x: 4, y: 4}
     newSize: {x: 1.6875, y: 1.3125}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.6875, y: 1.3125}
+  m_Size: {x: 3.5, y: 2.8}
   m_EdgeRadius: 0
 --- !u!50 &8521050675796039438
 Rigidbody2D:

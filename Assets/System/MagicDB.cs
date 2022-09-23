@@ -36,7 +36,7 @@ public class MagicInfo : SlotInfo
     public float criticalPower = 1f; //크리티컬 데미지 증가율
     public int pierce = 0; //관통 횟수 및 넉백 계수
     public int atkNum = 0; //투사체 수
-    public int coolTime = 0; //쿨타임
+    public float coolTime = 0; //쿨타임
 
     [Header("LevUp")]
     public float powerPerLev;
@@ -83,7 +83,7 @@ public class MagicInfo : SlotInfo
     }
 
     public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price,
-    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int atkNum, int coolTime,
+    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int atkNum, float coolTime,
     float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float atkNumPerLev, float coolTimePerLev)
     {
         this.id = id;

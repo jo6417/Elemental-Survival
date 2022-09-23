@@ -628,9 +628,10 @@ public class PhoneMenu : MonoBehaviour
         shinyMaskImg.color = maskColor;
         maskColor.a = 1f;
         // 마스크 이미지 알파값 올리기
-        shinyMaskImg.DOColor(maskColor, 0.5f)
-        .SetEase(Ease.InCirc)
-        .SetUpdate(true);
+        shinyMaskImg.color = maskColor;
+        // shinyMaskImg.DOColor(maskColor, 0.5f)
+        // .SetEase(Ease.InCirc)
+        // .SetUpdate(true);
 
         // 등급 업 파티클 이펙트 켜기
         rankUpEffect.Play();
@@ -644,23 +645,18 @@ public class PhoneMenu : MonoBehaviour
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
 
-        // animSlot 커지는 시간 대기
-        yield return new WaitForSecondsRealtime(0.5f);
-
         // 등급 업 파티클 이펙트 끄기
         rankUpEffect.Stop();
 
         // 마스크 이미지 알파값 낮추기
         maskColor.a = 1f / 255f;
-        shinyMaskImg.DOColor(maskColor, 1f)
+        shinyMaskImg.DOColor(maskColor, 0.5f)
         .SetUpdate(true)
         .OnComplete(() =>
         {
             // 마스크 이미지 끄기
             shinyMask.showMaskGraphic = false;
         });
-        // 첫 등급 오픈 시간 대기
-        yield return new WaitForSecondsRealtime(1f);
 
         // 애니메이션용 아이콘 스크린 가운데로 올라가기
         animSlot.DOMove(randomScroll.transform.position, 0.5f)
@@ -862,13 +858,14 @@ public class PhoneMenu : MonoBehaviour
             randomScroll.GoToNextPanel();
 
             // 확인 키 눌렀을때
-            if (UIManager.Instance.UI_Input.UI.Accept.triggered)
+            if (UIManager.Instance.UI_Input.UI.Click.IsPressed()
+            || UIManager.Instance.UI_Input.UI.Accept.IsPressed())
             {
                 // 남은시간 1초 이상일때 1초 후에 멈추게 하기 (피지컬로 슬롯 맞추기 가능)
-                if (stopTime >= Time.unscaledTime + 1f)
+                if (stopTime >= Time.unscaledTime + 0.5f)
                 {
-                    stopTime = Time.unscaledTime + 1f;
-                    print("Skip : " + (stopTime - Time.unscaledTime));
+                    stopTime = Time.unscaledTime + 0.5f;
+                    // print("Skip : " + (stopTime - Time.unscaledTime));
                 }
             }
 

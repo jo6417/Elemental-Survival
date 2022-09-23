@@ -143,7 +143,7 @@ public class AstralForm : MonoBehaviour
             //쿨타임 갱신
             ghostCount = ghostFrequency * PlayerManager.Instance.PlayerStat_Now.moveSpeed;
 
-            StartCoroutine(GhostTransition());
+            StartCoroutine(MakeGhost());
         }
         else
         {
@@ -151,7 +151,7 @@ public class AstralForm : MonoBehaviour
         }
     }
 
-    IEnumerator GhostTransition()
+    IEnumerator MakeGhost()
     {
         //고스트 오브젝트 소환
         GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, SystemManager.Instance.effectPool);
