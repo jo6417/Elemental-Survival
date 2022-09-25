@@ -9,23 +9,16 @@ public class GatePortal : MonoBehaviour
     float maxGem; //필요 젬 개수
     float nowGem; //현재 젬 개수
     float delayCount; //상호작용 딜레이 카운트
-    [SerializeField]
-    float interactDelay = 1f; //상호작용 딜레이
-    [SerializeField]
-    float farDistance = 150f; //해당 거리 이상 벌어지면 포탈 이동
+    [SerializeField] float interactDelay = 1f; //상호작용 딜레이
+    [SerializeField] float farDistance = 150f; //해당 거리 이상 벌어지면 포탈 이동
 
     [Header("Refer")]
     Interacter interacter; //상호작용 콜백 함수 클래스
-    [SerializeField]
-    GameObject showKey; //상호작용 키 표시 UI
-    [SerializeField]
-    TextMeshProUGUI GemNum; //젬 개수 표시 UI
-    [SerializeField]
-    TextMeshProUGUI pressKey; //상호작용 인디케이터
-    [SerializeField]
-    Animator anim; //포탈 이펙트 애니메이션
-    [SerializeField]
-    SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
+    [SerializeField] GameObject showKey; //상호작용 키 표시 UI
+    [SerializeField] TextMeshProUGUI GemNum; //젬 개수 표시 UI
+    [SerializeField] TextMeshProUGUI pressKey; //상호작용 인디케이터
+    [SerializeField] Animator anim; //포탈 이펙트 애니메이션
+    [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
 
     [Header("Debug")]
     public EnemyManager fixedBoss; //! 고정된 보스 소환
@@ -56,11 +49,11 @@ public class GatePortal : MonoBehaviour
         //포탈 이펙트 오브젝트 비활성화
         anim.gameObject.SetActive(false);
 
-        // 상호작용 함수 콜백에 연결 시키기
-        interacter.interactSubmitCallback += InteractSubmit;
-
         // 상호작용 트리거 함수 콜백에 연결 시키기
         interacter.interactTriggerCallback += InteractTrigger;
+
+        // 상호작용 함수 콜백에 연결 시키기
+        interacter.interactSubmitCallback += InteractSubmit;
     }
 
     private void Update()
@@ -82,7 +75,6 @@ public class GatePortal : MonoBehaviour
             showKey.SetActive(true);
         else
             showKey.SetActive(false);
-
     }
 
     // 포탈 상호작용

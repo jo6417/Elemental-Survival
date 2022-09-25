@@ -33,7 +33,7 @@ public class LevelupMenu : MonoBehaviour
     void SetArtifact()
     {
         //아이템 타입이 아티팩트인 모든아이템 리스트
-        List<ItemInfo> artifactList = ItemDB.Instance.itemDB.FindAll(x => x.itemType == "Artifact");
+        List<ItemInfo> artifactList = ItemDB.Instance.itemDB.FindAll(x => x.itemType == ItemDB.ItemType.Artifact.ToString());
         // 랜덤 아티팩트ID 뽑기, 중복제거됨
         int[] randomIDs = ItemDB.Instance.RandomItemIndex(3);
 

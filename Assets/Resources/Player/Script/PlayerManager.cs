@@ -441,7 +441,7 @@ public class PlayerManager : Character
         // print(hasGems[gemTypeIndex] + " : " + amount);
 
         //해당 젬 UI 인디케이터
-        UIManager.Instance.GemIndicator(gemTypeIndex);
+        UIManager.Instance.GemIndicator(gemTypeIndex, Color.red);
 
         // UI 업데이트
         UIManager.Instance.UpdateGem(gemTypeIndex);

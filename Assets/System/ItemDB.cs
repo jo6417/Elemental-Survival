@@ -5,102 +5,6 @@ using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ItemInfo : SlotInfo
-{
-    public int amount = 0; //몇개 갖고 있는지
-
-    [Header("Info")]
-    // public int id; //고유 아이디
-    // public int grade; //아이템 등급
-    // public string description; //아이템 설명
-    // public int price; //아이템 가격
-    // public string name; //아이템 이름
-    public string itemType; //아이템 타입 (Gem, Heart, Scroll, Artifact, etc)
-    public string priceType; //지불 원소 종류
-
-    [Header("Buff")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
-    public int projectileNum = 0; // 투사체 개수
-    public float hpMax = 1; //최대 체력
-    public float power = 1; //마법 공격력
-    public float armor = 1; //방어력
-    public float moveSpeed = 1; //이동 속도
-    public float rateFire = 1; //마법 공격속도
-    public float coolTime = 1; //마법 쿨타임
-    public float duration = 1; //마법 지속시간
-    public float range = 1; //마법 범위
-    public float luck = 1; //행운
-    public float expGain = 1; //경험치 획득량
-    public float moneyGain = 1; //원소젬 획득량
-
-    // 원소 공격력 추가
-    public float earth;
-    public float fire;
-    public float life;
-    public float lightning;
-    public float water;
-    public float wind;
-
-    public ItemInfo(int id, int grade, string itemName, string itemType, string description, string priceType, int price, int projectileNum, float hpMax, float power, float armor, float moveSpeed, float rateFire, float coolTime, float duration, float range, float luck, float expGain, float moneyGain, float earth, float fire, float life, float lightning, float water, float wind)
-    {
-        this.id = id;
-        this.grade = grade;
-        this.name = itemName;
-        this.itemType = itemType;
-        this.description = description;
-        this.priceType = priceType;
-        this.price = price;
-
-        this.projectileNum = projectileNum;
-        this.hpMax = hpMax;
-        this.power = power;
-        this.armor = armor;
-        this.moveSpeed = moveSpeed;
-        this.rateFire = rateFire;
-        this.coolTime = coolTime;
-        this.duration = duration;
-        this.range = range;
-        this.luck = luck;
-        this.expGain = expGain;
-        this.moneyGain = moneyGain;
-
-        this.earth = earth;
-        this.fire = fire;
-        this.life = life;
-        this.lightning = lightning;
-        this.water = water;
-        this.wind = wind;
-    }
-
-    public ItemInfo(ItemInfo item)
-    {
-        this.id = item.id;
-        this.grade = item.grade;
-        this.name = item.name;
-        this.itemType = item.itemType;
-        this.description = item.description;
-        this.priceType = item.priceType;
-        this.price = item.price;
-        this.projectileNum = item.projectileNum;
-        this.hpMax = item.hpMax;
-        this.power = item.power;
-        this.armor = item.armor;
-        this.moveSpeed = item.moveSpeed;
-        this.rateFire = item.rateFire;
-        this.coolTime = item.coolTime;
-        this.duration = item.duration;
-        this.range = item.range;
-        this.luck = item.luck;
-        this.expGain = item.expGain;
-        this.moneyGain = item.moneyGain;
-        this.earth = item.earth;
-        this.fire = item.fire;
-        this.life = item.life;
-        this.lightning = item.lightning;
-        this.water = item.water;
-        this.wind = item.wind;
-    }
-}
-
 public class ItemDB : MonoBehaviour
 {
     #region Singleton
@@ -127,7 +31,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
-    public enum ItemType { Gem, Heal, Shard }; // 아이템 타입 정의
+    public enum ItemType { Gem, Heal, Shard, Artifact }; // 아이템 타입 정의
 
     public List<ItemInfo> itemDB = new List<ItemInfo>(); //아이템 정보 DB
     public List<Sprite> itemIcon = null; //아이템 아이콘 리스트
@@ -228,6 +132,102 @@ public class ItemDB : MonoBehaviour
         foreach (var item in itemDB)
         {
             item.amount = 0;
+        }
+    }
+
+    public ItemInfo GetRandomItem(int targetGrade = 0)
+    {
+        // 랜덤 아이템 id를 넣을 리스트
+        List<int> randomItemPool = new List<int>();
+
+        // 모든 아이템 중 해당 등급 모두 넣기
+        for (int i = 0; i < itemDB.Count; i++)
+        {
+            int grade = itemDB[i].grade;
+
+            // 0등급이면 넘기기
+            if (grade == 0)
+                continue;
+
+            // 등급을 명시했을때
+            if (targetGrade != 0)
+            {
+                // 해당 등급의 아이템만 넣기
+                if (grade == targetGrade)
+                    randomItemPool.Add(itemDB[i].id);
+            }
+            // 등급을 명시하지 않았을때
+            else
+            {
+                // 모든 아이템 넣기
+                randomItemPool.Add(itemDB[i].id);
+            }
+        }
+
+        // 등급 지정을 해줬는데, 해당 등급의 아이템이 하나도 없을때
+        if (targetGrade != 0 && randomItemPool.Count == 0)
+        {
+            return null;
+        }
+        // 등급 지정 안했거나, 랜덤풀에 아이템이 존재할때
+        else
+        {
+            // 뽑은 리스트에서 인덱스 랜덤 뽑기
+            int index = Random.Range(0, randomItemPool.Count);
+
+            // 마법 ID로 마법정보 불러와서 리턴
+            return GetItemByID(randomItemPool[index]);
+        }
+    }
+
+    // 타입별로 랜덤 아이템 뽑기
+    public ItemInfo GetRandomItem(ItemType itemType, int targetGrade = 0)
+    {
+
+        // 랜덤 아이템 id를 넣을 리스트
+        List<int> randomItemPool = new List<int>();
+
+        // 모든 아이템 중 해당 등급 모두 넣기
+        for (int i = 0; i < itemDB.Count; i++)
+        {
+            int grade = itemDB[i].grade;
+
+            // 0등급이면 넘기기
+            if (grade == 0)
+                continue;
+
+            // 일치하는 아이템 타입일때
+            if (itemDB[i].itemType == itemType.ToString())
+            {
+                // 등급을 명시했을때
+                if (targetGrade != 0)
+                {
+                    // 해당 등급의 아이템만 넣기
+                    if (grade == targetGrade)
+                        randomItemPool.Add(itemDB[i].id);
+                }
+                // 등급을 명시하지 않았을때
+                else
+                {
+                    // 모든 아이템 넣기
+                    randomItemPool.Add(itemDB[i].id);
+                }
+            }
+        }
+
+        // 등급 지정을 해줬는데, 해당 등급의 아이템이 하나도 없을때
+        if (targetGrade != 0 && randomItemPool.Count == 0)
+        {
+            return null;
+        }
+        // 등급 지정 안했거나, 랜덤풀에 아이템이 존재할때
+        else
+        {
+            // 뽑은 리스트에서 인덱스 랜덤 뽑기
+            int index = Random.Range(0, randomItemPool.Count);
+
+            // 마법 ID로 마법정보 불러와서 리턴
+            return GetItemByID(randomItemPool[index]);
         }
     }
 

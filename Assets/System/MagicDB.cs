@@ -6,119 +6,6 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class MagicInfo : SlotInfo
-{
-    //수정 가능한 변수들
-    [Header("Configurable")]
-    public int magicLevel = 1; //현재 마법 레벨
-    public int amount = 0; // 해당 마법 개수 (스택 슬롯에서 사용)
-    public bool exist = false; //현재 소환 됬는지 여부
-    public float coolCount = 0f; //현재 마법의 남은 쿨타임
-
-    [Header("Info")]
-    // public int id; //고유 아이디
-    // public int grade; //마법 등급
-    // public string description; //마법 설명
-    // public int price; //마법 구매시 가격
-    // public string name; //마법 이름
-    public string element_A; //해당 마법을 만들 재료 A
-    public string element_B; //해당 마법을 만들 재료 B
-    public string castType; //시전 타입
-    public string priceType; //마법 구매시 화폐
-    public bool multiHit; //다단 히트 여부
-
-    [Header("Spec")]
-    public float power = 1; //데미지
-    public float speed = 1; //투사체 속도 및 쿨타임
-    public float range = 1; //범위
-    public float duration = 1; //지속시간
-    public float critical = 1f; //크리티컬 확률
-    public float criticalPower = 1f; //크리티컬 데미지 증가율
-    public int pierce = 0; //관통 횟수 및 넉백 계수
-    public int atkNum = 0; //투사체 수
-    public float coolTime = 0; //쿨타임
-
-    [Header("LevUp")]
-    public float powerPerLev;
-    public float speedPerLev;
-    public float rangePerLev;
-    public float durationPerLev;
-    public float criticalPerLev;
-    public float criticalPowerPerLev;
-    public float piercePerLev;
-    public float atkNumPerLev;
-    public float coolTimePerLev;
-
-    public MagicInfo(MagicInfo magic)
-    {
-        this.id = magic.id;
-        this.magicLevel = magic.magicLevel;
-        this.grade = magic.grade;
-        this.name = magic.name;
-        this.element_A = magic.element_A;
-        this.element_B = magic.element_B;
-        this.castType = magic.castType;
-        this.description = magic.description;
-        this.priceType = magic.priceType;
-        this.multiHit = magic.multiHit;
-        this.price = magic.price;
-        this.power = magic.power;
-        this.speed = magic.speed;
-        this.range = magic.range;
-        this.duration = magic.duration;
-        this.critical = magic.critical;
-        this.criticalPower = magic.criticalPower;
-        this.pierce = magic.pierce;
-        this.atkNum = magic.atkNum;
-        this.coolTime = magic.coolTime;
-        this.powerPerLev = magic.powerPerLev;
-        this.speedPerLev = magic.speedPerLev;
-        this.rangePerLev = magic.rangePerLev;
-        this.durationPerLev = magic.durationPerLev;
-        this.criticalPerLev = magic.criticalPerLev;
-        this.criticalPowerPerLev = magic.criticalPowerPerLev;
-        this.piercePerLev = magic.piercePerLev;
-        this.atkNumPerLev = magic.atkNumPerLev;
-        this.coolTimePerLev = magic.coolTimePerLev;
-    }
-
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, bool multiHit, int price,
-    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int atkNum, float coolTime,
-    float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float atkNumPerLev, float coolTimePerLev)
-    {
-        this.id = id;
-        this.grade = grade;
-        this.name = magicName;
-        this.element_A = element_A;
-        this.element_B = element_B;
-        this.castType = castType;
-        this.description = description;
-        this.priceType = priceType;
-        this.multiHit = multiHit;
-        this.price = price;
-
-        this.power = power;
-        this.speed = speed;
-        this.range = range;
-        this.duration = duration;
-        this.critical = critical;
-        this.criticalPower = criticalPower;
-        this.pierce = pierce;
-        this.atkNum = atkNum;
-        this.coolTime = coolTime;
-
-        this.powerPerLev = powerPerLev;
-        this.speedPerLev = speedPerLev;
-        this.rangePerLev = rangePerLev;
-        this.durationPerLev = durationPerLev;
-        this.criticalPerLev = criticalPerLev;
-        this.criticalPowerPerLev = criticalPowerPerLev;
-        this.piercePerLev = piercePerLev;
-        this.atkNumPerLev = atkNumPerLev;
-        this.coolTimePerLev = coolTimePerLev;
-    }
-}
-
 public class MagicDB : MonoBehaviour
 {
     #region Singleton
@@ -156,23 +43,20 @@ public class MagicDB : MonoBehaviour
     public List<int> unlockMagics = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
     public List<int> savedMagics = new List<int>(); //이번 게임에서 한번이라도 소지했던 마법들
 
-    [HideInInspector]
-    public bool loadDone = false; //로드 완료 여부
+    [HideInInspector] public bool loadDone = false; //로드 완료 여부
 
-    [SerializeField, ReadOnly]
-    Color[] gradeColor = new Color[7]; //마법 등급 색깔
+    [SerializeField, ReadOnly] Color[] gradeColor = new Color[7]; //마법 등급 색깔
     public Color[] GradeColor
     {
         get { return gradeColor; }
     }
-    [SerializeField, ReadOnly]
-    Color[] gradeHDRColor = new Color[7]; //마법 등급 HDR 색깔
+    [SerializeField, ReadOnly] Color[] gradeHDRColor = new Color[7]; //마법 등급 HDR 색깔
     public Color[] GradeHDRColor
     {
         get { return gradeHDRColor; }
     }
-    [SerializeField, ReadOnly]
-    Color[] elementColors = new Color[6]; //원소 색깔
+    [SerializeField, ReadOnly] Color[] elementColors = new Color[6]; //원소 색깔
+    // public enum ElementNames { Earth, Fire, Life, Lightning, Water, Wind };
     string[] elementNames = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
     public string[] ElementNames
     {
@@ -302,7 +186,7 @@ public class MagicDB : MonoBehaviour
 
                 //받아온 데이터를 id를 키값으로 MagicInfo 딕셔너리에 넣기
                 magicDB[magic["id"]] = (new MagicInfo(
-                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["multiHit"], magic["price"],
+                magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["price"], magic["multiHit"],
                 magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["atkNum"], magic["coolTime"],
                 magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["atkNumPerLev"], magic["coolTimePerLev"]
                 ));
@@ -454,7 +338,7 @@ public class MagicDB : MonoBehaviour
         // 언락된 모든 마법 인덱스를 넣을 리스트
         List<int> randomMagicPool = new List<int>();
 
-        //todo 언락된 마법 중 해당 등급 모두 넣기
+        // 언락된 마법 중 해당 등급 모두 넣기
         for (int i = 0; i < unlockMagics.Count; i++)
         {
             int grade = GetMagicByID(unlockMagics[i]).grade;
@@ -477,28 +361,6 @@ public class MagicDB : MonoBehaviour
                 randomMagicPool.Add(unlockMagics[i]);
             }
         }
-
-        // 모든 마법 데이터 전부 확인
-        // foreach (MagicInfo magic in magicDB.Values)
-        // {
-        //     // Slot 마법이 아닌 0등급 마법은 넘기기
-        //     if (!magic.name.Contains("Slot") && magic.grade == 0)
-        //         continue;
-
-        //     // 등급을 명시했을때
-        //     if (targetGrade != 0)
-        //     {
-        //         // 해당 등급의 마법만 넣기
-        //         if (magic.grade == targetGrade)
-        //             randomMagicPool.Add(magic.id);
-        //     }
-        //     // 등급을 명시하지 않았을때
-        //     else
-        //     {
-        //         // 모든 마법 넣기
-        //         randomMagicPool.Add(magic.id);
-        //     }
-        // }
 
         // 등급 지정을 해줬는데, 해당 등급의 마법이 하나도 없을때
         if (targetGrade != 0 && randomMagicPool.Count == 0)
@@ -552,17 +414,22 @@ public class MagicDB : MonoBehaviour
         return randomNum;
     }
 
-    public Color GetElementColor(int colorIndex)
-    {
-        return elementColors[colorIndex];
-    }
-
-    public Color GetElementColor(string elementName)
+    public int ElementIndex(SlotInfo slotInfo)
     {
         // 원소 색깔 리스트에서 해당 색을 가진 인덱스 찾기
-        int colorIndex = System.Array.FindIndex(ElementNames, x => x == elementName);
+        int colorIndex = -1;
+        colorIndex = System.Array.FindIndex(ElementNames, x => x == slotInfo.priceType);
 
-        // 해당 인덱스의 컬러 리턴
+        // 인덱스 못 찾았으면 인덱스 중 랜덤
+        if (colorIndex == -1)
+            colorIndex = Random.Range(0, 6);
+
+        return colorIndex;
+    }
+
+    public Color GetElementColor(int colorIndex)
+    {
+        // 해당 인덱스로 원소 색깔 리턴
         return elementColors[colorIndex];
     }
 

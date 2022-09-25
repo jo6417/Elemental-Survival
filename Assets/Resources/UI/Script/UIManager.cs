@@ -84,14 +84,15 @@ public class UIManager : MonoBehaviour
     RectTransform cursorRect;
 
     [Header("PlayerUI")]
+    [SerializeField] PlayerManager playerManager;
     public SlicedFilledImage playerHp;
     public TextMeshProUGUI playerHpText;
     public SlicedFilledImage playerExp;
     public TextMeshProUGUI playerLev;
 
-    public List<TextMeshProUGUI> gemUIs = new List<TextMeshProUGUI>();
-    public List<Light2D> gemUILights = new List<Light2D>();
-    public GameObject gemUIParent;
+    public List<TextMeshProUGUI> gemAmountUIs = new List<TextMeshProUGUI>();
+    public List<Image> gemIndicators = new List<Image>();
+    public Transform gemUIParent;
 
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
     public TextMeshProUGUI pauseScrollAmt; //일시정지 메뉴 스크롤 개수 UI
@@ -228,7 +229,7 @@ public class UIManager : MonoBehaviour
             StartCoroutine(PhoneMenu.Instance.OpenPhone());
 
             //플레이어 입력 끄기
-            PlayerManager.Instance.playerInput.Disable();
+            playerManager.playerInput.Disable();
 
             //현재 열려있는 팝업 갱신
             nowOpenPopup = phonePanel;
@@ -243,20 +244,17 @@ public class UIManager : MonoBehaviour
         cursorRect = UI_Cursor.GetComponent<RectTransform>();
 
         // GemUI 전부 찾기
-        TextMeshProUGUI[] gems = gemUIParent.GetComponentsInChildren<TextMeshProUGUI>();
-        foreach (TextMeshProUGUI gemUI in gems)
+        for (int i = 0; i < gemUIParent.childCount; i++)
         {
-            gemUIs.Add(gemUI);
-        }
+            // 원소젬 인디케이터 찾기
+            Image indicator = gemUIParent.GetChild(i).GetComponent<Image>();
+            gemIndicators.Add(indicator);
 
-        // GemUI Light2D 전부 찾기
-        Light2D[] lights = gemUIParent.GetComponentsInChildren<Light2D>();
-        foreach (Light2D light in lights)
-        {
-            //리스트에 추가
-            gemUILights.Add(light);
-            //밝기 0으로 낮추기
-            light.intensity = 0;
+            // 인디케이터 컬러 투명하게 초기화
+            indicator.color = new Color(1, 0, 0, 0);
+
+            // 원소젬 개수 텍스트 찾기
+            gemAmountUIs.Add(gemUIParent.GetChild(i).GetComponentInChildren<TextMeshProUGUI>());
         }
 
         //킬 카운트 초기화
@@ -339,7 +337,7 @@ public class UIManager : MonoBehaviour
                 isMove = true;
 
                 //커서 애니메이션 시작
-                StartCoroutine(NewCursorAnim());
+                StartCoroutine(CursorAnim());
             }
 
             // domove 끝났으면 타겟 위치 따라가기
@@ -382,7 +380,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    IEnumerator NewCursorAnim()
+    IEnumerator CursorAnim()
     {
         // 선택된 타겟 이미지
         Image image = lastSelected.targetGraphic.GetComponent<Image>();
@@ -510,153 +508,6 @@ public class UIManager : MonoBehaviour
         });
     }
 
-    #region CursorAnim
-    // void CursorAnim()
-    // {
-    //     Image image = lastSelected.targetGraphic.GetComponent<Image>();
-    //     RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
-
-    //     //깜빡일 시간
-    //     float flickTime = 0.3f;
-    //     //깜빡일 컬러 강조 비율
-    //     float colorRate = 1.4f;
-    //     //깜빡일 컬러
-    //     Color flickColor = new Color(targetOriginColor.r * colorRate, targetOriginColor.g * colorRate, targetOriginColor.b * colorRate, 1f);
-    //     //이동할 버튼 위치
-    //     Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
-
-    //     //커서 사이즈 + 여백 추가
-    //     Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
-
-    //     //마지막 선택된 버튼의 캔버스
-    //     Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
-
-    //     // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
-    //     if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
-    //     {
-    //         //렌더 모드 일치 시키기
-    //         UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
-
-    //         // 바뀐 렌더모드에 따라 커서 스케일 정의
-    //         RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-    //         if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-    //         {
-    //             cursorCanvasRect.localScale = Vector2.one;
-    //         }
-    //         else
-    //         {
-    //             cursorCanvasRect.localScale = Vector2.one / 64f;
-
-    //             //캔버스 z축을 선택된 캔버스에 맞추기
-    //             Vector3 canvasPos = cursorCanvasRect.position;
-    //             canvasPos.z = selectedCanvas.transform.position.z;
-    //             cursorCanvasRect.position = canvasPos;
-    //         }
-    //     }
-
-    //     //UI 커서 활성화
-    //     UICursorToggle(true);
-    //     // UI_Cursor.SetActive(true);
-
-    //     //원래 트윈 있으면 죽이기
-    //     if (image != null && DOTween.IsTweening(image))
-    //         image.DOKill();
-
-    //     if (UI_Cursor.transform != null && DOTween.IsTweening(UI_Cursor.transform))
-    //         UI_Cursor.transform.DOKill();
-
-    //     if (cursorRect != null && DOTween.IsTweening(cursorRect))
-    //         cursorRect.DOKill();
-
-    //     if (cursorSeq.IsActive())
-    //         cursorSeq.Kill();
-
-    //     //이동 시간 카운트
-    //     float moveCount = 0f;
-    //     //버튼 위치로 UI커서 이동
-    //     UI_Cursor.transform.DOMove(btnPos, flickTime)
-    //     .OnStart(() =>
-    //     {
-    //         //커서 애니메이션 시작
-    //         isFlicking = true;
-    //         isMove = true;
-
-    //         float moveCount = flickTime;
-    //     })
-    //     .OnUpdate(() =>
-    //     {
-    //         //남은 이동 시간
-    //         moveCount -= Time.deltaTime;
-
-    //         //이동 중 버튼 위치가 바뀌면
-    //         if (btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
-    //         {
-    //             //버튼 위치 갱신
-    //             btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
-
-    //             // 남은 이동시간동안 새로운 위치로 재이동
-    //             UI_Cursor.transform.DOMove(btnPos, moveCount)
-    //             .SetUpdate(true);
-    //         }
-    //     })
-    //     .SetUpdate(true)
-    //     .OnComplete(() =>
-    //     {
-    //         //커서 이동 끝
-    //         isMove = false;
-
-    //         cursorSeq = DOTween.Sequence();
-    //         cursorSeq
-    //         .OnStart(() =>
-    //         {
-    //             //커서 애니메이션 시작
-    //             isFlicking = true;
-    //             isMove = true;
-    //         })
-    //         .SetLoops(-1)
-    //         .PrependCallback(() =>
-    //         {
-    //             // 선택된 버튼과 커서 크기 맞추기
-    //             cursorRect.sizeDelta = size;
-    //         })
-    //         // 깜빡이는 색으로 변경, 해당 버튼 사이즈보다 확대
-    //         .Append(
-    //             image.DOColor(flickColor, flickTime)
-    //             .OnKill(() =>
-    //             {
-    //                 image.color = targetOriginColor;
-    //             })
-    //         )
-    //         .Join(
-    //             cursorRect.DOSizeDelta(size + size * 0.1f, flickTime)
-    //         )
-    //         // 원본 색깔로 복구, 해당 버튼 사이즈 원본 사이즈 복구
-    //         .Append(
-    //             image.DOColor(targetOriginColor, flickTime)
-    //             .OnKill(() =>
-    //             {
-    //                 image.color = targetOriginColor;
-    //             })
-    //         )
-    //         .Join(
-    //             cursorRect.DOSizeDelta(size, flickTime)
-    //         )
-    //         .OnKill(() =>
-    //         {
-    //             image.DOKill();
-    //             UI_Cursor.transform.DOKill();
-    //             cursorRect.DOKill();
-    //             image.color = targetOriginColor;
-    //         })
-    //         .SetUpdate(true);
-    //     });
-
-    //     // 선택된 버튼과 커서 크기 맞추기
-    //     cursorRect.DOSizeDelta(size, flickTime)
-    //     .SetUpdate(true);
-    // }
-    #endregion
-
     public void QuitMainMenu()
     {
         // 메인메뉴 씬 불러오기
@@ -725,10 +576,10 @@ public class UIManager : MonoBehaviour
     public void UpdateExp()
     {
         // 경험치 바 갱신
-        playerExp.fillAmount = PlayerManager.Instance.PlayerStat_Now.ExpNow / PlayerManager.Instance.PlayerStat_Now.ExpMax;
+        playerExp.fillAmount = playerManager.PlayerStat_Now.ExpNow / playerManager.PlayerStat_Now.ExpMax;
 
         // 레벨 갱신
-        playerLev.text = "Lev. " + PlayerManager.Instance.PlayerStat_Now.Level.ToString();
+        playerLev.text = "Lev. " + playerManager.PlayerStat_Now.Level.ToString();
     }
 
     public IEnumerator UpdateBossHp(EnemyManager bossManager)
@@ -764,28 +615,42 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHp()
     {
-        playerHp.fillAmount = PlayerManager.Instance.PlayerStat_Now.hpNow / PlayerManager.Instance.PlayerStat_Now.hpMax;
-        playerHpText.text = (int)PlayerManager.Instance.PlayerStat_Now.hpNow + " / " + (int)PlayerManager.Instance.PlayerStat_Now.hpMax;
+        playerHp.fillAmount = playerManager.PlayerStat_Now.hpNow / playerManager.PlayerStat_Now.hpMax;
+        playerHpText.text = (int)playerManager.PlayerStat_Now.hpNow + " / " + (int)playerManager.PlayerStat_Now.hpMax;
     }
 
     public void UpdateGem(int gemTypeIndex)
     {
-        gemUIs[gemTypeIndex].text = PlayerManager.Instance.hasGems[gemTypeIndex].ToString();
+        // 해당 타입의 젬 UI 업데이트
+        gemAmountUIs[gemTypeIndex].text = playerManager.hasGems[gemTypeIndex].ToString();
     }
 
-    public void GemIndicator(int gemIndex)
+    public void UpdateGem()
     {
-        Light2D gemLight = gemUILights[gemIndex];
-
-        //밝기 0으로 초기화
-        gemLight.intensity = 0;
-
-        //밝기 1까지 부드럽게 올렸다 내리기
-        DOTween.To(() => gemLight.intensity, x => gemLight.intensity = x, 1, 0.2f)
-        .OnComplete(() =>
+        // 모든 젬 UI 업데이트
+        for (int i = 0; i < 6; i++)
         {
-            DOTween.To(() => gemLight.intensity, x => gemLight.intensity = x, 0, 0.2f);
-        });
+            gemAmountUIs[i].text = playerManager.hasGems[i].ToString();
+        }
+    }
+
+    public void GemIndicator(int gemIndex, Color indicateColor)
+    {
+        Image indicator = gemIndicators[gemIndex];
+
+        // 기존 트윈 끄기
+        indicator.DOKill();
+        // 투명하게 초기화
+        Color originColor = indicateColor;
+        originColor.a = 0;
+        indicator.color = originColor;
+
+        // 투명도 복구
+        originColor.a = 1f;
+
+        // 2회 점멸하기
+        indicator.DOColor(originColor, 0.2f)
+        .SetLoops(4, LoopType.Yoyo);
     }
 
     public void UpdateItems()
@@ -801,19 +666,12 @@ public class UIManager : MonoBehaviour
                 LeanPool.Despawn(children[j].gameObject);
             }
 
-        foreach (var item in PlayerManager.Instance.hasItems)
+        foreach (var item in playerManager.hasItems)
         {
             // print(item.itemName + " x" + item.hasNum);
 
-            //스크롤일때
-            if (item.itemType == "Scroll")
-            {
-                pauseScrollAmt.text = "x " + item.amount.ToString();
-                continue;
-            }
-
             //아티팩트 아니면 넘기기
-            if (item.itemType != "Artifact")
+            if (item.itemType != ItemDB.ItemType.Artifact.ToString())
                 continue;
 
             //아이템 아이콘 오브젝트 생성
@@ -939,8 +797,8 @@ public class UIManager : MonoBehaviour
     // {
     //     //현재 보유중인 궁극기 마법 불러오기
     //     MagicInfo ultimateMagic = null;
-    //     if (PlayerManager.Instance.ultimateList.Count > 0)
-    //         ultimateMagic = PlayerManager.Instance.ultimateList[0];
+    //     if (playerManager.ultimateList.Count > 0)
+    //         ultimateMagic = playerManager.ultimateList[0];
 
     //     Image frame = ultimateMagicSlot.Find("Frame").GetComponent<Image>();
     //     Image icon = ultimateMagicSlot.Find("Icon").GetComponent<Image>();
@@ -968,14 +826,14 @@ public class UIManager : MonoBehaviour
     //     Image coolTimeImg = ultimateMagicSlot.Find("CoolTime").GetComponent<Image>();
 
     //     // 마법이 없으면 쿨타임 이미지 비우기
-    //     if (PlayerManager.Instance.ultimateList.Count <= 0)
+    //     if (playerManager.ultimateList.Count <= 0)
     //         coolTimeImg.fillAmount = 0;
     //     //마법이 있으면 쿨타임만큼 채우기
     //     else
     //     {
     //         coolTimeRate
-    //         = PlayerManager.Instance.ultimateList[0] != null
-    //         ? PlayerManager.Instance.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(PlayerManager.Instance.ultimateList[0])
+    //         = playerManager.ultimateList[0] != null
+    //         ? playerManager.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(playerManager.ultimateList[0])
     //         : 0;
 
     //         coolTimeImg.fillAmount = coolTimeRate;
@@ -993,25 +851,25 @@ public class UIManager : MonoBehaviour
         // 스탯 입력값
         List<float> statAmount = new List<float>();
 
-        stats[0].text = PlayerManager.Instance.PlayerStat_Now.hpMax.ToString();
-        stats[1].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.power * 100).ToString() + " %";
-        stats[2].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.armor * 100).ToString() + " %";
-        stats[3].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.moveSpeed * 100).ToString() + " %";
-        stats[4].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.atkNum * 100).ToString() + " %";
-        stats[5].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.speed * 100).ToString() + " %";
-        stats[6].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.coolTime * 100).ToString() + " %";
-        stats[7].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.duration * 100).ToString() + " %";
-        stats[8].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.range * 100).ToString() + " %";
-        stats[9].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.luck * 100).ToString() + " %";
-        stats[10].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.expGain * 100).ToString() + " %";
-        stats[11].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.moneyGain * 100).ToString() + " %";
+        stats[0].text = playerManager.PlayerStat_Now.hpMax.ToString();
+        stats[1].text = Mathf.Round(playerManager.PlayerStat_Now.power * 100).ToString() + " %";
+        stats[2].text = Mathf.Round(playerManager.PlayerStat_Now.armor * 100).ToString() + " %";
+        stats[3].text = Mathf.Round(playerManager.PlayerStat_Now.moveSpeed * 100).ToString() + " %";
+        stats[4].text = Mathf.Round(playerManager.PlayerStat_Now.atkNum * 100).ToString() + " %";
+        stats[5].text = Mathf.Round(playerManager.PlayerStat_Now.speed * 100).ToString() + " %";
+        stats[6].text = Mathf.Round(playerManager.PlayerStat_Now.coolTime * 100).ToString() + " %";
+        stats[7].text = Mathf.Round(playerManager.PlayerStat_Now.duration * 100).ToString() + " %";
+        stats[8].text = Mathf.Round(playerManager.PlayerStat_Now.range * 100).ToString() + " %";
+        stats[9].text = Mathf.Round(playerManager.PlayerStat_Now.luck * 100).ToString() + " %";
+        stats[10].text = Mathf.Round(playerManager.PlayerStat_Now.expGain * 100).ToString() + " %";
+        stats[11].text = Mathf.Round(playerManager.PlayerStat_Now.moneyGain * 100).ToString() + " %";
 
-        stats[12].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.earth_atk * 100).ToString() + " %";
-        stats[13].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.fire_atk * 100).ToString() + " %";
-        stats[14].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.life_atk * 100).ToString() + " %";
-        stats[15].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.lightning_atk * 100).ToString() + " %";
-        stats[16].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.water_atk * 100).ToString() + " %";
-        stats[17].text = Mathf.Round(PlayerManager.Instance.PlayerStat_Now.wind_atk * 100).ToString() + " %";
+        stats[12].text = Mathf.Round(playerManager.PlayerStat_Now.earth_atk * 100).ToString() + " %";
+        stats[13].text = Mathf.Round(playerManager.PlayerStat_Now.fire_atk * 100).ToString() + " %";
+        stats[14].text = Mathf.Round(playerManager.PlayerStat_Now.life_atk * 100).ToString() + " %";
+        stats[15].text = Mathf.Round(playerManager.PlayerStat_Now.lightning_atk * 100).ToString() + " %";
+        stats[16].text = Mathf.Round(playerManager.PlayerStat_Now.water_atk * 100).ToString() + " %";
+        stats[17].text = Mathf.Round(playerManager.PlayerStat_Now.wind_atk * 100).ToString() + " %";
     }
 
     public void PhoneNotice(int fixNum = -1)
@@ -1123,7 +981,7 @@ public class UIManager : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
             //플레이어 입력 켜기
-            PlayerManager.Instance.playerInput.Enable();
+            playerManager.playerInput.Enable();
 
             //현재 열려있는 팝업 비우기
             nowOpenPopup = null;
@@ -1132,7 +990,7 @@ public class UIManager : MonoBehaviour
         else
         {
             //플레이어 입력 끄기
-            PlayerManager.Instance.playerInput.Disable();
+            playerManager.playerInput.Disable();
 
             //현재 열려있는 팝업 갱신
             nowOpenPopup = popup;
@@ -1177,7 +1035,7 @@ public class UIManager : MonoBehaviour
                 arrowUI.transform.position = Camera.main.ViewportToWorldPoint(arrowPos);
 
                 // 오브젝트 방향 가리키기
-                Vector2 dir = targetObj.transform.position - PlayerManager.Instance.transform.position;
+                Vector2 dir = targetObj.transform.position - playerManager.transform.position;
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 225f;
                 arrow.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             }

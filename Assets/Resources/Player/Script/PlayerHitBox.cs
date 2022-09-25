@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayerHitBox : MonoBehaviour, IHitBox
 {
     [Header("Refer")]
+    PlayerManager playerManager;
     public IEnumerator hitDelayCoroutine;
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
     [SerializeField] GameObject hitEffect;
@@ -32,14 +33,18 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
     public IEnumerator slowCoroutine = null;
     public IEnumerator shockCoroutine = null;
 
+    private void Awake()
+    {
+        playerManager = PlayerManager.Instance;
+    }
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (hitCoolCount > 0 || PlayerManager.Instance.isDash)
+        if (hitCoolCount > 0 || playerManager.isDash)
             return;
 
         //무언가 충돌되면 움직이는 방향 수정
-        PlayerManager.Instance.Move();
+        playerManager.Move();
 
         // 공격 오브젝트와 충돌 했을때
         if (other.gameObject.TryGetComponent(out Attack attack))
@@ -52,7 +57,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
     {
         // print("OnTriggerEnter2D : " + other.name);
 
-        if (hitCoolCount > 0 || PlayerManager.Instance.isDash)
+        if (hitCoolCount > 0 || playerManager.isDash)
             return;
 
         // 공격 오브젝트와 충돌 했을때
@@ -64,7 +69,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
 
     public IEnumerator Hit(Attack attacker)
     {
-        //todo 피격 위치 산출
+        // 피격 위치 산출
         Vector2 hitPos = attacker.GetComponent<Collider2D>().ClosestPoint(transform.position);
 
         //크리티컬 성공 여부
@@ -282,14 +287,14 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         damage = Mathf.RoundToInt(damage);
 
         // 데미지 적용
-        PlayerManager.Instance.PlayerStat_Now.hpNow -= damage;
+        playerManager.PlayerStat_Now.hpNow -= damage;
 
         //체력 범위 제한
-        PlayerManager.Instance.PlayerStat_Now.hpNow = Mathf.Clamp(PlayerManager.Instance.PlayerStat_Now.hpNow, 0, PlayerManager.Instance.PlayerStat_Now.hpMax);
+        playerManager.PlayerStat_Now.hpNow = Mathf.Clamp(playerManager.PlayerStat_Now.hpNow, 0, playerManager.PlayerStat_Now.hpMax);
 
         //혈흔 파티클 생성
         if (damage > 0)
-            LeanPool.Spawn(PlayerManager.Instance.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(playerManager.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         //데미지 UI 띄우기
         StartCoroutine(DamageText(damage, false));
@@ -297,7 +302,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         UIManager.Instance.UpdateHp(); //체력 UI 업데이트
 
         //체력 0 이하가 되면 사망
-        if (PlayerManager.Instance.PlayerStat_Now.hpNow <= 0)
+        if (playerManager.PlayerStat_Now.hpNow <= 0)
         {
             print("Game Over");
             Dead();
@@ -370,21 +375,21 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         hitCoolCount = hitDelayTime;
 
         //머터리얼 변환
-        PlayerManager.Instance.sprite.material = SystemManager.Instance.hitMat;
+        playerManager.sprite.material = SystemManager.Instance.hitMat;
 
         //스프라이트 색 변환
         if (damage > 0)
-            PlayerManager.Instance.sprite.color = SystemManager.Instance.hitColor;
+            playerManager.sprite.color = SystemManager.Instance.hitColor;
         else
-            PlayerManager.Instance.sprite.color = SystemManager.Instance.healColor;
+            playerManager.sprite.color = SystemManager.Instance.healColor;
 
         yield return new WaitUntil(() => hitCoolCount <= 0);
 
         //머터리얼 복구
-        PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteUnLitMat;
+        playerManager.sprite.material = SystemManager.Instance.spriteUnLitMat;
 
         //원래 색으로 복구
-        PlayerManager.Instance.sprite.color = Color.white;
+        playerManager.sprite.color = Color.white;
 
         // 코루틴 변수 초기화
         hitDelayCoroutine = null;
@@ -489,7 +494,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         knockbackDir = dir.normalized * knockbackForce * 2f;
 
         // 넉백 벡터 반영하기
-        PlayerManager.Instance.Move();
+        playerManager.Move();
 
         yield return new WaitForSeconds(0.1f);
 
@@ -497,7 +502,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         knockbackDir = Vector2.zero;
 
         // 넉백 벡터 반영하기
-        PlayerManager.Instance.Move();
+        playerManager.Move();
     }
 
     public IEnumerator FlatDebuff(float flatTime)
@@ -505,13 +510,13 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         //마비됨
         isFlat = true;
         //플레이어 스프라이트 납작해짐
-        PlayerManager.Instance.transform.localScale = new Vector2(1f, 0.5f);
+        playerManager.transform.localScale = new Vector2(1f, 0.5f);
 
         //위치 얼리기
-        PlayerManager.Instance.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+        playerManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
 
         //플레이어 멈추기
-        PlayerManager.Instance.Move();
+        playerManager.Move();
 
         // 디버프 시간동안 대기
         yield return new WaitForSeconds(flatTime);
@@ -519,13 +524,13 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         //마비 해제
         isFlat = false;
         //플레이어 스프라이트 복구
-        PlayerManager.Instance.transform.localScale = Vector2.one;
+        playerManager.transform.localScale = Vector2.one;
 
         //위치 얼리기 해제
-        PlayerManager.Instance.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        playerManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 플레이어 움직임 다시 재생
-        PlayerManager.Instance.Move();
+        playerManager.Move();
     }
 
     public IEnumerator SlowDebuff(float slowDuration)
@@ -536,10 +541,10 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         GameObject slowIcon = null;
 
         // 애니메이션 속도 저하
-        PlayerManager.Instance.anim.speed = slowAmount;
+        playerManager.anim.speed = slowAmount;
 
         // 이동 속도 저하 디버프
-        PlayerManager.Instance.speedDeBuff = slowAmount;
+        playerManager.speedDeBuff = slowAmount;
 
         // 이미 슬로우 디버프 중 아닐때
         if (!buffParent.Find(SystemManager.Instance.slowDebuffUI.name))
@@ -550,10 +555,10 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         yield return new WaitForSeconds(slowDuration);
 
         // 애니메이션 속도 초기화
-        PlayerManager.Instance.anim.speed = 1f;
+        playerManager.anim.speed = 1f;
 
         // 이동 속도 저하 디버프 초기화
-        PlayerManager.Instance.speedDeBuff = 1f;
+        playerManager.speedDeBuff = 1f;
 
         // 슬로우 아이콘 없에기
         slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
@@ -572,27 +577,27 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         GameObject shockEffect = null;
 
         // 애니메이션 속도 저하
-        PlayerManager.Instance.anim.speed = slowAmount;
+        playerManager.anim.speed = slowAmount;
 
         // 이동 속도 저하 디버프
-        PlayerManager.Instance.speedDeBuff = slowAmount;
+        playerManager.speedDeBuff = slowAmount;
 
         // 이미 감전 디버프 중 아닐때
-        if (!PlayerManager.Instance.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
+        if (!playerManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
             //감전 디버프 이펙트 붙이기
-            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
+            shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, playerManager.transform.position, Quaternion.identity, playerManager.transform);
 
         // 감전 시간동안 대기
         yield return new WaitForSeconds(shockDuration);
 
         // 애니메이션 속도 초기화
-        PlayerManager.Instance.anim.speed = 1f;
+        playerManager.anim.speed = 1f;
 
         // 이동 속도 저하 디버프 초기화
-        PlayerManager.Instance.speedDeBuff = 1f;
+        playerManager.speedDeBuff = 1f;
 
         // 자식중에 감전 이펙트 찾기
-        shockEffect = PlayerManager.Instance.transform.Find(SystemManager.Instance.shockDebuffEffect.name).gameObject;
+        shockEffect = playerManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name).gameObject;
         if (shockEffect != null)
             LeanPool.Despawn(shockEffect);
 
@@ -614,11 +619,11 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
     public void DebuffRemove()
     {
         // 이동 속도 저하 디버프 초기화
-        PlayerManager.Instance.speedDeBuff = 1f;
+        playerManager.speedDeBuff = 1f;
 
         // 플랫 디버프 초기화
         flatCount = 0;
-        PlayerManager.Instance.transform.localScale = Vector2.one;
+        playerManager.transform.localScale = Vector2.one;
 
         //슬로우 디버프 해제
         // 슬로우 아이콘 없에기

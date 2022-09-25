@@ -81,7 +81,7 @@ public class ItemManager : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         // 원소젬이고 리스폰 콜라이더 안에 들어왔을때
-        if (item != null && item.itemType == "Gem" && other.gameObject.CompareTag("Respawn") && !isBundle)
+        if (item != null && item.itemType == ItemDB.ItemType.Gem.ToString() && other.gameObject.CompareTag("Respawn") && !isBundle)
         {
             //해당 타입 원소젬 개수 -1
             if (ItemDB.Instance.outGemNum[gemTypeIndex] > 0)
@@ -97,9 +97,9 @@ public class ItemManager : MonoBehaviour
             // print("플레이어 아이템 획득");
 
             // 샤드일때는 인벤토리에 빈칸 있을때, 다른 아이템이면 그냥 획득
-            if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptySlot() != -1)
-            || item.itemType == "Gem"
-            || item.itemType == "Heal")
+            if ((item.itemType == ItemDB.ItemType.Shard.ToString() && PhoneMenu.Instance.GetEmptySlot() != -1)
+            || item.itemType == ItemDB.ItemType.Gem.ToString()
+            || item.itemType == ItemDB.ItemType.Heal.ToString())
             {
                 //이중 충돌 방지
                 coll.enabled = false;
@@ -211,7 +211,7 @@ public class ItemManager : MonoBehaviour
         isGet = true;
 
         // 샤드일때는 인벤토리에 빈칸 없을때 리턴
-        if ((item.itemType == "Shard" && PhoneMenu.Instance.GetEmptySlot() == -1))
+        if ((item.itemType == ItemDB.ItemType.Shard.ToString() && PhoneMenu.Instance.GetEmptySlot() == -1))
         {
             coll.enabled = true;
 
@@ -219,14 +219,14 @@ public class ItemManager : MonoBehaviour
         }
 
         // 아이템이 젬 타입일때
-        if (item.itemType == "Gem")
+        if (item.itemType == ItemDB.ItemType.Gem.ToString())
         {
             //플레이어 소지 젬 갯수 올리기
             PlayerManager.Instance.AddGem(item, amount);
             // print(item.itemName + amount);
         }
         // 아이템이 힐 타입일때
-        else if (item.itemType == "Heal")
+        else if (item.itemType == ItemDB.ItemType.Heal.ToString())
         {
             PlayerManager.Instance.hitBox.Damage(-amount, false);
         }
