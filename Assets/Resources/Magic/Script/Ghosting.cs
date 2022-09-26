@@ -40,7 +40,7 @@ public class Ghosting : MonoBehaviour
     }
 
     // 몬스터 유령 생성하기
-    public void SummonGhost(EnemyManager enemyManager)
+    public void SummonGhost(Character enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -60,7 +60,7 @@ public class Ghosting : MonoBehaviour
             GameObject ghostObj = LeanPool.Spawn(ghostPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
 
             // 몬스터 매니저 찾기
-            EnemyManager ghostManager = ghostObj.GetComponent<EnemyManager>();
+            Character ghostManager = ghostObj.GetComponent<Character>();
 
             // 해당 유령은 고스트로 바꾸기 예약
             ghostManager.changeGhost = true;

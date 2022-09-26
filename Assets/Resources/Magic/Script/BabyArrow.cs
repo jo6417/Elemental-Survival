@@ -18,7 +18,7 @@ public class BabyArrow : MonoBehaviour
     public Light2D tailLight;
     public GameObject atkMark; //공격 위치 표시 마커
     public GameObject bloodParticle; // 타격시 혈흔 프리팹
-    [SerializeField] List<EnemyManager> targetList = new List<EnemyManager>();
+    [SerializeField] List<Character> targetList = new List<Character>();
     Vector3 arrowLastPos;
     Rigidbody2D rigidArrow;
     Collider2D coll;
@@ -170,9 +170,9 @@ public class BabyArrow : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 공격중일때, 0번 타겟과 충돌시
-        if (targetList.Count > 0 && other.TryGetComponent(out EnemyHitBox enemyHitBox))
+        if (targetList.Count > 0 && other.TryGetComponent(out HitBox enemyHitBox))
         {
-            if (enemyHitBox.enemyManager == targetList[0])
+            if (enemyHitBox.character == targetList[0])
             {
                 // 타겟 삭제 및 다음 타겟 공격 준비
                 HitTarget();

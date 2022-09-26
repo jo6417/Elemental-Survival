@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class GemAbsorb : MonoBehaviour
 {
-    public EnemyManager enemyManager;
+    public Character enemyManager;
     Collider2D coll;
     public float absorbSpeed = 1f; //흡수 속도
     public float getRange; //아이템 획득 범위
@@ -32,7 +32,7 @@ public class GemAbsorb : MonoBehaviour
             // 너무 가까우면 흡수해서 소지 아이템에 포함
             if (Vector2.Distance(transform.position, other.transform.position) <= getRange)
             {
-                ItemInfo item = itemManager.item;
+                ItemInfo item = itemManager.itemInfo;
 
                 if (item == null)
                 {

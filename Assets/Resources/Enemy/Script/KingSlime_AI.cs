@@ -114,7 +114,7 @@ public class KingSlime_AI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        if (enemyManager.nowAction != Character.Action.Idle)
             return;
 
         // Idle일때 쿨타임 카운트 차감
@@ -143,7 +143,7 @@ public class KingSlime_AI : MonoBehaviour
         // print("점프 시작");
 
         // 현재 행동 점프로 전환
-        enemyManager.nowAction = EnemyManager.Action.Jump;
+        enemyManager.nowAction = Character.Action.Jump;
 
         // 점프 애니메이션으로 전환
         enemyManager.animList[0].SetBool("Jump", true);
@@ -217,14 +217,14 @@ public class KingSlime_AI : MonoBehaviour
             enemyManager.physicsColl.isTrigger = false;
 
             // 현재 행동 끝내기
-            enemyManager.nowAction = EnemyManager.Action.Idle;
+            enemyManager.nowAction = Character.Action.Idle;
         }
     }
     void ChooseAttack()
     {
         // print("공격 패턴 선택");
         // 현재 행동 공격으로 전환
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        enemyManager.nowAction = Character.Action.Attack;
 
         // 패턴 쿨타임 중일때 리턴
         if (coolCount > 0)
@@ -263,7 +263,7 @@ public class KingSlime_AI : MonoBehaviour
         enemyManager.animList[0].SetBool("Jump", false);
 
         // 현재 행동 초기화
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     IEnumerator BabySlimeSummon()
@@ -294,7 +294,7 @@ public class KingSlime_AI : MonoBehaviour
 
             //컴포넌트 초기화
             // Collider2D babyColl = babySlime.GetComponent<Collider2D>();
-            EnemyManager babyEnemyManager = babySlime.GetComponent<EnemyManager>();
+            Character babyEnemyManager = babySlime.GetComponent<Character>();
 
             // 소환수 히트박스 끄기
             for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
@@ -347,7 +347,7 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 현재 행동 초기화
-                enemyManager.nowAction = EnemyManager.Action.Idle;
+                enemyManager.nowAction = Character.Action.Idle;
             });
         });
 
@@ -420,7 +420,7 @@ public class KingSlime_AI : MonoBehaviour
         yield return new WaitUntil(() => fillAmount <= 0f);
 
         // 현재 행동 초기화
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -435,7 +435,7 @@ public class KingSlime_AI : MonoBehaviour
             nowAbsorb = true;
 
             //현재 행동 공격으로 전환
-            enemyManager.nowAction = EnemyManager.Action.Attack;
+            enemyManager.nowAction = Character.Action.Attack;
 
             // IDLE 애니메이션 전환
             enemyManager.animList[0].SetBool("Jump", false);
@@ -492,7 +492,7 @@ public class KingSlime_AI : MonoBehaviour
             enemyManager.physicsColl.isTrigger = false;
 
             //현재 행동 초기화
-            enemyManager.nowAction = EnemyManager.Action.Idle;
+            enemyManager.nowAction = Character.Action.Idle;
         }
     }
 }

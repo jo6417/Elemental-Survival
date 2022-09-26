@@ -178,7 +178,7 @@ public class LifeMushroom : MonoBehaviour
             && magicHolder.targetType == MagicHolder.Target.Enemy)
             {
                 // 해당 몬스터 데미지
-                if (other.transform.TryGetComponent(out EnemyHitBox enemyHitBox))
+                if (other.transform.TryGetComponent(out HitBox enemyHitBox))
                 {
                     StartCoroutine(enemyHitBox.Hit(magicHolder));
                 }

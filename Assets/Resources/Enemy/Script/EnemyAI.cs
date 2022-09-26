@@ -6,8 +6,7 @@ using Lean.Pool;
 
 public class EnemyAI : MonoBehaviour
 {
-    [Header("State")]
-    public float moveSpeedDebuff = 1f; // 속도 디버프
+    // [Header("State")]    
 
     [Header("Refer")]
     public EnemyManager enemyManager;
@@ -108,7 +107,7 @@ public class EnemyAI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        if (enemyManager.nowAction != Character.Action.Idle)
             return;
 
         // 시간 멈추면 리턴
@@ -126,13 +125,13 @@ public class EnemyAI : MonoBehaviour
         }
 
         // 걷기, 대쉬 타입일때
-        if (enemyManager.moveType == EnemyManager.MoveType.Walk || enemyManager.moveType == EnemyManager.MoveType.Dash)
+        if (enemyManager.moveType == Character.MoveType.Walk || enemyManager.moveType == Character.MoveType.Dash)
         {
             Walk();
         }
 
         //점프 타입일때
-        if (enemyManager.moveType == EnemyManager.MoveType.Jump)
+        if (enemyManager.moveType == Character.MoveType.Jump)
         {
             // 점프 쿨타임 아닐때, 플레이어가 공격 범위보다 멀때
             if (jumpCoolCount <= 0 && targetDir.magnitude > enemyManager.attackRange)
@@ -150,7 +149,7 @@ public class EnemyAI : MonoBehaviour
 
     void Walk()
     {
-        enemyManager.nowAction = EnemyManager.Action.Walk;
+        enemyManager.nowAction = Character.Action.Walk;
 
         // 애니메이터 켜기
         if (enemyManager.animList.Count > 0)
@@ -169,7 +168,7 @@ public class EnemyAI : MonoBehaviour
         else
         {
             //해당 방향으로 가속
-            enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speedNow * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+            enemyManager.rigid.velocity = targetDir.normalized * enemyManager.speedNow * enemyManager.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
             //움직일 방향에따라 회전
             float leftAngle = enemyManager.lookLeft ? 180f : 0f;
@@ -181,7 +180,7 @@ public class EnemyAI : MonoBehaviour
         }
 
 
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     private void OnDrawGizmosSelected()
@@ -207,7 +206,7 @@ public class EnemyAI : MonoBehaviour
     void JumpStart()
     {
         // 현재 행동 점프로 전환
-        enemyManager.nowAction = EnemyManager.Action.Jump;
+        enemyManager.nowAction = Character.Action.Jump;
 
         // 점프 애니메이션으로 전환
         enemyManager.animList[0].SetBool("Jump", true);
@@ -232,7 +231,7 @@ public class EnemyAI : MonoBehaviour
         // print(targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+        enemyManager.rigid.velocity = targetDir.normalized * distance * enemyManager.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
         // print(enemyManager.rigid.velocity);
     }
@@ -253,7 +252,7 @@ public class EnemyAI : MonoBehaviour
             LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 현재 행동 끝내기
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     Vector3 PlayerNearPos(float range = 3f)

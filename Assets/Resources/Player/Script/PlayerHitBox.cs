@@ -79,7 +79,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         if (attacker.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 몬스터 정보 찾기
-            EnemyManager enemyManager = enemyAtk.enemyManager;
+            Character enemyManager = enemyAtk.enemyManager;
 
             // 몬스터 정보 없을때, 고스트일때 리턴
             if (enemyManager == null || enemyManager.enemy == null || enemyManager.IsGhost)

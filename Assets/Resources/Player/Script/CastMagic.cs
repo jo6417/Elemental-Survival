@@ -318,7 +318,7 @@ public class CastMagic : MonoBehaviour
             yield break;
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<EnemyManager> enemyObj = MarkEnemies(magic);
+        List<Character> enemyObj = MarkEnemies(magic);
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
@@ -441,7 +441,7 @@ public class CastMagic : MonoBehaviour
         List<Vector2> enemyPosList = new List<Vector2>();
 
         // 적 오브젝트 리스트
-        List<EnemyManager> enemyObjs = new List<EnemyManager>();
+        List<Character> enemyObjs = new List<Character>();
 
         //범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
@@ -456,7 +456,7 @@ public class CastMagic : MonoBehaviour
             if (enemyObjs.Count >= atkNum)
                 break;
 
-            EnemyManager enemyManager = null;
+            Character enemyManager = null;
             Collider2D targetColl = null;
             Vector2 targetPos = default;
 
@@ -465,10 +465,10 @@ public class CastMagic : MonoBehaviour
                 // 리스트 내에서 랜덤으로 선택
                 targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
                 // 적 히트박스 찾기
-                EnemyHitBox targetHitBox = targetColl.GetComponent<EnemyHitBox>();
+                HitBox targetHitBox = targetColl.GetComponent<HitBox>();
                 if (targetHitBox != null)
                     // 적 매니저 찾기
-                    enemyManager = targetHitBox.enemyManager;
+                    enemyManager = targetHitBox.character;
 
                 // 이미 들어있는 오브젝트일때
                 if (enemyObjs.Exists(x => x == enemyManager)
@@ -502,7 +502,7 @@ public class CastMagic : MonoBehaviour
         return enemyPosList;
     }
 
-    public List<EnemyManager> MarkEnemies(MagicInfo magic)
+    public List<Character> MarkEnemies(MagicInfo magic)
     {
         // 마법 범위 계산
         float range = MagicDB.Instance.MagicRange(magic);
@@ -510,7 +510,7 @@ public class CastMagic : MonoBehaviour
         int atkNum = MagicDB.Instance.MagicAtkNum(magic);
 
         //리턴할 적 오브젝트 리스트
-        List<EnemyManager> enemyObjs = new List<EnemyManager>();
+        List<Character> enemyObjs = new List<Character>();
 
         // 마우스를 중심으로 범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
@@ -525,7 +525,7 @@ public class CastMagic : MonoBehaviour
             if (enemyObjs.Count >= atkNum)
                 break;
 
-            EnemyManager enemyManager = null;
+            Character enemyManager = null;
             Collider2D targetColl = null;
 
             if (enemyCollList.Count > 0)
@@ -533,10 +533,10 @@ public class CastMagic : MonoBehaviour
                 // 리스트 내에서 랜덤으로 선택
                 targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
                 // 적 히트박스 찾기
-                EnemyHitBox targetHitBox = targetColl.GetComponent<EnemyHitBox>();
+                HitBox targetHitBox = targetColl.GetComponent<HitBox>();
                 if (targetHitBox != null)
                     // 적 매니저 찾기
-                    enemyManager = targetHitBox.enemyManager;
+                    enemyManager = targetHitBox.character;
 
                 // 이미 들어있는 오브젝트일때
                 if (enemyObjs.Exists(x => x == enemyManager)

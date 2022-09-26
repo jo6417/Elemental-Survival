@@ -164,7 +164,7 @@ public class Ascii_AI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        if (enemyManager.nowAction != Character.Action.Idle)
             return;
 
         // 시간 멈추면 리턴
@@ -194,7 +194,7 @@ public class Ascii_AI : MonoBehaviour
             enemyManager.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            enemyManager.nowAction = EnemyManager.Action.Attack;
+            enemyManager.nowAction = Character.Action.Attack;
 
             // 폴어택 공격
             FalldownAttack();
@@ -218,7 +218,7 @@ public class Ascii_AI : MonoBehaviour
             enemyManager.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            enemyManager.nowAction = EnemyManager.Action.Attack;
+            enemyManager.nowAction = Character.Action.Attack;
 
             //공격 패턴 결정하기
             ChooseAttack();
@@ -236,7 +236,7 @@ public class Ascii_AI : MonoBehaviour
     void Move()
     {
         // 걷기 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Walk;
+        enemyManager.nowAction = Character.Action.Walk;
 
         //걸을때 표정
         faceText.text = "● ▽ ●";
@@ -275,13 +275,13 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // idle 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     void ChooseAttack()
     {
         // 공격 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        enemyManager.nowAction = Character.Action.Attack;
 
         // 걷기 애니메이션 끝내기
         anim.SetBool("isWalk", false);
@@ -865,8 +865,8 @@ public class Ascii_AI : MonoBehaviour
         //몬스터 스폰 멈추기
         EnemySpawn.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
-        List<EnemyManager> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<EnemyManager>().ToList();
-        foreach (EnemyManager enemyManager in enemys)
+        List<Character> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
+        foreach (Character enemyManager in enemys)
         {
             // 보스 본인이 아닐때
             if (enemyManager != this.enemyManager)
@@ -1082,7 +1082,7 @@ public class Ascii_AI : MonoBehaviour
         anim.SetBool("isRest", false);
 
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
 
         // // 케이블 꺼내기
         // ToggleCable(false);

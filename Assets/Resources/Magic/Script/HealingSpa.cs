@@ -109,7 +109,7 @@ public class HealingSpa : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         // 적이 닿으면
-        if (other.TryGetComponent(out EnemyManager enemyManager))
+        if (other.TryGetComponent(out Character enemyManager))
         {
             // 해당 몬스터 히트 쿨타임 끝났을때
             if (enemyManager.hitDelayCount <= 0)

@@ -41,7 +41,7 @@ public class PlayerStat
     public float wind_atk = 1;
 }
 
-public class PlayerManager : Character
+public class PlayerManager : MonoBehaviour
 {
     #region Singleton
     private static PlayerManager instance;
@@ -88,6 +88,8 @@ public class PlayerManager : Character
     public SpriteRenderer sprite; // 몸체 스프라이트
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Light2D playerLight;
+    public Rigidbody2D rigid;
+    public Animator anim;
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Origin; //초기 스탯
@@ -96,6 +98,8 @@ public class PlayerManager : Character
     [Header("<State>")]
     public bool initFinish = false;
     public float camFollowSpeed = 10f; // 캠 따라오는 속도
+    public float hpNow;
+    public float hpMax;
 
     //TODO 피격시 카메라 흔들기
     // public float ShakeTime;

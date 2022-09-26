@@ -47,7 +47,7 @@ public class A_800Atk : MonoBehaviour
             return;
 
         // 이미 공격중이면 리턴
-        if (enemyManager.nowAction == EnemyManager.Action.Attack)
+        if (enemyManager.nowAction == Character.Action.Attack)
         {
             //속도 멈추기
             enemyManager.rigid.velocity = Vector3.zero;
@@ -68,7 +68,7 @@ public class A_800Atk : MonoBehaviour
         // print("Melee Attack");
 
         // 공격 액션으로 전환
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        enemyManager.nowAction = Character.Action.Attack;
 
         //움직일 방향에따라 회전
         if (targetDir.x > 0)
@@ -92,7 +92,7 @@ public class A_800Atk : MonoBehaviour
         // meleeAtkTrigger.atkTrigger = false;
 
         // Idle 상태로 초기화
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     public void OnMeleeEffect()

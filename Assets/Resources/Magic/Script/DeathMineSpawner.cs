@@ -39,7 +39,7 @@ public class DeathMineSpawner : MonoBehaviour
     }
 
     // 지뢰 드랍하기
-    public void DropMine(EnemyManager enemyManager)
+    public void DropMine(Character enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 

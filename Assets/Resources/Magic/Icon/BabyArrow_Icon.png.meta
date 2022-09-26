@@ -90,23 +90,7 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline:
-    - - {x: 3, y: 16}
-      - {x: 4, y: 17}
-      - {x: 4, y: 19}
-      - {x: 0, y: 27}
-      - {x: -1, y: 27}
-      - {x: -5, y: 19}
-      - {x: -5, y: 17}
-      - {x: -4, y: 16}
-      - {x: -4, y: -15}
-      - {x: -6, y: -18}
-      - {x: -6, y: -21}
-      - {x: -1, y: -26}
-      - {x: 0, y: -26}
-      - {x: 5, y: -21}
-      - {x: 5, y: -18}
-      - {x: 3, y: -15}
+    outline: []
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000

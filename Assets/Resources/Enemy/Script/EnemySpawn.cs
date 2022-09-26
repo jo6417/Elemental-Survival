@@ -44,8 +44,8 @@ public class EnemySpawn : MonoBehaviour
     // public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
     public float spawnCoolCount; //몬스터 스폰 쿨타임 카운트
     public bool nowSpawning; //스폰중일때
-    public List<EnemyManager> spawnAbleList = new List<EnemyManager>(); // 현재 맵에서 스폰 가능한 몹 리스트
-    public List<EnemyManager> spawnEnemyList = new List<EnemyManager>(); //현재 스폰된 몬스터 리스트
+    public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
+    public List<Character> spawnEnemyList = new List<Character>(); //현재 스폰된 몬스터 리스트
 
     [Header("Refer")]
     public GameObject dustPrefab; //먼지 이펙트 프리팹
@@ -242,8 +242,10 @@ public class EnemySpawn : MonoBehaviour
         //EnemyInfo 인스턴스 생성
         EnemyInfo enemyInfo = new EnemyInfo(enemy);
 
-        // 매니저 찾기
-        EnemyManager enemyManager = enemyObj.GetComponentInChildren<EnemyManager>();
+        // 캐릭터 찾기
+        Character character = enemyObj.GetComponentInChildren<Character>();
+        // 몬스터 매니저 찾기
+        EnemyManager enemyManager = character as EnemyManager;
 
         //몬스터 리스트에 넣기
         spawnEnemyList.Add(enemyManager);
@@ -346,7 +348,7 @@ public class EnemySpawn : MonoBehaviour
         yield return null;
     }
 
-    public void EnemyDespawn(EnemyManager enemyManager)
+    public void EnemyDespawn(Character enemyManager)
     {
         // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
         if (SystemManager.Instance.globalEnemyDeadCallback != null)
@@ -361,7 +363,7 @@ public class EnemySpawn : MonoBehaviour
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기, 콜라이더 꺼진 경우 아닐때만
         if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()) && other.gameObject.activeSelf && dragSwitch && other.enabled)
         {
-            EnemyManager manager = other.GetComponent<EnemyManager>();
+            Character manager = other.GetComponent<Character>();
             EnemyAI enemyAI = other.GetComponent<EnemyAI>();
 
             // 매니저가 없으면 몬스터 본체가 아니므로 리턴

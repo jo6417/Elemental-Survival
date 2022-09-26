@@ -190,7 +190,7 @@ public class Quad_AI : MonoBehaviour
         float playerAngle = Mathf.Atan2(enemyManager.targetDir.y, enemyManager.targetDir.x) * Mathf.Rad2Deg;
 
         // 휴식 아닐때만
-        if (enemyManager.nowAction != EnemyManager.Action.Rest)
+        if (enemyManager.nowAction != Character.Action.Rest)
         {
             // 눈동자 플레이어 방향으로 이동
             eye.position = head.position + enemyManager.targetDir.normalized * 1f;
@@ -209,7 +209,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         // Idle 상태 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        if (enemyManager.nowAction != Character.Action.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -227,7 +227,7 @@ public class Quad_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        if (enemyManager.nowAction != Character.Action.Idle)
             return;
 
         // 공격 쿨타임 차감
@@ -266,7 +266,7 @@ public class Quad_AI : MonoBehaviour
     void ChooseAttack()
     {
         // 현재 액션 변경
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        enemyManager.nowAction = Character.Action.Attack;
 
         // 애니메이터 끄기
         enemyManager.animList[0].enabled = false;
@@ -314,7 +314,7 @@ public class Quad_AI : MonoBehaviour
 
     void Walk()
     {
-        enemyManager.nowAction = EnemyManager.Action.Walk;
+        enemyManager.nowAction = Character.Action.Walk;
 
         //애니메이터 켜기
         enemyManager.animList[0].enabled = true;
@@ -349,7 +349,7 @@ public class Quad_AI : MonoBehaviour
         * SystemManager.Instance.globalTimeScale
         * nearSpeed;
 
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     private void OnDrawGizmosSelected()
@@ -1033,7 +1033,7 @@ public class Quad_AI : MonoBehaviour
         });
 
         // Idle 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     IEnumerator FanSmash()
@@ -1181,7 +1181,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator OverloadRest()
     {
         // Rest 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Rest;
+        enemyManager.nowAction = Character.Action.Rest;
 
         // 몸체 위로 다시 올라가기
         body.DOLocalMove(new Vector3(0, 5.5f, 0), 0.5f)
@@ -1317,6 +1317,6 @@ public class Quad_AI : MonoBehaviour
         enemyManager.animList[0].enabled = false;
 
         // Idle 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 }

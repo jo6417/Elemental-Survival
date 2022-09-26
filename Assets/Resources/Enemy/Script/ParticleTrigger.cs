@@ -87,7 +87,7 @@ public class ParticleTrigger : MonoBehaviour
             {
                 print($"Enemy : {other.name} : {other.tag} : {other.layer}");
 
-                if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
+                if (other.TryGetComponent(out HitBox enemyHitBox))
                 {
                     StartCoroutine(enemyHitBox.Hit(magicHolder));
                 }

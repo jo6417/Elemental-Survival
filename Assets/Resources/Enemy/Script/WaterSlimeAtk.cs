@@ -57,7 +57,7 @@ public class WaterSlimeAtk : MonoBehaviour
             return;
 
         // 이미 공격중이면 리턴
-        if (enemyManager.nowAction == EnemyManager.Action.Attack)
+        if (enemyManager.nowAction == Character.Action.Attack)
         {
             //속도 멈추기
             enemyManager.rigid.velocity = Vector3.zero;
@@ -99,7 +99,7 @@ public class WaterSlimeAtk : MonoBehaviour
             attackReady = true;
 
             // Idle 상태 될때까지 대기
-            yield return new WaitUntil(() => enemyManager.nowAction == EnemyManager.Action.Idle);
+            yield return new WaitUntil(() => enemyManager.nowAction == Character.Action.Idle);
 
             //공격 준비 끝
             attackReady = false;
@@ -115,7 +115,7 @@ public class WaterSlimeAtk : MonoBehaviour
         // print("Active Attack");
 
         // 공격 액션으로 전환
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        enemyManager.nowAction = Character.Action.Attack;
 
         //애니메이터 끄기
         enemyManager.animList[0].enabled = false;
@@ -168,7 +168,7 @@ public class WaterSlimeAtk : MonoBehaviour
         //애니메이터 켜기
         enemyManager.animList[0].enabled = true;
         // Idle로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
 
         // 코루틴 비우기
         atkCoroutine = null;

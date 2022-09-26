@@ -127,7 +127,7 @@ public class Bawi_AI : MonoBehaviour
             return;
 
         // 공격 중일때 리턴
-        if (enemyManager.nowAction == EnemyManager.Action.Attack)
+        if (enemyManager.nowAction == Character.Action.Attack)
             return;
 
         // 상태 이상 있으면 리턴
@@ -164,7 +164,7 @@ public class Bawi_AI : MonoBehaviour
         }
 
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        if (enemyManager.nowAction != Character.Action.Idle)
             return;
 
         // 쿨타임 차감
@@ -197,7 +197,7 @@ public class Bawi_AI : MonoBehaviour
 
     void Walk()
     {
-        enemyManager.nowAction = EnemyManager.Action.Walk;
+        enemyManager.nowAction = Character.Action.Walk;
 
         //애니메이터 켜기
         enemyManager.animList[0].enabled = true;
@@ -221,7 +221,7 @@ public class Bawi_AI : MonoBehaviour
         //해당 방향으로 가속
         enemyManager.rigid.velocity = dir.normalized * enemyManager.speedNow * SystemManager.Instance.globalTimeScale;
 
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     public void Floating()
@@ -272,7 +272,7 @@ public class Bawi_AI : MonoBehaviour
     void ChooseAttack()
     {
         // 현재 액션 변경
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        enemyManager.nowAction = Character.Action.Attack;
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 5);
@@ -494,7 +494,7 @@ public class Bawi_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // Idle 액션으로 전환
-            enemyManager.nowAction = EnemyManager.Action.Idle;
+            enemyManager.nowAction = Character.Action.Idle;
 
             // 일반 주먹으로 변경
             fistSprite.sprite = emptyFistSprite;
@@ -721,7 +721,7 @@ public class Bawi_AI : MonoBehaviour
         // Idle 애니메이션 재생
         enemyManager.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     IEnumerator WeaponCharge(Transform partObj, Vector2 atkPos, int chargeNum, float delay = 0f)
@@ -915,7 +915,7 @@ public class Bawi_AI : MonoBehaviour
         // Idle 애니메이션 재생
         enemyManager.animList[0].SetBool("UseFist", false);
         // Idle 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 
     IEnumerator DrillChase()
@@ -1068,6 +1068,6 @@ public class Bawi_AI : MonoBehaviour
         // Idle 애니메이션으로 전환
         enemyManager.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
     }
 }

@@ -32,7 +32,7 @@ public class StoneGolem_AI : MonoBehaviour
             return;
 
         // 이미 공격중이면 리턴
-        if (enemyManager.nowAction == EnemyManager.Action.Attack)
+        if (enemyManager.nowAction == Character.Action.Attack)
         {
             // 이동 멈추기
             enemyManager.rigid.velocity = Vector3.zero;
@@ -43,7 +43,7 @@ public class StoneGolem_AI : MonoBehaviour
         if (smashTrigger.atkTrigger)
         {
             // 공격 액션으로 전환
-            enemyManager.nowAction = EnemyManager.Action.Attack;
+            enemyManager.nowAction = Character.Action.Attack;
 
             StartCoroutine(SmashAttack());
         }
@@ -71,7 +71,7 @@ public class StoneGolem_AI : MonoBehaviour
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
         // Idle로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        enemyManager.nowAction = Character.Action.Idle;
 
         // 공격 트리거 끄기
         // smashTrigger.atkTrigger = false;

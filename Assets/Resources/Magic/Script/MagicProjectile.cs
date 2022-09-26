@@ -142,7 +142,7 @@ public class MagicProjectile : MonoBehaviour
         if (magicHolder.targetType == MagicHolder.Target.Enemy && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
         {
             // 히트박스 없으면 리턴
-            if (!other.TryGetComponent(out EnemyHitBox enemyHitBox))
+            if (!other.TryGetComponent(out HitBox enemyHitBox))
                 return;
 
             // 맞는 순간 콜라이더 끄기, 중복 충돌 방지

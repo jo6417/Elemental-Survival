@@ -582,7 +582,7 @@ public class UIManager : MonoBehaviour
         playerLev.text = "Lev. " + playerManager.PlayerStat_Now.Level.ToString();
     }
 
-    public IEnumerator UpdateBossHp(EnemyManager bossManager)
+    public IEnumerator UpdateBossHp(Character bossManager)
     {
         //보스 몬스터 정보 들어올때까지 대기
         yield return new WaitUntil(() => bossManager.enemy != null);

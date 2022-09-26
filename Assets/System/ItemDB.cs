@@ -31,7 +31,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
-    public enum ItemType { Gem, Heal, Shard, Artifact }; // 아이템 타입 정의
+    public enum ItemType { Gem, Heal, Shard, Artifact, Magic }; // 아이템 타입 정의
 
     public List<ItemInfo> itemDB = new List<ItemInfo>(); //아이템 정보 DB
     public List<Sprite> itemIcon = null; //아이템 아이콘 리스트

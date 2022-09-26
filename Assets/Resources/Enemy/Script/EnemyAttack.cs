@@ -16,7 +16,7 @@ public class EnemyAttack : Attack
     [SerializeField, ReadOnly] private float coolCount; // 주기적 자동 공격일때 현재 쿨타임 카운트
 
     [Header("Refer")]
-    public EnemyManager enemyManager;
+    public Character enemyManager;
     public string enemyName;
     public Collider2D atkColl; //공격 콜라이더
     public GameObject dashEffect;

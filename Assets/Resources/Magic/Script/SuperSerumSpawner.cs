@@ -39,7 +39,7 @@ public class SuperSerumSpawner : MonoBehaviour
     }
 
     // 슈퍼세럼 오브 드랍하기
-    public void DropSerumOrb(EnemyManager enemyManager)
+    public void DropSerumOrb(Character enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 

@@ -17,7 +17,8 @@ public class ItemManager : MonoBehaviour
     public float autoDespawnTime = 0; //자동 디스폰 시간
 
     [Header("Refer")]
-    public ItemInfo item; // 해당 아이템 정보
+    public ItemInfo itemInfo; // 해당 아이템 정보
+    public MagicInfo magicInfo; // 해당 아이템이 갖고 있는 마법 정보
     public string itemName;
     public SpriteRenderer sprite;
     public GameObject despawnEffect; //사라질때 이펙트
@@ -51,15 +52,18 @@ public class ItemManager : MonoBehaviour
         // yield return new WaitUntil(() => item != null);
 
         // item 정보 없으면 프리팹 이름으로 아이템 정보 찾아 넣기
-        if (item == null)
+        if (itemInfo == null)
         {
-            item = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
+            itemInfo = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
         }
-        itemName = item.name;
-        // print(itemName + " : " + item.itemName);
+        else
+        {
+            itemName = itemInfo.name;
+            // print(itemName + " : " + item.itemName);
 
-        //지불 원소젬 이름을 인덱스로 반환
-        gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == item.priceType);
+            //지불 원소젬 이름을 인덱스로 반환
+            gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == itemInfo.priceType);
+        }
 
         // 아이템 획득여부 초기화
         isGet = false;
@@ -78,10 +82,10 @@ public class ItemManager : MonoBehaviour
             AutoDespawn();
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         // 원소젬이고 리스폰 콜라이더 안에 들어왔을때
-        if (item != null && item.itemType == ItemDB.ItemType.Gem.ToString() && other.gameObject.CompareTag("Respawn") && !isBundle)
+        if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString() && other.gameObject.CompareTag("Respawn") && !isBundle)
         {
             //해당 타입 원소젬 개수 -1
             if (ItemDB.Instance.outGemNum[gemTypeIndex] > 0)
@@ -90,75 +94,103 @@ public class ItemManager : MonoBehaviour
             //원소젬 리스트에서 빼기
             ItemDB.Instance.outGem.Remove(gameObject);
         }
+    }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
         // 플레이어와 충돌 했을때
         if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
             // print("플레이어 아이템 획득");
 
-            // 샤드일때는 인벤토리에 빈칸 있을때, 다른 아이템이면 그냥 획득
-            if ((item.itemType == ItemDB.ItemType.Shard.ToString() && PhoneMenu.Instance.GetEmptySlot() != -1)
-            || item.itemType == ItemDB.ItemType.Gem.ToString()
-            || item.itemType == ItemDB.ItemType.Heal.ToString())
+            // 인벤토리에 들어가는 아이템일때 (마법이거나 샤드 아이템)
+            if (magicInfo != null
+            || (itemInfo != null && (itemInfo.itemType == ItemDB.ItemType.Shard.ToString())))
             {
-                //이중 충돌 방지
-                coll.enabled = false;
+                // 인벤토리 빈칸 있을때
+                if (PhoneMenu.Instance.GetEmptySlot() != -1)
+                {
+                    //이중 충돌 방지
+                    coll.enabled = false;
 
-                // 자동 디스폰 중지
-                sprite.DOKill();
+                    // 자동 디스폰 중지
+                    sprite.DOKill();
 
-                // 플레이어에게 날아가기
-                StartCoroutine(GetMove(PlayerManager.Instance.transform));
+                    // 플레이어에게 날아가기
+                    StartCoroutine(GetMove(PlayerManager.Instance.transform));
+                }
             }
-            // 인벤토리에 빈칸 없을때
+            // 인벤토리에 들어가지 않는 아이템일때
             else
             {
-                // 화면의 핸드폰 아이콘 빨간불 점멸
-                UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 20f / 255f, 20f / 255f, 1f), 0.2f)
-                .SetLoops(4, LoopType.Yoyo)
-                .SetUpdate(true)
-                .OnComplete(() =>
+                // 샤드일때는 인벤토리에 빈칸 있을때, 다른 아이템이면 그냥 획득
+                if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString()
+                || itemInfo.itemType == ItemDB.ItemType.Heal.ToString()
+                || itemInfo.itemType == ItemDB.ItemType.Artifact.ToString())
                 {
-                    // 흰색으로 초기화
-                    UIManager.Instance.phoneNoticeIcon.color = Color.white;
-                });
+                    //이중 충돌 방지
+                    coll.enabled = false;
+
+                    // 자동 디스폰 중지
+                    sprite.DOKill();
+
+                    // 플레이어에게 날아가기
+                    StartCoroutine(GetMove(PlayerManager.Instance.transform));
+                }
+                // 인벤토리에 빈칸 없을때
+                else
+                {
+                    // 화면의 핸드폰 아이콘 빨간불 점멸
+                    UIManager.Instance.phoneNoticeIcon.DOColor(new Color(1, 20f / 255f, 20f / 255f, 1f), 0.2f)
+                    .SetLoops(4, LoopType.Yoyo)
+                    .SetUpdate(true)
+                    .OnComplete(() =>
+                    {
+                        // 흰색으로 초기화
+                        UIManager.Instance.phoneNoticeIcon.color = Color.white;
+                    });
+                }
             }
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // 원소젬이고 리스폰 콜라이더 밖으로 나갔을때
-        if (item != null && item.itemType == "Gem" && other.CompareTag("Respawn") && !isBundle)
+        // 스폰 콜라이더 밖으로 나갔을때
+        if (other.CompareTag("Respawn"))
         {
-            // 같은 타입 원소젬 개수가 본인포함 10개 이상일때
-            if (ItemDB.Instance.outGemNum[gemTypeIndex] >= 9)
+            // 원소젬이고, 합쳐지지 않았을때
+            if (itemInfo != null && itemInfo.itemType == "Gem" && !isBundle)
             {
-                print(item.name + " : " + ItemDB.Instance.outGemNum[gemTypeIndex]);
-
-                // 해당 원소젬 사이즈 키우고 개수 늘리기
-                transform.localScale = Vector2.one * 2;
-                amount = 5;
-                isBundle = true;
-
-                //해당 타입 원소젬 개수 초기화
-                ItemDB.Instance.outGemNum[gemTypeIndex] = 0;
-
-                // 이름 같은 원소젬 찾아서 다 디스폰 시키기
-                List<GameObject> despawnList = ItemDB.Instance.outGem.FindAll(x => x.name == transform.name);
-                print(despawnList.Count);
-                foreach (var gem in despawnList)
+                // 같은 타입 원소젬 개수가 본인포함 10개 이상일때
+                if (ItemDB.Instance.outGemNum[gemTypeIndex] >= 9)
                 {
-                    ItemDB.Instance.outGem.Remove(gem);
-                    LeanPool.Despawn(gem);
+                    print(itemInfo.name + " : " + ItemDB.Instance.outGemNum[gemTypeIndex]);
+
+                    // 해당 원소젬 사이즈 키우고 개수 늘리기
+                    transform.localScale = Vector2.one * 2;
+                    amount = 5;
+                    isBundle = true;
+
+                    //해당 타입 원소젬 개수 초기화
+                    ItemDB.Instance.outGemNum[gemTypeIndex] = 0;
+
+                    // 이름 같은 원소젬 찾아서 다 디스폰 시키기
+                    List<GameObject> despawnList = ItemDB.Instance.outGem.FindAll(x => x.name == transform.name);
+                    print(despawnList.Count);
+                    foreach (var gem in despawnList)
+                    {
+                        ItemDB.Instance.outGem.Remove(gem);
+                        LeanPool.Despawn(gem);
+                    }
                 }
-            }
-            else
-            {
-                //해당 타입 원소젬 개수 +1
-                ItemDB.Instance.outGemNum[gemTypeIndex]++;
-                //카메라 밖으로 나간 원소젬 리스트에 넣기
-                ItemDB.Instance.outGem.Add(gameObject);
+                else
+                {
+                    //해당 타입 원소젬 개수 +1
+                    ItemDB.Instance.outGemNum[gemTypeIndex]++;
+                    //카메라 밖으로 나간 원소젬 리스트에 넣기
+                    ItemDB.Instance.outGem.Add(gameObject);
+                }
             }
         }
     }
@@ -189,7 +221,7 @@ public class ItemManager : MonoBehaviour
             // 벡터 거리가 0.5f 이하일때 획득
             if (dir.magnitude <= 0.5f)
             {
-                GainItem();
+                GetItem();
                 break;
             }
 
@@ -206,34 +238,51 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    void GainItem()
+    void GetItem()
     {
         isGet = true;
 
-        // 샤드일때는 인벤토리에 빈칸 없을때 리턴
-        if ((item.itemType == ItemDB.ItemType.Shard.ToString() && PhoneMenu.Instance.GetEmptySlot() == -1))
+        //todo 마법일때
+        if (magicInfo != null)
         {
-            coll.enabled = true;
-
-            return;
+            // 인벤토리 빈칸 없으면 리턴
+            if (PhoneMenu.Instance.GetEmptySlot() == -1)
+                coll.enabled = true;
+            //todo 인벤토리 빈칸 있으면
+            else
+            {
+                //todo 마법 획득
+                PhoneMenu.Instance.GetMagic(magicInfo);
+            }
         }
-
-        // 아이템이 젬 타입일때
-        if (item.itemType == ItemDB.ItemType.Gem.ToString())
-        {
-            //플레이어 소지 젬 갯수 올리기
-            PlayerManager.Instance.AddGem(item, amount);
-            // print(item.itemName + amount);
-        }
-        // 아이템이 힐 타입일때
-        else if (item.itemType == ItemDB.ItemType.Heal.ToString())
-        {
-            PlayerManager.Instance.hitBox.Damage(-amount, false);
-        }
+        // 아이템일때
         else
         {
-            //아이템 획득
-            PhoneMenu.Instance.GetItem(item);
+            // 샤드일때는 인벤토리에 빈칸 없을때 리턴
+            if ((itemInfo.itemType == ItemDB.ItemType.Shard.ToString() && PhoneMenu.Instance.GetEmptySlot() == -1))
+            {
+                coll.enabled = true;
+
+                return;
+            }
+
+            // 아이템이 젬 타입일때
+            if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
+            {
+                //플레이어 소지 젬 갯수 올리기
+                PlayerManager.Instance.AddGem(itemInfo, amount);
+                // print(item.itemName + amount);
+            }
+            // 아이템이 힐 타입일때
+            else if (itemInfo.itemType == ItemDB.ItemType.Heal.ToString())
+            {
+                PlayerManager.Instance.hitBox.Damage(-amount, false);
+            }
+            else
+            {
+                //아이템 획득
+                PhoneMenu.Instance.GetItem(itemInfo);
+            }
         }
 
         //아이템 속도 초기화

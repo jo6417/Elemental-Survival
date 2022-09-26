@@ -21,7 +21,7 @@ public class GatePortal : MonoBehaviour
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
 
     [Header("Debug")]
-    public EnemyManager fixedBoss; //! 고정된 보스 소환
+    public Character fixedBoss; //! 고정된 보스 소환
 
     private void Awake()
     {
@@ -158,7 +158,7 @@ public class GatePortal : MonoBehaviour
         GameObject bossObj = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, SystemManager.Instance.enemyPool);
 
         // 보스 enemyManager 참조
-        EnemyManager enemyManager = bossObj.GetComponent<EnemyManager>();
+        Character enemyManager = bossObj.GetComponent<Character>();
 
         // 보스 초기화 시작
         enemyManager.initialStart = true;

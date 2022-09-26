@@ -7,7 +7,7 @@ public class EnemyAtkTrigger : MonoBehaviour
     public GameObject explosionPrefab;
     public SpriteRenderer atkRangeBackground;
     public SpriteRenderer atkRangeFill;
-    public EnemyManager enemyManager;
+    public Character enemyManager;
 
     public bool atkTrigger; //범위내 타겟 들어왔는지 여부
 
@@ -77,14 +77,14 @@ public class EnemyAtkTrigger : MonoBehaviour
         if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
         {
             // 몬스터가 충돌했을때 히트박스 있을때
-            if (other.TryGetComponent(out EnemyHitBox hitBox))
+            if (other.TryGetComponent(out HitBox hitBox))
             {
                 // 충돌 대상이 본인이면 리턴
-                if (hitBox.enemyManager == enemyManager)
+                if (hitBox.character == enemyManager)
                     return;
 
                 // 충돌 몬스터도 고스트일때 리턴
-                if (hitBox.enemyManager.IsGhost)
+                if (hitBox.character.IsGhost)
                     return;
             }
             // 콜라이더가 히트박스를 갖고 있지 않을때 리턴

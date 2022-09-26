@@ -42,7 +42,7 @@ public class LayerList
 
 public class SystemManager : MonoBehaviour
 {
-    public delegate void EnemyDeadCallback(EnemyManager enemyManager);
+    public delegate void EnemyDeadCallback(Character enemyManager);
     public EnemyDeadCallback globalEnemyDeadCallback;
 
     #region Singleton

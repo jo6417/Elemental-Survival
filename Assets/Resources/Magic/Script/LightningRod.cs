@@ -203,7 +203,7 @@ public class LightningRod : MonoBehaviour
         List<Vector2> atkPosList = new List<Vector2>();
 
         //리턴할 적 오브젝트 리스트
-        List<EnemyManager> enemyObjs = new List<EnemyManager>();
+        List<Character> enemyObjs = new List<Character>();
 
         //범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
@@ -218,7 +218,7 @@ public class LightningRod : MonoBehaviour
             if (enemyObjs.Count >= pierceNum)
                 break;
 
-            EnemyManager enemyManager = null;
+            Character enemyManager = null;
             Collider2D targetColl = null;
 
             if (enemyCollList.Count > 0)
@@ -226,10 +226,10 @@ public class LightningRod : MonoBehaviour
                 // 리스트 내에서 랜덤으로 선택
                 targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
                 // 적 히트박스 찾기
-                EnemyHitBox targetHitBox = targetColl.GetComponent<EnemyHitBox>();
+                HitBox targetHitBox = targetColl.GetComponent<HitBox>();
                 if (targetHitBox != null)
                     // 적 매니저 찾기
-                    enemyManager = targetHitBox.enemyManager;
+                    enemyManager = targetHitBox.character;
 
                 // 이미 들어있는 오브젝트일때
                 if (enemyObjs.Exists(x => x == enemyManager)

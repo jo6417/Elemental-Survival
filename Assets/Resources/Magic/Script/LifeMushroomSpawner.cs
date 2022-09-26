@@ -63,7 +63,7 @@ public class LifeMushroomSpawner : MonoBehaviour
             {
                 // print($"Enemy : {other.name} : {other.tag} : {other.layer}");
 
-                if (other.TryGetComponent(out EnemyHitBox enemyHitBox))
+                if (other.TryGetComponent(out HitBox enemyHitBox))
                 {
                     // 독 도트 데미지 주기
                     StartCoroutine(enemyHitBox.Hit(magicHolder));
@@ -73,7 +73,7 @@ public class LifeMushroomSpawner : MonoBehaviour
     }
 
     // 버섯 드랍하기
-    public void DropLifeSeed(EnemyManager enemyManager)
+    public void DropLifeSeed(Character enemyManager)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
