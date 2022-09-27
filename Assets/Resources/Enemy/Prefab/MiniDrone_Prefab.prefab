@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 8701247743618535938}
+  character: {fileID: 8701247743618535938}
 --- !u!70 &3600352542222015601
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -392,7 +392,7 @@ MonoBehaviour:
     type: 3}
   atkRangeBackground: {fileID: 7189318774427322981}
   atkRangeFill: {fileID: 6617472265530581401}
-  enemyManager: {fileID: 8701247743618535938}
+  character: {fileID: 8701247743618535938}
   atkTrigger: 0
 --- !u!212 &7189318774427322981
 SpriteRenderer:
@@ -533,60 +533,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpNow: 0
-  hpMax: 0
-  rigid: {fileID: 5294624000008441115}
-  anim: {fileID: 0}
+  defaultHasItem: ffffffff
   initialStart: 1
   initialFinish: 0
+  eliteClass: 0
   lookLeft: 0
-  defaultHasItem: ffffffff
+  hpNow: 0
+  hpMax: 0
+  isDead: 0
+  changeGhost: 0
+  portalSize: 1
+  afterEffect: 0
+  invinsible: 0
+  selfExplosion: 1
+  attackRange: 0
+  healCount: 0
+  isGhost: 0
+  nowState: 0
+  nowAction: 0
+  moveType: 0
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  nowState: 0
-  nowAction: 0
-  moveType: 0
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  afterEffect: 0
-  isDead: 0
-  selfExplosion: 1
-  attackRange: 0
-  changeGhost: 0
-  enemyAI: {fileID: -5451379877862882109}
-  enemyAtkTrigger: {fileID: 8096507129767913019}
-  enemyAtkList: []
-  spriteObj: {fileID: 7235316671713338324}
   shadow: {fileID: 7195645699224406153}
   spriteList:
   - {fileID: 2790978120402739609}
   - {fileID: 1291201818}
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
+  enemyAI: {fileID: -5451379877862882109}
+  enemyAtkTrigger: {fileID: 8096507129767913019}
+  enemyAtkList: []
+  spriteObj: {fileID: 7235316671713338324}
+  healRange: {fileID: 0}
   animList:
   - {fileID: 7476364165769180974}
   - {fileID: 1291201817}
   physicsColl: {fileID: 6399995120407093454}
-  hitBoxList: []
-  power: 0
-  speed: 0
-  range: 0
-  buffParent: {fileID: 0}
+  rigid: {fileID: 5294624000008441115}
+  buffParent: {fileID: 1146522400549731273}
   particleHitCount: 0
-  hitCount: 0
+  hitDelayCount: 0
   stopCount: 0
   flatCount: 0
   oppositeCount: 0
-  poisonCoolCount: 0
-  bleedCoolCount: 0
+  moveSpeedDebuff: 1
+  hitEffect: {fileID: 0}
+  hitBoxList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  powerNow: 0
+  speedNow: 0
+  rangeNow: 0
+  cooltimeNow: 0
   enemyName: 
   enemyType: 
-  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &-5451379877862882109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -599,8 +601,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeedDebuff: 1
-  enemyManager: {fileID: 8701247743618535938}
+  character: {fileID: 8701247743618535938}
   targetDir: {x: 0, y: 0, z: 0}
   moveCoolTime: 1
   moveCoolCount: 0

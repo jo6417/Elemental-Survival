@@ -27,7 +27,7 @@ public class Bawi_AI : MonoBehaviour
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
-    public EnemyManager enemyManager;
+    public Character character;
     public GameObject bigLandDust; //착지할때 헤드 먼지 파티클
     public GameObject smallLandDust; //착지할때 손 먼지 파티클
     public ParticleSystem chargePulse; // 차지 펄스 이펙트
@@ -72,7 +72,7 @@ public class Bawi_AI : MonoBehaviour
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponent<EnemyManager>() : enemyManager;
+        character = character == null ? GetComponent<Character>() : character;
     }
 
     private void OnEnable()
@@ -83,12 +83,12 @@ public class Bawi_AI : MonoBehaviour
     IEnumerator Init()
     {
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
         //속도 초기화
-        enemyManager.rigid.velocity = Vector2.zero;
+        character.rigid.velocity = Vector2.zero;
         // 위치 고정 해제
-        enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        character.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         //부유 상태로 전환
         isFloating = true;
@@ -115,7 +115,7 @@ public class Bawi_AI : MonoBehaviour
         fistChargeGathering.gameObject.SetActive(false);
 
         //콜라이더 초기화
-        enemyManager.physicsColl.enabled = false;
+        character.physicsColl.enabled = false;
         drillGhostColl.enabled = false;
         fistCrushColl.enabled = false;
     }
@@ -123,15 +123,15 @@ public class Bawi_AI : MonoBehaviour
     void Update()
     {
         // 몬스터 정보 없으면 리턴
-        if (enemyManager.enemy == null)
+        if (character.enemy == null)
             return;
 
         // 공격 중일때 리턴
-        if (enemyManager.nowAction == Character.Action.Attack)
+        if (character.nowAction == Character.Action.Attack)
             return;
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         //행동 관리
@@ -164,7 +164,7 @@ public class Bawi_AI : MonoBehaviour
         }
 
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.Action.Idle)
             return;
 
         // 쿨타임 차감
@@ -183,7 +183,7 @@ public class Bawi_AI : MonoBehaviour
             drillPart.transform.DORotate(new Vector3(0, 0, 90f), 0.5f);
 
             // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             //공격 패턴 결정하기
             ChooseAttack();
@@ -197,13 +197,13 @@ public class Bawi_AI : MonoBehaviour
 
     void Walk()
     {
-        enemyManager.nowAction = Character.Action.Walk;
+        character.nowAction = Character.Action.Walk;
 
         //애니메이터 켜기
-        enemyManager.animList[0].enabled = true;
+        character.animList[0].enabled = true;
         // Idle 애니메이션으로 전환
-        enemyManager.animList[0].SetBool("UseFist", false);
-        enemyManager.animList[0].SetBool("UseDrill", false);
+        character.animList[0].SetBool("UseFist", false);
+        character.animList[0].SetBool("UseDrill", false);
 
         // 플레이어 근처 위치 계산
         Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 0f;
@@ -219,9 +219,9 @@ public class Bawi_AI : MonoBehaviour
         drillPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity = dir.normalized * enemyManager.speedNow * SystemManager.Instance.globalTimeScale;
+        character.rigid.velocity = dir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale;
 
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     public void Floating()
@@ -233,7 +233,7 @@ public class Bawi_AI : MonoBehaviour
             isFloating = true;
 
             // 물리 콜라이더 끄기
-            enemyManager.physicsColl.enabled = false;
+            character.physicsColl.enabled = false;
 
             // 부유 파티클 모두 켜기
             headHoverEffect.Play();
@@ -251,28 +251,28 @@ public class Bawi_AI : MonoBehaviour
             isFloating = false;
 
             // 물리 콜라이더 켜기
-            enemyManager.physicsColl.enabled = true;
+            character.physicsColl.enabled = true;
 
             // 머리 먼지 파티클 생성
             LeanPool.Spawn(bigLandDust, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-            if (enemyManager.animList[0].GetBool("UseDrill"))
+            if (character.animList[0].GetBool("UseDrill"))
                 // 드릴 먼지 파티클 생성
                 LeanPool.Spawn(smallLandDust, fistParent.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-            if (enemyManager.animList[0].GetBool("UseFist"))
+            if (character.animList[0].GetBool("UseFist"))
                 // 주먹 먼지 파티클 생성
                 LeanPool.Spawn(smallLandDust, drillRigid.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         }
 
         //애니메이터 끄기
-        enemyManager.animList[0].enabled = false;
+        character.animList[0].enabled = false;
     }
 
     void ChooseAttack()
     {
         // 현재 액션 변경
-        enemyManager.nowAction = Character.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 5);
@@ -325,7 +325,7 @@ public class Bawi_AI : MonoBehaviour
         drillHoverEffect.Stop();
 
         //주먹 공격 애니메이션으로 전환
-        enemyManager.animList[0].SetBool("UseFist", true);
+        character.animList[0].SetBool("UseFist", true);
 
         // 보스 주변 랜덤 위치로 바위 위치 지정
         Vector2 grabPos = Random.insideUnitCircle.normalized * 20f;
@@ -494,7 +494,7 @@ public class Bawi_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // Idle 액션으로 전환
-            enemyManager.nowAction = Character.Action.Idle;
+            character.nowAction = Character.Action.Idle;
 
             // 일반 주먹으로 변경
             fistSprite.sprite = emptyFistSprite;
@@ -589,7 +589,7 @@ public class Bawi_AI : MonoBehaviour
         fistHoverEffect.Stop();
 
         //드릴 사용 애니메이션으로 전환
-        enemyManager.animList[0].SetBool("UseDrill", true);
+        character.animList[0].SetBool("UseDrill", true);
 
         // 드릴 스핀 애니메이션 재생
         mainDrillAnim.SetBool("Spin", true);
@@ -719,9 +719,9 @@ public class Bawi_AI : MonoBehaviour
         ghostDrillAnim.SetBool("Spin", false);
 
         // Idle 애니메이션 재생
-        enemyManager.animList[0].SetBool("UseDrill", false);
+        character.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     IEnumerator WeaponCharge(Transform partObj, Vector2 atkPos, int chargeNum, float delay = 0f)
@@ -819,7 +819,7 @@ public class Bawi_AI : MonoBehaviour
         drillHoverEffect.Stop();
 
         // 주먹 공격 애니메이션 켜기
-        enemyManager.animList[0].SetBool("UseFist", true);
+        character.animList[0].SetBool("UseFist", true);
 
         //착지 할때까지 대기
         yield return new WaitUntil(() => !isFloating);
@@ -913,9 +913,9 @@ public class Bawi_AI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // Idle 애니메이션 재생
-        enemyManager.animList[0].SetBool("UseFist", false);
+        character.animList[0].SetBool("UseFist", false);
         // Idle 상태로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     IEnumerator DrillChase()
@@ -925,7 +925,7 @@ public class Bawi_AI : MonoBehaviour
         fistHoverEffect.Stop();
 
         // 드릴 사용 애니메이션 전환
-        enemyManager.animList[0].SetBool("UseDrill", true);
+        character.animList[0].SetBool("UseDrill", true);
 
         // 드릴 스핀 애니메이션 재생
         mainDrillAnim.SetBool("Spin", true);
@@ -1066,8 +1066,8 @@ public class Bawi_AI : MonoBehaviour
         mainDrillAnim.SetBool("Spin", false);
 
         // Idle 애니메이션으로 전환
-        enemyManager.animList[0].SetBool("UseDrill", false);
+        character.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 }

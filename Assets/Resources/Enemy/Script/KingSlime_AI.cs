@@ -17,7 +17,7 @@ public class KingSlime_AI : MonoBehaviour
     public float atkRatio = 0.5f; //이동 멈추고 공격할 확률
 
     [Header("Refer")]
-    public EnemyManager enemyManager;
+    public Character character;
     public Transform crownObj;
     public GameObject slimePrefab; //새끼 슬라임 프리팹
     public EnemyAtkTrigger babyTrigger; //새끼 슬라임 소환 범위
@@ -33,7 +33,7 @@ public class KingSlime_AI : MonoBehaviour
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+        character = character == null ? GetComponentInChildren<Character>() : character;
     }
 
     private void OnEnable()
@@ -44,41 +44,41 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 콜라이더 충돌 초기화
-        enemyManager.physicsColl.enabled = false;
-        enemyManager.physicsColl.isTrigger = false;
+        character.physicsColl.enabled = false;
+        character.physicsColl.isTrigger = false;
 
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
         //애니메이션 스피드 초기화
-        if (enemyManager.animList != null)
-            enemyManager.animList[0].speed = 1f;
+        if (character.animList != null)
+            character.animList[0].speed = 1f;
 
         //속도 초기화
-        enemyManager.rigid.velocity = Vector2.zero;
+        character.rigid.velocity = Vector2.zero;
         // 위치 고정 해제
-        enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        character.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         //몸체 머터리얼 컬러 초기화
         Color bodyColor = Color.cyan;
-        enemyManager.spriteList[0].material.SetColor("_TexColor", bodyColor);
+        character.spriteList[0].material.SetColor("_TexColor", bodyColor);
         //아웃라인 컬러 초기화
         Color outLineColor = Color.cyan * 5f;
-        enemyManager.spriteList[0].material.SetColor("_Color", outLineColor);
+        character.spriteList[0].material.SetColor("_Color", outLineColor);
         //독 기모으기 스프라이트 초기화
         spriteFill.material.SetFloat("_FillRate", 0);
     }
 
     private void Update()
     {
-        if (enemyManager.enemy == null)
+        if (character.enemy == null)
             return;
 
         // 플레이어 체력 흡수
         AbsorbPlayer();
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         // 행동 관리
@@ -94,13 +94,13 @@ public class KingSlime_AI : MonoBehaviour
             if (absorbCoolCount <= 0f)
             {
                 // 고정 데미지에 확률 계산
-                float damage = Random.Range(enemyManager.powerNow * 0.8f, enemyManager.powerNow * 1.2f);
+                float damage = Random.Range(character.powerNow * 0.8f, character.powerNow * 1.2f);
 
                 // 플레이어 체력 깎기
                 PlayerManager.Instance.hitBox.Damage(damage, false);
 
                 // 플레이어가 입은 데미지만큼 보스 회복
-                enemyManager.hitBoxList[0].Damage(-damage, false, transform.position);
+                character.hitBoxList[0].Damage(-damage, false, transform.position);
 
                 // 쿨타임 갱신
                 absorbCoolCount = 1f;
@@ -114,7 +114,7 @@ public class KingSlime_AI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.Action.Idle)
             return;
 
         // Idle일때 쿨타임 카운트 차감
@@ -143,16 +143,16 @@ public class KingSlime_AI : MonoBehaviour
         // print("점프 시작");
 
         // 현재 행동 점프로 전환
-        enemyManager.nowAction = Character.Action.Jump;
+        character.nowAction = Character.Action.Jump;
 
         // 점프 애니메이션으로 전환
-        enemyManager.animList[0].SetBool("Jump", true);
+        character.animList[0].SetBool("Jump", true);
 
         // 점프 쿨타임 갱신
         coolCount = jumpCoolTime;
 
         // 스프라이트 레이어 레벨 높이기
-        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        foreach (SpriteRenderer sprite in character.spriteList)
         {
             sprite.sortingOrder = 1;
         }
@@ -170,7 +170,7 @@ public class KingSlime_AI : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = dir.magnitude > enemyManager.rangeNow ? enemyManager.rangeNow : dir.magnitude;
+        float distance = dir.magnitude > character.rangeNow ? character.rangeNow : dir.magnitude;
 
         //착지 위치 변수에 저장
         jumpLandPos = transform.position + dir.normalized * distance;
@@ -179,9 +179,9 @@ public class KingSlime_AI : MonoBehaviour
         transform.DOMove(jumpLandPos, 1f);
 
         // 콜라이더 끄기
-        enemyManager.physicsColl.enabled = false;
+        character.physicsColl.enabled = false;
         // 콜라이더 trigger로 전환
-        enemyManager.physicsColl.isTrigger = true;
+        character.physicsColl.isTrigger = true;
     }
 
     public void Landing()
@@ -190,14 +190,14 @@ public class KingSlime_AI : MonoBehaviour
         absorbAtkTrigger = true;
 
         //콜라이더 켜기
-        enemyManager.physicsColl.enabled = true;
+        character.physicsColl.enabled = true;
 
         // 착지 이펙트 생성
         if (landEffect != null)
             LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 스프라이트 레이어 레벨 초기화
-        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        foreach (SpriteRenderer sprite in character.spriteList)
         {
             sprite.sortingOrder = 0;
         }
@@ -209,22 +209,22 @@ public class KingSlime_AI : MonoBehaviour
         absorbAtkTrigger = false;
 
         // IDLE 애니메이션 전환
-        enemyManager.animList[0].SetBool("Jump", false);
+        character.animList[0].SetBool("Jump", false);
 
         // 플레이어 흡수 못했으면 콜라이더 충돌로 전환
         if (!nowAbsorb)
         {
-            enemyManager.physicsColl.isTrigger = false;
+            character.physicsColl.isTrigger = false;
 
             // 현재 행동 끝내기
-            enemyManager.nowAction = Character.Action.Idle;
+            character.nowAction = Character.Action.Idle;
         }
     }
     void ChooseAttack()
     {
         // print("공격 패턴 선택");
         // 현재 행동 공격으로 전환
-        enemyManager.nowAction = Character.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 패턴 쿨타임 중일때 리턴
         if (coolCount > 0)
@@ -258,12 +258,12 @@ public class KingSlime_AI : MonoBehaviour
 
         //가능한 공격 없을때
         // Idle 애니메이션으로 전환
-        enemyManager.animList[0].SetBool("isShaking", false);
-        enemyManager.animList[0].SetBool("isBounce", false);
-        enemyManager.animList[0].SetBool("Jump", false);
+        character.animList[0].SetBool("isShaking", false);
+        character.animList[0].SetBool("isBounce", false);
+        character.animList[0].SetBool("Jump", false);
 
         // 현재 행동 초기화
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     IEnumerator BabySlimeSummon()
@@ -271,22 +271,22 @@ public class KingSlime_AI : MonoBehaviour
         print("슬라임 소환 패턴");
 
         // 떨림 애니메이션 시작
-        enemyManager.animList[0].speed = 1f;
-        enemyManager.animList[0].SetBool("isShaking", true);
+        character.animList[0].speed = 1f;
+        character.animList[0].SetBool("isShaking", true);
 
         //떨림 애니메이션 시간 대기
         yield return new WaitForSeconds(1f);
 
         //떨림 애니메이션 끝
-        enemyManager.animList[0].SetBool("isShaking", false);
+        character.animList[0].SetBool("isShaking", false);
         // 바운스 애니메이션 시작
-        enemyManager.animList[0].SetBool("isBounce", true);
+        character.animList[0].SetBool("isBounce", true);
 
         // 애니메이터 활성화까지 대기
         // yield return new WaitUntil(() => enemyManager.animList[0].enabled);
 
         // 남은 체력에 비례해서 소환 횟수 산출, 5~15마리
-        int summonNum = 5 + Mathf.RoundToInt(10 * (enemyManager.hpMax - enemyManager.hpNow) / enemyManager.hpMax);
+        int summonNum = 5 + Mathf.RoundToInt(10 * (character.hpMax - character.hpNow) / character.hpMax);
         for (int i = 0; i < summonNum; i++)
         {
             //슬라임 소환
@@ -324,12 +324,12 @@ public class KingSlime_AI : MonoBehaviour
         }
 
         // 바운스 애니메이션 끝
-        enemyManager.animList[0].SetBool("isBounce", false);
+        character.animList[0].SetBool("isBounce", false);
         //애니메이션 끄기
         // enemyManager.animList[0].enabled = false;
 
         // 천천히 추욱 쳐지기
-        enemyManager.spriteObj.DOScale(new Vector2(1.2f, 0.7f), 1f)
+        character.spriteObj.DOScale(new Vector2(1.2f, 0.7f), 1f)
         .OnStart(() =>
         {
             crownObj.DOLocalMove(new Vector2(0, -2), 1f);
@@ -337,7 +337,7 @@ public class KingSlime_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 스케일 복구
-            enemyManager.spriteObj.DOScale(Vector2.one, 0.5f)
+            character.spriteObj.DOScale(Vector2.one, 0.5f)
             .OnStart(() =>
             {
                 crownObj.DOLocalMove(new Vector2(0, 0), 0.5f)
@@ -347,7 +347,7 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 현재 행동 초기화
-                enemyManager.nowAction = Character.Action.Idle;
+                character.nowAction = Character.Action.Idle;
             });
         });
 
@@ -358,7 +358,7 @@ public class KingSlime_AI : MonoBehaviour
     {
         // 떨림 애니메이션 시작
         // enemyManager.animList[0].enabled = true;
-        enemyManager.animList[0].SetBool("isShaking", true);
+        character.animList[0].SetBool("isShaking", true);
 
         // 머터리얼 컬러 0으로 초기화
         float fillAmount = 0;
@@ -378,7 +378,7 @@ public class KingSlime_AI : MonoBehaviour
         yield return new WaitUntil(() => fillAmount >= 1f);
 
         //떨림 애니메이션 종료
-        enemyManager.animList[0].SetBool("isShaking", false);
+        character.animList[0].SetBool("isShaking", false);
         // enemyManager.animList[0].enabled = false;
 
         // 보스에서 플레이어 방향
@@ -389,18 +389,18 @@ public class KingSlime_AI : MonoBehaviour
         poisonAtkParticle.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         // 납작해지기
-        enemyManager.spriteObj.DOScale(new Vector2(1.2f, 0.8f), 0.5f);
+        character.spriteObj.DOScale(new Vector2(1.2f, 0.8f), 0.5f);
         // 납작해지며 왕관도 내려가기
         crownObj.DOLocalMove(new Vector2(0, -1), 0.5f);
 
         // 납작해지기 완료까지 대기
-        yield return new WaitUntil(() => enemyManager.spriteObj.localScale == new Vector3(1.2f, 0.8f));
+        yield return new WaitUntil(() => character.spriteObj.localScale == new Vector3(1.2f, 0.8f));
 
         // 독 뿜기 공격
         poisonAtkParticle.Play();
 
         // 스케일 복구
-        enemyManager.spriteObj.DOScale(Vector2.one, 0.3f)
+        character.spriteObj.DOScale(Vector2.one, 0.3f)
         .SetEase(Ease.InOutBack);
         // 왕관 위치 복구
         crownObj.DOLocalMove(Vector2.zero, 0.3f)
@@ -420,7 +420,7 @@ public class KingSlime_AI : MonoBehaviour
         yield return new WaitUntil(() => fillAmount <= 0f);
 
         // 현재 행동 초기화
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -435,12 +435,12 @@ public class KingSlime_AI : MonoBehaviour
             nowAbsorb = true;
 
             //현재 행동 공격으로 전환
-            enemyManager.nowAction = Character.Action.Attack;
+            character.nowAction = Character.Action.Attack;
 
             // IDLE 애니메이션 전환
-            enemyManager.animList[0].SetBool("Jump", false);
+            character.animList[0].SetBool("Jump", false);
             // 바운스 애니메이션 시작
-            enemyManager.animList[0].SetBool("isBounce", true);
+            character.animList[0].SetBool("isBounce", true);
 
             // 플레이어 위치 이동하는 동안 이동 금지
             PlayerManager.Instance.speedDeBuff = 0;
@@ -483,16 +483,16 @@ public class KingSlime_AI : MonoBehaviour
             PlayerManager.Instance.Move();
 
             // 바운스 애니메이션 끝
-            enemyManager.animList[0].SetBool("isBounce", false);
+            character.animList[0].SetBool("isBounce", false);
 
             // 스케일 복구
             transform.localScale = Vector2.one;
 
             // 충돌 콜라이더 trigger 비활성화
-            enemyManager.physicsColl.isTrigger = false;
+            character.physicsColl.isTrigger = false;
 
             //현재 행동 초기화
-            enemyManager.nowAction = Character.Action.Idle;
+            character.nowAction = Character.Action.Idle;
         }
     }
 }

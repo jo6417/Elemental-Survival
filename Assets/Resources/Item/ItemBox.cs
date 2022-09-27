@@ -5,6 +5,7 @@ using UnityEngine;
 public class ItemBox : Character
 {
     [Header("Refer")]
+    HitBox hitBox;
     [SerializeField] Sprite[] boxSpriteList = new Sprite[2];
     [SerializeField] SpriteRenderer boxSprite;
     [SerializeField] List<ItemInfo> dropList = new List<ItemInfo>();
@@ -16,14 +17,18 @@ public class ItemBox : Character
     public SlotInfo slotInfo;
     [SerializeField, ReadOnly] string productName;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         // 콜라이더 찾기
         coll = coll != null ? coll : GetComponent<Collider2D>();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+
         StartCoroutine(Init());
     }
 
@@ -81,5 +86,21 @@ public class ItemBox : Character
         // 캐릭터 초기화 완료
         initialStart = true;
         initialFinish = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        // 스폰 콜라이더 밖으로 나갔을때
+        if (other.CompareTag("Respawn"))
+        {
+            // 스폰 테두리 랜덤 위치로 이동
+            transform.position = WorldSpawner.Instance.BorderRandPos();
+        }
+    }
+
+    private void OnDisable()
+    {
+        // 스폰 리스트에서 해당 아이템 삭제
+        WorldSpawner.Instance.itemBoxList.Remove(gameObject);
     }
 }

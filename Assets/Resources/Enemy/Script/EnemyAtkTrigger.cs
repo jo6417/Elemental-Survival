@@ -7,7 +7,7 @@ public class EnemyAtkTrigger : MonoBehaviour
     public GameObject explosionPrefab;
     public SpriteRenderer atkRangeBackground;
     public SpriteRenderer atkRangeFill;
-    public Character enemyManager;
+    public Character character;
 
     public bool atkTrigger; //범위내 타겟 들어왔는지 여부
 
@@ -15,6 +15,9 @@ public class EnemyAtkTrigger : MonoBehaviour
     {
         //공격 범위 인디케이터 스프라이트 찾기
         // atkRangeBackground = GetComponent<SpriteRenderer>();
+
+        // 캐릭터 찾기
+        character = character != null ? character : GetComponentInChildren<Character>();
     }
 
     private void OnEnable()
@@ -38,10 +41,10 @@ public class EnemyAtkTrigger : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
         // 고스트일때
-        if (enemyManager.IsGhost)
+        if (character.IsGhost)
         {
             // 플레이어가 공격하는 레이어
             gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
@@ -66,10 +69,10 @@ public class EnemyAtkTrigger : MonoBehaviour
             atkTrigger = true;
 
             // 자폭형 몬스터일때
-            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+            if (character && character.selfExplosion && !character.isDead)
             {
                 // 자폭하기
-                StartCoroutine(enemyManager.hitBoxList[0].Dead());
+                StartCoroutine(character.hitBoxList[0].Dead());
             }
         }
 
@@ -80,7 +83,7 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (other.TryGetComponent(out HitBox hitBox))
             {
                 // 충돌 대상이 본인이면 리턴
-                if (hitBox.character == enemyManager)
+                if (hitBox.character == character)
                     return;
 
                 // 충돌 몬스터도 고스트일때 리턴
@@ -94,10 +97,10 @@ public class EnemyAtkTrigger : MonoBehaviour
             atkTrigger = true;
 
             // 자폭형 몬스터일때
-            if (enemyManager && enemyManager.selfExplosion && !enemyManager.isDead)
+            if (character && character.selfExplosion && !character.isDead)
             {
                 // 자폭하기
-                StartCoroutine(enemyManager.hitBoxList[0].Dead());
+                StartCoroutine(character.hitBoxList[0].Dead());
             }
         }
     }
@@ -109,11 +112,11 @@ public class EnemyAtkTrigger : MonoBehaviour
             return;
 
         //  고스트 아닐때, 플레이어가 나가면
-        if (!enemyManager.IsGhost && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (!character.IsGhost && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
             atkTrigger = false;
 
         // 고스트일때, 몬스터가 나가면
-        if (enemyManager.IsGhost && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+        if (character.IsGhost && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
             atkTrigger = false;
     }
 }

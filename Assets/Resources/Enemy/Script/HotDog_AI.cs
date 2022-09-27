@@ -15,7 +15,7 @@ public class HotDog_AI : MonoBehaviour
     bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
-    public EnemyManager enemyManager;
+    public Character character;
     public EnemyAtkTrigger biteTrigger;
 
     [Header("Phase")]
@@ -91,7 +91,7 @@ public class HotDog_AI : MonoBehaviour
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+        character = character == null ? GetComponentInChildren<Character>() : character;
     }
 
     private void OnEnable()
@@ -129,17 +129,17 @@ public class HotDog_AI : MonoBehaviour
         dashAtk.enabled = false;
 
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
-        enemyManager.rigid.velocity = Vector2.zero; //속도 초기화
+        character.rigid.velocity = Vector2.zero; //속도 초기화
 
         //애니메이션 초기화
-        enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
-        enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
-        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
+        character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+        character.animList[0].SetBool(AnimState.isRun.ToString(), false);
+        character.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
         // 상태값 Idle로 초기화
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -187,7 +187,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 맞을때마다 Hit 함수 실행
-        enemyManager.hitCallback += Hit;
+        character.hitCallback += Hit;
 
         // 초기화 완료
         initDone = true;
@@ -201,7 +201,7 @@ public class HotDog_AI : MonoBehaviour
     IEnumerator PhaseChange()
     {
         // Idle 상태가 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.nowAction == Character.Action.Idle);
+        yield return new WaitUntil(() => character.nowAction == Character.Action.Idle);
 
         // 현재 페이즈 컬러
         Color _nowColor = phaseColor[nowPhase];
@@ -232,7 +232,7 @@ public class HotDog_AI : MonoBehaviour
         .SetEase(Ease.Linear);
 
         // 짖기 애니메이션 재생
-        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), true);
+        character.animList[0].SetBool(AnimState.isBark.ToString(), true);
 
         // 짖으며 범위 표시되는 시간 대기
         yield return new WaitForSeconds(1f);
@@ -302,29 +302,29 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 몬스터의 기본 정보값
-        EnemyInfo originEnemy = EnemyDB.Instance.GetEnemyByID(enemyManager.enemy.id);
+        EnemyInfo originEnemy = EnemyDB.Instance.GetEnemyByID(character.enemy.id);
 
         // 데미지 갱신
-        enemyManager.enemy.power = originEnemy.power * damageMultiple;
+        character.enemy.power = originEnemy.power * damageMultiple;
 
         // HDR 색으로 변화
         hdrMat.DOColor(changeColor, 0.5f)
         .OnUpdate(() =>
         {
             // OriginMat 에서 HDR 머터리얼 컬러 전부 교체해주기
-            for (int i = 0; i < enemyManager.originMatList.Count; i++)
+            for (int i = 0; i < character.originMatList.Count; i++)
             {
                 // originMatList에서 glowMat과 이름 같은 머터리얼 찾으면
-                if (enemyManager.originMatList[i].name.Contains(hdrMat.name))
+                if (character.originMatList[i].name.Contains(hdrMat.name))
                 {
-                    enemyManager.originMatList[i] = hdrMat;
+                    character.originMatList[i] = hdrMat;
                 }
             }
 
             // OriginMat 에서 HDR 머터리얼 컬러 전부 교체해주기
-            for (int i = 0; i < enemyManager.originMatColorList.Count; i++)
+            for (int i = 0; i < character.originMatColorList.Count; i++)
             {
-                enemyManager.originMatColorList[i] = hdrMat.color;
+                character.originMatColorList[i] = hdrMat.color;
             }
         });
 
@@ -394,7 +394,7 @@ public class HotDog_AI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // 짖기 애니메이션 끄기
-        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
+        character.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
         print(nowPhase + " -> " + nextPhase);
 
@@ -411,7 +411,7 @@ public class HotDog_AI : MonoBehaviour
     void SwitchInvinsible(bool state)
     {
         // 무적 상태 갱신
-        enemyManager.invinsible = state;
+        character.invinsible = state;
 
         // 무적임을 나타내기 위한 쉴드 토글
         if (state)
@@ -432,15 +432,15 @@ public class HotDog_AI : MonoBehaviour
 
     void Update()
     {
-        if (enemyManager.enemy == null)
+        if (character.enemy == null)
             return;
 
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.Action.Idle)
             return;
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         // AI 초기화 완료 안됬으면 리턴
@@ -465,14 +465,14 @@ public class HotDog_AI : MonoBehaviour
         if (nextPhase > nowPhase)
         {
             // 상태값 Idle로 초기화
-            enemyManager.nowAction = Character.Action.Idle;
+            character.nowAction = Character.Action.Idle;
 
             // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             // Idle 애니메이션 진행
-            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+            character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
             return;
         }
@@ -490,14 +490,14 @@ public class HotDog_AI : MonoBehaviour
             stateText.text = "Bite : " + playerDistance;
 
             // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            enemyManager.nowAction = Character.Action.Attack;
+            character.nowAction = Character.Action.Attack;
 
             // 이동 애니메이션 종료
-            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+            character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
             // 호흡 이펙트 끄기
             breathEffect.SmoothDisable();
@@ -518,10 +518,10 @@ public class HotDog_AI : MonoBehaviour
             stateText.text = "Attack : " + playerDistance;
 
             // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            enemyManager.nowAction = Character.Action.Attack;
+            character.nowAction = Character.Action.Attack;
 
             //공격 패턴 결정하기
             StartCoroutine(ChooseAttack());
@@ -538,7 +538,7 @@ public class HotDog_AI : MonoBehaviour
 
     void Move()
     {
-        enemyManager.nowAction = Character.Action.Walk;
+        character.nowAction = Character.Action.Walk;
 
         // 움직이는 동안 공격 쿨타임 차감
         if (coolCount >= 0)
@@ -548,7 +548,7 @@ public class HotDog_AI : MonoBehaviour
         breathEffect.gameObject.SetActive(true);
 
         //애니메이터 켜기
-        enemyManager.animList[0].enabled = true;
+        character.animList[0].enabled = true;
 
         // 플레이어까지 방향 벡터
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
@@ -562,15 +562,15 @@ public class HotDog_AI : MonoBehaviour
         if (playerDistance <= farDistance)
         {
             // Walk 애니메이션으로 전환
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
-            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), true);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), false);
+            character.animList[0].SetBool(AnimState.isWalk.ToString(), true);
         }
         // 플레이어가 멀리 있을때
         else
         {
             // Run 애니메이션으로 전환
-            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
+            character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
             // 속도 빠르게
             runSpeed = 2f;
@@ -596,11 +596,11 @@ public class HotDog_AI : MonoBehaviour
         if (moveDistance < 1f)
         {
             // 이동 멈추기
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             // Idle 애니메이션 진행
-            enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+            character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), false);
         }
         else
         {
@@ -615,9 +615,9 @@ public class HotDog_AI : MonoBehaviour
             }
 
             //해당 방향으로 가속
-            enemyManager.rigid.velocity =
+            character.rigid.velocity =
             moveDir.normalized // 이동 방향
-            * enemyManager.speedNow //몬스터 정보 속도
+            * character.speedNow //몬스터 정보 속도
             * SystemManager.Instance.globalTimeScale //시간 비율 계산
             * runSpeed //달리기 속도 배율
             * speedMultiple; // 페이즈별로 속도 배율
@@ -626,20 +626,20 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 상태값 Idle로 초기화
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     IEnumerator ChooseAttack()
     {
         // 현재 액션 변경
-        enemyManager.nowAction = Character.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 이동 애니메이션 종료
-        enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
-        enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+        character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+        character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
         // 백스텝 애니메이션 실행 후 대기
-        enemyManager.animList[0].SetTrigger(AnimState.BackStep.ToString());
+        character.animList[0].SetTrigger(AnimState.BackStep.ToString());
 
         // 플레이어까지 방향 벡터
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
@@ -700,10 +700,10 @@ public class HotDog_AI : MonoBehaviour
         yield return new WaitForSeconds(endDelay);
 
         // 상태값 Idle로 초기화
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         // 애니메이션 속도 초기화
-        enemyManager.animList[0].speed = 1f;
+        character.animList[0].speed = 1f;
     }
 
     void BackStepMove()
@@ -714,7 +714,7 @@ public class HotDog_AI : MonoBehaviour
         Vector2 backStepPos = (Vector2)transform.position + new Vector2(dirX, dirY);
 
         // 마지막 플레이어 위치 반대 방향으로 이동
-        enemyManager.rigid.DOMove(backStepPos, 0.5f);
+        character.rigid.DOMove(backStepPos, 0.5f);
     }
 
     void StartChargeEffect()
@@ -726,22 +726,22 @@ public class HotDog_AI : MonoBehaviour
     void Bite()
     {
         // 걷기 애니메이션 끄기
-        enemyManager.animList[0].SetBool(AnimState.isWalk.ToString(), false);
+        character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
 
         // 물기 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.Bite.ToString());
+        character.animList[0].SetTrigger(AnimState.Bite.ToString());
 
         // 백스텝 애니메이션 실행 예약
-        enemyManager.animList[0].SetTrigger(AnimState.BackStep.ToString());
+        character.animList[0].SetTrigger(AnimState.BackStep.ToString());
 
         // 페이즈별로 물기 모션 속도 적용
-        enemyManager.animList[0].speed = speedMultiple;
+        character.animList[0].speed = speedMultiple;
     }
 
     void BiteEnd()
     {
         // 애니메이터 속도 초기화
-        enemyManager.animList[0].speed = 1f;
+        character.animList[0].speed = 1f;
 
         // 행동 초기화
         StartCoroutine(SetIdle(2f));
@@ -753,9 +753,9 @@ public class HotDog_AI : MonoBehaviour
     IEnumerator HellfireAtk()
     {
         // 차지 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.ChargeBall.ToString());
+        character.animList[0].SetTrigger(AnimState.ChargeBall.ToString());
         // 차지 끝나면 에너지볼 먹는 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.Eat.ToString());
+        character.animList[0].SetTrigger(AnimState.Eat.ToString());
 
         // 3연속 점프
         for (int i = 0; i < 3; i++)
@@ -763,7 +763,7 @@ public class HotDog_AI : MonoBehaviour
             jumpCount = i;
 
             // 점프 애니메이션 재생
-            enemyManager.animList[0].SetTrigger(AnimState.Jump.ToString());
+            character.animList[0].SetTrigger(AnimState.Jump.ToString());
 
             // 점프 애니메이션 끝날때까지 대기
             yield return new WaitUntil(() => jumpCount == -1);
@@ -880,9 +880,9 @@ public class HotDog_AI : MonoBehaviour
     void MeteorAtk()
     {
         // 차지 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.ChargeBall.ToString());
+        character.animList[0].SetTrigger(AnimState.ChargeBall.ToString());
         // 에너지볼 발사 애니메이션 재생
-        enemyManager.animList[0].SetTrigger(AnimState.Launch.ToString());
+        character.animList[0].SetTrigger(AnimState.Launch.ToString());
     }
 
     // meteor 애니메이션 끝날때쯤 meteor 소환 함수
@@ -924,12 +924,12 @@ public class HotDog_AI : MonoBehaviour
     IEnumerator StealthAtk()
     {
         // 짖기 애니메이션 재생
-        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), true);
+        character.animList[0].SetBool(AnimState.isBark.ToString(), true);
 
         // 히트박스 전부 끄기
-        for (int i = 0; i < enemyManager.hitBoxList.Count; i++)
+        for (int i = 0; i < character.hitBoxList.Count; i++)
         {
-            enemyManager.hitBoxList[i].enabled = false;
+            character.hitBoxList[i].enabled = false;
         }
 
         // 짖기 애니메이션 대기
@@ -939,10 +939,10 @@ public class HotDog_AI : MonoBehaviour
         MakeFog();
 
         // 투명해질때까지 대기
-        yield return new WaitUntil(() => enemyManager.spriteList[0].color == Color.clear);
+        yield return new WaitUntil(() => character.spriteList[0].color == Color.clear);
 
         // 짖기 애니메이션 트리거 끄기
-        enemyManager.animList[0].SetBool(AnimState.isBark.ToString(), false);
+        character.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
         // 돌진 횟수 계산 (2 ~ 4회)
         int atkNum = Random.Range(2, 5);
@@ -983,7 +983,7 @@ public class HotDog_AI : MonoBehaviour
             }
 
             // 스프라이트 색 초기화
-            foreach (SpriteRenderer sprite in enemyManager.spriteList)
+            foreach (SpriteRenderer sprite in character.spriteList)
             {
                 sprite.DOColor(Color.white, 0.2f);
             }
@@ -998,9 +998,9 @@ public class HotDog_AI : MonoBehaviour
             eyeGlow.DOColor(Color.white, 0.2f);
 
             // 히트박스 전부 켜기
-            for (int j = 0; j < enemyManager.hitBoxList.Count; j++)
+            for (int j = 0; j < character.hitBoxList.Count; j++)
             {
-                enemyManager.hitBoxList[i].enabled = true;
+                character.hitBoxList[i].enabled = true;
             }
 
             // 대쉬 어택 콜라이더 켜기
@@ -1013,7 +1013,7 @@ public class HotDog_AI : MonoBehaviour
             GameObject eyeTrail = LeanPool.Spawn(eyeTrailPrefab, eyeFlash.transform.position, Quaternion.identity, eyeFlash.transform.parent);
 
             // Run 애니메이션 재생
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), true);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
             // 돌진 시간 계산
             float moveSpeed = 1.5f / speedMultiple;
@@ -1057,7 +1057,7 @@ public class HotDog_AI : MonoBehaviour
             yield return new WaitForSeconds(moveSpeed - 0.5f);
 
             // 스프라이트 색 투명하게
-            foreach (SpriteRenderer sprite in enemyManager.spriteList)
+            foreach (SpriteRenderer sprite in character.spriteList)
             {
                 sprite.DOColor(Color.clear, 0.2f);
             }
@@ -1068,9 +1068,9 @@ public class HotDog_AI : MonoBehaviour
             eyeGlow.DOColor(Color.clear, 0.2f);
 
             // 히트박스 전부 끄기
-            for (int j = 0; j < enemyManager.hitBoxList.Count; j++)
+            for (int j = 0; j < character.hitBoxList.Count; j++)
             {
-                enemyManager.hitBoxList[i].enabled = false;
+                character.hitBoxList[i].enabled = false;
             }
 
             // 대쉬 어택 콜라이더 끄기
@@ -1080,7 +1080,7 @@ public class HotDog_AI : MonoBehaviour
             rightStart = !rightStart;
 
             // 애니메이션 idle
-            enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+            character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
             // 돌진 후딜레이 대기
             yield return new WaitForSeconds(0.5f);
@@ -1100,16 +1100,16 @@ public class HotDog_AI : MonoBehaviour
         // 대쉬 어택 콜라이더 끄기
         dashAtk.enabled = false;
         // 충돌 콜라이더 켜기
-        enemyManager.physicsColl.enabled = true;
+        character.physicsColl.enabled = true;
 
         // 히트박스 전부 켜기
-        for (int i = 0; i < enemyManager.hitBoxList.Count; i++)
+        for (int i = 0; i < character.hitBoxList.Count; i++)
         {
-            enemyManager.hitBoxList[i].enabled = true;
+            character.hitBoxList[i].enabled = true;
         }
 
         // 애니메이션 idle
-        enemyManager.animList[0].SetBool(AnimState.isRun.ToString(), false);
+        character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
         // 글로벌 라이트 초기화
         DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, SystemManager.Instance.globalLightDefault, 0.5f);
@@ -1121,7 +1121,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 스프라이트 색 초기화
-        foreach (SpriteRenderer sprite in enemyManager.spriteList)
+        foreach (SpriteRenderer sprite in character.spriteList)
         {
             sprite.DOColor(Color.white, 0.5f);
         }
@@ -1155,15 +1155,15 @@ public class HotDog_AI : MonoBehaviour
         groundSmoke.gameObject.SetActive(true);
 
         //충돌 콜라이더 끄기
-        enemyManager.physicsColl.enabled = false;
+        character.physicsColl.enabled = false;
 
         // 글로벌 라이트 어둡게
         DOTween.To(x => SystemManager.Instance.globalLight.intensity = x, SystemManager.Instance.globalLight.intensity, 0.1f, 1f);
 
         // 스프라이트 투명해지며 사라지기
-        for (int i = 0; i < enemyManager.spriteList.Count; i++)
+        for (int i = 0; i < character.spriteList.Count; i++)
         {
-            enemyManager.spriteList[i].DOColor(Color.clear, 1f)
+            character.spriteList[i].DOColor(Color.clear, 1f)
             .OnComplete(() =>
             {
                 // 몸에서 HDR 빛나는 오브젝트 모두 끄기
@@ -1188,7 +1188,7 @@ public class HotDog_AI : MonoBehaviour
     #region FootDust
     void HandDustPlay()
     {
-        if (enemyManager.nowAction == Character.Action.Walk)
+        if (character.nowAction == Character.Action.Walk)
             handDust.Play();
     }
 
@@ -1199,7 +1199,7 @@ public class HotDog_AI : MonoBehaviour
 
     void FootDustPlay()
     {
-        if (enemyManager.nowAction == Character.Action.Walk)
+        if (character.nowAction == Character.Action.Walk)
             footDust.Play();
     }
 
@@ -1214,7 +1214,7 @@ public class HotDog_AI : MonoBehaviour
         // 체력이 2/3 ~ 3/3 사이일때 1페이즈
 
         // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
-        if (nowPhase == 1 && enemyManager.hpNow / enemyManager.hpMax <= 2f / 3f)
+        if (nowPhase == 1 && character.hpNow / character.hpMax <= 2f / 3f)
         {
             // 페이즈업 함수 실행 안됬을때
             if (nowPhase == nextPhase)
@@ -1228,7 +1228,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
-        if (nowPhase == 2 && enemyManager.hpNow / enemyManager.hpMax <= 1f / 3f)
+        if (nowPhase == 2 && character.hpNow / character.hpMax <= 1f / 3f)
         {
             // 페이즈업 함수 실행 안됬을때
             if (nowPhase == nextPhase)
@@ -1242,7 +1242,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 체력이 0 이하일때, 죽었을때
-        if (enemyManager.hpNow <= 0)
+        if (character.hpNow <= 0)
         {
             // 글로벌 라이트 초기화
             SystemManager.Instance.globalLight.intensity = SystemManager.Instance.globalLight.intensity;

@@ -81,10 +81,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  enemyManager: {fileID: 367713317556661536}
+  character: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
@@ -256,10 +256,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -269,7 +269,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  enemyManager: {fileID: 367713317556661536}
+  character: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
@@ -5271,60 +5271,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpNow: 0
-  hpMax: 0
-  rigid: {fileID: 5731709546891530442}
-  anim: {fileID: 0}
-  eliteClass: 0
+  defaultHasItem: ffffffff
   initialStart: 1
   initialFinish: 0
+  eliteClass: 0
   lookLeft: 0
-  defaultHasItem: ffffffff
+  hpNow: 0
+  hpMax: 0
+  isDead: 0
+  changeGhost: 0
+  portalSize: 1.2
+  afterEffect: 0
+  invinsible: 0
+  selfExplosion: 0
+  attackRange: 0
+  healCount: 0
+  isGhost: 0
+  nowState: 0
+  nowAction: 0
+  moveType: 0
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  nowState: 0
-  nowAction: 0
-  moveType: 0
-  portalSize: 1.2
-  afterEffect: 0
-  isDead: 0
-  selfExplosion: 0
-  attackRange: 0
-  changeGhost: 0
+  shadow: {fileID: 4450725897239236901}
+  spriteList:
+  - {fileID: 2142261907023557570}
   enemyAI: {fileID: 3988004795875851619}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
   spriteObj: {fileID: 6348597076793159104}
-  shadow: {fileID: 4450725897239236901}
   healRange: {fileID: 0}
-  spriteList:
-  - {fileID: 2142261907023557570}
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
   animList:
   - {fileID: 1169140569}
   - {fileID: 1117852761}
   physicsColl: {fileID: 1921554375}
+  rigid: {fileID: 5731709546891530442}
+  buffParent: {fileID: 8901141728354415194}
+  particleHitCount: 0
+  hitDelayCount: 0
+  stopCount: 0
+  flatCount: 0
+  oppositeCount: 0
+  moveSpeedDebuff: 1
+  hitEffect: {fileID: 0}
   hitBoxList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
   powerNow: 0
   speedNow: 0
   rangeNow: 0
   cooltimeNow: 0
-  buffParent: {fileID: 0}
-  particleHitCount: 0
-  hitCount: 0
-  stopCount: 0
-  flatCount: 0
-  oppositeCount: 0
-  poisonCoolCount: 0
-  bleedCoolCount: 0
   enemyName: 
   enemyType: 
-  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &3988004795875851619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5337,8 +5338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeedDebuff: 1
-  enemyManager: {fileID: 367713317556661536}
+  character: {fileID: 367713317556661536}
   targetDir: {x: 0, y: 0, z: 0}
   moveCoolTime: 1
   moveCoolCount: 0
@@ -5429,7 +5429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 367713317556661536}
+  character: {fileID: 367713317556661536}
 --- !u!70 &894845260486342895
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5531,10 +5531,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -5544,7 +5544,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  enemyManager: {fileID: 367713317556661536}
+  character: {fileID: 367713317556661536}
   enemyName: 
   atkColl: {fileID: 7146421470627484963}
   dashEffect: {fileID: 2245917149986370186}
@@ -5915,6 +5915,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2282559697499699900}
     m_Modifications:
+    - target: {fileID: 223247545978266084, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1422577823990088107, guid: c4e91ebdbc1aa0045b484267392b6c33,
         type: 3}
       propertyPath: m_RootOrder
@@ -5972,8 +5977,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4465887104240193266, guid: c4e91ebdbc1aa0045b484267392b6c33,
         type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802,
+        type: 3}
+    - target: {fileID: 4465887104240193266, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.990566
+      objectReference: {fileID: 0}
+    - target: {fileID: 4465887104240193266, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.72581553
+      objectReference: {fileID: 0}
+    - target: {fileID: 4465887104240193266, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.26788884
+      objectReference: {fileID: 0}
+    - target: {fileID: 4465887104240193266, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4465887104240193266, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6817217322139260917, guid: c4e91ebdbc1aa0045b484267392b6c33,
         type: 3}
@@ -5987,7 +6018,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7649003865761871219, guid: c4e91ebdbc1aa0045b484267392b6c33,
         type: 3}
+      propertyPath: ghostPrefab
+      value: 
+      objectReference: {fileID: 1867821101119519115, guid: d807eeb4a19e3774da6db29d371f8f85,
+        type: 3}
+    - target: {fileID: 7649003865761871219, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
       propertyPath: originSprite
+      value: 
+      objectReference: {fileID: 2142261907023557570}
+    - target: {fileID: 7649003865761871219, guid: c4e91ebdbc1aa0045b484267392b6c33,
+        type: 3}
+      propertyPath: targetSprite
       value: 
       objectReference: {fileID: 2142261907023557570}
     - target: {fileID: 7649003865761871219, guid: c4e91ebdbc1aa0045b484267392b6c33,

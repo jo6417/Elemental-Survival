@@ -5,24 +5,24 @@ using Lean.Pool;
 using DG.Tweening;
 using UnityEngine.Experimental;
 
-public class EnemySpawn : MonoBehaviour
+public class WorldSpawner : MonoBehaviour
 {
     #region Singleton
-    private static EnemySpawn instance;
-    public static EnemySpawn Instance
+    private static WorldSpawner instance;
+    public static WorldSpawner Instance
     {
         get
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<EnemySpawn>();
+                var obj = FindObjectOfType<WorldSpawner>();
                 if (obj != null)
                 {
                     instance = obj;
                 }
                 else
                 {
-                    var newObj = new GameObject().AddComponent<EnemySpawn>();
+                    var newObj = new GameObject().AddComponent<WorldSpawner>();
                     instance = newObj;
                 }
             }
@@ -37,22 +37,28 @@ public class EnemySpawn : MonoBehaviour
     public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
     public bool allEliteSwitch; // 모든 적이 엘리트
 
-    Collider2D fenceColl; // 스포너 테두리 콜라이더
-    public int modifyEnemyPower; //! 전투력 임의 수정값
-    public int MaxEnemyPower; //최대 몬스터 전투력
+    [Header("State")]
+    [SerializeField] int modifyEnemyPower; //! 전투력 임의 수정값
+    [SerializeField, ReadOnly] int MaxEnemyPower; //최대 몬스터 전투력
     public int NowEnemyPower; //현재 몬스터 전투력
-    // public float spawnCoolTime = 3f; //몬스터 스폰 쿨타임
-    public float spawnCoolCount; //몬스터 스폰 쿨타임 카운트
-    public bool nowSpawning; //스폰중일때
-    public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
+    [SerializeField] float enemySpawnCount; //몬스터 스폰 쿨타임 카운트
+    [SerializeField] float itemboxSpawnCount; //아이템 박스 스폰 쿨타임 카운트
+    [SerializeField] float lockerSpawnCount; //아이템 금고 스폰 쿨타임 카운트
+    [SerializeField, ReadOnly] bool nowSpawning; //스폰중일때
+    [SerializeField, ReadOnly] List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
     public List<Character> spawnEnemyList = new List<Character>(); //현재 스폰된 몬스터 리스트
+    public List<GameObject> itemBoxList = new List<GameObject>(); // 현재 스폰된 아이템 박스 리스트
+    public List<GameObject> lockerList = new List<GameObject>(); // 현재 스폰된 아이템 금고 리스트
 
     [Header("Refer")]
-    public GameObject dustPrefab; //먼지 이펙트 프리팹
-    public GameObject mobPortal; //몬스터 등장할 포탈 프리팹
-    public GameObject bloodPrefab; //혈흔 프리팹
+    [SerializeField] GameObject itemBoxPrefab; // 파괴 가능한 아이템 박스
+    [SerializeField] GameObject lockerPrefab; // 구매 가능한 아이템 금고
+    [SerializeField] GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject healRange; // Heal 엘리트 몬스터의 힐 범위
     public GameObject hitEffect; // 몬스터 피격시 이펙트
+    public GameObject dustPrefab; //먼지 이펙트 프리팹
+    public GameObject bloodPrefab; //혈흔 프리팹
+    BoxCollider2D spawnColl; // 스포너 테두리 콜라이더
 
     private void Awake()
     {
@@ -62,56 +68,89 @@ public class EnemySpawn : MonoBehaviour
 
     void Start()
     {
-        fenceColl = GetComponent<BoxCollider2D>();
+        spawnColl = GetComponent<BoxCollider2D>();
     }
 
     void Update()
     {
-        //스폰 멈추기 스위치
-        if (!spawnSwitch)
-            return;
-
         //DB 로드 되어야 진행
         if (!EnemyDB.Instance.loadDone)
             return;
 
-        // 쿨타임마다 실행하기, 스폰중 아닐때
-        if (spawnCoolCount <= 0 && !nowSpawning)
-        {
-            //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
-            float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
-
-            // 스폰 횟수 범위 제한
-            maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
-
-            // 1~3번 중 랜덤으로 반복
-            int spawnNum = Random.Range(1, (int)maxSpawnNum);
-
-            // print(spawnCoolCount + " / " + spawnNum + " 번 스폰");
-
-            //! 테스트를 위해 하나씩소환
-            // int spawnNum = 1;
-
-            for (int i = 0; i < spawnNum; i++)
+        // 스폰 스위치 켜져있을때
+        if (spawnSwitch)
+            // 쿨타임마다 몬스터 스폰, 스폰중 아닐때
+            if (enemySpawnCount <= 0 && !nowSpawning)
             {
-                //랜덤 몬스터 스폰
-                StartCoroutine(SpawnMob());
+                //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
+                float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
+
+                // 스폰 횟수 범위 제한
+                maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
+
+                // 1~3번 중 랜덤으로 반복
+                int spawnNum = Random.Range(1, (int)maxSpawnNum);
+
+                // print(spawnCoolCount + " / " + spawnNum + " 번 스폰");
+
+                for (int i = 0; i < spawnNum; i++)
+                {
+                    //랜덤 몬스터 스폰
+                    StartCoroutine(SpawnEnemy());
+                }
+            }
+            else
+                enemySpawnCount -= Time.deltaTime;
+
+        // 쿨타임마다 아이템 박스 스폰
+        if (itemboxSpawnCount <= 0)
+        {
+            // 랜덤 스폰 확률
+            float spawnRate = Random.value;
+            // 아이템 박스 개수에 반비례해서 확률 스폰 (100% 확률에서 박스 1개당 확률 10% 차감)
+            if (spawnRate <= 1f - itemBoxList.Count * 1f / 10f)
+            {
+                // 아이템 박스 스폰, 최대 10개
+                GameObject itembox = SpawnItembox(itemBoxPrefab);
+
+                // 생성된 박스를 리스트에 포함
+                itemBoxList.Add(itembox);
+
+                // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
+                float boxCoolTime = 3f + itemBoxList.Count * 5f;
+                // 쿨타임 갱신
+                itemboxSpawnCount = boxCoolTime;
             }
         }
         else
-        {
-            spawnCoolCount -= Time.deltaTime; //스폰 쿨타임 카운트하기
-        }
+            itemboxSpawnCount -= Time.deltaTime;
 
-        //! 테스트용 수동 스폰, 쿨타임 무시, 몬스터 총 전투력 무시
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     //랜덤 몬스터 스폰
-        //     StartCoroutine(SpawnMob(true));
-        // }
+
+        // 쿨타임마다 아이템 금고 스폰
+        if (lockerSpawnCount <= 0)
+        {
+            // 랜덤 스폰 확률
+            float spawnRate = Random.value;
+            // 아이템 박스 개수에 반비례해서 확률 스폰 (100% 확률에서 박스 1개당 확률 10% 차감)
+            if (spawnRate <= 1f - lockerList.Count * 1f / 5f)
+            {
+                // 아이템 금고 스폰, 최대 5개
+                GameObject itembox = SpawnItembox(lockerPrefab);
+
+                // 생성된 금고를 리스트에 포함
+                lockerList.Add(itembox);
+
+                // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
+                float boxCoolTime = 10f + lockerList.Count * 10f;
+                // 쿨타임 갱신
+                lockerSpawnCount = boxCoolTime;
+            }
+        }
+        else
+            lockerSpawnCount -= Time.deltaTime;
     }
 
-    IEnumerator SpawnMob(bool ForceSpawn = false)
+    IEnumerator SpawnEnemy(bool ForceSpawn = false)
     {
         //스폰 스위치 꺼졌으면 스폰 멈추기
         if (!spawnSwitch)
@@ -200,11 +239,8 @@ public class EnemySpawn : MonoBehaviour
         // 1~5초 사이 값으로 범위 제한
         spawnCoolTime = Mathf.Clamp(spawnCoolTime, 1f, 10f);
 
-        //! 쿨타임 고정
-        // spawnCoolTime = 0f;
-
         // 쿨타임 갱신
-        spawnCoolCount = spawnCoolTime;
+        enemySpawnCount = spawnCoolTime;
 
         // print(enemy.enemyName + " : 스폰");
 
@@ -245,10 +281,10 @@ public class EnemySpawn : MonoBehaviour
         // 캐릭터 찾기
         Character character = enemyObj.GetComponentInChildren<Character>();
         // 몬스터 매니저 찾기
-        EnemyManager enemyManager = character as EnemyManager;
+        // EnemyManager enemyManager = character as EnemyManager;
 
         //몬스터 리스트에 넣기
-        spawnEnemyList.Add(enemyManager);
+        spawnEnemyList.Add(character);
 
         // 엘리트 종류 기본값 None
         int eliteClass = 0;
@@ -264,13 +300,13 @@ public class EnemySpawn : MonoBehaviour
             enemySprite.material = SystemManager.Instance.spriteLitMat;
         }
         // 엘리트 종류를 매니저에 전달
-        enemyManager.eliteClass = (EnemyManager.EliteClass)eliteClass;
+        character.eliteClass = (Character.EliteClass)eliteClass;
 
         //EnemyInfo 정보 넣기
-        enemyManager.enemy = enemyInfo;
+        character.enemy = enemyInfo;
 
         //포탈 소환 위치
-        Vector2 portalPos = spawnEndPos + Vector2.down * enemyManager.portalSize / 2;
+        Vector2 portalPos = spawnEndPos + Vector2.down * character.portalSize / 2;
         //몬스터 소환 시작 위치
         Vector2 spawnStartPos = spawnEndPos + Vector2.down * enemySprite.bounds.size.y * 1.5f;
 
@@ -308,13 +344,13 @@ public class EnemySpawn : MonoBehaviour
         portalSeq
         .Append(
             // 포탈을 몬스터 사이즈 맞게 키우기
-            portal.transform.DOScale(new Vector2(enemyManager.portalSize, enemyManager.portalSize), 0.5f)
+            portal.transform.DOScale(new Vector2(character.portalSize, character.portalSize), 0.5f)
             .OnComplete(() =>
             {
                 //아이콘 활성화
                 iconObj.SetActive(true);
                 //아이콘은 줄이기
-                iconObj.transform.localScale = Vector2.one * 0.1f / enemyManager.portalSize;
+                iconObj.transform.localScale = Vector2.one * 0.1f / character.portalSize;
             })
         )
         .Append(
@@ -329,7 +365,7 @@ public class EnemySpawn : MonoBehaviour
             enemyObj.SetActive(true);
 
             // 소환된 몬스터 초기화 시작
-            enemyManager.initialStart = true;
+            character.initialStart = true;
 
             // 몬스터 위치 가리킬 화살표 UI 소환
             StartCoroutine(PointEnemyDir(enemyObj));
@@ -356,6 +392,47 @@ public class EnemySpawn : MonoBehaviour
 
         // 죽은 적을 리스트에서 제거
         spawnEnemyList.Remove(enemyManager);
+    }
+
+    GameObject SpawnItembox(GameObject itemBox)
+    {
+        // 박스 생성 위치
+        Vector2 boxPos = default;
+        bool isClose = true;
+        int loopNum = 0;
+        while (isClose)
+        {
+            // 변수 초기화
+            isClose = false;
+
+            // 생성 위치 뽑기
+            boxPos = BorderRandPos();
+            loopNum++;
+
+            for (int i = 0; i < itemBoxList.Count; i++)
+            {
+                // 기존 박스와 거리 계산
+                float distance = Vector2.Distance(itemBoxList[i].transform.position, boxPos);
+
+                // 기존 박스와 거리가 가까우면
+                if (distance <= 5f)
+                {
+                    isClose = true;
+                    break;
+                }
+            }
+
+            // 100번 이상 반복하면 탈출
+            if (loopNum > 100)
+                break;
+        }
+
+        // 아이템 박스 생성
+        GameObject itembox = LeanPool.Spawn(itemBox, boxPos, Quaternion.identity, SystemManager.Instance.itemPool);
+
+        // print($"loopNum : {loopNum}");
+
+        return itembox;
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -392,36 +469,41 @@ public class EnemySpawn : MonoBehaviour
     Vector2 InnerRandPos()
     {
         // 콜라이더 내 랜덤 위치
-        float spawnPosX = Random.Range(fenceColl.bounds.min.x, fenceColl.bounds.max.x);
-        float spawnPosY = Random.Range(fenceColl.bounds.min.y, fenceColl.bounds.max.y);
+        float spawnPosX = Random.Range(spawnColl.bounds.min.x, spawnColl.bounds.max.x);
+        float spawnPosY = Random.Range(spawnColl.bounds.min.y, spawnColl.bounds.max.y);
 
         return new Vector2(spawnPosX, spawnPosY);
     }
 
     //콜라이더 테두리 랜덤 위치
-    Vector2 BorderRandPos()
+    public Vector2 BorderRandPos()
     {
-        float spawnPosX = Random.Range(fenceColl.bounds.min.x, fenceColl.bounds.max.x);
-        float spawnPosY = Random.Range(fenceColl.bounds.min.y, fenceColl.bounds.max.y);
+        float edgeRadius = spawnColl.edgeRadius;
+        float spawnPosX = Random.Range(spawnColl.bounds.min.x, spawnColl.bounds.max.x);
+        float spawnPosY = Random.Range(spawnColl.bounds.min.y, spawnColl.bounds.max.y);
         int spawnSide = Random.Range(0, 4);
 
         // 스폰될 모서리 방향
         switch (spawnSide)
         {
+            // 위
             case 0:
-                spawnPosY = fenceColl.bounds.max.y;
+                spawnPosY = Random.Range(spawnColl.bounds.max.y, spawnColl.bounds.max.y + edgeRadius);
                 break;
 
+            // 오른쪽
             case 1:
-                spawnPosX = fenceColl.bounds.max.x;
+                spawnPosX = Random.Range(spawnColl.bounds.max.x, spawnColl.bounds.max.x + edgeRadius);
                 break;
 
+            // 아래
             case 2:
-                spawnPosY = fenceColl.bounds.min.y;
+                spawnPosY = Random.Range(spawnColl.bounds.min.y, spawnColl.bounds.min.y - edgeRadius);
                 break;
 
+            // 왼쪽
             case 3:
-                spawnPosX = fenceColl.bounds.min.x;
+                spawnPosX = Random.Range(spawnColl.bounds.min.x, spawnColl.bounds.min.x - edgeRadius);
                 break;
         }
 

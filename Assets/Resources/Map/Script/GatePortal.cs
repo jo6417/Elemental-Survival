@@ -175,13 +175,13 @@ public class GatePortal : MonoBehaviour
         print("boss dead");
 
         // 몬스터 스폰 멈추기
-        EnemySpawn.Instance.spawnSwitch = false;
+        WorldSpawner.Instance.spawnSwitch = false;
 
         // 남은 몬스터 화살표로 방향 표시해주기
         UIManager.Instance.enemyPointSwitch = true;
 
         // 모든 몬스터 죽을때까지 대기
-        yield return new WaitUntil(() => EnemySpawn.Instance.spawnEnemyList.Count == 0f);
+        yield return new WaitUntil(() => WorldSpawner.Instance.spawnEnemyList.Count == 0f);
 
         print("all dead");
 

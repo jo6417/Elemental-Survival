@@ -30,7 +30,7 @@ public class Quad_AI : MonoBehaviour
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
-    public EnemyManager enemyManager;
+    public Character character;
     public Transform body;
     public Transform head;
     public Transform fanParent;
@@ -116,7 +116,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator Init()
     {
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
         // 휴식 이펙트 전부 끄기
         for (int i = 0; i < restEffects.Count; i++)
@@ -125,18 +125,18 @@ public class Quad_AI : MonoBehaviour
         }
 
         //애니메이션 스피드 초기화
-        if (enemyManager.animList != null)
+        if (character.animList != null)
         {
-            foreach (Animator anim in enemyManager.animList)
+            foreach (Animator anim in character.animList)
             {
                 anim.speed = 1f;
             }
         }
 
         //속도 초기화
-        enemyManager.rigid.velocity = Vector2.zero;
+        character.rigid.velocity = Vector2.zero;
         // 위치 고정 해제
-        enemyManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        character.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 원형 밀어내기 및 가두기 콜라이더 끄기
         wallCircle.gameObject.SetActive(false);
@@ -164,7 +164,7 @@ public class Quad_AI : MonoBehaviour
     private void Update()
     {
         // 몬스터 정보 없으면 리턴
-        if (enemyManager.enemy == null)
+        if (character.enemy == null)
             return;
 
         // 타겟 추적 쿨타임 차감
@@ -174,26 +174,26 @@ public class Quad_AI : MonoBehaviour
         else
         {
             // 플레이어 추정 위치 계산
-            enemyManager.targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 2f;
+            character.targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 2f;
 
             // 추적 쿨타임 갱신
             targetSearchCount = targetSearchTime;
         }
 
         // 추적 위치 벡터를 서서히 이동
-        enemyManager.movePos = Vector3.Lerp(enemyManager.movePos, enemyManager.targetPos, Time.deltaTime * 2f);
+        character.movePos = Vector3.Lerp(character.movePos, character.targetPos, Time.deltaTime * 2f);
 
         // 플레이어 방향
-        enemyManager.targetDir = enemyManager.movePos - head.position;
+        character.targetDir = character.movePos - head.position;
 
         // 플레이어 방향 각도
-        float playerAngle = Mathf.Atan2(enemyManager.targetDir.y, enemyManager.targetDir.x) * Mathf.Rad2Deg;
+        float playerAngle = Mathf.Atan2(character.targetDir.y, character.targetDir.x) * Mathf.Rad2Deg;
 
         // 휴식 아닐때만
-        if (enemyManager.nowAction != Character.Action.Rest)
+        if (character.nowAction != Character.Action.Rest)
         {
             // 눈동자 플레이어 방향으로 이동
-            eye.position = head.position + enemyManager.targetDir.normalized * 1f;
+            eye.position = head.position + character.targetDir.normalized * 1f;
 
             // 눈동자 플레이어 방향으로 회전
             eye.rotation = Quaternion.Euler(0, 0, playerAngle + 135f);
@@ -209,11 +209,11 @@ public class Quad_AI : MonoBehaviour
         }
 
         // Idle 상태 아니면 리턴
-        if (enemyManager.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.Action.Idle)
             return;
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         //행동 관리
@@ -227,7 +227,7 @@ public class Quad_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.Action.Idle)
             return;
 
         // 공격 쿨타임 차감
@@ -235,7 +235,7 @@ public class Quad_AI : MonoBehaviour
             atkCoolCount -= Time.deltaTime;
 
         // 플레이어 방향
-        Vector2 dir = enemyManager.movePos - transform.position;
+        Vector2 dir = character.movePos - transform.position;
 
         // 플레이어와의 거리
         float distance = dir.magnitude;
@@ -250,7 +250,7 @@ public class Quad_AI : MonoBehaviour
             if (atkCoolCount <= 0)
             {
                 // 속도 초기화
-                enemyManager.rigid.velocity = Vector3.zero;
+                character.rigid.velocity = Vector3.zero;
 
                 //공격 패턴 결정하기
                 ChooseAttack();
@@ -266,10 +266,10 @@ public class Quad_AI : MonoBehaviour
     void ChooseAttack()
     {
         // 현재 액션 변경
-        enemyManager.nowAction = Character.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 애니메이터 끄기
-        enemyManager.animList[0].enabled = false;
+        character.animList[0].enabled = false;
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 4);
@@ -314,18 +314,18 @@ public class Quad_AI : MonoBehaviour
 
     void Walk()
     {
-        enemyManager.nowAction = Character.Action.Walk;
+        character.nowAction = Character.Action.Walk;
 
         //애니메이터 켜기
-        enemyManager.animList[0].enabled = true;
+        character.animList[0].enabled = true;
         // Idle 애니메이션으로 전환
         // enemyManager.animList[0].SetBool("UseFist", false);
 
         //! 거리 확인
-        stateText.text = "Distance : " + enemyManager.targetDir.magnitude;
+        stateText.text = "Distance : " + character.targetDir.magnitude;
 
         // 기울임 각도 계산
-        float angleZ = -Mathf.Clamp(enemyManager.targetDir.x / 1.5f, -15f, 15f);
+        float angleZ = -Mathf.Clamp(character.targetDir.x / 1.5f, -15f, 15f);
         Quaternion rotation = Quaternion.Lerp(fanParent.localRotation, Quaternion.Euler(70, 0, angleZ), fanSensitive);
 
         // 프로펠러 기울이기
@@ -333,40 +333,40 @@ public class Quad_AI : MonoBehaviour
             fanParent.localRotation = rotation;
 
         // 플레이어까지 거리
-        float distance = Vector3.Distance(enemyManager.movePos, transform.position);
+        float distance = Vector3.Distance(character.movePos, transform.position);
 
         // 공격범위 이내 접근 못하게 하는 속도 계수
         float nearSpeed = distance < atkRange
         // 범위 안에 있을때
-        ? enemyManager.targetDir.magnitude - atkRange
+        ? character.targetDir.magnitude - atkRange
         // 범위 밖에 있을때
         : 1f;
 
         //해당 방향으로 가속
-        enemyManager.rigid.velocity =
-        enemyManager.targetDir.normalized
-        * enemyManager.speedNow
+        character.rigid.velocity =
+        character.targetDir.normalized
+        * character.speedNow
         * SystemManager.Instance.globalTimeScale
         * nearSpeed;
 
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     private void OnDrawGizmosSelected()
     {
         // 보스부터 이동 위치까지 직선
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, enemyManager.movePos);
+        Gizmos.DrawLine(transform.position, character.movePos);
 
         // 이동 위치 기즈모
-        Gizmos.DrawIcon(enemyManager.movePos, "Circle.png", true, new Color(1, 0, 0, 0.5f));
+        Gizmos.DrawIcon(character.movePos, "Circle.png", true, new Color(1, 0, 0, 0.5f));
 
         // 추적 위치 기즈모
-        Gizmos.DrawIcon(enemyManager.targetPos, "Circle.png", true, new Color(0, 0, 1, 0.5f));
+        Gizmos.DrawIcon(character.targetPos, "Circle.png", true, new Color(0, 0, 1, 0.5f));
 
         // 추적 위치부터 이동 위치까지 직선
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(enemyManager.targetPos, enemyManager.movePos);
+        Gizmos.DrawLine(character.targetPos, character.movePos);
     }
 
     IEnumerator SidePush()
@@ -591,7 +591,7 @@ public class Quad_AI : MonoBehaviour
         GameObject shotBlade = LeanPool.Spawn(bladePrefab, wings[fanIndex].transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
 
         // 블레이드에 몬스터 매니저 넣기
-        shotBlade.GetComponent<EnemyAttack>().enemyManager = enemyManager;
+        shotBlade.GetComponent<EnemyAttack>().character = character;
 
         // 블레이드 스프라이트 켜기
         SpriteRenderer bladeSprite = shotBlade.GetComponentInChildren<SpriteRenderer>();
@@ -849,7 +849,7 @@ public class Quad_AI : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 2f);
 
             // 플레이어 방향
-            Vector2 playerDir = enemyManager.movePos - transform.position;
+            Vector2 playerDir = character.movePos - transform.position;
             // 플레이어 방향 각도
             float angle = Mathf.Atan2(playerDir.y, playerDir.x) * Mathf.Rad2Deg + 90f;
             // 기울임 각도 계산
@@ -860,9 +860,9 @@ public class Quad_AI : MonoBehaviour
 
             // 레이저 포인트 설정
             eyeLaser.SetPosition(0, eyeLaser.transform.position);
-            eyeLaser.SetPosition(1, enemyManager.movePos);
+            eyeLaser.SetPosition(1, character.movePos);
             // 타겟 위치에 마커 옮기기
-            targetMarker.transform.position = enemyManager.movePos;
+            targetMarker.transform.position = character.movePos;
 
             // 레이저 굵기 점점 얇아짐
             targetWidth = aimCount / aimTime * 0.3f;
@@ -901,7 +901,7 @@ public class Quad_AI : MonoBehaviour
         LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 목표 위치에 블레이드 마스크 생성
-        GameObject bladeMask = LeanPool.Spawn(maskedBladePrefab, enemyManager.movePos, Quaternion.identity, SystemManager.Instance.enemyPool);
+        GameObject bladeMask = LeanPool.Spawn(maskedBladePrefab, character.movePos, Quaternion.identity, SystemManager.Instance.enemyPool);
 
         // 자식중에 블레이드 오브젝트 찾기
         Transform shotBlade = bladeMask.GetComponentInChildren<Animator>().transform;
@@ -911,7 +911,7 @@ public class Quad_AI : MonoBehaviour
         shotBlade.localScale = Vector3.zero;
 
         // 블레이드에 몬스터 매니저 넣기
-        bladeMask.GetComponentInChildren<EnemyAttack>().enemyManager = enemyManager;
+        bladeMask.GetComponentInChildren<EnemyAttack>().character = character;
 
         // 블레이드 스프라이트 켜기
         SpriteRenderer bladeSprite = shotBlade.GetComponentInChildren<SpriteRenderer>();
@@ -919,7 +919,7 @@ public class Quad_AI : MonoBehaviour
 
         // 발사 방향에 따라 발사체 회전
         shotBlade.rotation
-        = enemyManager.movePos.x > transform.position.x
+        = character.movePos.x > transform.position.x
         ? Quaternion.Euler(0, 0, 0)
         : Quaternion.Euler(0, 180f, 0);
 
@@ -927,7 +927,7 @@ public class Quad_AI : MonoBehaviour
         shotBlade.DOScale(Vector3.one, 0.2f);
 
         // 플레이어 쪽으로 블레이드 발사
-        shotBlade.DOMove(enemyManager.movePos, 0.4f)
+        shotBlade.DOMove(character.movePos, 0.4f)
         .OnComplete(() =>
         {
             // 블레이드 회전 애니메이터 멈추기
@@ -952,7 +952,7 @@ public class Quad_AI : MonoBehaviour
         Quaternion shotRotate = transform.rotation;
 
         // 쏘는 반대 방향으로 보스 몸 전체 넉백 이동
-        Vector3 shotDir = enemyManager.movePos - transform.position;
+        Vector3 shotDir = character.movePos - transform.position;
         transform.DOMove(transform.position - shotDir.normalized * 3f, 0.5f)
         .SetEase(Ease.OutBack);
 
@@ -1033,7 +1033,7 @@ public class Quad_AI : MonoBehaviour
         });
 
         // Idle 상태로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     IEnumerator FanSmash()
@@ -1181,7 +1181,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator OverloadRest()
     {
         // Rest 상태로 전환
-        enemyManager.nowAction = Character.Action.Rest;
+        character.nowAction = Character.Action.Rest;
 
         // 몸체 위로 다시 올라가기
         body.DOLocalMove(new Vector3(0, 5.5f, 0), 0.5f)
@@ -1223,10 +1223,10 @@ public class Quad_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 메인 애니메이터 켜기
-        enemyManager.animList[0].enabled = true;
+        character.animList[0].enabled = true;
 
         // 보스 그 자리에서 과부하로 착지해서 휴식 애니메이션
-        enemyManager.animList[0].SetBool("isRest", true);
+        character.animList[0].SetBool("isRest", true);
 
         // 모든 레이어 0으로 내리기
         sortingLayer.sortingOrder = 0;
@@ -1240,7 +1240,7 @@ public class Quad_AI : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             // 프로펠러 애니메이터 전부 끄기
-            enemyManager.animList[i + 1].enabled = false;
+            character.animList[i + 1].enabled = false;
 
             // 비행 파티클 전부 끄기
             flyEffects[i].SmoothDisable();
@@ -1284,7 +1284,7 @@ public class Quad_AI : MonoBehaviour
         yield return new WaitForSeconds(5f);
 
         // 휴식 애니메이션 종료
-        enemyManager.animList[0].SetBool("isRest", false);
+        character.animList[0].SetBool("isRest", false);
 
         // 휴식 이펙트 전부 끄기
         for (int i = 0; i < restEffects.Count; i++)
@@ -1295,7 +1295,7 @@ public class Quad_AI : MonoBehaviour
         // 프로펠러 애니메이터 전부 켜기
         for (int i = 1; i < 5; i++)
         {
-            Animator fanAnim = enemyManager.animList[i];
+            Animator fanAnim = character.animList[i];
 
             // 프로펠러 점점 빠르게 원래 속도까지 돌리기
             fanAnim.transform.DOLocalRotate(Vector3.forward * 360, 0.5f, RotateMode.LocalAxisAdd)
@@ -1314,9 +1314,9 @@ public class Quad_AI : MonoBehaviour
         sortingLayer.sortingOrder = 1;
 
         // 메인 애니메이터 끄기
-        enemyManager.animList[0].enabled = false;
+        character.animList[0].enabled = false;
 
         // Idle 상태로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 }

@@ -5,7 +5,7 @@ using Lean.Pool;
 using TMPro;
 using UnityEngine;
 
-public class PlayerHitBox : MonoBehaviour, IHitBox
+public class PlayerHitBox : MonoBehaviour
 {
     [Header("Refer")]
     PlayerManager playerManager;
@@ -70,7 +70,14 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
     public IEnumerator Hit(Attack attacker)
     {
         // 피격 위치 산출
-        Vector2 hitPos = attacker.GetComponent<Collider2D>().ClosestPoint(transform.position);
+        Collider2D attackerColl = attacker.GetComponent<Collider2D>();
+        Vector2 hitPos = default;
+        // 콜라이더 찾으면 가까운 포인트
+        if (attackerColl != null)
+            hitPos = attackerColl.ClosestPoint(transform.position);
+        // 콜라이더 못찾으면 본인 위치
+        else
+            hitPos = transform.position;
 
         //크리티컬 성공 여부
         bool isCritical = false;
@@ -79,7 +86,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
         if (attacker.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 몬스터 정보 찾기
-            Character enemyManager = enemyAtk.enemyManager;
+            Character enemyManager = enemyAtk.character;
 
             // 몬스터 정보 없을때, 고스트일때 리턴
             if (enemyManager == null || enemyManager.enemy == null || enemyManager.IsGhost)
@@ -97,7 +104,7 @@ public class PlayerHitBox : MonoBehaviour, IHitBox
                 StopCoroutine(hitDelayCoroutine);
 
             // 데미지 적용
-            Damage(enemyAtk.enemyManager.powerNow, false, hitPos);
+            Damage(enemyAtk.character.powerNow, false, hitPos);
         }
 
         //마법 정보 찾기

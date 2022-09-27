@@ -16,7 +16,7 @@ public class EnemyAttack : Attack
     [SerializeField, ReadOnly] private float coolCount; // 주기적 자동 공격일때 현재 쿨타임 카운트
 
     [Header("Refer")]
-    public Character enemyManager;
+    public Character character;
     public string enemyName;
     public Collider2D atkColl; //공격 콜라이더
     public GameObject dashEffect;
@@ -24,7 +24,7 @@ public class EnemyAttack : Attack
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+        character = character == null ? GetComponentInChildren<Character>() : character;
         atkColl = atkColl == null ? GetComponentInChildren<Collider2D>() : atkColl;
     }
 
@@ -41,13 +41,13 @@ public class EnemyAttack : Attack
         if (atkColl)
             atkColl.enabled = false;
 
-        yield return new WaitUntil(() => enemyManager != null && enemyManager.enemy != null);
+        yield return new WaitUntil(() => character != null && character.enemy != null);
 
         // 대쉬 범위 초기화
-        enemyManager.attackRange = enemyManager.enemy.range;
+        character.attackRange = character.enemy.range;
 
         // 적 정보 들어오면 이름 표시
-        enemyName = enemyManager.enemy.enemyName;
+        enemyName = character.enemy.enemyName;
 
         // 대쉬 이펙트 있으면 끄기
         if (dashEffect != null)
@@ -78,15 +78,15 @@ public class EnemyAttack : Attack
             return;
 
         // 몬스터 매니저 비활성화 되었으면 리턴
-        if (!enemyManager)
+        if (!character)
             return;
 
         // 공격 범위 0이하면 자동 공격 안한다는 뜻이므로 리턴
-        if (enemyManager.attackRange <= 0)
+        if (character.attackRange <= 0)
             return;
 
         // 상태 이상 있으면
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
         {
             // 이상 있으면 공격 콜라이더 끄기
             atkColl.enabled = false;
@@ -98,14 +98,14 @@ public class EnemyAttack : Attack
             return;
 
         // 타겟 없거나 비활성화면 리턴
-        if (!enemyManager.TargetObj || !enemyManager.TargetObj.activeSelf)
+        if (!character.TargetObj || !character.TargetObj.activeSelf)
             return;
 
         // 타겟 방향 계산
-        targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        targetDir = character.TargetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
-        if (targetDir.magnitude <= enemyManager.attackRange)
+        if (targetDir.magnitude <= character.attackRange)
         {
             //공격 준비로 전환
             attackReady = true;
@@ -117,21 +117,21 @@ public class EnemyAttack : Attack
     IEnumerator ChooseAttack()
     {
         //움직일 방향에따라 회전
-        float leftAngle = enemyManager.lookLeft ? 180f : 0f;
-        float rightAngle = enemyManager.lookLeft ? 0f : 180f;
+        float leftAngle = character.lookLeft ? 180f : 0f;
+        float rightAngle = character.lookLeft ? 0f : 180f;
         if (targetDir.x > 0)
-            enemyManager.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
+            character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
         else
-            enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
+            character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         // 이동 멈추기
-        enemyManager.rigid.velocity = Vector3.zero;
+        character.rigid.velocity = Vector3.zero;
 
         // 점프중이라면
-        if (enemyManager.enemyAI && enemyManager.enemyAI.jumpCoolCount > 0)
+        if (character.enemyAI && character.enemyAI.jumpCoolCount > 0)
         {
             // Idle 상태 될때까지 대기
-            yield return new WaitUntil(() => enemyManager.nowAction == EnemyManager.Action.Idle);
+            yield return new WaitUntil(() => character.nowAction == Character.Action.Idle);
         }
 
         // 쿨타임 있으면 주기적으로 켜기
@@ -183,54 +183,54 @@ public class EnemyAttack : Attack
         yield return new WaitUntil(() => initDone);
 
         // 공격 액션으로 전환
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 밀리지 않게 kinematic으로 전환
         // enemyManager.rigid.bodyType = RigidbodyType2D.Kinematic;
 
         //플레이어 방향 다시 계산
-        targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        targetDir = character.TargetObj.transform.position - transform.position;
 
         //움직일 방향에따라 회전
-        float leftAngle = enemyManager.lookLeft ? 180f : 0f;
-        float rightAngle = enemyManager.lookLeft ? 0f : 180f;
+        float leftAngle = character.lookLeft ? 180f : 0f;
+        float rightAngle = character.lookLeft ? 0f : 180f;
         if (targetDir.x > 0)
-            enemyManager.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
+            character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
         else
-            enemyManager.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
+            character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         // 돌진 시작 인디케이터 켜기
         dashEffect.SetActive(true);
 
         // 타겟 방향 반대로 살짝 이동
-        enemyManager.rigid.velocity = -targetDir.normalized * 3f;
+        character.rigid.velocity = -targetDir.normalized * 3f;
         // enemyManager.transform.DOMove(transform.position - targetDir.normalized, 1f);
         yield return new WaitForSeconds(1f);
 
         // rigid 타입 전환
-        enemyManager.rigid.bodyType = RigidbodyType2D.Dynamic;
+        character.rigid.bodyType = RigidbodyType2D.Dynamic;
 
         //공격 콜라이더 켜기
         atkColl.enabled = true;
 
         // 타겟 방향으로 돌진
-        enemyManager.rigid.velocity = targetDir.normalized * 20f;
+        character.rigid.velocity = targetDir.normalized * 20f;
         // enemyManager.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
         yield return new WaitForSeconds(0.5f);
 
         // 속도 멈추기
-        enemyManager.rigid.velocity = Vector3.zero;
+        character.rigid.velocity = Vector3.zero;
 
         //공격 콜라이더 끄기
         atkColl.enabled = false;
 
         // 타겟 위치 추적 시간 초기화
-        enemyManager.targetResetCount = 0f;
+        character.targetResetCount = 0f;
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         //공격 준비 해제
         attackReady = false;
@@ -243,7 +243,7 @@ public class EnemyAttack : Attack
         yield return new WaitUntil(() => initDone);
 
         // 공격 액션으로 전환
-        enemyManager.nowAction = EnemyManager.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 공격 오브젝트 활성화
         rangeObj.SetActive(true);
@@ -254,9 +254,9 @@ public class EnemyAttack : Attack
         rangeObj.SetActive(false);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        enemyManager.nowAction = EnemyManager.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         //공격 준비 해제
         attackReady = false;

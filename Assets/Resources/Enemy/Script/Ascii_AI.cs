@@ -19,7 +19,7 @@ public class Ascii_AI : MonoBehaviour
     List<int> atkList = new List<int>(); //공격 패턴 담을 변수
 
     [Header("Refer")]
-    public EnemyManager enemyManager;
+    public Character character;
     EnemyInfo enemy;
     public Image angryGauge; //분노 게이지 이미지
     public TextMeshProUGUI faceText;
@@ -75,7 +75,7 @@ public class Ascii_AI : MonoBehaviour
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+        character = character == null ? GetComponentInChildren<Character>() : character;
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
 
@@ -99,11 +99,11 @@ public class Ascii_AI : MonoBehaviour
         rigid.velocity = Vector2.zero; //속도 초기화
 
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
         //프리팹 이름으로 아이템 정보 찾아 넣기
         if (enemy == null)
-            enemy = enemyManager.enemy;
+            enemy = character.enemy;
 
         // fallAtk 공격 비활성화
         fallAtkColl.enabled = false;
@@ -150,7 +150,7 @@ public class Ascii_AI : MonoBehaviour
             return;
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         // AI 초기화 완료 안됬으면 리턴
@@ -164,7 +164,7 @@ public class Ascii_AI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (enemyManager.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.Action.Idle)
             return;
 
         // 시간 멈추면 리턴
@@ -191,10 +191,10 @@ public class Ascii_AI : MonoBehaviour
             stateText.text = "Fall : " + playerDistance;
 
             // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            enemyManager.nowAction = Character.Action.Attack;
+            character.nowAction = Character.Action.Attack;
 
             // 폴어택 공격
             FalldownAttack();
@@ -215,10 +215,10 @@ public class Ascii_AI : MonoBehaviour
             stateText.text = "Attack : " + playerDistance;
 
             // 속도 초기화
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            enemyManager.nowAction = Character.Action.Attack;
+            character.nowAction = Character.Action.Attack;
 
             //공격 패턴 결정하기
             ChooseAttack();
@@ -236,7 +236,7 @@ public class Ascii_AI : MonoBehaviour
     void Move()
     {
         // 걷기 상태로 전환
-        enemyManager.nowAction = Character.Action.Walk;
+        character.nowAction = Character.Action.Walk;
 
         //걸을때 표정
         faceText.text = "● ▽ ●";
@@ -275,13 +275,13 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // idle 상태로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
     }
 
     void ChooseAttack()
     {
         // 공격 상태로 전환
-        enemyManager.nowAction = Character.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         // 걷기 애니메이션 끝내기
         anim.SetBool("isWalk", false);
@@ -863,13 +863,13 @@ public class Ascii_AI : MonoBehaviour
         faceText.text = "⚆`  ︿  ´⚆";
 
         //몬스터 스폰 멈추기
-        EnemySpawn.Instance.spawnSwitch = false;
+        WorldSpawner.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
         List<Character> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
         foreach (Character enemyManager in enemys)
         {
             // 보스 본인이 아닐때
-            if (enemyManager != this.enemyManager)
+            if (enemyManager != this.character)
                 enemyManager.stopCount = 3f;
         }
 
@@ -953,7 +953,7 @@ public class Ascii_AI : MonoBehaviour
                 StopCoroutine(aimCable);
 
                 //몬스터 스폰 재개
-                EnemySpawn.Instance.spawnSwitch = true;
+                WorldSpawner.Instance.spawnSwitch = true;
                 // 모든 몬스터 움직임 재개
                 SystemManager.Instance.globalTimeScale = 1f;
 
@@ -976,7 +976,7 @@ public class Ascii_AI : MonoBehaviour
         anim.SetBool("isLaserWatch", false);
 
         //몬스터 스폰 재개
-        EnemySpawn.Instance.spawnSwitch = true;
+        WorldSpawner.Instance.spawnSwitch = true;
         // 모든 몬스터 움직임 재개
         SystemManager.Instance.globalTimeScale = 1f;
 
@@ -1082,7 +1082,7 @@ public class Ascii_AI : MonoBehaviour
         anim.SetBool("isRest", false);
 
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         // // 케이블 꺼내기
         // ToggleCable(false);

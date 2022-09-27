@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StoneGolem_AI : MonoBehaviour
 {
-    public EnemyManager enemyManager;
+    public Character character;
     public EnemyAtkTrigger smashTrigger;
     public Collider2D smashColl;
 
@@ -20,22 +20,22 @@ public class StoneGolem_AI : MonoBehaviour
     private void Update()
     {
         // 몬스터 매니저 비활성화 되었으면 리턴
-        if (!enemyManager)
+        if (!character)
             return;
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         // 타겟 없거나 비활성화면 리턴
-        if (!enemyManager.TargetObj || !enemyManager.TargetObj.activeSelf)
+        if (!character.TargetObj || !character.TargetObj.activeSelf)
             return;
 
         // 이미 공격중이면 리턴
-        if (enemyManager.nowAction == Character.Action.Attack)
+        if (character.nowAction == Character.Action.Attack)
         {
             // 이동 멈추기
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
             return;
         }
 
@@ -43,7 +43,7 @@ public class StoneGolem_AI : MonoBehaviour
         if (smashTrigger.atkTrigger)
         {
             // 공격 액션으로 전환
-            enemyManager.nowAction = Character.Action.Attack;
+            character.nowAction = Character.Action.Attack;
 
             StartCoroutine(SmashAttack());
         }
@@ -54,24 +54,24 @@ public class StoneGolem_AI : MonoBehaviour
         // print("SmashAttack");
 
         // 타겟 방향 계산
-        Vector2 targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        Vector2 targetDir = character.TargetObj.transform.position - transform.position;
 
         // 타겟 방향에 따라 회전
         if (targetDir.x > 0)
-            enemyManager.transform.rotation = Quaternion.Euler(0, 0, 0);
+            character.transform.rotation = Quaternion.Euler(0, 0, 0);
         else
-            enemyManager.transform.rotation = Quaternion.Euler(0, 180, 0);
+            character.transform.rotation = Quaternion.Euler(0, 180, 0);
 
         // 공격 애니메이션 재생
-        enemyManager.animList[0].SetTrigger("Attack");
+        character.animList[0].SetTrigger("Attack");
 
         // 스매쉬 콜라이더 비활성화까지 대기
         yield return new WaitUntil(() => !smashColl.enabled);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         // 공격 트리거 끄기
         // smashTrigger.atkTrigger = false;

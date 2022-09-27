@@ -9,7 +9,12 @@ public class HitBox : MonoBehaviour
 {
     [Header("Refer")]
     public Character character;
-    // public EnemyManager enemyManager;
+
+    private void Awake()
+    {
+        // character 찾기
+        character = character != null ? character : GetComponent<Character>();
+    }
 
     private void OnEnable()
     {
@@ -106,7 +111,14 @@ public class HitBox : MonoBehaviour
             yield break;
 
         // 피격 위치 산출
-        Vector2 hitPos = attacker.GetComponent<Collider2D>().ClosestPoint(transform.position);
+        Collider2D attackerColl = attacker.GetComponent<Collider2D>();
+        Vector2 hitPos = default;
+        // 콜라이더 찾으면 가까운 포인트
+        if (attackerColl != null)
+            hitPos = attackerColl.ClosestPoint(transform.position);
+        // 콜라이더 못찾으면 본인 위치
+        else
+            hitPos = transform.position;
 
         // 크리티컬 성공 여부
         bool isCritical = false;
@@ -117,7 +129,7 @@ public class HitBox : MonoBehaviour
         if (attacker.TryGetComponent<EnemyAttack>(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 공격한 캐릭터 찾기
-            Character atkCharacter = enemyAtk.enemyManager;
+            Character atkCharacter = enemyAtk.character;
 
             // other가 본인일때 리턴
             if (atkCharacter == this)
@@ -138,14 +150,14 @@ public class HitBox : MonoBehaviour
             {
                 //고스트 아닌 적이 때렸을때만 데미지
                 if (!atkCharacter.IsGhost)
-                    Damage(enemyAtk.enemyManager.powerNow, false, hitPos);
+                    Damage(enemyAtk.character.powerNow, false, hitPos);
             }
             // 피격 대상이 고스트 아닐때
             else
             {
                 //고스트가 때렸으면 데미지
                 if (atkCharacter.IsGhost)
-                    Damage(enemyAtk.enemyManager.powerNow, false, hitPos);
+                    Damage(enemyAtk.character.powerNow, false, hitPos);
             }
         }
 
@@ -242,17 +254,21 @@ public class HitBox : MonoBehaviour
 
     public void Debuff(Attack attacker, bool isCritical, float damage = 0)
     {
-        // 보스가 아닌적들만 디버프
-        if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+        //넉백
+        if (attacker.knockbackForce > 0)
         {
-            //넉백
-            if (attacker.knockbackForce > 0)
-            {
+            // 보스가 아닌 몬스터일때
+            if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString()
+            // 몬스터가 아닐때 (오브젝트일때)
+            || character.enemy == null)
                 StartCoroutine(Knockback(attacker, attacker.knockbackForce));
-            }
+        }
 
-            // 슬로우 디버프, 크리티컬 성공일때
-            if (attacker.slowTime > 0 && isCritical)
+        // 슬로우 디버프, 크리티컬 성공일때
+        if (attacker.slowTime > 0 && isCritical)
+        {
+            // 보스가 아닌 몬스터일때
+            if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
             {
                 //이미 슬로우 코루틴 실행중이면 기존 코루틴 취소
                 if (character.slowCoroutine != null)
@@ -262,16 +278,22 @@ public class HitBox : MonoBehaviour
 
                 StartCoroutine(character.slowCoroutine);
             }
+        }
 
-            //시간 정지
-            if (attacker.stopTime > 0)
-            {
+        //시간 정지
+        if (attacker.stopTime > 0)
+        {
+            // 보스가 아닌 몬스터일때
+            if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
                 //몬스터 경직 카운터에 stopTime 만큼 추가
                 character.stopCount = attacker.stopTime;
-            }
+        }
 
-            // 감전 디버프 && 크리티컬일때
-            if (attacker.shockTime > 0 && isCritical)
+        // 감전 디버프 && 크리티컬일때
+        if (attacker.shockTime > 0 && isCritical)
+        {
+            // 보스가 아닌 몬스터일때
+            if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
             {
                 //이미 감전 코루틴 실행중이면 기존 코루틴 취소
                 if (character.shockCoroutine != null)
@@ -281,15 +303,15 @@ public class HitBox : MonoBehaviour
 
                 StartCoroutine(character.shockCoroutine);
             }
+        }
 
-            // flat 디버프 있을때, flat 상태 아닐때
-            if (attacker.flatTime > 0 && character.flatCount <= 0)
-            {
-                // print("player flat");
-
+        // flat 디버프 있을때, flat 상태 아닐때
+        if (attacker.flatTime > 0 && character.flatCount <= 0)
+        {
+            // 보스가 아닌 몬스터일때
+            if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
                 // 납작해지고 행동불능
                 StartCoroutine(FlatDebuff(attacker.flatTime));
-            }
         }
 
         // 화상 피해 시간 있을때
@@ -371,7 +393,7 @@ public class HitBox : MonoBehaviour
         Color originMatColor = default;
 
         // 엘리트 몹일때
-        if (character.eliteClass != EnemyManager.EliteClass.None)
+        if (character.eliteClass != Character.EliteClass.None)
         {
             originMat = SystemManager.Instance.outLineMat;
 
@@ -429,11 +451,13 @@ public class HitBox : MonoBehaviour
         if (character.invinsible)
             return;
 
-        // 피격 이펙트 재생
-        HitEffect(hitPos);
-
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
+
+        // 데미지 있을때만
+        if (damage > 0)
+            // 피격 이펙트 재생
+            HitEffect(hitPos);
 
         // 데미지 적용
         character.hpNow -= damage;
@@ -450,7 +474,7 @@ public class HitBox : MonoBehaviour
             StartCoroutine(UIManager.Instance.UpdateBossHp(character));
         }
 
-        // 몬스터 맞았을때 함수 호출 (해당 몬스터만)
+        // 피격시 함수 호출 (해당 몬스터만)
         if (character.hitCallback != null)
             character.hitCallback();
 
@@ -625,7 +649,7 @@ public class HitBox : MonoBehaviour
     {
         // 반대 방향으로 넉백 벡터
         Vector2 knockbackDir = transform.position - attacker.transform.position;
-        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce * 2f;
+        knockbackDir = knockbackDir.normalized * knockbackForce * PlayerManager.Instance.PlayerStat_Now.knockbackForce;
 
         // 몬스터 위치에서 피격 반대방향 위치로 이동
         character.transform.DOMove((Vector2)character.transform.position + knockbackDir, 0.1f)
@@ -800,12 +824,7 @@ public class HitBox : MonoBehaviour
 
             // 색깔 점점 흰색으로
             sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
-            .SetEase(Ease.OutQuad)
-            .OnComplete(() =>
-            {
-                // 머터리얼 초기화
-                sprite.material = SystemManager.Instance.spriteLitMat;
-            });
+            .SetEase(Ease.OutQuad);
         }
 
         // 자폭 몬스터일때
@@ -836,21 +855,21 @@ public class HitBox : MonoBehaviour
             if (character.enemy != null)
             {
                 //몬스터 총 전투력 빼기
-                EnemySpawn.Instance.NowEnemyPower -= character.enemy.grade;
+                WorldSpawner.Instance.NowEnemyPower -= character.enemy.grade;
 
                 //몬스터 킬 카운트 올리기
                 SystemManager.Instance.killCount++;
                 UIManager.Instance.UpdateKillCount();
 
                 //혈흔 이펙트 생성
-                GameObject blood = LeanPool.Spawn(EnemySpawn.Instance.bloodPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                GameObject blood = LeanPool.Spawn(WorldSpawner.Instance.bloodPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
             }
 
             //아이템 드랍
             character.DropItem();
 
             // 몬스터 리스트에서 몬스터 본인 빼기
-            EnemySpawn.Instance.EnemyDespawn(character);
+            WorldSpawner.Instance.EnemyDespawn(character);
         }
 
         //폭발 몬스터면 폭발 시키기
@@ -882,7 +901,7 @@ public class HitBox : MonoBehaviour
         DebuffRemove();
 
         // 먼지 이펙트 생성
-        GameObject dust = LeanPool.Spawn(EnemySpawn.Instance.dustPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         // dust.tag = "Enemy";
 
         // 트윈 및 시퀀스 끝내기

@@ -2818,7 +2818,7 @@ GameObject:
   - component: {fileID: 2695126730359790017}
   - component: {fileID: 932304665824068904}
   m_Layer: 16
-  m_Name: Safe
+  m_Name: Locker
   m_TagString: Object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2866,7 +2866,8 @@ MonoBehaviour:
   boxSprite: {fileID: 2763911419529871901}
   doorSprite: {fileID: 8348513666446652799}
   lightParticle: {fileID: 6598751291497325708}
-  coll: {fileID: 0}
+  magicItemPrefab: {fileID: 3716985150437804629, guid: 109a187e88fb2bc4f90512b14fd7f95c,
+    type: 3}
   price: 0
   priceType: 0
   productName: 

@@ -12,14 +12,14 @@ public class WaterSlimeAtk : MonoBehaviour
     bool attackReady; //공격 준비중
 
     [Header("Refer")]
-    public EnemyManager enemyManager;
+    public Character character;
     public string enemyName;
     public GameObject bubblePrefab; //거품 프리팹
     IEnumerator atkCoroutine; // 거품 공격 코루틴
 
     private void Awake()
     {
-        enemyManager = enemyManager == null ? GetComponentInChildren<EnemyManager>() : enemyManager;
+        character = character == null ? GetComponentInChildren<Character>() : character;
     }
 
     private void OnEnable()
@@ -29,13 +29,13 @@ public class WaterSlimeAtk : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => enemyManager.enemy != null);
+        yield return new WaitUntil(() => character.enemy != null);
 
         // 대쉬 범위 초기화
-        attackRange = enemyManager.enemy.range;
+        attackRange = character.enemy.range;
 
         // 적 정보 들어오면 이름 표시
-        enemyName = enemyManager.enemy.enemyName;
+        enemyName = character.enemy.enemyName;
 
         // 공격 오브젝트 있으면 끄기
         if (bubblePrefab != null)
@@ -45,22 +45,22 @@ public class WaterSlimeAtk : MonoBehaviour
     private void Update()
     {
         // 몬스터 정보 없으면 리턴
-        if (enemyManager == null || enemyManager.enemy == null)
+        if (character == null || character.enemy == null)
             return;
 
         // 죽었으면 공격 멈추기
-        if (enemyManager.isDead && atkCoroutine != null)
+        if (character.isDead && atkCoroutine != null)
             StopCoroutine(atkCoroutine);
 
         // 상태 이상 있으면 리턴
-        if (!enemyManager.ManageState())
+        if (!character.ManageState())
             return;
 
         // 이미 공격중이면 리턴
-        if (enemyManager.nowAction == Character.Action.Attack)
+        if (character.nowAction == Character.Action.Attack)
         {
             //속도 멈추기
-            enemyManager.rigid.velocity = Vector3.zero;
+            character.rigid.velocity = Vector3.zero;
             return;
         }
 
@@ -69,12 +69,12 @@ public class WaterSlimeAtk : MonoBehaviour
             return;
 
         // 타겟 없거나 비활성화면 리턴
-        if (!enemyManager.TargetObj || !enemyManager.TargetObj.activeSelf)
+        if (!character.TargetObj || !character.TargetObj.activeSelf)
             return;
 
         // 타겟 방향 계산
-        if (enemyManager.TargetObj != null)
-            targetDir = enemyManager.TargetObj.transform.position - transform.position;
+        if (character.TargetObj != null)
+            targetDir = character.TargetObj.transform.position - transform.position;
 
         // 공격 범위 안에 들어오면 공격 시작
         if (targetDir.magnitude <= attackRange && attackRange > 0)
@@ -90,16 +90,16 @@ public class WaterSlimeAtk : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         // 이동 멈추기
-        enemyManager.rigid.velocity = Vector3.zero;
+        character.rigid.velocity = Vector3.zero;
 
         // 점프중이라면
-        if (enemyManager.enemyAI.jumpCoolCount > 0)
+        if (character.enemyAI.jumpCoolCount > 0)
         {
             //공격 준비로 전환
             attackReady = true;
 
             // Idle 상태 될때까지 대기
-            yield return new WaitUntil(() => enemyManager.nowAction == Character.Action.Idle);
+            yield return new WaitUntil(() => character.nowAction == Character.Action.Idle);
 
             //공격 준비 끝
             attackReady = false;
@@ -115,10 +115,10 @@ public class WaterSlimeAtk : MonoBehaviour
         // print("Active Attack");
 
         // 공격 액션으로 전환
-        enemyManager.nowAction = Character.Action.Attack;
+        character.nowAction = Character.Action.Attack;
 
         //애니메이터 끄기
-        enemyManager.animList[0].enabled = false;
+        character.animList[0].enabled = false;
 
         //스프라이트 길쭉해지기
         transform.DOScale(new Vector2(0.8f, 1.2f), 0.5f)
@@ -150,25 +150,25 @@ public class WaterSlimeAtk : MonoBehaviour
         MagicHolder bubbleMagic = bubbleAtk.GetComponent<MagicHolder>();
 
         //타겟 정보 넣기
-        if (enemyManager.TargetObj != null)
+        if (character.TargetObj != null)
         {
-            bubbleMagic.targetObj = enemyManager.TargetObj;
-            bubbleMagic.targetPos = enemyManager.TargetObj.transform.position;
+            bubbleMagic.targetObj = character.TargetObj;
+            bubbleMagic.targetPos = character.TargetObj.transform.position;
         }
 
         // 타겟 설정
-        if (enemyManager.IsGhost)
+        if (character.IsGhost)
             bubbleMagic.SetTarget(MagicHolder.Target.Enemy);
         else
             bubbleMagic.SetTarget(MagicHolder.Target.Player);
 
         // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(enemyManager.cooltimeNow / enemyManager.enemy.cooltime);
+        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
 
         //애니메이터 켜기
-        enemyManager.animList[0].enabled = true;
+        character.animList[0].enabled = true;
         // Idle로 전환
-        enemyManager.nowAction = Character.Action.Idle;
+        character.nowAction = Character.Action.Idle;
 
         // 코루틴 비우기
         atkCoroutine = null;

@@ -1020,6 +1020,9 @@ public class PhoneMenu : MonoBehaviour
 
         //플레이어 총 전투력 업데이트
         PlayerManager.Instance.PlayerStat_Now.playerPower = PlayerManager.Instance.GetPlayerPower();
+
+        // 인벤토리에서 마법 찾아 자동 시전하기
+        CastMagic.Instance.CastCheck();
     }
 
     private void Update()

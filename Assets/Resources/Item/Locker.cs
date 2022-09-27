@@ -210,6 +210,9 @@ public class Locker : MonoBehaviour
 
             // 캔버스 끄기
             uiCanvas.gameObject.SetActive(false);
+
+            // 스폰 리스트에서 해당 아이템 삭제
+            WorldSpawner.Instance.lockerList.Remove(gameObject);
         }
         // 재화가 가격보다 적을때
         else

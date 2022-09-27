@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 2609816229949297132}
+  character: {fileID: 2609816229949297132}
 --- !u!70 &1956065530
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2774556614207341227
 Transform:
   m_ObjectHideFlags: 0
@@ -263,10 +263,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -274,11 +274,13 @@ MonoBehaviour:
   stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
-  enemyManager: {fileID: 2609816229949297132}
+  cooltime: 0
+  coolCount: 0
+  character: {fileID: 2609816229949297132}
   enemyName: 
-  atkColl: {fileID: 0}
+  atkColl: {fileID: 1016044293152676191}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
+  rangeObj: {fileID: 0}
 --- !u!58 &1016044293152676191
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5195,7 +5197,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
-  enemyManager: {fileID: 2609816229949297132}
+  character: {fileID: 2609816229949297132}
   atkTrigger: 0
 --- !u!58 &8480430584315433452
 CircleCollider2D:
@@ -5288,58 +5290,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpNow: 0
-  hpMax: 0
-  rigid: {fileID: 8165655979838027218}
-  anim: {fileID: 0}
+  defaultHasItem: ffffffff
   initialStart: 1
   initialFinish: 0
+  eliteClass: 0
   lookLeft: 0
-  defaultHasItem: ffffffff
+  hpNow: 0
+  hpMax: 0
+  isDead: 0
+  changeGhost: 0
+  portalSize: 1
+  afterEffect: 0
+  invinsible: 0
+  selfExplosion: 0
+  attackRange: 0
+  healCount: 0
+  isGhost: 0
+  nowState: 0
+  nowAction: 0
+  moveType: 0
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  nowState: 0
-  nowAction: 0
-  moveType: 0
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  afterEffect: 0
-  isDead: 0
-  selfExplosion: 0
-  attackRange: 0
-  changeGhost: 0
+  shadow: {fileID: 8933786517452488958}
+  spriteList:
+  - {fileID: 3775307538943568029}
   enemyAI: {fileID: 8165655979838027246}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
   spriteObj: {fileID: 8165655979838027244}
-  shadow: {fileID: 8933786517452488958}
-  spriteList:
-  - {fileID: 3775307538943568029}
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
+  healRange: {fileID: 0}
   animList:
   - {fileID: 8703031671437433962}
   physicsColl: {fileID: 8165655979838027219}
-  hitBoxList: []
-  power: 0
-  speed: 0
-  range: 0
+  rigid: {fileID: 8165655979838027218}
+  anim: {fileID: 0}
   buffParent: {fileID: 4592455895541119263}
   particleHitCount: 0
-  hitCount: 0
+  hitDelayCount: 0
   stopCount: 0
   flatCount: 0
   oppositeCount: 0
-  poisonCoolCount: 0
-  bleedCoolCount: 0
+  moveSpeedDebuff: 1
+  hitEffect: {fileID: 0}
+  hitBoxList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  powerNow: 0
+  speedNow: 0
+  rangeNow: 0
+  cooltimeNow: 0
   enemyName: 
   enemyType: 
-  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &8165655979838027246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5352,8 +5357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeedDebuff: 1
-  enemyManager: {fileID: 2609816229949297132}
+  character: {fileID: 2609816229949297132}
   targetDir: {x: 0, y: 0, z: 0}
   moveCoolTime: 1
   moveCoolCount: 0
@@ -5374,7 +5378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackRange: 0
-  enemyManager: {fileID: 0}
+  character: {fileID: 2609816229949297132}
   enemyName: 
   meleeAtkTrigger: {fileID: 9046826874127638235}
   meleeColl: {fileID: 1016044293152676191}

@@ -10,7 +10,7 @@ using System.Linq;
 public class Character : MonoBehaviour
 {
     [Header("Initial")]
-    public HitCallback hitCallback; //해당 몬스터 죽을때 실행될 함수들
+    public HitCallback hitCallback; //캐릭터 피격시 실행될 콜백
     public delegate void HitCallback();
     public EnemyInfo enemy;
     public List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
@@ -109,7 +109,6 @@ public class Character : MonoBehaviour
     public List<Animator> animList = new List<Animator>(); // 보유한 모든 애니메이터
     public Collider2D physicsColl; // 물리용 콜라이더
     public Rigidbody2D rigid;
-    public Animator anim;
 
     [Header("Buff")]
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
@@ -143,7 +142,7 @@ public class Character : MonoBehaviour
     [SerializeField] string enemyName;
     [SerializeField] string enemyType;
 
-    void Start()
+    protected virtual void Awake()
     {
         enemyAI = enemyAI == null ? transform.GetComponent<EnemyAI>() : enemyAI;
 
@@ -178,14 +177,14 @@ public class Character : MonoBehaviour
 
         // 히트 이펙트가 없으면 기본 이펙트 가져오기
         if (hitEffect == null)
-            hitEffect = EnemySpawn.Instance.hitEffect;
+            hitEffect = WorldSpawner.Instance.hitEffect;
 
         // 초기화 시작 및 완료 변수 초기화
         // initialStart = false;
         initialFinish = false;
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         // 초기화 완료 취소
         initialFinish = false;
@@ -201,42 +200,45 @@ public class Character : MonoBehaviour
             hitBoxList[i].enabled = false;
         }
 
-        // 물리 콜라이더 끄기
-        physicsColl.enabled = false;
-
-        //스케일 초기화
-        transform.localScale = Vector3.one;
-
-        // rigid 초기화
-        rigid.velocity = Vector3.zero;
-        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
-
-        // 초기화 스위치 켜질때까지 대기
-        yield return new WaitUntil(() => initialStart);
-
-        // 고스트 여부 초기화
-        isGhost = changeGhost;
-
-        // 다음 리스폰할때 고스트 예약 초기화
-        changeGhost = false;
-
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
         // 몬스터 정보 찾기
         enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
 
-        // 몬스터 정보 인스턴싱, 몬스터 오브젝트마다 따로 EnemyInfo 갖기
-        enemy = new EnemyInfo(enemy);
+        if (enemy != null)
+        {
+            // 물리 콜라이더 끄기
+            physicsColl.enabled = false;
 
-        // 스탯 초기화
-        enemyName = enemy.enemyName;
-        enemyType = enemy.enemyType;
-        hpMax = enemy.hpMax;
-        powerNow = enemy.power;
-        speedNow = enemy.speed;
-        rangeNow = enemy.range;
-        cooltimeNow = enemy.cooltime;
+            //스케일 초기화
+            transform.localScale = Vector3.one;
+
+            // rigid 초기화
+            rigid.velocity = Vector3.zero;
+            rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            // 초기화 스위치 켜질때까지 대기
+            yield return new WaitUntil(() => initialStart);
+
+            // 고스트 여부 초기화
+            isGhost = changeGhost;
+
+            // 다음 리스폰할때 고스트 예약 초기화
+            changeGhost = false;
+
+            // 몬스터 정보 인스턴싱, 몬스터 오브젝트마다 따로 EnemyInfo 갖기
+            enemy = new EnemyInfo(enemy);
+
+            // 스탯 초기화
+            enemyName = enemy.enemyName;
+            enemyType = enemy.enemyType;
+            hpMax = enemy.hpMax;
+            powerNow = enemy.power;
+            speedNow = enemy.speed;
+            rangeNow = enemy.range;
+            cooltimeNow = enemy.cooltime;
+        }
 
         //엘리트 종류마다 색깔 및 능력치 적용
         switch ((int)eliteClass)
@@ -246,11 +248,11 @@ public class Character : MonoBehaviour
                 hpMax = hpMax * 2f;
 
                 //힐 오브젝트 소환
-                healRange = LeanPool.Spawn(EnemySpawn.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
+                healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
                 // 힐 오브젝트 크기 초기화
                 healRange.transform.localScale = Vector2.one * portalSize;
                 // enemyManager 넣어주기
-                healRange.GetComponent<EnemyAttack>().enemyManager = this;
+                healRange.GetComponent<EnemyAttack>().character = this;
 
                 // 초록 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
@@ -290,7 +292,7 @@ public class Character : MonoBehaviour
 
         //보유 아이템 초기화
         nowHasItem.Clear();
-        foreach (var itemId in defaultHasItem)
+        foreach (int itemId in defaultHasItem)
         {
             // id 할당을 위해 변수 선언
             int id = itemId;
@@ -310,43 +312,63 @@ public class Character : MonoBehaviour
         // 엘리트 몬스터일때
         if (eliteClass != EliteClass.None)
         {
-            // 랜덤 샤드 드랍 아이템에 등록
-            ItemInfo itemInfo = null;
-            string itemName = "";
-
-            // 해당 몬스터 등급으로 뽑기 등급 산출
-            int grade = enemy.grade;
-            // 해당 몬스터 등급으로 랜덤 마법 뽑기
-            MagicInfo randomMagic = MagicDB.Instance.GetRandomMagic(grade);
-
-            // 뽑았는데 랜덤이면 하위 등급으로 다시 뽑기
-            while (randomMagic == null)
+            // 엘리트 랜덤 아이템 드랍 (몬스터 등급+0~2급 샤드, 체력회복템, 트럭 호출버튼)
+            int randomItem = Random.Range(0, 2);
+            switch (randomItem)
             {
-                if (grade > 1)
-                    // 등급을 한단계 낮추기
-                    grade--;
-                // 1등급 이하면 중단
-                else
+                // 샤드일때
+                case 0:
+                    // 랜덤 샤드 드랍 아이템에 등록
+                    ItemInfo itemInfo = null;
+                    string itemName = "";
+
+                    // 해당 몬스터 등급으로 뽑기 등급 산출
+                    int grade = enemy.grade;
+                    // 해당 몬스터 등급으로 랜덤 마법 뽑기
+                    MagicInfo randomMagic = MagicDB.Instance.GetRandomMagic(grade);
+
+                    // 뽑았는데 랜덤이면 하위 등급으로 다시 뽑기
+                    while (randomMagic == null)
+                    {
+                        if (grade > 1)
+                            // 등급을 한단계 낮추기
+                            grade--;
+                        // 1등급 이하면 중단
+                        else
+                            break;
+
+                        // 해당 등급으로 랜덤 마법 뽑기
+                        randomMagic = MagicDB.Instance.GetRandomMagic(grade);
+
+                        if (randomMagic != null)
+                            print(grade + " : " + randomMagic.name);
+                    }
+
+                    // 해당 등급의 마법을 뽑는데 성공했을때
+                    if (randomMagic != null)
+                    {
+                        // 아이템 이름 짓기
+                        itemName = "Magic Shard " + grade;
+
+                        // 몬스터 등급에 해당하는 shard 찾기
+                        itemInfo = ItemDB.Instance.GetItemByName(itemName);
+
+                        // 드랍 아이템 정보 넣기
+                        nowHasItem.Add(itemInfo);
+                    }
                     break;
 
-                // 해당 등급으로 랜덤 마법 뽑기
-                randomMagic = MagicDB.Instance.GetRandomMagic(grade);
+                // 회복템일때
+                case 1:
+                    // 회복 아이템 찾기
+                    ItemInfo dropItem = ItemDB.Instance.itemDB.Find(x => x.itemType == ItemDB.ItemType.Heal.ToString());
+                    // 드랍 아이템 정보 넣기
+                    nowHasItem.Add(dropItem);
+                    break;
 
-                if (randomMagic != null)
-                    print(grade + " : " + randomMagic.name);
-            }
-
-            // 해당 등급의 마법을 뽑는데 성공했을때
-            if (randomMagic != null)
-            {
-                // 아이템 이름 짓기
-                itemName = "Magic Shard " + grade;
-
-                // 몬스터 등급에 해당하는 shard 찾기
-                itemInfo = ItemDB.Instance.GetItemByName(itemName);
-
-                // 드랍 아이템 정보 넣기
-                nowHasItem.Add(itemInfo);
+                //todo 트럭 호출 버튼일때
+                case 2:
+                    break;
             }
         }
 
@@ -391,9 +413,6 @@ public class Character : MonoBehaviour
             // 맥스 체력으로 초기화
             hpNow = hpMax;
 
-            // 물리 콜라이더 켜기
-            physicsColl.enabled = true;
-
             // 엘리트 몬스터 아닐때
             if (eliteClass == EliteClass.None)
                 // rigid, sprite, 트윈, 애니메이션 상태 초기화
@@ -408,13 +427,19 @@ public class Character : MonoBehaviour
             if (shadow)
                 shadow.color = new Color(0, 0, 0, 0.5f);
 
-            // 공격 트리거 레이어를 몬스터 공격으로 바꾸기
-            if (enemyAtkTrigger)
-                enemyAtkTrigger.gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
-            // 공격 레이어를 몬스터 공격으로 바꾸기
-            for (int i = 0; i < enemyAtkList.Count; i++)
+            if (enemy != null)
             {
-                enemyAtkList[i].gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+                // 물리 콜라이더 켜기
+                physicsColl.enabled = true;
+
+                // 공격 트리거 레이어를 몬스터 공격으로 바꾸기
+                if (enemyAtkTrigger)
+                    enemyAtkTrigger.gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+                // 공격 레이어를 몬스터 공격으로 바꾸기
+                for (int i = 0; i < enemyAtkList.Count; i++)
+                {
+                    enemyAtkList[i].gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+                }
             }
         }
 
@@ -424,20 +449,23 @@ public class Character : MonoBehaviour
         // idle 상태로 전환
         nowState = State.Idle;
 
-        for (int i = 0; i < animList.Count; i++)
+        if (enemy != null)
         {
-            // 애니메이터 켜기
-            animList[i].enabled = true;
+            for (int i = 0; i < animList.Count; i++)
+            {
+                // 애니메이터 켜기
+                animList[i].enabled = true;
 
-            // 애니메이션 속도 초기화
-            // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
-            animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
-        }
+                // 애니메이션 속도 초기화
+                // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
+                animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
+            }
 
-        //보스면 체력 UI 띄우기
-        if (enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
-        {
-            StartCoroutine(UIManager.Instance.UpdateBossHp(this));
+            //보스면 체력 UI 띄우기
+            if (enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
+            {
+                StartCoroutine(UIManager.Instance.UpdateBossHp(this));
+            }
         }
 
         // 히트박스 전부 켜기
@@ -454,8 +482,6 @@ public class Character : MonoBehaviour
         // 초기화 완료
         initialFinish = true;
     }
-
-
     private void Update()
     {
         // 초기화 안됬으면 리턴

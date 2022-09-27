@@ -16,7 +16,7 @@ public class ParticleTrigger : MonoBehaviour
     [Header("Attack")]
     public ParticleAttack attack; // 파티클에 닿았을때 실행할 공격 종류 선택
     public enum ParticleAttack { Damage, Poison, Slow, Knockback, Burn };
-    public EnemyManager enemyManager;
+    public Character character;
 
     private void Awake()
     {
@@ -128,10 +128,10 @@ public class ParticleTrigger : MonoBehaviour
             print("particle damage");
 
             // 피격 딜레이 갱신
-            StartCoroutine(PlayerManager.Instance.hitBox.HitDelay(enemyManager.powerNow));
+            StartCoroutine(PlayerManager.Instance.hitBox.HitDelay(character.powerNow));
 
             // 플레이어에게 몬스터 파워만큼 데미지 주기
-            PlayerManager.Instance.hitBox.Damage(enemyManager.powerNow, false);
+            PlayerManager.Instance.hitBox.Damage(character.powerNow, false);
         }
     }
 }

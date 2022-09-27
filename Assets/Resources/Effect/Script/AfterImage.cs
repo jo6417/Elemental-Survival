@@ -11,12 +11,20 @@ public class AfterImage : MonoBehaviour
 
     private void Awake()
     {
-        targetSpriteRenderer = targetSpriteRenderer != null ? targetSpriteRenderer : GetComponent<SpriteRenderer>();
+        // targetSpriteRenderer = targetSpriteRenderer != null ? targetSpriteRenderer : GetComponent<SpriteRenderer>();
         particle = particle != null ? particle : GetComponent<ParticleSystem>();
     }
 
     private void OnEnable()
     {
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        // 참조 스프라이트 값이 들어올때까지 대기
+        yield return new WaitUntil(() => targetSpriteRenderer != null);
+
         if (targetSpriteRenderer != null)
             // 파티클 스프라이트를 타겟 스프라이트로 업데이트
             particle.textureSheetAnimation.SetSprite(0, targetSpriteRenderer.sprite);
@@ -33,5 +41,8 @@ public class AfterImage : MonoBehaviour
             ParticleSystem.MainModule main = particle.main;
             main.startLifetime = ghostTime;
         }
+
+        // 파티클 재생
+        particle.Play();
     }
 }
