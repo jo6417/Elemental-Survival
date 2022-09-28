@@ -31,7 +31,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
-    public enum ItemType { Gem, Heal, Shard, Artifact, Magic }; // 아이템 타입 정의
+    public enum ItemType { Gem, Heal, Shard, Artifact, Gadget, Magic }; // 아이템 타입 정의
 
     public List<ItemInfo> itemDB = new List<ItemInfo>(); //아이템 정보 DB
     public List<Sprite> itemIcon = null; //아이템 아이콘 리스트
@@ -40,6 +40,7 @@ public class ItemDB : MonoBehaviour
     public List<GameObject> outGem = new List<GameObject>(); //카메라 밖으로 나간 원소젬 리스트
     [HideInInspector]
     public bool loadDone = false; //로드 완료 여부
+    public GameObject magicItemPrefab; // 마법 슬롯 아이템 프리팹
 
     void Awake()
     {
@@ -291,7 +292,6 @@ public class ItemDB : MonoBehaviour
     public ItemInfo GetItemByName(string name)
     {
         ItemInfo item = itemDB.Find(x => x.name.Replace(" ", "") == name.Replace(" ", ""));
-        // print(item.itemName.Replace(" ", "") + " : " + name.Replace(" ", ""));
         return item;
     }
 

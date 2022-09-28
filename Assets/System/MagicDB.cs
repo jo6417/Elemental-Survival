@@ -208,7 +208,6 @@ public class MagicDB : MonoBehaviour
 
         loadDone = true;
         print("MagicDB Loaded!");
-
     }
 
     public void LoadUnlockMagics()

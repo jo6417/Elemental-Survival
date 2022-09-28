@@ -127,7 +127,7 @@ public class MagicInfo : SlotInfo
 
 public class ItemInfo : SlotInfo
 {
-    public int amount = 0; //몇개 갖고 있는지
+    public int amount = 1; //몇개 갖고 있는지
 
     [Header("Info")]
     // public int id; //고유 아이디

@@ -157,20 +157,32 @@ public class SystemManager : MonoBehaviour
 
         // 마법, 몬스터, 아이템 로컬DB 모두 불러오기
         StartCoroutine(MagicDB.Instance.GetMagicDB());
-        StartCoroutine(EnemyDB.Instance.GetEnemyDB());
         StartCoroutine(ItemDB.Instance.GetItemDB());
+        StartCoroutine(EnemyDB.Instance.GetEnemyDB());
 
         // 모든 DB 동기화 여부 확인
         StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Magic, magicDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, enemyDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
         StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, itemDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, enemyDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
 
         // 갓모드 false 초기화
         GodModeToggle();
 
+        // 모두 로딩 완료시까지 대기
+        yield return new WaitUntil(() =>
+        MagicDB.Instance.loadDone
+        && ItemDB.Instance.loadDone
+        && EnemyDB.Instance.loadDone
+        );
+
         //TODO 로딩 UI 끄기
         print("로딩 완료");
         Time.timeScale = 1f;
+
+        // 플레이어 입력 켜기
+        PlayerManager.Instance.playerInput.Enable();
+        // ui 입력 켜기
+        UIManager.Instance.UI_Input.Enable();
     }
 
     private void OnEnable()
@@ -311,5 +323,37 @@ public class SystemManager : MonoBehaviour
             return false;
         else
             return false;
+    }
+
+    public int RandomPick(List<int> rateList)
+    {
+        // 아이템들의 가중치 총량 계산
+        float totalRate = 0;
+        foreach (var rate in rateList)
+        {
+            totalRate += rate;
+        }
+
+        // 0~1 사이 숫자에 가중치 총량을 곱해서 랜덤 숫자
+        float randomNum = UnityEngine.Random.value * totalRate;
+
+        // 랜덤 목록 개수만큼 반복
+        for (int i = 0; i < rateList.Count; i++)
+        {
+            // 랜덤 숫자가 i번 가중치보다 작다면
+            if (randomNum <= rateList[i])
+            {
+                // 해당 인덱스 반환
+                return i;
+            }
+            else
+            {
+                // 랜덤 숫자에서 가중치 빼기
+                randomNum -= rateList[i];
+            }
+        }
+
+        //랜덤 숫자가 1일때 마지막값 반환
+        return rateList.Count - 1;
     }
 }

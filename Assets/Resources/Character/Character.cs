@@ -312,14 +312,24 @@ public class Character : MonoBehaviour
         // 엘리트 몬스터일때
         if (eliteClass != EliteClass.None)
         {
-            // 엘리트 랜덤 아이템 드랍 (몬스터 등급+0~2급 샤드, 체력회복템, 트럭 호출버튼)
-            int randomItem = Random.Range(0, 2);
+            ItemInfo dropItem = null;
+
+            //todo 트럭 호출버튼 구현 후 추가
+
+            // 각각 아이템 개별 확률 적용
+            List<int> randomRate = new List<int>();
+            randomRate.Add(2); // 샤드 확률 가중치
+            randomRate.Add(1); // 회복 아이템 확률 가중치
+            randomRate.Add(1); // 자석 빔 확률 가중치
+
+            // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
+            int randomItem = SystemManager.Instance.RandomPick(randomRate);
+
             switch (randomItem)
             {
                 // 샤드일때
                 case 0:
                     // 랜덤 샤드 드랍 아이템에 등록
-                    ItemInfo itemInfo = null;
                     string itemName = "";
 
                     // 해당 몬스터 등급으로 뽑기 등급 산출
@@ -330,18 +340,18 @@ public class Character : MonoBehaviour
                     // 뽑았는데 랜덤이면 하위 등급으로 다시 뽑기
                     while (randomMagic == null)
                     {
-                        if (grade > 1)
+                        // 1등급 이하면 중단
+                        if (grade <= 1)
+                            break;
+                        else
                             // 등급을 한단계 낮추기
                             grade--;
-                        // 1등급 이하면 중단
-                        else
-                            break;
 
                         // 해당 등급으로 랜덤 마법 뽑기
                         randomMagic = MagicDB.Instance.GetRandomMagic(grade);
 
-                        if (randomMagic != null)
-                            print(grade + " : " + randomMagic.name);
+                        // if (randomMagic != null)
+                        //     print(grade + " : " + randomMagic.name);
                     }
 
                     // 해당 등급의 마법을 뽑는데 성공했을때
@@ -351,25 +361,29 @@ public class Character : MonoBehaviour
                         itemName = "Magic Shard " + grade;
 
                         // 몬스터 등급에 해당하는 shard 찾기
-                        itemInfo = ItemDB.Instance.GetItemByName(itemName);
-
-                        // 드랍 아이템 정보 넣기
-                        nowHasItem.Add(itemInfo);
+                        dropItem = ItemDB.Instance.GetItemByName(itemName);
                     }
                     break;
 
                 // 회복템일때
                 case 1:
                     // 회복 아이템 찾기
-                    ItemInfo dropItem = ItemDB.Instance.itemDB.Find(x => x.itemType == ItemDB.ItemType.Heal.ToString());
-                    // 드랍 아이템 정보 넣기
-                    nowHasItem.Add(dropItem);
+                    dropItem = ItemDB.Instance.itemDB.Find(x => x.itemType == ItemDB.ItemType.Heal.ToString());
+                    break;
+
+                // 자석빔일때
+                case 2:
+                    dropItem = ItemDB.Instance.GetItemByName("Magnet");
                     break;
 
                 //todo 트럭 호출 버튼일때
-                case 2:
+                case 3:
                     break;
             }
+
+            dropItem.amount = 1;
+            // 드랍 아이템 정보 넣기
+            nowHasItem.Add(dropItem);
         }
 
         hitDelayCount = 0; //데미지 카운트 초기화
@@ -794,15 +808,14 @@ public class Character : MonoBehaviour
         //보유한 모든 아이템 드랍
         foreach (ItemInfo item in nowHasItem)
         {
-            // print(item.itemName + " : " + item.amount);
             //해당 아이템의 amount 만큼 드랍
             for (int i = 0; i < item.amount; i++)
             {
                 //아이템 프리팹 찾기
                 GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
 
-                if (prefab == null)
-                    print(item.name + " : not found");
+                // if (prefab == null)
+                //     print(item.name + " : not found");
 
                 //아이템 오브젝트 소환
                 GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);

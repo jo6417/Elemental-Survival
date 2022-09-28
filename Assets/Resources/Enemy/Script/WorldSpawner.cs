@@ -45,7 +45,7 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] float itemboxSpawnCount; //아이템 박스 스폰 쿨타임 카운트
     [SerializeField] float lockerSpawnCount; //아이템 금고 스폰 쿨타임 카운트
     [SerializeField, ReadOnly] bool nowSpawning; //스폰중일때
-    [SerializeField, ReadOnly] List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
+    public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
     public List<Character> spawnEnemyList = new List<Character>(); //현재 스폰된 몬스터 리스트
     public List<GameObject> itemBoxList = new List<GameObject>(); // 현재 스폰된 아이템 박스 리스트
     public List<GameObject> lockerList = new List<GameObject>(); // 현재 스폰된 아이템 금고 리스트
@@ -113,9 +113,6 @@ public class WorldSpawner : MonoBehaviour
                 // 아이템 박스 스폰, 최대 10개
                 GameObject itembox = SpawnItembox(itemBoxPrefab);
 
-                // 생성된 박스를 리스트에 포함
-                itemBoxList.Add(itembox);
-
                 // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
                 float boxCoolTime = 3f + itemBoxList.Count * 5f;
                 // 쿨타임 갱신
@@ -136,9 +133,6 @@ public class WorldSpawner : MonoBehaviour
             {
                 // 아이템 금고 스폰, 최대 5개
                 GameObject itembox = SpawnItembox(lockerPrefab);
-
-                // 생성된 금고를 리스트에 포함
-                lockerList.Add(itembox);
 
                 // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
                 float boxCoolTime = 10f + lockerList.Count * 10f;

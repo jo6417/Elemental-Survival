@@ -89,11 +89,9 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI playerHpText;
     public SlicedFilledImage playerExp;
     public TextMeshProUGUI playerLev;
-
     public List<TextMeshProUGUI> gemAmountUIs = new List<TextMeshProUGUI>();
     public List<Image> gemIndicators = new List<Image>();
     public Transform gemUIParent;
-
     public GameObject statsUI; //일시정지 메뉴 스탯 UI
     public TextMeshProUGUI pauseScrollAmt; //일시정지 메뉴 스크롤 개수 UI
     public GameObject hasItemIcon; //플레이어 현재 소지 아이템 아이콘
@@ -143,7 +141,8 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        UI_Input.Enable();
+        // SystemManager 에서 켜기
+        // UI_Input.Enable();
     }
 
     private void OnDisable()
@@ -700,8 +699,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateMagics(List<MagicInfo> magicList)
+    public IEnumerator UpdateMagics(List<MagicInfo> magicList)
     {
+        // 목록 투명하게 숨기기
+        hasMagicGrid.GetComponent<CanvasGroup>().alpha = 0f;
+
         //모든 자식 오브젝트 비활성화
         int childNum = hasMagicGrid.transform.childCount;
         for (int i = 0; i < childNum; i++)
@@ -740,6 +742,11 @@ public class UIManager : MonoBehaviour
 
         //그리드 업데이트 명령하기
         hasMagicGrid.isChanged = true;
+
+        yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
+
+        // 목록 나타내기
+        hasMagicGrid.GetComponent<CanvasGroup>().alpha = 1f;
     }
 
     public void AddMagicUI(MagicInfo magic)

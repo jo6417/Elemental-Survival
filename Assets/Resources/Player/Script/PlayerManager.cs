@@ -219,7 +219,8 @@ public class PlayerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        playerInput.Enable();
+        // SystemManager 에서 켜기
+        // playerInput.Enable();
 
         //기본 마법 추가
         StartCoroutine(CastDefaultMagics());

@@ -112,7 +112,6 @@ public class OpenSafeMenu : MonoBehaviour
 
     int RandomPick()
     {
-
         //아이템들의 확률 총합
         float totalRate = 0;
         foreach (var rate in chestRate)

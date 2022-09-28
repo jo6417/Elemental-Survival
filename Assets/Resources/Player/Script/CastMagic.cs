@@ -112,8 +112,7 @@ public class CastMagic : MonoBehaviour
         // 투사체 개수만큼 마우스 근처 포지션 지정
         for (int i = 0; i < atkNum; i++)
         {
-            Vector2 atkPos =
-            PlayerManager.Instance.GetMousePos();
+            Vector2 atkPos = PlayerManager.Instance.GetMousePos();
             // + Random.insideUnitCircle * range;
 
             attackPos.Add(atkPos);
@@ -301,7 +300,7 @@ public class CastMagic : MonoBehaviour
         }
 
         // 인게임 화면 하단에 사용중인 마법 아이콘 리스트 갱신
-        UIManager.Instance.UpdateMagics(castList);
+        StartCoroutine(UIManager.Instance.UpdateMagics(castList));
     }
 
     //액티브 마법 소환

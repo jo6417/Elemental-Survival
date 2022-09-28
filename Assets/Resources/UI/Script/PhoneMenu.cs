@@ -263,6 +263,9 @@ public class PhoneMenu : MonoBehaviour
         //초기화
         StartCoroutine(Init());
 
+        //마법 DB 로딩 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
         // 휴대폰 로딩 화면으로 가리기
         LoadingToggle(true);
         blackScreen.color = new Color(70f / 255f, 70f / 255f, 70f / 255f, 1);
@@ -1390,7 +1393,7 @@ public class PhoneMenu : MonoBehaviour
             backBtnFill.fillAmount = 0f;
 
             // 끝나면 시간 복구하기
-            Time.timeScale = 1f;
+            // Time.timeScale = 1f;
 
             //팝업 세팅
             UIManager.Instance.PopupSet(UIManager.Instance.phonePanel);

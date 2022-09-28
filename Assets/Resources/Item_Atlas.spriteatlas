@@ -81,6 +81,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b0b0cb6f864baae40a45865ee2ddeb40, type: 3}
   - {fileID: 21300000, guid: 5b551ebf45165b140afd27e58dc906a7, type: 3}
   - {fileID: 21300000, guid: 47013ebfeaf3f5a4cb641592e7046e45, type: 3}
+  - {fileID: 21300000, guid: dc3f4acf43987ad42bf1e3c8b83f74e1, type: 3}
   m_PackedSpriteNamesToIndex:
   - WindGem_Icon
   - USB_Icon
@@ -114,6 +115,7 @@ SpriteAtlas:
   - MagicShard1_Icon
   - EmptyScroll_Icon
   - MagicUSB5_Icon
+  - Magnet_Icon
   m_RenderDataMap: {}
   m_Tag: Item_Atlas
   m_IsVariant: 0
