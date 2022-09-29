@@ -84,6 +84,8 @@ MonoBehaviour:
   coll: {fileID: 6512097500589560256}
   ghostPrefab: {fileID: 1867821101119519115, guid: d807eeb4a19e3774da6db29d371f8f85,
     type: 3}
+  dashSprite: {fileID: -9115721424117958124, guid: 85a55f7c82e3b1c458b5e396c2eeaf72,
+    type: 3}
   ghostTime: 1
   ghostDelay: 2
 --- !u!114 &8653905108687864190
@@ -4896,7 +4898,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

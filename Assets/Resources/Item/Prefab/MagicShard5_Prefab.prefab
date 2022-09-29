@@ -4936,6 +4936,7 @@ MonoBehaviour:
   sprite: {fileID: 1883610055342713591}
   despawnEffect: {fileID: 7420950429603813841}
   coll: {fileID: 0}
+  gadgetPrefab: {fileID: 0}
 --- !u!212 &1883610055342713591
 SpriteRenderer:
   m_ObjectHideFlags: 0

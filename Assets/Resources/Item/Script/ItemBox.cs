@@ -88,7 +88,7 @@ public class ItemBox : Character
 
         //todo 드랍 아이템 선정 (회복템, 자석... 중에서 랜덤)
         // 버섯 아이템으로 테스트
-        ItemInfo dropItem = ItemDB.Instance.itemDB.Find(x => x.itemType == ItemDB.ItemType.Heal.ToString());
+        ItemInfo dropItem = ItemDB.Instance.GetItemByName("Heart");
         // 드랍 개수 1개로 초기화
         dropItem.amount = 1;
 

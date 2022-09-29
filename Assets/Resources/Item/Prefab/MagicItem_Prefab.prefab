@@ -5185,6 +5185,7 @@ MonoBehaviour:
   sprite: {fileID: 0}
   despawnEffect: {fileID: 247720266629558472}
   coll: {fileID: 0}
+  gadgetPrefab: {fileID: 0}
 --- !u!50 &7126061559683287822
 Rigidbody2D:
   serializedVersion: 4

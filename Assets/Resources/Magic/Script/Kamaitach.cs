@@ -11,6 +11,7 @@ public class Kamaitach : MonoBehaviour
     [SerializeField] ParticleManager particleManager;
     [SerializeField] BoxCollider2D coll;
     [SerializeField] AfterImage ghostPrefab; // 잔상 효과 프리팹
+    [SerializeField] Sprite dashSprite; // 잔상 스프라이트
 
     Vector3 nowPlayerPos;
     Vector3 movePos;
@@ -31,6 +32,13 @@ public class Kamaitach : MonoBehaviour
     private void OnEnable()
     {
         StartCoroutine(Init());
+    }
+
+    private void OnDisable()
+    {
+        // 플레이어, UI 키입력 풀기
+        PlayerManager.Instance.playerInput.Enable();
+        UIManager.Instance.UI_Input.Enable();
     }
 
     IEnumerator Init()
@@ -72,16 +80,24 @@ public class Kamaitach : MonoBehaviour
         // 수동 시전 했을때
         if (magicHolder.isManualCast)
         {
+            // 시간 멈추기
+            Time.timeScale = 0.1f;
+
+            // 플레이어, UI 키입력 막기
+            PlayerManager.Instance.playerInput.Disable();
+            UIManager.Instance.UI_Input.Disable();
+
+            // 플레이어 애니메이터 끄기
+            PlayerManager.Instance.anim.enabled = false;
+            // 플레이어 스프라이트 바꾸기
+            PlayerManager.Instance.sprite.sprite = dashSprite;
+
             // 시전여부 초기화
             magicHolder.isManualCast = false;
 
             // 타겟 위치로 플레이어 이동 시키기
             PlayerManager.Instance.transform.DOMove(movePos, 0.2f)
-            .OnComplete(() =>
-            {
-                // 이동 끝나면 파티클 실행
-                particleManager.particle.Play();
-            });
+            .SetUpdate(true);
 
             // 잔상 회전값
             Vector3 ghostRotation = (movePos - nowPlayerPos).x > 0 ? Vector3.zero : Vector3.up * -180f;
@@ -91,6 +107,21 @@ public class Kamaitach : MonoBehaviour
 
             // 고스트 오브젝트 소환, 자동 디스폰
             StartCoroutine(MakeGhost());
+
+            yield return new WaitForSecondsRealtime(0.2f);
+
+            // 시간 정상화
+            Time.timeScale = 1f;
+
+            // 플레이어 애니메이터 켜기
+            PlayerManager.Instance.anim.enabled = true;
+
+            // 플레이어, UI 키입력 풀기
+            PlayerManager.Instance.playerInput.Enable();
+            UIManager.Instance.UI_Input.Enable();
+
+            // 이동 끝나면 파티클 실행
+            particleManager.particle.Play();
         }
         else
             // 이동하지 않으면 바로 파티클 실행
@@ -139,12 +170,15 @@ public class Kamaitach : MonoBehaviour
             // 잔상 단일 소환
             AfterImage ghostObj = LeanPool.Spawn(ghostPrefab, ghostPos, Quaternion.Euler(ghostRotation), SystemManager.Instance.effectPool);
 
+            // 대쉬 스프라이트 넣기
+            ghostObj.targetSprite = dashSprite;
+
             // 잔상 소멸시간 초기화
             ghostObj.ghostTime = ghostTime;
             // 사이즈 초기화
             ghostObj.transform.localScale = Vector2.one;
 
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSecondsRealtime(0.01f);
         }
     }
 }

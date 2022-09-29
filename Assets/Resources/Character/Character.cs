@@ -368,7 +368,7 @@ public class Character : MonoBehaviour
                 // 회복템일때
                 case 1:
                     // 회복 아이템 찾기
-                    dropItem = ItemDB.Instance.itemDB.Find(x => x.itemType == ItemDB.ItemType.Heal.ToString());
+                    dropItem = ItemDB.Instance.GetItemByName("Heart");
                     break;
 
                 // 자석빔일때

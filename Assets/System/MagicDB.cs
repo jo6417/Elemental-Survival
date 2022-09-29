@@ -56,7 +56,8 @@ public class MagicDB : MonoBehaviour
         get { return gradeHDRColor; }
     }
     [SerializeField, ReadOnly] Color[] elementColors = new Color[6]; //원소 색깔
-    // public enum ElementNames { Earth, Fire, Life, Lightning, Water, Wind };
+    [SerializeField] Color[] elementHDRColors = new Color[6]; //원소 HDR 색깔
+
     string[] elementNames = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
     public string[] ElementNames
     {
@@ -430,6 +431,12 @@ public class MagicDB : MonoBehaviour
     {
         // 해당 인덱스로 원소 색깔 리턴
         return elementColors[colorIndex];
+    }
+
+    public Color GetHDRElementColor(int colorIndex)
+    {
+        // 해당 인덱스로 원소 색깔 리턴
+        return elementHDRColors[colorIndex];
     }
 
     public float MagicPower(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)

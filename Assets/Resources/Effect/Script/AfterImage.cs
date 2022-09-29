@@ -23,7 +23,7 @@ public class AfterImage : MonoBehaviour
     IEnumerator Init()
     {
         // 참조 스프라이트 값이 들어올때까지 대기
-        yield return new WaitUntil(() => targetSpriteRenderer != null);
+        yield return new WaitUntil(() => targetSpriteRenderer != null || targetSprite != null);
 
         if (targetSpriteRenderer != null)
             // 파티클 스프라이트를 타겟 스프라이트로 업데이트

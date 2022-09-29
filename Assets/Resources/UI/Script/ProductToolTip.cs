@@ -38,7 +38,7 @@ public class ProductToolTip : MonoBehaviour
     public enum ToolTipCorner { LeftUp, LeftDown, RightUp, RightDown };
     // bool isFollow = false; //마우스 따라가기 여부
     bool SetDone = false; //모든 정보 표시 완료 여부
-    public bool offCall = false; //툴팁 끄라는 명령
+    // public bool offCall = false; //툴팁 끄라는 명령
 
     [Header("Refer")]
     public TextMeshProUGUI productType;
@@ -180,8 +180,8 @@ public class ProductToolTip : MonoBehaviour
             return false;
         }
 
-        //마법 등급 프레임에 넣기
-        GradeFrame.gameObject.SetActive(true);
+        // GradeFrame.gameObject.SetActive(true);
+        // 프레임 색깔에 등급 표시
         GradeFrame.color = MagicDB.Instance.GradeColor[magic.grade];
 
         // 마법 타입 표시
@@ -238,8 +238,11 @@ public class ProductToolTip : MonoBehaviour
     {
         // 마법 재료 오브젝트 끄기
         recipeObj.SetActive(false);
+
         //마법 등급 프레임 끄기
-        GradeFrame.gameObject.SetActive(false);
+        // GradeFrame.gameObject.SetActive(false);
+        // 프레임 색깔에 등급 표시
+        GradeFrame.color = MagicDB.Instance.GradeColor[item.grade];
 
         // 아이템 타입 표시
         productType.text = item.itemType;
