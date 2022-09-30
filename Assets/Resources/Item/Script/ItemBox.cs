@@ -14,9 +14,9 @@ public class ItemBox : Character
     [Header("State")]
     [SerializeField] float boxHp = 5f; // 박스 체력 기본값
     int randomType; // 아이템 종류 (마법,샤드,아티팩트)
-    public SlotInfo slotInfo;
+    public ItemInfo slotInfo;
     [SerializeField, ReadOnly] string productName;
-    [SerializeField] List<int> randomRate = new List<int>(); // 개별 확률 적용 아이템
+    [SerializeField] List<float> randomRate = new List<float>(); // 개별 확률 적용 아이템
 
     protected override void Awake()
     {
@@ -42,17 +42,15 @@ public class ItemBox : Character
         yield return new WaitUntil(() => MagicDB.Instance.loadDone && ItemDB.Instance.loadDone);
 
         // 각각 아이템 개별 확률 적용
-        randomRate.Add(2); // 원소젬 확률 가중치
-        randomRate.Add(1); // 회복 아이템 확률 가중치
-        randomRate.Add(1); // 자석 빔 확률 가중치
-
-        // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
-        int randomItem = SystemManager.Instance.RandomPick(randomRate);
+        randomRate.Add(40); // 원소젬 확률 가중치
+        randomRate.Add(20); // 회복 아이템 확률 가중치
+        randomRate.Add(20); // 자석 빔 확률 가중치
+        randomRate.Add(10); // 슬롯머신 확률 가중치
 
         // null 이 아닌 상품이 뽑힐때까지 반복
         while (slotInfo == null)
         {
-            // 아이템 종류 뽑기 (원소젬, 회복템, 자석)
+            // 아이템 종류 뽑기
             randomType = SystemManager.Instance.RandomPick(randomRate);
 
             // 해당 상품 내에서 랜덤 id
@@ -65,11 +63,15 @@ public class ItemBox : Character
                     break;
                 // 회복 아이템일때
                 case 1:
-                    slotInfo = ItemDB.Instance.GetItemByName("Life Mushroom");
+                    slotInfo = ItemDB.Instance.GetItemByName("Heart");
                     break;
                 // 자석빔일때
                 case 2:
                     slotInfo = ItemDB.Instance.GetItemByName("Magnet");
+                    break;
+                // 슬롯머신일때
+                case 3:
+                    slotInfo = ItemDB.Instance.GetItemByName("SlotMachine");
                     break;
             }
 
@@ -86,15 +88,11 @@ public class ItemBox : Character
         hpMax = boxHp;
         hpNow = hpMax;
 
-        //todo 드랍 아이템 선정 (회복템, 자석... 중에서 랜덤)
-        // 버섯 아이템으로 테스트
-        ItemInfo dropItem = ItemDB.Instance.GetItemByName("Heart");
-        // 드랍 개수 1개로 초기화
-        dropItem.amount = 1;
-
         // 드랍 아이템 넣기
         nowHasItem.Clear();
-        nowHasItem.Add(dropItem);
+        // 드랍 개수 1개로 초기화
+        slotInfo.amount = 1;
+        nowHasItem.Add(slotInfo);
 
         // 생성된 박스를 리스트에 포함
         WorldSpawner.Instance.itemBoxList.Add(gameObject);

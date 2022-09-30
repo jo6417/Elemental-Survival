@@ -317,10 +317,11 @@ public class Character : MonoBehaviour
             //todo 트럭 호출버튼 구현 후 추가
 
             // 각각 아이템 개별 확률 적용
-            List<int> randomRate = new List<int>();
-            randomRate.Add(2); // 샤드 확률 가중치
-            randomRate.Add(1); // 회복 아이템 확률 가중치
-            randomRate.Add(1); // 자석 빔 확률 가중치
+            List<float> randomRate = new List<float>();
+            randomRate.Add(40); // 원소젬 확률 가중치
+            randomRate.Add(20); // 회복 아이템 확률 가중치
+            randomRate.Add(20); // 자석 빔 확률 가중치
+            randomRate.Add(10); // 슬롯머신 확률 가중치
 
             // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
             int randomItem = SystemManager.Instance.RandomPick(randomRate);
@@ -376,8 +377,13 @@ public class Character : MonoBehaviour
                     dropItem = ItemDB.Instance.GetItemByName("Magnet");
                     break;
 
-                //todo 트럭 호출 버튼일때
+                // 슬롯머신일때
                 case 3:
+                    dropItem = ItemDB.Instance.GetItemByName("SlotMachine");
+                    break;
+
+                //todo 트럭 호출 버튼일때
+                case 4:
                     break;
             }
 
@@ -821,13 +827,14 @@ public class Character : MonoBehaviour
                 GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
                 //아이템 정보 넣기
-                itemObj.GetComponent<ItemManager>().itemInfo = item;
+                if (itemObj.TryGetComponent(out ItemManager itemManager))
+                    itemManager.itemInfo = item;
 
                 //아이템 리지드 찾기
                 Rigidbody2D itemRigid = itemObj.GetComponent<Rigidbody2D>();
 
                 // 랜덤 방향으로 아이템 날리기
-                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(3f, 5f);
+                itemRigid.velocity = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * Random.Range(10f, 20f);
 
                 // 아이템 랜덤 회전 시키기
                 itemRigid.angularVelocity = Random.value < 0.5f ? 180f : -180f;

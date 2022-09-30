@@ -325,7 +325,7 @@ public class SystemManager : MonoBehaviour
             return false;
     }
 
-    public int RandomPick(List<int> rateList)
+    public int RandomPick(List<float> rateList)
     {
         // 아이템들의 가중치 총량 계산
         float totalRate = 0;

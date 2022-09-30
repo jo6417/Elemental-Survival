@@ -20,6 +20,7 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] Animator leverAnim;
     [SerializeField] List<SimpleScrollSnap> slotScrolls = new List<SimpleScrollSnap>();
     [SerializeField] Transform gemLED;
+    [SerializeField] Image blackScreen;
 
     [Header("State")]
     float spinCount;
@@ -46,6 +47,15 @@ public class SlotMachine : MonoBehaviour
 
     IEnumerator Init()
     {
+        // blackScreen으로 슬롯 가리기
+        blackScreen.color = Color.black;
+        List<SpriteRenderer> gemLEDs = gemLED.GetComponentsInChildren<SpriteRenderer>().ToList();
+
+        // led 전부 끄기        
+        foreach (SpriteRenderer led in gemLEDs)
+            // 해당 순서 led 켜기
+            led.color = Color.clear;
+
         // 캔버스 끄기
         uiCanvas.gameObject.SetActive(false);
 
@@ -71,6 +81,15 @@ public class SlotMachine : MonoBehaviour
         interacter.interactTriggerCallback += InteractTrigger;
         // 상호작용 함수 콜백에 연결 시키기
         interacter.interactSubmitCallback += InteractSubmit;
+
+        // led 전부 켜기        
+        foreach (SpriteRenderer led in gemLEDs)
+            // 해당 순서 led 켜기
+            led.DOColor(Color.white, 1f);
+
+        // blackScreen 투명하게
+        blackScreen.DOColor(Color.clear, 1f);
+        yield return new WaitForSeconds(1f);
 
         // 캔버스 켜기
         uiCanvas.gameObject.SetActive(true);
@@ -237,10 +256,22 @@ public class SlotMachine : MonoBehaviour
         priceUI.GetComponentInChildren<Image>().color = MagicDB.Instance.GetElementColor(priceType);
         priceUI.GetComponentInChildren<TextMeshProUGUI>().text = price.ToString();
 
-        //todo 랜덤하게 슬롯머신 정지 아니면 캔버스 켜기
+        // 랜덤하게 슬롯머신 정지
+        if (Random.value <= 0.3f)
+        {
+            // led 끄기
+            List<SpriteRenderer> gemLEDs = gemLED.GetComponentsInChildren<SpriteRenderer>().ToList();
+            foreach (SpriteRenderer led in gemLEDs)
+                // 해당 순서 led 끄기
+                led.DOColor(Color.clear, 1f);
 
-        // 캔버스 켜기
-        uiCanvas.gameObject.SetActive(true);
+            // blackScreen으로 가리기
+            blackScreen.DOColor(Color.black, 1f);
+        }
+        // 정지 아닐때
+        else
+            // 캔버스 켜기, 다시 작동
+            uiCanvas.gameObject.SetActive(true);
     }
 
     IEnumerator LEDFlash()
@@ -304,5 +335,15 @@ public class SlotMachine : MonoBehaviour
         }
 
         slotStopNum++;
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        // 스폰 콜라이더 밖으로 나갔을때, 기능 정지한 상태일때
+        if (other.CompareTag("Respawn") && !uiCanvas.gameObject.activeSelf)
+        {
+            // 디스폰
+            LeanPool.Despawn(transform);
+        }
     }
 }

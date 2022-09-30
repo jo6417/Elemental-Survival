@@ -34,13 +34,6 @@ public class Kamaitach : MonoBehaviour
         StartCoroutine(Init());
     }
 
-    private void OnDisable()
-    {
-        // 플레이어, UI 키입력 풀기
-        PlayerManager.Instance.playerInput.Enable();
-        UIManager.Instance.UI_Input.Enable();
-    }
-
     IEnumerator Init()
     {
         // 콜라이더 끄기

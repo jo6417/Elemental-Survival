@@ -61,7 +61,6 @@ SpriteAtlas:
   - {fileID: 5164350089764898201, guid: 8bb10c403c5a5db4d89d27d2a2c0121a, type: 3}
   - {fileID: 21300000, guid: 5f35ef60c2c7b6441977d18d0bcdce6a, type: 3}
   - {fileID: 21300000, guid: 95cf09a04a00c6e47927d2187ef92bda, type: 3}
-  - {fileID: 21300000, guid: a66f3cd010ad0da4e8178832f0675158, type: 3}
   - {fileID: 21300000, guid: aaf16a113a450c74dbf82c8b71e04eae, type: 3}
   - {fileID: -5712959122012955994, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
   - {fileID: 5435921867156881161, guid: 6c8835e1e6b6c06458bb96435772e8e8, type: 3}
@@ -78,7 +77,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a12cfe82c771ae040bad4ffd5030f64f, type: 3}
   - {fileID: 21300000, guid: 63524fa2c4b4ba045abd287ded7bb51b, type: 3}
   - {fileID: 21300000, guid: fde42df2f89eb1b4cb84654bdea8c330, type: 3}
-  - {fileID: 21300000, guid: d517c663e7a7bb148be8c6c70e34247f, type: 3}
   - {fileID: 4117335768061151153, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: 769383347276963491, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: -4392649398402108704, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
@@ -94,7 +92,6 @@ SpriteAtlas:
   - {fileID: 4052886725512566304, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: -2435822838769587993, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
   - {fileID: -4898178295380021446, guid: 11a77594c0e18be48b681768f9e067eb, type: 3}
-  - {fileID: 21300000, guid: f23731a414aaf034caf50232c22b79e1, type: 3}
   - {fileID: 9069452203224602429, guid: b6822fb46b51b774c98aae460d8f5792, type: 3}
   - {fileID: -4622714332243487470, guid: b6822fb46b51b774c98aae460d8f5792, type: 3}
   - {fileID: 5746233912124084476, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
@@ -105,12 +102,12 @@ SpriteAtlas:
   - {fileID: 22442593591287992, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 21300000, guid: 5ddbb22550d1d8e45af45dbc3a6fddf9, type: 3}
   - {fileID: 21300000, guid: 6041c625775d0e340b10b4cf437c04b9, type: 3}
-  - {fileID: 21300000, guid: a846f955773477346a68790fc68be129, type: 3}
   - {fileID: 21300000, guid: f80246a55bc89374b84ef9ad497d2c6d, type: 3}
   - {fileID: 21300000, guid: 845360268351fd14483682e19c071d7c, type: 3}
   - {fileID: 21300000, guid: 51e7805665b7cab41aa72c3339889e78, type: 3}
   - {fileID: 21300000, guid: ded3a7563ccccbf4b94e3fa3e13146bd, type: 3}
   - {fileID: 21300000, guid: fe793b17594220349accfc1346ead8be, type: 3}
+  - {fileID: 21300000, guid: babb5247a36af9d4b821a6ab1840560f, type: 3}
   - {fileID: 21300000, guid: 37d6a05717b3f4f478e3a1b83b19b6b2, type: 3}
   - {fileID: 21300000, guid: 63c51377007af4943bb56dc7fcd238f0, type: 3}
   - {fileID: 21300000, guid: b69a18771fd84ae47a880e5a518d982c, type: 3}
@@ -211,8 +208,6 @@ SpriteAtlas:
   - {fileID: -3619053025217519886, guid: ddf97f4ec5e18e94f87071609bc93ab6, type: 3}
   - {fileID: 8092416761886967685, guid: ddf97f4ec5e18e94f87071609bc93ab6, type: 3}
   - {fileID: -8274049009435962668, guid: ddf97f4ec5e18e94f87071609bc93ab6, type: 3}
-  - {fileID: 21300000, guid: 151f5f7e91b068344a8f3f384942df04, type: 3}
-  - {fileID: 21300000, guid: f353b28eea06dff4cbe707b0d8cf71f8, type: 3}
   - {fileID: 5112280428559345770, guid: 57870d8e521eef145801111270879442, type: 3}
   - {fileID: 4351972778460142468, guid: 57870d8e521eef145801111270879442, type: 3}
   - {fileID: 173199709879682316, guid: 57870d8e521eef145801111270879442, type: 3}
@@ -234,8 +229,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 17518c2f753425743ac1fe29b0915f73, type: 3}
   - {fileID: 21300000, guid: 31b0367f8da80be479dd56f1245191dd, type: 3}
   - {fileID: 21300000, guid: e2ef8ecf2e08b4743a22185d1b6d1bbb, type: 3}
-  - {fileID: -1940797720717528354, guid: ee217affa7f48c948aec1b24ba897e88, type: 3}
-  - {fileID: -7536790541032447284, guid: ee217affa7f48c948aec1b24ba897e88, type: 3}
   m_PackedSpriteNamesToIndex:
   - MetalSword_Icon
   - IceHit_Sheet_2
@@ -248,7 +241,6 @@ SpriteAtlas:
   - IceHit_Sheet_5
   - FireBall_Icon
   - WindBlast_Icon
-  - LifeGem_
   - LifeGem_Icon
   - Bubble_0
   - Bubble_1
@@ -265,7 +257,6 @@ SpriteAtlas:
   - SuperSerum_Icon
   - Nimbus_Icon
   - LightningRod
-  - WaterGem_
   - RuneLine_0
   - RuneLine_1
   - RuneLine_2
@@ -281,7 +272,6 @@ SpriteAtlas:
   - SlingShot-Sheet_0
   - SlingShot-Sheet_3
   - SlingShot-Sheet_2
-  - LightningGem_
   - Nimbus_Sheet_0
   - Nimbus_Sheet_1
   - StompDust_Sheet_5
@@ -292,12 +282,12 @@ SpriteAtlas:
   - StompDust_Sheet_0
   - Explosion_Icon
   - SlotMove_Icon
-  - WindGem_
   - SandShot_Icon
   - TimeStop_Icon
   - LavaWalk_Icon
   - EarthGem_Icon
   - IceThorn
+  - LightningRod_Icon
   - IceSpear_Icon
   - Kamaitachi_Icon
   - IceSpear
@@ -398,8 +388,6 @@ SpriteAtlas:
   - MetalCube_Sheet_3
   - MetalCube_Sheet_0
   - MetalCube_Sheet_1
-  - FireGem_
-  - EarthGem_
   - Nimbus_Sheet_4
   - Nimbus_Sheet_5
   - Nimbus_Sheet_6
@@ -421,8 +409,6 @@ SpriteAtlas:
   - Ghosting_Icon
   - WindGem_Icon
   - Icicle_Icon
-  - LightningRod_Sheet_1
-  - LightningRod_Sheet_0
   m_RenderDataMap: {}
   m_Tag: Magic_Atlas
   m_IsVariant: 0

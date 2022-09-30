@@ -1275,6 +1275,9 @@ public class PhoneMenu : MonoBehaviour
         if (!btnsInteractable)
             yield break;
 
+        // 툴팁 끄기
+        ProductToolTip.Instance.QuitTooltip();
+
         // 메인 인벤토리 화면일때
         if (backBtnCount <= 0)
         {
