@@ -368,16 +368,16 @@ public class PlayerManager : MonoBehaviour
         //! 인스펙터의 테스트 마법 획득
         for (int i = 0; i < CastMagic.Instance.testMagics.Count; i++)
         {
-            int id = CastMagic.Instance.testMagics[i];
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(id);
+            string name = CastMagic.Instance.testMagics[i].ToString();
+            MagicInfo magic = MagicDB.Instance.GetMagicByName(name);
             PhoneMenu.Instance.GetMagic(magic);
         }
 
         //! 인스펙터의 테스트 아이템 획득
         for (int i = 0; i < CastMagic.Instance.testItems.Count; i++)
         {
-            int id = CastMagic.Instance.testItems[i];
-            ItemInfo item = ItemDB.Instance.GetItemByID(id);
+            string name = CastMagic.Instance.testItems[i].ToString();
+            ItemInfo item = ItemDB.Instance.GetItemByName(name);
             PhoneMenu.Instance.GetItem(item);
         }
 

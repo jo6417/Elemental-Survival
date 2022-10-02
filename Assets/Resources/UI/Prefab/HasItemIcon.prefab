@@ -264,7 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c430cac268919464d8210cb7c7f479ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooltimeImg: {fileID: 0}
+  cooltimeImg: {fileID: 1037176260}
   coolCount: 0
   magicName: 
 --- !u!114 &3451127316103655798

@@ -313,6 +313,15 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""MouseWheel"",
+                    ""type"": ""Value"",
+                    ""id"": ""1cbc4677-0ef8-4d3e-a4af-2f7e2920a511"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""Accept"",
                     ""type"": ""Button"",
                     ""id"": ""a9fcff04-fb45-48ed-ab05-3ed3c119c49f"",
@@ -585,6 +594,17 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""action"": ""Ctrl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b8cb5fd-09e8-4f08-aa44-938442ff5530"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseWheel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -617,6 +637,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_MouseMove = m_UI.FindAction("MouseMove", throwIfNotFound: true);
         m_UI_MousePosition = m_UI.FindAction("MousePosition", throwIfNotFound: true);
+        m_UI_MouseWheel = m_UI.FindAction("MouseWheel", throwIfNotFound: true);
         m_UI_Accept = m_UI.FindAction("Accept", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
         m_UI_PhoneMenu = m_UI.FindAction("PhoneMenu", throwIfNotFound: true);
@@ -774,6 +795,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     private IUIActions m_UIActionsCallbackInterface;
     private readonly InputAction m_UI_MouseMove;
     private readonly InputAction m_UI_MousePosition;
+    private readonly InputAction m_UI_MouseWheel;
     private readonly InputAction m_UI_Accept;
     private readonly InputAction m_UI_Cancel;
     private readonly InputAction m_UI_PhoneMenu;
@@ -787,6 +809,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         public UIActions(@NewInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @MouseMove => m_Wrapper.m_UI_MouseMove;
         public InputAction @MousePosition => m_Wrapper.m_UI_MousePosition;
+        public InputAction @MouseWheel => m_Wrapper.m_UI_MouseWheel;
         public InputAction @Accept => m_Wrapper.m_UI_Accept;
         public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
         public InputAction @PhoneMenu => m_Wrapper.m_UI_PhoneMenu;
@@ -809,6 +832,9 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @MousePosition.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMousePosition;
                 @MousePosition.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMousePosition;
                 @MousePosition.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMousePosition;
+                @MouseWheel.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMouseWheel;
+                @MouseWheel.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMouseWheel;
+                @MouseWheel.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMouseWheel;
                 @Accept.started -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
                 @Accept.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
                 @Accept.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnAccept;
@@ -840,6 +866,9 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @MousePosition.started += instance.OnMousePosition;
                 @MousePosition.performed += instance.OnMousePosition;
                 @MousePosition.canceled += instance.OnMousePosition;
+                @MouseWheel.started += instance.OnMouseWheel;
+                @MouseWheel.performed += instance.OnMouseWheel;
+                @MouseWheel.canceled += instance.OnMouseWheel;
                 @Accept.started += instance.OnAccept;
                 @Accept.performed += instance.OnAccept;
                 @Accept.canceled += instance.OnAccept;
@@ -889,6 +918,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     {
         void OnMouseMove(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
+        void OnMouseWheel(InputAction.CallbackContext context);
         void OnAccept(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
         void OnPhoneMenu(InputAction.CallbackContext context);

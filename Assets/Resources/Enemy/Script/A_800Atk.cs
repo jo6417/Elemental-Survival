@@ -34,7 +34,7 @@ public class A_800Atk : MonoBehaviour
         meleeAtkTrigger.transform.localScale = Vector2.one * attackRange;
 
         // 적 정보 들어오면 이름 표시
-        enemyName = character.enemy.enemyName;
+        enemyName = character.enemy.name;
 
         //공격 콜라이더 끄기
         meleeColl.gameObject.SetActive(false);

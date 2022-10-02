@@ -231,7 +231,7 @@ public class Character : MonoBehaviour
             enemy = new EnemyInfo(enemy);
 
             // 스탯 초기화
-            enemyName = enemy.enemyName;
+            enemyName = enemy.name;
             enemyType = enemy.enemyType;
             hpMax = enemy.hpMax;
             powerNow = enemy.power;

@@ -7,6 +7,8 @@ using Lean.Pool;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 using DanielLochner.Assets.SimpleScrollSnap;
+using System.Linq;
+using System.Text;
 
 public class PhoneMenu : MonoBehaviour
 {
@@ -54,6 +56,7 @@ public class PhoneMenu : MonoBehaviour
     public Vector3 UIPosition; //팝업일때 위치
     public SlicedFilledImage backBtnFill; //뒤로가기 버튼
     float backBtnCount; //백버튼 더블클릭 카운트
+    bool isSkipped = false;// 스킵 버튼 누름 여부
 
     [Header("Chat List")]
     public GameObject chatPrefab; // 채팅 프리팹
@@ -75,7 +78,7 @@ public class PhoneMenu : MonoBehaviour
     public InventorySlot R_MergeSlot; // 오른쪽 재료 슬롯
     public InventorySlot mergedSlot; // 합성된 마법 슬롯
     public GameObject plusIcon; // 가운데 플러스 아이콘
-    public ParticleSystem mergeBeforeEffect; // 합성 준비 이펙트
+    public ParticleManager mergeBeforeEffect; // 합성 준비 이펙트
     public ParticleSystem mergeFailEffect; // 합성 실패 이펙트
     public Image mergeAfterEffect; // 합성 완료 이펙트
 
@@ -83,6 +86,8 @@ public class PhoneMenu : MonoBehaviour
     public SimpleScrollSnap recipeScroll; // 레시피 슬롯 스크롤
     public GameObject recipePrefab; // 단일 레시피 프리팹
     public bool recipeInit = false;
+    [SerializeField] Button recipeUpBtn; // 레시피 위로 스크롤
+    [SerializeField] Button recipeDownBtn; // 레시피 아래로 스크롤
 
     [Header("Random Panel")]
     public Transform animSlot; // 애니메이션용 슬롯
@@ -133,6 +138,15 @@ public class PhoneMenu : MonoBehaviour
         {
             if (gameObject.activeSelf)
                 StartCoroutine(CancelMoveItem());
+        };
+        // 마우스 휠 스크롤
+        UIManager.Instance.UI_Input.UI.MouseWheel.performed += val =>
+        {
+            // 마우스 휠 입력하면 레시피 스크롤 하기
+            if (val.ReadValue<Vector2>().y > 0)
+                recipeUpBtn.onClick.Invoke();
+            else
+                recipeDownBtn.onClick.Invoke();
         };
 
         // 스마트폰 버튼 입력
@@ -355,6 +369,9 @@ public class PhoneMenu : MonoBehaviour
 
     public IEnumerator MergeMagic(MagicInfo mergedMagic = null, int grade = 0)
     {
+        // 스킵 스위치 초기화
+        isSkipped = false;
+
         // 상호작용 비활성화
         InteractBtnsToggle(false);
 
@@ -372,7 +389,7 @@ public class PhoneMenu : MonoBehaviour
         Vector3 originScale = L_MergeSlot.transform.localScale;
 
         // 합성 준비 이펙트 재생
-        mergeBeforeEffect.Play();
+        mergeBeforeEffect.gameObject.SetActive(true);
 
         // 플러스 아이콘 줄이기
         plusIcon.transform.localScale = Vector3.zero;
@@ -391,6 +408,18 @@ public class PhoneMenu : MonoBehaviour
         .SetEase(Ease.InQuad)
         .SetDelay(0.5f)
         .SetUpdate(true)
+        .OnUpdate(() =>
+        {
+            // 스킵 스위치 켜졌을때
+            if (isSkipped)
+            {
+                // 즉시 완료
+                L_MergeSlotRect.DOComplete();
+
+                // 합성 준비 이펙트 끄기
+                mergeBeforeEffect.gameObject.SetActive(false);
+            }
+        })
         .OnComplete(() =>
         {
             // 슬롯 비우기
@@ -403,6 +432,18 @@ public class PhoneMenu : MonoBehaviour
         .SetEase(Ease.InQuad)
         .SetDelay(0.5f)
         .SetUpdate(true)
+        .OnUpdate(() =>
+        {
+            // 스킵 스위치 켜졌을때
+            if (isSkipped)
+            {
+                // 즉시 완료
+                R_MergeSlotRect.DOComplete();
+
+                // 합성 준비 이펙트 끄기
+                mergeBeforeEffect.gameObject.SetActive(false);
+            }
+        })
         .OnComplete(() =>
         {
             // 슬롯 비우기
@@ -414,12 +455,14 @@ public class PhoneMenu : MonoBehaviour
         // 랜덤 뽑기일때
         if (grade > 0)
         {
-            yield return new WaitForSecondsRealtime(0.5f);
-
-            // 합성 준비 이펙트 정지
-            mergeBeforeEffect.Stop();
-
-            yield return new WaitForSecondsRealtime(0.5f);
+            // 스킵 스위치 꺼져있을때
+            if (!isSkipped)
+            {
+                yield return new WaitForSecondsRealtime(0.5f);
+                // 합성 준비 이펙트 정지
+                mergeBeforeEffect.SmoothDisable();
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
 
             // 해당 등급으로 랜덤 뽑기 시작
             yield return StartCoroutine(GetGradeMagic(grade));
@@ -433,6 +476,8 @@ public class PhoneMenu : MonoBehaviour
             mergedSlot.slotFrame.color = MagicDB.Instance.GradeColor[mergedMagic.grade];
             // 합성된 마법 레벨 합산
             mergedSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + mergedMagic.magicLevel.ToString();
+            // 합성된 마법 툴팁 넣기
+            mergedSlot.slotTooltip.Magic = mergedMagic;
 
             bool isNew = false;
             // 언락된 마법중에 없으면
@@ -449,12 +494,14 @@ public class PhoneMenu : MonoBehaviour
             // 새로운 마법일때만 New 표시하기
             mergedSlot.newSign.SetActive(isNew);
 
-            yield return new WaitForSecondsRealtime(0.5f);
-
-            // 합성 준비 이펙트 정지
-            mergeBeforeEffect.Stop();
-
-            yield return new WaitForSecondsRealtime(0.5f);
+            // 스킵 스위치 꺼져있을때
+            if (!isSkipped)
+            {
+                yield return new WaitForSecondsRealtime(0.5f);
+                // 합성 준비 이펙트 정지
+                mergeBeforeEffect.SmoothDisable();
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
 
             // 합성된 슬롯 켜기
             mergedSlot.gameObject.SetActive(true);
@@ -465,15 +512,31 @@ public class PhoneMenu : MonoBehaviour
             // 합성된 슬롯 사이즈 키우기
             mergedSlot.transform.DOScale(originScale, 0.5f)
             .SetEase(Ease.OutBack)
+            .OnUpdate(() =>
+            {
+                // 스킵 스위치 켜졌을때
+                if (isSkipped)
+                    // 즉시 완료
+                    mergedSlot.transform.DOComplete();
+            })
             .SetUpdate(true);
 
-            yield return new WaitForSecondsRealtime(0.5f);
+            // 스킵 스위치 꺼져있을때
+            if (!isSkipped)
+                yield return new WaitForSecondsRealtime(0.5f);
 
             // 합성 완료 이펙트 켜기
             mergeAfterEffect.transform.localScale = Vector3.zero;
             mergeAfterEffect.GetComponent<Animator>().speed = 0.1f;
             mergeAfterEffect.gameObject.SetActive(true);
             mergeAfterEffect.transform.DOScale(Vector3.one, 0.2f)
+            .OnUpdate(() =>
+            {
+                // 스킵 스위치 켜졌을때
+                if (isSkipped)
+                    // 즉시 완료
+                    mergeAfterEffect.transform.DOComplete();
+            })
             .SetUpdate(true);
 
             // 클릭, 확인 누르면 
@@ -484,7 +547,7 @@ public class PhoneMenu : MonoBehaviour
         L_MergeSlotRect.anchoredPosition = L_originPos;
         R_MergeSlotRect.anchoredPosition = R_originPos;
 
-        // 일반 합성일때
+        // 샤드 뽑기가 아닌 합성일때
         if (grade == 0)
         {
             // 인벤토리 빈칸에 합성된 마법 넣기
@@ -540,7 +603,7 @@ public class PhoneMenu : MonoBehaviour
         Vector3 centerPos = mergedSlot.GetComponent<RectTransform>().anchoredPosition;
 
         // 합성 준비 이펙트 재생
-        mergeBeforeEffect.Play();
+        mergeBeforeEffect.gameObject.SetActive(true);
 
         // 플러스 아이콘 줄이기
         plusIcon.transform.localScale = Vector3.zero;
@@ -557,7 +620,7 @@ public class PhoneMenu : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
 
         // 합성 준비 이펙트 끄기
-        mergeBeforeEffect.Stop();
+        mergeBeforeEffect.SmoothDisable();
 
         // 실패 이펙트 재생
         mergeFailEffect.Play();
@@ -594,6 +657,17 @@ public class PhoneMenu : MonoBehaviour
         // 메뉴, 백 버튼 상호작용 및 키입력 막기
         InteractBtnsToggle(false);
 
+        // 뽑기 스크롤 그룹 투명하게
+        CanvasGroup randomScrollGroup = randomScroll.GetComponent<CanvasGroup>();
+        randomScrollGroup.alpha = 0;
+        // 뽑기 스크롤 비활성화
+        randomScroll.gameObject.SetActive(false);
+        // 뽑기 스크롤 컴포넌트 비활성화
+        randomScroll.enabled = false;
+
+        // 모든 자식 비우기
+        SystemManager.Instance.DestroyAllChild(randomScroll.Content);
+
         // 애니메이션용 슬롯 컴포넌트 찾기
         Image animIcon = animSlot.Find("Icon").GetComponent<Image>();
         Image animFrame = animSlot.Find("Frame").GetComponent<Image>();
@@ -607,17 +681,6 @@ public class PhoneMenu : MonoBehaviour
         randomScreen.alpha = 0;
         // 뽑기 배경 활성화, 가려서 핸드폰 입력 막기
         randomScreen.gameObject.SetActive(true);
-
-        // 뽑기 스크롤 그룹 투명하게
-        CanvasGroup randomScrollGroup = randomScroll.GetComponent<CanvasGroup>();
-        randomScrollGroup.alpha = 0;
-        // 뽑기 스크롤 비활성화
-        randomScroll.gameObject.SetActive(false);
-        // 뽑기 스크롤 컴포넌트 비활성화
-        randomScroll.enabled = false;
-
-        // 모든 자식 비우기
-        SystemManager.Instance.DestroyAllChild(randomScroll.Content);
 
         // 애니메이션용 아이콘 색 넣기
         animIcon.color = MagicDB.Instance.GradeColor[randomGrade];
@@ -636,15 +699,17 @@ public class PhoneMenu : MonoBehaviour
         // .SetEase(Ease.InCirc)
         // .SetUpdate(true);
 
-        // 등급 업 파티클 이펙트 켜기
-        rankUpEffect.Play();
+        // 스킵 스위치 꺼져있을때
+        if (!isSkipped)
+            // 등급 업 파티클 이펙트 켜기
+            rankUpEffect.Play();
 
         // 애니메이션용 슬롯 켜기
         animSlot.gameObject.SetActive(true);
 
         // 애니메이션 슬롯 사이즈 키워서 나타내기
         animSlot.transform.localScale = Vector2.zero;
-        animSlot.DOScale(Vector3.one, 0.5f)
+        animSlot.DOScale(Vector3.one, isSkipped ? 0f : 0.5f)
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
 
@@ -653,7 +718,7 @@ public class PhoneMenu : MonoBehaviour
 
         // 마스크 이미지 알파값 낮추기
         maskColor.a = 1f / 255f;
-        shinyMaskImg.DOColor(maskColor, 0.5f)
+        shinyMaskImg.DOColor(maskColor, isSkipped ? 0f : 0.5f)
         .SetUpdate(true)
         .OnComplete(() =>
         {
@@ -662,16 +727,19 @@ public class PhoneMenu : MonoBehaviour
         });
 
         // 애니메이션용 아이콘 스크린 가운데로 올라가기
-        animSlot.DOMove(randomScroll.transform.position, 0.5f)
+        animSlot.DOMove(randomScroll.transform.position, isSkipped ? 0f : 0.5f)
         .SetEase(Ease.OutSine)
         .SetUpdate(true);
 
         // 뽑기 화면 전체 나타내기
-        DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 1f, 0.5f)
+        DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 1f, isSkipped ? 0f : 0.5f)
         .SetUpdate(true);
 
-        yield return new WaitForSecondsRealtime(0.5f);
+        // 스킵 스위치 꺼져있을때
+        if (!isSkipped)
+            yield return new WaitForSecondsRealtime(0.5f);
 
+        // 등급 올리기 (실패할때까지)
         while (true)
         {
             // 확률로 등급 상승 - 1등급 50%, 2등급 40%, 3등급 30%, 4등급 20%, 5등급 10%, 6등급은 계산상 무조건 실패
@@ -694,6 +762,8 @@ public class PhoneMenu : MonoBehaviour
                     if (i == MagicDB.Instance.unlockMagics.Count - 1)
                         // 등급 상승 불가
                         rankUp = false;
+
+                    yield return null;
                 }
 
             // 등급 업 파티클 이펙트 켜기
@@ -706,22 +776,20 @@ public class PhoneMenu : MonoBehaviour
             shinyMaskImg.color = maskColor;
             maskColor.a = 1f;
             // 마스크 이미지 알파값 올리기
-            shinyMaskImg.DOColor(maskColor, 0.5f)
+            shinyMaskImg.DOColor(maskColor, 0.2f)
             .SetEase(Ease.InCirc)
             .SetUpdate(true);
 
             // 슬롯 각도를 흔들기
-            animSlot.DOShakeRotation(1.5f, Vector3.forward * 10f, 50, 90, true)
+            animSlot.DOShakeRotation(0.5f, Vector3.forward * 10f, 50, 90, true)
             .SetEase(Ease.InOutCirc)
             .SetUpdate(true);
 
             // 슬롯 흔드는 시간 대기
-            yield return new WaitForSecondsRealtime(1f);
-
+            yield return new WaitForSecondsRealtime(0.35f);
             // 등급 업 파티클 이펙트 끄기
             rankUpEffect.Stop();
-
-            yield return new WaitForSecondsRealtime(1f);
+            yield return new WaitForSecondsRealtime(0.35f);
 
             // 등급 상승 성공시
             if (rankUp)
@@ -752,6 +820,7 @@ public class PhoneMenu : MonoBehaviour
                 // 마스크 이미지 끄기
                 shinyMask.showMaskGraphic = false;
             });
+
             yield return new WaitForSecondsRealtime(0.5f);
 
             // 등급 상승 실패시
@@ -803,6 +872,10 @@ public class PhoneMenu : MonoBehaviour
                 yield return null;
             }
 
+        // 랜덤으로 순서 섞기
+        System.Random random = new System.Random();
+        randomList = randomList.OrderBy(x => random.Next()).ToList();
+
         // 랜덤 마법 풀 개수만큼 반복
         for (int i = 0; i < randomList.Count; i++)
         {
@@ -815,22 +888,26 @@ public class PhoneMenu : MonoBehaviour
             magicSlot.Find("Icon").GetComponent<Image>().sprite = icon == null ? SystemManager.Instance.questionMark : icon;
             // 프레임 색 넣기
             magicSlot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[randomList[i].grade];
+
+            yield return null;
         }
+
+        // 스킵 여부 초기화
+        isSkipped = false;
 
         // 스냅 스크롤 컴포넌트 활성화
         randomScroll.enabled = true;
         // 뽑기 스크롤 활성화
         randomScroll.gameObject.SetActive(true);
 
-        // 한번 굴려서 무한 스크롤 위치 초기화
-        randomScroll.GoToNextPanel();
-
         // 애니메이션용 슬롯 줄어들어 사라지기
-        animSlot.DOScale(Vector3.zero, 0.5f)
+        animSlot.DOScale(Vector3.zero, isSkipped ? 0f : 0.5f)
         .SetEase(Ease.InBack)
         .SetUpdate(true);
 
-        yield return new WaitForSecondsRealtime(0.5f);
+        // 스킵 스위치 꺼져있을때
+        if (!isSkipped)
+            yield return new WaitForSecondsRealtime(0.5f);
 
         // 애니메이션용 슬롯 초기화
         animSlot.gameObject.SetActive(false);
@@ -838,44 +915,27 @@ public class PhoneMenu : MonoBehaviour
         animSlot.localScale = Vector3.one;
 
         // 뽑기 스크롤 그룹 알파값 초기화
-        DOTween.To(() => randomScrollGroup.alpha, x => randomScrollGroup.alpha = x, 1f, 0.5f)
+        DOTween.To(() => randomScrollGroup.alpha, x => randomScrollGroup.alpha = x, 1f, isSkipped ? 0f : 0.5f)
         .SetUpdate(true);
 
-        // 스크롤 끝나는 시간 계산
-        float stopTime = Time.unscaledTime + Random.Range(minScrollTime, maxScrollTime);
-        // 타이머 끝날때까지 빠르게 스크롤 반복 내리기
-        while (stopTime > Time.unscaledTime)
+        // 랜덤 스크롤 돌리기
+        randomScroll.Velocity = Vector2.down * Random.Range(1000f, 1500f);
+
+        // 스크롤 일정 속도 이하거나 스킵할때까지 대기
+        yield return new WaitUntil(() => randomScroll.Velocity.magnitude <= 100f
+        || isSkipped);
+
+        // 스크롤이 일정 속도 이상이면 반복
+        while (randomScroll.Velocity.magnitude > 100f)
         {
-            // 끝날때쯤 점점 느려짐
-            if (stopTime <= Time.unscaledTime + 1f)
-            {
-                // 스냅 스피드 계산
-                float scrollSpeed = (stopTime - Time.unscaledTime) * randomScroll_Speed;
-                scrollSpeed = Mathf.Clamp(scrollSpeed, 5f, randomScroll_Speed);
+            // 속도 부드럽게 낮추기
+            randomScroll.Velocity = Vector2.Lerp(randomScroll.Velocity, Vector2.zero, 0.01f);
 
-                randomScroll.SnapSpeed = scrollSpeed;
-            }
-            else
-                randomScroll.SnapSpeed = randomScroll_Speed;
-
-            randomScroll.GoToNextPanel();
-
-            // 확인 키 눌렀을때
-            if (UIManager.Instance.UI_Input.UI.Click.IsPressed()
-            || UIManager.Instance.UI_Input.UI.Accept.IsPressed())
-            {
-                // 남은시간 1초 이상일때 1초 후에 멈추게 하기 (피지컬로 슬롯 맞추기 가능)
-                if (stopTime >= Time.unscaledTime + 0.5f)
-                {
-                    stopTime = Time.unscaledTime + 0.5f;
-                    // print("Skip : " + (stopTime - Time.unscaledTime));
-                }
-            }
-
-            // print(stopTime - Time.unscaledTime);
-
-            yield return new WaitForSecondsRealtime(0.01f);
+            yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
         }
+
+        // 속도 멈추기
+        randomScroll.Velocity = Vector2.zero;
 
         // 멈춘 후 딜레이
         yield return new WaitForSecondsRealtime(0.5f);
@@ -900,7 +960,7 @@ public class PhoneMenu : MonoBehaviour
         ParticleSystem.MainModule particleMain = getMagicEffect.main;
         particleMain.startColor = MagicDB.Instance.GradeColor[getMagic.grade];
 
-        // 끝난 후 아무키 누르거나 클릭하면 트랜지션 종료
+        // 확인 혹인 클릭할때까지 대기
         yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
 
         // 팡파레 이펙트 끄기
@@ -915,19 +975,17 @@ public class PhoneMenu : MonoBehaviour
 
         // 마법 획득 이펙트 켜기
         getMagicEffect.gameObject.SetActive(true);
-
-        yield return new WaitForSecondsRealtime(0.5f);
+        // 마법 획득 이펙트 시간 대기
+        yield return new WaitForSecondsRealtime(0.2f);
 
         // 뽑기 스크린 전체 투명하게
-        DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 0f, 1f)
+        DOTween.To(() => randomScreen.alpha, x => randomScreen.alpha = x, 0f, 0.5f)
         .SetUpdate(true);
 
-        yield return new WaitForSecondsRealtime(0.5f);
-
+        yield return new WaitForSecondsRealtime(0.2f);
         // 획득한 마법 인벤에 넣기
         GetMagic(getMagic);
-
-        yield return new WaitForSecondsRealtime(0.5f);
+        yield return new WaitForSecondsRealtime(0.3f);
 
         // 마법 획득 이펙트 끄기
         getMagicEffect.gameObject.SetActive(false);
@@ -985,7 +1043,7 @@ public class PhoneMenu : MonoBehaviour
         UIManager.Instance.PhoneNotice();
     }
 
-    public void GetMagic(MagicInfo getMagic)
+    public void GetMagic(MagicInfo getMagic, bool castCheck = false)
     {
         // MagicInfo 인스턴스 생성
         MagicInfo magic = new MagicInfo(getMagic);
@@ -1024,8 +1082,10 @@ public class PhoneMenu : MonoBehaviour
         //플레이어 총 전투력 업데이트
         PlayerManager.Instance.PlayerStat_Now.playerPower = PlayerManager.Instance.GetPlayerPower();
 
-        // 인벤토리에서 마법 찾아 자동 시전하기
-        CastMagic.Instance.CastCheck();
+        // 마법 획득 시 바로 해당 마법 자동 시전일때
+        if (castCheck)
+            // 인벤토리에서 마법 찾아 자동 시전하기
+            CastMagic.Instance.CastCheck();
     }
 
     private void Update()
@@ -1038,6 +1098,11 @@ public class PhoneMenu : MonoBehaviour
             DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 0f, 0.2f)
             .SetUpdate(true);
         }
+
+        // 클릭,확인 누르면 스킵 켜기
+        if (UIManager.Instance.UI_Input.UI.Click.IsPressed()
+        || UIManager.Instance.UI_Input.UI.Accept.IsPressed())
+            isSkipped = true;
 
         // 채팅패널 Lerp로 사이즈 반영해서 lerp로 늘어나기
         chatContentRect.sizeDelta = new Vector2(chatContentRect.sizeDelta.x, Mathf.Lerp(chatContentRect.sizeDelta.y, sumChatHeights, Time.unscaledDeltaTime * 5f));
@@ -1159,7 +1224,7 @@ public class PhoneMenu : MonoBehaviour
         for (int i = 0; i < recipeScroll.Content.childCount; i++)
         {
             // 마법 정보 찾기
-            MagicInfo magic = MagicDB.Instance.magicDB[i + 6];
+            MagicInfo magic = MagicDB.Instance.magicDB[i];
 
             // 레시피 아이템 찾기
             Transform recipe = recipeScroll.Content.GetChild(i);

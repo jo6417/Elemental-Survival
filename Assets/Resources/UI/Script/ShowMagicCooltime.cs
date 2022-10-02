@@ -12,7 +12,7 @@ public class ShowMagicCooltime : MonoBehaviour
 
     private void Awake()
     {
-        cooltimeImg = transform.Find("Cooltime").GetComponent<Image>();
+        // cooltimeImg = transform.Find("Cooltime").GetComponent<Image>();
     }
 
     private void OnEnable()

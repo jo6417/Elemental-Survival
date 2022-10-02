@@ -291,6 +291,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "MouseWheel",
+                    "type": "Value",
+                    "id": "1cbc4677-0ef8-4d3e-a4af-2f7e2920a511",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Accept",
                     "type": "Button",
                     "id": "a9fcff04-fb45-48ed-ab05-3ed3c119c49f",
@@ -561,6 +570,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Ctrl",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9b8cb5fd-09e8-4f08-aa44-938442ff5530",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseWheel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

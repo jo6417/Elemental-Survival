@@ -602,7 +602,7 @@ public class UIManager : MonoBehaviour
 
         //보스 이름 갱신, 체력 0이하면 공백
         bossHp.transform.Find("BossName").GetComponent<TextMeshProUGUI>().text
-        = bossHpNow <= 0 ? "" : bossManager.enemy.enemyName;
+        = bossHpNow <= 0 ? "" : bossManager.enemy.name;
 
         //체력 0 이하면 체력 UI 끄기
         if (bossHpNow <= 0)

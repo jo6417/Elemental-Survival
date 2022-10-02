@@ -34,10 +34,10 @@ public class CastMagic : MonoBehaviour
 
     public List<GameObject> passiveObjs = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
     public List<MagicInfo> nowCastMagics = new List<MagicInfo>(); //현재 사용중인 마법
-    public bool noMagic; // 마법 없이 테스트
-    public List<int> testMagics = new List<int>(); // 테스트용 마법 리스트
-    public bool noItem; // 아이템 없이 테스트
-    public List<int> testItems = new List<int>(); // 테스트용 아이템 리스트
+    public List<DBEnums.MagicDBEnum> testMagics = new List<DBEnums.MagicDBEnum>(); // 테스트용 마법 리스트
+    public List<DBEnums.ItemDBEnum> testItems = new List<DBEnums.ItemDBEnum>(); // 테스트용 아이템 리스트
+    [SerializeField] bool noMagic; // 마법 없이 테스트
+    [SerializeField] bool noItem; // 아이템 없이 테스트
 
     [Header("Refer")]
     [SerializeField] ParticleSystem playerMagicCastEffect; // 플레이어가 마법 사용시 파티클 실행

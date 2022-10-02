@@ -35,7 +35,7 @@ public class WaterSlimeAtk : MonoBehaviour
         attackRange = character.enemy.range;
 
         // 적 정보 들어오면 이름 표시
-        enemyName = character.enemy.enemyName;
+        enemyName = character.enemy.name;
 
         // 공격 오브젝트 있으면 끄기
         if (bubblePrefab != null)

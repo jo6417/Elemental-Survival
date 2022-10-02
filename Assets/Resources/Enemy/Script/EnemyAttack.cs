@@ -47,7 +47,7 @@ public class EnemyAttack : Attack
         character.attackRange = character.enemy.range;
 
         // 적 정보 들어오면 이름 표시
-        enemyName = character.enemy.enemyName;
+        enemyName = character.enemy.name;
 
         // 대쉬 이펙트 있으면 끄기
         if (dashEffect != null)

@@ -234,7 +234,7 @@ SpriteAtlas:
   - A-800_Attack_Sheet_4
   - VacuumFin
   - KingSlime_Skin
-  - B-800_Icon
+  - B_800_Icon
   - WaterSlime_Icon
   - Ascii_Idle_Icon
   - Ascii_Cable_1
@@ -249,7 +249,7 @@ SpriteAtlas:
   - Golem_Attack-Sheet_5
   - Golem_Attack-Sheet_4
   - Golem_Attack-Sheet_8
-  - A-800_Icon
+  - A_800_Icon
   - BloodEffect_Light_2
   - BloodEffect_Light_3
   - BloodEffect_Light_0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
 
 public class SlotMachineUI : MonoBehaviour
 {
@@ -70,7 +71,7 @@ public class SlotMachineUI : MonoBehaviour
             }
 
             //아이템 타입이 아티팩트인 모든아이템 리스트
-            List<ItemInfo> itemList = ItemDB.Instance.itemDB.FindAll(x => x.itemType == ItemDB.ItemType.Artifact.ToString());
+            List<ItemInfo> itemList = ItemDB.Instance.itemDB.Values.ToList().FindAll(x => x.itemType == ItemDB.ItemType.Artifact.ToString());
             // 중복 없는 랜덤 아이템 5개 뽑기
             int[] itemIDs = ItemDB.Instance.RandomItemIndex(items.Count);
 

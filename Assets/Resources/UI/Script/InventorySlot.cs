@@ -18,6 +18,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     public SlotType slotType;
     public enum SlotType { inventory, Merge, Active };
+
+    [Header("Refer")]
+    [SerializeField] Transform shakeParent;
     public Image slotBack; // 슬롯 배경 이미지
     public Image slotFrame; // 아이템 등급 표시 슬롯 프레임
     public Image slotIcon; // 아이템 아이콘
@@ -531,18 +534,18 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     public void ShakeIcon()
     {
-        // 아이콘 현재 트윈 멈추기
-        slotIcon.transform.DOPause();
+        // shakeParent 현재 트윈 멈추기
+        shakeParent.transform.DOPause();
 
         // 원래 위치 저장
-        Vector2 originPos = slotIcon.transform.localPosition;
+        Vector2 originPos = shakeParent.transform.localPosition;
 
-        // 해당 슬롯 아이콘 흔들기
-        slotIcon.transform.DOPunchPosition(Vector2.right * 30f, 1f, 10, 1)
+        // 해당 슬롯 흔들기
+        shakeParent.transform.DOPunchPosition(Vector2.right * 30f, 1f, 10, 1)
         .SetEase(Ease.Linear)
         .OnPause(() =>
         {
-            slotIcon.transform.localPosition = originPos;
+            shakeParent.transform.localPosition = originPos;
         })
         .SetUpdate(true);
     }
@@ -681,7 +684,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     else
                         break;
 
-                //todo 등급 풀을 전부 다 조회했는데 언락된 마법이 하나도 없을때
+                // 등급 풀을 전부 다 조회했는데 언락된 마법이 하나도 없을때
                 if (get_Grade == -1)
                 {
                     // 핸드폰 옆에 메시지 띄우기

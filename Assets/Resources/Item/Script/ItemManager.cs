@@ -263,7 +263,7 @@ public class ItemManager : MonoBehaviour
             else
             {
                 // 마법 획득
-                PhoneMenu.Instance.GetMagic(magicInfo);
+                PhoneMenu.Instance.GetMagic(magicInfo, true);
             }
         }
         // 아이템일때
