@@ -185,7 +185,6 @@ public class ItemDB : MonoBehaviour
     // 타입별로 랜덤 아이템 뽑기
     public ItemInfo GetRandomItem(ItemType itemType, int targetGrade = 0)
     {
-
         // 랜덤 아이템 id를 넣을 리스트
         List<int> randomItemPool = new List<int>();
 
@@ -193,10 +192,6 @@ public class ItemDB : MonoBehaviour
         for (int i = 0; i < itemDB.Count; i++)
         {
             int grade = itemDB[i].grade;
-
-            // 0등급이면 넘기기
-            if (grade == 0)
-                continue;
 
             // 일치하는 아이템 타입일때
             if (itemDB[i].itemType == itemType.ToString())
@@ -270,6 +265,15 @@ public class ItemDB : MonoBehaviour
 
         //인덱스 리스트 리턴
         return randomNum;
+    }
+
+    public List<ItemInfo> GetItemsByType(ItemType itemType)
+    {
+        // 해당 타입을 가진 아이템 모두 찾기
+        List<ItemInfo> randomItemPool = itemDB.Values.ToList().FindAll(x => x.itemType == itemType.ToString());
+
+        // 찾은 리스트 반환
+        return randomItemPool;
     }
 
     public ItemInfo GetItemByID(int id)

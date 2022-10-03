@@ -92,7 +92,7 @@ public class Locker : MonoBehaviour
         yield return new WaitUntil(() => slotInfo != null);
 
         // 가격 타입 갱신
-        priceType = MagicDB.Instance.ElementIndex(slotInfo);
+        priceType = MagicDB.Instance.ElementType(slotInfo);
         // 상품 가격 갱신
         price = slotInfo.price;
 

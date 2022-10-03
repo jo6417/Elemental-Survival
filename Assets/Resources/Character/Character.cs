@@ -6,6 +6,7 @@ using Lean.Pool;
 using DG.Tweening;
 using TMPro;
 using System.Linq;
+using System.Text;
 
 public class Character : MonoBehaviour
 {
@@ -204,7 +205,7 @@ public class Character : MonoBehaviour
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
         // 몬스터 정보 찾기
-        enemy = EnemyDB.Instance.GetEnemyByName(transform.name.Split('_')[0]);
+        enemy = EnemyDB.Instance.GetEnemyByName(gameObject.name.Replace("_Prefab", ""));
 
         if (enemy != null)
         {
@@ -296,16 +297,28 @@ public class Character : MonoBehaviour
         {
             // id 할당을 위해 변수 선언
             int id = itemId;
+            ItemInfo item = null;
 
             // -1이면 랜덤 원소젬 뽑기
             if (id == -1)
-                id = Random.Range(0, 6);
+            {
+                // 원소젬 전부 찾기
+                List<ItemInfo> gems = ItemDB.Instance.GetItemsByType(ItemDB.ItemType.Gem);
 
-            // item 인스턴스 생성 및 amount 초기화
-            ItemInfo item = new ItemInfo(ItemDB.Instance.GetItemByID(id));
-            item.amount = 1;
+                // 가중치 확률로 원소젬 인덱스 뽑기
+                int gemIndex = SystemManager.Instance.RandomPick(PhoneMenu.Instance.elementWeitght.ToList());
+
+                // gem 인스턴스 생성
+                item = new ItemInfo(gems[gemIndex]);
+            }
+            else
+            {
+                // item 인스턴스 생성 및 amount 초기화
+                item = new ItemInfo(ItemDB.Instance.GetItemByID(id));
+            }
 
             //item 정보 넣기
+            item.amount = 1;
             nowHasItem.Add(item);
         }
 
@@ -800,16 +813,36 @@ public class Character : MonoBehaviour
     // 갖고있는 아이템 드랍
     public void DropItem()
     {
-        //아이템 없으면 원소젬 1개 추가, 최소 젬 1개라도 떨구게
-        if (nowHasItem.Count == 0)
-        {
-            //todo 플레이어 인벤토리 원소 가중치에 따라 원소젬 속성 계산
+        // 드랍 아이템 없으면 원소젬 1개 드랍
+        // if (nowHasItem.Count == 0)
+        // {
+        //     //todo 플레이어 인벤토리 원소 가중치에 따라 원소젬 속성 계산
+        //     List<float> randomWeight = new List<float>();
+        //     for (int i = 0; i < PlayerManager.Instance.hasGems.Count; i++)
+        //     {
+        //         randomWeight.Add(PlayerManager.Instance.hasGems[i]);
+        //     }
+        //     int randomIndex = SystemManager.Instance.RandomPick(randomWeight);
 
-            // 랜덤 원소젬 정보 넣기
-            ItemInfo gem = ItemDB.Instance.GetItemByID(Random.Range(0, 6));
-            gem.amount = 1;
-            nowHasItem.Add(gem);
-        }
+        //     //! 테스트
+        //     int[] testGemNum = new int[6];
+        //     for (int i = 0; i < 10000; i++)
+        //     {
+        //         randomIndex = SystemManager.Instance.RandomPick(randomWeight);
+
+        //         testGemNum[randomIndex]++;
+        //     }
+
+        //     StringBuilder gemNums = new StringBuilder();
+        //     foreach (var item in testGemNum)
+        //         gemNums.Append(item + ", ");
+        //     print(gemNums);
+
+        //     // 랜덤 원소젬 정보 넣기
+        //     ItemInfo gem = ItemDB.Instance.GetItemByID(randomIndex);
+        //     gem.amount = 1;
+        //     nowHasItem.Add(gem);
+        // }
 
         //보유한 모든 아이템 드랍
         foreach (ItemInfo item in nowHasItem)

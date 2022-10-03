@@ -65,8 +65,11 @@ public class PhoneMenu : MonoBehaviour
     public float sumChatHeights; // 채팅 스크롤 content의 높이
 
     [Header("Inventory")]
+    public Image invenBackground; // 인벤토리 뒷배경 이미지
     public Transform invenParent; // 인벤토리 슬롯들 부모 오브젝트
+    int mergeAbleNum; // 현재 합성 가능한 마법 개수
     public List<InventorySlot> invenSlots = new List<InventorySlot>(); //각각 슬롯 오브젝트
+    public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public InventorySlot nowSelectSlot; // 현재 선택된 슬롯
     public SlotInfo nowSelectSlotInfo; // 현재 선택된 슬롯 정보
     public Image nowSelectIcon; //마우스 따라다닐 아이콘
@@ -365,6 +368,84 @@ public class PhoneMenu : MonoBehaviour
             // 각 슬롯 세팅
             invenSlots[i].Set_Slot();
         }
+
+        // 합성 가능한 마법 있으면 인디케이터 켜기
+        if (MergeNumCheck() > 0)
+        {
+            invenBackground.color = new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f);
+            invenBackground.DOKill();
+            invenBackground.DOColor(new Color(200f / 255f, 200f / 255f, 200f / 255f, 1f), 1f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetUpdate(true);
+        }
+        else
+        {
+            invenBackground.DOKill();
+            invenBackground.DOColor(new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f), 1f)
+            .SetUpdate(true);
+        }
+    }
+
+    int MergeNumCheck()
+    {
+        // 인벤토리에 있는 모든 마법 리스트
+        List<MagicInfo> magicList = new List<MagicInfo>();
+        // 현재 합성 가능한 모든 마법 리스트
+        List<MagicInfo> mergeAbleList = new List<MagicInfo>();
+
+        // 가중치 배열 초기화
+        for (int i = 0; i < elementWeitght.Length; i++)
+            elementWeitght[i] = 1;
+
+        // 머지 리스트에 있는 마법들 머지 보드에 나타내기
+        for (int i = 0; i < invenSlots.Count; i++)
+        {
+            // 각 슬롯 정보 마법 정보로 변환
+            MagicInfo magic = invenSlots[i].slotInfo as MagicInfo;
+
+            // 해당 슬롯의 정보가 마법 정보일때
+            if (magic != null)
+            {
+                magicList.Add(magic);
+
+                // 해당 마법 원소의 인덱스 가중치 증가
+                elementWeitght[MagicDB.Instance.ElementType(magic)]++;
+            }
+        }
+
+        for (int i = 0; i < magicList.Count; i++)
+        {
+            // 해당 마법이 재료에 포함된 마법들 찾기
+            List<MagicInfo> hasA_List = MagicDB.Instance.magicDB.Values.ToList().FindAll(
+                x => x.element_A == magicList[i].name
+                || x.element_B == magicList[i].name);
+
+            // 나머지 재료도 인벤토리에 있는지 검사
+            for (int j = 0; j < hasA_List.Count; j++)
+            {
+                // 현재 조회중인 슬롯이 아닌 슬롯만 조회
+                if (i != j)
+                {
+                    // A 재료를 갖고 있는 마법중 나머지 B 재료가 인벤토리에 있는지 검사
+                    List<MagicInfo> hasBoth_List = hasA_List.FindAll(x =>
+                       (x.element_A == magicList[i].name && magicList.Exists(y => y.name == x.element_B))
+                    || (x.element_B == magicList[i].name && magicList.Exists(y => y.name == x.element_A)));
+
+                    foreach (MagicInfo magic in hasBoth_List)
+                    {
+                        // mergeAbleList 에 없는 마법이면 넣기
+                        if (!mergeAbleList.Exists(x => x.name == magic.name))
+                            mergeAbleList.Add(magic);
+                    }
+                }
+            }
+        }
+
+        // 현재 합성 가능한 개수 저장
+        mergeAbleNum = mergeAbleList.Count;
+
+        // 최종 합성 가능한 마법 개수 반환
+        return mergeAbleList.Count;
     }
 
     public IEnumerator MergeMagic(MagicInfo mergedMagic = null, int grade = 0)
@@ -567,6 +648,22 @@ public class PhoneMenu : MonoBehaviour
             .SetUpdate(true);
 
             yield return new WaitForSecondsRealtime(0.5f);
+        }
+
+        // 합성 가능한 마법 있으면 인디케이터 켜기
+        if (MergeNumCheck() > 0)
+        {
+            invenBackground.color = new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f);
+            invenBackground.DOKill();
+            invenBackground.DOColor(new Color(200f / 255f, 200f / 255f, 200f / 255f, 1f), 1f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetUpdate(true);
+        }
+        else
+        {
+            invenBackground.DOKill();
+            invenBackground.DOColor(new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f), 1)
+            .SetUpdate(true);
         }
 
         // 좌측 슬롯 커지기
@@ -1306,21 +1403,22 @@ public class PhoneMenu : MonoBehaviour
         backBtn.interactable = able;
     }
 
-    public void ScreenScrollBtn()
+    public void ScreenScrollStart()
     {
         // 키 입력 막기
         if (!btnsInteractable)
             return;
 
-        // 선택된게 머지 스크린일때
+        // 선택된게 인벤 스크린일때
         if (screenScroll.CenteredPanel == 0)
         {
         }
         // 선택된게 레시피 스크린일때
         else
         {
-            // 레시피 갱신
-            Set_Recipe();
+            // 레시피 스크롤 위치 초기화
+            recipeScroll.Content.localPosition = Vector2.zero;
+            recipeScroll.GoToPanel(0);
         }
     }
 

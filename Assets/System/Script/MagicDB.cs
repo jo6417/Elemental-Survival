@@ -414,7 +414,7 @@ public class MagicDB : MonoBehaviour
         return randomNum;
     }
 
-    public int ElementIndex(SlotInfo slotInfo)
+    public int ElementType(SlotInfo slotInfo)
     {
         // 원소 색깔 리스트에서 해당 색을 가진 인덱스 찾기
         int colorIndex = -1;
