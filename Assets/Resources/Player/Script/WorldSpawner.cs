@@ -205,7 +205,7 @@ public class WorldSpawner : MonoBehaviour
             enemyObj = spawnAbleList[Random.Range(0, spawnAbleList.Count)].gameObject;
 
             //몬스터 정보 찾기
-            enemy = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(enemyObj.name.Split('_')[0]));
+            enemy = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(enemyObj.name.Replace("_Prefab", "")));
 
             //몬스터 id 찾기
             enemyId = enemy.id;

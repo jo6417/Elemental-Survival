@@ -59,19 +59,19 @@ public class ItemBox : Character
                 // 원소젬일때
                 case 0:
                     // 랜덤 원소젬 뽑기
-                    slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
+                    slotInfo = new ItemInfo(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem));
                     break;
                 // 회복 아이템일때
                 case 1:
-                    slotInfo = ItemDB.Instance.GetItemByName("Heart");
+                    slotInfo = new ItemInfo(ItemDB.Instance.GetItemByName("Heart"));
                     break;
                 // 자석빔일때
                 case 2:
-                    slotInfo = ItemDB.Instance.GetItemByName("Magnet");
+                    slotInfo = new ItemInfo(ItemDB.Instance.GetItemByName("Magnet"));
                     break;
                 // 슬롯머신일때
                 case 3:
-                    slotInfo = ItemDB.Instance.GetItemByName("SlotMachine");
+                    slotInfo = new ItemInfo(ItemDB.Instance.GetItemByName("SlotMachine"));
                     break;
             }
 

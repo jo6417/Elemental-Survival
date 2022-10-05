@@ -112,8 +112,8 @@ public class ItemDB : MonoBehaviour
                 //받아온 데이터를 List<ItemInfo>에 넣기
                 itemDB[item["id"]] = (new ItemInfo
                 (item["id"], item["grade"], item["name"], item["itemType"], item["description"], item["priceType"], item["price"],
-                item["projectileNum"], item["hpMax"], item["power"], item["armor"], item["moveSpeed"],
-                item["rateFire"], item["coolTime"], item["duration"], item["range"], item["luck"], item["expGain"], item["moneyGain"],
+                item["projectileNum"], item["hpMax"], item["power"], item["armor"], item["speed"], item["moveSpeed"],
+                item["evade"], item["coolTime"], item["duration"], item["range"], item["luck"], item["expRate"], item["getRange"],
                 item["earth"], item["fire"], item["life"], item["lightning"], item["water"], item["wind"]
                 ));
             }

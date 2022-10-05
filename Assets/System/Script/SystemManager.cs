@@ -82,7 +82,7 @@ public class SystemManager : MonoBehaviour
     public LayerMask PlayerPhysics_Mask;
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
-    public bool godMod = true; //! 플레이어 갓모드 여부
+    [ReadOnly] public bool godMod = false; //! 플레이어 갓모드 여부
     //! DB 동기화 버튼
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
@@ -166,7 +166,7 @@ public class SystemManager : MonoBehaviour
         StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, enemyDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
 
         // 갓모드 false 초기화
-        GodModeToggle();
+        // GodModeToggle();
 
         // 모두 로딩 완료시까지 대기
         yield return new WaitUntil(() =>

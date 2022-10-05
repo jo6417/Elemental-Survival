@@ -311,7 +311,7 @@ public class VendMachine : MonoBehaviour
         TextMeshProUGUI priceTxt = product.transform.Find("Button/Price").GetComponent<TextMeshProUGUI>();
         priceTxt.text = price.ToString();
         // 구매 가능하면 초록, 아니면 빨강
-        priceTxt.color = PlayerManager.Instance.hasGems[gemTypeIndex] >= price ? Color.green : Color.red;
+        priceTxt.color = PlayerManager.Instance.hasItems[gemTypeIndex].amount >= price ? Color.green : Color.red;
 
         // 할인 표시 오브젝트 찾기
         Transform discount = product.transform.Find("Discount");
@@ -387,7 +387,7 @@ public class VendMachine : MonoBehaviour
 
         // 해당 상품의 화폐과 같은 원소젬 개수 보여주기
         productPriceType.text = (MagicDB.Instance.ElementNames[gemTypeIndex] + " Gem").ToString(); // 화폐 원소젬 이름
-        productPrice.text = PlayerManager.Instance.hasGems[gemTypeIndex].ToString(); //지불할 가격
+        productPrice.text = PlayerManager.Instance.hasItems[gemTypeIndex].amount.ToString(); //지불할 가격
 
         // 상품 모서리에 툴팁 띄우고 고정
         ProductToolTip.Instance.OpenTooltip(magic, item, ProductToolTip.ToolTipCorner.LeftUp, pos);
@@ -406,7 +406,7 @@ public class VendMachine : MonoBehaviour
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
         //구매 가능
-        if (PlayerManager.Instance.hasGems[gemTypeIndex] >= price)
+        if (PlayerManager.Instance.hasItems[gemTypeIndex].amount >= price)
         {
             // 선택한 버튼의 상품 획득하기
             infoHolder.ChooseBtn();
@@ -419,7 +419,7 @@ public class VendMachine : MonoBehaviour
             for (int i = 0; i < productsParent.childCount; i++)
             {
                 //해당 화폐 플레이어 소지금
-                int _hasGem = PlayerManager.Instance.hasGems[allInfo[i].gemType];
+                int _hasGem = PlayerManager.Instance.hasItems[allInfo[i].gemType].amount;
                 //해당 상품 가격
                 int _price = allInfo[i].holderType == InfoHolder.HolderType.magicHolder
                 ? MagicDB.Instance.GetMagicByID(allInfo[i].id).price

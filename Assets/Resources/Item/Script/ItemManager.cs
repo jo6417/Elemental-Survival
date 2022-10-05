@@ -289,9 +289,13 @@ public class ItemManager : MonoBehaviour
             {
                 PlayerManager.Instance.hitBox.Damage(-amount, false);
             }
-            // 아이템이 아티팩트, 샤드 타입일때
-            else if (itemInfo.itemType == ItemDB.ItemType.Artifact.ToString()
-            || itemInfo.itemType == ItemDB.ItemType.Shard.ToString())
+            // 아이템이 아티팩트 타입일때
+            else if (itemInfo.itemType == ItemDB.ItemType.Artifact.ToString())
+            {
+                //todo 인벤토리가 아닌 hasItem으로 넣기
+            }
+            // 아이템이 샤드 타입일때
+            else if (itemInfo.itemType == ItemDB.ItemType.Shard.ToString())
             {
                 //아이템 획득
                 PhoneMenu.Instance.GetItem(itemInfo);

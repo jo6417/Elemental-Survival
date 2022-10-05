@@ -290,6 +290,10 @@ public class PlayerHitBox : MonoBehaviour
         if (SystemManager.Instance.godMod && damage > 0)
             damage = 0;
 
+        // 회피율에 따라 데미지 0
+        if (playerManager.PlayerStat_Now.evade > Random.value)
+            damage = 0;
+
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 

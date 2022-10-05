@@ -12,8 +12,8 @@ using UnityEngine.UI;
 public class PlayerStat
 {
     public int playerPower; //플레이어 전투력
-    public float hpMax = 10000; // 최대 체력
-    public float hpNow = 10000; // 체력
+    public float hpMax = 1000; // 최대 체력
+    public float hpNow = 1000; // 체력
     public float Level = 1; //레벨
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
@@ -23,14 +23,15 @@ public class PlayerStat
     public int pierce = 0; // 관통 횟수
     public float power = 1; //마법 공격력
     public float armor = 1; //방어력
-    public float knockbackForce = 1; //넉백 파워
     public float speed = 1; //마법 공격속도
+    public float evade = 0f; // 회피율
+    public float knockbackForce = 1; //넉백 파워
     public float coolTime = 1; //마법 쿨타임
     public float duration = 1; //마법 지속시간
     public float range = 1; //마법 범위
     public float luck = 1; //행운
     public float expGain = 1; //경험치 획득량
-    public float moneyGain = 1; //원소젬 획득량
+    public float getRage = 1; //todo 아이템 획득 범위 (플레이어 상호작용 콜라이더 크기에 반영하기)
 
     //원소 공격력
     public float earth_atk = 1;
@@ -92,7 +93,6 @@ public class PlayerManager : MonoBehaviour
     public Animator anim;
 
     [Header("<Stat>")] //플레이어 스탯
-    public PlayerStat PlayerStat_Origin; //초기 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
 
     [Header("<State>")]
@@ -106,8 +106,7 @@ public class PlayerManager : MonoBehaviour
     // public float ShakeIntensity;
 
     [Header("<Pocket>")]
-    // public SlotInfo[] inventory = new SlotInfo[23]; // 플레이어 인벤토리
-    public List<int> hasGems = new List<int>(6); //플레이어가 가진 원소젬
+    [SerializeField] List<int> hasGems = new List<int>(); // 테스트용 초기 원소젬 개수
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
     public InventorySlot activeSlot_A;
     public InventorySlot activeSlot_B;
@@ -124,9 +123,6 @@ public class PlayerManager : MonoBehaviour
 
         //플레이어 스탯 인스턴스 생성
         PlayerStat_Now = new PlayerStat();
-
-        //플레이어 초기 스탯 저장
-        PlayerStat_Origin = PlayerStat_Now;
 
         // 입력값 초기화
         InputInit();
@@ -219,32 +215,45 @@ public class PlayerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // SystemManager 에서 켜기
-        // playerInput.Enable();
+        // 초기화
+        StartCoroutine(Init());
 
         //기본 마법 추가
         StartCoroutine(CastDefaultMagics());
     }
 
-    private void OnDisable()
+    IEnumerator Init()
     {
-        playerInput.Disable();
-    }
+        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
-    void Start()
-    {
-        // 원소젬 UI 업데이트
+        // 보유 아이템 리스트 초기화
+        hasItems.Clear();
+        // 6종류 gem을 리스트에 넣기
         for (int i = 0; i < 6; i++)
         {
-            // hasGems.Add(0);
-            UIManager.Instance.UpdateGem(i);
+            ItemInfo gem = new ItemInfo(ItemDB.Instance.GetItemByID(i));
+            //! 테스트용 원소젬 개수 넣기
+            gem.amount = hasGems[i];
+
+            hasItems.Add(gem);
         }
 
-        //경험치 최대치 갱신
+        // 플레이어 버프 업데이트
+        BuffUpdate();
+
+        // 원소젬 전체 UI 업데이트
+        UIManager.Instance.UpdateGem();
+
+        // 1레벨 경험치 최대치 갱신
         PlayerStat_Now.ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
 
         //능력치 초기화
         UIManager.Instance.InitialStat();
+    }
+
+    private void OnDisable()
+    {
+        playerInput.Disable();
     }
 
     private void Update()
@@ -272,8 +281,6 @@ public class PlayerManager : MonoBehaviour
 
     public void Move()
     {
-        // print(nowMoveDir);
-
         // 깔렸을때 조작불가
         if (hitBox.isFlat)
         {
@@ -390,36 +397,52 @@ public class PlayerManager : MonoBehaviour
 
     void BuffUpdate()
     {
-        //초기 스탯 복사
+        //초기 스탯을 임시 스탯으로 복사
         PlayerStat PlayerStat_Temp = new PlayerStat();
-        PlayerStat_Temp = PlayerStat_Origin;
 
         //임시 스탯에 현재 아이템의 모든 버프 넣기
-        foreach (var item in hasItems)
+        foreach (ItemInfo item in hasItems)
         {
-            PlayerStat_Temp.atkNum += item.projectileNum * item.amount; // 투사체 개수 버프
-            PlayerStat_Temp.hpMax += item.hpMax * item.amount; //최대체력 버프
-            PlayerStat_Temp.power += item.power * item.amount; //마법 공격력 버프
-            PlayerStat_Temp.armor += item.armor * item.amount; //방어력 버프
-            PlayerStat_Temp.speed += item.rateFire * item.amount; //마법 공격속도 버프
-            PlayerStat_Temp.coolTime += item.coolTime * item.amount; //마법 쿨타임 버프
-            PlayerStat_Temp.duration += item.duration * item.amount; //마법 지속시간 버프
-            PlayerStat_Temp.range += item.range * item.amount; //마법 범위 버프
-            PlayerStat_Temp.luck += item.luck * item.amount; //행운 버프
-            PlayerStat_Temp.expGain += item.expGain * item.amount; //경험치 획득량 버프
-            PlayerStat_Temp.moneyGain += item.moneyGain * item.amount; //원소젬 획득량 버프
-            PlayerStat_Temp.moveSpeed += item.moveSpeed / item.amount; //이동속도 버프
+            PlayerStat_Temp.atkNum += item.atkNum * item.amount; // 투사체 개수 버프
+            PlayerStat_Temp.hpMax += item.hpMax * item.amount; // 최대체력 버프
+            PlayerStat_Temp.power += item.power * item.amount; // 마법 공격력 버프
+            PlayerStat_Temp.armor += item.armor * item.amount; // 방어력 버프
+            PlayerStat_Temp.speed += item.speed * item.amount; // 마법 속도 버프
+            PlayerStat_Temp.evade += item.evade * item.amount; // 회피율 버프
+            PlayerStat_Temp.coolTime += item.coolTime * item.amount; // 마법 쿨타임 버프
+            PlayerStat_Temp.duration += item.duration * item.amount; // 마법 지속시간 버프
+            PlayerStat_Temp.range += item.range * item.amount; // 마법 범위 버프
+            PlayerStat_Temp.luck += item.luck * item.amount; // 행운 버프
+            PlayerStat_Temp.expGain += item.expRate * item.amount; // 경험치 획득량 버프
+            PlayerStat_Temp.getRage += item.getRage * item.amount; // 아이템 획득거리 버프
+            PlayerStat_Temp.moveSpeed += item.moveSpeed * item.amount; //이동속도 버프
 
-            PlayerStat_Temp.earth_atk += item.earth * item.amount;
-            PlayerStat_Temp.fire_atk += item.fire * item.amount;
-            PlayerStat_Temp.life_atk += item.life * item.amount;
-            PlayerStat_Temp.lightning_atk += item.lightning * item.amount;
-            PlayerStat_Temp.water_atk += item.water * item.amount;
-            PlayerStat_Temp.wind_atk += item.wind * item.amount;
+            // PlayerStat_Temp.earth_atk += item.earth * item.amount;
+            // PlayerStat_Temp.fire_atk += item.fire * item.amount;
+            // PlayerStat_Temp.life_atk += item.life * item.amount;
+            // PlayerStat_Temp.lightning_atk += item.lightning * item.amount;
+            // PlayerStat_Temp.water_atk += item.water * item.amount;
+            // PlayerStat_Temp.wind_atk += item.wind * item.amount;
         }
 
         //현재 스탯에 임시 스탯을 넣기
         PlayerStat_Now = PlayerStat_Temp;
+
+        print(
+            " atkNum : " + PlayerStat_Temp.atkNum + ", " +
+            "\n hpMax : " + PlayerStat_Temp.hpMax + ", " +
+            "\n power : " + PlayerStat_Temp.power + ", " +
+            "\n armor : " + PlayerStat_Temp.armor + ", " +
+            "\n speed : " + PlayerStat_Temp.speed + ", " +
+            "\n evade : " + PlayerStat_Temp.evade + ", " +
+            "\n coolTime : " + PlayerStat_Temp.coolTime + ", " +
+            "\n duration : " + PlayerStat_Temp.duration + ", " +
+            "\n range : " + PlayerStat_Temp.range + ", " +
+            "\n luck : " + PlayerStat_Temp.luck + ", " +
+            "\n expGain : " + PlayerStat_Temp.expGain + ", " +
+            "\n moneyGain : " + PlayerStat_Temp.getRage + ", " +
+            "\n moveSpeed : " + PlayerStat_Temp.moveSpeed
+        );
     }
 
     public void AddGem(ItemInfo item, int amount)
@@ -433,26 +456,40 @@ public class PlayerManager : MonoBehaviour
             //레벨업
             Levelup();
         }
-        // print(item.itemName.Split(' ')[0]);
 
         // 가격 타입으로 젬 타입 인덱스로 반환
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == item.priceType);
+        // 보유 아이템 중 해당 젬 개수 올리기
+        hasItems[gemTypeIndex].amount += amount;
 
-        // 젬 타입 인덱스로 해당 젬과 같은 마법 찾아서 획득
-        // GetMagic(MagicDB.Instance.GetMagicByID(gemTypeIndex));
-
-        //해당 젬 갯수 올리기
-        hasGems[gemTypeIndex] = hasGems[gemTypeIndex] + amount;
-        // print(hasGems[gemTypeIndex] + " : " + amount);
+        //todo 플레이어 버프 업데이트
+        BuffUpdate();
 
         //해당 젬 UI 인디케이터
-        UIManager.Instance.GemIndicator(gemTypeIndex, Color.red);
+        UIManager.Instance.GemIndicator(gemTypeIndex, Color.green);
 
         // UI 업데이트
         UIManager.Instance.UpdateGem(gemTypeIndex);
 
         //경험치 및 레벨 갱신
         UIManager.Instance.UpdateExp();
+    }
+
+    public void GetArtifact(ItemInfo getItem)
+    {
+        //todo 해당 아티팩트가 이미 있으면 개수 올리기
+        ItemInfo alreadyHas = hasItems.Find(x => x.id == getItem.id);
+        if (alreadyHas != null)
+        {
+            alreadyHas.amount++;
+        }
+        //todo 해당 아티팩트가 없으면 추가
+        else
+        {
+            hasItems.Add(getItem);
+        }
+
+        //todo 아티팩트 그리드 UI 갱신
     }
 
     void Levelup()
@@ -478,7 +515,7 @@ public class PlayerManager : MonoBehaviour
     public void PayGem(int gemIndex, int price)
     {
         //원소젬 지불하기
-        hasGems[gemIndex] -= price;
+        hasItems[gemIndex].amount -= price;
 
         //젬 UI 업데이트
         UIManager.Instance.UpdateGem(gemIndex);

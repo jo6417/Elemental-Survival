@@ -621,7 +621,7 @@ public class UIManager : MonoBehaviour
     public void UpdateGem(int gemTypeIndex)
     {
         // 해당 타입의 젬 UI 업데이트
-        gemAmountUIs[gemTypeIndex].text = playerManager.hasGems[gemTypeIndex].ToString();
+        gemAmountUIs[gemTypeIndex].text = playerManager.hasItems[gemTypeIndex].amount.ToString();
     }
 
     public void UpdateGem()
@@ -629,7 +629,7 @@ public class UIManager : MonoBehaviour
         // 모든 젬 UI 업데이트
         for (int i = 0; i < 6; i++)
         {
-            gemAmountUIs[i].text = playerManager.hasGems[i].ToString();
+            gemAmountUIs[i].text = playerManager.hasItems[i].amount.ToString();
         }
     }
 
@@ -869,7 +869,7 @@ public class UIManager : MonoBehaviour
         stats[8].text = Mathf.Round(playerManager.PlayerStat_Now.range * 100).ToString() + " %";
         stats[9].text = Mathf.Round(playerManager.PlayerStat_Now.luck * 100).ToString() + " %";
         stats[10].text = Mathf.Round(playerManager.PlayerStat_Now.expGain * 100).ToString() + " %";
-        stats[11].text = Mathf.Round(playerManager.PlayerStat_Now.moneyGain * 100).ToString() + " %";
+        stats[11].text = Mathf.Round(playerManager.PlayerStat_Now.getRage * 100).ToString() + " %";
 
         stats[12].text = Mathf.Round(playerManager.PlayerStat_Now.earth_atk * 100).ToString() + " %";
         stats[13].text = Mathf.Round(playerManager.PlayerStat_Now.fire_atk * 100).ToString() + " %";

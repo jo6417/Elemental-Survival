@@ -280,7 +280,7 @@ SpriteAtlas:
   - StompDust_Sheet_2
   - StompDust_Sheet_1
   - StompDust_Sheet_0
-  - Explosion_Icon
+  - LaserBeam_Icon
   - SlotMove_Icon
   - SandShot_Icon
   - TimeStop_Icon

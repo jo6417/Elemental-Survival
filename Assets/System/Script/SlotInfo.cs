@@ -139,18 +139,19 @@ public class ItemInfo : SlotInfo
     public string itemType; //아이템 타입 (Gem, Heart, Scroll, Artifact, etc)
 
     [Header("Buff")] // 능력치 추가 계수 (곱연산 기본값 : 1 / 합연산 기본값 : 0)
-    public int projectileNum = 0; // 투사체 개수
+    public int atkNum = 0; // 투사체 개수
     public float hpMax = 1; //최대 체력
     public float power = 1; //마법 공격력
     public float armor = 1; //방어력
+    public float speed = 1; //투사체 속도 및 쿨타임
     public float moveSpeed = 1; //이동 속도
-    public float rateFire = 1; //마법 공격속도
+    public float evade = 1; // 회피율
     public float coolTime = 1; //마법 쿨타임
     public float duration = 1; //마법 지속시간
     public float range = 1; //마법 범위
-    public float luck = 1; //행운
-    public float expGain = 1; //경험치 획득량
-    public float moneyGain = 1; //원소젬 획득량
+    public float luck = 1; // 행운 (크리티컬 확률, 고급 아이템 드랍 확률)
+    public float expRate = 1; //경험치 획득량
+    public float getRage = 1; // 아이템 획득 범위
 
     // 원소 공격력 추가
     public float earth;
@@ -160,7 +161,9 @@ public class ItemInfo : SlotInfo
     public float water;
     public float wind;
 
-    public ItemInfo(int id, int grade, string itemName, string itemType, string description, string priceType, int price, int projectileNum, float hpMax, float power, float armor, float moveSpeed, float rateFire, float coolTime, float duration, float range, float luck, float expGain, float moneyGain, float earth, float fire, float life, float lightning, float water, float wind)
+    public ItemInfo(int id, int grade, string itemName, string itemType, string description, string priceType, int price,
+    int projectileNum, float hpMax, float power, float armor, float speed, float moveSpeed, float rateFire, float coolTime, float duration, float range, float luck, float expGain, float getRage,
+    float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
         this.grade = grade;
@@ -170,18 +173,19 @@ public class ItemInfo : SlotInfo
         this.priceType = priceType;
         this.price = price;
 
-        this.projectileNum = projectileNum;
+        this.atkNum = projectileNum;
         this.hpMax = hpMax;
         this.power = power;
         this.armor = armor;
+        this.speed = speed;
         this.moveSpeed = moveSpeed;
-        this.rateFire = rateFire;
+        this.evade = rateFire;
         this.coolTime = coolTime;
         this.duration = duration;
         this.range = range;
         this.luck = luck;
-        this.expGain = expGain;
-        this.moneyGain = moneyGain;
+        this.expRate = expGain;
+        this.getRage = getRage;
 
         this.earth = earth;
         this.fire = fire;
@@ -200,18 +204,19 @@ public class ItemInfo : SlotInfo
         this.description = item.description;
         this.priceType = item.priceType;
         this.price = item.price;
-        this.projectileNum = item.projectileNum;
+        this.atkNum = item.atkNum;
         this.hpMax = item.hpMax;
         this.power = item.power;
         this.armor = item.armor;
+        this.speed = item.speed;
         this.moveSpeed = item.moveSpeed;
-        this.rateFire = item.rateFire;
+        this.evade = item.evade;
         this.coolTime = item.coolTime;
         this.duration = item.duration;
         this.range = item.range;
         this.luck = item.luck;
-        this.expGain = item.expGain;
-        this.moneyGain = item.moneyGain;
+        this.expRate = item.expRate;
+        this.getRage = item.getRage;
         this.earth = item.earth;
         this.fire = item.fire;
         this.life = item.life;
