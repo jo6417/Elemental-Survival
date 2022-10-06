@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 60e358c2739bb8649881d1715baa0353
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - enemyManager: {instanceID: 0}
+  - attackTrigger_A: {instanceID: 0}
+  - dustEffect: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

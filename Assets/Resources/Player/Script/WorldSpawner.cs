@@ -59,7 +59,7 @@ public class WorldSpawner : MonoBehaviour
     public GameObject hitEffect; // 몬스터 피격시 이펙트
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
-    BoxCollider2D spawnColl; // 스포너 테두리 콜라이더
+    public BoxCollider2D spawnColl; // 스포너 테두리 콜라이더
 
     private void Awake()
     {

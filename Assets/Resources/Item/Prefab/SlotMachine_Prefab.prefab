@@ -2587,6 +2587,7 @@ MonoBehaviour:
   - {fileID: 5110598185273934026}
   gemLED: {fileID: 5110598184751892024}
   blackScreen: {fileID: 5110598183999462997}
+  itemDropper: {fileID: 0}
   spinTime: 1
   randomTime: 0
   spinSpeed: 10

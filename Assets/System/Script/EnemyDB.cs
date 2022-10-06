@@ -131,14 +131,14 @@ public class EnemyDB : MonoBehaviour
     void GetEnemyResources()
     {
         // 몬스터 아이콘 모두 가져오기
-        Sprite[] _enemyIcon = Resources.LoadAll<Sprite>("Enemy/Icon");
+        Sprite[] _enemyIcon = Resources.LoadAll<Sprite>("Character/Icon");
         foreach (var icon in _enemyIcon)
         {
             enemyIcon[icon.name] = icon;
         }
 
         // 몬스터 프리팹 모두 가져오기
-        GameObject[] _enemyPrefab = Resources.LoadAll<GameObject>("Enemy/Prefab");
+        GameObject[] _enemyPrefab = Resources.LoadAll<GameObject>("Character/Prefab");
         foreach (var prefab in _enemyPrefab)
         {
             enemyPrefab[prefab.name] = prefab;

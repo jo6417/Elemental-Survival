@@ -451,7 +451,7 @@ public class MagicDB : MonoBehaviour
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.Target.Enemy)
             //플레이어 자체 파워 증가량 계산
-            power = power + power * (PlayerManager.Instance.PlayerStat_Now.power - 1);
+            power = power * PlayerManager.Instance.PlayerStat_Now.power;
 
         return power;
     }

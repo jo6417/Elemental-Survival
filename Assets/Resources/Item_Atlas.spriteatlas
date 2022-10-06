@@ -79,6 +79,9 @@ SpriteAtlas:
   - {fileID: -6936453207617735441, guid: 24436ea820bdaf240bcdab7173a324c5, type: 3}
   - {fileID: 21300000, guid: 15e86fd8bfa5e3249a1e01c7fe9e8a2b, type: 3}
   - {fileID: 21300000, guid: 75ba6f8900d49c9428e65a8a2b649524, type: 3}
+  - {fileID: 4704088574612128260, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
+  - {fileID: 8009083395882017052, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
+  - {fileID: -8372854300331179455, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
   - {fileID: -3726239229719224584, guid: 7d8f81a996a4f4a4aa23c23088ccb87e, type: 3}
   - {fileID: -6265155566855376615, guid: 7d8f81a996a4f4a4aa23c23088ccb87e, type: 3}
   - {fileID: -1246608491812224087, guid: 7d8f81a996a4f4a4aa23c23088ccb87e, type: 3}
@@ -129,6 +132,9 @@ SpriteAtlas:
   - SlotMachine_Sheet_0
   - _ManaGem
   - LifeSeed_Icon
+  - Truck_Idle_0
+  - Truck_Idle_1
+  - Truck_Idle_2
   - chest_Sheet_3
   - chest_Sheet_2
   - chest_Sheet_1
