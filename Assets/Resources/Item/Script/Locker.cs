@@ -110,9 +110,11 @@ public class Locker : MonoBehaviour
         priceUI.GetComponentInChildren<TextMeshProUGUI>().text = price.ToString();
 
         // 상호작용 트리거 함수 콜백에 연결 시키기
-        interacter.interactTriggerCallback += InteractTrigger;
+        if (interacter.interactTriggerCallback == null)
+            interacter.interactTriggerCallback += InteractTrigger;
         // 상호작용 함수 콜백에 연결 시키기
-        interacter.interactSubmitCallback += InteractSubmit;
+        if (interacter.interactSubmitCallback == null)
+            interacter.interactSubmitCallback += InteractSubmit;
 
         // 캔버스 켜기
         uiCanvas.gameObject.SetActive(true);

@@ -229,43 +229,43 @@ public class ItemDB : MonoBehaviour
     }
 
     //랜덤 아티팩트 뽑기
-    public int[] RandomItemIndex(int amount)
-    {
-        //모든 아이템 인덱스를 넣을 리스트
-        List<int> randomIndex = new List<int>();
+    // public int[] RandomItemIndex(int amount)
+    // {
+    //     //모든 아이템 인덱스를 넣을 리스트
+    //     List<int> randomIndex = new List<int>();
 
-        // 랜덤 아이템 풀
-        randomIndex.Add(GetItemByName("Empty Scroll").id);
-        randomIndex.Add(GetItemByName("Health Potion").id);
-        randomIndex.Add(GetItemByName("Mana Shard").id);
-        randomIndex.Add(GetItemByName("Random Box").id);
+    //     // 랜덤 아이템 풀
+    //     randomIndex.Add(GetItemByName("Empty Scroll").id);
+    //     randomIndex.Add(GetItemByName("Health Potion").id);
+    //     randomIndex.Add(GetItemByName("Mana Shard").id);
+    //     randomIndex.Add(GetItemByName("Random Box").id);
 
-        //랜덤 인덱스를 넣을 배열
-        int[] randomNum = new int[amount];
+    //     //랜덤 인덱스를 넣을 배열
+    //     int[] randomNum = new int[amount];
 
-        for (int i = 0; i < amount; i++)
-        {
-            // 획득 가능한 아이템 없을때
-            if (randomIndex.Count == 0)
-            {
-                randomNum[i] = -1;
-            }
-            else
-            {
-                //인덱스 리스트에서 랜덤한 난수 생성
-                int j = Random.Range(0, randomIndex.Count);
-                int itemID = randomIndex[j];
+    //     for (int i = 0; i < amount; i++)
+    //     {
+    //         // 획득 가능한 아이템 없을때
+    //         if (randomIndex.Count == 0)
+    //         {
+    //             randomNum[i] = -1;
+    //         }
+    //         else
+    //         {
+    //             //인덱스 리스트에서 랜덤한 난수 생성
+    //             int j = Random.Range(0, randomIndex.Count);
+    //             int itemID = randomIndex[j];
 
-                //랜덤 인덱스 숫자 넣기
-                randomNum[i] = itemID;
-                //이미 선택된 인덱스 제거
-                randomIndex.RemoveAt(j);
-            }
-        }
+    //             //랜덤 인덱스 숫자 넣기
+    //             randomNum[i] = itemID;
+    //             //이미 선택된 인덱스 제거
+    //             randomIndex.RemoveAt(j);
+    //         }
+    //     }
 
-        //인덱스 리스트 리턴
-        return randomNum;
-    }
+    //     //인덱스 리스트 리턴
+    //     return randomNum;
+    // }
 
     public List<ItemInfo> GetItemsByType(ItemType itemType)
     {

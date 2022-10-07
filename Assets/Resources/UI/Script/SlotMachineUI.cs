@@ -73,7 +73,7 @@ public class SlotMachineUI : MonoBehaviour
             //아이템 타입이 아티팩트인 모든아이템 리스트
             List<ItemInfo> itemList = ItemDB.Instance.itemDB.Values.ToList().FindAll(x => x.itemType == ItemDB.ItemType.Artifact.ToString());
             // 중복 없는 랜덤 아이템 5개 뽑기
-            int[] itemIDs = ItemDB.Instance.RandomItemIndex(items.Count);
+            int[] itemIDs = null;
 
             // 해당 슬롯에서 피버 아이템 선정
             int feverIndex = Random.Range(0, 5);

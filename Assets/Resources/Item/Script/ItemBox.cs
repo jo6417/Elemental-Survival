@@ -51,7 +51,7 @@ public class ItemBox : Character
         while (slotInfo == null)
         {
             // 아이템 종류 뽑기
-            randomType = SystemManager.Instance.RandomPick(randomRate);
+            randomType = SystemManager.Instance.WeightRandom(randomRate);
 
             // 해당 상품 내에서 랜덤 id
             switch (randomType)

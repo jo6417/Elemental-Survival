@@ -306,7 +306,7 @@ public class Character : MonoBehaviour
                 List<ItemInfo> gems = ItemDB.Instance.GetItemsByType(ItemDB.ItemType.Gem);
 
                 // 가중치 확률로 원소젬 인덱스 뽑기
-                int gemIndex = SystemManager.Instance.RandomPick(PhoneMenu.Instance.elementWeitght.ToList());
+                int gemIndex = SystemManager.Instance.WeightRandom(PhoneMenu.Instance.elementWeitght.ToList());
 
                 // gem 인스턴스 생성
                 item = new ItemInfo(gems[gemIndex]);
@@ -337,7 +337,7 @@ public class Character : MonoBehaviour
             randomRate.Add(10); // 슬롯머신 확률 가중치
 
             // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
-            int randomItem = SystemManager.Instance.RandomPick(randomRate);
+            int randomItem = SystemManager.Instance.WeightRandom(randomRate);
 
             switch (randomItem)
             {

@@ -23,6 +23,8 @@ public class Truck : MonoBehaviour
         // 자판기 부모 오브젝트 끄기
         shopGlass.SetActive(false);
 
+        yield return new WaitUntil(() => WorldSpawner.Instance != null);
+
         // 플레이어가 오른쪽 보고있을때
         if (PlayerManager.Instance.lastDir.x > 0)
         {
