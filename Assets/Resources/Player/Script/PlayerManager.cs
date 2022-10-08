@@ -428,8 +428,7 @@ public class PlayerManager : MonoBehaviour
         //현재 스탯에 임시 스탯을 넣기
         PlayerStat_Now = PlayerStat_Temp;
 
-        print(
-            " atkNum : " + PlayerStat_Temp.atkNum + ", " +
+        string allBuff = " atkNum : " + PlayerStat_Temp.atkNum + ", " +
             "\n hpMax : " + PlayerStat_Temp.hpMax + ", " +
             "\n power : " + PlayerStat_Temp.power + ", " +
             "\n armor : " + PlayerStat_Temp.armor + ", " +
@@ -441,8 +440,9 @@ public class PlayerManager : MonoBehaviour
             "\n luck : " + PlayerStat_Temp.luck + ", " +
             "\n expGain : " + PlayerStat_Temp.expGain + ", " +
             "\n moneyGain : " + PlayerStat_Temp.getRage + ", " +
-            "\n moveSpeed : " + PlayerStat_Temp.moveSpeed
-        );
+            "\n moveSpeed : " + PlayerStat_Temp.moveSpeed;
+
+        // print(allBuff);
     }
 
     public void AddGem(ItemInfo item, int amount)

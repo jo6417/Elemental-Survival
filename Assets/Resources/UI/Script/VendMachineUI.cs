@@ -14,14 +14,14 @@ public class VendMachineUI : MonoBehaviour
     private List<ItemInfo> items = new List<ItemInfo>(); //자판기에 들어갈 아이템 목록
     private List<MagicInfo> magics = new List<MagicInfo>(); //자판기에 들어갈 마법 목록
     Sequence outputSeq;
+    List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
 
     [Header("Refer")]
-    [SerializeField] private Sprite itemFrame; //아이템 프레임 스프라이트
-    [SerializeField] private Sprite magicFrame; //마법 프레임 스프라이트
+    [SerializeField] private RectTransform vendMachineObj;
     [SerializeField] private Transform productsParent; //상품 부모 오브젝트
     [SerializeField] private Transform productOutput; //상품 토출구 오브젝트
     [SerializeField] private GameObject productPrefab; //상품 소개 프리팹
-    [SerializeField] private GameObject productObj; // 토출구에서 나올 상품 프리팹
+    [SerializeField] private GameObject outputObj; // 토출구에서 나올 상품 프리팹
     // private float rate = 0.5f; //아티팩트가 아닌 마법이 나올 확률
     [SerializeField] private TextMeshProUGUI productPriceType; // 현재 선택 상품 지불 수단 텍스트
     [SerializeField] private TextMeshProUGUI productPrice; // 현재 선택 상품 가격 텍스트
@@ -32,10 +32,16 @@ public class VendMachineUI : MonoBehaviour
         //시간 멈추기
         Time.timeScale = 0f;
 
-        GetComponent<Animator>().enabled = true;
+        // 화면 위로 이동
+        vendMachineObj.anchoredPosition = new Vector2(0, 1100f);
 
         // 자판기 상품 불러오기
         StartCoroutine(LoadProducts());
+
+        // 원래 위치로 떨어지기
+        vendMachineObj.DOAnchorPos(new Vector2(0, 20f), 0.5f)
+        .SetEase(Ease.OutBounce)
+        .SetUpdate(true);
     }
 
     private void Update()
@@ -53,14 +59,12 @@ public class VendMachineUI : MonoBehaviour
 
         //상품 모두 지우기
         SystemManager.Instance.DestroyAllChild(productsParent);
-
-        // 판매 상품 리스트
-        List<SlotInfo> productList = new List<SlotInfo>();
+        productList.Clear();
 
         // 랜덤 뽑기 가중치 리스트
         List<float> randomWeight = new List<float>();
         randomWeight.Add(10); // 하트 가중치
-        randomWeight.Add(0); // 아티팩트 가중치
+        randomWeight.Add(0); //todo 아티팩트 가중치
         randomWeight.Add(40); // 마법샤드 가중치
         randomWeight.Add(40); // 마법 가중치
 
@@ -94,23 +98,16 @@ public class VendMachineUI : MonoBehaviour
             // 상품 인스턴스 생성
             GameObject productObj = LeanPool.Spawn(productPrefab, transform.position, Quaternion.identity, productsParent);
 
-            //품절 표시 비활성화
-            Transform soldoutCover = productObj.transform.Find("Cover");
-            Transform soldoutSlash = productObj.transform.Find("Button/Slash");
-            soldoutCover.gameObject.SetActive(false);
-            soldoutSlash.gameObject.SetActive(false);
-
-            //품절 표시 커버 스프라이트 변경
-            // soldoutCover.GetComponent<Image>().sprite = type == ProductType.Magic ? magicBack : itemBack;
-
-            // 상품 버튼 속성
-            InfoHolder infoHolder = productObj.transform.GetComponent<InfoHolder>();
-            //버튼 누르면 종료될 팝업창 오브젝트
-            infoHolder.popupMenu = UIManager.Instance.vendMachinePanel;
+            // 아이콘 버튼 찾기
+            Button button = productObj.transform.Find("Button").GetComponent<Button>();
+            // 가격 버튼
+            Button priceBtn = productObj.transform.Find("Price").GetComponent<Button>();
+            // 품절 표시 빨간줄
+            Transform soldOutSlash = priceBtn.transform.Find("Slash");
+            soldOutSlash.gameObject.SetActive(false);
 
             // 아이템,마법 각각 프레임
             Image frame = productObj.transform.Find("Frame").GetComponent<Image>();
-            // Transform gemCircle = frame.transform.Find("GemCircle");
 
             //신규 여부
             bool isNew = false;
@@ -120,12 +117,13 @@ public class VendMachineUI : MonoBehaviour
             Color gradeColor = Color.white;
             //상품 가격
             int price = 0;
-            //상품 비용 젬 타입 인덱스
-            int gemTypeIndex = -1;
 
             // 상품에 담길 아이템 or 마법
             ItemInfo item = slotInfo as ItemInfo;
             MagicInfo magic = slotInfo as MagicInfo;
+
+            // 가격 타입 인덱스, 정보 없으면 랜덤으로 부여
+            int priceType = slotInfo.priceType != "None" ? MagicDB.Instance.ElementType(slotInfo) : Random.Range(0, 6);
 
             // 마법일때 정보 넣기
             if (magic != null)
@@ -135,19 +133,7 @@ public class VendMachineUI : MonoBehaviour
 
                 // 마법 아이콘 찾기
                 productSprite = MagicDB.Instance.GetMagicIcon(magic.id);
-
-                // 마법 등급 프레임 및 색깔
-                gradeColor = MagicDB.Instance.GradeColor[magic.grade];
-                frame.color = gradeColor;
-
-                //가격 정보 넣기
-                price = SetPrice(productObj, infoHolder, magic, item);
-
-                // 해당 상품 타입 및 ID 넣기
-                infoHolder.holderType = InfoHolder.HolderType.magicHolder;
-                infoHolder.id = magic.id;
             }
-
             //아이템일때 정보 넣기
             if (item != null)
             {
@@ -156,18 +142,14 @@ public class VendMachineUI : MonoBehaviour
 
                 //아이템 아이콘 찾기
                 productSprite = ItemDB.Instance.GetItemIcon(item.id);
-
-                //아이템 등급 프레임 및 색깔
-                gradeColor = MagicDB.Instance.GradeColor[item.grade];
-                frame.color = gradeColor;
-
-                //가격 정보 넣기
-                price = SetPrice(productObj, infoHolder, magic, item);
-
-                // 해당 상품 타입 및 ID 넣기
-                infoHolder.holderType = InfoHolder.HolderType.itemHolder;
-                infoHolder.id = item.id;
             }
+
+            // 마법 등급 프레임 및 색깔
+            gradeColor = MagicDB.Instance.GradeColor[slotInfo.grade];
+            frame.color = gradeColor;
+
+            // 기존 가격에서 랜덤 할인된 가격
+            price = SetPrice(productObj, slotInfo, priceType);
 
             // 신규 여부 표시
             Transform newTxt = productObj.transform.Find("New");
@@ -187,64 +169,66 @@ public class VendMachineUI : MonoBehaviour
             //스프라이트 못찾으면 임시로 물음표 넣기
             Icon.GetComponent<Image>().sprite = productSprite != null ? productSprite : SystemManager.Instance.questionMark;
 
-            // 화폐 종류 다시 불러오기
-            gemTypeIndex = infoHolder.gemType;
+            // 버튼 마우스 Enter시 이벤트 작성
+            EventTrigger.Entry selectEntry = new EventTrigger.Entry(); //이벤트 트리거에 넣을 엔트리 생성            
+            selectEntry.eventID = EventTriggerType.PointerEnter; //Select 했을때로 지정
+            selectEntry.callback.AddListener((data) => { ProductSelect(priceType, price); }); //Select 했을때 넣을 함수 넣기
 
-            //버튼 찾기
-            Button button = productObj.transform.GetComponent<Button>();
+            // 아이콘 버튼 선택 했을때
+            button.GetComponent<EventTrigger>().triggers.Add(selectEntry);
+            // 가격 버튼 선택 했을때
+            priceBtn.GetComponent<EventTrigger>().triggers.Add(selectEntry);
 
-            // 선택 했을때
-            EventTrigger trigger = button.GetComponent<EventTrigger>(); //이벤트 트리거 참조
-            EventTrigger.Entry entry = new EventTrigger.Entry(); //이벤트 트리거에 넣을 엔트리 생성            
-            entry.eventID = EventTriggerType.Select; //Select 했을때로 지정
-            entry.callback.AddListener((data) => { ProductSelect(productObj, gemTypeIndex, magic, item); }); //Select 했을때 넣을 함수 넣기
-            trigger.triggers.Add(entry); //만들어진 엔트리를 이벤트 트리거에 넣어주기
-
-            // 클릭 했을때
+            // 아이콘 버튼 클릭 했을때
             button.onClick.AddListener(delegate
             {
                 // 상품 획득 시도하기
-                GetProduct(productObj, gemTypeIndex, infoHolder, price, magic, item);
+                GetProduct(productObj, priceType, price);
             });
 
             // 툴팁에 상품 정보 넣기
-            ToolTipTrigger tooltip = productObj.GetComponent<ToolTipTrigger>();
+            ToolTipTrigger tooltip = button.GetComponent<ToolTipTrigger>();
             tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
             tooltip.Magic = magic;
             tooltip.Item = item;
         }
     }
 
-    int SetPrice(GameObject product, InfoHolder infoHolder, MagicInfo magic = null, ItemInfo item = null)
+    void UpdatePrice()
     {
-        // 화폐 종류 넣기, 어떤 원소젬인지
-        string priceType = magic != null ? magic.priceType : item.priceType;
-        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == priceType); //지불 원소젬 이름을 인덱스로 치환
-
-        //지불 수단 타입이 없을때
-        if (gemTypeIndex == -1)
+        // 모든 상품 가격 색깔 바꿔서 구매 가능 여부 갱신
+        for (int i = 0; i < 9; i++)
         {
-            // 0~5 사이 랜덤
-            gemTypeIndex = Random.Range(0, 6);
+            // 가격 텍스트
+            TextMeshProUGUI amount = productsParent.GetChild(i).Find("Price/Amount").GetComponent<TextMeshProUGUI>();
+            // 해당 상품 정보
+            SlotInfo slotInfo = productList[i];
+            // 가격 타입
+            int priceType = MagicDB.Instance.ElementType(slotInfo);
+            // 가격
+            int price = slotInfo.price;
+
+            // 구매 가능하면 초록, 아니면 빨강
+            amount.color = PlayerManager.Instance.hasItems[priceType].amount >= price ? Color.green : Color.red;
         }
+    }
 
-        //상품의 화폐 종류 저장
-        infoHolder.gemType = gemTypeIndex;
-
+    int SetPrice(GameObject product, SlotInfo slotInfo, int priceType)
+    {
         // 화폐에 따라 색 바꾸기
-        Color color = MagicDB.Instance.GetElementColor(gemTypeIndex);
-        Image gem = product.transform.Find("Button/Gem").GetComponent<Image>();
+        Color color = MagicDB.Instance.GetElementColor(priceType);
+        Image gem = product.transform.Find("Price/Gem").GetComponent<Image>();
         gem.color = color;
 
         // 고정된 가격에서 +- 범위내 랜덤 조정해서 가격 넣기, 10 단위로 반올림
-        float originPrice = magic != null ? magic.price : item.price;
+        float originPrice = slotInfo.price;
         float price = Mathf.Round(originPrice * Random.Range(0.51f, 1.5f) / 10f) * 10f;
 
         //아이템 가격 텍스트
-        TextMeshProUGUI priceTxt = product.transform.Find("Button/Price").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI priceTxt = product.transform.Find("Price/Amount").GetComponent<TextMeshProUGUI>();
         priceTxt.text = price.ToString();
         // 구매 가능하면 초록, 아니면 빨강
-        priceTxt.color = PlayerManager.Instance.hasItems[gemTypeIndex].amount >= price ? Color.green : Color.red;
+        priceTxt.color = PlayerManager.Instance.hasItems[priceType].amount >= price ? Color.green : Color.red;
 
         // 할인 표시 오브젝트 찾기
         Transform discount = product.transform.Find("Discount");
@@ -313,78 +297,51 @@ public class VendMachineUI : MonoBehaviour
     }
 
     //상품 선택했을때
-    public void ProductSelect(GameObject product, int gemTypeIndex, MagicInfo magic = null, ItemInfo item = null)
+    public void ProductSelect(int priceType, int priceAmount)
     {
-        //해당 버튼의 위치에서 오른쪽 아래 모서리로 툴팁 위치하기
-        Vector2 pos = (Vector2)product.transform.position + new Vector2(product.GetComponent<RectTransform>().sizeDelta.x, -product.GetComponent<RectTransform>().sizeDelta.y);
-
         // 해당 상품의 화폐과 같은 원소젬 개수 보여주기
-        productPriceType.text = (MagicDB.Instance.ElementNames[gemTypeIndex] + " Gem").ToString(); // 화폐 원소젬 이름
-        productPrice.text = PlayerManager.Instance.hasItems[gemTypeIndex].amount.ToString(); //지불할 가격
-
-        // 상품 모서리에 툴팁 띄우고 고정
-        ProductToolTip.Instance.OpenTooltip(magic, item, ProductToolTip.ToolTipCorner.LeftUp, pos);
+        productPriceType.text = (MagicDB.Instance.ElementNames[priceType] + " Gem").ToString(); // 화폐 원소젬 이름
+        productPrice.text = priceAmount.ToString(); //지불할 가격
     }
 
     //상품 획득
-    void GetProduct(GameObject product, int gemTypeIndex, InfoHolder infoHolder, int price,
-    MagicInfo magic = null, ItemInfo item = null)
+    void GetProduct(GameObject product, int priceType, int price)
     {
-        // 지불 수단 넣기, 어떤 원소젬인지
-        // string priceType = magic != null ? magic.priceType : item.priceType;
-        // int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.elementNames, x => x == priceType); //지불 원소젬 이름을 인덱스로 치환
         Image frame = product.transform.Find("Frame").GetComponent<Image>();
-        Button button = product.transform.GetComponent<Button>();
+        // 아이콘 버튼
+        Button iconBtn = product.transform.Find("Button").GetComponent<Button>();
+        // 가격 버튼
+        Button priceBtn = product.transform.Find("Price").GetComponent<Button>();
+        // 품절 표시
+        Transform priceSoldOut = product.transform.Find("Price/Slash");
+        // 신규 표시
+        Transform newTxt = product.transform.Find("New");
 
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
         //구매 가능
-        if (PlayerManager.Instance.hasItems[gemTypeIndex].amount >= price)
+        if (PlayerManager.Instance.hasItems[priceType].amount >= price)
         {
-            // 선택한 버튼의 상품 획득하기
-            infoHolder.ChooseBtn();
-
             // 가격 지불하기
-            PlayerManager.Instance.PayGem(gemTypeIndex, price);
+            PlayerManager.Instance.PayGem(priceType, price);
 
-            // 모든 상품 정보 찾기
-            InfoHolder[] allInfo = productsParent.GetComponentsInChildren<InfoHolder>();
-            for (int i = 0; i < productsParent.childCount; i++)
-            {
-                //해당 화폐 플레이어 소지금
-                int _hasGem = PlayerManager.Instance.hasItems[allInfo[i].gemType].amount;
-                //해당 상품 가격
-                int _price = allInfo[i].holderType == InfoHolder.HolderType.magicHolder
-                ? MagicDB.Instance.GetMagicByID(allInfo[i].id).price
-                : ItemDB.Instance.GetItemByID(allInfo[i].id).price;
+            // 모든 상품 가격 색깔 업데이트하여 구매가능 여부 표시
+            UpdatePrice();
 
-                // 모든 상품 가격 색깔로 구매 가능여부 갱신
-                allInfo[i].transform.Find("Button/Price").GetComponent<TextMeshProUGUI>().color
-                = _hasGem >= _price ? Color.green : Color.red;
-
-                // if (allInfo[i].holderType == InfoHolder.HolderType.magicHolder)
-                //     print(MagicDB.Instance.GetMagicByID(allInfo[i].id).magicName + ":" + _hasGem + ":" + _price);
-                // else
-                //     print(ItemDB.Instance.GetItemByID(allInfo[i].id).itemName + ":" + _hasGem + ":" + _price);
-            }
-
-            //툴팁 끄기
+            // 현재 툴팁 끄기
             ProductToolTip.Instance.QuitTooltip();
 
-            //신규 표시
-            Transform newTxt = product.transform.Find("New");
-            //품절 표시
-            Transform soldoutCover = product.transform.Find("Cover");
-            Transform soldoutSlash = product.transform.Find("Button/Slash");
-
             // 해당 상품 비활성화
-            button.interactable = false; // 상호작용 비활성화
+            iconBtn.interactable = false; // 아이콘 버튼 상호작용 비활성화
+            priceBtn.interactable = false; // 가격 버튼 상호작용 비활성화
             newTxt.gameObject.SetActive(false); //신규 표시 없에기
-            soldoutCover.gameObject.SetActive(true); //아이콘 어둡게
-            soldoutSlash.gameObject.SetActive(true); //가격 표시 사선 표시
+            priceSoldOut.gameObject.SetActive(true); //가격 표시 사선 표시
 
-            // 토출구에서 상품 떨어뜨리기
-            GameObject outputObj = LeanPool.Spawn(productObj, product.transform.position, Quaternion.identity, productOutput);
+            // 토출구에 드랍될 상품 위치,크기 초기화
+            outputObj.transform.position = productsParent.position;
+            outputObj.transform.localScale = Vector2.one;
+            // 상품 오브젝트 켜기
+            outputObj.SetActive(true);
 
             //아이콘 스프라이트 교체
             Image outputIcon = outputObj.transform.Find("Icon").GetComponent<Image>();
@@ -392,15 +349,11 @@ public class VendMachineUI : MonoBehaviour
 
             //프레임 색깔 변경
             Image outputFrame = outputObj.transform.Find("Frame").GetComponent<Image>();
-            if (magic != null)
-                outputFrame.sprite = magicFrame; //마법이면 마법 프레임
-            else
-                outputFrame.sprite = itemFrame; //아이템이면 아이템 프레임
-
-            outputObj.transform.localScale = Vector2.one;
+            outputFrame.color = product.transform.Find("Frame").GetComponent<Image>().color;
 
             outputSeq = DOTween.Sequence();
             outputSeq
+            .SetUpdate(true)
             .Append(
                 // 토출구 가운데까지 DoMove 하기
                 outputObj.transform.DOMove(outputHole.position, 1f)
@@ -416,22 +369,23 @@ public class VendMachineUI : MonoBehaviour
                 outputObj.transform.DOScale(Vector2.zero, 0.5f)
                 .SetEase(Ease.InBack)
             )
-            .SetUpdate(true)
             .OnComplete(() =>
             {
-                LeanPool.Despawn(outputObj);
+                // 상품 오브젝트 끄기
+                outputObj.SetActive(false);
             });
         }
         //구매 불가능
         else
         {
-            Color frameColor = frame.color;
+            Color originColor = iconBtn.GetComponent<Image>().color;
 
-            //프레임 깜빡이기
-            FlickerObj(frame.gameObject, frameColor);
+            // 상품 깜빡이기
+            FlickerObj(iconBtn.gameObject, originColor);
 
             //부족한 젬 타입 숫자 UI 깜빡이기
-            FlickerObj(UIManager.Instance.gemAmountUIs[gemTypeIndex].gameObject, Color.white);
+            UIManager.Instance.GemIndicator(priceType, Color.red);
+            // FlickerObj(UIManager.Instance.gemAmountUIs[gemTypeIndex].gameObject, Color.white);
         }
     }
 
@@ -440,12 +394,12 @@ public class VendMachineUI : MonoBehaviour
         // 재화 부족할때 인디케이터 표시
         if (obj.TryGetComponent(out Image img))
         {
-            img.DOComplete();
+            img.DOKill();
 
-            // 이미지 색깔 깜빡이기
-            img.DOColor(Color.red, 0.5f)
-            .SetUpdate(true) //timescale 무시
-            .SetEase(Ease.Flash, 3, 0)
+            // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
+            img.DOColor(new Color(1, 0, 0, 0.5f), 0.1f)
+            .SetLoops(4, LoopType.Yoyo)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 img.color = originColor; //색깔 초기화하고 끝
@@ -453,12 +407,12 @@ public class VendMachineUI : MonoBehaviour
         }
         else if (obj.TryGetComponent(out Text txt))
         {
-            txt.DOComplete();
+            txt.DOKill();
 
-            // 텍스트 색깔 깜빡이기
-            txt.DOColor(Color.red, 0.5f)
-            .SetUpdate(true) //timescale 무시
-            .SetEase(Ease.Flash, 3, 0)
+            // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
+            txt.DOColor(new Color(1, 0, 0, 0.5f), 0.1f)
+            .SetLoops(4, LoopType.Yoyo)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 txt.color = originColor; //색깔 초기화하고 끝
