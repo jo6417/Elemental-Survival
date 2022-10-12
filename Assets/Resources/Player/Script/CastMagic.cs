@@ -80,7 +80,7 @@ public class CastMagic : MonoBehaviour
         if (magic == null || MagicDB.Instance.GetActiveMagicByID(magic.id).coolCount > 0)
         {
             // 스프라이트 2회 켜기
-            invenSlot.FailBlink(2);
+            invenSlot.BlinkSlot(4);
 
             yield break;
         }

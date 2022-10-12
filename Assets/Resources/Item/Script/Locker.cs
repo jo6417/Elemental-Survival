@@ -213,7 +213,7 @@ public class Locker : MonoBehaviour
             case 0:
                 MagicInfo magicInfo = slotInfo as MagicInfo;
 
-                // 슬롯 아이템 만들기
+                // 마법 슬롯 아이템 만들기
                 dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
 
                 // 아이템 프레임 색 넣기

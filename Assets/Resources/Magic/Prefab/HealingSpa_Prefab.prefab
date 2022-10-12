@@ -1,35 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4459422470321439404
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4362000730484829808}
-  m_Layer: 16
-  m_Name: effects
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4362000730484829808
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4459422470321439404}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 9210057795328001451}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7166743062616861768
 GameObject:
   m_ObjectHideFlags: 0
@@ -9672,7 +9642,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9210057795328001451
 Transform:
   m_ObjectHideFlags: 0
@@ -9686,7 +9656,6 @@ Transform:
   m_Children:
   - {fileID: 4643853155822654724}
   - {fileID: 1772796887217285419}
-  - {fileID: 4362000730484829808}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9705,10 +9674,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -9716,6 +9685,7 @@ MonoBehaviour:
   stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
@@ -9736,13 +9706,13 @@ MonoBehaviour:
   bubbleDelay: 2
   reduceDelay: 1
   magicHolder: {fileID: 9210057795328001454}
-  effectParent: {fileID: 4362000730484829808}
+  coll: {fileID: 9210057795328001448}
   pondSprite: {fileID: 9210057795328001450}
-  pulsePrefab: {fileID: 5703874530627898632, guid: 99e6eb844b1bb8c4fbd38cdc4fe917b5,
+  pulsePrefab: {fileID: 7539487434049666061, guid: 99e6eb844b1bb8c4fbd38cdc4fe917b5,
     type: 3}
   dustEffect: {fileID: 1994870664517383061, guid: 9f2d6315a7af63841baea7c567eff226,
     type: 3}
-  pulseCharacterList: []
+  nowPulseCharacter: []
 --- !u!212 &9210057795328001450
 SpriteRenderer:
   m_ObjectHideFlags: 0

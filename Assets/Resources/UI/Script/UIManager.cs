@@ -46,12 +46,12 @@ public class UIManager : MonoBehaviour
     public GameObject nowOpenPopup; //현재 열려있는 팝업 UI
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
-    public GameObject mixMagicPanel;
+    // public GameObject mixMagicPanel;
     public GameObject phonePanel;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
-    public GameObject slotMachinePanel;
-    public GameObject magicUpgradePanel;
+    public GameObject magicMachinePanel;
+    // public GameObject magicUpgradePanel;
     public GameObject pausePanel;
     public GameObject gameoverPanel;
 
@@ -220,12 +220,12 @@ public class UIManager : MonoBehaviour
         Resume();
     }
 
-    void PhoneOpen()
+    public void PhoneOpen(Vector3 modifyPos = default)
     {
         // 시간 멈추지 않았을때
         if (Time.timeScale > 0)
         {
-            StartCoroutine(PhoneMenu.Instance.OpenPhone());
+            StartCoroutine(PhoneMenu.Instance.OpenPhone(modifyPos));
 
             //플레이어 입력 끄기
             playerManager.playerInput.Disable();

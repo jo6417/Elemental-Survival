@@ -21,7 +21,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     [Header("Refer")]
     [SerializeField] Transform shakeParent;
-    public Image slotBack; // 슬롯 배경 이미지
+    public Image slotBackEffect; // 슬롯 강조 배경 이펙트
     public Image slotFrame; // 아이템 등급 표시 슬롯 프레임
     public Image slotIcon; // 아이템 아이콘
     public Image slotLevel; //레벨 텍스트 상자
@@ -29,7 +29,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     public GameObject newSign; // 새로운 언락 싸인
     public Button slotButton;
     public ToolTipTrigger slotTooltip;
-    public Image failIndicator;
+    public Image indicator;
     public ShowMagicCooltime coolTimeIndicator;
 
     private void Awake()
@@ -134,14 +134,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 레벨 이미지 색에 등급색 넣기
             slotLevel.color = MagicDB.Instance.GradeColor[grade];
             //레벨 넣기
-            slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + level.ToString();
-
-            // 등급 프레임 색
-            frameColor = MagicDB.Instance.GradeColor[slotInfo.grade];
-
-            // 슬롯에 툴팁 정보 넣기
-            slotTooltip.Magic = magic;
-            slotTooltip.Item = null;
+            slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv." + level.ToString();
         }
 
         if (item != null)
@@ -153,11 +146,14 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
             // 레벨 비활성화
             slotLevel.gameObject.SetActive(false);
-
-            // 슬롯에 툴팁 정보 넣기
-            slotTooltip.Item = item;
-            slotTooltip.Magic = null;
         }
+
+        // 슬롯에 툴팁 정보 넣기
+        slotTooltip.Magic = magic;
+        slotTooltip.Item = item;
+
+        // 등급 프레임 색
+        frameColor = MagicDB.Instance.GradeColor[slotInfo.grade];
 
         // 등급 프레임 색 넣기
         slotFrame.color = frameColor;
@@ -252,6 +248,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     void ClickSlot(int secondInput = -1)
     {
+        // new 표시 끄기
+        newSign.SetActive(false);
+
         // 선택된 슬롯 없을때
         if (PhoneMenu.Instance.nowSelectSlot == null)
         {
@@ -288,7 +287,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     else
                     {
                         // 현재 슬롯 빨갛게 인디케이터 점등
-                        FailBlink(2);
+                        BlinkSlot(4);
                         return;
                     }
                 }
@@ -352,7 +351,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     else
                     {
                         // 현재 슬롯 빨갛게 인디케이터 점등
-                        FailBlink(2);
+                        BlinkSlot(4);
                         return;
                     }
                 }
@@ -362,7 +361,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 if (magicInfo == null)
                 {
                     // 현재 슬롯 빨갛게 인디케이터 점등
-                    FailBlink(2);
+                    BlinkSlot(4);
 
                     //todo 메시지
                     StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 슬롯에는 마법만 장착 가능합니다."));
@@ -373,7 +372,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 if (magicInfo.castType != MagicDB.CastType.active.ToString())
                 {
                     // 현재 슬롯 빨갛게 인디케이터 점등
-                    FailBlink(2);
+                    BlinkSlot(4);
 
                     //todo 메시지
                     StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 마법만 장착 가능합니다."));
@@ -455,7 +454,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     PhoneMenu.Instance.ShakeMouseIcon();
 
                     // 현재 슬롯 빨갛게 인디케이터 점등
-                    FailBlink(2);
+                    BlinkSlot(4);
 
                     // 리턴
                     return;
@@ -513,22 +512,26 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         Set_Slot();
     }
 
-    public void FailBlink(int blinkNum = 2)
+    public void BlinkSlot(int blinkNum = -1, float blinkTime = 0.2f, Color color = default)
     {
         // 기존 트윈 있다면 끄기
-        failIndicator.DOKill();
+        indicator.DOKill();
 
         // 인디케이터 색깔 투명하게 초기화
-        failIndicator.color = Color.clear;
+        indicator.color = Color.clear;
+
+        // 색깔 입력 없으면 빨간색
+        if (color == default)
+            color = new Color(1, 0, 0, 0.5f);
 
         // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
-        failIndicator.DOColor(new Color(1, 0, 0, 0.5f), 0.2f)
-        .SetLoops(blinkNum * 2, LoopType.Yoyo)
+        indicator.DOColor(color, blinkTime)
+        .SetLoops(blinkNum, LoopType.Yoyo)
         .SetUpdate(true)
         .OnComplete(() =>
         {
             // 인디케이터 색깔 투명하게 초기화
-            failIndicator.color = Color.clear;
+            indicator.color = Color.clear;
         });
     }
 

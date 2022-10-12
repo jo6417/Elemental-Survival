@@ -10,9 +10,6 @@ using TMPro;
 
 public class VendMachineUI : MonoBehaviour
 {
-    enum ProductType { Item, Magic };
-    private List<ItemInfo> items = new List<ItemInfo>(); //자판기에 들어갈 아이템 목록
-    private List<MagicInfo> magics = new List<MagicInfo>(); //자판기에 들어갈 마법 목록
     Sequence outputSeq;
     List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
 

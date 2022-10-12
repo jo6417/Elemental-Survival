@@ -953,6 +953,6 @@ public class MagicMixMenu : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
 
         //해당 팝업 끄기
-        UIManager.Instance.PopupUI(UIManager.Instance.mixMagicPanel);
+        // UIManager.Instance.PopupUI(UIManager.Instance.mixMagicPanel);
     }
 }

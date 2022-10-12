@@ -275,7 +275,7 @@ public class PhoneMenu : MonoBehaviour
         randomScreen.alpha = 0f;
     }
 
-    public IEnumerator OpenPhone()
+    public IEnumerator OpenPhone(Vector3 modifyPos = default)
     {
         //초기화
         StartCoroutine(Init());
@@ -302,8 +302,8 @@ public class PhoneMenu : MonoBehaviour
 
         float moveTime = 0.8f;
 
-        // 팝업UI 위치,회전,스케일로 복구하기
-        CastMagic.Instance.transform.DOMove(camPos + UIPosition, moveTime)
+        // 팝업UI 상태일때 위치,회전,스케일로 이동
+        CastMagic.Instance.transform.DOMove(camPos + UIPosition + modifyPos, moveTime)
         .SetUpdate(true);
         CastMagic.Instance.transform.DOScale(Vector3.one, moveTime)
         .SetUpdate(true);
@@ -556,7 +556,7 @@ public class PhoneMenu : MonoBehaviour
             // 합성된 마법 프레임 색 넣기
             mergedSlot.slotFrame.color = MagicDB.Instance.GradeColor[mergedMagic.grade];
             // 합성된 마법 레벨 합산
-            mergedSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv. " + mergedMagic.magicLevel.ToString();
+            mergedSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv." + mergedMagic.magicLevel.ToString();
             // 합성된 마법 툴팁 넣기
             mergedSlot.slotTooltip.Magic = mergedMagic;
 
@@ -736,8 +736,8 @@ public class PhoneMenu : MonoBehaviour
         .SetUpdate(true);
 
         // 양쪽 슬롯 깜빡이기
-        L_MergeSlot.FailBlink();
-        R_MergeSlot.FailBlink();
+        L_MergeSlot.BlinkSlot(4);
+        R_MergeSlot.BlinkSlot(4);
 
         // 양쪽 슬롯 아이콘 떨기
         L_MergeSlot.ShakeIcon();
@@ -1057,7 +1057,7 @@ public class PhoneMenu : MonoBehaviour
         ParticleSystem.MainModule particleMain = getMagicEffect.main;
         particleMain.startColor = MagicDB.Instance.GradeColor[getMagic.grade];
 
-        // 확인 혹인 클릭할때까지 대기
+        // 확인, 클릭할때까지 대기
         yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
 
         // 팡파레 이펙트 끄기
@@ -1118,29 +1118,46 @@ public class PhoneMenu : MonoBehaviour
         return emptyIndex;
     }
 
-    public void GetItem(ItemInfo getItem)
+    public void GetSlot(SlotInfo slotInfo, int getIndex = -1)
+    {
+        // 아이템일때
+        if (slotInfo as ItemInfo != null)
+            PhoneMenu.Instance.GetItem(slotInfo as ItemInfo, getIndex);
+
+        // 마법
+        if (slotInfo as MagicInfo != null)
+            PhoneMenu.Instance.GetMagic(slotInfo as MagicInfo, false, getIndex);
+    }
+
+    public void GetItem(ItemInfo getItem, int getIndex = -1)
     {
         // print(getItem.itemType + " : " + getItem.itemName);
 
-        // 인벤토리 빈칸 찾기
-        int emptyIndex = GetEmptySlot();
+        // 획득 인덱스 지정 안했을때
+        if (getIndex == -1)
+            // 인벤토리 빈칸 찾기
+            getIndex = GetEmptySlot();
 
-        // 빈 슬롯에 해당 아이템 넣기
-        invenSlots[emptyIndex].slotInfo = getItem;
+        // 빈칸 있을때
+        if (getIndex != -1)
+        {
+            // 빈 슬롯에 해당 아이템 넣기
+            invenSlots[getIndex].slotInfo = getItem;
 
-        // New 표시 켜기
-        invenSlots[emptyIndex].newSign.SetActive(true);
+            // New 표시 켜기
+            invenSlots[getIndex].newSign.SetActive(true);
 
-        // 핸드폰 열려있으면
-        if (gameObject.activeSelf)
-            // 해당 칸 UI 갱신
-            invenSlots[emptyIndex].Set_Slot(true);
+            // 핸드폰 열려있으면
+            if (gameObject.activeSelf)
+                // 해당 칸 UI 갱신
+                invenSlots[getIndex].Set_Slot(true);
 
-        // 핸드폰 알림 개수 추가
-        UIManager.Instance.PhoneNotice();
+            // 핸드폰 알림 개수 추가
+            UIManager.Instance.PhoneNotice();
+        }
     }
 
-    public void GetMagic(MagicInfo getMagic, bool castCheck = false)
+    public void GetMagic(MagicInfo getMagic, bool castCheck = false, int getIndex = -1)
     {
         // MagicInfo 인스턴스 생성
         MagicInfo magic = new MagicInfo(getMagic);
@@ -1155,22 +1172,24 @@ public class PhoneMenu : MonoBehaviour
             MagicDB.Instance.savedMagics.Add(magic.id);
         }
 
-        // 인벤토리 빈칸 찾기
-        int emptyIndex = GetEmptySlot();
+        // 획득 인덱스 지정 안했을때
+        if (getIndex == -1)
+            // 인벤토리 빈칸 찾기
+            getIndex = GetEmptySlot();
 
         // 빈칸 있을때
-        if (emptyIndex != -1)
+        if (getIndex != -1)
         {
             // 해당 빈 슬롯에 마법 넣기
-            invenSlots[emptyIndex].slotInfo = getMagic;
+            invenSlots[getIndex].slotInfo = getMagic;
 
             // New 표시 켜기
-            invenSlots[emptyIndex].newSign.SetActive(true);
+            invenSlots[getIndex].newSign.SetActive(true);
 
             // 핸드폰 열려있으면
             if (gameObject.activeSelf)
                 // 해당 칸 UI 갱신
-                invenSlots[emptyIndex].Set_Slot(true);
+                invenSlots[getIndex].Set_Slot(true);
 
             // 핸드폰 알림 개수 추가
             UIManager.Instance.PhoneNotice();
@@ -1441,7 +1460,7 @@ public class PhoneMenu : MonoBehaviour
         // 툴팁 끄기
         ProductToolTip.Instance.QuitTooltip();
 
-        // 메인 인벤토리 화면일때
+        // 백버튼 안누른 상태일때
         if (backBtnCount <= 0)
         {
             //버튼 시간 카운트 시작
@@ -1454,118 +1473,131 @@ public class PhoneMenu : MonoBehaviour
             // Merge 슬롯의 아이템 전부 인벤에 넣기
             if (L_MergeSlot.slotInfo != null)
             {
-                // 인벤 빈칸 찾기
-                int emptyIndex = GetEmptySlot();
-
-                // 빈칸에 마법 넣기
-                invenSlots[emptyIndex].slotInfo = L_MergeSlot.slotInfo;
-                // Merge 슬롯의 정보 삭제
-                L_MergeSlot.slotInfo = null;
-
-                // 인벤 슬롯 정보 갱신
-                invenSlots[emptyIndex].Set_Slot(true);
-                // Merge 슬롯 정보 갱신
-                L_MergeSlot.Set_Slot(true);
+                BackToInven(L_MergeSlot);
             }
             if (R_MergeSlot.slotInfo != null)
             {
-                // 인벤 빈칸 찾기
-                int emptyIndex = GetEmptySlot();
+                BackToInven(R_MergeSlot);
+            }
+            // 매직 머신 재화 슬롯의 아이템 인벤에 넣기
+            if (MagicMachineUI.Instance.paySlot.slotInfo != null)
+            {
+                BackToInven(MagicMachineUI.Instance.paySlot);
 
-                // 빈칸에 마법 넣기
-                invenSlots[emptyIndex].slotInfo = R_MergeSlot.slotInfo;
-                // Merge 슬롯의 정보 삭제
-                R_MergeSlot.slotInfo = null;
-
-                // 인벤 슬롯 정보 갱신
-                invenSlots[emptyIndex].Set_Slot(true);
-                // Merge 슬롯 정보 갱신
-                R_MergeSlot.Set_Slot(true);
+                // spin 버튼 불 끄기
+                MagicMachineUI.Instance.ClickPaySlot();
             }
         }
-        // 시간 내에 한번 더 누르면 팝업 종료
+        // 백버튼 한번 더 누르면
         else
         {
-            // 인벤 슬롯 상호작용 모두 끄기
-            foreach (InventorySlot invenSlot in invenSlots)
-            {
-                invenSlot.slotButton.interactable = false;
-            }
-            //레시피 버튼 끄기
-            recipeBtn.interactable = false;
-            //뒤로 버튼 끄기
-            backBtn.interactable = false;
-            //홈 버튼 끄기
-            homeBtn.interactable = false;
-
-            // 액티브 슬롯 3개 상호작용 막기
-            PlayerManager.Instance.activeSlot_A.slotButton.interactable = false;
-            PlayerManager.Instance.activeSlot_B.slotButton.interactable = false;
-            PlayerManager.Instance.activeSlot_C.slotButton.interactable = false;
-
-            //마우스로 아이콘 들고 있으면 복귀시키기
-            if (nowSelectIcon.enabled)
-                CancelSelectSlot();
-
-            // UI 커서 미리 끄기
-            UIManager.Instance.UICursorToggle(false);
-
-            // 로딩 패널 켜기
-            loadingPanel.SetActive(true);
-
-            // 백버튼 색 채우기
-            DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
-            .SetUpdate(true);
-
-            // 화면 검은색으로
-            blackScreen.DOColor(new Color(70f / 255f, 70f / 255f, 70f / 255f, 1), 0.2f)
-            .SetUpdate(true);
-
-            // 화면 꺼지는 동안 대기
-            yield return new WaitForSecondsRealtime(0.2f);
-
-            // 핸드폰 화면 패널 끄기
-            phonePanel.SetActive(false);
-
-            // 핸드폰 알림 개수 초기화
-            UIManager.Instance.PhoneNotice(0);
-
-            // 인벤토리 new 표시 모두 끄기
-            for (int i = 0; i < invenSlots.Count; i++)
-            {
-                invenSlots[i].newSign.SetActive(false);
-            }
-
-            float moveTime = 0.8f;
-
-            // 매직폰 위치,회전,스케일로 복구하기
-            CastMagic.Instance.transform.DOMove(phonePosition, moveTime)
-            .SetUpdate(true);
-            CastMagic.Instance.transform.DOScale(phoneScale, moveTime)
-            .SetUpdate(true);
-            CastMagic.Instance.transform.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
-            .SetUpdate(true);
-
-            // 절반쯤 이동했을때 화면 라이트 켜기
-            lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 100f / 255f), moveTime / 2f)
-            .SetDelay(moveTime / 2f)
-            .SetUpdate(true);
-
-            // 핸드폰 이동하는 동안 대기
-            yield return new WaitForSecondsRealtime(moveTime);
-
-            //백 버튼 변수 초기화
-            backBtnCount = 0f;
-            backBtnFill.fillAmount = 0f;
-
-            // 끝나면 시간 복구하기
-            // Time.timeScale = 1f;
-
-            //팝업 세팅
-            UIManager.Instance.PopupSet(UIManager.Instance.phonePanel);
-
-            // 인벤토리에서 마법 찾아 자동 시전하기
-            CastMagic.Instance.CastCheck();
+            // 매직머신 팝업 켜져있으면
+            if (MagicMachineUI.Instance.gameObject.activeSelf)
+                // 매지머신 팝업과 함께 핸드폰 끄기
+                MagicMachineUI.Instance.ExitPopup();
+            else
+                // 핸드폰 끄기
+                StartCoroutine(PhoneExit());
         }
+    }
+
+    public void BackToInven(InventorySlot slot)
+    {
+        // 인벤 빈칸 찾기
+        int emptyIndex = GetEmptySlot();
+
+        // 빈칸에 마법 넣기
+        invenSlots[emptyIndex].slotInfo = slot.slotInfo;
+        // Merge 슬롯의 정보 삭제
+        slot.slotInfo = null;
+
+        // 인벤 슬롯 정보 갱신
+        invenSlots[emptyIndex].Set_Slot(true);
+        // Merge 슬롯 정보 갱신
+        slot.Set_Slot(true);
+    }
+
+    public IEnumerator PhoneExit()
+    {
+        // 인벤 슬롯 상호작용 모두 끄기
+        foreach (InventorySlot invenSlot in invenSlots)
+        {
+            invenSlot.slotButton.interactable = false;
+        }
+        //레시피 버튼 끄기
+        recipeBtn.interactable = false;
+        //뒤로 버튼 끄기
+        backBtn.interactable = false;
+        //홈 버튼 끄기
+        homeBtn.interactable = false;
+
+        // 액티브 슬롯 3개 상호작용 막기
+        PlayerManager.Instance.activeSlot_A.slotButton.interactable = false;
+        PlayerManager.Instance.activeSlot_B.slotButton.interactable = false;
+        PlayerManager.Instance.activeSlot_C.slotButton.interactable = false;
+
+        //마우스로 아이콘 들고 있으면 복귀시키기
+        if (nowSelectIcon.enabled)
+            CancelSelectSlot();
+
+        // UI 커서 미리 끄기
+        UIManager.Instance.UICursorToggle(false);
+
+        // 로딩 패널 켜기
+        loadingPanel.SetActive(true);
+
+        // 백버튼 색 채우기
+        DOTween.To(() => backBtnFill.fillAmount, x => backBtnFill.fillAmount = x, 1f, 0.2f)
+        .SetUpdate(true);
+
+        // 화면 검은색으로
+        blackScreen.DOColor(new Color(70f / 255f, 70f / 255f, 70f / 255f, 1), 0.2f)
+        .SetUpdate(true);
+
+        // 화면 꺼지는 동안 대기
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        // 핸드폰 화면 패널 끄기
+        phonePanel.SetActive(false);
+
+        // 핸드폰 알림 개수 초기화
+        UIManager.Instance.PhoneNotice(0);
+
+        // 인벤토리 new 표시 모두 끄기
+        for (int i = 0; i < invenSlots.Count; i++)
+        {
+            invenSlots[i].newSign.SetActive(false);
+        }
+
+        float moveTime = 0.8f;
+
+        // 매직폰 상태일때 위치,회전,스케일로 이동
+        CastMagic.Instance.transform.DOMove(phonePosition, moveTime)
+        .SetUpdate(true);
+        CastMagic.Instance.transform.DOScale(phoneScale, moveTime)
+        .SetUpdate(true);
+        CastMagic.Instance.transform.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
+        .SetUpdate(true);
+
+        // 절반쯤 이동했을때 화면 라이트 켜기
+        lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 100f / 255f), moveTime / 2f)
+        .SetDelay(moveTime / 2f)
+        .SetUpdate(true);
+
+        // 핸드폰 이동하는 동안 대기
+        yield return new WaitForSecondsRealtime(moveTime);
+
+        //백 버튼 변수 초기화
+        backBtnCount = 0f;
+        backBtnFill.fillAmount = 0f;
+
+        // 끝나면 시간 복구하기
+        // Time.timeScale = 1f;
+
+        //팝업 세팅
+        UIManager.Instance.PopupSet(UIManager.Instance.phonePanel);
+
+        // 인벤토리에서 마법 찾아 자동 시전하기
+        CastMagic.Instance.CastCheck();
     }
 }

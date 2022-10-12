@@ -88,7 +88,7 @@ public class OpenSafeMenu : MonoBehaviour
                 break;
 
             case 1:
-                popupUI = UIManager.Instance.slotMachinePanel;
+                popupUI = UIManager.Instance.magicMachinePanel;
                 break;
         }
 
