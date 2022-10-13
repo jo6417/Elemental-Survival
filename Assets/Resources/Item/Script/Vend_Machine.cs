@@ -8,6 +8,10 @@ public class Vend_Machine : MonoBehaviour
     [SerializeField] Canvas uiCanvas; // 가격, 상호작용키 안내 UI 캔버스
     [SerializeField] Interacter interacter;
     [SerializeField] GameObject showKey; //상호작용 키 표시 UI
+    [SerializeField] private Transform itemDropper; //상품 토출구 오브젝트
+
+
+    List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
 
     private void OnEnable()
     {
@@ -34,6 +38,41 @@ public class Vend_Machine : MonoBehaviour
 
         // 캔버스 켜기
         uiCanvas.gameObject.SetActive(true);
+
+        // 상품 목록 초기화
+        productList.Clear();
+
+        // 랜덤 뽑기 가중치 리스트
+        List<float> randomWeight = new List<float>();
+        randomWeight.Add(10); // 하트 가중치
+        randomWeight.Add(0); //todo 아티팩트 가중치
+        randomWeight.Add(40); // 마법샤드 가중치
+        randomWeight.Add(40); // 마법 가중치
+
+        for (int i = 0; i < 9; i++)
+        {
+            int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
+
+            switch (randomPick)
+            {
+                // 하트일때
+                case 0:
+                    productList.Add(ItemDB.Instance.GetItemByName("Heart"));
+                    break;
+                // 아티팩트일때
+                case 1:
+                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Artifact));
+                    break;
+                // 마법 샤드일때
+                case 2:
+                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard));
+                    break;
+                // 마법일때
+                case 3:
+                    productList.Add(MagicDB.Instance.GetRandomMagic());
+                    break;
+            }
+        }
     }
 
     public void InteractTrigger(bool isClose)
@@ -64,7 +103,13 @@ public class Vend_Machine : MonoBehaviour
         if (!showKey.activeSelf)
             return;
 
-        //todo 자판기 UI 띄우기
+        // 드롭퍼 오브젝트 넣어주기
+        VendMachineUI.Instance.itemDropper = itemDropper;
+
+        // 상품 목록 전달
+        VendMachineUI.Instance.productList = productList;
+
+        // 자판기 UI 끄기
         UIManager.Instance.PopupUI(UIManager.Instance.vendMachinePanel);
     }
 }

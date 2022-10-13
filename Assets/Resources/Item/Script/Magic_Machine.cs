@@ -8,6 +8,9 @@ public class Magic_Machine : MonoBehaviour
     [SerializeField] Canvas uiCanvas; // 가격, 상호작용키 안내 UI 캔버스
     [SerializeField] Interacter interacter;
     [SerializeField] GameObject showKey; //상호작용 키 표시 UI
+    [SerializeField] private Transform itemDropper; //상품 토출구 오브젝트
+
+    List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
 
     private void OnEnable()
     {
@@ -34,6 +37,49 @@ public class Magic_Machine : MonoBehaviour
 
         // 캔버스 켜기
         uiCanvas.gameObject.SetActive(true);
+
+        // 랜덤 마법,샤드 뽑기
+        productList.Clear();
+        // 랜덤 뽑기 가중치 리스트
+        List<float> randomWeight = new List<float>();
+        randomWeight.Add(2); // 마법샤드 가중치
+        randomWeight.Add(1); // 마법 가중치
+
+        // 등급 가중치 리스트
+        List<float> gradeWeight = new List<float>();
+        for (int i = 6; i > 0; i--)
+            gradeWeight.Add(i);
+
+        // 상품 목록 뽑기
+        for (int i = 0; i < 15; i++)
+        {
+            SlotInfo slotInfo = null;
+
+            // 나올때까지 뽑기 (단일 등급에 한해 unlockMagic에 없는 경우 다시 뽑기)
+            while (slotInfo == null)
+            {
+                // 상품 종류 뽑기
+                int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
+
+                // 등급 뽑기 (가중치 반영)
+                int targetGrade = SystemManager.Instance.WeightRandom(gradeWeight);
+
+                switch (randomPick)
+                {
+                    // 마법 샤드일때
+                    case 0:
+                        slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, targetGrade);
+                        break;
+                    // 마법일때
+                    case 1:
+                        slotInfo = MagicDB.Instance.GetRandomMagic(targetGrade);
+                        break;
+                }
+            }
+
+            // 리스트에 정보 저장
+            productList.Add(slotInfo);
+        }
     }
 
     public void InteractTrigger(bool isClose)
@@ -63,6 +109,12 @@ public class Magic_Machine : MonoBehaviour
         // 인디케이터 꺼져있으면 리턴
         if (!showKey.activeSelf)
             return;
+
+        // 드롭퍼 오브젝트 넣어주기
+        MagicMachineUI.Instance.itemDropper = itemDropper;
+
+        // 상품 리스트 참조 전달
+        MagicMachineUI.Instance.productList = productList;
 
         // 매직머신 UI 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.magicMachinePanel);

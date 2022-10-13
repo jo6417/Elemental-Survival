@@ -1118,7 +1118,7 @@ public class PhoneMenu : MonoBehaviour
         return emptyIndex;
     }
 
-    public void GetSlot(SlotInfo slotInfo, int getIndex = -1)
+    public void GetProduct(SlotInfo slotInfo, int getIndex = -1)
     {
         // 아이템일때
         if (slotInfo as ItemInfo != null)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Lean.Pool;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -339,5 +340,70 @@ public class ItemDB : MonoBehaviour
 
         prefab = itemPrefab.Find(x => x.name == itemName);
         return prefab;
+    }
+
+    public IEnumerator ItemDrop(SlotInfo slotInfo, Transform itemDropper)
+    {
+        // 인벤토리 빈칸 없으면 필드 드랍
+        GameObject dropObj = null;
+
+        MagicInfo magicInfo = slotInfo as MagicInfo;
+        ItemInfo itemInfo = slotInfo as ItemInfo;
+
+        // 마법일때
+        if (magicInfo != null)
+        {
+            // 마법 슬롯 아이템 만들기
+            dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, itemDropper.position, Quaternion.identity, SystemManager.Instance.itemPool);
+
+            // 아이템 프레임 색 넣기
+            dropObj.transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[slotInfo.grade];
+
+            // 아이템 아이콘 넣기
+            dropObj.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetMagicIcon(slotInfo.id);
+        }
+
+        // 아이템일때
+        if (itemInfo != null)
+        {
+            dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(slotInfo.id), itemDropper.position, Quaternion.identity, SystemManager.Instance.itemPool);
+        }
+
+        // 아이템 정보 넣기
+        ItemManager itemManager = dropObj.GetComponent<ItemManager>();
+        itemManager.itemInfo = slotInfo as ItemInfo;
+        itemManager.magicInfo = slotInfo as MagicInfo;
+
+        // 아이템 정보 삭제
+        slotInfo = null;
+
+        // 아이템 콜라이더 찾기
+        Collider2D itemColl = dropObj.GetComponent<Collider2D>();
+        // 아이템 rigid 찾기
+        Rigidbody2D itemRigid = dropObj.GetComponent<Rigidbody2D>();
+
+        // 콜라이더 끄기
+        itemColl.enabled = false;
+
+        // 플레이어 반대 방향, 랜덤 각도 추가
+        Vector3 itemDir = (dropObj.transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
+
+        // 추가 각도를 벡터로 바꾸기
+        float angle = Random.Range(-45, 45);
+        Vector3 addDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0) * Random.Range(10f, 20f);
+        print(addDir);
+
+        // 플레이어 반대 방향, 랜덤 파워로 아이템 날리기
+        itemRigid.velocity = itemDir + addDir;
+
+        // 랜덤으로 방향 및 속도 결정
+        float randomRotate = Random.Range(1f, 3f);
+        // 아이템 랜덤 속도로 회전 시키기
+        itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
+
+        yield return new WaitForSeconds(1f);
+
+        // 콜라이더 켜기
+        itemColl.enabled = true;
     }
 }

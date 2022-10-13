@@ -37,16 +37,17 @@ public class MagicMachineUI : MonoBehaviour
     public InventorySlot paySlot; // 마법or샤드를 지불할 슬롯
     [SerializeField] List<Button> spinBtns; // 스핀 버튼들
     [SerializeField] Transform slotParent;
-    [SerializeField] Transform exitBtn;
+    [SerializeField] Button exitBtn;
     [SerializeField] Transform effectSlotParent; // 상품 이펙트 슬롯
     [SerializeField] Transform slotParticleParent; // 상품 슬롯 파티클
     [SerializeField] List<SimpleScrollSnap> slotScrolls = new List<SimpleScrollSnap>();
     public Transform itemDropper; // 아이템 드랍 시킬 오브젝트
     Color btnOffColor = new Color32(150, 0, 0, 255);
     [SerializeField] Image slotCover;
+    [SerializeField] SlicedFilledImage feverGauge;
 
     [Header("State")]
-    List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
+    public List<SlotInfo> productList = null; // 판매 상품 리스트
     [SerializeField, ReadOnly] bool isSkipped;
     [SerializeField, ReadOnly] bool fieldDrop; // 아이템 필드드랍 할지 여부
     float spinCount;
@@ -62,11 +63,12 @@ public class MagicMachineUI : MonoBehaviour
 
     IEnumerator Init()
     {
-        //todo 매직머신 팝업 열고 닫기 하는 방식으로 보이는 아이템 가챠 하는것 방지하기
-        //todo 필드의 매직머신 오브젝트의 상품 리스트와 연결하여 오브젝트마다 고정된 리스트 쓰기
-
         // 필드드랍 스위치 초기화
         fieldDrop = false;
+
+        // 피버 게이지 초기화
+        feverGauge.color = Color.white;
+        feverGauge.fillAmount = 0;
 
         // 스케일 초기화
         transform.localScale = Vector3.zero;
@@ -74,6 +76,10 @@ public class MagicMachineUI : MonoBehaviour
         // 이펙트 슬롯 모두 끄기
         for (int i = 0; i < effectSlotParent.childCount; i++)
             effectSlotParent.GetChild(i).gameObject.SetActive(false);
+
+        // 슬롯 파티클 모두 끄기
+        for (int i = 0; i < slotParticleParent.childCount; i++)
+            slotParticleParent.GetChild(i).gameObject.SetActive(false);
 
         // 핸드폰을 화면 옆에 띄우기
         UIManager.Instance.PhoneOpen(new Vector3(20, 0, 0));
@@ -90,47 +96,12 @@ public class MagicMachineUI : MonoBehaviour
 
         yield return new WaitUntil(() => ItemDB.Instance.loadDone && MagicDB.Instance.loadDone);
 
-        // 랜덤 마법,샤드 뽑기
-        productList.Clear();
-        // 랜덤 뽑기 가중치 리스트
-        List<float> randomWeight = new List<float>();
-        randomWeight.Add(2); // 마법샤드 가중치
-        randomWeight.Add(1); // 마법 가중치
-
-        // 등급 가중치 리스트
-        List<float> gradeWeight = new List<float>();
-        gradeWeight.Add(6); // 1등급 가중치
-        gradeWeight.Add(5); // 2등급 가중치
-        gradeWeight.Add(4); // 3등급 가중치
-        gradeWeight.Add(3); // 4등급 가중치
-        gradeWeight.Add(2); // 5등급 가중치
-        gradeWeight.Add(1); // 6등급 가중치
-
         // 매직 머신에 있는 모든 슬롯 불러오기
         List<InventorySlot> slots = slotParent.GetComponentsInChildren<InventorySlot>().ToList();
 
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < productList.Count; i++)
         {
-            int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
-            SlotInfo slotInfo = null;
-
-            // 등급 가중치 반영하여 뽑기
-            int targetGrade = SystemManager.Instance.WeightRandom(gradeWeight);
-
-            switch (randomPick)
-            {
-                // 마법 샤드일때
-                case 0:
-                    slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, targetGrade);
-                    break;
-                // 마법일때
-                case 1:
-                    slotInfo = MagicDB.Instance.GetRandomMagic(targetGrade);
-                    break;
-            }
-
-            // 리스트에 정보 저장
-            productList.Add(slotInfo);
+            SlotInfo slotInfo = productList[i];
 
             // 슬롯에 정보 넣기
             slots[i].slotInfo = slotInfo;
@@ -176,6 +147,15 @@ public class MagicMachineUI : MonoBehaviour
                 .SetUpdate(true)
                 .SetLoops(-1, LoopType.Yoyo);
             }
+
+            // 피버 게이지 색 변경
+            feverGauge.DOColor(MagicDB.Instance.GradeColor[paySlot.slotInfo.grade], 0.5f)
+            .SetUpdate(true);
+
+            // 피버 게이지 표시
+            DOTween.To(() => feverGauge.fillAmount, x => feverGauge.fillAmount = x, (float)paySlot.slotInfo.grade / 6f, 0.5f)
+            .SetUpdate(true)
+            .SetEase(Ease.OutExpo);
         }
         // 슬롯에서 아이템 뺄때
         else
@@ -194,6 +174,15 @@ public class MagicMachineUI : MonoBehaviour
                 img.DOColor(btnOffColor, 0.5f)
                 .SetUpdate(true);
             }
+
+            // 피버 게이지 색 변경
+            feverGauge.DOColor(Color.white, 0.5f)
+            .SetUpdate(true);
+
+            // 피버 게이지 초기화
+            DOTween.To(() => feverGauge.fillAmount, x => feverGauge.fillAmount = x, 0, 0.5f)
+            .SetUpdate(true)
+            .SetEase(Ease.OutExpo);
         }
     }
 
@@ -230,8 +219,13 @@ public class MagicMachineUI : MonoBehaviour
             yield break;
         }
 
-        //todo 재화 등급에 따라 피버 확률 가중치 산출
-        //todo 피버 확률 자판기에 게이지로 표시
+        // Exit 버튼 막기
+        exitBtn.interactable = false;
+        // 핸드폰 종료 막기
+        PhoneMenu.Instance.InteractBtnsToggle(false);
+
+        // 지불한 재화의 등급 저장
+        float payGrade = paySlot.slotInfo.grade;
 
         // 재화 슬롯의 아이템 삭제
         paySlot.slotInfo = null;
@@ -263,15 +257,16 @@ public class MagicMachineUI : MonoBehaviour
         // 해당 인덱스 슬롯 velocity로 돌리기
         StartCoroutine(spinCoroutines[slotIndex]);
 
-        // 피버 확률 추첨
+        // 1차 피버 확률 추첨
         float feverRate = Random.value;
+        print("1차 피버 : " + feverRate + "/" + payGrade / 12f);
 
         yield return new WaitForSecondsRealtime(1f);
 
-        // 좌,우 둘중 하나 회전 시작
-        if (feverRate > 0.5f)
+        // 1차 피버일때 (6등급 기준 50% 확률)
+        if (feverRate < payGrade / 12f)
         {
-            print("1차 피버 : " + feverRate);
+            //todo 피버 게이지 반짝이기
 
             // 현재 스핀중인 슬롯 아닌 슬롯 뽑기
             List<int> indexes = new List<int>();
@@ -306,15 +301,16 @@ public class MagicMachineUI : MonoBehaviour
                 }
             }
 
-            // 피버 확률 재추첨
+            // 2차 피버 확률 추첨 (6등급 기준 50% 확률)
             feverRate = Random.value;
+            print("2차 피버 : " + feverRate + "/" + payGrade / 12f);
 
             yield return new WaitForSecondsRealtime(1f);
 
-            // 피버 성공했으면 한번 더 반복
-            if (feverRate > 0.5f)
+            // 2차 피버일때 (6등급 기준 50% 확률)
+            if (feverRate < payGrade / 12f)
             {
-                print("2차 피버 : " + feverRate);
+                //todo 피버 게이지 반짝이기
 
                 // 마지막 멈춰있는 슬롯 찾기
                 feverIndex = nowSlotSpin.ToList().FindIndex(x => x == false);
@@ -353,6 +349,11 @@ public class MagicMachineUI : MonoBehaviour
             }
         }
 
+        // 피버 게이지 초기화
+        DOTween.To(() => feverGauge.fillAmount, x => feverGauge.fillAmount = x, 0, 0.5f)
+        .SetUpdate(true)
+        .SetEase(Ease.OutExpo);
+
         //todo 슬롯 회전 이펙트 시작
 
         // 모든 슬롯이 멈출때까지 대기
@@ -363,14 +364,24 @@ public class MagicMachineUI : MonoBehaviour
         // 확인, 클릭할때까지 대기
         yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
 
-        // 상품 획득 슬롯 모두 끄기
-        for (int i = 0; i < effectSlotParent.childCount; i++)
-            effectSlotParent.GetChild(i).gameObject.SetActive(false);
-
         for (int i = 0; i < 3; i++)
         {
             // 인벤토리에 해당 아이템 넣기
             StartCoroutine(PutMagicInven(i));
+        }
+
+        // 상품 획득 슬롯 모두 끄기
+        for (int i = 0; i < effectSlotParent.childCount; i++)
+        {
+            // 결과 슬롯 찾기
+            InventorySlot effectSlot = effectSlotParent.GetChild(i).GetComponent<InventorySlot>();
+
+            // 아이템 정보 초기화
+            effectSlot.slotInfo = null;
+            effectSlot.Set_Slot();
+
+            // 결과 슬롯 끄기
+            effectSlot.gameObject.SetActive(false);
         }
 
         // 모든 버튼 상호작용 켜기
@@ -378,6 +389,11 @@ public class MagicMachineUI : MonoBehaviour
         {
             spinBtns[i].interactable = true;
         }
+
+        // Exit 버튼 풀기
+        exitBtn.interactable = true;
+        // 핸드폰 종료 풀기
+        PhoneMenu.Instance.InteractBtnsToggle(true);
     }
 
     IEnumerator PutMagicInven(int index)
@@ -424,65 +440,14 @@ public class MagicMachineUI : MonoBehaviour
                 fieldDrop = true;
 
                 // Exit 버튼 위치에 Attractor 오브젝트 옮기기
-                getMagicEffect.transform.Find("ParticleAttractor").transform.position = exitBtn.position;
+                getMagicEffect.transform.Find("ParticleAttractor").transform.position = exitBtn.transform.position;
 
                 // 획득 상품 파티클 재생
                 getMagicEffect.gameObject.SetActive(false);
                 getMagicEffect.gameObject.SetActive(true);
 
-                // 인벤토리 빈칸 없으면 필드 드랍
-                GameObject dropObj = null;
-
-                MagicInfo magicInfo = slotInfo as MagicInfo;
-                ItemInfo itemInfo = slotInfo as ItemInfo;
-
-                // 마법일때
-                if (magicInfo != null)
-                {
-                    // 마법 슬롯 아이템 만들기
-                    dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, itemDropper.position, Quaternion.identity, SystemManager.Instance.itemPool);
-
-                    // 아이템 프레임 색 넣기
-                    dropObj.transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[slotInfo.grade];
-
-                    // 아이템 아이콘 넣기
-                    dropObj.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetMagicIcon(slotInfo.id);
-                }
-
-                // 아이템일때
-                if (itemInfo != null)
-                {
-                    dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(slotInfo.id), itemDropper.position, Quaternion.identity, SystemManager.Instance.itemPool);
-                }
-
-                // 아이템 정보 넣기
-                ItemManager itemManager = dropObj.GetComponent<ItemManager>();
-                itemManager.itemInfo = slotInfo as ItemInfo;
-                itemManager.magicInfo = slotInfo as MagicInfo;
-
-                // 아이템 정보 삭제
-                slotInfo = null;
-
-                // 아이템 콜라이더 찾기
-                Collider2D itemColl = dropObj.GetComponent<Collider2D>();
-                // 아이템 rigid 찾기
-                Rigidbody2D itemRigid = dropObj.GetComponent<Rigidbody2D>();
-
-                // 콜라이더 끄기
-                itemColl.enabled = false;
-
-                // 플레이어 반대 방향, 랜덤 파워로 아이템 날리기
-                itemRigid.velocity = (dropObj.transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
-
-                // 랜덤으로 방향 및 속도 결정
-                float randomRotate = Random.Range(1f, 3f);
-                // 아이템 랜덤 속도로 회전 시키기
-                itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
-
-                yield return new WaitForSeconds(1f);
-
-                // 콜라이더 켜기
-                itemColl.enabled = true;
+                // 아이템 드롭
+                StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper));
             }
         }
     }
@@ -532,7 +497,7 @@ public class MagicMachineUI : MonoBehaviour
 
         // 멈췄을때 아이템 반환
         int index = scrollIndex * 5 + scroll.CenteredPanel;
-        print(scrollIndex + ":" + scroll.CenteredPanel + ":" + scroll.Content.GetChild(scroll.CenteredPanel).name + ":" + productList[index].name);
+        // print(scrollIndex + ":" + scroll.CenteredPanel + ":" + scroll.Content.GetChild(scroll.CenteredPanel).name + ":" + productList[index].name);
 
         InventorySlot effectSlot = effectSlotParent.GetChild(scrollIndex).GetComponent<InventorySlot>();
 
@@ -579,14 +544,17 @@ public class MagicMachineUI : MonoBehaviour
         // 핸드폰 끄기
         yield return StartCoroutine(PhoneMenu.Instance.PhoneExit());
 
-        // 팝업 닫기
-        UIManager.Instance.PopupUI(gameObject, false);
-
         // 필드드랍 아이템 1개 이상 있을때
         if (fieldDrop)
         {
-            //todo 트럭 전조등 이펙트 켜기
-            // 드롭퍼 위치에 파티클 이펙트 켜기
+            // 트럭 전조등 이펙트 켜기
+            itemDropper.GetComponent<ParticleSystem>().Play();
         }
+
+        // 드롭퍼 변수 초기화
+        itemDropper = null;
+
+        // 팝업 닫기
+        UIManager.Instance.PopupUI(gameObject, false);
     }
 }

@@ -291,7 +291,7 @@ public class PlayerHitBox : MonoBehaviour
             damage = 0;
 
         // 회피율에 따라 데미지 0
-        if (playerManager.PlayerStat_Now.evade > Random.value)
+        if (playerManager.PlayerStat_Now.evade > Random.value && damage > 0)
             damage = 0;
 
         //데미지 int로 바꾸기

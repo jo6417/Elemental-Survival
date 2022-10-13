@@ -217,43 +217,8 @@ public class Slot_Machine : MonoBehaviour
 
         print(itemInfo.id + " : " + itemInfo.name);
 
-        // 드랍할 아이템 오브젝트
-        GameObject dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(itemInfo.id), dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
-
-        // 해당 상품 이름 확인
-        productName = itemInfo.name;
-
-        // 아이템 정보 넣기
-        ItemManager itemManager = dropObj.GetComponent<ItemManager>();
-        itemManager.itemInfo = itemInfo as ItemInfo;
-
-        // 아이템 정보 삭제
-        itemInfo = null;
-
-        // 아이템 콜라이더 찾기
-        Collider2D itemColl = dropObj.GetComponent<Collider2D>();
-        // 아이템 rigid 찾기
-        Rigidbody2D itemRigid = dropObj.GetComponent<Rigidbody2D>();
-
-        // 콜라이더 끄기
-        itemColl.enabled = false;
-
-        // 플레이어 반대 방향, 랜덤 파워로 아이템 날리기
-        if (itemDropper != null)
-            itemRigid.velocity = (transform.rotation.eulerAngles).normalized * Random.Range(10f, 20f);
-        else
-            itemRigid.velocity = (dropObj.transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
-
-        // 랜덤으로 방향 및 속도 결정
-        float randomRotate = Random.Range(1f, 3f);
-        // 아이템 랜덤 속도로 회전 시키기
-        itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
-
-        // 레버 내리는 애니메이션 끄기
-        leverAnim.enabled = false;
-
-        // 콜라이더 켜기
-        itemColl.enabled = true;
+        // 아이템 드롭
+        StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, itemDropper));
 
         // 가격 타입 랜덤 초기화
         priceType = Random.Range(0, 6);

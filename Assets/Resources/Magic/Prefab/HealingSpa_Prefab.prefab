@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4643853155822654724}
   - component: {fileID: 380868364729976463}
   - component: {fileID: 6049642282605674517}
-  m_Layer: 16
+  m_Layer: 0
   m_Name: SteamEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4815,7 +4815,7 @@ GameObject:
   - component: {fileID: 1772796887217285419}
   - component: {fileID: 5580481090358950172}
   - component: {fileID: 7176890717678716220}
-  m_Layer: 16
+  m_Layer: 0
   m_Name: BubbleEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9594,9 +9594,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingLayerID: -1869315837
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -9636,13 +9636,13 @@ GameObject:
   - component: {fileID: 9210057795328001450}
   - component: {fileID: 9210057795328001461}
   - component: {fileID: 9210057795328001448}
-  m_Layer: 16
+  m_Layer: 7
   m_Name: HealingSpa_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &9210057795328001451
 Transform:
   m_ObjectHideFlags: 0
@@ -9702,17 +9702,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 423662ed4e80b1f4fa79ad076bd44a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxTime: 0
-  bubbleDelay: 2
-  reduceDelay: 1
   magicHolder: {fileID: 9210057795328001454}
+  inPlayer: 0
   coll: {fileID: 9210057795328001448}
   pondSprite: {fileID: 9210057795328001450}
   pulsePrefab: {fileID: 7539487434049666061, guid: 99e6eb844b1bb8c4fbd38cdc4fe917b5,
     type: 3}
   dustEffect: {fileID: 1994870664517383061, guid: 9f2d6315a7af63841baea7c567eff226,
     type: 3}
-  nowPulseCharacter: []
 --- !u!212 &9210057795328001450
 SpriteRenderer:
   m_ObjectHideFlags: 0

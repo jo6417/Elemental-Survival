@@ -85,6 +85,10 @@ public class HitBox : MonoBehaviour
         if (!character.initialFinish)
             return;
 
+        // 피격 딜레이 중이면 리턴
+        if (character.hitDelayCount > 0)
+            return;
+
         // 죽었으면 리턴
         if (character.isDead)
             return;

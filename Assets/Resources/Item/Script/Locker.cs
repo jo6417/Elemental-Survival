@@ -158,8 +158,8 @@ public class Locker : MonoBehaviour
             PlayerManager.Instance.PayGem(priceType, (int)price);
             UIManager.Instance.UpdateGem(priceType);
 
-            // 아이템 날리기
-            StartCoroutine(ThrowItem());
+            // 아이템 드롭
+            StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, transform));
 
             // 금고 열린 스프라이트로 변경
             boxSprite.sprite = boxSpriteList[1];
@@ -196,71 +196,6 @@ public class Locker : MonoBehaviour
             //해당 젬 UI 인디케이터
             UIManager.Instance.GemIndicator(priceType, Color.red);
         }
-    }
-
-    IEnumerator ThrowItem()
-    {
-        // 드랍할 아이템 오브젝트
-        GameObject dropObj = null;
-
-        // 아이템 생성 위치
-        Vector3 dropPos = transform.position + (transform.position - PlayerManager.Instance.transform.position).normalized;
-
-        // 해당 아이템 드랍 (인벤 빈칸 판단 필요 없음)
-        switch (randomType)
-        {
-            // 마법일때
-            case 0:
-                MagicInfo magicInfo = slotInfo as MagicInfo;
-
-                // 마법 슬롯 아이템 만들기
-                dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
-
-                // 아이템 프레임 색 넣기
-                dropObj.transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[magicInfo.grade];
-
-                // 아이템 아이콘 넣기
-                dropObj.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetMagicIcon(magicInfo.id);
-
-                break;
-            // 마법 샤드일때
-            case 1:
-                dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(slotInfo.id), dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
-                break;
-            // 아티팩트일때
-            case 2:
-                dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(slotInfo.id), dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
-                break;
-        }
-
-        // 아이템 정보 넣기
-        ItemManager itemManager = dropObj.GetComponent<ItemManager>();
-        itemManager.itemInfo = slotInfo as ItemInfo;
-        itemManager.magicInfo = slotInfo as MagicInfo;
-
-        // 아이템 정보 삭제
-        slotInfo = null;
-
-        // 아이템 콜라이더 찾기
-        Collider2D itemColl = dropObj.GetComponent<Collider2D>();
-        // 아이템 rigid 찾기
-        Rigidbody2D itemRigid = dropObj.GetComponent<Rigidbody2D>();
-
-        // 콜라이더 끄기
-        itemColl.enabled = false;
-
-        // 플레이어 반대 방향, 랜덤 파워로 아이템 날리기
-        itemRigid.velocity = (dropObj.transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
-
-        // 랜덤으로 방향 및 속도 결정
-        float randomRotate = Random.Range(1f, 3f);
-        // 아이템 랜덤 속도로 회전 시키기
-        itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
-
-        yield return new WaitForSeconds(1f);
-
-        // 콜라이더 켜기
-        itemColl.enabled = true;
     }
 
     private void OnTriggerExit2D(Collider2D other)

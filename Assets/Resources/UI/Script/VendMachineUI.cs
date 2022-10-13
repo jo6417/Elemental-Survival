@@ -10,13 +10,38 @@ using TMPro;
 
 public class VendMachineUI : MonoBehaviour
 {
+    #region Singleton
+    private static VendMachineUI instance;
+    public static VendMachineUI Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                var obj = FindObjectOfType<VendMachineUI>(true);
+                if (obj != null)
+                {
+                    instance = obj;
+                }
+                // else
+                // {
+                //     var newObj = new GameObject().AddComponent<VendMachineUI>();
+                //     instance = newObj;
+                // }
+            }
+            return instance;
+        }
+    }
+    #endregion
+
     Sequence outputSeq;
-    List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
+    public List<SlotInfo> productList = null; // 판매 상품 리스트
+    [SerializeField, ReadOnly] bool fieldDrop; // 아이템 필드드랍 할지 여부
 
     [Header("Refer")]
     [SerializeField] private RectTransform vendMachineObj;
     [SerializeField] private Transform productsParent; //상품 부모 오브젝트
-    [SerializeField] private Transform productOutput; //상품 토출구 오브젝트
+    [SerializeField] public Transform itemDropper; //상품 토출구 오브젝트
     [SerializeField] private GameObject productPrefab; //상품 소개 프리팹
     [SerializeField] private GameObject outputObj; // 토출구에서 나올 상품 프리팹
     // private float rate = 0.5f; //아티팩트가 아닌 마법이 나올 확률
@@ -33,7 +58,7 @@ public class VendMachineUI : MonoBehaviour
         vendMachineObj.anchoredPosition = new Vector2(0, 1100f);
 
         // 자판기 상품 불러오기
-        StartCoroutine(LoadProducts());
+        StartCoroutine(SetProducts());
 
         // 원래 위치로 떨어지기
         vendMachineObj.DOAnchorPos(new Vector2(0, 20f), 0.5f)
@@ -50,45 +75,12 @@ public class VendMachineUI : MonoBehaviour
         }
     }
 
-    IEnumerator LoadProducts()
+    IEnumerator SetProducts()
     {
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //상품 모두 지우기
         SystemManager.Instance.DestroyAllChild(productsParent);
-        productList.Clear();
-
-        // 랜덤 뽑기 가중치 리스트
-        List<float> randomWeight = new List<float>();
-        randomWeight.Add(10); // 하트 가중치
-        randomWeight.Add(0); //todo 아티팩트 가중치
-        randomWeight.Add(40); // 마법샤드 가중치
-        randomWeight.Add(40); // 마법 가중치
-
-        for (int i = 0; i < 9; i++)
-        {
-            int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
-
-            switch (randomPick)
-            {
-                // 하트일때
-                case 0:
-                    productList.Add(ItemDB.Instance.GetItemByName("Heart"));
-                    break;
-                // 아티팩트일때
-                case 1:
-                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Artifact));
-                    break;
-                // 마법 샤드일때
-                case 2:
-                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard));
-                    break;
-                // 마법일때
-                case 3:
-                    productList.Add(MagicDB.Instance.GetRandomMagic());
-                    break;
-            }
-        }
 
         foreach (SlotInfo slotInfo in productList)
         {
@@ -180,7 +172,7 @@ public class VendMachineUI : MonoBehaviour
             button.onClick.AddListener(delegate
             {
                 // 상품 획득 시도하기
-                GetProduct(productObj, priceType, price);
+                GetProduct(productObj, priceType, slotInfo);
             });
 
             // 툴팁에 상품 정보 넣기
@@ -302,7 +294,7 @@ public class VendMachineUI : MonoBehaviour
     }
 
     //상품 획득
-    void GetProduct(GameObject product, int priceType, int price)
+    void GetProduct(GameObject product, int priceType, SlotInfo slotInfo)
     {
         Image frame = product.transform.Find("Frame").GetComponent<Image>();
         // 아이콘 버튼
@@ -316,11 +308,11 @@ public class VendMachineUI : MonoBehaviour
 
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
-        //구매 가능
-        if (PlayerManager.Instance.hasItems[priceType].amount >= price)
+        // 충분한 화폐가 있을때
+        if (PlayerManager.Instance.hasItems[priceType].amount >= slotInfo.price)
         {
             // 가격 지불하기
-            PlayerManager.Instance.PayGem(priceType, price);
+            PlayerManager.Instance.PayGem(priceType, slotInfo.price);
 
             // 모든 상품 가격 색깔 업데이트하여 구매가능 여부 표시
             UpdatePrice();
@@ -370,6 +362,23 @@ public class VendMachineUI : MonoBehaviour
             {
                 // 상품 오브젝트 끄기
                 outputObj.SetActive(false);
+
+                // 인벤토리 빈칸 인덱스
+                int emptyIndex = PhoneMenu.Instance.GetEmptySlot();
+
+                // 빈칸이 있을때
+                if (emptyIndex != -1)
+                    // 플레이어 상품 획득
+                    PhoneMenu.Instance.GetProduct(slotInfo, emptyIndex);
+                // 빈칸 없을때
+                else
+                {
+                    // 필드드랍 1개 이상 있으면 켜기
+                    fieldDrop = true;
+
+                    // 아이템 드롭
+                    StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper));
+                }
             });
         }
         //구매 불가능
@@ -421,6 +430,16 @@ public class VendMachineUI : MonoBehaviour
     {
         //아이템 받는 시퀀스 강제 완료시키기
         outputSeq.Complete();
+
+        // 필드드랍 아이템 1개 이상 있을때
+        if (fieldDrop)
+        {
+            // 트럭 전조등 이펙트 켜기
+            itemDropper.GetComponent<ParticleSystem>().Play();
+        }
+
+        // 드롭퍼 변수 초기화
+        itemDropper = null;
 
         //팝업 메뉴 닫기
         UIManager.Instance.PopupUI(UIManager.Instance.vendMachinePanel);
