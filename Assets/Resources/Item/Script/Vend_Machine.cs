@@ -12,6 +12,7 @@ public class Vend_Machine : MonoBehaviour
 
 
     List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
+    bool[] soldOutList = new bool[9]; // 상품 품절 여부
 
     private void OnEnable()
     {
@@ -72,6 +73,9 @@ public class Vend_Machine : MonoBehaviour
                     productList.Add(MagicDB.Instance.GetRandomMagic());
                     break;
             }
+
+            // 판매중 여부 초기화
+            soldOutList[i] = false;
         }
     }
 
@@ -108,6 +112,7 @@ public class Vend_Machine : MonoBehaviour
 
         // 상품 목록 전달
         VendMachineUI.Instance.productList = productList;
+        VendMachineUI.Instance.soldOutList = soldOutList;
 
         // 자판기 UI 끄기
         UIManager.Instance.PopupUI(UIManager.Instance.vendMachinePanel);

@@ -9,7 +9,7 @@ public class Truck : MonoBehaviour
     [SerializeField] SpriteRenderer sprite;
     [SerializeField] List<Sprite> truckSprites = new List<Sprite>();
     [SerializeField] GameObject arriveEffect; // 도착 후 이펙트(배기구 매연, 착지 먼지 등)
-    [SerializeField] GameObject shopGlass;
+    [SerializeField] GameObject shopGlass; // 양측 자판기 부모 오브젝트
 
     private void OnEnable()
     {
@@ -76,13 +76,30 @@ public class Truck : MonoBehaviour
         // 가판대 열린 스프라이트로 교체
         sprite.sprite = truckSprites[1];
 
-        //todo 내부 자판기 종류 2개 정하기
-        //todo 정해진대로 위치 이동
+        // 랜덤 자판기 종류 뽑기 (중복 방지)
+        List<int> randomShops = SystemManager.Instance.RandomIndexes(shopGlass.transform.GetChild(0).childCount, 2, false);
 
-        // 자판기 각도 초기화
+        // 자판기 개수만큼 반복
         for (int i = 0; i < shopGlass.transform.childCount; i++)
         {
-            shopGlass.transform.GetChild(i).rotation = Quaternion.Euler(Vector3.zero);
+            Transform shop = shopGlass.transform.GetChild(i);
+
+            // 자판기 각도 초기화
+            shop.rotation = Quaternion.Euler(Vector3.zero);
+
+            // 정해진 자판기만 켜기
+            for (int j = 0; j < shop.childCount; j++)
+            {
+                GameObject targetShop = shop.GetChild(j).gameObject;
+
+                // 랜덤으로 뽑은 자판기 종류와 같다면
+                if (randomShops[i] == j)
+                    // 해당 오브젝트 켜기
+                    targetShop.SetActive(true);
+                else
+                    // 해당 오브젝트 끄기
+                    targetShop.SetActive(false);
+            }
         }
 
         // 자판기 부모 켜기

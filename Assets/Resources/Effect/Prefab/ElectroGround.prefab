@@ -21,7 +21,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5117969537878007351
 Transform:
   m_ObjectHideFlags: 0
@@ -48,22 +48,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 3
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  wetTime: 0
+  shockTime: 1
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 2089196336015408745}
   targetObj: {fileID: 0}
+  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
   initDone: 0
-  fixedPower: 3
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 0
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 1
-  freezeTime: 0
 --- !u!50 &3758190695193998158
 Rigidbody2D:
   serializedVersion: 4
@@ -126,6 +129,7 @@ MonoBehaviour:
   particle: {fileID: 5028823652047870719}
   autoDespawn: 1
   collOverTime: 0
+  modify_startLife: 0
 --- !u!198 &5028823652047870719
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4884,7 +4888,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 945064743
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0

@@ -356,4 +356,33 @@ public class SystemManager : MonoBehaviour
         //랜덤 숫자가 1일때 마지막값 반환
         return rateList.Count - 1;
     }
+
+    public List<int> RandomIndexes(int listNum, int indexNum, bool overlap = false)
+    {
+        List<int> indexes = new List<int>();
+        List<int> returnIndexes = new List<int>();
+
+        // 모든 인덱스 넣어주기
+        for (int i = 0; i < listNum; i++)
+        {
+            indexes.Add(i);
+        }
+
+        // 필요한 인덱스 수만큼 반복
+        for (int i = 0; i < indexNum; i++)
+        {
+            // 랜덤 인덱스 하나 뽑기
+            int randomIndex = UnityEngine.Random.Range(0, indexes.Count);
+
+            // 해당 인덱스를 리턴 리스트에 넣기
+            returnIndexes.Add(randomIndex);
+
+            // 중복 방지 옵션 켜졌으면
+            if (overlap)
+                // 해당 인덱스 삭제해 중복방지
+                indexes.RemoveAt(randomIndex);
+        }
+
+        return returnIndexes;
+    }
 }

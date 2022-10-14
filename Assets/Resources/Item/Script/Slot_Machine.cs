@@ -24,6 +24,7 @@ public class Slot_Machine : MonoBehaviour
     [SerializeField] Transform itemDropper;
 
     [Header("State")]
+    [SerializeField] bool isDespawnAble = true; // 디스폰 허용 여부
     float spinCount;
     [SerializeField] float spinTime = 2f; // 슬롯머신 돌리는 시간
     [SerializeField] float randomTime;
@@ -312,11 +313,13 @@ public class Slot_Machine : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        // 스폰 콜라이더 밖으로 나갔을때, 기능 정지한 상태일때
-        if (other.CompareTag("Respawn") && !uiCanvas.gameObject.activeSelf)
-        {
-            // 디스폰
-            LeanPool.Despawn(transform);
-        }
+        // 디스폰 허용일때
+        if (isDespawnAble)
+            // 스폰 콜라이더 밖으로 나갔을때, 기능 정지한 상태일때
+            if (other.CompareTag("Respawn") && !uiCanvas.gameObject.activeSelf)
+            {
+                // 디스폰
+                LeanPool.Despawn(transform);
+            }
     }
 }

@@ -36,23 +36,24 @@ public class MagicMachineUI : MonoBehaviour
     [Header("Refer")]
     public InventorySlot paySlot; // 마법or샤드를 지불할 슬롯
     [SerializeField] List<Button> spinBtns; // 스핀 버튼들
-    [SerializeField] Transform slotParent;
-    [SerializeField] Button exitBtn;
+    [SerializeField] Transform slotParent; // 상품 슬롯들 부모
+    [SerializeField] Button exitBtn; // 종료 버튼
     [SerializeField] Transform effectSlotParent; // 상품 이펙트 슬롯
     [SerializeField] Transform slotParticleParent; // 상품 슬롯 파티클
     [SerializeField] List<SimpleScrollSnap> slotScrolls = new List<SimpleScrollSnap>();
     public Transform itemDropper; // 아이템 드랍 시킬 오브젝트
     Color btnOffColor = new Color32(150, 0, 0, 255);
-    [SerializeField] Image slotCover;
-    [SerializeField] SlicedFilledImage feverGauge;
+    [SerializeField] Image slotCover; // 슬롯 어둡게 가림막
+    [SerializeField] List<Image> leds = new List<Image>(); // 매직 머신 이미지
+    [SerializeField] SlicedFilledImage feverGauge; // 피버 게이지
 
     [Header("State")]
     public List<SlotInfo> productList = null; // 판매 상품 리스트
     [SerializeField, ReadOnly] bool isSkipped;
     [SerializeField, ReadOnly] bool fieldDrop; // 아이템 필드드랍 할지 여부
-    float spinCount;
-    [SerializeField] float spinTime = 2f; // 슬롯머신 돌리는 시간
-    [SerializeField] float spinSpeed = 10f; // 슬롯머신 스핀 속도
+    [SerializeField] float ledFlashSpeed = 0.05f; // led 깜빡이는 속도
+    [SerializeField] float minSpinSpeed = 1000f; // 슬롯머신 스핀 속도 최소
+    [SerializeField] float maxSpinSpeed = 1500f; // 슬롯머신 스핀 속도 최대
     [SerializeField] bool[] nowSlotSpin = new bool[3];
 
 
@@ -63,6 +64,10 @@ public class MagicMachineUI : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 모든 불 끄기
+        for (int i = 0; i < leds.Count; i++)
+            leds[i].material = null;
+
         // 필드드랍 스위치 초기화
         fieldDrop = false;
 
@@ -234,6 +239,9 @@ public class MagicMachineUI : MonoBehaviour
         // 해당 슬롯 스핀 여부 true
         nowSlotSpin[slotIndex] = true;
 
+        // LED 점멸 반복
+        StartCoroutine(LEDFlash());
+
         // 모든 버튼 상호작용 끄기, 컬러 트윈 끄기
         foreach (Button btn in spinBtns)
         {
@@ -259,7 +267,7 @@ public class MagicMachineUI : MonoBehaviour
 
         // 1차 피버 확률 추첨
         float feverRate = Random.value;
-        print("1차 피버 : " + feverRate + "/" + payGrade / 12f);
+        // print("1차 피버 : " + feverRate + "/" + payGrade / 12f);
 
         yield return new WaitForSecondsRealtime(1f);
 
@@ -303,7 +311,7 @@ public class MagicMachineUI : MonoBehaviour
 
             // 2차 피버 확률 추첨 (6등급 기준 50% 확률)
             feverRate = Random.value;
-            print("2차 피버 : " + feverRate + "/" + payGrade / 12f);
+            // print("2차 피버 : " + feverRate + "/" + payGrade / 12f);
 
             yield return new WaitForSecondsRealtime(1f);
 
@@ -349,11 +357,6 @@ public class MagicMachineUI : MonoBehaviour
             }
         }
 
-        // 피버 게이지 초기화
-        DOTween.To(() => feverGauge.fillAmount, x => feverGauge.fillAmount = x, 0, 0.5f)
-        .SetUpdate(true)
-        .SetEase(Ease.OutExpo);
-
         //todo 슬롯 회전 이펙트 시작
 
         // 모든 슬롯이 멈출때까지 대기
@@ -363,6 +366,11 @@ public class MagicMachineUI : MonoBehaviour
 
         // 확인, 클릭할때까지 대기
         yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
+
+        // 피버 게이지 초기화
+        DOTween.To(() => feverGauge.fillAmount, x => feverGauge.fillAmount = x, 0, 0.5f)
+        .SetUpdate(true)
+        .SetEase(Ease.OutExpo);
 
         for (int i = 0; i < 3; i++)
         {
@@ -464,7 +472,7 @@ public class MagicMachineUI : MonoBehaviour
         .SetUpdate(true);
 
         // 랜덤 스크롤 돌리기
-        scroll.Velocity = Vector2.down * Random.Range(1000f, 1500f);
+        scroll.Velocity = Vector2.down * Random.Range(minSpinSpeed, maxSpinSpeed);
 
         // 스크롤 일정 속도 이하거나 스킵할때까지 대기
         yield return new WaitUntil(() => scroll.Velocity.magnitude <= 100f
@@ -516,6 +524,39 @@ public class MagicMachineUI : MonoBehaviour
         effectSlot.transform.DOScale(Vector3.one, 0.5f)
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
+    }
+
+    IEnumerator LEDFlash()
+    {
+        int lightIndex = 0;
+
+        // 모든 슬롯 멈출때까지 진행
+        while (nowSlotSpin[0] || nowSlotSpin[1] || nowSlotSpin[2])
+        {
+            for (int i = 0; i < leds.Count; i++)
+            {
+                // 불켜기
+                if (i == lightIndex)
+                    leds[i].material = SystemManager.Instance.HDR3_Mat;
+                // 불끄기
+                else
+                    leds[i].material = null;
+
+                yield return null;
+            }
+
+            lightIndex++;
+
+            // 최대 인덱스 넘어가면 초기화
+            if (lightIndex >= leds.Count)
+                lightIndex = 0;
+
+            yield return new WaitForSecondsRealtime(ledFlashSpeed);
+        }
+
+        // 모든 불 끄기
+        for (int i = 0; i < leds.Count; i++)
+            leds[i].material = null;
     }
 
     public void ExitPopup()
