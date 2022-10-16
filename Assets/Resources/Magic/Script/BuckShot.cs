@@ -27,8 +27,22 @@ public class BuckShot : MonoBehaviour
         magicHolder = GetComponent<MagicHolder>();
         magic = magicHolder.magic;
 
-        //플레이어가 마지막 바라본 방향의 각도
-        float rotation = Mathf.Atan2(PlayerManager.Instance.lastDir.y, PlayerManager.Instance.lastDir.x) * Mathf.Rad2Deg;
+        float rotation;
+        // 수동 사격일때
+        if (magicHolder.isManualCast)
+        {
+            // 마우스 방향
+            Vector2 mouseDir = PlayerManager.Instance.GetMousePos() - (Vector2)PlayerManager.Instance.transform.position;
+
+            // 마우스 각도
+            rotation = Mathf.Atan2(mouseDir.y, mouseDir.x) * Mathf.Rad2Deg;
+        }
+        // 자동 사격일때
+        else
+        {
+            //플레이어가 마지막 바라본 방향의 각도
+            rotation = Mathf.Atan2(PlayerManager.Instance.lastDir.y, PlayerManager.Instance.lastDir.x) * Mathf.Rad2Deg;
+        }
 
         //해당 각도로 회전
         transform.rotation = Quaternion.Euler(Vector3.forward * rotation);

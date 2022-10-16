@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Lean.Pool;
 using TMPro;
@@ -9,11 +10,15 @@ public class HitBox : MonoBehaviour
 {
     [Header("Refer")]
     public Character character;
+    List<Collider2D> hitColls;
 
     private void Awake()
     {
         // character 찾기
         character = character != null ? character : GetComponent<Character>();
+
+        // 피격 콜라이더 모두 찾기
+        hitColls = GetComponents<Collider2D>().ToList();
     }
 
     private void OnEnable()
@@ -32,6 +37,12 @@ public class HitBox : MonoBehaviour
             gameObject.layer = SystemManager.Instance.layerList.PlayerHit_Layer;
         else
             gameObject.layer = SystemManager.Instance.layerList.EnemyHit_Layer;
+
+        // 히트 콜라이더 모두 켜기
+        foreach (Collider2D hitColl in hitColls)
+        {
+            hitColl.enabled = true;
+        }
     }
 
     private void OnParticleCollision(GameObject other)
@@ -807,6 +818,12 @@ public class HitBox : MonoBehaviour
 
             // 물리 콜라이더 끄기
             character.physicsColl.enabled = false;
+        }
+
+        // 피격 콜라이더 모두 끄기
+        foreach (Collider2D hitColl in hitColls)
+        {
+            hitColl.enabled = false;
         }
 
         // 죽음 여부 초기화

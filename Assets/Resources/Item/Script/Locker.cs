@@ -159,7 +159,7 @@ public class Locker : MonoBehaviour
             UIManager.Instance.UpdateGem(priceType);
 
             // 아이템 드롭
-            StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, transform));
+            StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, transform.position));
 
             // 금고 열린 스프라이트로 변경
             boxSprite.sprite = boxSpriteList[1];

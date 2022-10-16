@@ -342,7 +342,7 @@ public class ItemDB : MonoBehaviour
         return prefab;
     }
 
-    public IEnumerator ItemDrop(SlotInfo slotInfo, Transform itemDropper)
+    public IEnumerator ItemDrop(SlotInfo slotInfo, Vector2 dropPos)
     {
         // 인벤토리 빈칸 없으면 필드 드랍
         GameObject dropObj = null;
@@ -354,7 +354,7 @@ public class ItemDB : MonoBehaviour
         if (magicInfo != null)
         {
             // 마법 슬롯 아이템 만들기
-            dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, itemDropper.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
 
             // 아이템 프레임 색 넣기
             dropObj.transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[slotInfo.grade];
@@ -366,7 +366,7 @@ public class ItemDB : MonoBehaviour
         // 아이템일때
         if (itemInfo != null)
         {
-            dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(slotInfo.id), itemDropper.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(itemInfo.id), dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
         }
 
         // 아이템 정보 넣기

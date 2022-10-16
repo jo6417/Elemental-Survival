@@ -316,7 +316,6 @@ public class VendMachineUI : MonoBehaviour
     void GetProduct(GameObject productObj, int priceType, int productIndex)
     {
         // 상품 정보 캐싱
-        print(productIndex);
         SlotInfo slotInfo = productList[productIndex];
 
         Image frame = productObj.transform.Find("Frame").GetComponent<Image>();
@@ -416,7 +415,7 @@ public class VendMachineUI : MonoBehaviour
                     fieldDrop = true;
 
                     // 아이템 드롭
-                    StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper));
+                    StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position));
                 }
             });
         }

@@ -48,12 +48,15 @@ public class StickyBubble : MonoBehaviour
 
         // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
         ParticleSystem.CollisionModule particleColl = bubbleParticle.collision;
+
+        // 플레이어가 쐈을때, 몬스터가 타겟
         if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
         {
             gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
             particleColl.collidesWith = SystemManager.Instance.layerList.EnemyHit_Mask;
         }
 
+        // 몬스터가 쐈을때, 플레이어가 타겟
         if (magicHolder.GetTarget() == MagicHolder.Target.Player)
         {
             gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
@@ -82,8 +85,6 @@ public class StickyBubble : MonoBehaviour
 
         for (int i = 0; i < collisionEvents.Count; i++)
         {
-            //todo 충돌 지점에 거품 터진 스프라이트 남기기
-
             // 플레이어에 충돌하면 데미지 주기
             if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
             {
@@ -92,14 +93,10 @@ public class StickyBubble : MonoBehaviour
 
             // 몬스터에 충돌하면 데미지 주기
             if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
-            {
-                // print($"{other.name} : {other.tag} : {other.layer}");
-
                 if (other.TryGetComponent(out HitBox enemyHitBox))
                 {
                     StartCoroutine(enemyHitBox.Hit(magicHolder));
                 }
-            }
         }
     }
 }

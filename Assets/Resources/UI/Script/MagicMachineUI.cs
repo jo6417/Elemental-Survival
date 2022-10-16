@@ -455,7 +455,7 @@ public class MagicMachineUI : MonoBehaviour
                 getMagicEffect.gameObject.SetActive(true);
 
                 // 아이템 드롭
-                StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper));
+                StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position));
             }
         }
     }

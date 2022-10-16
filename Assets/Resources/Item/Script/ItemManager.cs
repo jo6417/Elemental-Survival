@@ -101,6 +101,14 @@ public class ItemManager : MonoBehaviour
         {
             PlayerCollision();
         }
+
+        // 자석 레이저와 충돌 했을때
+        if (other.gameObject.CompareTag(SystemManager.TagNameList.Item.ToString()))
+        {
+            // 원소젬일때만 획득
+            if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
+                PlayerCollision();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -303,7 +311,7 @@ public class ItemManager : MonoBehaviour
             // 아이템이 가젯 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Gadget.ToString())
             {
-                //todo 가젯 프리팹 소환
+                // 가젯 프리팹 소환
                 LeanPool.Spawn(gadgetPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
             }
         }

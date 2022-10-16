@@ -4874,6 +4874,7 @@ GameObject:
   - component: {fileID: 7538162009005391220}
   - component: {fileID: 8632908752227872801}
   - component: {fileID: 8632908752227872800}
+  - component: {fileID: 3713155053586245308}
   - component: {fileID: 3459317121763309752}
   - component: {fileID: 1934147848397244494}
   m_Layer: 10
@@ -4910,23 +4911,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 2
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
+  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 1
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 2
-  burnTime: 0
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
 --- !u!114 &8632908752227872800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4940,7 +4943,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 8632908752227872801}
-  bubbleParticle: {fileID: 0}
+  bubbleParticle: {fileID: 3459317121763309752}
+--- !u!114 &3713155053586245308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8632908752227872807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 3459317121763309752}
+  autoDespawn: 1
+  collOverTime: 0
+  modify_startLife: 0
 --- !u!198 &3459317121763309752
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4951,7 +4970,7 @@ ParticleSystem:
   serializedVersion: 7
   lengthInSec: 3
   simulationSpeed: 3
-  stopAction: 1
+  stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}

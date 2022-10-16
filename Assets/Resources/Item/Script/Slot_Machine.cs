@@ -219,7 +219,7 @@ public class Slot_Machine : MonoBehaviour
         print(itemInfo.id + " : " + itemInfo.name);
 
         // 아이템 드롭
-        StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, itemDropper));
+        StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));
 
         // 가격 타입 랜덤 초기화
         priceType = Random.Range(0, 6);

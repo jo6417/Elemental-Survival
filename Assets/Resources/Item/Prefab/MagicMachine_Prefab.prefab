@@ -1362,8 +1362,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: E
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 51621fe15c318344f949b4d8cc376373, type: 2}
-  m_sharedMaterial: {fileID: 5102506194067504121, guid: 51621fe15c318344f949b4d8cc376373,
+  m_fontAsset: {fileID: 11400000, guid: edd35fbaf40504d43a4f3119a1f016e9, type: 2}
+  m_sharedMaterial: {fileID: 5102506194067504121, guid: edd35fbaf40504d43a4f3119a1f016e9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1896,6 +1896,7 @@ MonoBehaviour:
   uiCanvas: {fileID: 7699367857967102796}
   interacter: {fileID: 7481093921542346981}
   showKey: {fileID: 8055173788338571515}
+  itemDropper: {fileID: 0}
 --- !u!50 &6382050485898837794
 Rigidbody2D:
   serializedVersion: 4

@@ -62,7 +62,12 @@ public class ParticleManager : MonoBehaviour
         //자동 디스폰일때
         if (autoDespawn)
         {
-            //파티클 끝날때까지 대기
+            // 파티클 바로 시작되지 않았으면
+            if (!particle.isPlaying)
+                // 파티클 시작 할때까지 대기
+                yield return new WaitUntil(() => particle.isPlaying);
+
+            // 파티클 끝날때까지 대기
             yield return new WaitUntil(() => particle.isStopped);
 
             //파티클 끝나면 디스폰

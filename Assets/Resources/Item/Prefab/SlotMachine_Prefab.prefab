@@ -258,8 +258,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: E
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 51621fe15c318344f949b4d8cc376373, type: 2}
-  m_sharedMaterial: {fileID: 5102506194067504121, guid: 51621fe15c318344f949b4d8cc376373,
+  m_fontAsset: {fileID: 11400000, guid: edd35fbaf40504d43a4f3119a1f016e9, type: 2}
+  m_sharedMaterial: {fileID: 5102506194067504121, guid: edd35fbaf40504d43a4f3119a1f016e9,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2385,11 +2385,12 @@ MonoBehaviour:
   leverAnim: {fileID: 2215534197294147431}
   slotScrolls:
   - {fileID: 5110598184913516379}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7676060853872156845}
+  - {fileID: 7730522193777875195}
   gemLED: {fileID: 5110598184751892024}
   blackScreen: {fileID: 5110598183999462997}
   itemDropper: {fileID: 0}
+  isDespawnAble: 1
   spinTime: 1
   randomTime: 0
   spinSpeed: 10
