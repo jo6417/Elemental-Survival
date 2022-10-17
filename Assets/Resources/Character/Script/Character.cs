@@ -198,6 +198,9 @@ public class Character : MonoBehaviour
         // 히트박스 전부 끄기
         for (int i = 0; i < hitBoxList.Count; i++)
         {
+            // 모든 히트박스에 캐릭터 전달
+            hitBoxList[i].character = this;
+            // 히트박스 끄기
             hitBoxList[i].enabled = false;
         }
 
@@ -327,14 +330,13 @@ public class Character : MonoBehaviour
         {
             ItemInfo dropItem = null;
 
-            //todo 트럭 호출버튼 구현 후 추가
-
             // 각각 아이템 개별 확률 적용
             List<float> randomRate = new List<float>();
             randomRate.Add(40); // 원소젬 확률 가중치
             randomRate.Add(20); // 회복 아이템 확률 가중치
             randomRate.Add(20); // 자석 빔 확률 가중치
             randomRate.Add(10); // 슬롯머신 확률 가중치
+            randomRate.Add(5); // 트럭 버튼 확률 가중치
 
             // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
             int randomItem = SystemManager.Instance.WeightRandom(randomRate);
@@ -395,8 +397,9 @@ public class Character : MonoBehaviour
                     dropItem = ItemDB.Instance.GetItemByName("SlotMachine");
                     break;
 
-                //todo 트럭 호출 버튼일때
+                // 트럭 버튼일때
                 case 4:
+                    dropItem = ItemDB.Instance.GetItemByName("TruckButton");
                     break;
             }
 
@@ -813,37 +816,6 @@ public class Character : MonoBehaviour
     // 갖고있는 아이템 드랍
     public void DropItem()
     {
-        // 드랍 아이템 없으면 원소젬 1개 드랍
-        // if (nowHasItem.Count == 0)
-        // {
-        //     //todo 플레이어 인벤토리 원소 가중치에 따라 원소젬 속성 계산
-        //     List<float> randomWeight = new List<float>();
-        //     for (int i = 0; i < PlayerManager.Instance.hasGems.Count; i++)
-        //     {
-        //         randomWeight.Add(PlayerManager.Instance.hasGems[i]);
-        //     }
-        //     int randomIndex = SystemManager.Instance.RandomPick(randomWeight);
-
-        //     //! 테스트
-        //     int[] testGemNum = new int[6];
-        //     for (int i = 0; i < 10000; i++)
-        //     {
-        //         randomIndex = SystemManager.Instance.RandomPick(randomWeight);
-
-        //         testGemNum[randomIndex]++;
-        //     }
-
-        //     StringBuilder gemNums = new StringBuilder();
-        //     foreach (var item in testGemNum)
-        //         gemNums.Append(item + ", ");
-        //     print(gemNums);
-
-        //     // 랜덤 원소젬 정보 넣기
-        //     ItemInfo gem = ItemDB.Instance.GetItemByID(randomIndex);
-        //     gem.amount = 1;
-        //     nowHasItem.Add(gem);
-        // }
-
         //보유한 모든 아이템 드랍
         foreach (ItemInfo item in nowHasItem)
         {

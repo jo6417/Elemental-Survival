@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using Lean.Pool;
 
-public class Explosion : MonoBehaviour
+public class LaserBeam : MonoBehaviour
 {
     public float laserExpandSpeed = 0.2f;
     public MagicHolder magicHolder;

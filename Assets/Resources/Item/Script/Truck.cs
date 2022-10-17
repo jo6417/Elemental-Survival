@@ -78,8 +78,6 @@ public class Truck : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180f, 0);
         }
 
-        print(transform.rotation);
-
         // 충돌 콜라이더 켜기
         stopColl.enabled = true;
         // 스프라이트 켜기
@@ -246,9 +244,13 @@ public class Truck : MonoBehaviour
                 shop.GetChild(j).gameObject.SetActive(false);
         }
 
+        // 잠시 대기
+        yield return new WaitForSeconds(1f);
+
         // 뒤로 살짝 후퇴
         Vector3 backPos = transform.rotation.y == 0f ? -Vector2.right * 3f : Vector2.right * 3f;
-        transform.DOMove(transform.position + backPos, 0.5f);
+        transform.DOMove(transform.position + backPos, 0.5f)
+        .SetEase(Ease.OutCubic);
         yield return new WaitForSeconds(0.5f);
 
         // 정차 이펙트 끄기
@@ -265,8 +267,8 @@ public class Truck : MonoBehaviour
 
         // 플레이어 이동 속도 계수
         float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed;
-        // 가속도값
-        float accelSpeed = 0.8f;
+        // 가속도 기본값
+        float accelSpeed = 1f;
 
         // 디스폰 할때까지 반복
         while (truckSprite.gameObject.activeSelf)

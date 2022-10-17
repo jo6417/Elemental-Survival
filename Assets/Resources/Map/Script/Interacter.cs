@@ -8,6 +8,6 @@ public class Interacter : MonoBehaviour
     public delegate void InteractTriggerCallback(bool able);
 
     public InteractSubmitCallback interactSubmitCallback; // 상호작용 확인 콜백
-    public delegate void InteractSubmitCallback();
+    public delegate void InteractSubmitCallback(bool isPress = true);
 
 }

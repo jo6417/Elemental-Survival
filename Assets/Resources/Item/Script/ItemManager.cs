@@ -311,7 +311,7 @@ public class ItemManager : MonoBehaviour
             // 아이템이 가젯 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Gadget.ToString())
             {
-                // 가젯 프리팹 소환
+                // 가젯에 대응하는 오브젝트 소환
                 LeanPool.Spawn(gadgetPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
             }
         }

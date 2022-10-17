@@ -806,6 +806,9 @@ public class HitBox : MonoBehaviour
         // if (character.enemy == null)
         //     yield break;
 
+        // 죽음 여부 초기화
+        character.isDead = true;
+
         // 경직 시간 추가
         // hitCount += 1f;
         character.nowState = Character.State.Dead;
@@ -825,9 +828,6 @@ public class HitBox : MonoBehaviour
         {
             hitColl.enabled = false;
         }
-
-        // 죽음 여부 초기화
-        character.isDead = true;
 
         // 초기화 완료 취소
         character.initialFinish = false;

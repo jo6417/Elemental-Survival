@@ -23537,7 +23537,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
-  character: {fileID: 0}
+  character: {fileID: 6198355565525276696}
   atkTrigger: 0
 --- !u!212 &2028642404204801092
 SpriteRenderer:
@@ -24528,7 +24528,7 @@ GameObject:
   - component: {fileID: 3634838079005204305}
   - component: {fileID: 8346033938574748102}
   - component: {fileID: 1040393321775288662}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: Ascii_Sprite
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -24561,7 +24561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  character: {fileID: 0}
+  character: {fileID: 6198355565525276696}
 --- !u!61 &1040393321775288662
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24572,7 +24572,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.3, y: 6}
@@ -30051,7 +30051,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
-  character: {fileID: 0}
+  character: {fileID: 6198355565525276696}
   atkTrigger: 0
 --- !u!212 &9177898890322600236
 SpriteRenderer:

@@ -299,7 +299,7 @@ public class KingSlime_AI : MonoBehaviour
             // 소환수 히트박스 끄기
             for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
             {
-                babyEnemyManager.hitBoxList[i].enabled = false;
+                babyEnemyManager.hitBoxList[j].enabled = false;
             }
 
             //소환 위치
@@ -312,7 +312,7 @@ public class KingSlime_AI : MonoBehaviour
                 // 소환수 히트박스 켜기
                 for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
                 {
-                    babyEnemyManager.hitBoxList[i].enabled = true;
+                    babyEnemyManager.hitBoxList[j].enabled = true;
                 }
 
                 // 소환수 초기화

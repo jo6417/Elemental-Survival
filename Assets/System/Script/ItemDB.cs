@@ -342,7 +342,7 @@ public class ItemDB : MonoBehaviour
         return prefab;
     }
 
-    public IEnumerator ItemDrop(SlotInfo slotInfo, Vector2 dropPos)
+    public IEnumerator ItemDrop(SlotInfo slotInfo, Vector2 dropPos, Vector2 dropDir = default)
     {
         // 인벤토리 빈칸 없으면 필드 드랍
         GameObject dropObj = null;
@@ -370,9 +370,11 @@ public class ItemDB : MonoBehaviour
         }
 
         // 아이템 정보 넣기
-        ItemManager itemManager = dropObj.GetComponent<ItemManager>();
-        itemManager.itemInfo = slotInfo as ItemInfo;
-        itemManager.magicInfo = slotInfo as MagicInfo;
+        if (dropObj.TryGetComponent(out ItemManager itemManager))
+        {
+            itemManager.itemInfo = slotInfo as ItemInfo;
+            itemManager.magicInfo = slotInfo as MagicInfo;
+        }
 
         // 아이템 정보 삭제
         slotInfo = null;
@@ -385,13 +387,19 @@ public class ItemDB : MonoBehaviour
         // 콜라이더 끄기
         itemColl.enabled = false;
 
-        // 플레이어 반대 방향, 랜덤 각도 추가
-        Vector3 itemDir = (dropObj.transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
+        Vector3 itemDir;
+        // 드롭 방향 지정 했을때
+        if (dropDir != default)
+            itemDir = dropDir;
+        // 드롭 방향 지정 없을때 
+        else
+            // 플레이어 반대 방향, 랜덤 각도 추가
+            itemDir = dropObj.transform.position - PlayerManager.Instance.transform.position * Random.Range(10f, 20f);
 
         // 추가 각도를 벡터로 바꾸기
         float angle = Random.Range(-45, 45);
         Vector3 addDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0) * Random.Range(10f, 20f);
-        print(addDir);
+        // print(addDir);
 
         // 플레이어 반대 방향, 랜덤 파워로 아이템 날리기
         itemRigid.velocity = itemDir + addDir;

@@ -406,7 +406,7 @@ GameObject:
   - component: {fileID: 6239104519420113511}
   - component: {fileID: 93515746342521194}
   m_Layer: 16
-  m_Name: TruckButton
+  m_Name: TruckButton_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

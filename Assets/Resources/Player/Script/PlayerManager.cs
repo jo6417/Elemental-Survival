@@ -160,21 +160,19 @@ public class PlayerManager : MonoBehaviour
                 DashToggle();
         };
 
-        // 상호작용 버튼 매핑
+        // 상호작용 버튼 눌렀을때
         playerInput.Player.Interact.performed += val =>
         {
             // 현재 상호작용 가능한 오브젝트 상호작용 하기
-            InteractSubmit();
+            InteractSubmit(true);
         };
 
-        // // 마우스 위치 입력
-        // playerInput.Player.MousePosition.performed += val =>
-        // {
-        //     mouseWorldPos = Camera.main.ScreenToWorldPoint(val.ReadValue<Vector2>());
-        //     mouseWorldPos.z = 0;
-
-        //     // print(mouseWorldPos);
-        // };
+        // 상호작용 버튼 뗐을때
+        playerInput.Player.Interact.canceled += val =>
+        {
+            // 현재 상호작용 가능한 오브젝트 상호작용 하기
+            InteractSubmit(false);
+        };
 
         // A슬롯 마법 시전
         playerInput.Player.ActiveMagic_A.performed += val =>
@@ -360,11 +358,11 @@ public class PlayerManager : MonoBehaviour
         // print("Dash : " + isDash);
     }
 
-    public void InteractSubmit()
+    public void InteractSubmit(bool isPress = true)
     {
         // 가장 가까운 상호작용 오브젝트와 상호작용 실행
         if (playerInteracter.nearInteracter != null && playerInteracter.nearInteracter.interactSubmitCallback != null)
-            playerInteracter.nearInteracter.interactSubmitCallback();
+            playerInteracter.nearInteracter.interactSubmitCallback(isPress);
     }
 
     IEnumerator CastDefaultMagics()

@@ -49,6 +49,7 @@ public class WorldSpawner : MonoBehaviour
     public List<Character> spawnEnemyList = new List<Character>(); //현재 스폰된 몬스터 리스트
     public List<GameObject> itemBoxList = new List<GameObject>(); // 현재 스폰된 아이템 박스 리스트
     public List<GameObject> lockerList = new List<GameObject>(); // 현재 스폰된 아이템 금고 리스트
+    List<float> eliteWeight = new List<float>(); // 엘리트 몬스터 가중치 리스트
 
     [Header("Refer")]
     [SerializeField] GameObject itemBoxPrefab; // 파괴 가능한 아이템 박스
@@ -65,6 +66,12 @@ public class WorldSpawner : MonoBehaviour
     {
         // 현재 스폰 몬스터 리스트 비우기
         spawnEnemyList.Clear();
+
+        // 엘리트 종류 가중치
+        eliteWeight.Add(0); // 엘리트 아닐 확률 가중치 = 0
+        eliteWeight.Add(20); // Power 엘리트 가중치
+        eliteWeight.Add(20); // Speed 엘리트 가중치
+        eliteWeight.Add(10); // Heal 엘리트 가중치
     }
 
     void Start()
@@ -224,8 +231,10 @@ public class WorldSpawner : MonoBehaviour
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;
 
-        //포탈에서 몬스터 소환
-        StartCoroutine(PortalSpawn(enemy, isElite));
+        // 스폰 스위치 켜졌을때
+        if (spawnSwitch)
+            //포탈에서 몬스터 소환
+            StartCoroutine(PortalSpawn(enemy, isElite));
 
         // 해당 몬스터의 쿨타임 넣기
         float spawnCoolTime = enemy.spawnCool;
@@ -243,29 +252,24 @@ public class WorldSpawner : MonoBehaviour
         nowSpawning = false;
     }
 
-    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 fixPos = default, GameObject enemyObj = null)
+    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 spawnEndPos = default, GameObject enemyPrefab = null, bool isBoss = false)
     {
-        //스폰 스위치 꺼졌으면 스폰 취소
-        if (!spawnSwitch)
-            yield break;
+        // enemyPrefab 변수 안들어왔으면
+        if (enemyPrefab == null)
+            // 몬스터 프리팹 찾기
+            enemyPrefab = EnemyDB.Instance.GetPrefab(enemy.id);
 
-        //몬스터 프리팹 찾기
-        GameObject enemyPrefab = EnemyDB.Instance.GetPrefab(enemy.id);
-
-        //몬스터 소환 완료 위치
-        Vector2 spawnEndPos;
-        if (fixPos != default)
-            spawnEndPos = fixPos;
-        else
+        // spawnEndPos 소환 위치 변수 없으면 지정
+        if (spawnEndPos == default)
+            // 몬스터 소환 완료 위치
             spawnEndPos = BorderRandPos();
 
-        //enemyObj 변수 안들어왔으면 만들어 넣기
-        if (enemyObj == null)
-        {
-            // 몬스터 프리팹 소환 및 비활성화
-            enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, SystemManager.Instance.enemyPool);
-            enemyObj.SetActive(false);
-        }
+        // 몬스터 프리팹 소환
+        GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, SystemManager.Instance.enemyPool);
+        // 소환된 몬스터 위치 이동
+        enemyObj.transform.position = spawnEndPos;
+        // 몬스터 비활성화
+        enemyObj.SetActive(false);
 
         //프리팹에서 스프라이트 컴포넌트 찾기
         SpriteRenderer enemySprite = enemyObj.GetComponentInChildren<SpriteRenderer>();
@@ -275,8 +279,11 @@ public class WorldSpawner : MonoBehaviour
 
         // 캐릭터 찾기
         Character character = enemyObj.GetComponentInChildren<Character>();
-        // 몬스터 매니저 찾기
-        // EnemyManager enemyManager = character as EnemyManager;
+
+        // 보스일때
+        if (isBoss)
+            // 게이트에 캐릭터 변수 전달
+            GatePortal.Instance.bossCharacter = character;
 
         //몬스터 리스트에 넣기
         spawnEnemyList.Add(character);
@@ -286,8 +293,8 @@ public class WorldSpawner : MonoBehaviour
         // 몬스터 랜덤 스킬 뽑기
         if (isElite)
         {
-            // 엘리트 종류 선정
-            eliteClass = Random.Range(1, 4);
+            // 엘리트 종류 가중치로 뽑기
+            eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
         }
         else
         {
@@ -433,7 +440,8 @@ public class WorldSpawner : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기, 콜라이더 꺼진 경우 아닐때만
-        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()) && other.gameObject.activeSelf && dragSwitch && other.enabled)
+        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+        && other.gameObject.activeSelf && dragSwitch && other.enabled)
         {
             Character manager = other.GetComponent<Character>();
             EnemyAI enemyAI = other.GetComponent<EnemyAI>();
@@ -456,8 +464,8 @@ public class WorldSpawner : MonoBehaviour
             other.transform.parent = transform;
             // 내부 포지션 역전 및 거리 추가
             other.transform.localPosition *= -0.8f;
-
-            other.transform.parent = originParent; //원래 부모로 복귀
+            //원래 부모로 복귀
+            other.transform.parent = originParent;
         }
     }
 

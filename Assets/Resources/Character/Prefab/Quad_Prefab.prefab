@@ -48,10 +48,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 10
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -59,11 +59,13 @@ MonoBehaviour:
   stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
-  enemyManager: {fileID: 652660704057197544}
+  cooltime: 0
+  coolCount: 0
+  character: {fileID: 0}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
+  rangeObj: {fileID: 0}
 --- !u!70 &652660702749960825
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -185,7 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 652660704057197544}
 --- !u!70 &652660702784417472
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -283,7 +285,6 @@ MonoBehaviour:
   autoDespawn: 0
   collOverTime: 0
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &652660702929263940
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -5282,10 +5283,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 10
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -5293,11 +5294,13 @@ MonoBehaviour:
   stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
-  enemyManager: {fileID: 652660704057197544}
+  cooltime: 0
+  coolCount: 0
+  character: {fileID: 0}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
+  rangeObj: {fileID: 0}
 --- !u!70 &652660703004301726
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5605,7 +5608,6 @@ MonoBehaviour:
   autoDespawn: 0
   collOverTime: 0
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &652660703512420976
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -10868,7 +10870,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 652660704057197544}
 --- !u!70 &652660703703063259
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -15839,7 +15841,6 @@ MonoBehaviour:
   autoDespawn: 0
   collOverTime: 0
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &652660703787367070
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -20691,7 +20692,6 @@ MonoBehaviour:
   autoDespawn: 0
   collOverTime: 0
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &652660703839324125
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -30487,7 +30487,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 652660704057197544}
 --- !u!70 &652660704024124078
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -30589,34 +30589,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hpNow: 0
-  hpMax: 0
-  rigid: {fileID: 652660704057197556}
-  anim: {fileID: 0}
+  defaultHasItem: 
   initialStart: 1
   initialFinish: 0
+  eliteClass: 0
   lookLeft: 0
-  defaultHasItem: 
+  hpNow: 0
+  hpMax: 0
+  isDead: 0
+  changeGhost: 0
+  portalSize: 1
+  afterEffect: 0
+  invinsible: 0
+  selfExplosion: 0
+  attackRange: 10
+  healCount: 0
+  isGhost: 0
+  nowState: 0
+  nowAction: 0
+  moveType: 0
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  nowState: 0
-  nowAction: 0
-  moveType: 0
-  portalSize: 1
-  isElite: 0
-  eliteClass: 0
-  afterEffect: 0
-  isDead: 0
-  selfExplosion: 0
-  attackRange: 10
-  changeGhost: 0
-  enemyAI: {fileID: 0}
-  enemyAtkTrigger: {fileID: 0}
-  enemyAtkList: []
-  spriteObj: {fileID: 0}
   shadow: {fileID: 0}
   spriteList:
   - {fileID: 652660704366674903}
@@ -30624,26 +30620,32 @@ MonoBehaviour:
   - {fileID: 652660704803164541}
   - {fileID: 652660703703063270}
   - {fileID: 652660702784417487}
-  originMatList: []
-  originMatColorList: []
-  originColorList: []
+  enemyAI: {fileID: 0}
+  enemyAtkTrigger: {fileID: 0}
+  enemyAtkList: []
+  spriteObj: {fileID: 0}
+  healRange: {fileID: 0}
   animList: []
   physicsColl: {fileID: 652660704057197558}
-  hitBoxList: []
-  power: 0
-  speed: 0
-  range: 0
+  rigid: {fileID: 652660704057197556}
   buffParent: {fileID: 0}
   particleHitCount: 0
-  hitCount: 0
+  hitDelayCount: 0
   stopCount: 0
   flatCount: 0
   oppositeCount: 0
-  poisonCoolCount: 0
-  bleedCoolCount: 0
+  moveSpeedDebuff: 1
+  hitEffect: {fileID: 0}
+  hitBoxList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  powerNow: 0
+  speedNow: 0
+  rangeNow: 0
+  cooltimeNow: 0
   enemyName: 
   enemyType: 
-  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &652660704057197545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30665,7 +30667,7 @@ MonoBehaviour:
   fanSensitive: 0.1
   targetSearchTime: 0.1
   stateText: {fileID: 652660704424181443}
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 652660704057197544}
   body: {fileID: 652660704744864170}
   head: {fileID: 652660704366674900}
   fanParent: {fileID: 652660702965365154}
@@ -30715,7 +30717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 0}
 --- !u!70 &652660704057197558
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -30820,10 +30822,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 10
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -30831,11 +30833,13 @@ MonoBehaviour:
   stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
-  enemyManager: {fileID: 652660704057197544}
+  cooltime: 0
+  coolCount: 0
+  character: {fileID: 0}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
+  rangeObj: {fileID: 0}
 --- !u!70 &652660704093782719
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -31086,7 +31090,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 652660704057197544}
 --- !u!212 &652660704366674903
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31635,10 +31639,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 10
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -31646,11 +31650,13 @@ MonoBehaviour:
   stopTime: 0
   activeAngleOffset: 0
   defaultCollOn: 1
-  enemyManager: {fileID: 652660704057197544}
+  cooltime: 0
+  coolCount: 0
+  character: {fileID: 0}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
-  activeObj: {fileID: 0}
+  rangeObj: {fileID: 0}
 --- !u!70 &652660704733605869
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -31868,7 +31874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManager: {fileID: 652660704057197544}
+  character: {fileID: 652660704057197544}
 --- !u!70 &652660704803164542
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

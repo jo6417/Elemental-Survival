@@ -115,7 +115,7 @@ public class Slot_Machine : MonoBehaviour
             showKey.SetActive(false);
     }
 
-    public void InteractSubmit()
+    public void InteractSubmit(bool isPress = false)
     {
         // 상호작용 불가능하면 리턴
         if (!uiCanvas.gameObject.activeSelf)
@@ -123,6 +123,10 @@ public class Slot_Machine : MonoBehaviour
 
         // 인디케이터 꺼져있으면 리턴
         if (!showKey.activeSelf)
+            return;
+
+        // 상호작용 버튼 뗐을때
+        if (!isPress)
             return;
 
         // 슬롯머신 스케일 바운스

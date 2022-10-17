@@ -134,7 +134,7 @@ public class Ascii_AI : MonoBehaviour
         if (laserMagic == null)
         {
             //찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
-            laserMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("Explosion"));
+            laserMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("LaserBeam"));
 
             // 강력한 데미지로 고정
             laserMagic.power = 20f;
@@ -1041,7 +1041,7 @@ public class Ascii_AI : MonoBehaviour
             //레이저 생성
             GameObject magicObj = LeanPool.Spawn(LaserPrefab, plugTip.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
-            Explosion laser = magicObj.GetComponent<Explosion>();
+            LaserBeam laser = magicObj.GetComponent<LaserBeam>();
             // 레이저 발사할 오브젝트 넣기
             laser.startObj = plugTip;
 

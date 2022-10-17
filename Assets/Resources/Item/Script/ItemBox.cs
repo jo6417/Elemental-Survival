@@ -46,6 +46,7 @@ public class ItemBox : Character
         randomRate.Add(20); // 회복 아이템 확률 가중치
         randomRate.Add(20); // 자석 빔 확률 가중치
         randomRate.Add(10); // 슬롯머신 확률 가중치
+        randomRate.Add(5); // 트럭 버튼 확률 가중치
 
         // null 이 아닌 상품이 뽑힐때까지 반복
         while (slotInfo == null)
@@ -72,6 +73,10 @@ public class ItemBox : Character
                 // 슬롯머신일때
                 case 3:
                     slotInfo = new ItemInfo(ItemDB.Instance.GetItemByName("SlotMachine"));
+                    break;
+                // 트럭 버튼일때
+                case 4:
+                    slotInfo = new ItemInfo(ItemDB.Instance.GetItemByName("TruckButton"));
                     break;
             }
 
@@ -105,15 +110,15 @@ public class ItemBox : Character
         initialFinish = true;
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        // 스폰 콜라이더 밖으로 나갔을때
-        if (other.CompareTag("Respawn"))
-        {
-            // 스폰 테두리 랜덤 위치로 이동
-            transform.position = WorldSpawner.Instance.BorderRandPos();
-        }
-    }
+    // private void OnTriggerExit2D(Collider2D other)
+    // {
+    //     // 스폰 콜라이더 밖으로 나갔을때
+    //     if (other.CompareTag("Respawn"))
+    //     {
+    //         // 스폰 테두리 랜덤 위치로 이동
+    //         transform.position = WorldSpawner.Instance.BorderRandPos();
+    //     }
+    // }
 
     void RemoveList()
     {

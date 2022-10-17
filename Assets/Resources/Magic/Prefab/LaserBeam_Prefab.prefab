@@ -14707,7 +14707,7 @@ GameObject:
   - component: {fileID: 6558328931824545046}
   - component: {fileID: 1858461208}
   m_Layer: 10
-  m_Name: Explosion_Prefab
+  m_Name: LaserBeam_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

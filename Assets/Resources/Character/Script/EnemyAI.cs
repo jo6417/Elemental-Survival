@@ -161,7 +161,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         // 목표위치 도착했으면 위치 다시 갱신
-        if (targetDir.magnitude < 0.1f)
+        if (targetDir.magnitude < 0.5f)
         {
             moveCoolCount = 0f;
         }

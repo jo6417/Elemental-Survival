@@ -64,6 +64,7 @@ MonoBehaviour:
   stopTime: 0
   coll: {fileID: 4641395756389376506}
   targetObj: {fileID: 0}
+  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
@@ -96,11 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particle: {fileID: 0}
+  particle: {fileID: 4804630850445665503}
   autoDespawn: 0
   collOverTime: 0.2
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &4804630850445665503
 ParticleSystem:
   m_ObjectHideFlags: 0

@@ -394,7 +394,8 @@ MonoBehaviour:
   oppositeCount: 0
   moveSpeedDebuff: 1
   hitEffect: {fileID: 0}
-  hitBoxList: []
+  hitBoxList:
+  - {fileID: 2044665212814803894}
   originMatList: []
   originMatColorList: []
   originColorList: []
