@@ -8,9 +8,11 @@ using UnityEngine.Rendering;
 
 public class Quad_AI : MonoBehaviour
 {
+    WaitForSeconds wait_1 = new WaitForSeconds(1f);
+
     [Header("State")]
     [SerializeField]
-    Patten patten = Patten.None;
+    Patten testPatten = Patten.None;
     enum Patten { PushSide, PushCircle, SingleShot, FanSmash, None };
     bool moveFanTilt = true; // 팬 기울이기 여부
     bool fanHorizon = true; // 팬 수평유지 여부
@@ -59,7 +61,7 @@ public class Quad_AI : MonoBehaviour
     MagicInfo windMagic;
     public ParticleSystem wallCircle; // 플레이어 가두는 원형 프리팹
     [SerializeField]
-    float spinSpeed = 1f; // 프로펠러 공전 속도
+    float spinSpeed = 2f; // 프로펠러 공전 속도
     [SerializeField]
     float windShotNum = 50f; // 윈드커터 발사 횟수
     [SerializeField]
@@ -277,8 +279,8 @@ public class Quad_AI : MonoBehaviour
         // print("randomNum : " + randomNum);
 
         //! 테스트를 위해 패턴 고정
-        if (patten != Patten.None)
-            randomNum = (int)patten;
+        if (testPatten != Patten.None)
+            randomNum = (int)testPatten;
 
         switch (randomNum)
         {
@@ -555,7 +557,7 @@ public class Quad_AI : MonoBehaviour
         // 머리 올라간 만큼 프로펠러들 낮추기
         fanParent.DOLocalMove(new Vector3(0, -3f, 0), 1f);
 
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 프로펠러 부모 원위치
         fanParent.DOLocalMove(new Vector3(0, 0f, 0), 1f);
@@ -577,7 +579,7 @@ public class Quad_AI : MonoBehaviour
 
         // 프로펠러 빨갛게 달아오르기
         wings[fanIndex].DOColor(wingRageColor, 1f);
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 프로펠러 날개 오브젝트 끄기
         wings[fanIndex].gameObject.SetActive(false);
@@ -608,12 +610,12 @@ public class Quad_AI : MonoBehaviour
         Vector3 blade_TargetPos = wings[fanIndex].transform.position + innerDir * horizonSize;
         shotBlade.transform.DOMove(blade_TargetPos, 1f)
         .SetLoops(2, LoopType.Yoyo);
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 발사 방향 반대로 블레이드 회전
         shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 180f, 0) : Quaternion.Euler(0, 0, 0);
         // 복귀 시간 대기
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 블레이드 스프라이트 끄기
         bladeSprite.enabled = false;
@@ -739,6 +741,8 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.Linear)
         .SetLoops(-1);
 
+        WaitForSeconds wait_windShotDelay = new WaitForSeconds(windShotDelay);
+
         // 윈드커터 마법을 모든 프로펠러에서 발사
         // 발사 횟수만큼 반복
         for (int j = 0; j < windShotNum; j++)
@@ -755,13 +759,13 @@ public class Quad_AI : MonoBehaviour
                 // 머리에서 프로펠러까지 방향
                 Vector2 fanDir = shotterFan.position - head.transform.position;
                 // 프로펠러 전방 목표 지점
-                Vector2 targetPos = (Vector2)shotterFan.position + fanDir.normalized;
+                Vector2 targetPos = (Vector2)shotterFan.position + fanDir.normalized * 20f;
 
                 // 윈드커터 생성
                 GameObject magicObj = LeanPool.Spawn(windCutterPrefab, shotterFan.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
                 // 매직홀더 찾기
-                MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
+                MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();
 
                 // magic 데이터 넣기
                 magicHolder.magic = windMagic;
@@ -777,7 +781,7 @@ public class Quad_AI : MonoBehaviour
             }
 
             // 발사 지연시간
-            yield return new WaitForSeconds(windShotDelay);
+            yield return wait_windShotDelay;
         }
 
         // 가두기 콜라이더 끄기
@@ -836,6 +840,8 @@ public class Quad_AI : MonoBehaviour
         float laserWidth = 0.3f;
         float targetWidth = 0;
 
+        WaitForSeconds wait_deltaTime = new WaitForSeconds(Time.deltaTime);
+
         // 조준 하는동안 플레이어 위쪽에서 계속 추적
         while (aimCount > 0)
         {
@@ -884,7 +890,7 @@ public class Quad_AI : MonoBehaviour
             eyeLaser.startWidth = laserWidth;
             eyeLaser.endWidth = laserWidth;
 
-            yield return new WaitForSeconds(Time.deltaTime);
+            yield return wait_deltaTime;
         }
 
         // 레이저 및 마커 비활성화
@@ -970,7 +976,7 @@ public class Quad_AI : MonoBehaviour
         transform.DOMove(shotPos, 1f)
         .SetEase(Ease.OutSine);
 
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 몸 전체 약한 기울기 진동
         fanParent.DOShakeRotation(1f, Vector3.forward, 50, 90, false);
@@ -984,7 +990,7 @@ public class Quad_AI : MonoBehaviour
         shotBlade.DORotate(Vector3.forward * 10f, 0.1f)
         .SetEase(Ease.Linear);
 
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 블레이드 좌우 반전
         shotBlade.transform.rotation = Quaternion.Euler(shotBlade.transform.rotation.eulerAngles.x + 180f, 0, 0);
@@ -1047,8 +1053,7 @@ public class Quad_AI : MonoBehaviour
             sortingLayer.sortingOrder = 1;
         });
 
-        // 프로펠러들 각도 초기화
-        // 프로펠러 수평으로
+        // 프로펠러 부모 수평으로
         fanParent.DOLocalRotate(fanParentDefaultRotation, smashReadyTime)
         .SetEase(Ease.OutCubic);
 
@@ -1059,17 +1064,18 @@ public class Quad_AI : MonoBehaviour
             .SetEase(Ease.OutCubic);
         }
 
-        // 프로펠러 목표 각도
-        float targetAngle = 0;
-        // 가속도 초기화
-        float accel = 0;
-        // 가속도 방향 여부 +,-
-        bool isFaster = true;
+        // // 프로펠러 목표 각도
+        // float targetAngle = 0;
+        // // 가속도 초기화
+        // float accel = 0;
+        // // 가속도 방향 여부 +,-
+        // bool isFaster = true;
 
         // 프로펠러 간격 빠르게 벌리기
         float fanPosX = 0;
         float fanPosY = 0;
 
+        // 프로펠러 각각 이펙트 초기화
         for (int i = 0; i < 4; i++)
         {
             int fanIndex = i;
@@ -1101,12 +1107,10 @@ public class Quad_AI : MonoBehaviour
         }
 
         // 차지시간 대기
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         for (int i = 0; i < 4; i++)
         {
-            int fanIndex = i;
-
             // 프로펠러 인덱스에 따라 위치 계산
             if (i == 1 || i == 3)
                 fanPosX = smashRange;
@@ -1118,61 +1122,74 @@ public class Quad_AI : MonoBehaviour
                 fanPosY = -smashRange;
 
             // 몸체와 프로펠러 간격 빠르게 벌렸다 좁히기
-            fans[fanIndex].DOLocalMove(new Vector2(fanPosX, fanPosY), smashTime)
-            .SetLoops(2, LoopType.Yoyo)
-            .SetEase(Ease.InBack)
-            .SetDelay(smashReadyTime)
-            .OnComplete(() =>
-            {
-                // 프로펠러 속도 점점 느려지게
-                isFaster = false;
-
-                // 프로펠러 및 날개 색 초기화
-                SpriteRenderer fanSprite = fans[fanIndex].GetComponent<SpriteRenderer>();
-                fanSprite.DOColor(fanDefaultColor, 1f);
-                wings[fanIndex].DOColor(wingDefaultColor, 1f);
-
-                // 원형 불꽃 파티클 튀는 이펙트 끄기
-                sparkEffects[fanIndex].SmoothDisable();
-            });
+            fans[i].DOLocalMove(new Vector2(fanPosX, fanPosY), 0.5f)
+            .SetDelay(0.5f)
+            .SetLoops(2, LoopType.Yoyo);
         }
 
-        // 점점 빠르게 회전, 공격 끝나면 점점 느려짐
-        while (true)
+        // 프로펠러 전체 회전
+        fanParent.DOLocalRotate(new Vector3(0, 0, 360f), smashTime, RotateMode.LocalAxisAdd)
+        .SetEase(Ease.InOutBack)
+        .OnUpdate(() =>
         {
-            // 가속도 점점 증가 혹은 감소
-            accel = isFaster ? accel + 0.1f : accel - 0.1f;
-
-            // 속도 감소중에, 가속도 1 이하로 내려가면 반복문 중단
-            if (!isFaster && accel <= 1f)
-                break;
-
-            // 가속도 제한
-            accel = Mathf.Clamp(accel, 0, 10f);
-
-            // 가속도 합산
-            targetAngle += accel * Time.deltaTime * 80f;
-
-            // 360도 넘지않게 보정
-            if (targetAngle > 360f)
-                targetAngle -= 360f;
-            // 마이너스 되지않게 보정
-            if (targetAngle < 0f)
-                targetAngle += 360f;
-
-            Quaternion fanRotate = Quaternion.Lerp(fanParent.localRotation, Quaternion.Euler(70, 0, targetAngle), Time.deltaTime * 10f);
-
-            // 프로펠러들 회전
-            fanParent.localRotation = fanRotate;
-
             // 프로펠러들의 각도 유지
             for (int i = 0; i < 4; i++)
             {
                 fans[i].rotation = Quaternion.Euler(0, 0, 0);
             }
+        });
 
-            yield return new WaitForSeconds(Time.deltaTime);
+        yield return new WaitForSeconds(smashTime);
+
+        for (int i = 0; i < 4; i++)
+        {
+            // 프로펠러 및 날개 색 초기화
+            SpriteRenderer fanSprite = fans[i].GetComponent<SpriteRenderer>();
+            fanSprite.DOColor(fanDefaultColor, 1f);
+            wings[i].DOColor(wingDefaultColor, 1f);
+
+            // 원형 불꽃 파티클 튀는 이펙트 끄기
+            sparkEffects[i].SmoothDisable();
         }
+
+        // WaitForSeconds wait_deltaTime = new WaitForSeconds(Time.deltaTime);
+
+        // // 점점 빠르게 회전, 공격 끝나면 점점 느려짐
+        // while (true)
+        // {
+        //     // 가속도 점점 증가 혹은 감소
+        //     accel = isFaster ? accel + 0.5f : accel - 0.5f;
+
+        //     // 속도 감소중에, 가속도 1 이하로 내려가면 반복문 중단
+        //     if (!isFaster && accel <= 1f)
+        //         break;
+
+        //     // 가속도 제한
+        //     accel = Mathf.Clamp(accel, 0, 10f);
+
+        //     // 가속도 합산
+        //     targetAngle += accel * Time.deltaTime * 80f;
+
+        //     // 360도 넘지않게 보정
+        //     if (targetAngle > 360f)
+        //         targetAngle -= 360f;
+        //     // 마이너스 되지않게 보정
+        //     if (targetAngle < 0f)
+        //         targetAngle += 360f;
+
+        //     Quaternion fanRotate = Quaternion.Lerp(fanParent.localRotation, Quaternion.Euler(70, 0, targetAngle), Time.deltaTime * 10f);
+
+        //     // 프로펠러들 회전
+        //     fanParent.localRotation = fanRotate;
+
+        //     // 프로펠러들의 각도 유지
+        //     for (int i = 0; i < 4; i++)
+        //     {
+        //         fans[i].rotation = Quaternion.Euler(0, 0, 0);
+        //     }
+
+        //     yield return wait_deltaTime;
+        // }
 
         // 과부하로 착지해서 휴식
         StartCoroutine(OverloadRest());
@@ -1308,7 +1325,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         // idle 복귀 시간 대기
-        yield return new WaitForSeconds(1f);
+        yield return wait_1;
 
         // 전체 레이어 1로 올리기
         sortingLayer.sortingOrder = 1;

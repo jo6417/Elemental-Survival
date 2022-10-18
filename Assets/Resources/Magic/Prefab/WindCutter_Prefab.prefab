@@ -109,7 +109,7 @@ Animator:
   m_GameObject: {fileID: 4423584926110347715}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 65605c226e0cb2545801ea29871b6e3c, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6a2842ba919b50b4baf2bb0152584013, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -166,10 +166,10 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 2
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
@@ -177,6 +177,7 @@ MonoBehaviour:
   stopTime: 0
   coll: {fileID: 5922864781553456689}
   targetObj: {fileID: 0}
+  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 2

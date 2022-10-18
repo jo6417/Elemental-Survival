@@ -211,6 +211,11 @@ public class PlayerManager : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>());
     }
 
+    public Vector2 GetMouseDir()
+    {
+        return GetMousePos() - (Vector2)transform.position;
+    }
+
     private void OnEnable()
     {
         // 초기화

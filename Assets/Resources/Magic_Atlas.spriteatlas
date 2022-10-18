@@ -116,6 +116,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e1e3fde75271bb74b8ae734a848f8c4f, type: 3}
   - {fileID: 21300000, guid: 22c0cdc88e386484eafb1a31f9e27e12, type: 3}
   - {fileID: 21300000, guid: 4d039ec80c3885943947d00f7fd2bcb5, type: 3}
+  - {fileID: 21300000, guid: 0f334cd895179d34e8f3cdde9b3e47a5, type: 3}
   - {fileID: 21300000, guid: 4575daf89b9578d4da23a2a8eb9db67a, type: 3}
   - {fileID: -1368692251643826084, guid: db45f1196c110914792e7a8a22ca650e, type: 3}
   - {fileID: 4777702216827948514, guid: db45f1196c110914792e7a8a22ca650e, type: 3}
@@ -296,6 +297,7 @@ SpriteAtlas:
   - MetalCube_Icon
   - DustSpiral
   - Heist_Icon
+  - MetalSword
   - LightningGem_Icon
   - Wave_Sheet_1
   - Wave_Sheet_0

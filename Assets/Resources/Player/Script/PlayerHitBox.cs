@@ -481,7 +481,7 @@ public class PlayerHitBox : MonoBehaviour
         if (!transform.Find(SystemManager.Instance.bleedDebuffUI.name))
         {
             //출혈 디버프 이펙트 붙이기
-            bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, transform.position, Quaternion.identity, transform).transform;
+            bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, transform.position, Quaternion.identity, buffParent).transform;
         }
 
         // 도트 데미지 입히기

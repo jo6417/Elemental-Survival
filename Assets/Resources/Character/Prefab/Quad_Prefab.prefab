@@ -61,7 +61,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  character: {fileID: 0}
+  character: {fileID: 652660704057197544}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
@@ -92,11 +92,10 @@ GameObject:
   m_Component:
   - component: {fileID: 652660702784417484}
   - component: {fileID: 652660702784417487}
-  - component: {fileID: 652660702784417486}
   - component: {fileID: 652660702784417472}
   - component: {fileID: 652660702784417473}
   - component: {fileID: 652660702784417475}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Fan3
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -175,19 +174,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!114 &652660702784417486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652660702784417485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 652660704057197544}
 --- !u!70 &652660702784417472
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -5296,7 +5282,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  character: {fileID: 0}
+  character: {fileID: 652660704057197544}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
@@ -10775,11 +10761,10 @@ GameObject:
   m_Component:
   - component: {fileID: 652660703703063271}
   - component: {fileID: 652660703703063270}
-  - component: {fileID: 652660703703063257}
   - component: {fileID: 652660703703063259}
   - component: {fileID: 652660703703063256}
   - component: {fileID: 652660703703063258}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Fan2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -10858,19 +10843,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!114 &652660703703063257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652660703703063268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 652660704057197544}
 --- !u!70 &652660703703063259
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -30393,11 +30365,10 @@ GameObject:
   m_Component:
   - component: {fileID: 652660704024124077}
   - component: {fileID: 652660704024124074}
-  - component: {fileID: 652660704024124076}
   - component: {fileID: 652660704024124078}
   - component: {fileID: 652660704024124079}
   - component: {fileID: 652660704024124065}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Fan0
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -30475,19 +30446,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!114 &652660704024124076
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652660704024124075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 652660704057197544}
 --- !u!70 &652660704024124078
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -30658,7 +30616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44fdb219bf4d17d47a9e1154810adae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patten: 3
+  testPatten: 0
   pushSideCoolTime: 5
   pushCircleCoolTime: 5
   bladeShotCoolTime: 5
@@ -30685,7 +30643,7 @@ MonoBehaviour:
   wallBox: {fileID: 5663323579395508400, guid: 7d3a2a1776c7b4f4d9b154f8ea4faac0, type: 3}
   bladePrefab: {fileID: 4902996646881834528, guid: 11f64386058d83448b5aed63a0900bf3,
     type: 3}
-  windCutterPrefab: {fileID: 6883775968284645621, guid: cc47424f72ba9764eae96e5544780fa7,
+  windCutterPrefab: {fileID: 7108942861070958247, guid: cc47424f72ba9764eae96e5544780fa7,
     type: 3}
   wallCircle: {fileID: 652660703932945279}
   spinSpeed: 1
@@ -30835,7 +30793,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  character: {fileID: 0}
+  character: {fileID: 652660704057197544}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
@@ -31652,7 +31610,7 @@ MonoBehaviour:
   defaultCollOn: 1
   cooltime: 0
   coolCount: 0
-  character: {fileID: 0}
+  character: {fileID: 652660704057197544}
   enemyName: 
   atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
@@ -31780,11 +31738,10 @@ GameObject:
   m_Component:
   - component: {fileID: 652660704803164538}
   - component: {fileID: 652660704803164541}
-  - component: {fileID: 652660704803164540}
   - component: {fileID: 652660704803164542}
   - component: {fileID: 652660704803164543}
   - component: {fileID: 652660704803164529}
-  m_Layer: 9
+  m_Layer: 11
   m_Name: Fan1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -31862,19 +31819,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!114 &652660704803164540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652660704803164539}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  character: {fileID: 652660704057197544}
 --- !u!70 &652660704803164542
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -32991,15 +32935,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3195d798284a42b418f9f4df9923f55e, type: 3}
---- !u!212 &625294935559725924 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 118159145603561895, guid: 3195d798284a42b418f9f4df9923f55e,
-    type: 3}
-  m_PrefabInstance: {fileID: 652660703740205763}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8438021643915289883 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8941730523758886872, guid: 3195d798284a42b418f9f4df9923f55e,
+    type: 3}
+  m_PrefabInstance: {fileID: 652660703740205763}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &625294935559725924 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 118159145603561895, guid: 3195d798284a42b418f9f4df9923f55e,
     type: 3}
   m_PrefabInstance: {fileID: 652660703740205763}
   m_PrefabAsset: {fileID: 0}

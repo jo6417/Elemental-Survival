@@ -5,7 +5,7 @@ using Lean.Pool;
 
 public class GhostTrail : MonoBehaviour
 {
-    [SerializeField] AfterImage ghostPrefab;
+    // [SerializeField] AfterImage ghostPrefab;
     public SpriteRenderer targetSprite;
     public SpriteRenderer copySprite;
     public Color ghostColor;
@@ -46,6 +46,11 @@ public class GhostTrail : MonoBehaviour
 
                 // 복사본 스프라이트를 가진 고스트를 복사해서 생성
                 SpriteRenderer ghost = LeanPool.Spawn(copySprite, transform.position, rotation, SystemManager.Instance.effectPool);
+
+                // 고스트 매니저 활성화
+                GhostManager ghostManager = ghost.GetComponent<GhostManager>();
+                ghostManager.fadeTime = fadeTime;
+                ghostManager.enabled = true;
 
                 // ghost.targetSpriteRenderer = this.targetSprite;
             }
