@@ -152,6 +152,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b9d516ca36a07284d920b5b7a3b6c73e, type: 3}
   - {fileID: 21300000, guid: e096cbca07e631d46bcce9364fba2a1e, type: 3}
   - {fileID: 21300000, guid: 097c3fda0ff66c44ab36e8ba09b4f7ba, type: 3}
+  - {fileID: 21300000, guid: d66d0cea15979b247abc5c837f90d473, type: 3}
   - {fileID: 21300000, guid: 3adf700be01792e40a30ee5d97406e31, type: 3}
   - {fileID: 21300000, guid: e9d11bfb5ef63314993f4059eb5757e6, type: 3}
   - {fileID: 3077425217977446100, guid: a82d651c696b02f4c96e3b70eeb29b04, type: 3}
@@ -170,6 +171,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 521d603c64b152640b4fbdb762ffabd3, type: 3}
   - {fileID: 21300000, guid: 59ccdd3ca79b3e24292b1317c1757551, type: 3}
   - {fileID: 21300000, guid: 95f8b14c5484b864e944b171dda7be0c, type: 3}
+  - {fileID: 21300000, guid: f417b26c9a17dd0449b61fae0d4ce656, type: 3}
   - {fileID: 21300000, guid: e1f28d7c379eac6429973edf7329b55b, type: 3}
   - {fileID: 21300000, guid: 786b7d8c73faa41438a6f5af3175cc2a, type: 3}
   - {fileID: -5254449307309821379, guid: c4f007ccd80da8147aa55cede9124f50, type: 3}
@@ -333,6 +335,7 @@ SpriteAtlas:
   - ElectroBolt_Icon
   - LifeMushroom_Icon
   - BabyArrow
+  - HotBlade_Icon
   - SlotReplace_Icon
   - FireGem_Icon
   - TimeStop_Sheet_10
@@ -351,6 +354,7 @@ SpriteAtlas:
   - WaterPulse
   - particlePixel
   - HealingSpa_Icon
+  - HotBlade
   - QuestionMark
   - SlotDelete_Icon
   - Thunderbolt_Sheet_10

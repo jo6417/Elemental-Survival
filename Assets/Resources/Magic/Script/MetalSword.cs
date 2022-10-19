@@ -40,6 +40,7 @@ public class MetalSword : MonoBehaviour
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
 
+        // 스탯 초기화
         float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
         float range = MagicDB.Instance.MagicRange(magicHolder.magic);
 

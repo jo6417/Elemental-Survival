@@ -113,7 +113,6 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < atkNum; i++)
         {
             Vector2 atkPos = PlayerManager.Instance.GetMousePos();
-            // + Random.insideUnitCircle * range;
 
             attackPos.Add(atkPos);
         }
@@ -356,7 +355,7 @@ public class CastMagic : MonoBehaviour
             else
                 // 오브젝트 없으면 범위내 랜덤 위치 넣기
                 magicHolder.targetPos =
-                PlayerManager.Instance.GetMousePos()
+                (Vector2)PlayerManager.Instance.transform.position
                 + Random.insideUnitCircle.normalized * range;
 
             yield return new WaitForSeconds(0.1f);
@@ -514,7 +513,7 @@ public class CastMagic : MonoBehaviour
         // 마우스를 중심으로 범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
         enemyCollList.Clear();
-        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.GetMousePos(), range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
+        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
         // 찾은 적과 투사체 개수 중 많은 쪽만큼 반복
         int findNum = Mathf.Max(enemyCollList.Count, atkNum);

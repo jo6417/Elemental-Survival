@@ -247,6 +247,9 @@ public class Truck : MonoBehaviour
         // 잠시 대기
         yield return new WaitForSeconds(1f);
 
+        // 정차 충돌용 콜라이더 충돌 끄기
+        stopColl.isTrigger = true;
+
         // 뒤로 살짝 후퇴
         Vector3 backPos = transform.rotation.y == 0f ? -Vector2.right * 3f : Vector2.right * 3f;
         transform.DOMove(transform.position + backPos, 0.5f)
@@ -305,8 +308,6 @@ public class Truck : MonoBehaviour
         stopColl.enabled = false;
         // 스프라이트 끄기
         truckSprite.gameObject.SetActive(false);
-        // 정차 충돌용 콜라이더 충돌 끄기
-        stopColl.isTrigger = true;
         // 그림자 끄기
         shadow.gameObject.SetActive(false);
         // 바퀴 파티클 대기 후 끄기

@@ -69,9 +69,12 @@ public class MagicProjectile : MonoBehaviour
         if (sprite != null)
             sprite.enabled = true;
 
-        // 파티클 활성화
-        // if (particleManager != null)
-        //     particleManager.particle.Play();
+        // 파티클 있으면 켜기
+        if (particleManager != null)
+        {
+            particleManager.gameObject.SetActive(true);
+            particleManager.particle.Play();
+        }
 
         //콜라이더 켜기
         coll.enabled = true;
@@ -267,14 +270,17 @@ public class MagicProjectile : MonoBehaviour
         magicHolder.MultipleSpeed = 1f;
 
         // 파티클 매니저 있으면
-        if (particleManager)
-            // 파티클 사라진후 디스폰
-            particleManager.SmoothDespawn();
-        else
+        if (particleManager != null)
         {
-            // 오브젝트 디스폰하기
-            if (gameObject.activeSelf)
-                LeanPool.Despawn(transform);
+            // 파티클 사라진후 디스폰
+            particleManager.SmoothDisable();
+
+            // 파티클 꺼질때까지 대기
+            yield return new WaitUntil(() => !particleManager.gameObject.activeSelf);
         }
+
+        // 오브젝트 디스폰하기
+        if (gameObject.activeSelf)
+            LeanPool.Despawn(transform);
     }
 }
