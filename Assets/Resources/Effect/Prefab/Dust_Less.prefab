@@ -49,7 +49,6 @@ MonoBehaviour:
   autoDespawn: 1
   collOverTime: 0.2
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &1994870664517383051
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -59,7 +58,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1994870664517383061}
   serializedVersion: 7
   lengthInSec: 2
-  simulationSpeed: 1
+  simulationSpeed: 3
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0

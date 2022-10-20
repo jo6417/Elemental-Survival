@@ -165,10 +165,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pierceCount: 0
   fixedPower: 0
-  knockbackForce: 2
+  knockbackForce: 0
   burnTime: 0
   poisonTime: 0
-  bleedTime: 0
+  bleedTime: 2
   slowTime: 0
   wetTime: 0
   shockTime: 0
@@ -261,7 +261,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2515815000629190185
 Transform:
   m_ObjectHideFlags: 0
@@ -344,7 +344,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7182411091134342155
 Transform:
   m_ObjectHideFlags: 0
@@ -373,6 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isFade: 1
   lookDir: 1
   isSpin: 0
   spreadForce: 10

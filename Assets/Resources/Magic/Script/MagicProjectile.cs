@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
 
 public class MagicProjectile : MonoBehaviour
 {
     [Header("Modify")]
+    [SerializeField] bool isFade = false; // 디스폰시 옅어지며 사라짐
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
     public bool isSpin; // 투사체 회전 여부
@@ -20,6 +22,7 @@ public class MagicProjectile : MonoBehaviour
     public Rigidbody2D rigid;
     [SerializeField] Collider2D coll;
     [SerializeField] SpriteRenderer sprite;
+    Color originColor;
 
     [Header("Status")]
     float speed = 0;
@@ -34,6 +37,10 @@ public class MagicProjectile : MonoBehaviour
         sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
 
         velocity = rigid.velocity;
+
+        // 원본 컬러 저장
+        if (sprite != null)
+            originColor = sprite.color;
 
         // particleManager = particleManager == null ? GetComponentInChildren<ParticleManager>() : particleManager;
     }
@@ -52,6 +59,10 @@ public class MagicProjectile : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 스프라이트 끄기
+        if (sprite != null)
+            sprite.enabled = false;
+
         //콜라이더 끄기
         coll.enabled = false;
 
@@ -65,9 +76,20 @@ public class MagicProjectile : MonoBehaviour
         // 마법 지속시간 계산 + 추가 지속시간
         duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.AddDuration;
 
-        // 스프라이트 활성화
+        // 타겟 위치 바라보기
+        Vector3 returnDir = (magicHolder.targetPos - transform.position).normalized;
+        float rotation = Mathf.Atan2(returnDir.y, returnDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
+
+        // 스프라이트 있을때
         if (sprite != null)
+        {
+            // 원본 컬러로 초기화
+            sprite.color = originColor;
+
+            // 스프라이트 켜기
             sprite.enabled = true;
+        }
 
         // 파티클 있으면 켜기
         if (particleManager != null)
@@ -209,10 +231,6 @@ public class MagicProjectile : MonoBehaviour
         // 콜라이더 끄기
         coll.enabled = false;
 
-        // 스프라이트 있으면 끄기
-        if (sprite)
-            sprite.enabled = false;
-
         //파괴 이펙트 있으면 남기기
         if (hitEffect)
         {
@@ -226,44 +244,44 @@ public class MagicProjectile : MonoBehaviour
         }
 
         //파편 있으면 비산 시키기
-        if (shatters.Length > 0)
-        {
-            foreach (GameObject shatter in shatters)
-            {
-                //파편 활성화
-                shatter.SetActive(true);
+        // if (shatters.Length > 0)
+        // {
+        //     foreach (GameObject shatter in shatters)
+        //     {
+        //         //파편 활성화
+        //         shatter.SetActive(true);
 
-                //날아갈 방향
-                Vector2 dir = Random.insideUnitCircle;
+        //         //날아갈 방향
+        //         Vector2 dir = Random.insideUnitCircle;
 
-                Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
-                //속도 지정
-                rigid.velocity = dir.normalized * spreadForce;
-                //각속도 지정
-                rigid.angularVelocity = dir.x * 20f * spreadForce;
-            }
+        //         Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
+        //         //속도 지정
+        //         rigid.velocity = dir.normalized * spreadForce;
+        //         //각속도 지정
+        //         rigid.angularVelocity = dir.x * 20f * spreadForce;
+        //     }
 
-            //파편 비산되는동안 대기
-            yield return new WaitForSeconds(1f);
+        //     //파편 비산되는동안 대기
+        //     yield return new WaitForSeconds(1f);
 
-            //파편 초기화
-            foreach (GameObject shatter in shatters)
-            {
-                //파편 비활성화
-                shatter.SetActive(false);
+        //     //파편 초기화
+        //     foreach (GameObject shatter in shatters)
+        //     {
+        //         //파편 비활성화
+        //         shatter.SetActive(false);
 
-                Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
-                //속도 초기화
-                rigid.velocity = Vector3.zero;
-                //각속도 초기화
-                rigid.angularVelocity = 0f;
+        //         Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
+        //         //속도 초기화
+        //         rigid.velocity = Vector3.zero;
+        //         //각속도 초기화
+        //         rigid.angularVelocity = 0f;
 
-                //위치 초기화
-                shatter.transform.localPosition = Vector3.zero;
-                //각도 초기화
-                shatter.transform.rotation = Quaternion.identity;
-            }
-        }
+        //         //위치 초기화
+        //         shatter.transform.localPosition = Vector3.zero;
+        //         //각도 초기화
+        //         shatter.transform.rotation = Quaternion.identity;
+        //     }
+        // }
 
         // 마법 추가 스탯 초기화
         magicHolder.AddDuration = 0f;
@@ -278,6 +296,16 @@ public class MagicProjectile : MonoBehaviour
             // 파티클 꺼질때까지 대기
             yield return new WaitUntil(() => !particleManager.gameObject.activeSelf);
         }
+
+        // 오브젝트 투명하게
+        if (sprite != null && isFade)
+        {
+            sprite.DOColor(Color.clear, 0.2f);
+            yield return new WaitForSeconds(0.2f);
+        }
+        // 바로 끄기
+        else
+            sprite.enabled = false;
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)

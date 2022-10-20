@@ -10,6 +10,7 @@ public class ParticleManager : MonoBehaviour
 
     [Header("Modify")]
     public bool autoDespawn = false; //자동 디스폰 여부
+    [SerializeField] float despawnDelay; // 디스폰 딜레이
     public float collOverTime = 0f;
     public float modify_startLife;
     // public bool autoPlay = true;
@@ -69,6 +70,9 @@ public class ParticleManager : MonoBehaviour
 
             // 파티클 끝날때까지 대기
             yield return new WaitUntil(() => particle.isStopped);
+
+            // 임의의 디스폰 딜레이 대기
+            yield return new WaitForSeconds(despawnDelay);
 
             //파티클 끝나면 디스폰
             LeanPool.Despawn(transform);

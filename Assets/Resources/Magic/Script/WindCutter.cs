@@ -8,7 +8,6 @@ public class WindCutter : MonoBehaviour
     [SerializeField] MagicHolder magicHolder;
     public SpriteRenderer sprite;
     public Animator anim;
-    public MagicInfo magic;
     float duration;
 
     private void Awake()
@@ -27,7 +26,12 @@ public class WindCutter : MonoBehaviour
     {
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+
+        // 스탯 초기화
+        duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
+
+        // 출혈 시간에 적용
+        magicHolder.bleedTime = duration;
 
         // 레이어에 따라 색깔 바꾸기
         if (magicHolder.gameObject.layer == SystemManager.Instance.layerList.EnemyAttack_Layer)

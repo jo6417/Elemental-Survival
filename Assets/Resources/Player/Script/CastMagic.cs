@@ -107,15 +107,7 @@ public class CastMagic : MonoBehaviour
             yield break;
 
         // 마우스 위치 근처 공격 지점 리스트
-        List<Vector2> attackPos = new List<Vector2>();
-
-        // 투사체 개수만큼 마우스 근처 포지션 지정
-        for (int i = 0; i < atkNum; i++)
-        {
-            Vector2 atkPos = PlayerManager.Instance.GetMousePos();
-
-            attackPos.Add(atkPos);
-        }
+        List<Vector2> attackPos = MarkEnemyPos(magic, PlayerManager.Instance.GetMousePos());
 
         // 공격지점 개수만큼 마법 시전
         for (int i = 0; i < attackPos.Count; i++)
@@ -316,12 +308,10 @@ public class CastMagic : MonoBehaviour
             yield break;
 
         // 랜덤 적 찾기, 투사체 수 이하로
-        List<Character> enemyObj = MarkEnemies(magic);
+        List<Vector2> enemyObj = MarkEnemyPos(magic);
 
         //해당 마법 쿨타임 불러오기
         float coolTime = MagicDB.Instance.MagicCoolTime(magic);
-        // 해당 마법 범위 불러오기
-        float range = MagicDB.Instance.MagicRange(magic);
 
         // print(magic.magicName + " : " + coolTime);
 
@@ -343,20 +333,9 @@ public class CastMagic : MonoBehaviour
             if (magicHolder.magic == null)
                 magicHolder.magic = magic;
 
-            // 적 오브젝트가 null이 아닐때
-            if (enemyObj[i] != null)
-            {
-                //적 오브젝트 넣기, (유도 기능 등에 사용)
-                magicHolder.targetObj = enemyObj[i].gameObject;
 
-                //적 위치 넣기
-                magicHolder.targetPos = enemyObj[i].transform.position;
-            }
-            else
-                // 오브젝트 없으면 범위내 랜덤 위치 넣기
-                magicHolder.targetPos =
-                (Vector2)PlayerManager.Instance.transform.position
-                + Random.insideUnitCircle.normalized * range;
+            // 산출된 위치 넣기
+            magicHolder.targetPos = enemyObj[i];
 
             yield return new WaitForSeconds(0.1f);
         }
@@ -428,12 +407,15 @@ public class CastMagic : MonoBehaviour
         nowCastMagics.Add(magic);
     }
 
-    public List<Vector2> MarkEnemyPos(MagicInfo magic)
+    public List<Vector2> MarkEnemyPos(MagicInfo magic, Vector2 targetPos = default)
     {
         // 마법 범위 계산
         float range = MagicDB.Instance.MagicRange(magic);
         // 투사체 개수 계산
         int atkNum = MagicDB.Instance.MagicAtkNum(magic);
+
+        // 프리팹 찾기
+        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
 
         // 리턴할 적 위치 리스트
         List<Vector2> enemyPosList = new List<Vector2>();
@@ -441,59 +423,39 @@ public class CastMagic : MonoBehaviour
         // 적 오브젝트 리스트
         List<Character> enemyObjs = new List<Character>();
 
-        //범위 안의 모든 적 콜라이더 리스트에 담기
-        List<Collider2D> enemyCollList = new List<Collider2D>();
-        enemyCollList.Clear();
-        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
-
-        // 찾은 적과 투사체 개수 중 많은 쪽만큼 반복
-        int findNum = Mathf.Max(enemyCollList.Count, atkNum);
-        for (int i = 0; i < findNum; i++)
+        // 기준점을 정해주지 않으면 주변의 적 찾기
+        if (targetPos == default)
         {
-            // 투사체 개수만큼 채워지면 반복문 끝내기
-            if (enemyObjs.Count >= atkNum)
-                break;
+            //범위 안의 모든 적 콜라이더 리스트에 담기
+            List<Collider2D> enemyCollList = new List<Collider2D>();
+            enemyCollList.Clear();
+            enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
-            Character enemyManager = null;
-            Collider2D targetColl = null;
-            Vector2 targetPos = default;
+            // 적 못찾으면 범위내 랜덤 위치 잡기
+            targetPos = Random.insideUnitCircle.normalized * range;
 
-            if (enemyCollList.Count > 0)
+            // 가장 가까운 적의 위치를 기준으로 잡기
+            foreach (Collider2D enemyColl in enemyCollList)
             {
-                // 리스트 내에서 랜덤으로 선택
-                targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
                 // 적 히트박스 찾기
-                HitBox targetHitBox = targetColl.GetComponent<HitBox>();
+                HitBox targetHitBox = enemyColl.GetComponent<HitBox>();
+                // 히트박스 찾으면 끝내기
                 if (targetHitBox != null)
-                    // 적 매니저 찾기
-                    enemyManager = targetHitBox.character;
-
-                // 이미 들어있는 오브젝트일때
-                if (enemyObjs.Exists(x => x == enemyManager)
-                // 해당 몬스터가 유령일때
-                || (enemyManager && enemyManager.IsGhost))
                 {
-                    // 임시 리스트에서 지우기
-                    enemyCollList.Remove(targetColl);
-
-                    // 넘기기
-                    continue;
+                    targetPos = enemyColl.transform.position;
+                    break;
                 }
             }
+        }
 
-            // 몬스터가 있으면 위치 넣기
-            if (enemyManager != null)
-                targetPos = enemyManager.transform.position;
-            else
-                // 오브젝트 없으면 범위내 랜덤 위치 넣기
-                targetPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * MagicDB.Instance.MagicRange(magic);
+        // 투사체 개수만큼 반복
+        for (int i = 0; i < atkNum; i++)
+        {
+            // 첫번째 찾은 타겟 기준 범위내 위치 산출
+            Vector2 pos = targetPos + Random.insideUnitCircle.normalized * magicPrefab.transform.lossyScale.x * 5f;
 
             // 적 위치 변수에 담기
-            enemyPosList.Add(targetPos);
-
-            // 임시 리스트에서 지우기
-            if (targetColl != null)
-                enemyCollList.Remove(targetColl);
+            enemyPosList.Add(pos);
         }
 
         // 적의 위치 리스트 리턴

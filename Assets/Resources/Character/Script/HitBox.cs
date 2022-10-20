@@ -653,7 +653,7 @@ public class HitBox : MonoBehaviour
             bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, character.buffParent.position, Quaternion.identity, character.buffParent);
 
             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-            bleedIcon.transform.localScale = Vector3.one * character.portalSize;
+            // bleedIcon.transform.localScale = Vector3.one * character.portalSize;
         }
 
         // 도트 데미지 입히기

@@ -36,7 +36,7 @@ public class StickyBubble : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.initDone);
 
         // 슬로우 시간 갱신
-        magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);
+        // magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);
 
         // 발사할 거품 개수에 atkNum값 갱신
         ParticleSystem.EmissionModule particleEmmision = bubbleParticle.emission;
