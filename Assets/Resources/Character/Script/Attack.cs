@@ -28,4 +28,5 @@ public class Attack : MonoBehaviour
     public float freezeTime = 0; // 빙결 지속시간
     public float flatTime = 0f; // 납작해지는 디버프 지속시간
     public float stopTime; // 시간정지 지속시간
+    public float stunTime; // 스턴 지속시간
 }

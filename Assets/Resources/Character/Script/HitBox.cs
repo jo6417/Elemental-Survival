@@ -312,6 +312,22 @@ public class HitBox : MonoBehaviour
                 character.stopCount = attacker.stopTime;
         }
 
+        // 스턴
+        if (attacker.stunTime > 0)
+        {
+            // 보스가 아닌 몬스터일때
+            if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+            {
+                //이미 스턴 코루틴 실행중이면 기존 코루틴 취소
+                if (character.stunCoroutine != null)
+                    StopCoroutine(character.stunCoroutine);
+
+                character.stunCoroutine = StunDebuff(attacker.stunTime);
+
+                StartCoroutine(character.stunCoroutine);
+            }
+        }
+
         // 감전 디버프 && 크리티컬일때
         if (attacker.shockTime > 0 && isCritical)
         {
@@ -801,6 +817,60 @@ public class HitBox : MonoBehaviour
         character.shockCoroutine = null;
     }
 
+    public IEnumerator StunDebuff(float stunDuration)
+    {
+        // 디버프량
+        float slowAmount = 0f;
+        // 스턴 디버프 이펙트
+        Transform stunEffect = null;
+
+        // 애니메이션 속도 저하
+        for (int i = 0; i < character.animList.Count; i++)
+        {
+            character.animList[i].speed = slowAmount;
+        }
+
+        // 이동 속도 저하 디버프
+        character.moveSpeedDebuff = slowAmount;
+
+        //이동 멈추기
+        character.rigid.velocity = Vector2.zero;
+
+        // 이미 스턴 디버프 중 아닐때
+        if (!character.transform.Find(SystemManager.Instance.stunDebuffEffect.name))
+        {
+            // 스턴 디버프 이펙트 붙이기
+            stunEffect = LeanPool.Spawn(SystemManager.Instance.stunDebuffEffect, character.buffParent.position, Quaternion.identity, character.buffParent).transform;
+
+            // 포탈 사이즈 배율만큼 이펙트 배율 키우기
+            stunEffect.transform.localScale = Vector3.one * character.portalSize;
+        }
+
+        // 스턴 시간동안 대기
+        yield return new WaitForSeconds(stunDuration);
+
+        // 죽었으면 초기화 없이 리턴
+        if (character.isDead)
+            yield break;
+
+        // 애니메이션 속도 초기화
+        for (int i = 0; i < character.animList.Count; i++)
+        {
+            character.animList[i].speed = 1f;
+        }
+
+        // 이동 속도 저하 디버프 초기화
+        character.moveSpeedDebuff = 1f;
+
+        // 자식중에 스턴 이펙트 찾기
+        stunEffect = character.buffParent.Find(SystemManager.Instance.stunDebuffEffect.name);
+        if (stunEffect != null)
+            LeanPool.Despawn(stunEffect);
+
+        // 코루틴 변수 초기화
+        character.stunCoroutine = null;
+    }
+
     public IEnumerator Dead()
     {
         // if (character.enemy == null)
@@ -969,6 +1039,14 @@ public class HitBox : MonoBehaviour
         // 감전 코루틴 변수 초기화
         character.shockCoroutine = null;
 
+        // 스턴 디버프 해제
+        // 자식중에 스턴 이펙트 찾기
+        Transform stunEffect = character.buffParent.Find(SystemManager.Instance.stunDebuffEffect.name);
+        if (stunEffect != null)
+            LeanPool.Despawn(stunEffect);
+        // 스턴 코루틴 변수 초기화
+        character.stunCoroutine = null;
+
         #region DotHit
 
         // 화상 이펙트 없에기
@@ -986,7 +1064,7 @@ public class HitBox : MonoBehaviour
         character.poisonCoroutine = null;
 
         // 출혈 이펙트 없에기
-        Transform bleedIcon = character.transform.Find(SystemManager.Instance.bleedDebuffUI.name);
+        Transform bleedIcon = character.buffParent.Find(SystemManager.Instance.bleedDebuffUI.name);
         if (bleedIcon != null)
             LeanPool.Despawn(bleedIcon);
         // 출혈 코루틴 변수 초기화

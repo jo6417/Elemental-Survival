@@ -432,7 +432,7 @@ public class CastMagic : MonoBehaviour
             enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
             // 적 못찾으면 범위내 랜덤 위치 잡기
-            targetPos = Random.insideUnitCircle.normalized * range;
+            targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
             // 가장 가까운 적의 위치를 기준으로 잡기
             foreach (Collider2D enemyColl in enemyCollList)
@@ -451,8 +451,12 @@ public class CastMagic : MonoBehaviour
         // 투사체 개수만큼 반복
         for (int i = 0; i < atkNum; i++)
         {
-            // 첫번째 찾은 타겟 기준 범위내 위치 산출
-            Vector2 pos = targetPos + Random.insideUnitCircle.normalized * magicPrefab.transform.lossyScale.x * 5f;
+            Vector2 pos = targetPos;
+
+            // 2번째 투사체부터
+            if (i > 1)
+                // 마법 월드 사이즈에 비례해서 위치 퍼뜨리기
+                pos = targetPos + Random.insideUnitCircle.normalized * magicPrefab.transform.lossyScale.x * 3f;
 
             // 적 위치 변수에 담기
             enemyPosList.Add(pos);

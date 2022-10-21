@@ -38,7 +38,7 @@ public class StickyBubble : MonoBehaviour
         // 슬로우 시간 갱신
         // magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);
 
-        // 발사할 거품 개수에 atkNum값 갱신
+        // 발사할 파티클 개수에 atkNum값 갱신
         ParticleSystem.EmissionModule particleEmmision = bubbleParticle.emission;
         particleEmmision.SetBurst(0, new ParticleSystem.Burst(0, 1, MagicDB.Instance.MagicPierce(magic), 0.05f));
 

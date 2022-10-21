@@ -117,11 +117,14 @@ public class Character : MonoBehaviour
     public IEnumerator burnCoroutine = null;
     public IEnumerator poisonCoroutine = null;
     public IEnumerator bleedCoroutine = null;
+    //todo 행동불능, 저하 기능 하나로 묶고 이펙트만 다르게 수정
     public IEnumerator slowCoroutine = null;
     public IEnumerator shockCoroutine = null;
+    public IEnumerator stunCoroutine = null;
     public float particleHitCount = 0; // 파티클 피격 카운트
     public float hitDelayCount = 0; // 피격 딜레이 카운트
     public float stopCount = 0; // 시간 정지 카운트
+    public float stunCount = 0; // 스턴 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
     public float moveSpeedDebuff = 1f; // 속도 디버프
