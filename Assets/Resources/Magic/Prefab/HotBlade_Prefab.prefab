@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 7691492264046929192}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0
   modify_startLife: 0
 --- !u!198 &7691492264046929192
@@ -4873,15 +4874,16 @@ MonoBehaviour:
   pierceCount: 0
   fixedPower: 0
   knockbackForce: 0
-  burnTime: 0
+  burnTime: 1
   poisonTime: 0
-  bleedTime: 0
+  bleedTime: 1
   slowTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
   flatTime: 0
   stopTime: 0
+  stunTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   isManualCast: 0

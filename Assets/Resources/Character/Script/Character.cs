@@ -114,13 +114,16 @@ public class Character : MonoBehaviour
     [Header("Buff")]
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
-    public IEnumerator burnCoroutine = null;
-    public IEnumerator poisonCoroutine = null;
-    public IEnumerator bleedCoroutine = null;
+    public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
+    public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
+
+    // public IEnumerator burnCoroutine = null;
+    // public IEnumerator poisonCoroutine = null;
+    // public IEnumerator bleedCoroutine = null;
     //todo 행동불능, 저하 기능 하나로 묶고 이펙트만 다르게 수정
-    public IEnumerator slowCoroutine = null;
-    public IEnumerator shockCoroutine = null;
-    public IEnumerator stunCoroutine = null;
+    // public IEnumerator slowCoroutine = null;
+    // public IEnumerator shockCoroutine = null;
+    // public IEnumerator stunCoroutine = null;
     public float particleHitCount = 0; // 파티클 피격 카운트
     public float hitDelayCount = 0; // 피격 딜레이 카운트
     public float stopCount = 0; // 시간 정지 카운트
@@ -696,30 +699,15 @@ public class Character : MonoBehaviour
 
         // 피격 했을때
         if (hitDelayCount > 0)
-        {
             return false;
-        }
 
         // 감전 디버프일때
-        if (shockCoroutine != null)
-        {
+        if (DebuffList[(int)Debuff.Shock] != null
+        // 스턴 디버프일때
+        || DebuffList[(int)Debuff.Stun] != null
+        )
             // 행동불능이므로 false 리턴
             return false;
-        }
-
-        // 슬로우 디버프일때
-        if (slowCoroutine != null)
-        {
-            // 행동가능이므로 true 리턴
-            return true;
-        }
-
-        // 포이즌 디버프일때
-        if (poisonCoroutine != null)
-        {
-            // 행동가능이므로 true 리턴
-            return true;
-        }
 
         // 모든 문제 없으면 idle 상태로 전환
         // state = State.Idle;

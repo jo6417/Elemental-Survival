@@ -73,12 +73,12 @@ public class LifeMushroomSpawner : MonoBehaviour
     }
 
     // 버섯 드랍하기
-    public void DropLifeSeed(Character enemyManager)
+    public void DropLifeSeed(Character character)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
         // 독 데미지 받는중에만 진행
-        if (enemyManager.poisonCoroutine != null)
+        if (character.DebuffList[(int)Character.Debuff.Poison] != null)
             return;
 
         // 크리티컬 확률 = 드랍 확률
@@ -91,7 +91,7 @@ public class LifeMushroomSpawner : MonoBehaviour
         // HealSeed 마법 크리티컬 확률에 따라 드랍
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(lifeMushroom, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject mushroom = LeanPool.Spawn(lifeMushroom, character.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
             SpriteRenderer mushroomSprite = mushroom.GetComponent<SpriteRenderer>();
 

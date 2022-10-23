@@ -26,9 +26,12 @@ public class ElectroBolt : MonoBehaviour
     IEnumerator Init()
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
-        // 필요한 스탯 불러오기
+        // 스탯 초기화
         range = MagicDB.Instance.MagicRange(magicHolder.magic);
         duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
+
+        // 디버프 초기화
+        magicHolder.shockTime = 1f;
 
         //콜라이더 끄기
         atkColl.enabled = false;

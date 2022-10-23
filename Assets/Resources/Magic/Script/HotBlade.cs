@@ -38,6 +38,10 @@ public class HotBlade : MonoBehaviour
         float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
         float duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
 
+        // 디버프 초기화
+        magicHolder.burnTime = duration;
+        magicHolder.bleedTime = duration;
+
         // 톱날 회전
         transform.DOLocalRotate(Vector3.forward * 360f, 0.2f, RotateMode.LocalAxisAdd)
         .SetEase(Ease.Linear)

@@ -381,6 +381,8 @@ public class PlayerManager : MonoBehaviour
             string name = CastMagic.Instance.testMagics[i].ToString();
             MagicInfo magic = MagicDB.Instance.GetMagicByName(name);
             PhoneMenu.Instance.GetMagic(magic);
+
+            yield return null;
         }
 
         //! 인스펙터의 테스트 아이템 획득
@@ -389,6 +391,8 @@ public class PlayerManager : MonoBehaviour
             string name = CastMagic.Instance.testItems[i].ToString();
             ItemInfo item = ItemDB.Instance.GetItemByName(name);
             PhoneMenu.Instance.GetItem(item);
+
+            yield return null;
         }
 
         // 인벤토리에서 마법 찾아 자동 시전하기

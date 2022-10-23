@@ -4917,12 +4917,13 @@ MonoBehaviour:
   burnTime: 0
   poisonTime: 0
   bleedTime: 0
-  slowTime: 0
+  slowTime: 3
   wetTime: 0
   shockTime: 0
   freezeTime: 0
   flatTime: 0
   stopTime: 0
+  stunTime: 0
   coll: {fileID: 0}
   targetObj: {fileID: 0}
   isManualCast: 0

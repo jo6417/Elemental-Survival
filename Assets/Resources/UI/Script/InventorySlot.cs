@@ -363,22 +363,22 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     // 현재 슬롯 빨갛게 인디케이터 점등
                     BlinkSlot(4);
 
-                    //todo 메시지
+                    // 메시지
                     StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 슬롯에는 마법만 장착 가능합니다."));
 
                     return;
                 }
 
-                if (magicInfo.castType != MagicDB.CastType.active.ToString())
-                {
-                    // 현재 슬롯 빨갛게 인디케이터 점등
-                    BlinkSlot(4);
+                // if (magicInfo.castType != MagicDB.CastType.active.ToString())
+                // {
+                //     // 현재 슬롯 빨갛게 인디케이터 점등
+                //     BlinkSlot(4);
 
-                    //todo 메시지
-                    StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 마법만 장착 가능합니다."));
+                //     // 메시지
+                //     StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 마법만 장착 가능합니다."));
 
-                    return;
-                }
+                //     return;
+                // }
 
                 // 비어있는 액티브 슬롯
                 InventorySlot emptyActiveSlot = null;
