@@ -16,6 +16,7 @@ public class DeathMine : MonoBehaviour
     [SerializeField] ParticleSystem landEffect;
     [SerializeField] Collider2D coll;
     [SerializeField] Transform shadow;
+    [SerializeField] ParticleSystem sparkEffect; // 폭발 직전 불꽃 파티클
 
     private void Awake()
     {
@@ -29,6 +30,9 @@ public class DeathMine : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 불꽃 파티클 끄기
+        sparkEffect.gameObject.SetActive(false);
+
         // 콜라이더 끄기
         coll.enabled = false;
 
@@ -85,17 +89,23 @@ public class DeathMine : MonoBehaviour
         shadow.rotation = Quaternion.Euler(Vector3.zero);
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        // 플레이어가 발로 차면
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
-        {
-            // 콜라이더 끄기, 중복 충돌 방지
-            coll.enabled = false;
+    // private void OnCollisionEnter2D(Collision2D other)
+    // {
+    //     // 플레이어가 발로 차면
+    //     if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
+    //     {
+    //         // 콜라이더 끄기, 중복 충돌 방지
+    //         coll.enabled = false;
 
-            // 폭발하기
-            StartCoroutine(Explosion());
-        }
+    //         // 폭발하기
+    //         StartCoroutine(Explosion());
+    //     }
+    // }
+
+    public void Explode()
+    {
+        // 폭발하기
+        StartCoroutine(Explosion());
     }
 
     IEnumerator Explosion()
@@ -108,6 +118,9 @@ public class DeathMine : MonoBehaviour
         bombLight.DOColor(Color.red, 1f)
         .SetLoops(2, LoopType.Yoyo);
 
+        // 불꽃 파티클 켜기
+        sparkEffect.gameObject.SetActive(true);
+
         // 깜빡이는 2초간 대기
         yield return new WaitForSeconds(2f);
 
@@ -118,7 +131,7 @@ public class DeathMine : MonoBehaviour
         explosionHit.SetActive(false);
 
         // 마법 range 만큼 감지 및 폭발 범위 적용
-        explosionHit.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic);
+        explosionHit.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic) / 2f;
 
         //폭발에 마법 정보 넣기
         MagicHolder effectHolder = explosionHit.GetComponent<MagicHolder>();

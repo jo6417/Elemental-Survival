@@ -5,11 +5,13 @@ using UnityEngine;
 public class MagicHolder : Attack
 {
     [Header("Refer")]
+    public MagicCastCallback magicCastCallback; // 패시브를 액티브 사용 했을때 콜백
+    public delegate void MagicCastCallback();
     public MagicInfo magic; //보유한 마법 데이터
     public Collider2D coll;
-    [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
 
     [Header("Status")]
+    [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
     public bool isManualCast = false; //수동으로 시전한 마법인지 여부
     public string magicName; //마법 이름 확인
     public Vector3 targetPos = default(Vector3); //목표 위치

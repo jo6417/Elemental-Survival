@@ -447,8 +447,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 MagicInfo magic = selectSlotInfo as MagicInfo;
                 ItemInfo item = selectSlotInfo as ItemInfo;
 
-                // 마법이 아니거나, 액티브 마법이 아닐때
-                if (magic == null || magic.castType != MagicDB.CastType.active.ToString())
+                // 마법이 아닐때
+                if (magic == null)
                 {
                     // 마우스 아이콘 떨리기
                     PhoneMenu.Instance.ShakeMouseIcon();

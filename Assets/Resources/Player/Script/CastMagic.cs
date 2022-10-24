@@ -74,83 +74,6 @@ public class CastMagic : MonoBehaviour
         transform.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange + hoverHeight, -0.5f);
     }
 
-    public IEnumerator ManualCast(InventorySlot invenSlot, MagicInfo magic)
-    {
-        // 마법 정보가 없거나 쿨타임 중이면 실패 인디케이터 실행
-        if (magic == null || MagicDB.Instance.GetActiveMagicByID(magic.id).coolCount > 0)
-        {
-            // 스프라이트 2회 켜기
-            invenSlot.BlinkSlot(4);
-
-            yield break;
-        }
-
-        // 해당 마법 투사체 개수 불러오기
-        float atkNum = MagicDB.Instance.MagicAtkNum(magic);
-        // 해당 마법 쿨타임 불러오기
-        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
-        // 해당 마법 범위 불러오기
-        float range = MagicDB.Instance.MagicRange(magic);
-
-        // 해당 마법의 전역 쿨타임 갱신
-        MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
-        activeMagic.coolCount = coolTime;
-
-        // 플레이어 마법 시전 이펙트 플레이
-        playerMagicCastEffect.Play();
-
-        //마법 프리팹 찾기
-        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
-
-        //프리팹 없으면 넘기기
-        if (magicPrefab == null)
-            yield break;
-
-        // 마우스 위치 근처 공격 지점 리스트
-        List<Vector2> attackPos = MarkEnemyPos(magic, PlayerManager.Instance.GetMousePos());
-
-        // 공격지점 개수만큼 마법 시전
-        for (int i = 0; i < attackPos.Count; i++)
-        {
-            // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
-
-            // 레이어 바꾸기
-            magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
-
-            //매직 홀더 찾기
-            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
-
-            // 수동 시전 여부 넣기
-            magicHolder.isManualCast = true;
-
-            //타겟 정보 넣기
-            magicHolder.SetTarget(MagicHolder.Target.Enemy);
-
-            //마법 정보 넣기
-            if (magicHolder.magic == null)
-                magicHolder.magic = magic;
-
-            //적 오브젝트 넣기, (유도 기능 등에 사용)
-            // magicHolder.targetObj = attackPos[i];
-
-            //적 위치 넣기
-            if (attackPos[i] != null)
-                magicHolder.targetPos = attackPos[i];
-
-            yield return new WaitForSeconds(0.1f);
-        }
-
-        // 해당 마법 전역 쿨타임 카운트 감소
-        while (activeMagic.coolCount > 0)
-        {
-            //카운트 차감, 플레이어 자체속도 반영
-            activeMagic.coolCount -= Time.deltaTime;
-
-            yield return null;
-        }
-    }
-
     public void CastCheck()
     {
         // 인벤토리에서 레벨 합산해서 리스트 만들기
@@ -160,10 +83,6 @@ public class CastMagic : MonoBehaviour
         // 인벤토리에서 마법 찾기
         for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
         {
-            // 액티브 마법이면 넘기기
-            if (i >= 20)
-                continue;
-
             // 마법 정보 불러오기
             MagicInfo magic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
 
@@ -195,48 +114,57 @@ public class CastMagic : MonoBehaviour
             // print(referMagic.magicLevel + " : " + magic.magicLevel);
         }
 
+        // 액티브 슬롯의 패시브 마법도 포함
+        MagicInfo activeMagic = PlayerManager.Instance.activeSlot_A.slotInfo as MagicInfo;
+        if (activeMagic != null && activeMagic.castType == MagicDB.CastType.passive.ToString())
+            castList.Add(activeMagic);
+        activeMagic = PlayerManager.Instance.activeSlot_B.slotInfo as MagicInfo;
+        if (activeMagic != null && activeMagic.castType == MagicDB.CastType.passive.ToString())
+            castList.Add(activeMagic);
+        activeMagic = PlayerManager.Instance.activeSlot_C.slotInfo as MagicInfo;
+        if (activeMagic != null && activeMagic.castType == MagicDB.CastType.passive.ToString())
+            castList.Add(activeMagic);
+
         // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
         foreach (MagicInfo magic in castList)
         {
             MagicInfo tempMagic = null;
 
-            // 일반 마법일때
-            if (magic.castType == MagicDB.CastType.passive.ToString()
-            || magic.castType == MagicDB.CastType.active.ToString())
+            //ID 같은 마법 찾기
+            tempMagic = nowCastMagics.Find(x => x.id == magic.id);
+
+            // 마법이 현재 실행 마법 리스트에 없으면, 신규 마법이면
+            if (tempMagic == null)
             {
-                //ID 같은 일반 마법 찾기
-                tempMagic = nowCastMagics.Find(x => x.id == magic.id);
-
-                // 마법이 현재 실행 마법 리스트에 없으면, 신규 마법이면
-                if (tempMagic == null)
-                {
-                    // 해당 마법이 쿨타임 중일때 넘기기 (이미 반복 코루틴 실행중이므로)
-                    if (MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
-                        continue;
-
-                    // 패시브 마법일때
-                    if (magic.castType == MagicDB.CastType.passive.ToString())
-                    {
-                        //이미 소환되지 않았을때
-                        if (!magic.exist)
-                        {
-                            //패시브 마법 시전
-                            PassiveCast(magic);
-                        }
-                    }
-
-                    // 액티브 마법일때
-                    if (magic.castType == MagicDB.CastType.active.ToString())
-                    {
-                        //nowCastMagics에 해당 마법 추가
-                        nowCastMagics.Add(magic);
-
-                        // 액티브 마법 시전
-                        StartCoroutine(ActiveCast(magic));
-                    }
-
+                // 해당 마법이 쿨타임 중일때 넘기기 (이미 반복 코루틴 실행중이므로)
+                if (MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
                     continue;
+
+                // 패시브 마법일때
+                if (magic.castType == MagicDB.CastType.passive.ToString())
+                {
+                    //이미 소환되지 않았을때
+                    if (!magic.exist)
+                    {
+                        //패시브 마법 시전
+                        PassiveCast(magic);
+                    }
+
+                    // 액티브 콜백 시전
+                    StartCoroutine(ActiveCast(magic));
                 }
+
+                // 액티브 마법일때
+                if (magic.castType == MagicDB.CastType.active.ToString())
+                {
+                    //nowCastMagics에 해당 마법 추가
+                    nowCastMagics.Add(magic);
+
+                    // 액티브 마법 시전
+                    StartCoroutine(ActiveCast(magic));
+                }
+
+                continue;
             }
 
             //현재 실행중인 마법 레벨이 다르면 (마법 레벨업일때)
@@ -260,7 +188,7 @@ public class CastMagic : MonoBehaviour
             }
         }
 
-        // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 일반 마법 찾아서 중단시키기
+        // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 마법 찾아서 중단시키기
         for (int i = 0; i < nowCastMagics.Count; i++)
         {
             //ID 같은 마법 찾기
@@ -294,63 +222,190 @@ public class CastMagic : MonoBehaviour
         StartCoroutine(UIManager.Instance.UpdateMagics(castList));
     }
 
-    //액티브 마법 소환
+    public IEnumerator ManualCast(InventorySlot invenSlot, MagicInfo magic)
+    {
+        // 마법 정보가 없거나 쿨타임 중이면 실패 인디케이터 실행
+        if (magic == null || MagicDB.Instance.GetActiveMagicByID(magic.id).coolCount > 0)
+        {
+            // 스프라이트 2회 켜기
+            invenSlot.BlinkSlot(4);
+
+            yield break;
+        }
+
+        // 플레이어 마법 시전 이펙트 플레이
+        playerMagicCastEffect.Play();
+
+        // 패시브일때
+        if (magic.castType == MagicDB.CastType.passive.ToString())
+        {
+            // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
+            GameObject passiveMagic = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == magic.id);
+
+            // 패시브 오브젝트에서 magicHolder 찾기
+            if (passiveMagic.TryGetComponent(out MagicHolder magicHolder))
+            {
+                // 수동 실행
+                magicHolder.isManualCast = true;
+
+                // 해당 마법의 콜백 실행
+                if (magicHolder.magicCastCallback != null)
+                    magicHolder.magicCastCallback();
+            }
+        }
+        // 액티브일때
+        else
+        {
+            //마법 프리팹 찾기
+            GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
+
+            //프리팹 없으면 넘기기
+            if (magicPrefab == null)
+                yield break;
+
+            // 마우스 위치 근처 공격 지점 리스트
+            List<Vector2> attackPos = MarkEnemyPos(magic, PlayerManager.Instance.GetMousePos());
+
+            // 공격지점 개수만큼 마법 시전
+            for (int i = 0; i < attackPos.Count; i++)
+            {
+                // 마법 오브젝트 생성
+                GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+                // 레이어 바꾸기
+                magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+
+                //매직 홀더 찾기
+                MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+                // 수동 시전 여부 넣기
+                magicHolder.isManualCast = true;
+
+                //타겟 정보 넣기
+                magicHolder.SetTarget(MagicHolder.Target.Enemy);
+
+                //마법 정보 넣기
+                if (magicHolder.magic == null)
+                    magicHolder.magic = magic;
+
+                //적 오브젝트 넣기, (유도 기능 등에 사용)
+                // magicHolder.targetObj = attackPos[i];
+
+                //적 위치 넣기
+                if (attackPos[i] != null)
+                    magicHolder.targetPos = attackPos[i];
+
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+
+        // 해당 마법 쿨타임 불러오기
+        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
+
+        // 패시브일때
+        MagicInfo globalMagic = null;
+        if (magic.castType == MagicDB.CastType.passive.ToString())
+        {
+            // 쿨타임 체크를 위한 전역 마법 정보 불러오기
+            globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
+            globalMagic.coolCount = coolTime;
+        }
+
+        // 해당 마법의 액티브 쿨타임 갱신
+        MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
+        activeMagic.coolCount = coolTime;
+
+        // 쿨타임중이면 반복
+        while (activeMagic.coolCount > 0)
+        {
+            // 해당 마법 액티브 쿨타임 차감
+            activeMagic.coolCount -= Time.deltaTime;
+
+            // 패시브는 전역 쿨타임도 차감
+            if (globalMagic != null)
+                globalMagic.coolCount -= Time.deltaTime;
+
+            yield return null;
+        }
+    }
+
     public IEnumerator ActiveCast(MagicInfo magic)
     {
         // 핸드폰 마법 시전 이펙트 플레이
         phoneMagicCastEffect.Play();
 
-        //마법 프리팹 찾기
-        GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
-
-        //프리팹 없으면 넘기기
-        if (magicPrefab == null)
-            yield break;
-
-        // 랜덤 적 찾기, 투사체 수 이하로
-        List<Vector2> enemyObj = MarkEnemyPos(magic);
-
-        //해당 마법 쿨타임 불러오기
-        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
-
-        // print(magic.magicName + " : " + coolTime);
-
-        for (int i = 0; i < enemyObj.Count; i++)
+        // 패시브일때
+        if (magic.castType == MagicDB.CastType.passive.ToString())
         {
-            // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+            //todo 이미 생성된 패시브 오브젝트 찾아서 magicHolder의 콜백 실행
 
-            // 레이어 바꾸기
-            magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+            // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
+            GameObject passiveMagic = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == magic.id);
 
-            //매직 홀더 찾기
-            MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+            // 패시브 오브젝트에서 magicHolder 찾기
+            if (passiveMagic.TryGetComponent(out MagicHolder magicHolder))
+            {
+                // 자동 실행
+                magicHolder.isManualCast = false;
 
-            //타겟 정보 넣기
-            magicHolder.SetTarget(MagicHolder.Target.Enemy);
-
-            //마법 정보 넣기
-            if (magicHolder.magic == null)
-                magicHolder.magic = magic;
-
-
-            // 산출된 위치 넣기
-            magicHolder.targetPos = enemyObj[i];
-
-            yield return new WaitForSeconds(0.1f);
+                //todo 해당 마법의 콜백 실행
+                if (magicHolder.magicCastCallback != null)
+                    magicHolder.magicCastCallback();
+            }
         }
+        // 액티브일때
+        else
+        {
+            //마법 프리팹 찾기
+            GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
+
+            //프리팹 없으면 넘기기
+            if (magicPrefab == null)
+                yield break;
+
+            // 공격 지점 찾기
+            List<Vector2> enemyObj = MarkEnemyPos(magic);
+
+            for (int i = 0; i < enemyObj.Count; i++)
+            {
+                // 마법 오브젝트 생성
+                GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+                // 레이어 바꾸기
+                magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+
+                //매직 홀더 찾기
+                MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+                //타겟 정보 넣기
+                magicHolder.SetTarget(MagicHolder.Target.Enemy);
+
+                //마법 정보 넣기
+                if (magicHolder.magic == null)
+                    magicHolder.magic = magic;
+
+
+                // 산출된 위치 넣기
+                magicHolder.targetPos = enemyObj[i];
+
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+
+        // 해당 마법 쿨타임 불러오기
+        float coolTime = MagicDB.Instance.MagicCoolTime(magic);
 
         // 쿨타임 체크를 위한 전역 마법 정보 불러오기
         MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
-        // 해당 마법의 전역 쿨타임 갱신
         globalMagic.coolCount = coolTime;
 
+        // 쿨타임중이면 반복
         while (globalMagic.coolCount > 0)
         {
-            //카운트 차감, 플레이어 자체속도 반영
+            // 전역 쿨타임 차감
             globalMagic.coolCount -= Time.deltaTime;
 
-            yield return new WaitForSeconds(Time.deltaTime);
+            yield return null;
         }
 
         // 인벤토리에서 해당 마법이 있는 인덱스 찾기
@@ -405,6 +460,8 @@ public class CastMagic : MonoBehaviour
 
         //nowCastMagics에 해당 마법 추가
         nowCastMagics.Add(magic);
+
+
     }
 
     public List<Vector2> MarkEnemyPos(MagicInfo magic, Vector2 targetPos = default)
