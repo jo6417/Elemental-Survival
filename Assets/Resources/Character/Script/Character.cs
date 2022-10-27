@@ -117,13 +117,6 @@ public class Character : MonoBehaviour
     public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
     public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
 
-    // public IEnumerator burnCoroutine = null;
-    // public IEnumerator poisonCoroutine = null;
-    // public IEnumerator bleedCoroutine = null;
-    //todo 행동불능, 저하 기능 하나로 묶고 이펙트만 다르게 수정
-    // public IEnumerator slowCoroutine = null;
-    // public IEnumerator shockCoroutine = null;
-    // public IEnumerator stunCoroutine = null;
     public float particleHitCount = 0; // 파티클 피격 카운트
     public float hitDelayCount = 0; // 피격 딜레이 카운트
     public float stopCount = 0; // 시간 정지 카운트
@@ -226,7 +219,7 @@ public class Character : MonoBehaviour
 
             // rigid 초기화
             rigid.velocity = Vector3.zero;
-            rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+            // rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             // 초기화 스위치 켜질때까지 대기
             yield return new WaitUntil(() => initialStart);
@@ -662,8 +655,11 @@ public class Character : MonoBehaviour
         {
             nowState = State.TimeStop;
 
+            // transform.DOPause();
+
             rigid.velocity = Vector2.zero; //이동 초기화
-            rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+
+            // rigid.constraints = RigidbodyConstraints2D.FreezeAll;
             // 애니메이션 멈추기
             if (animList.Count > 0)
             {
@@ -681,8 +677,6 @@ public class Character : MonoBehaviour
                     // spriteList[i].material = originMatList[i];
                     spriteList[i].color = SystemManager.Instance.stopColor;
                 }
-
-            transform.DOPause();
 
             // 행동불능이므로 false 리턴
             return false;
@@ -747,7 +741,7 @@ public class Character : MonoBehaviour
 
         // rigid 초기화
         // rigid.velocity = Vector3.zero;
-        rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        // rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 상태 이상 없음
         afterEffect = true;

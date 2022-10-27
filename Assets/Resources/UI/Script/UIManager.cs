@@ -699,7 +699,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public IEnumerator UpdateMagics(List<MagicInfo> magicList)
+    public IEnumerator UpdateMagics(List<InventorySlot> magicList)
     {
         // 목록 투명하게 숨기기
         hasMagicGrid.GetComponent<CanvasGroup>().alpha = 0f;
@@ -711,11 +711,13 @@ public class UIManager : MonoBehaviour
             LeanPool.Despawn(hasMagicGrid.transform.GetChild(0).gameObject);
         }
 
-        foreach (MagicInfo magic in magicList)
+        foreach (InventorySlot slot in magicList)
         {
             //0등급은 원소젬이므로 표시 안함
-            if (magic.grade == 0)
+            if (slot.slotInfo.grade == 0)
                 continue;
+
+            MagicInfo magic = slot.slotInfo as MagicInfo;
 
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicGrid.transform.position, Quaternion.identity, hasMagicGrid.transform);
@@ -726,13 +728,13 @@ public class UIManager : MonoBehaviour
             toolTipTrigger.Magic = magic;
 
             // 전역 마법 정보 찾기
-            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(magic.id);
+            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(slot.slotInfo.id);
             // 전역 마법 정보의 쿨타임 보여주기
             ShowMagicCooltime showCool = magicIcon.GetComponent<ShowMagicCooltime>();
             showCool.magic = sharedMagic;
 
             //아이콘 넣기
-            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(slot.slotInfo.id);
 
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);

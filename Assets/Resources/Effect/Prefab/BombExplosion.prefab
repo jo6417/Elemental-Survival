@@ -19577,7 +19577,11 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
+  stunTime: 0
   coll: {fileID: 0}
+  autoCoolDown: 1
+  fixCoolTime: 0
+  isManualCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
@@ -19595,9 +19599,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  particle: {fileID: 0}
+  particle: {fileID: 7302078125117468433}
   autoDespawn: 1
-  collOverTime: 0.1
+  despawnDelay: 0
+  collOverTime: 0
   modify_startLife: 0
 --- !u!198 &7302078125117468433
 ParticleSystem:
@@ -24448,7 +24453,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7464123567940427643}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0

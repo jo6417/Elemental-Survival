@@ -10,7 +10,7 @@ public class HitBox : MonoBehaviour
 {
     [Header("Refer")]
     public Character character;
-    List<Collider2D> hitColls;
+    public List<Collider2D> hitColls;
 
     private void Awake()
     {
@@ -207,7 +207,7 @@ public class HitBox : MonoBehaviour
             //크리티컬 데미지 계산
             float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
-            // print(transform.name + " : " + magic.magicName);
+            // print(attacker.gameObject.name + " : " + magic.name);
 
             // 데미지가 있으면
             if (power > 0)
@@ -414,7 +414,7 @@ public class HitBox : MonoBehaviour
         {
             this.character.spriteList[i].material = SystemManager.Instance.hitMat;
 
-            if (damage > 0)
+            if (damage >= 0)
             {
                 // 현재 체력이 max에 가까울수록 빨간색, 0에 가까울수록 흰색
                 Color hitColor = Color.Lerp(SystemManager.Instance.hitColor, SystemManager.Instance.DeadColor, this.character.hpNow / this.character.hpMax);
@@ -645,87 +645,6 @@ public class HitBox : MonoBehaviour
         coroutine = null;
     }
 
-    // public IEnumerator BurnDotHit(float tickDamage, float duration)
-    // {
-    //     // 화상 디버프 아이콘
-    //     Transform burnEffect = null;
-
-    //     // 해당 디버프 아이콘이 없을때
-    //     if (!character.transform.Find(SystemManager.Instance.burnDebuffEffect.name))
-    //     {
-    //         // 화상 디버프 이펙트 붙이기
-    //         burnEffect = LeanPool.Spawn(SystemManager.Instance.burnDebuffEffect, character.transform.position, Quaternion.identity, character.transform).transform;
-
-    //         // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-    //         burnEffect.transform.localScale = Vector3.one * character.portalSize;
-    //     }
-
-    //     // 도트 데미지 입히기
-    //     yield return StartCoroutine(DotHit(tickDamage, duration));
-
-    //     // 화상 이펙트 없에기
-    //     burnEffect = character.transform.Find(SystemManager.Instance.burnDebuffEffect.name);
-    //     if (burnEffect != null)
-    //         LeanPool.Despawn(burnEffect);
-
-    //     // 화상 코루틴 변수 초기화
-    //     character.burnCoroutine = null;
-    // }
-
-    // public IEnumerator PoisonDotHit(float tickDamage, float duration)
-    // {
-    //     // 포이즌 디버프 이펙트
-    //     Transform poisonEffect = null;
-
-    //     // 해당 디버프 아이콘이 없을때
-    //     if (!character.transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
-    //     {
-    //         //포이즌 디버프 이펙트 붙이기
-    //         poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, character.transform.position, Quaternion.identity, character.transform).transform;
-
-    //         // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-    //         poisonEffect.transform.localScale = Vector3.one * character.portalSize;
-    //     }
-
-    //     // 도트 데미지 입히기
-    //     yield return StartCoroutine(DotHit(tickDamage, duration));
-
-    //     // 포이즌 이펙트 없에기
-    //     poisonEffect = character.transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
-    //     if (poisonEffect != null)
-    //         LeanPool.Despawn(poisonEffect);
-
-    //     // 포이즌 코루틴 변수 초기화
-    //     character.poisonCoroutine = null;
-    // }
-
-    // public IEnumerator BleedDotHit(float tickDamage, float duration)
-    // {
-    //     // 출혈 디버프 아이콘
-    //     GameObject bleedIcon = null;
-
-    //     // 해당 디버프 아이콘이 없을때
-    //     if (!character.transform.Find(SystemManager.Instance.bleedDebuffUI.name))
-    //     {
-    //         //출혈 디버프 이펙트 붙이기
-    //         bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, character.buffParent.position, Quaternion.identity, character.buffParent);
-
-    //         // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-    //         // bleedIcon.transform.localScale = Vector3.one * character.portalSize;
-    //     }
-
-    //     // 도트 데미지 입히기
-    //     yield return StartCoroutine(DotHit(tickDamage, duration));
-
-    //     // 출혈 아이콘 없에기
-    //     bleedIcon = character.buffParent.Find(SystemManager.Instance.bleedDebuffUI.name).gameObject;
-    //     if (bleedIcon != null)
-    //         LeanPool.Despawn(bleedIcon);
-
-    //     // 코루틴 비우기
-    //     character.bleedCoroutine = null;
-    // }
-
     public IEnumerator Knockback(Attack attacker, float knockbackForce)
     {
         // 반대 방향으로 넉백 벡터
@@ -802,114 +721,6 @@ public class HitBox : MonoBehaviour
         //스케일 복구
         character.transform.localScale = Vector2.one;
     }
-
-    // public IEnumerator ShockDebuff(float shockDuration)
-    // {
-    //     // 디버프량
-    //     float slowAmount = 0f;
-    //     // 감전 디버프 이펙트
-    //     Transform shockEffect = null;
-
-    //     // 애니메이션 속도 저하
-    //     for (int i = 0; i < character.animList.Count; i++)
-    //     {
-    //         character.animList[i].speed = slowAmount;
-    //     }
-
-    //     // 이동 속도 저하 디버프
-    //     character.moveSpeedDebuff = slowAmount;
-
-    //     //이동 멈추기
-    //     character.rigid.velocity = Vector2.zero;
-
-    //     // 이미 감전 디버프 중 아닐때
-    //     if (!character.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
-    //     {
-    //         //감전 디버프 이펙트 붙이기
-    //         shockEffect = LeanPool.Spawn(SystemManager.Instance.shockDebuffEffect, character.transform.position, Quaternion.identity, character.transform).transform;
-
-    //         // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-    //         shockEffect.transform.localScale = Vector3.one * character.portalSize;
-    //     }
-
-    //     // 감전 시간동안 대기
-    //     yield return new WaitForSeconds(shockDuration);
-
-    //     // 죽었으면 초기화 없이 리턴
-    //     if (character.isDead)
-    //         yield break;
-
-    //     // 애니메이션 속도 초기화
-    //     for (int i = 0; i < character.animList.Count; i++)
-    //     {
-    //         character.animList[i].speed = 1f;
-    //     }
-
-    //     // 이동 속도 저하 디버프 초기화
-    //     character.moveSpeedDebuff = 1f;
-
-    //     // 자식중에 감전 이펙트 찾기
-    //     shockEffect = character.transform.Find(SystemManager.Instance.shockDebuffEffect.name);
-    //     if (shockEffect != null)
-    //         LeanPool.Despawn(shockEffect);
-
-    //     // 코루틴 변수 초기화
-    //     character.shockCoroutine = null;
-    // }
-
-    // public IEnumerator StunDebuff(float stunDuration)
-    // {
-    //     // 디버프량
-    //     float slowAmount = 0f;
-    //     // 스턴 디버프 이펙트
-    //     Transform stunEffect = null;
-
-    //     // 애니메이션 속도 저하
-    //     for (int i = 0; i < character.animList.Count; i++)
-    //     {
-    //         character.animList[i].speed = slowAmount;
-    //     }
-
-    //     // 이동 속도 저하 디버프
-    //     character.moveSpeedDebuff = slowAmount;
-
-    //     //이동 멈추기
-    //     character.rigid.velocity = Vector2.zero;
-
-    //     // 이미 스턴 디버프 중 아닐때
-    //     if (!character.transform.Find(SystemManager.Instance.stunDebuffEffect.name))
-    //     {
-    //         // 스턴 디버프 이펙트 붙이기
-    //         stunEffect = LeanPool.Spawn(SystemManager.Instance.stunDebuffEffect, character.buffParent.position, Quaternion.identity, character.buffParent).transform;
-
-    //         // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-    //         stunEffect.transform.localScale = Vector3.one * character.portalSize;
-    //     }
-
-    //     // 스턴 시간동안 대기
-    //     yield return new WaitForSeconds(stunDuration);
-
-    //     // 죽었으면 초기화 없이 리턴
-    //     if (character.isDead)
-    //         yield break;
-
-    //     // 애니메이션 속도 초기화
-    //     for (int i = 0; i < character.animList.Count; i++)
-    //     {
-    //         character.animList[i].speed = 1f;
-    //     }
-
-    //     // 이동 속도 저하 디버프 초기화
-    //     character.moveSpeedDebuff = 1f;
-
-    //     // 자식중에 스턴 이펙트 찾기
-    //     stunEffect = character.buffParent.Find(SystemManager.Instance.stunDebuffEffect.name);
-    //     if (stunEffect != null)
-    //         LeanPool.Despawn(stunEffect);
-
-    //     // 코루틴 변수 초기화
-    //     character.stunCoroutine = null;
-    // }
 
     public IEnumerator Dead()
     {

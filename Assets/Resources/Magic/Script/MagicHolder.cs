@@ -11,8 +11,10 @@ public class MagicHolder : Attack
     public Collider2D coll;
 
     [Header("Status")]
-    [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
+    public bool autoCoolDown = true; // 마법 시전 즉시 쿨타임 자동 차감 (쿨타임 수동 제어 여부)
+    public float fixCoolTime = 0; // 수동 쿨타임 입력
     public bool isManualCast = false; //수동으로 시전한 마법인지 여부
+    [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
     public string magicName; //마법 이름 확인
     public Vector3 targetPos = default(Vector3); //목표 위치
     public enum Target { None, Enemy, Player, Both };
@@ -34,7 +36,7 @@ public class MagicHolder : Attack
     private void Awake()
     {
         // 변수 없으면 찾기
-        coll = coll == null ? GetComponentInChildren<Collider2D>() : coll;
+        // coll = coll == null ? GetComponentInChildren<Collider2D>() : coll;
     }
 
     private void OnEnable()
@@ -57,6 +59,9 @@ public class MagicHolder : Attack
         //프리팹 이름으로 마법 정보 찾아 넣기
         if (magic == null)
             magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
+
+        // magic 정보 들어올때까지 대기
+        yield return new WaitUntil(() => magic != null);
 
         //관통 횟수 초기화 
         pierceCount = MagicDB.Instance.MagicPierce(magic);

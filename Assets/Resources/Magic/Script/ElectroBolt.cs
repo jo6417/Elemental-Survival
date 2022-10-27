@@ -36,8 +36,11 @@ public class ElectroBolt : MonoBehaviour
         //콜라이더 끄기
         atkColl.enabled = false;
 
-        // 타겟 위치로 이동
-        transform.position = magicHolder.targetPos;
+        // // 타겟 위치로 이동
+        // transform.position = magicHolder.targetPos;
+
+        // 범위 내 랜덤 위치로 이동
+        transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
         // 그림자 사이즈 초기화
         shadow.localScale = new Vector3(1, 0.4f, 1);

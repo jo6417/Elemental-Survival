@@ -73,7 +73,6 @@ public class PlayerManager : MonoBehaviour
     Vector2 inputMoveDir; // 현재 이동 입력 벡터
     Vector2 nowMoveDir; // 현재 이동 벡터
     public Vector2 lastDir; // 마지막 이동 벡터
-    public Vector3 mouseWorldPos; // 현재 마우스 위치
     public bool isDash; //현재 대쉬중 여부
     public float defaultDashSpeed = 1.5f; // 대쉬 속도 기본값
     public float dashSpeed = 1; //대쉬 버프 속도

@@ -5,16 +5,32 @@ using UnityEngine;
 
 public class KeepDistanceMove : MonoBehaviour
 {
-    Rigidbody2D rigid;
+    [Header("Refer")]
+    public Rigidbody2D rigid;
     public Transform followTarget;
 
+    [Header("State")]
     public float minDistance = 3f; // 타겟과 최소 거리
     public float maxDistance = 3f; // 타겟과의 유지거리
     public float addSpeed = 5f; // 추가 속도
 
+    [Header("State")]
+    [SerializeField] Transform jumpObj; // 점프시킬 오브젝트
+    public AnimationCurve jumpCurve;
+    public float jumpDelay;
+
     private void Awake()
     {
         rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
+    }
+
+    private void OnEnable()
+    {
+        // if (jumpObj != null)
+        // {
+        //     // 점프 오브젝트 위치 초기화
+        //     jumpObj.position = Vector2.zero;
+        // }
     }
 
     private void FixedUpdate()
@@ -52,5 +68,15 @@ public class KeepDistanceMove : MonoBehaviour
 
         // 이동시키기
         rigid.velocity = dir.normalized * moveSpeed * addSpeed;
+
+        // // 점프 오브젝트 있을때만
+        // if (jumpObj != null)
+        //     // 점프중 아닐때, 이동중일때
+        //     if (jumpObj.localPosition == Vector3.zero && Mathf.Sqrt(moveSpeed) > 0.1f)
+        //     {
+        //         jumpObj.DOLocalJump(Vector2.zero, 1f, 1, 0.5f)
+        //         .SetDelay(jumpDelay)
+        //         .SetEase(jumpCurve);
+        //     }
     }
 }

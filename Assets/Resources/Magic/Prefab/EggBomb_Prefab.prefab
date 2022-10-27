@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2773706960666662116
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2773706960666662113}
+  - component: {fileID: 2773706960666662114}
+  - component: {fileID: 2773706960666662115}
+  m_Layer: 0
+  m_Name: EggBomb_Prefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2773706960666662113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2773706960666662116}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.31, y: -5.87, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2773706960666662114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2773706960666662116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pierceCount: 0
+  fixedPower: 0
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
+  stunTime: 0
+  coll: {fileID: 0}
+  autoCoolDown: 0
+  fixCoolTime: -1
+  isManualCast: 0
+  targetObj: {fileID: 0}
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
+  targetType: 0
+  initDone: 0
+--- !u!114 &2773706960666662115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2773706960666662116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbe63a91c8310db4090fd2491fd7116a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magicHolder: {fileID: 2773706960666662114}
+  eggSpriteList:
+  - {fileID: 4676298330881412316, guid: 2c8e0a54ecc703c4995083ed2016e9a8, type: 3}
+  - {fileID: 4990908202691064323, guid: 2c8e0a54ecc703c4995083ed2016e9a8, type: 3}
+  - {fileID: -8475774766038953667, guid: 2c8e0a54ecc703c4995083ed2016e9a8, type: 3}
+  - {fileID: -8774469433196241017, guid: 2c8e0a54ecc703c4995083ed2016e9a8, type: 3}
+  - {fileID: 7154015565488225378, guid: 2c8e0a54ecc703c4995083ed2016e9a8, type: 3}
+  - {fileID: -9038092927097132165, guid: 2c8e0a54ecc703c4995083ed2016e9a8, type: 3}
+  eggList: []
+  eggPrefab: {fileID: 6012211014639695498, guid: dafc1403bdb7cbe4696e64361823f00d,
+    type: 3}
+  readyColor: {r: 1, g: 1, b: 0, a: 1}
+  shotColor: {r: 1, g: 0.078431375, b: 0.078431375, a: 1}
