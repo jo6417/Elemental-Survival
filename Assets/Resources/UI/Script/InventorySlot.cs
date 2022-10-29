@@ -149,8 +149,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         }
 
         // 슬롯에 툴팁 정보 넣기
-        slotTooltip.Magic = magic;
-        slotTooltip.Item = item;
+        if (magic != null)
+            slotTooltip._slotInfo = magic;
+        if (item != null)
+            slotTooltip._slotInfo = item;
 
         // 등급 프레임 색
         frameColor = MagicDB.Instance.GradeColor[slotInfo.grade];
@@ -427,7 +429,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 slotInfo = null;
 
                 // 키 입력 막기 변수 토글
-                PhoneMenu.Instance.btnsInteractable = false;
+                PhoneMenu.Instance.InteractBtnsToggle(false);
                 // 메뉴 버튼 상호작용 토글
                 PhoneMenu.Instance.recipeBtn.interactable = false;
                 // 백 버튼 상호작용 토글
@@ -501,7 +503,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             }
 
             // 키 입력 막기 변수 토글
-            PhoneMenu.Instance.btnsInteractable = true;
+            PhoneMenu.Instance.InteractBtnsToggle(true);
             // 메뉴 버튼 상호작용 토글
             PhoneMenu.Instance.recipeBtn.interactable = true;
             // 백 버튼 상호작용 토글
@@ -510,6 +512,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
         // 현재 슬롯 UI 갱신
         Set_Slot();
+
+        // 합성 가능 여부 체크
+        PhoneMenu.Instance.MergeNumCheck();
     }
 
     public void BlinkSlot(int blinkNum = -1, float blinkTime = 0.2f, Color color = default)

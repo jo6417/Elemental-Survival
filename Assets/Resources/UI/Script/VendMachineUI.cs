@@ -56,7 +56,7 @@ public class VendMachineUI : MonoBehaviour
         fieldDrop = false;
 
         //시간 멈추기
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
 
         // 화면 위로 이동
         vendMachineObj.anchoredPosition = new Vector2(0, 1100f);
@@ -187,8 +187,10 @@ public class VendMachineUI : MonoBehaviour
             // 툴팁에 상품 정보 넣기
             ToolTipTrigger tooltip = iconBtn.GetComponent<ToolTipTrigger>();
             tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-            tooltip.Magic = magic;
-            tooltip.Item = item;
+            if (magic != null)
+                tooltip._slotInfo = magic;
+            if (item != null)
+                tooltip._slotInfo = item;
 
             // 해당 상품 품절일때
             if (soldOutList[i])

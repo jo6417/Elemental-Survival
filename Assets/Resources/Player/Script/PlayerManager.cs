@@ -356,6 +356,9 @@ public class PlayerManager : MonoBehaviour
         isDash = !isDash;
         anim.SetBool("isDash", isDash);
 
+        //todo 대쉬 토글시 체력바 가리기
+        UIManager.Instance.dodgeBar.alpha = isDash ? 1f : 0f;
+
         //대쉬 끝날때 이동 입력확인
         Move();
 

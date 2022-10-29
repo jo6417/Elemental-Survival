@@ -102,10 +102,10 @@ public class MagicProjectile : MonoBehaviour
         coll.enabled = true;
 
         //마법 날리기
-        StartCoroutine(FlyingMagic());
+        StartCoroutine(ShotMagic());
     }
 
-    IEnumerator FlyingMagic()
+    IEnumerator ShotMagic()
     {
         yield return new WaitUntil(() => magic != null);
 
@@ -230,6 +230,8 @@ public class MagicProjectile : MonoBehaviour
 
         // 콜라이더 끄기
         coll.enabled = false;
+        // 스프라이트 끄기
+        sprite.enabled = false;
 
         //파괴 이펙트 있으면 남기기
         if (hitEffect)
@@ -287,16 +289,6 @@ public class MagicProjectile : MonoBehaviour
         magicHolder.AddDuration = 0f;
         magicHolder.MultipleSpeed = 1f;
 
-        // 파티클 매니저 있으면
-        if (particleManager != null)
-        {
-            // 파티클 사라진후 디스폰
-            particleManager.SmoothDisable();
-
-            // 파티클 꺼질때까지 대기
-            yield return new WaitUntil(() => !particleManager.gameObject.activeSelf);
-        }
-
         // 오브젝트 투명하게
         if (sprite != null && isFade)
         {
@@ -306,6 +298,16 @@ public class MagicProjectile : MonoBehaviour
         // 바로 끄기
         else
             sprite.enabled = false;
+
+        // 파티클 매니저 있으면
+        if (particleManager != null)
+        {
+            // 파티클 사라진후 디스폰
+            particleManager.SmoothDisable();
+
+            // 파티클 꺼질때까지 대기
+            yield return new WaitUntil(() => !particleManager.gameObject.activeSelf);
+        }
 
         // 오브젝트 디스폰하기
         if (gameObject.activeSelf)

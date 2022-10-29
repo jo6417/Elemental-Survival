@@ -7,73 +7,53 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     public enum ToolTipType { ProductTip, HasStuffTip };
     public ToolTipType toolTipType;
-    private MagicInfo magic;
-    public MagicInfo Magic
+    private SlotInfo slotInfo;
+    public SlotInfo _slotInfo
     {
-        get { return magic; }
+        get { return slotInfo; }
         set
         {
-            magic = value;
+            slotInfo = value;
 
-            if (magic != null)
+            if (slotInfo != null)
             {
-                magicName = Magic.name;
+                magicName = _slotInfo.name;
             }
         }
     }
-    private ItemInfo item;
-    public ItemInfo Item
-    {
-        get { return item; }
-        set
-        {
-            item = value;
 
-            if (item != null)
-            {
-                itemName = Item.name;
-            }
-        }
-    }
     public string magicName;
     public string itemName;
 
-    private void OnEnable()
-    {
-        StartCoroutine(Init());
-    }
+    // private void OnEnable()
+    // {
+    //     StartCoroutine(Init());
+    // }
 
-    IEnumerator Init()
-    {
-        yield return null;
+    // IEnumerator Init()
+    // {
+    //     yield return null;
 
-        // 마법,아이템 정보 들어올때까지 대기
-        // yield return new WaitUntil(() => Magic != null || Item != null);
-
-        // if (Magic != null)
-        //     magicName = Magic.magicName;
-
-        // if (Item != null)
-        //     itemName = Item.itemName;
-
-        // 마법 아이템 정보 없으면 컴포넌트 끄기
-        if (Magic == null && Item == null)
-            this.enabled = false;
-    }
+    //     // 마법 아이템 정보 없으면 컴포넌트 끄기
+    //     if (Magic == null && Item == null)
+    //         this.enabled = false;
+    // }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (slotInfo == null)
+            return;
+
         // 상품 구매 버튼일때
         if (toolTipType == ToolTipType.ProductTip)
         {
-            // StartCoroutine(ProductToolTip.Instance.OpenTooltip(magic, item));
-            ProductToolTip.Instance.OpenTooltip(Magic, Item);
+            ProductToolTip.Instance.OpenTooltip(_slotInfo);
         }
 
         // 소지품 아이콘일때
         if (toolTipType == ToolTipType.HasStuffTip)
         {
-            HasStuffToolTip.Instance.OpenTooltip(Magic, Item);
+            HasStuffToolTip.Instance.OpenTooltip(_slotInfo);
         }
     }
 

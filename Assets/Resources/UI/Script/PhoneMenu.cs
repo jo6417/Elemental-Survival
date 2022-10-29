@@ -47,7 +47,7 @@ public class PhoneMenu : MonoBehaviour
     public SpriteRenderer lightScreen; // 폰 스크린 전체 빛내는 HDR 이미지
     public Image blackScreen; // 폰 작아질때 검은 이미지로 화면 가리기
     public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
-    public bool btnsInteractable = true; // 버튼 상호작용 가능 여부
+    private bool btnsInteractable = true; // 버튼 상호작용 가능 여부
 
     [Header("Effect")]
     public Vector3 phonePosition; //핸드폰일때 위치 기억
@@ -229,7 +229,7 @@ public class PhoneMenu : MonoBehaviour
     IEnumerator Init()
     {
         //시간 멈추기
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
 
         //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -246,13 +246,6 @@ public class PhoneMenu : MonoBehaviour
 
         // 선택 아이콘 끄기
         nowSelectIcon.enabled = false;
-
-        //레시피 버튼 상호작용 켜기
-        recipeBtn.interactable = true;
-        //뒤로 버튼 상호작용 켜기
-        backBtn.interactable = true;
-        //홈 버튼 상호작용 켜기
-        homeBtn.interactable = true;
 
         // 팡파레 이펙트 끄기
         slotRayEffect.gameObject.SetActive(false);
@@ -313,6 +306,9 @@ public class PhoneMenu : MonoBehaviour
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
 
+        // 버튼 상호작용 켜기
+        InteractBtnsToggle(true);
+
         // 액티브 슬롯 3개 상호작용 켜기
         PlayerManager.Instance.activeSlot_A.slotButton.interactable = true;
         PlayerManager.Instance.activeSlot_B.slotButton.interactable = true;
@@ -369,8 +365,14 @@ public class PhoneMenu : MonoBehaviour
             invenSlots[i].Set_Slot();
         }
 
+        // 합성 가능 여부 체크
+        MergeNumCheck();
+    }
+
+    public void MergeNumCheck()
+    {
         // 합성 가능한 마법 있으면 인디케이터 켜기
-        if (MergeNumCheck() > 0)
+        if (MergeNum() > 0)
         {
             invenBackground.color = new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f);
             invenBackground.DOKill();
@@ -386,7 +388,7 @@ public class PhoneMenu : MonoBehaviour
         }
     }
 
-    int MergeNumCheck()
+    int MergeNum()
     {
         // 인벤토리에 있는 모든 마법 리스트
         List<MagicInfo> magicList = new List<MagicInfo>();
@@ -558,7 +560,7 @@ public class PhoneMenu : MonoBehaviour
             // 합성된 마법 레벨 합산
             mergedSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv." + mergedMagic.magicLevel.ToString();
             // 합성된 마법 툴팁 넣기
-            mergedSlot.slotTooltip.Magic = mergedMagic;
+            mergedSlot.slotTooltip._slotInfo = mergedMagic;
 
             bool isNew = false;
             // 언락된 마법중에 없으면
@@ -650,21 +652,8 @@ public class PhoneMenu : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.5f);
         }
 
-        // 합성 가능한 마법 있으면 인디케이터 켜기
-        if (MergeNumCheck() > 0)
-        {
-            invenBackground.color = new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f);
-            invenBackground.DOKill();
-            invenBackground.DOColor(new Color(200f / 255f, 200f / 255f, 200f / 255f, 1f), 1f)
-            .SetLoops(-1, LoopType.Yoyo)
-            .SetUpdate(true);
-        }
-        else
-        {
-            invenBackground.DOKill();
-            invenBackground.DOColor(new Color(50f / 255f, 50f / 255f, 50f / 255f, 1f), 1)
-            .SetUpdate(true);
-        }
+        // 합성 가능 여부 체크
+        MergeNumCheck();
 
         // 좌측 슬롯 커지기
         L_MergeSlotRect.DOScale(Vector3.one, 0.2f)
@@ -1291,7 +1280,7 @@ public class PhoneMenu : MonoBehaviour
         nowSelectSlot = null;
 
         // 폰 하단 버튼 상호작용 허용
-        InteractBtnsToggle(true);
+        // InteractBtnsToggle(true);
 
         //선택된 마법 아이콘 마우스 위치로 이동
         MousePos();
@@ -1383,14 +1372,14 @@ public class PhoneMenu : MonoBehaviour
                 ToolTipTrigger elementA_tooltip = elementA_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
                 ToolTipTrigger elementB_tooltip = elementB_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
 
-                main_tooltip.Magic = magic;
+                main_tooltip._slotInfo = magic;
                 main_tooltip.enabled = true;
 
                 if (elementA != null && elementB != null)
                 {
-                    elementA_tooltip.Magic = elementA;
+                    elementA_tooltip._slotInfo = elementA;
                     elementA_tooltip.enabled = true;
-                    elementB_tooltip.Magic = elementB;
+                    elementB_tooltip._slotInfo = elementB;
                     elementB_tooltip.enabled = true;
                 }
             }
@@ -1407,19 +1396,23 @@ public class PhoneMenu : MonoBehaviour
         recipeInit = true;
     }
 
-    public void InteractBtnsToggle(bool able)
+    public void InteractBtnsToggle(bool toggle)
     {
+        print(toggle);
+
         // 키 입력 막기 변수 토글
-        btnsInteractable = able;
+        btnsInteractable = toggle;
 
         // 머지슬롯 상호작용 토글
-        L_MergeSlot.slotButton.interactable = able;
-        R_MergeSlot.slotButton.interactable = able;
+        L_MergeSlot.slotButton.interactable = toggle;
+        R_MergeSlot.slotButton.interactable = toggle;
 
         // 메뉴 버튼 상호작용 토글
-        recipeBtn.interactable = able;
+        recipeBtn.interactable = toggle;
         // 백 버튼 상호작용 토글
-        backBtn.interactable = able;
+        backBtn.interactable = toggle;
+        //홈 버튼 상호작용 켜기
+        homeBtn.interactable = toggle;
     }
 
     public void ScreenScrollStart()
@@ -1453,7 +1446,7 @@ public class PhoneMenu : MonoBehaviour
         if (!phonePanel.activeSelf)
             yield break;
 
-        // 키 입력 막기
+        // 키 입력 막혀있으면 리턴
         if (!btnsInteractable)
             yield break;
 
@@ -1497,7 +1490,7 @@ public class PhoneMenu : MonoBehaviour
                 MagicMachineUI.Instance.ExitPopup();
             else
                 // 핸드폰 끄기
-                StartCoroutine(PhoneExit());
+                ClosePhone();
         }
     }
 
@@ -1517,6 +1510,11 @@ public class PhoneMenu : MonoBehaviour
         slot.Set_Slot(true);
     }
 
+    public void ClosePhone()
+    {
+        StartCoroutine(PhoneExit());
+    }
+
     public IEnumerator PhoneExit()
     {
         // 인벤 슬롯 상호작용 모두 끄기
@@ -1524,12 +1522,9 @@ public class PhoneMenu : MonoBehaviour
         {
             invenSlot.slotButton.interactable = false;
         }
-        //레시피 버튼 끄기
-        recipeBtn.interactable = false;
-        //뒤로 버튼 끄기
-        backBtn.interactable = false;
-        //홈 버튼 끄기
-        homeBtn.interactable = false;
+
+        // 버튼 상호작용 끄기
+        InteractBtnsToggle(false);
 
         // 액티브 슬롯 3개 상호작용 막기
         PlayerManager.Instance.activeSlot_A.slotButton.interactable = false;

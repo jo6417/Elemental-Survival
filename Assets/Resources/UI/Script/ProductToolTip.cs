@@ -45,11 +45,12 @@ public class ProductToolTip : MonoBehaviour
     public TextMeshProUGUI productName;
     public TextMeshProUGUI productDescript;
     RectTransform rect;
+    [SerializeField] CanvasGroup canvasGroup;
 
     [Header("Magic")]
     public MagicInfo magic;
     List<int> stats = new List<int>();
-    public UIPolygon magicStatGraph;
+    // public UIPolygon magicStatGraph;
     public GameObject recipeObj;
     public Image GradeFrame;
     public Image elementIcon_A;
@@ -76,7 +77,8 @@ public class ProductToolTip : MonoBehaviour
         rect = GetComponent<RectTransform>();
 
         //처음엔 끄기
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
+        canvasGroup.alpha = 0;
     }
 
     void Update()
@@ -104,8 +106,7 @@ public class ProductToolTip : MonoBehaviour
 
     //툴팁 켜기
     public void OpenTooltip(
-        MagicInfo magic = null,
-        ItemInfo item = null,
+        SlotInfo slotInfo = null,
         ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown,
         Vector2 position = default(Vector2))
     {
@@ -124,6 +125,7 @@ public class ProductToolTip : MonoBehaviour
 
         //툴팁 켜기
         gameObject.SetActive(true);
+        canvasGroup.alpha = 0.7f;
 
         if (!rect)
             rect = GetComponent<RectTransform>();
@@ -146,10 +148,10 @@ public class ProductToolTip : MonoBehaviour
         }
 
         //마법 or 아이템 정보 넣기
-        this.magic = magic;
-        this.item = item;
+        this.magic = slotInfo as MagicInfo;
+        this.item = slotInfo as ItemInfo;
 
-        if (magic != null)
+        if (slotInfo != null)
         {
             SetDone = SetMagicInfo();
         }
@@ -169,7 +171,8 @@ public class ProductToolTip : MonoBehaviour
 
         SetDone = false;
 
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
+        canvasGroup.alpha = 0f;
     }
 
     bool SetMagicInfo()

@@ -151,7 +151,6 @@ public class SystemManager : MonoBehaviour
 
         //TODO 로딩 UI 띄우기
         print("로딩 시작");
-        Time.timeScale = 0f;
 
         // 로컬 세이브 불러오기
         yield return StartCoroutine(SaveManager.Instance.LoadData());
@@ -178,7 +177,6 @@ public class SystemManager : MonoBehaviour
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
-        Time.timeScale = 1f;
 
         // 플레이어 입력 켜기
         PlayerManager.Instance.playerInput.Enable();

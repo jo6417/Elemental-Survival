@@ -67,7 +67,7 @@ public class MagicMixMenu : MonoBehaviour
     IEnumerator SetMenu()
     {
         //시간 멈추기
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
 
         //플레이어 보유 스크롤 개수 업데이트
         int amount = 0;
@@ -248,7 +248,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip = magicIcon.GetComponent<ToolTipTrigger>();
                     tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                    tooltip.Magic = magic;
+                    tooltip._slotInfo = magic;
 
                     // 아이콘 마우스 클릭할때 이벤트
                     Button btn = magicIcon.GetComponent<Button>();
@@ -463,7 +463,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip_A = element_A.GetComponent<ToolTipTrigger>();
                     tooltip_A.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                    tooltip_A.Magic = MagicDB.Instance.GetMagicByName(magic.element_A);
+                    tooltip_A._slotInfo = MagicDB.Instance.GetMagicByName(magic.element_A);
 
                     //마법 재료 B 아이콘
                     Transform element_B = recipe.transform.Find("Element_B");
@@ -477,7 +477,7 @@ public class MagicMixMenu : MonoBehaviour
                     // 툴팁 컴포넌트에 마법 정보 넣기
                     ToolTipTrigger tooltip_B = element_B.GetComponent<ToolTipTrigger>();
                     tooltip_B.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
-                    tooltip_B.Magic = MagicDB.Instance.GetMagicByName(magic.element_B);
+                    tooltip_B._slotInfo = MagicDB.Instance.GetMagicByName(magic.element_B);
 
                     // 아이콘 눌렀을때 일어날 이벤트 넣기
                     Button btn = recipe.GetComponent<Button>();

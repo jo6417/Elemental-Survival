@@ -38,6 +38,7 @@ public class HasStuffToolTip : MonoBehaviour
     public ItemInfo item;
     float halfCanvasWidth;
     private RectTransform rect;
+    [SerializeField] CanvasGroup canvasGroup;
 
     private void Awake()
     {
@@ -53,7 +54,8 @@ public class HasStuffToolTip : MonoBehaviour
         rect = GetComponent<RectTransform>();
 
         //처음엔 끄기
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
+        canvasGroup.alpha = 0f;
     }
 
     void Update()
@@ -83,24 +85,25 @@ public class HasStuffToolTip : MonoBehaviour
     }
 
     //툴팁 켜기
-    public void OpenTooltip(MagicInfo magic = null, ItemInfo item = null)
+    public void OpenTooltip(SlotInfo slotInfo = null)
     {
         //마우스 위치로 이동 후 활성화
         FollowMouse(UIManager.Instance.nowMousePos);
         gameObject.SetActive(true);
+        canvasGroup.alpha = 0.7f;
 
         //마법 or 아이템 정보 넣기
-        this.magic = magic;
-        this.item = item;
+        this.magic = slotInfo as MagicInfo;
+        this.item = slotInfo as ItemInfo;
 
         string name = "";
         string description = "";
 
         // 마법 정보가 있을때
-        if (magic != null)
+        if (slotInfo != null)
         {
-            name = magic.name;
-            description = magic.description;
+            name = slotInfo.name;
+            description = slotInfo.description;
         }
 
         // 아이템 정보가 있을때
@@ -122,6 +125,7 @@ public class HasStuffToolTip : MonoBehaviour
         magic = null;
         item = null;
 
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
+        canvasGroup.alpha = 0f;
     }
 }

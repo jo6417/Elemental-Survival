@@ -85,6 +85,7 @@ public class UIManager : MonoBehaviour
 
     [Header("PlayerUI")]
     [SerializeField] PlayerManager playerManager;
+    public CanvasGroup dodgeBar;
     public SlicedFilledImage playerHp;
     public TextMeshProUGUI playerHpText;
     public SlicedFilledImage playerExp;
@@ -225,6 +226,9 @@ public class UIManager : MonoBehaviour
         // 시간 멈추지 않았을때
         if (Time.timeScale > 0)
         {
+            //시간 멈추기
+            Time.timeScale = 0f;
+
             StartCoroutine(PhoneMenu.Instance.OpenPhone(modifyPos));
 
             //플레이어 입력 끄기
@@ -679,7 +683,7 @@ public class UIManager : MonoBehaviour
             // 오브젝트에 아이템 정보 저장
             ToolTipTrigger toolTipTrigger = itemIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.Item = item;
+            toolTipTrigger._slotInfo = item;
 
             //스프라이트 넣기
             itemIcon.GetComponent<Image>().sprite =
@@ -699,7 +703,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public IEnumerator UpdateMagics(List<InventorySlot> magicList)
+    public IEnumerator UpdateMagics(List<MagicInfo> magicList)
     {
         // 목록 투명하게 숨기기
         hasMagicGrid.GetComponent<CanvasGroup>().alpha = 0f;
@@ -711,13 +715,13 @@ public class UIManager : MonoBehaviour
             LeanPool.Despawn(hasMagicGrid.transform.GetChild(0).gameObject);
         }
 
-        foreach (InventorySlot slot in magicList)
+        foreach (MagicInfo slot in magicList)
         {
             //0등급은 원소젬이므로 표시 안함
-            if (slot.slotInfo.grade == 0)
+            if (slot.grade == 0)
                 continue;
 
-            MagicInfo magic = slot.slotInfo as MagicInfo;
+            MagicInfo magic = slot as MagicInfo;
 
             //마법 아이콘 오브젝트 생성
             GameObject magicIcon = LeanPool.Spawn(hasItemIcon, hasMagicGrid.transform.position, Quaternion.identity, hasMagicGrid.transform);
@@ -725,16 +729,16 @@ public class UIManager : MonoBehaviour
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.Magic = magic;
+            toolTipTrigger._slotInfo = magic;
 
             // 전역 마법 정보 찾기
-            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(slot.slotInfo.id);
+            MagicInfo sharedMagic = MagicDB.Instance.GetMagicByID(slot.id);
             // 전역 마법 정보의 쿨타임 보여주기
             ShowMagicCooltime showCool = magicIcon.GetComponent<ShowMagicCooltime>();
             showCool.magic = sharedMagic;
 
             //아이콘 넣기
-            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(slot.slotInfo.id);
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(slot.id);
 
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -759,7 +763,7 @@ public class UIManager : MonoBehaviour
         for (int j = 0; j < hasMagicGrid.transform.childCount; j++)
         {
             // TooltipTrigger의 magic이 같은 아이콘 찾기
-            if (hasMagicGrid.transform.GetChild(j).GetComponent<ToolTipTrigger>().Magic == magic)
+            if (hasMagicGrid.transform.GetChild(j).GetComponent<ToolTipTrigger>()._slotInfo == magic)
             {
                 matchIcon = hasMagicGrid.transform.GetChild(j);
                 break;
@@ -779,7 +783,7 @@ public class UIManager : MonoBehaviour
             //툴팁에 마법 정보 저장
             ToolTipTrigger toolTipTrigger = magicIcon.GetComponent<ToolTipTrigger>();
             toolTipTrigger.toolTipType = ToolTipTrigger.ToolTipType.HasStuffTip;
-            toolTipTrigger.Magic = magic;
+            toolTipTrigger._slotInfo = magic;
 
             //스프라이트 넣기
             magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);

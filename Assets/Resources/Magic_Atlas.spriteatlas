@@ -108,10 +108,12 @@ SpriteAtlas:
   - {fileID: 22442593591287992, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 21300000, guid: 5ddbb22550d1d8e45af45dbc3a6fddf9, type: 3}
   - {fileID: 21300000, guid: 6041c625775d0e340b10b4cf437c04b9, type: 3}
+  - {fileID: 21300000, guid: d957ef95027369f4f89c54229e4ed58b, type: 3}
   - {fileID: 21300000, guid: f80246a55bc89374b84ef9ad497d2c6d, type: 3}
   - {fileID: -3770179725029816743, guid: c4415aa5ef0ef8746943d39dfaf01e24, type: 3}
   - {fileID: -4365617517610802000, guid: c4415aa5ef0ef8746943d39dfaf01e24, type: 3}
   - {fileID: 21300000, guid: 845360268351fd14483682e19c071d7c, type: 3}
+  - {fileID: 21300000, guid: c1e72a366066fab4483c3bfbda91f015, type: 3}
   - {fileID: 21300000, guid: 51e7805665b7cab41aa72c3339889e78, type: 3}
   - {fileID: 21300000, guid: ded3a7563ccccbf4b94e3fa3e13146bd, type: 3}
   - {fileID: 21300000, guid: fe793b17594220349accfc1346ead8be, type: 3}
@@ -162,6 +164,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 097c3fda0ff66c44ab36e8ba09b4f7ba, type: 3}
   - {fileID: 21300000, guid: d66d0cea15979b247abc5c837f90d473, type: 3}
   - {fileID: 21300000, guid: 3adf700be01792e40a30ee5d97406e31, type: 3}
+  - {fileID: 21300000, guid: ae63e3ab467a8e44398bf225619be848, type: 3}
   - {fileID: 21300000, guid: e9d11bfb5ef63314993f4059eb5757e6, type: 3}
   - {fileID: 3077425217977446100, guid: a82d651c696b02f4c96e3b70eeb29b04, type: 3}
   - {fileID: -50720779055665232, guid: a82d651c696b02f4c96e3b70eeb29b04, type: 3}
@@ -299,10 +302,12 @@ SpriteAtlas:
   - StompDust_Sheet_0
   - LaserBeam_Icon
   - SlotMove_Icon
+  - SteamRelease_Icon
   - SandShot_Icon
   - RockHand_Sheet_0
   - RockHand_Sheet_1
   - TimeStop_Icon
+  - EggBomb_Icon
   - LavaWalk_Icon
   - EarthGem_Icon
   - IceThorn
@@ -353,6 +358,7 @@ SpriteAtlas:
   - BabyArrow
   - HotBlade_Icon
   - SlotReplace_Icon
+  - RockHand_Icon
   - FireGem_Icon
   - TimeStop_Sheet_10
   - TimeStop_Sheet_11
