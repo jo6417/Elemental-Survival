@@ -100,16 +100,15 @@ public class PlayerManager : MonoBehaviour
     public float hpNow;
     public float hpMax;
 
-    //TODO 피격시 카메라 흔들기
-    // public float ShakeTime;
-    // public float ShakeIntensity;
-
     [Header("<Pocket>")]
     [SerializeField] List<int> hasGems = new List<int>(); // 테스트용 초기 원소젬 개수
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
     public InventorySlot activeSlot_A;
     public InventorySlot activeSlot_B;
     public InventorySlot activeSlot_C;
+
+    [Header("Sound")]
+    IEnumerator stepSound;
 
     private void Awake()
     {
@@ -333,8 +332,10 @@ public class PlayerManager : MonoBehaviour
 
         // 대쉬중 아닐때
         if (!isDash)
+        {
             // 이동 입력값을 실제 이동 벡터에 담기
             nowMoveDir = inputMoveDir;
+        }
 
         // 마지막 이동 방향 기억
         if (nowMoveDir != Vector2.zero)
@@ -356,7 +357,7 @@ public class PlayerManager : MonoBehaviour
         isDash = !isDash;
         anim.SetBool("isDash", isDash);
 
-        //todo 대쉬 토글시 체력바 가리기
+        // 대쉬 토글시 체력바 가리기
         UIManager.Instance.dodgeBar.alpha = isDash ? 1f : 0f;
 
         //대쉬 끝날때 이동 입력확인
@@ -471,7 +472,7 @@ public class PlayerManager : MonoBehaviour
         // 보유 아이템 중 해당 젬 개수 올리기
         hasItems[gemTypeIndex].amount += amount;
 
-        //todo 플레이어 버프 업데이트
+        // 플레이어 버프 업데이트
         BuffUpdate();
 
         //해당 젬 UI 인디케이터
@@ -551,5 +552,10 @@ public class PlayerManager : MonoBehaviour
         }
 
         return magicPower;
+    }
+
+    public void PlaySound(string name)
+    {
+        SoundManager.Instance.Play(name);
     }
 }

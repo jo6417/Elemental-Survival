@@ -220,7 +220,9 @@ public class Slot_Machine : MonoBehaviour
         else
             dropPos = transform.position + (transform.position - PlayerManager.Instance.transform.position).normalized * 3f;
 
-        print(itemInfo.id + " : " + itemInfo.name);
+        // print(transform.position + " : " + (transform.position - PlayerManager.Instance.transform.position).normalized * 3f);
+
+        // Vector3 dropDir = (transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
 
         // 아이템 드롭
         StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));

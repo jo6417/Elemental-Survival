@@ -173,6 +173,9 @@ public class EnemyDB : MonoBehaviour
         // 로컬 세이브데이터에서 불러와 enemyDB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetEnemyDB());
 
+        // DB 전부 Enum으로 바꿔서 저장
+        yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+
         // 동기화 여부 다시 검사
         yield return StartCoroutine(
             SaveManager.Instance.DBSyncCheck(

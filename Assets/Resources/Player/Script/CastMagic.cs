@@ -240,10 +240,13 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < nowCastMagics.Count; i++)
         {
             //ID 같은 마법 찾기
-            MagicInfo tempMagic = slotList.Find(x => x.slotInfo.id == nowCastMagics[i].id).slotInfo as MagicInfo;
+            InventorySlot tempSlot = slotList.Find(x => x.slotInfo.id == nowCastMagics[i].id);
+            SlotInfo tempMagic = null;
+            if (tempSlot != null)
+                tempMagic = tempSlot.slotInfo;
 
             // 시전 중인 마법을 castList에서 못찾으면 해당 마법 제거
-            if (tempMagic == null)
+            if (tempMagic as MagicInfo == null)
             {
                 // 패시브 마법이면 컴포넌트 찾아서 디스폰
                 if (nowCastMagics[i].castType == MagicDB.CastType.passive.ToString())

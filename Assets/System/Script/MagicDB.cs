@@ -157,6 +157,9 @@ public class MagicDB : MonoBehaviour
         // 로컬 데이터에서 파싱해서 마법DB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetMagicDB());
 
+        // DB 전부 Enum으로 바꿔서 저장
+        yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+
         // 로컬 세이브에서 언락된 마법들 불러오기
         LoadUnlockMagics();
 

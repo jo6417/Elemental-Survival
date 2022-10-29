@@ -84,9 +84,6 @@ public class SaveManager : MonoBehaviour
 
         print("저장 완료 - " + Application.persistentDataPath + "/save.json");
 
-        //todo DB 전부 Enum으로 바꾸기
-        yield return StartCoroutine(DBtoEnum());
-
         isSaving = false; //저장 끝
 
         yield return null;
@@ -213,7 +210,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    IEnumerator DBtoEnum()
+    public IEnumerator DBtoEnum()
     {
         string filePath = "Assets/System/Script/" + "DBEnums.cs";
 

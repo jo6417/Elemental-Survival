@@ -297,6 +297,16 @@ public class PlayerHitBox : MonoBehaviour
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 
+        // 데미지 사운드 재생
+        if (damage > 0)
+            SoundManager.Instance.Play("Hit");
+        // 회피 사운드 재생
+        if (damage == 0)
+            SoundManager.Instance.Play("Miss");
+        // 힐 사운드 재생
+        if (damage < 0)
+            SoundManager.Instance.Play("Heal");
+
         // 데미지 적용
         playerManager.PlayerStat_Now.hpNow -= damage;
 

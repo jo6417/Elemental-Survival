@@ -1398,8 +1398,6 @@ public class PhoneMenu : MonoBehaviour
 
     public void InteractBtnsToggle(bool toggle)
     {
-        print(toggle);
-
         // 키 입력 막기 변수 토글
         btnsInteractable = toggle;
 
