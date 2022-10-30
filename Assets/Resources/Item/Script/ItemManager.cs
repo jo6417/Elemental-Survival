@@ -291,6 +291,9 @@ public class ItemManager : MonoBehaviour
                 //플레이어 소지 젬 갯수 올리기
                 PlayerManager.Instance.AddGem(itemInfo, amount);
                 // print(item.itemName + amount);
+
+                // 젬 획득 사운드 재생
+                SoundManager.Instance.Play("GetGem");
             }
             // 아이템이 힐 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Heal.ToString())
@@ -307,6 +310,9 @@ public class ItemManager : MonoBehaviour
             {
                 //아이템 획득
                 PhoneMenu.Instance.GetItem(itemInfo);
+
+                // 샤드 획득 사운드 재생
+                SoundManager.Instance.Play("GetShard");
             }
             // 아이템이 가젯 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Gadget.ToString())

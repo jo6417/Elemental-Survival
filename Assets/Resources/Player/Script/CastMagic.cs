@@ -289,6 +289,9 @@ public class CastMagic : MonoBehaviour
         // 플레이어 마법 시전 이펙트 플레이
         playerMagicCastEffect.Play();
 
+        //todo 마법 시전 효과음 플레이
+        SoundManager.Instance.Play("UseMagic");
+
         MagicHolder magicHolder = null;
 
         // 패시브일때

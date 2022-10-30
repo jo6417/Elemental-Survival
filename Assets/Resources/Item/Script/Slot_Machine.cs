@@ -35,6 +35,7 @@ public class Slot_Machine : MonoBehaviour
     public float price;
     public int priceType;
     [SerializeField, ReadOnly] string productName;
+    [SerializeField] bool test = false;
 
     private void Awake()
     {
@@ -177,6 +178,9 @@ public class Slot_Machine : MonoBehaviour
         // 레버 내리는 애니메이션 1회 재생
         leverAnim.enabled = true;
 
+        //todo 슬롯 스핀 사운드 재생
+        SoundManager.Instance.Play("SlotSpin");
+
         // 완료 슬롯 개수 초기화
         slotStopNum = 0;
 
@@ -210,8 +214,13 @@ public class Slot_Machine : MonoBehaviour
 
         // 모든 슬롯 멈출때까지 대기
         yield return new WaitUntil(() => slotStopNum == 3);
+
         // 슬롯이 멈출때까지 추가 대기
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
+
+        // 아이템 드랍 사운드
+        SoundManager.Instance.Play("ItemDrop");
+        yield return new WaitForSeconds(0.1f);
 
         // 아이템 생성 위치
         Vector3 dropPos;
@@ -219,10 +228,6 @@ public class Slot_Machine : MonoBehaviour
             dropPos = itemDropper.position;
         else
             dropPos = transform.position + (transform.position - PlayerManager.Instance.transform.position).normalized * 3f;
-
-        // print(transform.position + " : " + (transform.position - PlayerManager.Instance.transform.position).normalized * 3f);
-
-        // Vector3 dropDir = (transform.position - PlayerManager.Instance.transform.position).normalized * Random.Range(10f, 20f);
 
         // 아이템 드롭
         StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));
@@ -289,7 +294,7 @@ public class Slot_Machine : MonoBehaviour
     IEnumerator SpinMachine(int slotIndex, int itemNum)
     {
         // 랜덤 시간 대기
-        yield return new WaitForSeconds(Random.Range(0f, 0.3f));
+        yield return new WaitForSeconds(Random.Range(0f, 0.2f));
 
         spinCount = randomTime;
         // 시간이 남았거나, 뽑힌 아이템의 슬롯이 아닐때 계속 스냅

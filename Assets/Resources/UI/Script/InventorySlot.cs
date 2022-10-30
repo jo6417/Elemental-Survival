@@ -191,7 +191,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         //해당 버튼 선택
-        // button.Select();
+        slotButton.Select();
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -199,7 +199,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 버튼이 상호작용 가능할때만
         if (slotButton.interactable)
         {
-            // select 했을때 툴팁 띄우기 - 툴팁트리거에서 하기
+            // 버튼 선택 사운드 재생
+            SoundManager.Instance.Play("SelectButton");
         }
     }
 
@@ -250,6 +251,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     void ClickSlot(int secondInput = -1)
     {
+        // 버튼 클릭 사운드 재생
+        SoundManager.Instance.Play("SubmitButton");
+
         // new 표시 끄기
         newSign.SetActive(false);
 

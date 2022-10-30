@@ -1491,7 +1491,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: -1861760285
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!114 &5110598184431744972
 MonoBehaviour:
@@ -2397,6 +2397,7 @@ MonoBehaviour:
   price: 0
   priceType: 0
   productName: 
+  test: 1
 --- !u!50 &5110598185505770280
 Rigidbody2D:
   serializedVersion: 4

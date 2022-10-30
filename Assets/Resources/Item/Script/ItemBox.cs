@@ -124,7 +124,12 @@ public class ItemBox : Character
     {
         // 죽을때
         if (hpNow <= 0)
+        {
             // 스폰 리스트에서 해당 아이템 삭제
             WorldSpawner.Instance.itemBoxList.Remove(gameObject);
+
+            // 상자 오픈 사운드 재생
+            SoundManager.Instance.Play("BoxOpen", 0.8f);
+        }
     }
 }

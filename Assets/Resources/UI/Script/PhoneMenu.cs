@@ -276,6 +276,9 @@ public class PhoneMenu : MonoBehaviour
         //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
+        // 핸드폰 토글 사운드 재생
+        SoundManager.Instance.Play("PhoneToggle");
+
         // 휴대폰 로딩 화면으로 가리기
         LoadingToggle(true);
         blackScreen.color = new Color(70f / 255f, 70f / 255f, 70f / 255f, 1);
@@ -302,6 +305,11 @@ public class PhoneMenu : MonoBehaviour
         .SetUpdate(true);
         CastMagic.Instance.transform.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        // 스크린 오픈 사운드 재생
+        SoundManager.Instance.Play("ScreenOpen");
 
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
@@ -1547,8 +1555,14 @@ public class PhoneMenu : MonoBehaviour
         blackScreen.DOColor(new Color(70f / 255f, 70f / 255f, 70f / 255f, 1), 0.2f)
         .SetUpdate(true);
 
+        // 핸드폰 토글 사운드 재생
+        SoundManager.Instance.Play("PhoneToggle");
+
         // 화면 꺼지는 동안 대기
         yield return new WaitForSecondsRealtime(0.2f);
+
+        // 휴대폰 닫기 사운드 재생
+        SoundManager.Instance.Play("ScreenClose");
 
         // 핸드폰 화면 패널 끄기
         phonePanel.SetActive(false);

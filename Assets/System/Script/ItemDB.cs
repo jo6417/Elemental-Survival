@@ -402,14 +402,14 @@ public class ItemDB : MonoBehaviour
         // 방향 벡터를 각도로 바꾸기
         float angle = Mathf.Atan2(itemDir.y, itemDir.x) * Mathf.Rad2Deg;
         // 각도 랜덤성 추가
-        // angle = angle + Random.Range(-45, 45);
+        angle = angle + Random.Range(-45, 45);
 
         // 각도를 방향 벡터로 바꾸기
-        itemDir = new Vector2(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle));
-        print(angle + ":" + itemDir);
+        itemDir = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
+        // print(angle + ":" + itemDir);
 
         // 플레이어 반대 방향, 랜덤 파워로 아이템 날리기
-        itemRigid.velocity = itemDir.normalized * Random.Range(10f, 20f);
+        itemRigid.velocity = itemDir.normalized * 30f;
 
         // 랜덤으로 방향 및 속도 결정
         float randomRotate = Random.Range(1f, 3f);
