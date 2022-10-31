@@ -88,21 +88,51 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void Play(string soundName, float delay = 0)
+    public void SoundPlay(string soundName, float delay = 0, int loopNum = 1, bool scaledTime = false)
     {
-        StartCoroutine(PlayCoroutine(soundName, delay));
+        StartCoroutine(Play(soundName, delay, loopNum, scaledTime));
     }
 
-    IEnumerator PlayCoroutine(string soundName, float delay)
+    IEnumerator Play(string soundName, float delay, int loopNum, bool scaledTime)
     {
-        // 딜레이 동안 대기
-        yield return new WaitForSeconds(delay);
+        for (int i = 0; i < loopNum; i++)
+        {
+            // 해당 이름으로 사운드 찾기
+            Sound sound = all_Sounds.Find(x => x.name == soundName);
 
+            if (scaledTime)
+                // 딜레이 동안 대기
+                yield return new WaitForSeconds(delay);
+            else
+                // 딜레이 동안 대기
+                yield return new WaitForSecondsRealtime(delay);
+
+
+            // 사운드 있으면 재생
+            if (sound != null)
+                sound.source.Play();
+        }
+    }
+
+    public void SoundStop(string soundName, float delay = 0, bool scaledTime = false)
+    {
+        StartCoroutine(Stop(soundName, delay, scaledTime));
+    }
+
+    IEnumerator Stop(string soundName, float delay, bool scaledTime)
+    {
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
+        if (scaledTime)
+            // 딜레이 동안 대기
+            yield return new WaitForSeconds(delay);
+        else
+            // 딜레이 동안 대기
+            yield return new WaitForSecondsRealtime(delay);
+
         // 사운드 있으면 재생
         if (sound != null)
-            sound.source.Play();
+            sound.source.Stop();
     }
 }

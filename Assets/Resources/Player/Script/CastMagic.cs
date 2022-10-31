@@ -290,7 +290,7 @@ public class CastMagic : MonoBehaviour
         playerMagicCastEffect.Play();
 
         //todo 마법 시전 효과음 플레이
-        SoundManager.Instance.Play("UseMagic");
+        SoundManager.Instance.SoundPlay("UseMagic");
 
         MagicHolder magicHolder = null;
 

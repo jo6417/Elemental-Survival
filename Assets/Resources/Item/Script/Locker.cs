@@ -159,7 +159,7 @@ public class Locker : MonoBehaviour
         if (PlayerManager.Instance.hasItems[priceType].amount > price)
         {
             // 금고 오픈사운드 재생
-            SoundManager.Instance.Play("LockerOpen");
+            SoundManager.Instance.SoundPlay("LockerOpen");
 
             // 플레이어 젬 소모 및 UI 갱신
             PlayerManager.Instance.PayGem(priceType, (int)price);
@@ -185,7 +185,7 @@ public class Locker : MonoBehaviour
         else
         {
             // 거부 사운드 재생
-            SoundManager.Instance.Play("Denied");
+            SoundManager.Instance.SoundPlay("Denied");
 
             // 중복 트윈 방지
             priceUI.transform.DOKill();

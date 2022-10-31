@@ -299,13 +299,13 @@ public class PlayerHitBox : MonoBehaviour
 
         // 데미지 사운드 재생
         if (damage > 0)
-            SoundManager.Instance.Play("Hit");
+            SoundManager.Instance.SoundPlay("Hit");
         // 회피 사운드 재생
         if (damage == 0)
-            SoundManager.Instance.Play("Miss");
+            SoundManager.Instance.SoundPlay("Miss");
         // 힐 사운드 재생
         if (damage < 0)
-            SoundManager.Instance.Play("Heal");
+            SoundManager.Instance.SoundPlay("Heal");
 
         // 데미지 적용
         playerManager.PlayerStat_Now.hpNow -= damage;

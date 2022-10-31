@@ -178,8 +178,8 @@ public class Slot_Machine : MonoBehaviour
         // 레버 내리는 애니메이션 1회 재생
         leverAnim.enabled = true;
 
-        //todo 슬롯 스핀 사운드 재생
-        SoundManager.Instance.Play("SlotSpin");
+        // 슬롯 스핀 사운드 재생
+        SoundManager.Instance.SoundPlay("SlotSpin_Short");
 
         // 완료 슬롯 개수 초기화
         slotStopNum = 0;
@@ -219,7 +219,7 @@ public class Slot_Machine : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         // 아이템 드랍 사운드
-        SoundManager.Instance.Play("ItemDrop");
+        SoundManager.Instance.SoundPlay("ItemDrop");
         yield return new WaitForSeconds(0.1f);
 
         // 아이템 생성 위치

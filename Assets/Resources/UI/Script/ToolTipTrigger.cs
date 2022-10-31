@@ -25,19 +25,19 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public string magicName;
     public string itemName;
 
-    // private void OnEnable()
-    // {
-    //     StartCoroutine(Init());
-    // }
+    private void OnEnable()
+    {
+        StartCoroutine(Init());
+    }
 
-    // IEnumerator Init()
-    // {
-    //     yield return null;
+    IEnumerator Init()
+    {
+        yield return null;
 
-    //     // 마법 아이템 정보 없으면 컴포넌트 끄기
-    //     if (Magic == null && Item == null)
-    //         this.enabled = false;
-    // }
+        // 마법 아이템 정보 없으면 컴포넌트 끄기
+        if (slotInfo == null)
+            this.enabled = false;
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

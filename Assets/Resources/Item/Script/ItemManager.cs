@@ -293,7 +293,7 @@ public class ItemManager : MonoBehaviour
                 // print(item.itemName + amount);
 
                 // 젬 획득 사운드 재생
-                SoundManager.Instance.Play("GetGem");
+                SoundManager.Instance.SoundPlay("GetGem");
             }
             // 아이템이 힐 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Heal.ToString())
@@ -312,7 +312,7 @@ public class ItemManager : MonoBehaviour
                 PhoneMenu.Instance.GetItem(itemInfo);
 
                 // 샤드 획득 사운드 재생
-                SoundManager.Instance.Play("GetShard");
+                SoundManager.Instance.SoundPlay("GetShard");
             }
             // 아이템이 가젯 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Gadget.ToString())

@@ -556,6 +556,6 @@ public class PlayerManager : MonoBehaviour
 
     public void PlaySound(string name)
     {
-        SoundManager.Instance.Play(name);
+        SoundManager.Instance.SoundPlay(name);
     }
 }

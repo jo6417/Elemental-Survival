@@ -200,7 +200,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (slotButton.interactable)
         {
             // 버튼 선택 사운드 재생
-            SoundManager.Instance.Play("SelectButton");
+            SoundManager.Instance.SoundPlay("SelectButton");
         }
     }
 
@@ -252,7 +252,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     void ClickSlot(int secondInput = -1)
     {
         // 버튼 클릭 사운드 재생
-        SoundManager.Instance.Play("SubmitButton");
+        SoundManager.Instance.SoundPlay("SubmitButton");
 
         // new 표시 끄기
         newSign.SetActive(false);
