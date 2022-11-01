@@ -66,9 +66,6 @@ public class MagicMixMenu : MonoBehaviour
 
     IEnumerator SetMenu()
     {
-        //시간 멈추기
-        // Time.timeScale = 0f;
-
         //플레이어 보유 스크롤 개수 업데이트
         int amount = 0;
         if (PlayerManager.Instance.hasItems.Exists(x => x.itemType == "Scroll"))

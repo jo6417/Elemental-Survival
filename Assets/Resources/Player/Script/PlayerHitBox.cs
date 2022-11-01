@@ -629,7 +629,7 @@ public class PlayerHitBox : MonoBehaviour
     public IEnumerator Dead()
     {
         // 시간 멈추기
-        Time.timeScale = 0;
+        SystemManager.Instance.TimeScaleChange(0f);
 
         //TODO 게임오버 UI 띄우기
         UIManager.Instance.GameOver();

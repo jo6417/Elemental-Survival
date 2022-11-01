@@ -228,9 +228,6 @@ public class PhoneMenu : MonoBehaviour
 
     IEnumerator Init()
     {
-        //시간 멈추기
-        // Time.timeScale = 0f;
-
         //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
@@ -308,9 +305,6 @@ public class PhoneMenu : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.5f);
 
-        // 스크린 오픈 사운드 재생
-        SoundManager.Instance.SoundPlay("ScreenOpen");
-
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
         yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
 
@@ -324,6 +318,9 @@ public class PhoneMenu : MonoBehaviour
 
         // 핸드폰 화면 패널 켜기
         phonePanel.SetActive(true);
+
+        // 스크린 토글 사운드 재생
+        SoundManager.Instance.SoundPlay("ScreenToggle");
 
         // 검은화면 투명하게
         blackScreen.DOColor(Color.clear, 0.2f)
@@ -1608,14 +1605,14 @@ public class PhoneMenu : MonoBehaviour
         blackScreen.DOColor(new Color(70f / 255f, 70f / 255f, 70f / 255f, 1), 0.2f)
         .SetUpdate(true);
 
-        // 핸드폰 토글 사운드 재생
-        SoundManager.Instance.SoundPlay("PhoneToggle");
+        // 스크린 토글 사운드 재생
+        SoundManager.Instance.SoundPlay("ScreenToggle");
 
         // 화면 꺼지는 동안 대기
         yield return new WaitForSecondsRealtime(0.2f);
 
-        // 휴대폰 닫기 사운드 재생
-        SoundManager.Instance.SoundPlay("ScreenClose");
+        // 핸드폰 토글 사운드 재생
+        SoundManager.Instance.SoundPlay("PhoneToggle");
 
         // 핸드폰 화면 패널 끄기
         phonePanel.SetActive(false);
@@ -1650,9 +1647,6 @@ public class PhoneMenu : MonoBehaviour
         //백 버튼 변수 초기화
         backBtnCount = 0f;
         backBtnFill.fillAmount = 0f;
-
-        // 끝나면 시간 복구하기
-        // Time.timeScale = 1f;
 
         //팝업 세팅
         UIManager.Instance.PopupSet(UIManager.Instance.phonePanel);

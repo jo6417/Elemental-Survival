@@ -133,6 +133,9 @@ public class PlayerManager : MonoBehaviour
         // 방향키 눌렀을때
         playerInput.Player.Move.performed += val =>
         {
+            //! 사운드 테스트
+            // SoundManager.Instance.SoundPlay("Test");
+
             //현재 이동방향 입력
             inputMoveDir = val.ReadValue<Vector2>();
 
@@ -263,7 +266,7 @@ public class PlayerManager : MonoBehaviour
             return;
 
         // 카메라 플레이어 부드럽게 따라오기
-        SystemManager.Instance.camParent.position = Vector3.Lerp(SystemManager.Instance.camParent.position, transform.position + new Vector3(0, 0, -50), Time.deltaTime * camFollowSpeed);
+        SystemManager.Instance.camParent.position = Vector3.Lerp(SystemManager.Instance.camParent.position, transform.position, Time.deltaTime * camFollowSpeed);
 
         //몬스터 스포너 따라오기
         if (mobSpawner.activeSelf)
@@ -504,9 +507,6 @@ public class PlayerManager : MonoBehaviour
 
     void Levelup()
     {
-        // 시간 멈추기
-        // Time.timeScale = 0;
-
         //레벨업
         PlayerStat_Now.Level++;
 

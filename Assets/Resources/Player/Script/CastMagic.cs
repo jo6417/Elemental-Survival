@@ -290,7 +290,7 @@ public class CastMagic : MonoBehaviour
         playerMagicCastEffect.Play();
 
         //todo 마법 시전 효과음 플레이
-        SoundManager.Instance.SoundPlay("UseMagic");
+        // SoundManager.Instance.SoundPlay("UseMagic");
 
         MagicHolder magicHolder = null;
 
@@ -345,8 +345,7 @@ public class CastMagic : MonoBehaviour
                 magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
                 //마법 정보 넣기
-                if (magicHolder.magic == null)
-                    magicHolder.magic = magic;
+                magicHolder.magic = magic;
 
                 //적 오브젝트 넣기, (유도 기능 등에 사용)
                 // magicHolder.targetObj = attackPos[i];
@@ -445,8 +444,7 @@ public class CastMagic : MonoBehaviour
                 magicHolder.SetTarget(MagicHolder.Target.Enemy);
 
                 //마법 정보 넣기
-                if (magicHolder.magic == null)
-                    magicHolder.magic = magic;
+                magicHolder.magic = magic;
 
                 // 산출된 위치 넣기
                 magicHolder.targetPos = enemyObj[i];

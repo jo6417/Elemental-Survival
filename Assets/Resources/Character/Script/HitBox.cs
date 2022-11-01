@@ -375,7 +375,7 @@ public class HitBox : MonoBehaviour
         if (attacker.burnTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, attacker.bleedTime, character.transform,
+            DotHit(damage, attacker.burnTime, character.transform,
             SystemManager.Instance.burnDebuffEffect, character.DebuffList[(int)Character.Debuff.Burn]);
         }
 
@@ -383,7 +383,7 @@ public class HitBox : MonoBehaviour
         if (attacker.poisonTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, attacker.bleedTime, character.transform,
+            DotHit(damage, attacker.poisonTime, character.transform,
             SystemManager.Instance.poisonDebuffEffect, character.DebuffList[(int)Character.Debuff.Poison]);
         }
 

@@ -120,8 +120,9 @@ public class AstralForm : MonoBehaviour
             Physics2D.IgnoreLayerCollision(SystemManager.Instance.layerList.PlayerHit_Layer, SystemManager.Instance.layerList.EnemyAttack_Layer, false);
         }
 
-        // 전체 타임 스케일 낮추기
-        Time.timeScale = isStop ? 1f / speed : 1f;
+        // 씬 타임 스케일 토글
+        float timeScale = isStop ? 1f / speed : 1f;
+        SystemManager.Instance.TimeScaleChange(timeScale);
 
         // 타임 스케일 낮춘만큼 플레이어 이동, 애니메이션 속도 올리기
         SystemManager.Instance.playerTimeScale = isStop ? 1f * speed * speed : 1f;

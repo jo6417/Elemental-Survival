@@ -51,6 +51,12 @@ public class LifeMushroomSpawner : MonoBehaviour
         SystemManager.Instance.globalEnemyDeadCallback -= DropLifeSeed;
     }
 
+    private void Update()
+    {
+        //todo 쿨타임마다 Burst로 파티클 atkNum만큼 방출
+        //todo 방출할때 사운드 재생
+    }
+
     // 파티클에 충돌한 몬스터 감지
     private void OnParticleCollision(GameObject other)
     {
@@ -92,6 +98,9 @@ public class LifeMushroomSpawner : MonoBehaviour
         if (isDrop)
         {
             GameObject mushroom = LeanPool.Spawn(lifeMushroom, character.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+
+            //todo 버섯 드랍시 사운드 재생
+            SoundManager.Instance.SoundPlay("LifeMushroom_Spawn", transform);
 
             SpriteRenderer mushroomSprite = mushroom.GetComponent<SpriteRenderer>();
 

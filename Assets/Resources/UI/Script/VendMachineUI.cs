@@ -55,9 +55,6 @@ public class VendMachineUI : MonoBehaviour
         // 필드드랍 여부 초기화
         fieldDrop = false;
 
-        //시간 멈추기
-        // Time.timeScale = 0f;
-
         // 화면 위로 이동
         vendMachineObj.anchoredPosition = new Vector2(0, 1100f);
 

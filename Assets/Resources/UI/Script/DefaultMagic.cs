@@ -14,15 +14,15 @@ public class DefaultMagic : MonoBehaviour
 
     private void Awake()
     {
-        // 시간 멈추기
-        Time.timeScale = 0f;
-
         // 아이콘 초기화
         StartCoroutine(Init());
     }
 
     IEnumerator Init()
     {
+        // 시간 멈추기
+        SystemManager.Instance.TimeScaleChange(0f);
+
         // 화면 가림막 켜기
         blockScreen.enabled = true;
         blockScreen.color = Color.black;

@@ -62,9 +62,12 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
+  stunTime: 0
   coll: {fileID: 4641395756389376506}
-  targetObj: {fileID: 0}
+  autoCoolDown: 1
+  fixCoolTime: -1
   isManualCast: 0
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
@@ -85,6 +88,8 @@ MonoBehaviour:
   magicHolder: {fileID: 4641395756389376504}
   fireColor: {r: 0, g: 0, b: 0, a: 0}
   fireMaterial: {fileID: 0}
+  fireStartSound: {fileID: 0}
+  burnSound: {fileID: 0}
 --- !u!114 &8924197724212575983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,6 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 4804630850445665503}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0.2
   modify_startLife: 0
 --- !u!198 &4804630850445665503

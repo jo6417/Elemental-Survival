@@ -46,11 +46,15 @@ public class Flame : MonoBehaviour
         ParticleSystemRenderer particleRenderer = particleManager.particle.GetComponent<ParticleSystemRenderer>();
         particleRenderer.material = fireMaterial;
 
-        // magicHolder에서 targetPos 받아와서 해당 위치로 이동
-        transform.position = magicHolder.targetPos;
+        if (magicHolder.isManualCast)
+            // 타겟 위치로 이동
+            transform.position = magicHolder.targetPos;
+        else
+            // 범위 내 랜덤 위치로 이동
+            transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
         // 범위만큼 스케일 반영
-        transform.localScale = Vector2.one * range;
+        transform.localScale = Vector2.one * range / 10f;
 
         // 콜라이더 켜기
         magicHolder.coll.enabled = true;
@@ -58,17 +62,24 @@ public class Flame : MonoBehaviour
         // 화염 파티클 재생
         particleManager.particle.Play();
 
+        // 화염 시작 사운드 재생
+        SoundManager.Instance.SoundPlay("Flame_Start", transform);
+        // 지속 불타는 사운드 재생
+        AudioSource burnAudio = SoundManager.Instance.SoundPlay("Flame_Burn", transform);
+
         // duration 만큼 시간 지나면 디스폰 시작
         yield return new WaitForSeconds(duration);
 
-        // 파티클 끄고 디스폰
+        // 지속 불타는 사운드 끄기
+        SoundManager.Instance.SoundStop(burnAudio);
+
+        // 파티클 끄고 마법 디스폰
         particleManager.SmoothDespawn();
 
-        // 파티클 사라지는 시간 절반만큼 대기
-        yield return new WaitForSeconds(1f);
-
-        // 콜라이더 끄기
-        magicHolder.coll.enabled = false;
+        // // 파티클 사라지는 시간 절반만큼 대기
+        // yield return new WaitForSeconds(1f);
+        // // 콜라이더 끄기
+        // magicHolder.coll.enabled = false;
     }
 
     private void OnDisable()

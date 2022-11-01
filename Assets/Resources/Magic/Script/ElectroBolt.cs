@@ -55,6 +55,13 @@ public class ElectroBolt : MonoBehaviour
         // 파티클 켜기
         energyBall.particle.Play();
 
+        // 사운드 반복 딜레이
+        float loopDelay = 0.2f;
+        // 사운드 반복 횟수
+        int loopNum = Mathf.RoundToInt(duration / loopDelay);
+        // 전기 사운드 반복 재생
+        SoundManager.Instance.SoundPlay("ElectroBolt", transform, loopDelay, loopNum, true);
+
         // duartion 동안 콜라이더 점멸 반복
         yield return StartCoroutine(FlickerColl());
 

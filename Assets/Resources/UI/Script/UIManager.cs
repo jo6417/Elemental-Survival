@@ -227,7 +227,7 @@ public class UIManager : MonoBehaviour
         if (Time.timeScale > 0)
         {
             //시간 멈추기
-            Time.timeScale = 0f;
+            SystemManager.Instance.TimeScaleChange(0f);
 
             StartCoroutine(PhoneMenu.Instance.OpenPhone(modifyPos));
 
@@ -241,8 +241,6 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        // Time.timeScale = 1; //시간값 초기화
-
         UIRect = GetComponent<RectTransform>();
         cursorRect = UI_Cursor.GetComponent<RectTransform>();
 
@@ -982,7 +980,8 @@ public class UIManager : MonoBehaviour
     public void PopupSet(GameObject popup)
     {
         // 시간 정지 토글
-        Time.timeScale = popup.activeSelf ? 0 : 1;
+        float scale = popup.activeSelf ? 0 : 1;
+        SystemManager.Instance.TimeScaleChange(scale);
 
         //팝업 off
         if (!popup.activeSelf)
@@ -1070,7 +1069,7 @@ public class UIManager : MonoBehaviour
     public void GameOver(bool isClear = false)
     {
         // 시간 멈추기
-        Time.timeScale = 0f;
+        SystemManager.Instance.TimeScaleChange(0f);
         // 게임 오버 UI 켜기
         gameoverPanel.SetActive(true);
 

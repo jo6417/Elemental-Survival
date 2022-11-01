@@ -12,6 +12,8 @@ public class MagicProjectile : MonoBehaviour
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
     public bool isSpin; // 투사체 회전 여부
     public float spreadForce = 10f; // 파편 날아가는 강도
+    public delegate void DespawnCallback();
+    public DespawnCallback despawnCallback; // 파괴시 콜백
 
     [Header("Refer")]
     public MagicInfo magic;
@@ -232,6 +234,10 @@ public class MagicProjectile : MonoBehaviour
         coll.enabled = false;
         // 스프라이트 끄기
         sprite.enabled = false;
+
+        // 디스폰 콜백 함수 있으면 실행
+        if (despawnCallback != null)
+            despawnCallback.Invoke();
 
         //파괴 이펙트 있으면 남기기
         if (hitEffect)

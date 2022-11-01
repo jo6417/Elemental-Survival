@@ -233,10 +233,13 @@ public class SystemManager : MonoBehaviour
         return angle;
     }
 
-    public void AllTimeScale(float scale)
+    public void TimeScaleChange(float scale)
     {
-        playerTimeScale = scale;
-        globalTimeScale = scale;
+        // 씬 타임스케일 변경
+        Time.timeScale = scale;
+
+        // 모든 오디오 소스 피치에 반영
+        SoundManager.Instance.SoundTimeScale(scale);
     }
 
     public void TimeStopToggle()
@@ -246,13 +249,13 @@ public class SystemManager : MonoBehaviour
 
         if (Time.timeScale == 0f)
         {
-            Time.timeScale = 1f;
+            SystemManager.Instance.TimeScaleChange(1f);
 
             timeImg.color = Color.green;
         }
         else
         {
-            Time.timeScale = 0f;
+            SystemManager.Instance.TimeScaleChange(0f);
 
             timeImg.color = Color.red;
         }

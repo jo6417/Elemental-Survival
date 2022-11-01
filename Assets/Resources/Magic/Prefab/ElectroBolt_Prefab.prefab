@@ -62,9 +62,12 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
+  stunTime: 0
   coll: {fileID: 0}
-  targetObj: {fileID: 0}
+  autoCoolDown: 1
+  fixCoolTime: 0
   isManualCast: 0
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 0
@@ -83,6 +86,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 587663054536785857}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0
   modify_startLife: 0
 --- !u!114 &5917025461180078709

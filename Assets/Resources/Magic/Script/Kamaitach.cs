@@ -74,7 +74,7 @@ public class Kamaitach : MonoBehaviour
         if (magicHolder.isManualCast)
         {
             // 시간 멈추기
-            Time.timeScale = 0.1f;
+            SystemManager.Instance.TimeScaleChange(0.1f);
 
             // 플레이어, UI 키입력 막기
             PlayerManager.Instance.playerInput.Disable();
@@ -104,7 +104,7 @@ public class Kamaitach : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.2f);
 
             // 시간 정상화
-            Time.timeScale = 1f;
+            SystemManager.Instance.TimeScaleChange(1f);
 
             // 플레이어 애니메이터 켜기
             PlayerManager.Instance.anim.enabled = true;
