@@ -5,6 +5,8 @@ using UnityEngine;
 public class MagicHolder : Attack
 {
     [Header("Refer")]
+    public System.Action hitAction;
+    public System.Action despawnAction;
     public MagicCastCallback magicCastCallback; // 패시브를 액티브 사용 했을때 콜백
     public delegate void MagicCastCallback();
     public MagicInfo magic; //보유한 마법 데이터

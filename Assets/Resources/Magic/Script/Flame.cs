@@ -63,15 +63,15 @@ public class Flame : MonoBehaviour
         particleManager.particle.Play();
 
         // 화염 시작 사운드 재생
-        SoundManager.Instance.SoundPlay("Flame_Start", transform);
+        SoundManager.Instance.PlaySound("Flame_Start", transform.position);
         // 지속 불타는 사운드 재생
-        AudioSource burnAudio = SoundManager.Instance.SoundPlay("Flame_Burn", transform);
+        AudioSource burnAudio = SoundManager.Instance.PlaySound("Flame_Burn", transform.position);
 
         // duration 만큼 시간 지나면 디스폰 시작
         yield return new WaitForSeconds(duration);
 
         // 지속 불타는 사운드 끄기
-        SoundManager.Instance.SoundStop(burnAudio);
+        SoundManager.Instance.StopSound(burnAudio);
 
         // 파티클 끄고 마법 디스폰
         particleManager.SmoothDespawn();

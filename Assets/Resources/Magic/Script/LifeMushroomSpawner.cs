@@ -100,7 +100,7 @@ public class LifeMushroomSpawner : MonoBehaviour
             GameObject mushroom = LeanPool.Spawn(lifeMushroom, character.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
             //todo 버섯 드랍시 사운드 재생
-            SoundManager.Instance.SoundPlay("LifeMushroom_Spawn", transform);
+            // SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position);
 
             SpriteRenderer mushroomSprite = mushroom.GetComponent<SpriteRenderer>();
 

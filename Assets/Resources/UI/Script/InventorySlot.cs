@@ -200,7 +200,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (slotButton.interactable)
         {
             // 버튼 선택 사운드 재생
-            SoundManager.Instance.SoundPlay("SelectButton");
+            SoundManager.Instance.PlaySound("SelectButton");
         }
     }
 
@@ -252,7 +252,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     void ClickSlot(int secondInput = -1)
     {
         // 버튼 클릭 사운드 재생
-        SoundManager.Instance.SoundPlay("SubmitButton");
+        SoundManager.Instance.PlaySound("SubmitButton");
 
         // new 표시 끄기
         newSign.SetActive(false);
@@ -432,12 +432,12 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 // 해당 슬롯 아이템 삭제
                 slotInfo = null;
 
-                // 키 입력 막기 변수 토글
-                PhoneMenu.Instance.InteractBtnsToggle(false);
-                // 메뉴 버튼 상호작용 토글
-                PhoneMenu.Instance.recipeBtn.interactable = false;
-                // 백 버튼 상호작용 토글
-                PhoneMenu.Instance.backBtn.interactable = false;
+                // // 키 입력 막기 변수 토글
+                // PhoneMenu.Instance.InteractBtnsToggle(false);
+                // // 메뉴 버튼 상호작용 토글
+                // PhoneMenu.Instance.recipeBtn.interactable = false;
+                // // 백 버튼 상호작용 토글
+                // PhoneMenu.Instance.backBtn.interactable = false;
             }
         }
         // 아이템 들고 click 했을때
@@ -506,12 +506,12 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 MergeCheck();
             }
 
-            // 키 입력 막기 변수 토글
-            PhoneMenu.Instance.InteractBtnsToggle(true);
-            // 메뉴 버튼 상호작용 토글
-            PhoneMenu.Instance.recipeBtn.interactable = true;
-            // 백 버튼 상호작용 토글
-            PhoneMenu.Instance.backBtn.interactable = true;
+            // // 키 입력 막기 변수 토글
+            // PhoneMenu.Instance.InteractBtnsToggle(true);
+            // // 메뉴 버튼 상호작용 토글
+            // PhoneMenu.Instance.recipeBtn.interactable = true;
+            // // 백 버튼 상호작용 토글
+            // PhoneMenu.Instance.backBtn.interactable = true;
         }
 
         // 현재 슬롯 UI 갱신

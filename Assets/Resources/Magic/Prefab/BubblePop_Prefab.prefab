@@ -4925,8 +4925,10 @@ MonoBehaviour:
   stopTime: 0
   stunTime: 0
   coll: {fileID: 0}
-  targetObj: {fileID: 0}
+  autoCoolDown: 1
+  fixCoolTime: 0
   isManualCast: 0
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 1
@@ -4944,7 +4946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 8632908752227872801}
-  bubbleParticle: {fileID: 3459317121763309752}
+  particle: {fileID: 3459317121763309752}
 --- !u!114 &3713155053586245308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8783,12 +8785,13 @@ ParticleSystem:
     enabled: 0
     serializedVersion: 2
     inside: 2
-    outside: 0
+    outside: 2
     enter: 2
-    exit: 0
+    exit: 2
     colliderQueryMode: 0
-    radiusScale: 0.84
-    primitives: []
+    radiusScale: 1
+    primitives:
+    - {fileID: 0}
   SubModule:
     serializedVersion: 2
     enabled: 1

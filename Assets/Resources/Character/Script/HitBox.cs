@@ -195,8 +195,12 @@ public class HitBox : MonoBehaviour
                 yield break;
             }
 
+            // 히트 콜백 있으면 실행
+            if (magicHolder.hitAction != null)
+                magicHolder.hitAction.Invoke();
+
             // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
-            if (magicHolder.pierceCount != -1 && magicHolder.pierceCount > 0)
+            if (magicHolder.pierceCount > 0)
                 // 관통 횟수 차감
                 magicHolder.pierceCount--;
 
@@ -230,11 +234,12 @@ public class HitBox : MonoBehaviour
                         damage = damage * criticalPower;
                 }
 
-                // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈)
-                if (attacker.poisonTime == 0
-                && attacker.burnTime == 0
-                && attacker.bleedTime == 0)
-                    Damage(damage, isCritical, hitPos);
+                // // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈)
+                // if (attacker.poisonTime == 0
+                // && attacker.burnTime == 0
+                // && attacker.bleedTime == 0)
+                // 데미지 주기
+                Damage(damage, isCritical, hitPos);
             }
         }
         // 그냥 Attack 컴포넌트일때
@@ -375,24 +380,24 @@ public class HitBox : MonoBehaviour
         if (attacker.burnTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, attacker.burnTime, character.transform,
-            SystemManager.Instance.burnDebuffEffect, character.DebuffList[(int)Character.Debuff.Burn]);
+            DotHit(damage, isCritical, attacker.burnTime, character.transform,
+            SystemManager.Instance.burnDebuffEffect, Character.Debuff.Burn);
         }
 
         // 포이즌 피해 시간 있으면 도트 피해
         if (attacker.poisonTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, attacker.poisonTime, character.transform,
-            SystemManager.Instance.poisonDebuffEffect, character.DebuffList[(int)Character.Debuff.Poison]);
+            DotHit(damage, isCritical, attacker.poisonTime, character.transform,
+            SystemManager.Instance.poisonDebuffEffect, Character.Debuff.Poison);
         }
 
         // 출혈 지속시간 있으면 도트 피해
         if (attacker.bleedTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, attacker.bleedTime, character.buffParent,
-            SystemManager.Instance.bleedDebuffUI, character.DebuffList[(int)Character.Debuff.Bleed]);
+            DotHit(damage, isCritical, attacker.bleedTime, character.buffParent,
+            SystemManager.Instance.bleedDebuffUI, Character.Debuff.Bleed);
         }
     }
 
@@ -591,19 +596,21 @@ public class HitBox : MonoBehaviour
         LeanPool.Despawn(damageUI);
     }
 
-    public void DotHit(float tickDamage, float duration, Transform buffParent, GameObject debuffEffect, IEnumerator coroutine)
+    public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Character.Debuff debuffType)
     {
-        //이미 출혈 코루틴 실행중이면 기존 코루틴 취소
-        if (coroutine != null)
-            StopCoroutine(coroutine);
+        //이미 코루틴 실행중이면 기존 코루틴 취소
+        if (character.DebuffList[(int)debuffType] != null)
+        {
+            StopCoroutine(character.DebuffList[(int)debuffType]);
+        }
 
-        // 도트 피해 입히기
-        coroutine = DotHitCoroutine(tickDamage, duration, debuffEffect, buffParent, coroutine);
+        // 도트 피해 코루틴 설정
+        character.DebuffList[(int)debuffType] = DotHitCoroutine(tickDamage, isCritical, duration, debuffEffect, buffParent, debuffType);
 
-        StartCoroutine(coroutine);
+        StartCoroutine(character.DebuffList[(int)debuffType]);
     }
 
-    public IEnumerator DotHitCoroutine(float tickDamage, float duration, GameObject debuffEffect, Transform buffParent, IEnumerator coroutine)
+    public IEnumerator DotHitCoroutine(float tickDamage, bool isCritical, float duration, GameObject debuffEffect, Transform buffParent, Character.Debuff debuffType)
     {
         // 디버프 이펙트
         Transform effect = null;
@@ -626,14 +633,14 @@ public class HitBox : MonoBehaviour
         // 도트 데미지 지속시간이 1초 이상 남았을때, 몬스터 살아있을때
         while (durationCount >= 1 && !character.isDead)
         {
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
-
             // 도트 데미지 입히기
-            Damage(tickDamage, false);
+            Damage(tickDamage, isCritical);
 
             // 남은 지속시간에서 한틱 차감
             durationCount -= 1f;
+
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
         }
 
         // 디버프 이펙트 없에기
@@ -642,7 +649,7 @@ public class HitBox : MonoBehaviour
             LeanPool.Despawn(effect);
 
         // 디버프 코루틴 변수 초기화
-        coroutine = null;
+        character.DebuffList[(int)debuffType] = null;
     }
 
     public IEnumerator Knockback(Attack attacker, float knockbackForce)

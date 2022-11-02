@@ -5278,7 +5278,7 @@ MonoBehaviour:
   lookDir: 0
   isSpin: 1
   spreadForce: 3
-  magicHolder: {fileID: 0}
+  magicHolder: {fileID: 1209804316078193461}
   particleManager: {fileID: 3149800593902531953}
   shatters:
   - {fileID: 289528900}
@@ -5301,7 +5301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcebc536e876b224bb1b7ab16180947b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  magicProjectile: {fileID: 5089590563991329980}
+  magicHolder: {fileID: 1209804316078193461}
 --- !u!212 &7344502147705067009
 SpriteRenderer:
   m_ObjectHideFlags: 0

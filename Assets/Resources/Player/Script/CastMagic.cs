@@ -326,55 +326,27 @@ public class CastMagic : MonoBehaviour
             // 마우스 위치 근처 공격 지점 리스트
             List<Vector2> attackPos = MarkEnemyPos(magic, PlayerManager.Instance.GetMousePos());
 
-            // 공격지점 개수만큼 마법 시전
-            for (int i = 0; i < attackPos.Count; i++)
-            {
-                // 마법 오브젝트 생성
-                GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
-
-                // 레이어 바꾸기
-                magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
-
-                //매직 홀더 찾기
-                magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
-
-                // 수동 시전 여부 넣기
-                magicHolder.isManualCast = true;
-
-                //타겟 정보 넣기
-                magicHolder.SetTarget(MagicHolder.Target.Enemy);
-
-                //마법 정보 넣기
-                magicHolder.magic = magic;
-
-                //적 오브젝트 넣기, (유도 기능 등에 사용)
-                // magicHolder.targetObj = attackPos[i];
-
-                //적 위치 넣기
-                if (attackPos[i] != null)
-                    magicHolder.targetPos = attackPos[i];
-
-                yield return new WaitForSeconds(0.1f);
-            }
+            // 공격 횟수만큼 시전
+            StartCoroutine(Cast(true, attackPos, magic, magicPrefab, magicHolder));
         }
 
         // 해당 마법의 액티브 쿨타임 갱신
         MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
         float fixCoolTime = -1;
 
-        // 쿨타임 수동 제어일때
-        if (!magicHolder.autoCoolDown)
-        {
-            // 쿨타임 스위치 끄기
-            magicHolder.fixCoolTime = -1;
-            // 쿨타임 스위치 켜질때까지 대기
-            yield return new WaitUntil(() => magicHolder.fixCoolTime != -1);
+        // // 쿨타임 수동 제어일때
+        // if (!magicHolder.autoCoolDown)
+        // {
+        //     // 쿨타임 스위치 끄기
+        //     magicHolder.fixCoolTime = -1;
+        //     // 쿨타임 스위치 켜질때까지 대기
+        //     yield return new WaitUntil(() => magicHolder.fixCoolTime != -1);
 
-            fixCoolTime = magicHolder.fixCoolTime;
-        }
-        // 쿨타임 자동 제어일때
-        else
-            fixCoolTime = MagicDB.Instance.MagicCoolTime(activeMagic);
+        //     fixCoolTime = magicHolder.fixCoolTime;
+        // }
+        // // 쿨타임 자동 제어일때
+        // else
+        fixCoolTime = MagicDB.Instance.MagicCoolTime(activeMagic);
 
         // 액티브 쿨타임 차감
         yield return StartCoroutine(Cooldown(activeMagic, fixCoolTime));
@@ -427,47 +399,27 @@ public class CastMagic : MonoBehaviour
                 yield break;
 
             // 공격 지점 찾기
-            List<Vector2> enemyObj = MarkEnemyPos(magic);
+            List<Vector2> attackPos = MarkEnemyPos(magic);
 
-            for (int i = 0; i < enemyObj.Count; i++)
-            {
-                // 마법 오브젝트 생성
-                GameObject magicObj = LeanPool.Spawn(magicPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
-
-                // 레이어 바꾸기
-                magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
-
-                //매직 홀더 찾기
-                magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
-
-                //타겟 정보 넣기
-                magicHolder.SetTarget(MagicHolder.Target.Enemy);
-
-                //마법 정보 넣기
-                magicHolder.magic = magic;
-
-                // 산출된 위치 넣기
-                magicHolder.targetPos = enemyObj[i];
-
-                yield return new WaitForSeconds(0.1f);
-            }
+            // 공격 횟수만큼 시전
+            StartCoroutine(Cast(false, attackPos, magic, magicPrefab, magicHolder));
         }
 
         // 쿨타임 체크를 위한 전역 마법 정보 불러오기
         MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
         float fixCoolTime = -1;
 
-        // 쿨타임 수동 제어일때
-        if (!magicHolder.autoCoolDown)
-        {
-            // 쿨타임 스위치 켜질때까지 대기
-            yield return new WaitUntil(() => magicHolder.fixCoolTime != -1);
+        // // 쿨타임 수동 제어일때
+        // if (!magicHolder.autoCoolDown)
+        // {
+        //     // 쿨타임 스위치 켜질때까지 대기
+        //     yield return new WaitUntil(() => magicHolder.fixCoolTime != -1);
 
-            fixCoolTime = magicHolder.fixCoolTime;
-        }
-        //tod 쿨타임 자동 제어일때
-        else
-            fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
+        //     fixCoolTime = magicHolder.fixCoolTime;
+        // }
+        // //tod 쿨타임 자동 제어일때
+        // else
+        fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
 
         // 쿨타임 차감
         yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
@@ -491,6 +443,40 @@ public class CastMagic : MonoBehaviour
         {
             // 더이상 재실행 하지않고, 현재 사용중 목록에서 제거
             nowCastMagics.Remove(magic);
+        }
+    }
+
+    IEnumerator Cast(bool isManual, List<Vector2> attackPos, MagicInfo magic, GameObject magicPrefab, MagicHolder magicHolder)
+    {
+        // 공격지점 개수만큼 마법 시전
+        for (int i = 0; i < attackPos.Count; i++)
+        {
+            // 마법 오브젝트 생성
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+            // 레이어 바꾸기
+            magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+
+            //매직 홀더 찾기
+            magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+
+            // 수동 시전 여부 넣기
+            magicHolder.isManualCast = isManual;
+
+            //타겟 정보 넣기
+            magicHolder.SetTarget(MagicHolder.Target.Enemy);
+
+            //마법 정보 넣기
+            magicHolder.magic = magic;
+
+            //적 오브젝트 넣기, (유도 기능 등에 사용)
+            // magicHolder.targetObj = attackPos[i];
+
+            //적 위치 넣기
+            if (attackPos[i] != null)
+                magicHolder.targetPos = attackPos[i];
+
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -540,8 +526,6 @@ public class CastMagic : MonoBehaviour
 
         //nowCastMagics에 해당 마법 추가
         nowCastMagics.Add(magic);
-
-
     }
 
     public List<Vector2> MarkEnemyPos(MagicInfo magic, Vector2 targetPos = default)

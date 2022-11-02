@@ -103,7 +103,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public AudioSource SoundPlay(string soundName, Transform soundPoint, float delay = 0, int loopNum = 1, bool scaledTime = false)
+    public AudioSource PlaySound(string soundName, Vector3 position, float delay = 0, int loopNum = 1, bool scaledTime = false)
     {
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
@@ -112,7 +112,7 @@ public class SoundManager : MonoBehaviour
             return null;
 
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, soundPoint.position, Quaternion.identity, transform);
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, transform);
 
         // 오브젝트 이름을 사운드 이름으로 동기화
         audioObj.name = soundName;
@@ -138,7 +138,7 @@ public class SoundManager : MonoBehaviour
         return audio;
     }
 
-    public void SoundPlay(string soundName, float delay = 0, int loopNum = 1, bool scaledTime = false)
+    public void PlaySound(string soundName, float delay = 0, int loopNum = 1, bool scaledTime = true)
     {
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
@@ -159,15 +159,15 @@ public class SoundManager : MonoBehaviour
 
         for (int i = 0; i < loopNum; i++)
         {
+            // 사운드 있으면 재생
+            if (audio != null)
+                audio.Play();
+
             // 스케일타임에 따라 딜레이 동안 대기
             if (scaledTime)
                 yield return waitScaled_Delay;
             else
                 yield return waitUnScaled_Delay;
-
-            // 사운드 있으면 재생
-            if (audio != null)
-                audio.Play();
         }
 
         WaitForSeconds waitScaled_Delta = new WaitForSeconds(Time.deltaTime);
@@ -197,7 +197,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void SoundStop(string soundName, float delay = 0, bool scaledTime = false)
+    public void StopSound(string soundName, float delay = 0, bool scaledTime = false)
     {
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
@@ -207,7 +207,7 @@ public class SoundManager : MonoBehaviour
             StartCoroutine(Stop(sound.source, delay, scaledTime));
     }
 
-    public void SoundStop(AudioSource audio, float delay = 0, bool scaledTime = false)
+    public void StopSound(AudioSource audio, float delay = 0, bool scaledTime = false)
     {
         // 오디오 오브젝트 디스폰
         if (audio != null)
@@ -237,11 +237,17 @@ public class SoundManager : MonoBehaviour
         if (!init)
             yield return new WaitUntil(() => init);
 
-        // 해당 사운드 리스트 소스의 pitch 디폴트 값에 타임스케일 곱하기
+        // 플레이어 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        foreach (Sound sound in player_Sounds)
+            sound.source.pitch = sound.pitch * scale;
+        // 마법 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
         foreach (Sound sound in magic_Sounds)
             sound.source.pitch = sound.pitch * scale;
-        // 해당 사운드 리스트 소스의 pitch 디폴트 값에 타임스케일 곱하기
-        foreach (Sound sound in player_Sounds)
+        // 아이템 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        foreach (Sound sound in item_Sounds)
+            sound.source.pitch = sound.pitch * scale;
+        // 몬스터 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        foreach (Sound sound in enemy_Sounds)
             sound.source.pitch = sound.pitch * scale;
 
         // 모든 자식 오디오소스 오브젝트의 피치에 타임스케일 곱하기

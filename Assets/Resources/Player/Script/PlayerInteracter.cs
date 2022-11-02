@@ -47,7 +47,7 @@ public class PlayerInteracter : MonoBehaviour
             nearInteracter.interactTriggerCallback(true);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         // 상호작용 오브젝트 충돌시
         if (other.CompareTag(SystemManager.TagNameList.Object.ToString()) && other.TryGetComponent(out Interacter interacter))

@@ -6,15 +6,10 @@ public class WindCutter : MonoBehaviour
 {
     [Header("Refer")]
     [SerializeField] MagicHolder magicHolder;
+    [SerializeField] Animator anim;
     public SpriteRenderer sprite;
-    public Animator anim;
-    float duration;
 
-    private void Awake()
-    {
-        anim = anim == null ? GetComponent<Animator>() : anim;
-        sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
-    }
+    float duration;
 
     private void OnEnable()
     {
@@ -44,5 +39,18 @@ public class WindCutter : MonoBehaviour
 
         // 애니메이션 재생
         anim.speed = 3f;
+
+        // 발사할때 사운드
+        SoundManager.Instance.PlaySound("WindCutter_Shot", transform.position);
+
+        // 적 충돌시 사운드 - 콜백으로 처리
+        if (magicHolder.hitAction == null)
+            magicHolder.hitAction += SliceSound;
+    }
+
+    void SliceSound()
+    {
+        print("slice!");
+        SoundManager.Instance.PlaySound("WindCutter_Slice", transform.position);
     }
 }

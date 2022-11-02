@@ -233,7 +233,7 @@ public class PlayerManager : MonoBehaviour
         // 보유 아이템 리스트 초기화
         hasItems.Clear();
         // 6종류 gem을 리스트에 넣기
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < hasGems.Count; i++)
         {
             ItemInfo gem = new ItemInfo(ItemDB.Instance.GetItemByID(i));
             //! 테스트용 원소젬 개수 넣기
@@ -318,6 +318,9 @@ public class PlayerManager : MonoBehaviour
             {
                 sprite.transform.rotation = Quaternion.Euler(0, 180, 0);
             }
+
+            //todo 그림자는 회전값 유지
+            shadowSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
         // 방향키 입력에 따라 애니메이터 걷기 변수 입력
@@ -556,6 +559,6 @@ public class PlayerManager : MonoBehaviour
 
     public void PlaySound(string name)
     {
-        SoundManager.Instance.SoundPlay(name);
+        SoundManager.Instance.PlaySound(name);
     }
 }

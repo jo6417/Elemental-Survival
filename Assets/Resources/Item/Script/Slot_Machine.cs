@@ -179,7 +179,7 @@ public class Slot_Machine : MonoBehaviour
         leverAnim.enabled = true;
 
         // 슬롯 스핀 사운드 재생
-        SoundManager.Instance.SoundPlay("SlotSpin_Short");
+        SoundManager.Instance.PlaySound("SlotSpin_Short");
 
         // 완료 슬롯 개수 초기화
         slotStopNum = 0;
@@ -219,7 +219,7 @@ public class Slot_Machine : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         // 아이템 드랍 사운드
-        SoundManager.Instance.SoundPlay("ItemDrop");
+        SoundManager.Instance.PlaySound("ItemDrop");
         yield return new WaitForSeconds(0.1f);
 
         // 아이템 생성 위치

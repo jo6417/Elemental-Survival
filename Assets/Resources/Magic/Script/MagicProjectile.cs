@@ -12,8 +12,6 @@ public class MagicProjectile : MonoBehaviour
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
     public bool isSpin; // 투사체 회전 여부
     public float spreadForce = 10f; // 파편 날아가는 강도
-    public delegate void DespawnCallback();
-    public DespawnCallback despawnCallback; // 파괴시 콜백
 
     [Header("Refer")]
     public MagicInfo magic;
@@ -166,14 +164,15 @@ public class MagicProjectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         //적에게 충돌
-        if (magicHolder.targetType == MagicHolder.Target.Enemy && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+        if (magicHolder.targetType == MagicHolder.Target.Enemy
+        && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
         {
             // 히트박스 없으면 리턴
             if (!other.TryGetComponent(out HitBox enemyHitBox))
                 return;
 
             // 맞는 순간 콜라이더 끄기, 중복 충돌 방지
-            coll.enabled = false;
+            // coll.enabled = false;
 
             // print(other.transform.parent.parent.name + " : " + magicHolder.pierceCount);
 
@@ -183,15 +182,19 @@ public class MagicProjectile : MonoBehaviour
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());
             }
-            else
-                // 관통 횟수 남아있으면 다시 콜라이더 켜기
-                coll.enabled = true;
+            // else
+            //     // 관통 횟수 남아있으면 다시 콜라이더 켜기
+            //     coll.enabled = true;
         }
 
         // 플레이어에게 충돌, 대쉬중이면 무시
         if (magicHolder.targetType == MagicHolder.Target.Player && other.CompareTag(SystemManager.TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
         {
             // print(gameObject.name + " : " + magicHolder.pierceCount);
+
+            // 히트 콜백 있으면 실행
+            if (magicHolder.hitAction != null)
+                magicHolder.hitAction.Invoke();
 
             //남은 관통횟수 0 일때 디스폰
             if (magicHolder.pierceCount == 0)
@@ -236,8 +239,8 @@ public class MagicProjectile : MonoBehaviour
         sprite.enabled = false;
 
         // 디스폰 콜백 함수 있으면 실행
-        if (despawnCallback != null)
-            despawnCallback.Invoke();
+        if (magicHolder.despawnAction != null)
+            magicHolder.despawnAction.Invoke();
 
         //파괴 이펙트 있으면 남기기
         if (hitEffect)

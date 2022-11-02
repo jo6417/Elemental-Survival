@@ -274,7 +274,7 @@ public class PhoneMenu : MonoBehaviour
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         // 핸드폰 토글 사운드 재생
-        SoundManager.Instance.SoundPlay("PhoneToggle");
+        SoundManager.Instance.PlaySound("PhoneToggle");
 
         // 휴대폰 로딩 화면으로 가리기
         LoadingToggle(true);
@@ -320,7 +320,7 @@ public class PhoneMenu : MonoBehaviour
         phonePanel.SetActive(true);
 
         // 스크린 토글 사운드 재생
-        SoundManager.Instance.SoundPlay("ScreenToggle");
+        SoundManager.Instance.PlaySound("ScreenToggle");
 
         // 검은화면 투명하게
         blackScreen.DOColor(Color.clear, 0.2f)
@@ -483,7 +483,7 @@ public class PhoneMenu : MonoBehaviour
         plusIcon.transform.localScale = Vector3.zero;
 
         // 합성 시작 사운드 재생
-        SoundManager.Instance.SoundPlay("MergeStart");
+        SoundManager.Instance.PlaySound("MergeStart");
 
         // 좌측 슬롯 가운데로 이동
         L_MergeSlotRect.DOAnchorPos(centerPos, 1f)
@@ -595,7 +595,7 @@ public class PhoneMenu : MonoBehaviour
             }
 
             // 합성 완료 사운드 재생
-            SoundManager.Instance.SoundPlay("MergeComplete");
+            SoundManager.Instance.PlaySound("MergeComplete");
 
             // 합성된 슬롯 켜기
             mergedSlot.gameObject.SetActive(true);
@@ -892,7 +892,7 @@ public class PhoneMenu : MonoBehaviour
             if (rankUp)
             {
                 // 등급 업 성공 사운드 재생
-                SoundManager.Instance.SoundPlay("RankUpSuccess");
+                SoundManager.Instance.PlaySound("RankUpSuccess");
 
                 // 등급 상승 성공 이펙트, 폭죽 이펙트
                 rankUpSuccessEffect.Play();
@@ -908,7 +908,7 @@ public class PhoneMenu : MonoBehaviour
             else
             {
                 // 등급 업 실패 사운드 재생
-                SoundManager.Instance.SoundPlay("RankUpFail");
+                SoundManager.Instance.PlaySound("RankUpFail");
 
                 // 등급 상승 실패 이펙트, 먼지 이펙트
                 rankUpFailEffect.Play();
@@ -1045,7 +1045,7 @@ public class PhoneMenu : MonoBehaviour
         randomScroll.Velocity = Vector2.zero;
 
         // 마지막 스핀 사운드 재생
-        SoundManager.Instance.SoundPlay("SlotSpin_Once");
+        SoundManager.Instance.PlaySound("SlotSpin_Once");
 
         // 멈춘 후 딜레이
         yield return new WaitForSecondsRealtime(0.5f);
@@ -1071,7 +1071,7 @@ public class PhoneMenu : MonoBehaviour
         particleMain.startColor = MagicDB.Instance.GradeColor[getMagic.grade];
 
         // 합성 완료 사운드 재생
-        SoundManager.Instance.SoundPlay("MergeComplete");
+        SoundManager.Instance.PlaySound("MergeComplete");
 
         // 확인, 클릭할때까지 대기
         yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
@@ -1090,7 +1090,7 @@ public class PhoneMenu : MonoBehaviour
         getMagicEffect.gameObject.SetActive(true);
 
         // 파티클 생성 사운드 재생
-        SoundManager.Instance.SoundPlay("MergeParticleGet", 0.005f, 20);
+        SoundManager.Instance.PlaySound("MergeParticleGet", 0.005f, 20, false);
 
         // 마법 획득 이펙트 시간 대기
         yield return new WaitForSecondsRealtime(0.2f);
@@ -1120,7 +1120,7 @@ public class PhoneMenu : MonoBehaviour
     public void ParticleSound()
     {
         // 파티클이 슬롯에 충돌후 사라질때 사운드 재생
-        SoundManager.Instance.SoundPlay("MergeParticleGet");
+        SoundManager.Instance.PlaySound("MergeParticleGet");
     }
 
     IEnumerator SpinSound()
@@ -1137,7 +1137,7 @@ public class PhoneMenu : MonoBehaviour
                 nowHeight = randomScroll.Content.anchoredPosition.y - 90f;
 
                 // 랜덤 스핀 1회 할때마다 사운드 재생
-                SoundManager.Instance.SoundPlay("SlotSpin_Once");
+                SoundManager.Instance.PlaySound("SlotSpin_Once");
             }
 
             yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
@@ -1317,9 +1317,9 @@ public class PhoneMenu : MonoBehaviour
 
     public void CancelSelectSlot()
     {
-        //마우스 꺼져있으면 리턴
-        if (Cursor.lockState == CursorLockMode.Locked)
-            return;
+        // //마우스 꺼져있으면 리턴
+        // if (Cursor.lockState == CursorLockMode.Locked)
+        //     return;
 
         // 마우스의 아이콘 끄기
         nowSelectIcon.enabled = false;
@@ -1473,9 +1473,13 @@ public class PhoneMenu : MonoBehaviour
 
     public void ScreenScrollStart()
     {
-        // 키 입력 막기
+        // 키 입력 막혔으면 리턴
         if (!btnsInteractable)
             return;
+
+        //마우스로 아이콘 들고 있으면 복귀시키기
+        if (nowSelectIcon.enabled)
+            CancelSelectSlot();
 
         // 선택된게 인벤 스크린일때
         if (screenScroll.CenteredPanel == 0)
@@ -1505,6 +1509,10 @@ public class PhoneMenu : MonoBehaviour
         // 키 입력 막혀있으면 리턴
         if (!btnsInteractable)
             yield break;
+
+        //마우스로 아이콘 들고 있으면 복귀시키기
+        if (nowSelectIcon.enabled)
+            CancelSelectSlot();
 
         // 툴팁 끄기
         ProductToolTip.Instance.QuitTooltip();
@@ -1606,13 +1614,13 @@ public class PhoneMenu : MonoBehaviour
         .SetUpdate(true);
 
         // 스크린 토글 사운드 재생
-        SoundManager.Instance.SoundPlay("ScreenToggle");
+        SoundManager.Instance.PlaySound("ScreenToggle");
 
         // 화면 꺼지는 동안 대기
         yield return new WaitForSecondsRealtime(0.2f);
 
         // 핸드폰 토글 사운드 재생
-        SoundManager.Instance.SoundPlay("PhoneToggle");
+        SoundManager.Instance.PlaySound("PhoneToggle");
 
         // 핸드폰 화면 패널 끄기
         phonePanel.SetActive(false);

@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6418904442233477465}
-  - component: {fileID: 8546613109353666094}
   - component: {fileID: 3669818428861418879}
   - component: {fileID: 5268441312115156446}
   m_Layer: 0
@@ -33,21 +32,6 @@ Transform:
   m_Father: {fileID: 7310950075424957536}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8546613109353666094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4423584926110347715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d9e5b5888b05d44397648a7eb0f713b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  magicHolder: {fileID: 1298789436274202269}
-  sprite: {fileID: 3669818428861418879}
-  anim: {fileID: 5268441312115156446}
 --- !u!212 &3669818428861418879
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -175,9 +159,12 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
+  stunTime: 0
   coll: {fileID: 5922864781553456689}
-  targetObj: {fileID: 0}
+  autoCoolDown: 1
+  fixCoolTime: -1
   isManualCast: 0
+  targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   targetType: 2
@@ -337,6 +324,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7182411091134342155}
   - component: {fileID: 5516981779341346625}
+  - component: {fileID: 6451224335039233366}
   - component: {fileID: 3992797407984048518}
   m_Layer: 0
   m_Name: WindCutter_Prefab
@@ -383,6 +371,21 @@ MonoBehaviour:
   hitEffect: {fileID: 0}
   rigid: {fileID: 3992797407984048518}
   coll: {fileID: 5922864781553456689}
+  sprite: {fileID: 3669818428861418879}
+--- !u!114 &6451224335039233366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7108942861070958247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9e5b5888b05d44397648a7eb0f713b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magicHolder: {fileID: 1298789436274202269}
+  anim: {fileID: 5268441312115156446}
   sprite: {fileID: 3669818428861418879}
 --- !u!50 &3992797407984048518
 Rigidbody2D:
