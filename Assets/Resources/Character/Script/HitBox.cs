@@ -189,7 +189,7 @@ public class HitBox : MonoBehaviour
             }
 
             // 목표가 미설정 되었을때
-            if (magicHolder.targetType == MagicHolder.Target.None)
+            if (magicHolder.targetType == MagicHolder.TargetType.None)
             {
                 // print("타겟 미설정");
                 yield break;
@@ -787,6 +787,9 @@ public class HitBox : MonoBehaviour
         // 자폭 몬스터일때
         if (character.selfExplosion)
         {
+            //todo 자폭 경고 사운드 재생
+            SoundManager.Instance.PlaySound("MiniDrone_Warning", transform.position);
+
             // 폭발 반경 표시
             character.enemyAtkTrigger.atkRangeBackground.enabled = true;
             character.enemyAtkTrigger.atkRangeFill.enabled = true;
@@ -839,16 +842,16 @@ public class HitBox : MonoBehaviour
             effect.SetActive(false);
 
             // 폭발 데미지 넣기
-            MagicHolder magicHolder = effect.GetComponent<MagicHolder>();
+            Attack attack = effect.GetComponent<Attack>();
             // 몬스터 정보가 있을때
             if (character.enemy != null)
-                magicHolder.fixedPower = character.enemy.power;
+                attack.fixedPower = character.enemy.power;
 
             // 고스트 여부에 따라 타겟 및 충돌 레이어 바꾸기
             if (character.IsGhost)
-                magicHolder.SetTarget(MagicHolder.Target.Player);
+                attack.SetTarget(MagicHolder.TargetType.Player);
             else
-                magicHolder.SetTarget(MagicHolder.Target.Both);
+                attack.SetTarget(MagicHolder.TargetType.Both);
 
             // 폭발 활성화
             effect.SetActive(true);

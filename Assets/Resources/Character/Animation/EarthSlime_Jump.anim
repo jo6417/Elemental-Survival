@@ -482,6 +482,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.33333334
+    functionName: SoundPlay
+    data: EarthSlime_Jump
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.9166667
     functionName: JumpMoveStop
     data: 
@@ -492,6 +499,13 @@ AnimationClip:
   - time: 0.9166667
     functionName: JumpEnd
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.9166667
+    functionName: SoundPlay
+    data: EarthSlime_Landing
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

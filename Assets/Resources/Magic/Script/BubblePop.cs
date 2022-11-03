@@ -47,14 +47,14 @@ public class BubblePop : MonoBehaviour
         ParticleSystem.CollisionModule particleColl = particle.collision;
 
         // 플레이어가 쐈을때, 몬스터가 타겟
-        if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
+        if (magicHolder.GetTarget() == MagicHolder.TargetType.Enemy)
         {
             gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
             particleColl.collidesWith = SystemManager.Instance.layerList.EnemyHit_Mask;
         }
 
         // 몬스터가 쐈을때, 플레이어가 타겟
-        if (magicHolder.GetTarget() == MagicHolder.Target.Player)
+        if (magicHolder.GetTarget() == MagicHolder.TargetType.Player)
         {
             gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
             particleColl.collidesWith = SystemManager.Instance.layerList.PlayerHit_Mask;

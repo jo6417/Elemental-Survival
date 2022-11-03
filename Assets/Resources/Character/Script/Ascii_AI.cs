@@ -773,7 +773,7 @@ public class Ascii_AI : MonoBehaviour
             magicHolder.magic = laserMagic;
 
             // 타겟을 플레이어로 전환
-            magicHolder.SetTarget(MagicHolder.Target.Player);
+            magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
             // 투사체 목표지점 넣기
             magicHolder.targetPos = lastPos[i];
@@ -1050,7 +1050,7 @@ public class Ascii_AI : MonoBehaviour
             magicHolder.magic = laserMagic;
 
             // 타겟을 플레이어로 전환
-            magicHolder.SetTarget(MagicHolder.Target.Player);
+            magicHolder.SetTarget(MagicHolder.TargetType.Player);
             // 레이저 목표지점 targetPos 넣기
             magicHolder.targetPos = PlayerManager.Instance.transform.position;
 

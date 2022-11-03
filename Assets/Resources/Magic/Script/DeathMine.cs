@@ -136,7 +136,7 @@ public class DeathMine : MonoBehaviour
         //폭발에 마법 정보 넣기
         MagicHolder effectHolder = explosionHit.GetComponent<MagicHolder>();
         effectHolder.magic = magic;
-        effectHolder.targetType = MagicHolder.Target.Enemy;
+        effectHolder.targetType = MagicHolder.TargetType.Enemy;
 
         // 폭발 활성화
         explosionHit.SetActive(true);

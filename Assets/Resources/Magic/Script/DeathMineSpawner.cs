@@ -126,7 +126,7 @@ public class DeathMineSpawner : MonoBehaviour
             MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>();
 
             // 마법 타겟 넣기
-            mineMagicHolder.SetTarget(MagicHolder.Target.Enemy);
+            mineMagicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
             // 마법 타겟 위치 넣기
             mineMagicHolder.targetPos = enemyManager.transform.position;

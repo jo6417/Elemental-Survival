@@ -771,7 +771,7 @@ public class Quad_AI : MonoBehaviour
                 magicHolder.magic = windMagic;
 
                 // 타겟을 플레이어로 전환
-                magicHolder.SetTarget(MagicHolder.Target.Player);
+                magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
                 // 프로펠러 전방을 목표지점으로 설정
                 magicHolder.targetPos = targetPos;

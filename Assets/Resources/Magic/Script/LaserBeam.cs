@@ -53,10 +53,10 @@ public class LaserBeam : MonoBehaviour
         targetPos = magicHolder.targetPos;
 
         // 발사 주체 입력 될때까지 대기
-        yield return new WaitUntil(() => magicHolder.GetTarget() != MagicHolder.Target.None);
+        yield return new WaitUntil(() => magicHolder.GetTarget() != MagicHolder.TargetType.None);
 
         // 시작 오브젝트 초기화
-        if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
+        if (magicHolder.GetTarget() == MagicHolder.TargetType.Enemy)
         {
             // 플레이어가 발사 주체면 스마트폰에서 시작
             startObj = CastMagic.Instance.transform;
@@ -68,7 +68,7 @@ public class LaserBeam : MonoBehaviour
             //레이저 색깔 초기화
             laserColor = SystemManager.Instance.HexToRGBA("FF7B3B");
         }
-        else if (magicHolder.GetTarget() == MagicHolder.Target.Player)
+        else if (magicHolder.GetTarget() == MagicHolder.TargetType.Player)
         {
             //적이 쏠때는 더 빠르게 조준
             aimTime = 0.5f;

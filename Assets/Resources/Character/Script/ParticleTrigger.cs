@@ -39,13 +39,13 @@ public class ParticleTrigger : MonoBehaviour
         // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
         ParticleSystem.CollisionModule particleColl = particle.collision;
 
-        if (magicHolder.GetTarget() == MagicHolder.Target.Enemy)
+        if (magicHolder.GetTarget() == MagicHolder.TargetType.Enemy)
         {
             gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
             particleColl.collidesWith = SystemManager.Instance.layerList.EnemyHit_Mask;
         }
 
-        if (magicHolder.GetTarget() == MagicHolder.Target.Player)
+        if (magicHolder.GetTarget() == MagicHolder.TargetType.Player)
         {
             gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
             particleColl.collidesWith = SystemManager.Instance.layerList.PlayerHit_Mask;

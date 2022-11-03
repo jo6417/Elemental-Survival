@@ -442,7 +442,7 @@ public class MagicDB : MonoBehaviour
         return elementHDRColors[colorIndex];
     }
 
-    public float MagicPower(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public float MagicPower(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -452,14 +452,14 @@ public class MagicDB : MonoBehaviour
         power = magic.power + magic.powerPerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 자체 파워 증가량 계산
             power = power * PlayerManager.Instance.PlayerStat_Now.power;
 
         return power;
     }
 
-    public float MagicSpeed(MagicInfo magic, bool bigNumFast, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public float MagicSpeed(MagicInfo magic, bool bigNumFast, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -471,7 +471,7 @@ public class MagicDB : MonoBehaviour
         : magic.speed - magic.speedPerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 speed 스탯 곱하기
             speed = bigNumFast
             ? speed + speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1)
@@ -483,7 +483,7 @@ public class MagicDB : MonoBehaviour
         return speed;
     }
 
-    public float MagicRange(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public float MagicRange(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -493,7 +493,7 @@ public class MagicDB : MonoBehaviour
         range = magic.range + magic.rangePerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 자체 마법 범위 증가량 계산
             range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
 
@@ -503,7 +503,7 @@ public class MagicDB : MonoBehaviour
         return range;
     }
 
-    public float MagicDuration(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public float MagicDuration(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -513,7 +513,7 @@ public class MagicDB : MonoBehaviour
         duration = magic.duration + magic.durationPerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 자체 마법 지속시간 증가량 계산
             duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
 
@@ -523,7 +523,7 @@ public class MagicDB : MonoBehaviour
         return duration;
     }
 
-    public bool MagicCritical(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public bool MagicCritical(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -534,7 +534,7 @@ public class MagicDB : MonoBehaviour
         float critical = magic.critical + magic.criticalPerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 자체 마법 크리티컬 확률 증가량 계산
             critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
 
@@ -555,7 +555,7 @@ public class MagicDB : MonoBehaviour
         return isCritical;
     }
 
-    public float MagicCriticalPower(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public float MagicCriticalPower(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -565,14 +565,14 @@ public class MagicDB : MonoBehaviour
         criticalPower = magic.criticalPower + magic.criticalPowerPerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 자체 마법 크리티컬 데미지 증가량 계산
             criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
 
         return criticalPower;
     }
 
-    public int MagicPierce(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public int MagicPierce(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -582,7 +582,7 @@ public class MagicDB : MonoBehaviour
         pierce = magic.pierce + Mathf.FloorToInt(magic.piercePerLev * (level - 1));
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             // 플레이어 관통 횟수 추가 계산
             pierce += PlayerManager.Instance.PlayerStat_Now.pierce;
 
@@ -590,7 +590,7 @@ public class MagicDB : MonoBehaviour
         return pierce;
     }
 
-    public int MagicAtkNum(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public int MagicAtkNum(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -612,7 +612,7 @@ public class MagicDB : MonoBehaviour
         return atkNum;
     }
 
-    public float MagicCoolTime(MagicInfo magic, MagicHolder.Target target = MagicHolder.Target.Enemy)
+    public float MagicCoolTime(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
     {
         // 마법 레벨 제한
         int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
@@ -622,7 +622,7 @@ public class MagicDB : MonoBehaviour
         coolTime = magic.coolTime - magic.coolTimePerLev * (level - 1);
 
         // 플레이어가 쓰는 마법일때
-        if (target == MagicHolder.Target.Enemy)
+        if (target == MagicHolder.TargetType.Enemy)
             //플레이어 자체 쿨타임 증가량 계산
             coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
 

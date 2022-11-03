@@ -121,7 +121,7 @@ public class PlayerHitBox : MonoBehaviour
             }
 
             // 목표가 미설정 되었을때
-            if (magicHolder.targetType == MagicHolder.Target.None)
+            if (magicHolder.targetType == MagicHolder.TargetType.None)
             {
                 // print("타겟 미설정");
                 yield break;

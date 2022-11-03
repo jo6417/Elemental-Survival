@@ -831,4 +831,9 @@ public class Character : MonoBehaviour
             }
         }
     }
+
+    void SoundPlay(string soundName)
+    {
+        SoundManager.Instance.PlaySound(soundName, transform.position);
+    }
 }

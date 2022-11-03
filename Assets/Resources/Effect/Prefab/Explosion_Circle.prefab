@@ -40,7 +40,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4361769514903680662}
   serializedVersion: 7
-  lengthInSec: 2
+  lengthInSec: 0.5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -4902,7 +4902,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4361769514966177609}
   serializedVersion: 7
-  lengthInSec: 2
+  lengthInSec: 1
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -9765,7 +9765,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4361769515750901972}
   serializedVersion: 7
-  lengthInSec: 2
+  lengthInSec: 0.5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -14598,7 +14598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4361769515971435768}
   - component: {fileID: 4361769515971435769}
-  - component: {fileID: 6052826482772270991}
+  - component: {fileID: 9172237395944904236}
   - component: {fileID: 4361769515971435771}
   - component: {fileID: 4361769515971435772}
   m_Layer: 10
@@ -14639,9 +14639,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 0}
   autoDespawn: 1
+  despawnDelay: 0
   collOverTime: 0.2
   modify_startLife: 0
---- !u!114 &6052826482772270991
+--- !u!114 &9172237395944904236
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14650,11 +14651,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4361769515971435773}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
+  m_Script: {fileID: 11500000, guid: bb68539df0be55b4f8ba4cd50ab97063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playSoundName: Explosion_Big
   pierceCount: 0
-  fixedPower: 0
+  targetType: 0
+  fixedPower: 10
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -14665,12 +14668,7 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
-  coll: {fileID: 0}
-  targetObj: {fileID: 0}
-  magicName: 
-  targetPos: {x: 0, y: 0, z: 0}
-  targetType: 0
-  initDone: 0
+  stunTime: 0
 --- !u!58 &4361769515971435771
 CircleCollider2D:
   m_ObjectHideFlags: 0

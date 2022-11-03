@@ -68,11 +68,11 @@ public class Meteor : MonoBehaviour
 
         // 인디케이터 색깔 초기화
         SpriteRenderer shadowSprite = shadow.GetComponent<SpriteRenderer>();
-        if (magicHolder.targetType == MagicHolder.Target.Player)
+        if (magicHolder.targetType == MagicHolder.TargetType.Player)
             // 플레이어가 타겟이면 빨간색
             shadowSprite.color = new Color(1, 0, 0, 100f / 255f);
 
-        if (magicHolder.targetType == MagicHolder.Target.Enemy)
+        if (magicHolder.targetType == MagicHolder.TargetType.Enemy)
             // 몬스터가 타겟이면 흰색
             shadowSprite.color = new Color(1, 1, 1, 100f / 255f);
 

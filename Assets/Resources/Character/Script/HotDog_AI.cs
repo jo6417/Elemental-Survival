@@ -380,7 +380,7 @@ public class HotDog_AI : MonoBehaviour
                 magicHolder.magic = flameMagic;
 
                 // 타겟을 플레이어로 전환
-                magicHolder.SetTarget(MagicHolder.Target.Player);
+                magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
                 // Flame 목표지점 넣기
                 magicHolder.targetPos = lastPos[i];
@@ -857,7 +857,7 @@ public class HotDog_AI : MonoBehaviour
                 magicHolder.magic = hellFireMagic;
 
                 // 타겟을 플레이어로 전환
-                magicHolder.SetTarget(MagicHolder.Target.Player);
+                magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
                 // 헬파이어 목표지점 넣기
                 magicHolder.targetPos = lastPos[i];
@@ -907,7 +907,7 @@ public class HotDog_AI : MonoBehaviour
             magicHolder.magic = meteorMagic;
 
             // 타겟을 플레이어로 전환
-            magicHolder.SetTarget(MagicHolder.Target.Player);
+            magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
             // 메테오 목표지점 targetPos 넣기
             magicHolder.targetPos = targetPos;
@@ -1036,7 +1036,7 @@ public class HotDog_AI : MonoBehaviour
                     // 마법 정보 넣기
                     flameHolder.magic = flameMagic;
                     // 마법 타겟 지정
-                    flameHolder.SetTarget(MagicHolder.Target.Player);
+                    flameHolder.SetTarget(MagicHolder.TargetType.Player);
                     // 타겟 위치 지정
                     flameHolder.targetPos = transform.position;
 

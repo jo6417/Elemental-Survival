@@ -13,7 +13,7 @@ public class Sound
 
     [Range(0f, 1f)]
     public float volume = 0.5f;
-    [Range(0.1f, 3f)]
+    [Range(0f, 3f)]
     public float pitch = 1f;
 
     public AudioSource source;
@@ -45,40 +45,61 @@ public class SoundManager : MonoBehaviour
     }
     #endregion
 
+    [ReadOnly] public bool init = false;
+
+    [Header("Refer")]
+    [SerializeField] GameObject emptyAudio;
+    [SerializeField] Transform soundPool;
+
+    [Header("Sounds")]
     private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
     public Sound[] UI_Sounds;
-
     public Sound[] music_Sounds;
     public Sound[] player_Sounds;
-
     public Sound[] magic_Sounds;
     public Sound[] item_Sounds;
     public Sound[] enemy_Sounds;
-
-    [SerializeField] GameObject emptyAudio;
-
-    bool init = false;
 
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
 
-        // 거리에 상관없이 똑같이 재생
-        AudioMake(player_Sounds);
-        AudioMake(UI_Sounds);
-        AudioMake(music_Sounds);
+        // 초기화
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        // 거리에 상관없이 똑같이 재생되는 사운드
+        AudioMake(player_Sounds, nameof(player_Sounds));
+        AudioMake(UI_Sounds, nameof(UI_Sounds));
+        AudioMake(music_Sounds, nameof(music_Sounds));
 
         // 거리에 따라 음량 변하는 사운드
-        AudioMake(magic_Sounds);
-        AudioMake(item_Sounds);
-        AudioMake(enemy_Sounds);
+        AudioMake(magic_Sounds, nameof(magic_Sounds));
+        AudioMake(item_Sounds, nameof(item_Sounds));
+        AudioMake(enemy_Sounds, nameof(enemy_Sounds));
+
+        // 모든 사운드 추가 될때까지 대기
+        yield return new WaitUntil(() => all_Sounds.Count ==
+        UI_Sounds.Length +
+        music_Sounds.Length +
+        player_Sounds.Length +
+        magic_Sounds.Length +
+        item_Sounds.Length +
+        enemy_Sounds.Length);
 
         // 초기화 완료
+        print("SoundManager Init");
         init = true;
     }
 
-    void AudioMake(Sound[] sounds)
+    void AudioMake(Sound[] sounds, string bundleName)
     {
+        // 빈 오브젝트 만들어 자식으로 넣기
+        GameObject soundsBundle = new GameObject(bundleName);
+        soundsBundle.transform.SetParent(transform);
+
         // 입력된 오디오 클립을 오디오 소스로 생성
         foreach (Sound sound in sounds)
         {
@@ -90,7 +111,7 @@ public class SoundManager : MonoBehaviour
             }
 
             // 오디오 소스 컴포넌트 생성
-            sound.source = gameObject.AddComponent<AudioSource>();
+            sound.source = soundsBundle.AddComponent<AudioSource>();
             // 오디오 클립 넣기
             sound.source.clip = sound.clip;
 
@@ -103,6 +124,22 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    // 사운드 매니저에서 전역 사운드 재생
+    public void PlaySound(string soundName, float delay = 0, int loopNum = 1, bool scaledTime = true)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        // 볼륨 및 피치 초기화
+        sound.source.volume = sound.volume;
+        sound.source.pitch = sound.pitch;
+
+        // 오디오 소스가 있으면 플레이
+        if (sound.source != null)
+            StartCoroutine(Play(false, sound.source, delay, loopNum, scaledTime));
+    }
+
+    // 특정 위치에 사운드 재생
     public AudioSource PlaySound(string soundName, Vector3 position, float delay = 0, int loopNum = 1, bool scaledTime = false)
     {
         // 해당 이름으로 사운드 찾기
@@ -112,7 +149,7 @@ public class SoundManager : MonoBehaviour
             return null;
 
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, transform);
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, soundPool);
 
         // 오브젝트 이름을 사운드 이름으로 동기화
         audioObj.name = soundName;
@@ -138,37 +175,89 @@ public class SoundManager : MonoBehaviour
         return audio;
     }
 
-    public void PlaySound(string soundName, float delay = 0, int loopNum = 1, bool scaledTime = true)
+    // 특정 오브젝트에 오디오 소스 붙여주기
+    public AudioSource PlaySound(string soundName, Transform attachor, float delay = 0, int loopNum = 1, bool scaledTime = false)
     {
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        // 볼륨 및 피치 초기화
-        sound.source.volume = sound.volume;
-        sound.source.pitch = sound.pitch;
+        if (sound == null)
+            return null;
 
-        // 오디오 소스가 있으면 플레이
-        if (sound.source != null)
-            StartCoroutine(Play(false, sound.source, delay, loopNum, scaledTime));
+        //todo 해당 오브젝트에 이미 같은 오디오 소스가 있으면 리턴
+        if (attachor.TryGetComponent(out AudioSource audioSource))
+        {
+            if (audioSource.clip == sound.clip
+            && audioSource.volume == sound.volume
+            && audioSource.pitch == sound.pitch)
+                return null;
+        }
+
+        // 빈 오디오소스 프리팹을 attachor에 자식으로 붙여주기
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, attachor.position, Quaternion.identity, attachor);
+
+        // 오브젝트 이름을 사운드 이름으로 동기화
+        audioObj.name = soundName;
+
+        // 받은 Sound 데이터를 스폰된 오브젝트에 복사
+        AudioSource audio = audioObj.GetComponent<AudioSource>();
+
+        // 오디오 클립 넣기
+        audio.clip = sound.clip;
+
+        // 볼륨 및 피치 초기화
+        audio.volume = sound.volume;
+        audio.pitch = sound.pitch;
+
+        // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
+        audio.spatialBlend = 1f;
+        audio.rolloffMode = AudioRolloffMode.Custom;
+        audio.maxDistance = 35f;
+
+        // 재생 끝나면 디스폰
+        StartCoroutine(Play(true, audio, delay, loopNum, scaledTime));
+
+        return audio;
     }
 
     IEnumerator Play(bool autoDespawn, AudioSource audio, float delay, int loopNum, bool scaledTime)
     {
+        // 사운드 매니저 초기화 대기
+        yield return new WaitUntil(() => init);
+
         WaitForSeconds waitScaled_Delay = new WaitForSeconds(delay);
         WaitForSecondsRealtime waitUnScaled_Delay = new WaitForSecondsRealtime(delay);
 
-        for (int i = 0; i < loopNum; i++)
+        // 무한 반복일때
+        if (loopNum == -1)
         {
             // 사운드 있으면 재생
             if (audio != null)
-                audio.Play();
+            {
+                // 루프로 변경
+                audio.loop = true;
 
-            // 스케일타임에 따라 딜레이 동안 대기
-            if (scaledTime)
-                yield return waitScaled_Delay;
-            else
-                yield return waitUnScaled_Delay;
+                audio.Play();
+            }
         }
+        else
+            for (int i = 0; i < loopNum; i++)
+            {
+                // 사운드 있으면 재생
+                if (audio != null)
+                {
+                    // 루프 없음
+                    audio.loop = false;
+
+                    audio.Play();
+                }
+
+                // 스케일타임에 따라 딜레이 동안 대기
+                if (scaledTime)
+                    yield return waitScaled_Delay;
+                else
+                    yield return waitUnScaled_Delay;
+            }
 
         WaitForSeconds waitScaled_Delta = new WaitForSeconds(Time.deltaTime);
         WaitForSecondsRealtime waitUnScaled_Delta = new WaitForSecondsRealtime(Time.unscaledDeltaTime);
@@ -176,19 +265,8 @@ public class SoundManager : MonoBehaviour
         // 자동 디스폰일때
         if (autoDespawn)
         {
-            // 재생중이면 반복
-            while (audio.isPlaying)
-            {
-                // 디스폰 됬으면 그만
-                if (audio == null)
-                    break;
-
-                // 스케일타임에 따라 딜레이 동안 대기
-                if (scaledTime)
-                    yield return waitScaled_Delta;
-                else
-                    yield return waitUnScaled_Delta;
-            }
+            // 오디오 오브젝트가 꺼지거나, 사운드 끝날때까지 대기
+            yield return new WaitUntil(() => audio == null || !audio.gameObject.activeInHierarchy || !audio.isPlaying);
 
             // 오디오 살아있으면
             if (audio != null)
@@ -234,8 +312,8 @@ public class SoundManager : MonoBehaviour
 
     IEnumerator ChangePitch(float scale)
     {
-        if (!init)
-            yield return new WaitUntil(() => init);
+        // 사운드 매니저 초기화 대기
+        yield return new WaitUntil(() => init);
 
         // 플레이어 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
         foreach (Sound sound in player_Sounds)

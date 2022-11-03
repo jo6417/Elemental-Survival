@@ -540,7 +540,7 @@ public class Bawi_AI : MonoBehaviour
 
             // 타겟 및 타겟위치 설정하기
             MagicHolder magicHolder = stoneObj.GetComponent<MagicHolder>();
-            magicHolder.SetTarget(MagicHolder.Target.Player);
+            magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
             // 마법 정보 인스턴스 만들어 넣기
             magicHolder.magic = new MagicInfo(MagicDB.Instance.GetMagicByName("SlingShot"));

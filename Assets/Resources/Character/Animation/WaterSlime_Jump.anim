@@ -802,9 +802,23 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.33333334
+    functionName: SoundPlay
+    data: WaterSlime_Jump
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.8333333
     functionName: JumpMoveStop
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.8333333
+    functionName: SoundPlay
+    data: WaterSlime_Landing
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

@@ -158,9 +158,9 @@ public class WaterSlimeAtk : MonoBehaviour
 
         // 타겟 설정
         if (character.IsGhost)
-            bubbleMagic.SetTarget(MagicHolder.Target.Enemy);
+            bubbleMagic.SetTarget(MagicHolder.TargetType.Enemy);
         else
-            bubbleMagic.SetTarget(MagicHolder.Target.Player);
+            bubbleMagic.SetTarget(MagicHolder.TargetType.Player);
 
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);

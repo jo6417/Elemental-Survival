@@ -197,7 +197,7 @@ public class Heist : MonoBehaviour
         _magicHolder.shockTime = MagicDB.Instance.MagicDuration(magic);
 
         //마법 타겟 지정
-        _magicHolder.SetTarget(MagicHolder.Target.Enemy);
+        _magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
         //마지막 이펙트 위치 갱신
         lastEffectPos = magicObj.transform.position;

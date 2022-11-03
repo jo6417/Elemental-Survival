@@ -464,7 +464,7 @@ public class CastMagic : MonoBehaviour
             magicHolder.isManualCast = isManual;
 
             //타겟 정보 넣기
-            magicHolder.SetTarget(MagicHolder.Target.Enemy);
+            magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
             //마법 정보 넣기
             magicHolder.magic = magic;
@@ -519,7 +519,7 @@ public class CastMagic : MonoBehaviour
         MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
 
         //타겟 정보 넣기
-        magicHolder.SetTarget(MagicHolder.Target.Enemy);
+        magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
         //passive 마법 오브젝트 리스트에 넣기
         passiveObjs.Add(magicObj);

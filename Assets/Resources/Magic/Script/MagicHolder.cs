@@ -19,8 +19,7 @@ public class MagicHolder : Attack
     [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
     public string magicName; //마법 이름 확인
     public Vector3 targetPos = default(Vector3); //목표 위치
-    public enum Target { None, Enemy, Player, Both };
-    public Target targetType; //마법의 목표 타겟
+
     private float addDuration; // 추가 유지 시간
     public float AddDuration // 추가 유지 시간
     {
@@ -69,7 +68,7 @@ public class MagicHolder : Attack
         pierceCount = MagicDB.Instance.MagicPierce(magic);
 
         //타겟 임의 지정되면 마법 정보에 반영
-        if (targetType != Target.None)
+        if (targetType != TargetType.None)
             SetTarget(targetType);
 
         // 마법 정보 찾은 뒤 콜라이더 활성화
@@ -94,34 +93,34 @@ public class MagicHolder : Attack
         magic = null;
     }
 
-    public Target GetTarget()
+    public TargetType GetTarget()
     {
         return targetType;
     }
 
-    public void SetTarget(Target changeTarget)
-    {
-        //입력된 타겟에 따라 오브젝트 태그 및 레이어 변경
-        switch (changeTarget)
-        {
-            case Target.Enemy:
-                gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
-                break;
+    // public void SetTarget(TargetType changeTarget)
+    // {
+    //     //입력된 타겟에 따라 오브젝트 태그 및 레이어 변경
+    //     switch (changeTarget)
+    //     {
+    //         case TargetType.Enemy:
+    //             gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+    //             break;
 
-            case Target.Player:
-                gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
-                break;
+    //         case TargetType.Player:
+    //             gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+    //             break;
 
-            case Target.Both:
-                gameObject.layer = SystemManager.Instance.layerList.AllAttack_Layer;
-                break;
-        }
+    //         case TargetType.Both:
+    //             gameObject.layer = SystemManager.Instance.layerList.AllAttack_Layer;
+    //             break;
+    //     }
 
-        //해당 마법의 타겟 변경
-        targetType = changeTarget;
+    //     //해당 마법의 타겟 변경
+    //     targetType = changeTarget;
 
-        // StartCoroutine(MagicTarget(changeTarget));
-    }
+    //     // StartCoroutine(MagicTarget(changeTarget));
+    // }
 
     // IEnumerator MagicTarget(Target changeTarget)
     // {
