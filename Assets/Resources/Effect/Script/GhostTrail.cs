@@ -44,6 +44,7 @@ public class GhostTrail : MonoBehaviour
                 // 고스트 컬러 초기화
                 ghostManager.sprite.color = ghostColor;
                 // 한단계 낮은 레이어로 변경
+                ghostManager.sprite.sortingLayerID = targetSprite.sortingLayerID;
                 ghostManager.sprite.sortingOrder = targetSprite.sortingOrder - 1;
                 // 잔상 유지시간 넣기
                 ghostManager.fadeTime = fadeTime;

@@ -15,6 +15,6 @@ public class MiniDrone_AI : MonoBehaviour
         yield return new WaitUntil(() => SoundManager.Instance.init);
 
         // 시작하면 사운드 재생
-        SoundManager.Instance.PlaySound("MiniDrone_Fly", transform, 0, -1, true);
+        SoundManager.Instance.PlaySound("MiniDrone_Fly", transform, 0, 0, -1, true);
     }
 }

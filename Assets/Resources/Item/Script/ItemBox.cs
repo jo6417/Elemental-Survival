@@ -129,7 +129,7 @@ public class ItemBox : Character
             WorldSpawner.Instance.itemBoxList.Remove(gameObject);
 
             // 상자 오픈 사운드 재생
-            SoundManager.Instance.PlaySound("BoxOpen", transform.position, 0.8f);
+            SoundManager.Instance.PlaySound("BoxOpen", transform.position, 0, 0.8f);
         }
     }
 }

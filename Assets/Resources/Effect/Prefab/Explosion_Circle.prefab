@@ -14603,7 +14603,7 @@ GameObject:
   - component: {fileID: 4361769515971435772}
   m_Layer: 10
   m_Name: Explosion_Circle
-  m_TagString: Magic
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14654,7 +14654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb68539df0be55b4f8ba4cd50ab97063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playSoundName: Explosion_Big
+  playSoundName: Explosion_Middle
   pierceCount: 0
   targetType: 0
   fixedPower: 10

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyAtkTrigger : MonoBehaviour
 {
+    public System.Action attackAction;
+
     public GameObject explosionPrefab;
     public SpriteRenderer atkRangeBackground;
     public SpriteRenderer atkRangeFill;
@@ -66,6 +68,10 @@ public class EnemyAtkTrigger : MonoBehaviour
         // 플레이어가 충돌하면
         if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
+            //todo 액션 실행
+            if (attackAction != null)
+                attackAction.Invoke();
+
             atkTrigger = true;
 
             // 자폭형 몬스터일때

@@ -75,7 +75,7 @@ public class LifeMushroom : MonoBehaviour
         }
 
         // 효과음 재생
-        SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0.05f, atkNum, true);
+        SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0, 0.05f, atkNum, true);
 
         // 쿨다운 코루틴 변수에 넣기
         cooldownCoroutine = CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), coolTime);

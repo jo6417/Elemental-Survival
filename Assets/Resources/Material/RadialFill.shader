@@ -10,6 +10,7 @@ Shader "Custom/RadialFill"
         _Arc1("Arc Point 1", Range(0, 360)) = 15
         _Arc2("Arc Point 2", Range(0, 360)) = 15
 		[MaterialToggle] PixelSnap ("Pixel snap", Float) = 0
+		_SpriteData("X, Y, Width, Height", Vector) = (1, 1, 1, 1)
 	}
 
 	SubShader
@@ -89,10 +90,17 @@ Shader "Custom/RadialFill"
 				fixed4 c = SampleSpriteTexture (IN.texcoord) * IN.color;
 				c.rgb *= c.a;
 
+				// //Convert UV coordinate space to cartesian coordinate space (0;1) to (-1;1) While taking into account the sprite's position in the texture and centering it around the cartesian origin.
+				// float x = lerp(-1, 1, (IN.texcoord.x - _SpriteData.x) / _SpriteData.z);
+				// float y = lerp(-1, 1, (IN.texcoord.y - _SpriteData.y) / _SpriteData.w);
+
+				// //Calculate angle, convert to degrees
+				// float angle = atan2(x, y) * 57.2958;
+
                 //-------- Creating arc --------//
                 // sector start/end angles
-                float startAngle = _Angle - _Arc1;
-                float endAngle = _Angle + _Arc2;
+				float startAngle = _Angle - _Arc1;
+				float endAngle = _Angle + _Arc2;
 
                 // check offsets
                 float offset0 = clamp(0, 360, startAngle + 360);

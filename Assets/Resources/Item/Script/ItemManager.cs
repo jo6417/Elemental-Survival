@@ -6,26 +6,25 @@ using DG.Tweening;
 
 public class ItemManager : MonoBehaviour
 {
-    bool isGet = false; //플레이어가 획득했는지
-    [HideInInspector]
-    public int amount = 1; //아이템 개수
-    [HideInInspector]
-    public bool isBundle; //합쳐진 아이템인지
-    [HideInInspector]
-    public int gemTypeIndex = -1;
-    public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
-    public float autoDespawnTime = 0; //자동 디스폰 시간
 
     [Header("Refer")]
     public ItemInfo itemInfo; // 해당 아이템 정보
     public MagicInfo magicInfo; // 해당 아이템이 갖고 있는 마법 정보
-    public string itemName;
     public SpriteRenderer sprite;
     public GameObject despawnEffect; //사라질때 이펙트
     public Collider2D coll;
-    Rigidbody2D rigid;
-    Vector3 velocity;
+    private Rigidbody2D rigid;
+    private Vector3 velocity;
     [SerializeField] GameObject gadgetPrefab;
+
+    [Header("State")]
+    [ReadOnly] public int amount = 1; //아이템 개수
+    [ReadOnly] public bool isBundle; //합쳐진 아이템인지
+    [ReadOnly] public int gemTypeIndex = -1;
+    [ReadOnly] private string itemName;
+    private bool isGet = false; //플레이어가 획득했는지
+    public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
+    public float autoDespawnTime = 0; //자동 디스폰 시간
 
     private void Awake()
     {
@@ -57,10 +56,10 @@ public class ItemManager : MonoBehaviour
         {
             itemInfo = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
         }
-        else
+
+        if (itemInfo != null)
         {
             itemName = itemInfo.name;
-            // print(itemName + " : " + item.itemName);
 
             //지불 원소젬 이름을 인덱스로 반환
             gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == itemInfo.priceType);
@@ -220,14 +219,14 @@ public class ItemManager : MonoBehaviour
         Vector2 dir = Getter.position - transform.position;
 
         // 플레이어 반대 방향으로 날아가기
-        rigid.DOMove((Vector2)transform.position - dir.normalized * 5f, 0.3f);
+        rigid.DOMove((Vector2)transform.position - dir.normalized * 3f, 0.2f);
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
 
         // 플레이어 이동 속도 계수
         float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed;
         // 가속도값
-        float accelSpeed = 0.8f;
+        float accelSpeed = 1.5f;
 
         // 플레이어 방향으로 날아가기, 아이템 사라질때까지 방향 갱신하며 반복
         while (!isGet || gameObject.activeSelf)

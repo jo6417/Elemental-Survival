@@ -81,6 +81,8 @@ public class PlayerHitBox : MonoBehaviour
 
         //크리티컬 성공 여부
         bool isCritical = false;
+        // 데미지
+        float damage = 0;
 
         // 몬스터 정보 찾기, EnemyAtk 컴포넌트 활성화 되어있을때
         if (attacker.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
@@ -106,9 +108,8 @@ public class PlayerHitBox : MonoBehaviour
             // 데미지 적용
             Damage(enemyAtk.character.powerNow, false, hitPos);
         }
-
         //마법 정보 찾기
-        if (attacker.TryGetComponent(out MagicHolder magicHolder))
+        else if (attacker.TryGetComponent(out MagicHolder magicHolder))
         {
             // 마법 정보 찾기
             MagicInfo magic = magicHolder.magic;
@@ -144,7 +145,7 @@ public class PlayerHitBox : MonoBehaviour
                 StopCoroutine(hitDelayCoroutine);
 
             // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-            float damage = magicHolder.fixedPower == 0 ? power : magicHolder.fixedPower;
+            damage = magicHolder.fixedPower != 0 ? magicHolder.fixedPower : power;
             // 고정 데미지에 확률 계산
             damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
@@ -163,6 +164,15 @@ public class PlayerHitBox : MonoBehaviour
 
             //데미지 입기
             Damage(damage, false, hitPos);
+        }
+        // 그냥 Attack 컴포넌트일때
+        else
+        {
+            // 고정 데미지 불러오기
+            damage = attacker.fixedPower;
+
+            // 데미지 입기
+            Damage(damage, isCritical, hitPos);
         }
 
         // 디버프 판단해서 적용

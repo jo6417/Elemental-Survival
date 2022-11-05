@@ -50,6 +50,7 @@ SpriteAtlas:
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: b9bac750e9052ca46ac3c04e29cd3f02, type: 3}
   - {fileID: 489418093617637917, guid: 729727b0eb2def74ca3aef592e267b02, type: 3}
   - {fileID: 8530622144906979949, guid: 729727b0eb2def74ca3aef592e267b02, type: 3}
   - {fileID: 157260174599120221, guid: 729727b0eb2def74ca3aef592e267b02, type: 3}
@@ -111,6 +112,7 @@ SpriteAtlas:
   - {fileID: -5199842602021179740, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: -1393387521054166907, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
+  - {fileID: 21300000, guid: 16bc50a805902cd4383f00f6f3aaa96d, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
   - {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
   - {fileID: 65732626766748736, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
@@ -135,9 +137,6 @@ SpriteAtlas:
   - {fileID: -8164322943603081415, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
   - {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   - {fileID: 21300000, guid: 5c3aac0d2222d6349938891de574401a, type: 3}
-  - {fileID: 4250153402159111836, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
-  - {fileID: -8609229472539899035, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
-  - {fileID: -3411505516414708846, guid: 1af71a3ddc4d4c6438de5896e3126370, type: 3}
   - {fileID: -7541850853189336606, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: -3998438342723584634, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: 8497403174052090491, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
@@ -151,6 +150,7 @@ SpriteAtlas:
   - {fileID: -6615783630180790865, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
   - {fileID: 7374904569357234349, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
   - {fileID: -4034562165591099319, guid: ba79009dbd645814da6c88058fd710dc, type: 3}
+  - {fileID: 21300000, guid: 6b64109d6f7f3a742b953adcaa159271, type: 3}
   - {fileID: 4407818653772729075, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: 6889375382349201494, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: -4809397253275508708, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
@@ -197,6 +197,7 @@ SpriteAtlas:
   - {fileID: -2168307003543048242, guid: 52a7672b5ccf8dd4eb6229d7748e6aad, type: 3}
   - {fileID: -718314721265097537, guid: 52a7672b5ccf8dd4eb6229d7748e6aad, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Citizen_NPC
   - HotDog_GlowParts_10
   - HotDog_GlowParts_11
   - HotDog_GlowParts_9
@@ -258,6 +259,7 @@ SpriteAtlas:
   - BloodEffect_Light_7
   - BloodEffect_Light_4
   - BloodEffect_Light_5
+  - Vacuum_PulseLight
   - MiniDrone_Icon
   - KingSlime_Bubble
   - A-800_Walk-Sheet_6
@@ -282,9 +284,6 @@ SpriteAtlas:
   - Bawi_Parts_1
   - KingSlimeFill
   - Bawi_Head
-  - Vacuum-Sheet_1
-  - Vacuum-Sheet_0
-  - Vacuum-Sheet_2
   - BloodEffect_7
   - BloodEffect_6
   - BloodEffect_5
@@ -298,6 +297,7 @@ SpriteAtlas:
   - Bawi_Drill-Sheet_3
   - Bawi_Drill-Sheet_2
   - Bawi_Drill-Sheet_4
+  - Vacuum_light
   - Tail
   - Neck
   - Front_Arm

@@ -787,7 +787,7 @@ public class HitBox : MonoBehaviour
         // 자폭 몬스터일때
         if (character.selfExplosion)
         {
-            //todo 자폭 경고 사운드 재생
+            // 자폭 경고 사운드 재생
             SoundManager.Instance.PlaySound("MiniDrone_Warning", transform.position);
 
             // 폭발 반경 표시

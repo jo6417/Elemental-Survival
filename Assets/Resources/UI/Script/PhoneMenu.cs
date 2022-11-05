@@ -1090,7 +1090,7 @@ public class PhoneMenu : MonoBehaviour
         getMagicEffect.gameObject.SetActive(true);
 
         // 파티클 생성 사운드 재생
-        SoundManager.Instance.PlaySound("MergeParticleGet", 0.005f, 20, false);
+        SoundManager.Instance.PlaySound("MergeParticleGet", 0, 0.005f, 20, false);
 
         // 마법 획득 이펙트 시간 대기
         yield return new WaitForSecondsRealtime(0.2f);
