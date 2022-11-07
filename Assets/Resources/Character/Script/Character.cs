@@ -53,8 +53,7 @@ public class Character : MonoBehaviour
         Walk, // 걸어서 등속도이동
         Jump, // 시간마다 점프
         Dash, // 범위안에 들어오면 대쉬
-        Teleport, // 시간마다 플레이어 주변 위치로 텔레포트
-        Follow // 플레이어와 일정거리 고정하며 따라다님
+        Custom // 자체 AI로 컨트롤
     };
     GameObject targetObj; // 공격 목표
     public GameObject TargetObj
@@ -254,7 +253,7 @@ public class Character : MonoBehaviour
                 healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
                 // 힐 오브젝트 크기 초기화
                 healRange.transform.localScale = Vector2.one * portalSize;
-                // enemyManager 넣어주기
+                // chracter 넣어주기
                 healRange.GetComponent<EnemyAttack>().character = this;
 
                 // 초록 아웃라인 머터리얼

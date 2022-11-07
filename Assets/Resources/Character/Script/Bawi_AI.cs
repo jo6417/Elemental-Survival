@@ -4,8 +4,9 @@ using DG.Tweening;
 using UnityEngine;
 using TMPro;
 using Lean.Pool;
+using UnityEngine.Rendering;
 
-public class Bawi_AI : MonoBehaviour
+public class Bawi_AI : EnemyAI
 {
     [Header("State")]
     [SerializeField]
@@ -27,7 +28,6 @@ public class Bawi_AI : MonoBehaviour
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
-    public Character character;
     public GameObject bigLandDust; //착지할때 헤드 먼지 파티클
     public GameObject smallLandDust; //착지할때 손 먼지 파티클
     public ParticleSystem chargePulse; // 차지 펄스 이펙트
@@ -36,9 +36,10 @@ public class Bawi_AI : MonoBehaviour
     public ParticleSystem DirtExplosion; // 흙 솟아나오며 터지는 파티클
 
     [Header("Head")]
-    public Transform headPart;
+    public SortingGroup headPart;
     public ParticleSystem headHoverEffect; // 머리 부유 이펙트
-    public GameObject headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    public ParticleManager headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    AudioSource moveSound;
 
     [Header("Fist")]
     public Collider2D fistCrushColl; //주먹 으깨기 콜라이더
@@ -53,8 +54,9 @@ public class Bawi_AI : MonoBehaviour
     public Sprite openFistSprite;
     public Sprite grabFistSprite;
     public GameObject stonePrefab; // 공격시 던질 돌 프리팹
-    public GameObject fistDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    public ParticleManager fistDashDust; // 돌진시 땅에 남기는 먼지 이펙트
     public ParticleSystem fistChargeGathering; // 주먹 차지 기모으는 이펙트
+    public ParticleSystem DirtExplosionCircle; // 원형 흙 튀기기
 
     [Header("Drill")]
     public Collider2D drillGhostColl; // 고스트 드릴 콜라이더
@@ -68,7 +70,7 @@ public class Bawi_AI : MonoBehaviour
     public Animator mainDrillAnim; // 메인 드릴 회전 애니메이터
     public Animator ghostDrillAnim; // 고스트 드릴 회전 애니메이터
     public ParticleSystem drillChargeGathering; // 드릴차지 기모으는 이펙트
-    public GameObject drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    public ParticleManager drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
     private void Awake()
     {
@@ -122,6 +124,10 @@ public class Bawi_AI : MonoBehaviour
 
     void Update()
     {
+        // 이동 리셋 카운트 차감
+        if (searchCoolCount > 0)
+            searchCoolCount -= Time.deltaTime;
+
         // 몬스터 정보 없으면 리턴
         if (character.enemy == null)
             return;
@@ -144,23 +150,20 @@ public class Bawi_AI : MonoBehaviour
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
 
-        // 플레이어 근처 위치 계산
-        Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 3f;
-
         // 플레이어 방향
-        Vector2 dir = playerPos - transform.position;
+        character.targetDir = character.movePos - transform.position;
 
         // 플레이어와의 거리
-        float distance = dir.magnitude;
+        float distance = character.targetDir.magnitude;
 
         // 플레이어 방향 쳐다보기
-        if (dir.x > 0)
+        if (character.targetDir.x > 0)
         {
-            headPart.rotation = Quaternion.Euler(0, 0, 0);
+            headPart.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
         else
         {
-            headPart.rotation = Quaternion.Euler(0, 180, 0);
+            headPart.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
         // Idle 아니면 리턴
@@ -188,6 +191,10 @@ public class Bawi_AI : MonoBehaviour
             //공격 패턴 결정하기
             ChooseAttack();
 
+            // if (moveSound != null)
+            //     //todo 이동 사운드 정지
+            //     SoundManager.Instance.StopSound(moveSound, 0.5f);
+
             return;
         }
 
@@ -199,27 +206,30 @@ public class Bawi_AI : MonoBehaviour
     {
         character.nowAction = Character.Action.Walk;
 
+        // if (moveSound == null)
+        //     //todo 이동 사운드 반복 재생
+        //     moveSound = SoundManager.Instance.PlaySound("Bawi_Moving", transform, 0, 1f, 30, true);
+
         //애니메이터 켜기
         character.animList[0].enabled = true;
         // Idle 애니메이션으로 전환
         character.animList[0].SetBool("UseFist", false);
         character.animList[0].SetBool("UseDrill", false);
 
-        // 플레이어 근처 위치 계산
-        Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 0f;
-
-        //움직일 방향
-        Vector2 dir = playerPos - transform.position;
+        // // 플레이어 근처 위치 계산
+        // Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 0f;
+        // //움직일 방향
+        // Vector2 dir = playerPos - transform.position;
 
         // 움직일 방향 2D 각도
-        float rotation = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        float rotation = Mathf.Atan2(character.targetDir.y, character.targetDir.x) * Mathf.Rad2Deg;
 
         // 가려는 방향으로 양쪽 손이 회전
         fistPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
         drillPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
         //해당 방향으로 가속
-        character.rigid.velocity = dir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale;
+        character.rigid.velocity = character.targetDir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale;
 
         character.nowAction = Character.Action.Idle;
     }
@@ -239,6 +249,15 @@ public class Bawi_AI : MonoBehaviour
             headHoverEffect.Play();
             drillHoverEffect.Play();
             fistHoverEffect.Play();
+
+            // 드릴, 주먹 레이어 올리기
+            drillSprite.GetComponent<SortingGroup>().sortingOrder = 1;
+            fistSprite.GetComponent<SortingGroup>().sortingOrder = 1;
+            // 머리 레이어 올리기
+            headPart.sortingOrder = 1;
+
+            //todo 호버링 사운드 재생
+            // SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
         }
     }
 
@@ -257,12 +276,32 @@ public class Bawi_AI : MonoBehaviour
             LeanPool.Spawn(bigLandDust, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
             if (character.animList[0].GetBool("UseDrill"))
+            {
                 // 드릴 먼지 파티클 생성
                 LeanPool.Spawn(smallLandDust, fistParent.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
+                // 드릴 레이어 올리기
+                drillSprite.GetComponent<SortingGroup>().sortingOrder = 1;
+                // 주먹 레이어 내리기
+                fistSprite.GetComponent<SortingGroup>().sortingOrder = 0;
+            }
+
             if (character.animList[0].GetBool("UseFist"))
+            {
                 // 주먹 먼지 파티클 생성
                 LeanPool.Spawn(smallLandDust, drillRigid.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+                // 주먹 레이어 올리기
+                fistSprite.GetComponent<SortingGroup>().sortingOrder = 1;
+                // 드릴 레이어 내리기
+                drillSprite.GetComponent<SortingGroup>().sortingOrder = 0;
+            }
+
+            // 머리 레이어 내리기
+            headPart.sortingOrder = 0;
+
+            // 착지 사운드 재생
+            SoundManager.Instance.PlaySound("Bawi_Land", transform.position);
         }
 
         //애니메이터 끄기
@@ -328,7 +367,7 @@ public class Bawi_AI : MonoBehaviour
         character.animList[0].SetBool("UseFist", true);
 
         // 보스 주변 랜덤 위치로 바위 위치 지정
-        Vector2 grabPos = Random.insideUnitCircle.normalized * 20f;
+        Vector2 grabPos = Random.insideUnitCircle.normalized * 10f;
         // 돌 잡는 시간
         float grabTime = 1f;
 
@@ -364,6 +403,9 @@ public class Bawi_AI : MonoBehaviour
         {
             // 바위 집은 손으로 변경
             fistSprite.sprite = grabFistSprite;
+
+            // 바위 집는 사운드 재생
+            SoundManager.Instance.PlaySound("Bawi_GrabStone", fistPart.transform.position);
         })
         // 잠시 대기
         .AppendInterval(0.5f)
@@ -418,6 +460,9 @@ public class Bawi_AI : MonoBehaviour
         // 작은 돌이면 돌 부수는 트랜지션
         if (isSmallStone)
         {
+            // 바위 부수는 사운드 재생
+            SoundManager.Instance.PlaySound("Bawi_CrushStone", fistPart.transform.position);
+
             // 주먹 위치 떨림
             fistPart.transform.DOPunchPosition(Vector3.up, 0.5f, 50, 1);
 
@@ -474,6 +519,9 @@ public class Bawi_AI : MonoBehaviour
         {
             //돌 날리기
             StartCoroutine(ShotStone(isSmallStone));
+
+            // 던지기 사운드 재생
+            SoundManager.Instance.PlaySound("Bawi_ThrowStone", fistPart.transform.position);
         })
         .Join(
             //포물선 그리며 손 휘두르기
@@ -598,6 +646,9 @@ public class Bawi_AI : MonoBehaviour
         //착지 할때까지 대기
         yield return new WaitUntil(() => !isFloating);
 
+        //todo 드릴 스핀 사운드 반복 재생
+        AudioSource drillSpin = SoundManager.Instance.PlaySound("Bawi_DrillSpin", drillPart.transform, 2f, 0, -1, true);
+
         // 차지 이펙트 켜기
         drillChargeGathering.gameObject.SetActive(true);
         drillChargeGathering.Play();
@@ -629,11 +680,14 @@ public class Bawi_AI : MonoBehaviour
         // 드릴 타겟팅 지연시간
         float aimRate = 0.1f;
 
+        // 바위 떨리는 사운드 재생
+        AudioSource shakeSound = SoundManager.Instance.PlaySound("Bawi_Shake", transform.position);
+
         // 조준 시간동안 플레이어 조준하기
         while (aimCount > 0)
         {
             // 플레이어 근처 위치
-            Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 3f;
+            Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 0.5f;
 
             // 보스에서 플레이어까지 방향
             playerDir = playerPos - transform.position;
@@ -657,6 +711,10 @@ public class Bawi_AI : MonoBehaviour
             yield return new WaitForSeconds(aimRate);
         }
 
+        // 떨리는 사운드 정지
+        if (shakeSound != null)
+            SoundManager.Instance.StopSound(shakeSound, 0.2f);
+
         // 대쉬 위치
         Vector2 dashPos = transform.position + (PlayerManager.Instance.transform.position - transform.position).normalized * 30f;
 
@@ -664,26 +722,29 @@ public class Bawi_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 대쉬 먼지 파티클 켜기
-        headDashDust.SetActive(true);
-        fistDashDust.SetActive(true);
+        headDashDust.gameObject.SetActive(true);
+        fistDashDust.gameObject.SetActive(true);
         // drillDashDust.SetActive(true);
+
+        // 대쉬 사운드 재생
+        SoundManager.Instance.PlaySound("Bawi_DrillDash", transform);
 
         // 플레이어 방향으로 돌진
         transform.DOMove(dashPos, 1f)
-        .SetEase(Ease.OutExpo)
-        .OnComplete(() =>
-        {
-            // 드릴 콜라이더 끄기
-            drillGhostColl.enabled = false;
-
-            // 대쉬 먼지 파티클 끄기
-            headDashDust.SetActive(false);
-            fistDashDust.SetActive(false);
-            // drillDashDust.SetActive(false);
-        });
+        .SetEase(Ease.OutExpo);
 
         //돌진하는 동안 대기
         yield return new WaitForSeconds(1f);
+
+        //todo 드릴 스핀 사운드 종료
+        SoundManager.Instance.StopSound(drillSpin, 0.5f);
+
+        // 드릴 콜라이더 끄기
+        drillGhostColl.enabled = false;
+
+        // 대쉬 먼지 파티클 끄기
+        headDashDust.SmoothDisable();
+        fistDashDust.SmoothDisable();
 
         //초기화 시간
         float resetTime = 1f;
@@ -722,6 +783,9 @@ public class Bawi_AI : MonoBehaviour
         character.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
         character.nowAction = Character.Action.Idle;
+
+        // 파츠 호버링 사운드 재생
+        SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
     }
 
     IEnumerator WeaponCharge(Transform partObj, Vector2 atkPos, int chargeNum, float delay = 0f)
@@ -775,6 +839,9 @@ public class Bawi_AI : MonoBehaviour
 
                 // 차지 펄스 이펙트 발생
                 LeanPool.Spawn(chargePulse, partObj.position, Quaternion.identity, partObj);
+
+                // 파워업 사운드 재생
+                SoundManager.Instance.PlaySound("Bawi_PowerUp", transform.position);
             })
             .Append(
                 //원래 높이로 복구
@@ -843,7 +910,7 @@ public class Bawi_AI : MonoBehaviour
         StartCoroutine(WeaponCharge(fistPart, fistPartLocalPos, chargeNum, 0.5f));
 
         // 조준시간 입력
-        aimCount = 3f;
+        aimCount = 0.5f * (chargeNum + 1) + 0.5f;
 
         //콜라이더 끄기
         fistCrushColl.enabled = false;
@@ -851,10 +918,12 @@ public class Bawi_AI : MonoBehaviour
         // 플레이어 위치 부드럽게 따라가기
         while (aimCount > 0)
         {
-            Vector3 playerPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 3f;
+            // 플레이어 위치 계산
+            Vector3 playerPos = PlayerManager.Instance.transform.position;
+            // 이동할 위치 계산
+            Vector2 movePos = Vector2.Lerp(fistParent.position, playerPos, Time.deltaTime * 5f);
 
             // 주먹 위치 이동
-            Vector2 movePos = Vector2.Lerp(fistParent.position, playerPos, Time.deltaTime * 5f);
             fistParent.position = movePos;
 
             // 시간 차감 후 대기
@@ -872,6 +941,15 @@ public class Bawi_AI : MonoBehaviour
         .SetEase(Ease.InBack)
         .OnComplete(() =>
         {
+            // 흙 튀는 파티클 개수 수정
+            ParticleSystem.EmissionModule emission = DirtExplosionCircle.emission;
+            ParticleSystem.Burst burst = emission.GetBurst(0);
+            burst.count = 30f + chargeNum * 10f;
+            DirtExplosionCircle.emission.SetBurst(0, burst);
+            // 흙 튀는 파티클 재생
+            DirtExplosionCircle.Play();
+            // LeanPool.Spawn(DirtExplosion, fistParent.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
             // 착지 먼지 이펙트 생성
             GameObject landDust = LeanPool.Spawn(smallLandDust, fistParent.position, Quaternion.identity, SystemManager.Instance.effectPool);
             // 먼지 이펙트 사이즈 설정
@@ -882,6 +960,9 @@ public class Bawi_AI : MonoBehaviour
 
             // 콜라이더 켜기
             fistCrushColl.enabled = true;
+
+            // 주먹 내려찍기 사운드 재생
+            SoundManager.Instance.PlaySound("Bawi_FistImpact", transform.position);
         });
 
         // 주먹 떨어지는데 1초, 0.5초 대기
@@ -916,6 +997,9 @@ public class Bawi_AI : MonoBehaviour
         character.animList[0].SetBool("UseFist", false);
         // Idle 상태로 전환
         character.nowAction = Character.Action.Idle;
+
+        // 파츠 호버링 사운드 재생
+        SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
     }
 
     IEnumerator DrillChase()
@@ -943,6 +1027,9 @@ public class Bawi_AI : MonoBehaviour
         drillPart.transform.DOLocalMove(drillPartLocalPos + Vector2.up * 5f, 1f)
         .SetEase(Ease.InOutQuart);
 
+        // 드릴 스핀 사운드 재생
+        SoundManager.Instance.PlaySound("Bawi_DrillSpin", drillPart.transform.position);
+
         // 드릴 다 들때까지 대기
         yield return new WaitForSeconds(1f);
 
@@ -954,6 +1041,8 @@ public class Bawi_AI : MonoBehaviour
         // 부유 이펙트 빠르게
         ParticleSystem.EmissionModule hoverEmission = drillHoverEffect.emission;
         hoverEmission.rateOverTime = 30f;
+
+        AudioSource drillSound = null;
 
         // 드릴 내려서 땅에 박기
         drillPart.transform.DOLocalMove(Vector2.up * 1f, 0.5f)
@@ -972,6 +1061,11 @@ public class Bawi_AI : MonoBehaviour
             //흙무더기 파티클 켜기
             BurrowTrail.gameObject.SetActive(true);
             BurrowTrail.Play();
+
+            // 드릴 땅에 꽂히는 사운드 재생
+            SoundManager.Instance.PlaySound("Bawi_Drill_Impact", drillPart.transform.position);
+            // 드릴 땅파기 사운드 재생
+            drillSound = SoundManager.Instance.PlaySound("Bawi_DrillDig", drillPart.transform.position);
         });
 
         // 동시에 그림자 사이즈 줄여 없에기
@@ -987,6 +1081,9 @@ public class Bawi_AI : MonoBehaviour
         {
             // 땅파기 파티클 끄기
             digDirtParticle.GetComponent<ParticleManager>().SmoothDisable();
+
+            // 드릴 땅파기 사운드 끄기
+            SoundManager.Instance.StopSound(drillSound, 0.5f);
         });
 
         yield return new WaitForSeconds(2f);
@@ -1002,8 +1099,8 @@ public class Bawi_AI : MonoBehaviour
         // 조준 딜레이 입력
         float aimRate = 0.1f;
 
-        // 드릴 rigid 켜기
-        drillRigid.simulated = true;
+        // 드릴 추적 사운드 반복 재생
+        drillSound = SoundManager.Instance.PlaySound("Bawi_DrillChasing", drillSprite.transform, 1f, 0, -1, true);
 
         // 플레이어 위치 부드럽게 따라가기
         while (aimCount > 0)
@@ -1030,10 +1127,12 @@ public class Bawi_AI : MonoBehaviour
             yield return new WaitForSeconds(aimRate);
         }
 
+        if (drillSound != null)
+            // 드릴 추적 사운드 정지
+            SoundManager.Instance.StopSound(drillSound, 0.5f);
+
         // 드릴 속도 멈추기
         drillRigid.velocity = Vector3.zero;
-        // 드릴 rigid 끄기
-        drillRigid.simulated = false;
 
         // 드릴 콜라이더 켜기
         drillGhostColl.enabled = true;
@@ -1052,6 +1151,9 @@ public class Bawi_AI : MonoBehaviour
         drillShadow.transform.DOScale(new Vector3(3f, 1f, 1f), 0.5f)
         .SetEase(Ease.OutBack);
 
+        // 드릴 튀어나올때 사운드 재생
+        SoundManager.Instance.PlaySound("Bawi_Drill_Impact", drillPart.transform.position);
+
         yield return new WaitForSeconds(2f);
 
         //공격 끝, 모두 초기화
@@ -1069,5 +1171,8 @@ public class Bawi_AI : MonoBehaviour
         character.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
         character.nowAction = Character.Action.Idle;
+
+        // 파츠 호버링 사운드 재생
+        SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
     }
 }

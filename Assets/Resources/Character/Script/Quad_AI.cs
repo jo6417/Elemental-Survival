@@ -321,7 +321,7 @@ public class Quad_AI : MonoBehaviour
         //애니메이터 켜기
         character.animList[0].enabled = true;
         // Idle 애니메이션으로 전환
-        // enemyManager.animList[0].SetBool("UseFist", false);
+        // chracter.animList[0].SetBool("UseFist", false);
 
         //! 거리 확인
         stateText.text = "Distance : " + character.targetDir.magnitude;

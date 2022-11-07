@@ -13,8 +13,8 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Walk")]
     public Vector3 targetDir; //플레이어 방향
-    public float moveCoolTime = 1f; // 타겟 위치 추적 시간
-    public float moveCoolCount; // 타겟 위치 추적 시간 카운트
+    public float searchCoolTime = 1f; // 타겟 위치 추적 시간
+    public float searchCoolCount; // 타겟 위치 추적 시간 카운트
     [SerializeField]
     bool directionTilt = false; // 가는 방향으로 기울이기 여부
 
@@ -63,8 +63,8 @@ public class EnemyAI : MonoBehaviour
     private void Update()
     {
         // 이동 리셋 카운트 차감
-        if (moveCoolCount > 0)
-            moveCoolCount -= Time.deltaTime;
+        if (searchCoolCount > 0)
+            searchCoolCount -= Time.deltaTime;
     }
 
     private void FixedUpdate()
@@ -74,10 +74,10 @@ public class EnemyAI : MonoBehaviour
             return;
 
         // 목표 위치 갱신 시간 됬을때, 추적 위치 계산
-        if (moveCoolCount <= 0)
+        if (searchCoolCount <= 0)
         {
             // 추적 타이머 갱신
-            moveCoolCount = moveCoolTime;
+            searchCoolCount = searchCoolTime;
 
             // 타겟이 null일때
             if (character.TargetObj == null)
@@ -100,8 +100,10 @@ public class EnemyAI : MonoBehaviour
         if (!character.ManageState())
             return;
 
-        //행동 관리
-        ManageAction();
+        // 커스텀 AI 아닐때
+        if (character.moveType != Character.MoveType.Custom)
+            //행동 관리
+            ManageAction();
     }
 
     void ManageAction()
@@ -163,7 +165,7 @@ public class EnemyAI : MonoBehaviour
         // 목표위치 도착했으면 위치 다시 갱신
         if (targetDir.magnitude < 0.5f)
         {
-            moveCoolCount = 0f;
+            searchCoolCount = 0f;
         }
         else
         {
@@ -233,7 +235,7 @@ public class EnemyAI : MonoBehaviour
         //해당 방향으로 가속
         character.rigid.velocity = targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
-        // print(enemyManager.rigid.velocity);
+        // print(chracter.rigid.velocity);
     }
 
     public void JumpMoveStop()

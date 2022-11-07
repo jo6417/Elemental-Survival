@@ -283,7 +283,7 @@ public class KingSlime_AI : MonoBehaviour
         character.animList[0].SetBool("isBounce", true);
 
         // 애니메이터 활성화까지 대기
-        // yield return new WaitUntil(() => enemyManager.animList[0].enabled);
+        // yield return new WaitUntil(() => chracter.animList[0].enabled);
 
         // 남은 체력에 비례해서 소환 횟수 산출, 5~15마리
         int summonNum = 5 + Mathf.RoundToInt(10 * (character.hpMax - character.hpNow) / character.hpMax);
@@ -294,12 +294,12 @@ public class KingSlime_AI : MonoBehaviour
 
             //컴포넌트 초기화
             // Collider2D babyColl = babySlime.GetComponent<Collider2D>();
-            Character babyEnemyManager = babySlime.GetComponent<Character>();
+            Character babyChracter = babySlime.GetComponent<Character>();
 
             // 소환수 히트박스 끄기
-            for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
+            for (int j = 0; j < babyChracter.hitBoxList.Count; j++)
             {
-                babyEnemyManager.hitBoxList[j].enabled = false;
+                babyChracter.hitBoxList[j].enabled = false;
             }
 
             //소환 위치
@@ -310,13 +310,13 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 소환수 히트박스 켜기
-                for (int j = 0; j < babyEnemyManager.hitBoxList.Count; j++)
+                for (int j = 0; j < babyChracter.hitBoxList.Count; j++)
                 {
-                    babyEnemyManager.hitBoxList[j].enabled = true;
+                    babyChracter.hitBoxList[j].enabled = true;
                 }
 
                 // 소환수 초기화
-                babyEnemyManager.initialStart = true;
+                babyChracter.initialStart = true;
             });
 
             //소환 딜레이
@@ -326,7 +326,7 @@ public class KingSlime_AI : MonoBehaviour
         // 바운스 애니메이션 끝
         character.animList[0].SetBool("isBounce", false);
         //애니메이션 끄기
-        // enemyManager.animList[0].enabled = false;
+        // chracter.animList[0].enabled = false;
 
         // 천천히 추욱 쳐지기
         character.spriteObj.DOScale(new Vector2(1.2f, 0.7f), 1f)
@@ -357,7 +357,7 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator PoisonShot()
     {
         // 떨림 애니메이션 시작
-        // enemyManager.animList[0].enabled = true;
+        // chracter.animList[0].enabled = true;
         character.animList[0].SetBool("isShaking", true);
 
         // 머터리얼 컬러 0으로 초기화
@@ -379,7 +379,7 @@ public class KingSlime_AI : MonoBehaviour
 
         //떨림 애니메이션 종료
         character.animList[0].SetBool("isShaking", false);
-        // enemyManager.animList[0].enabled = false;
+        // chracter.animList[0].enabled = false;
 
         // 보스에서 플레이어 방향
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;

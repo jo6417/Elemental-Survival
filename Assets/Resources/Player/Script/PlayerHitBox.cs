@@ -47,7 +47,8 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.Move();
 
         // 공격 오브젝트와 충돌 했을때
-        if (other.gameObject.TryGetComponent(out Attack attack))
+        Attack attack = other.transform.GetComponentInChildren<Attack>();
+        if (attack)
         {
             StartCoroutine(Hit(attack));
         }
@@ -61,7 +62,8 @@ public class PlayerHitBox : MonoBehaviour
             return;
 
         // 공격 오브젝트와 충돌 했을때
-        if (other.TryGetComponent(out Attack attack))
+        Attack attack = other.GetComponentInChildren<Attack>();
+        if (attack)
         {
             StartCoroutine(Hit(attack));
         }
@@ -88,12 +90,12 @@ public class PlayerHitBox : MonoBehaviour
         if (attacker.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 몬스터 정보 찾기
-            Character enemyManager = enemyAtk.character;
+            Character chracter = enemyAtk.character;
 
             // 몬스터 정보 없을때, 고스트일때 리턴
-            if (enemyManager == null || enemyManager.enemy == null || enemyManager.IsGhost)
+            if (chracter == null || chracter.enemy == null || chracter.IsGhost)
             {
-                Debug.Log($"enemy is null : {enemyManager.transform.position}");
+                Debug.Log($"enemy is null : {chracter.transform.position}");
                 yield break;
             }
 

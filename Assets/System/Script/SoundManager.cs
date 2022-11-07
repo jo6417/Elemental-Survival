@@ -12,7 +12,7 @@ public class Sound
 
     public AudioClip clip;
 
-    [Range(0f, 1f)]
+    [Range(0f, 3f)]
     public float volume = 0.5f;
     [Range(0f, 3f)]
     public float pitch = 1f;
@@ -191,13 +191,18 @@ public class SoundManager : MonoBehaviour
         if (sound == null)
             return null;
 
-        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면 리턴
+        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
         if (attachor.TryGetComponent(out AudioSource audioSource))
         {
             if (audioSource.clip == sound.clip
             && audioSource.volume == sound.volume
             && audioSource.pitch == sound.pitch)
-                return null;
+            {
+                // 재생하고 끝나면 디스폰
+                StartCoroutine(Play(sound, audioSource, true, fadeIn, delay, loopNum, scaledTime));
+
+                return audioSource;
+            }
         }
 
         // 빈 오디오소스 프리팹을 attachor에 자식으로 붙여주기
@@ -221,7 +226,7 @@ public class SoundManager : MonoBehaviour
         audio.rolloffMode = AudioRolloffMode.Custom;
         audio.maxDistance = 35f;
 
-        // 재생 끝나면 디스폰
+        // 재생하고 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
 
         return audio;
@@ -296,34 +301,54 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void StopSound(string soundName, float delay = 0, bool scaledTime = false)
+    public void StopSound(string soundName, float fadeoutTime, float delay = 0, bool scaledTime = false)
     {
-        // 해당 이름으로 사운드 찾기
+        // 해당 이름으로 전역 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
         // 사운드 있으면 멈추기
         if (sound.source != null)
-            StartCoroutine(Stop(sound.source, delay, scaledTime));
+            StartCoroutine(Stop(sound.source, false, fadeoutTime, delay, scaledTime));
     }
 
-    public void StopSound(AudioSource audio, float delay = 0, bool scaledTime = false)
+    public void StopSound(AudioSource audio, float fadeoutTime = 0, float delay = 0, bool scaledTime = false)
     {
         // 오디오 오브젝트 디스폰
-        if (audio != null)
-            LeanPool.Despawn(audio.gameObject);
+        StartCoroutine(Stop(audio, true, fadeoutTime, delay, scaledTime));
     }
 
-    IEnumerator Stop(AudioSource audio, float delay, bool scaledTime)
+    IEnumerator Stop(AudioSource audio, bool isDespawn, float fadeoutTime, float delay, bool scaledTime)
     {
+        // 딜레이 동안 대기
         if (scaledTime)
-            // 딜레이 동안 대기
             yield return new WaitForSeconds(delay);
         else
-            // 딜레이 동안 대기
             yield return new WaitForSecondsRealtime(delay);
 
-        // 사운드 재생
-        audio.Stop();
+        // 페이드 아웃 시간이 있을때
+        if (fadeoutTime > 0)
+        {
+            // 서서히 볼륨 제로까지 내리기
+            if (scaledTime)
+                DOTween.To(() => audio.volume, x => audio.volume = x, 0, fadeoutTime);
+            else
+                DOTween.To(() => audio.volume, x => audio.volume = x, 0, fadeoutTime)
+                .SetUpdate(true);
+
+            // 페이드 아웃 시간동안 대기
+            if (scaledTime)
+                yield return new WaitForSeconds(fadeoutTime);
+            else
+                yield return new WaitForSecondsRealtime(fadeoutTime);
+        }
+
+        // 디스폰일때
+        if (isDespawn)
+            // 오디오 오브젝트 디스폰
+            LeanPool.Despawn(audio.gameObject);
+        else
+            // 오디오 정지
+            audio.Stop();
     }
 
     public void SoundTimeScale(float scale)

@@ -15,11 +15,11 @@ C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-41416
+29273
 Successfully changed project path to: C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
 C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 435.41 ms, found 8 plugins.
+Refreshing native plugins compatible for Editor in 429.71 ms, found 6 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.3.25f1 (9b9180224418)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Resources/UnitySubsystems
@@ -35,37 +35,37 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56008
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56532
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.003414 seconds.
+Registered in 0.004074 seconds.
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 428.61 ms, found 8 plugins.
+Refreshing native plugins compatible for Editor in 422.97 ms, found 6 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  1.057 seconds
+- Completed reload, in  1.063 seconds
 Domain Reload Profiling:
-	ReloadAssembly (1058ms)
-		BeginReloadAssembly (73ms)
+	ReloadAssembly (1063ms)
+		BeginReloadAssembly (76ms)
 			ExecutionOrderSort (0ms)
 			DisableScriptedObjects (0ms)
 			BackupInstance (0ms)
 			ReleaseScriptingObjects (0ms)
 			CreateAndSetChildDomain (1ms)
-		EndReloadAssembly (893ms)
-			LoadAssemblies (69ms)
+		EndReloadAssembly (897ms)
+			LoadAssemblies (71ms)
 			RebuildTransferFunctionScriptingTraits (0ms)
-			SetupTypeCache (153ms)
+			SetupTypeCache (159ms)
 			ReleaseScriptCaches (0ms)
 			RebuildScriptCaches (37ms)
-			SetupLoadedEditorAssemblies (574ms)
+			SetupLoadedEditorAssemblies (567ms)
 				LogAssemblyErrors (0ms)
 				InitializePlatformSupportModulesInManaged (5ms)
 				SetLoadedEditorAssemblies (0ms)
-				RefreshPlugins (429ms)
-				BeforeProcessingInitializeOnLoad (15ms)
-				ProcessInitializeOnLoadAttributes (94ms)
+				RefreshPlugins (423ms)
+				BeforeProcessingInitializeOnLoad (14ms)
+				ProcessInitializeOnLoadAttributes (93ms)
 				ProcessInitializeOnLoadMethodAttributes (31ms)
 				AfterProcessingInitializeOnLoad (0ms)
 				EditorAssembliesLoaded (0ms)
@@ -73,51 +73,51 @@ Domain Reload Profiling:
 			AwakeInstancesAfterBackupRestoration (0ms)
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.022452 seconds.
+Registered in 0.017642 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
-Refreshing native plugins compatible for Editor in 421.55 ms, found 8 plugins.
+Refreshing native plugins compatible for Editor in 427.76 ms, found 6 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  2.058 seconds
+- Completed reload, in  2.322 seconds
 Domain Reload Profiling:
-	ReloadAssembly (2060ms)
-		BeginReloadAssembly (171ms)
+	ReloadAssembly (2324ms)
+		BeginReloadAssembly (276ms)
 			ExecutionOrderSort (0ms)
 			DisableScriptedObjects (6ms)
 			BackupInstance (0ms)
 			ReleaseScriptingObjects (0ms)
-			CreateAndSetChildDomain (20ms)
-		EndReloadAssembly (1808ms)
-			LoadAssemblies (150ms)
+			CreateAndSetChildDomain (38ms)
+		EndReloadAssembly (1939ms)
+			LoadAssemblies (193ms)
 			RebuildTransferFunctionScriptingTraits (0ms)
-			SetupTypeCache (424ms)
+			SetupTypeCache (487ms)
 			ReleaseScriptCaches (1ms)
 			RebuildScriptCaches (111ms)
-			SetupLoadedEditorAssemblies (968ms)
+			SetupLoadedEditorAssemblies (1012ms)
 				LogAssemblyErrors (0ms)
-				InitializePlatformSupportModulesInManaged (5ms)
+				InitializePlatformSupportModulesInManaged (4ms)
 				SetLoadedEditorAssemblies (0ms)
-				RefreshPlugins (422ms)
-				BeforeProcessingInitializeOnLoad (165ms)
-				ProcessInitializeOnLoadAttributes (336ms)
+				RefreshPlugins (428ms)
+				BeforeProcessingInitializeOnLoad (175ms)
+				ProcessInitializeOnLoadAttributes (362ms)
 				ProcessInitializeOnLoadMethodAttributes (28ms)
-				AfterProcessingInitializeOnLoad (12ms)
+				AfterProcessingInitializeOnLoad (14ms)
 				EditorAssembliesLoaded (0ms)
 			ExecutionOrderSort2 (0ms)
-			AwakeInstancesAfterBackupRestoration (7ms)
+			AwakeInstancesAfterBackupRestoration (8ms)
 Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
-Launched and connected shader compiler UnityShaderCompiler.exe after 0.06 seconds
-Refreshing native plugins compatible for Editor in 3.20 ms, found 8 plugins.
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.07 seconds
+Refreshing native plugins compatible for Editor in 3.15 ms, found 6 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
-Unloading 5026 Unused Serialized files (Serialized files now loaded: 0)
-System memory in use before: 327.7 MB.
-System memory in use after: 328.2 MB.
+Unloading 4902 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 323.6 MB.
+System memory in use after: 323.8 MB.
 
-Unloading 97 unused Assets to reduce memory usage. Loaded Objects now: 5431.
-Total: 4.345900 ms (FindLiveObjects: 0.428500 ms CreateObjectMapping: 0.127200 ms MarkObjects: 3.746900 ms  DeleteObjects: 0.042200 ms)
+Unloading 42 unused Assets to reduce memory usage. Loaded Objects now: 5362.
+Total: 5.307300 ms (FindLiveObjects: 0.479900 ms CreateObjectMapping: 0.323400 ms MarkObjects: 4.463000 ms  DeleteObjects: 0.039000 ms)
 
 AssetImportParameters requested are different than current active one (requested -> active):
   custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
@@ -132,9 +132,2329 @@ AssetImportParameters requested are different than current active one (requested
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
 ========================================================================
 Received Import Request.
-  path: Assets/Plugins/FMOD
-  artifactKey: Guid(06ae579381df01a4a87bb149dec89954) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Plugins/FMOD using Guid(06ae579381df01a4a87bb149dec89954) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '69e87d4caf621e2f6a0b8cfd6c5c9966') in 0.013382 seconds 
-  Import took 0.022166 seconds .
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 11.wav
+  artifactKey: Guid(336c0ab6c16c8ff4293aa9e8d695daf8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 11.wav using Guid(336c0ab6c16c8ff4293aa9e8d695daf8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b781e79c5daec3955bc5a1914d89c671') in 0.172452 seconds 
+  Import took 0.181821 seconds .
 
+========================================================================
+Received Import Request.
+  Time since last request: 0.000278 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 10.wav
+  artifactKey: Guid(9b633818ebf65d34b912ff42474a9b5e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 10.wav using Guid(9b633818ebf65d34b912ff42474a9b5e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1ef17a907a543f1acf7ca0adc7855590') in 0.026766 seconds 
+  Import took 0.036153 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.001609 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 5.wav
+  artifactKey: Guid(f9f3ed7c6aaf0f04293cbd981d77af11) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 5.wav using Guid(f9f3ed7c6aaf0f04293cbd981d77af11) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '26af1bbc64252365fc7a06c7e5eefa1b') in 0.025492 seconds 
+  Import took 0.036892 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000253 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 16.wav
+  artifactKey: Guid(a9c03e0f5a9c17442a7aa2562568bb74) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 16.wav using Guid(a9c03e0f5a9c17442a7aa2562568bb74) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a0de328be76f2ea17716615374764a0f') in 0.027341 seconds 
+  Import took 0.038177 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000251 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 13.wav
+  artifactKey: Guid(afb48da7bc7e1424a8e361ee2d563d56) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 13.wav using Guid(afb48da7bc7e1424a8e361ee2d563d56) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c5567a24b1ea75ded711d38e3ee1765b') in 0.026133 seconds 
+  Import took 0.035574 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000288 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 8.wav
+  artifactKey: Guid(3a7a9342565812b438aa11b55ed6d3ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 8.wav using Guid(3a7a9342565812b438aa11b55ed6d3ef) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bcd1f2968165ce54fe38ffee76ddb3c1') in 0.025239 seconds 
+  Import took 0.038687 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000360 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 14.wav
+  artifactKey: Guid(fd1b234e029aa4843a649d4ca3091f84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 14.wav using Guid(fd1b234e029aa4843a649d4ca3091f84) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0cd0ba557a32bb3419d2b2a95e8b6744') in 0.025847 seconds 
+  Import took 0.037097 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000279 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 7.wav
+  artifactKey: Guid(3cedfc5c030c5fc4e87929cc3545c66f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 7.wav using Guid(3cedfc5c030c5fc4e87929cc3545c66f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b13637a5fc2260d170b51a98aef60731') in 0.027409 seconds 
+  Import took 0.037479 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000299 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 12.wav
+  artifactKey: Guid(430c22109ba22354099f7231e1a940f5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 12.wav using Guid(430c22109ba22354099f7231e1a940f5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ab39efcb45e338f6993e1c4bcede174d') in 0.026516 seconds 
+  Import took 0.042468 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000462 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 3.wav
+  artifactKey: Guid(7e2bfcadd17d3514ca33caf9ddbc730c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 3.wav using Guid(7e2bfcadd17d3514ca33caf9ddbc730c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c7d1fe6ad62543d7964a7e6afc080549') in 0.024789 seconds 
+  Import took 0.036584 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000416 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 1.wav
+  artifactKey: Guid(c8581d840f9d35c448265364d111a437) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 1.wav using Guid(c8581d840f9d35c448265364d111a437) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a158f7f53332aa84c72056ea2cd23586') in 0.022760 seconds 
+  Import took 0.035905 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000363 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 2.wav
+  artifactKey: Guid(7759531d775c18c46ac4f0b5d2e8ec03) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 2.wav using Guid(7759531d775c18c46ac4f0b5d2e8ec03) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '58b2c5a4008ab2cb2b59bba61d069fbf') in 0.025864 seconds 
+  Import took 0.035090 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000264 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 15.wav
+  artifactKey: Guid(7fd7b33677616de4e83aa50e2ff56d44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 15.wav using Guid(7fd7b33677616de4e83aa50e2ff56d44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '791dd9939007f477362942baf73440fd') in 0.020304 seconds 
+  Import took 0.028284 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000264 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 17.wav
+  artifactKey: Guid(e31ef4ca211ab504697244f5d9e7308c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 17.wav using Guid(e31ef4ca211ab504697244f5d9e7308c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6ecf53fd55e58370272e4aebf8978ebb') in 0.020881 seconds 
+  Import took 0.029510 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000322 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 6.wav
+  artifactKey: Guid(799ccacf5f984ad40a1f885e0b0463d9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ultimate Retro Sounds/Ui Hover over button - 10/Ui Hover over button 6.wav using Guid(799ccacf5f984ad40a1f885e0b0463d9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c26838ed9c4998e881393b5c5267125e') in 0.020966 seconds 
+  Import took 0.030139 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 27.077564 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_3rd Round.wav
+  artifactKey: Guid(53eb3f4a01e41c444a0af418f0f2d500) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_3rd Round.wav using Guid(53eb3f4a01e41c444a0af418f0f2d500) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8f37a3c466c43a490bb164e5350b2752') in 0.021763 seconds 
+  Import took 0.031870 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000335 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Are You Ready_02.wav
+  artifactKey: Guid(d3bbb4b7a896d6346956acd44068d644) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Are You Ready_02.wav using Guid(d3bbb4b7a896d6346956acd44068d644) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a3d817e345c8d4b135c138c6f820707e') in 0.020487 seconds 
+  Import took 0.028961 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000323 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Eight.wav
+  artifactKey: Guid(8d23d3d0c1a71314a87076d03ecdf9d1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Eight.wav using Guid(8d23d3d0c1a71314a87076d03ecdf9d1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2330d0d67a875931d5104b9eddd0017c') in 0.024930 seconds 
+  Import took 0.033853 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000229 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Da.wav
+  artifactKey: Guid(37ce0e75a06b2714f855f349ad51c20e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Da.wav using Guid(37ce0e75a06b2714f855f349ad51c20e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'be0c20b3f1be3ff7b2e872b8eef02e33') in 0.042423 seconds 
+  Import took 0.052090 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000271 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Don't shoot.wav
+  artifactKey: Guid(aba37fdd32f355f478d21ce2c21e5adf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Don't shoot.wav using Guid(aba37fdd32f355f478d21ce2c21e5adf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e8d078a39e1c056e13346f0621eb9afe') in 0.020943 seconds 
+  Import took 0.030910 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000275 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_First Round.wav
+  artifactKey: Guid(254628fff53fdde43a5aa005dc1338da) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_First Round.wav using Guid(254628fff53fdde43a5aa005dc1338da) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'db0a464771a915f0f494befa9b362994') in 0.021229 seconds 
+  Import took 0.029179 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000258 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Defuse The Bomb.wav
+  artifactKey: Guid(aac39c3603e699141b7eea7fda725fd4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Defuse The Bomb.wav using Guid(aac39c3603e699141b7eea7fda725fd4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2ea15afe2a032c9b8d28fedae44c5b6d') in 0.020764 seconds 
+  Import took 0.030155 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000323 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Enemy Spotted.wav
+  artifactKey: Guid(d22e14e3183e944438fc9fcf9cd8cb06) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Enemy Spotted.wav using Guid(d22e14e3183e944438fc9fcf9cd8cb06) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '18c296c678447f9facf97e7c2f9e3315') in 0.019980 seconds 
+  Import took 0.028874 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000249 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Feels good.wav
+  artifactKey: Guid(a3115a626fd97024199db3089fbb2e66) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Feels good.wav using Guid(a3115a626fd97024199db3089fbb2e66) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '04b01969f59fa5797c325ea5983cf90b') in 0.021792 seconds 
+  Import took 0.030617 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000355 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Feels Good_02.wav
+  artifactKey: Guid(a87754a1ff57b414d9fe8ed21629c1f4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Feels Good_02.wav using Guid(a87754a1ff57b414d9fe8ed21629c1f4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6d1f5cffba9b50eb80d14ae2d2a83953') in 0.021278 seconds 
+  Import took 0.030441 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000279 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Destroyed.wav
+  artifactKey: Guid(7911429d86addf940b5410f0a138e510) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Destroyed.wav using Guid(7911429d86addf940b5410f0a138e510) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'deed7b888dd6f384b798402622ca28cf') in 0.019639 seconds 
+  Import took 0.028491 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000259 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Enemies are here.wav
+  artifactKey: Guid(ba7d7e1700706a64280fbd4083668ed6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Enemies are here.wav using Guid(ba7d7e1700706a64280fbd4083668ed6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '02a51f12aa020db9dedf47e459259485') in 0.021688 seconds 
+  Import took 0.030788 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000292 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_All Dead.wav
+  artifactKey: Guid(2df0097b6adc8eb48b9bde204479e3e0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_All Dead.wav using Guid(2df0097b6adc8eb48b9bde204479e3e0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fbb109209cf5c6240c528f3829aa3708') in 0.019857 seconds 
+  Import took 0.029663 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000310 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Easy work.wav
+  artifactKey: Guid(5c5a11d8854636a43bcfc11e2399fff4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Easy work.wav using Guid(5c5a11d8854636a43bcfc11e2399fff4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'da1ed9e4e30eaf3954320a517d6914b6') in 0.025241 seconds 
+  Import took 0.034163 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000275 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Are You Ready.wav
+  artifactKey: Guid(4fb2300761cc8704fb800b4108cf5012) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Are You Ready.wav using Guid(4fb2300761cc8704fb800b4108cf5012) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '99c626bc3626116780fec44be0851371') in 0.020828 seconds 
+  Import took 0.029756 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000326 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Help.wav
+  artifactKey: Guid(970750433fafb62468a9b3d24ffee48e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Help.wav using Guid(970750433fafb62468a9b3d24ffee48e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7994036f4738d2eba0c8faca898420e4') in 0.020553 seconds 
+  Import took 0.028782 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000240 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_General.wav
+  artifactKey: Guid(1e862419cbeeb174888a3843837f0f0f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_General.wav using Guid(1e862419cbeeb174888a3843837f0f0f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3346299e2e1e3a229062169508b3cf35') in 0.021222 seconds 
+  Import took 0.030856 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000300 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Cover Me.wav
+  artifactKey: Guid(3a1908c8c107c5a44a7ec337d6d2f18e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Cover Me.wav using Guid(3a1908c8c107c5a44a7ec337d6d2f18e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd27fbe72f3e3e5082e55ecf308628a12') in 0.021365 seconds 
+  Import took 0.030177 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000297 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Bomb site.wav
+  artifactKey: Guid(f775463a035698b489c6837368fcb834) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Bomb site.wav using Guid(f775463a035698b489c6837368fcb834) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '874d95bf2203c15ab6cbca8cd4a7fd1a') in 0.020979 seconds 
+  Import took 0.030495 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000345 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Capture the flag.wav
+  artifactKey: Guid(e41e501c2d7dc2c48b5742a081edd752) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Capture the flag.wav using Guid(e41e501c2d7dc2c48b5742a081edd752) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '030981aa2cce4739d3580f66b91af2e1') in 0.020250 seconds 
+  Import took 0.029579 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000243 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Fire!.wav
+  artifactKey: Guid(564cfac3eaf47564a8ce08b60f790e18) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Fire!.wav using Guid(564cfac3eaf47564a8ce08b60f790e18) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '107bb87a7cc45e0d928fe401ded0d39c') in 0.023553 seconds 
+  Import took 0.031840 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000318 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Double Kill_03.wav
+  artifactKey: Guid(b4ce0762ae867ec4c8ef710ecb68bd42) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Double Kill_03.wav using Guid(b4ce0762ae867ec4c8ef710ecb68bd42) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '22deb40ff7c3c92ea240c9656309a879') in 0.022472 seconds 
+  Import took 0.030699 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000291 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Game Over.wav
+  artifactKey: Guid(4dae5ad90dc9b9c4983fb3e5c3438b68) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Game Over.wav using Guid(4dae5ad90dc9b9c4983fb3e5c3438b68) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '74445ce6c40e96c9c0d9ac5648f6b81e') in 0.023675 seconds 
+  Import took 0.033424 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000263 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Double Kill_02.wav
+  artifactKey: Guid(b8e2a2ceafce7c64d8c1356ad50e9bf0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Double Kill_02.wav using Guid(b8e2a2ceafce7c64d8c1356ad50e9bf0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9da2a50bd31623873289b873105e1390') in 0.020982 seconds 
+  Import took 0.029550 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000260 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Headshot_01.wav
+  artifactKey: Guid(a3d18594e0d5dbf419b797fc91c3853c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Headshot_01.wav using Guid(a3d18594e0d5dbf419b797fc91c3853c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c1f16bddc90814251c820a842c240790') in 0.020595 seconds 
+  Import took 0.030017 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000251 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Clear.wav
+  artifactKey: Guid(bf9cce17b3ac19543ab2db458182a70f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Clear.wav using Guid(bf9cce17b3ac19543ab2db458182a70f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '98ccfd2feff253bd8a4f65f8e2934a6f') in 0.020473 seconds 
+  Import took 0.030188 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000280 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Cover Me_02.wav
+  artifactKey: Guid(3626e0b477cca604ea917d5bf3887b9c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Cover Me_02.wav using Guid(3626e0b477cca604ea917d5bf3887b9c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '47fbc83ef69d7fac6716e00fdb88c6a2') in 0.022346 seconds 
+  Import took 0.030785 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000273 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Bomb Site_02.wav
+  artifactKey: Guid(62273ea8469c19744a1a0a44cb958fab) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Bomb Site_02.wav using Guid(62273ea8469c19744a1a0a44cb958fab) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '402f82d27431da3c76e0d120c8c0dc09') in 0.021288 seconds 
+  Import took 0.029694 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000285 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Four.wav
+  artifactKey: Guid(e334f9b9c8bfc9742be3f7b7b104c253) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Four.wav using Guid(e334f9b9c8bfc9742be3f7b7b104c253) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c1d45662524260b241272cc50b406769') in 0.024492 seconds 
+  Import took 0.033207 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000352 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Capture the flag_02.wav
+  artifactKey: Guid(dab9be28c0bc72244a72f2e3697b1073) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Capture the flag_02.wav using Guid(dab9be28c0bc72244a72f2e3697b1073) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0ae00d2db9055b6af16c1eb8ebad8a3d') in 0.022199 seconds 
+  Import took 0.032567 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000283 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Bomb Defused.wav
+  artifactKey: Guid(fcb9c4ee5cd48f4438d5a0ad656a9b31) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Bomb Defused.wav using Guid(fcb9c4ee5cd48f4438d5a0ad656a9b31) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a84d867b54765ad7ede7c77a0b5e01ca') in 0.021126 seconds 
+  Import took 0.030975 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000358 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Enemy incoming.wav
+  artifactKey: Guid(3aa78ccc9a464e348a8be7ad15a606f6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Enemy incoming.wav using Guid(3aa78ccc9a464e348a8be7ad15a606f6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a4a3495061ede229e1910185c8ca7a1') in 0.022405 seconds 
+  Import took 0.031020 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000346 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Go Go Go.wav
+  artifactKey: Guid(a9423d421bd0ce04299874cb79ea3291) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Go Go Go.wav using Guid(a9423d421bd0ce04299874cb79ea3291) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '010f117f3948ee133298b0e940535da6') in 0.020743 seconds 
+  Import took 0.030082 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000260 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Headshot_02.wav
+  artifactKey: Guid(e2011771dff27e341bdcf5d81774056a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Headshot_02.wav using Guid(e2011771dff27e341bdcf5d81774056a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f35360abf939eadbe90627d6f85cea6f') in 0.020191 seconds 
+  Import took 0.029107 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000240 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Capitan.wav
+  artifactKey: Guid(236f2e2fcf7a3ec4eb950f21db725345) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Capitan.wav using Guid(236f2e2fcf7a3ec4eb950f21db725345) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2c2089c50ef801489d4e23031d2771ca') in 0.020745 seconds 
+  Import took 0.029073 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000245 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Go Go Go!.wav
+  artifactKey: Guid(1cd2fb11efcad9d45969bccd3cdafcc9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Go Go Go!.wav using Guid(1cd2fb11efcad9d45969bccd3cdafcc9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '480586a3cd60bc97cf4fb014db5015e2') in 0.020886 seconds 
+  Import took 0.031365 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000351 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Double Kill.wav
+  artifactKey: Guid(0d633275f32fd9148a01e36bf258cfcb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Double Kill.wav using Guid(0d633275f32fd9148a01e36bf258cfcb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bafd0d91072dc90e9fa6d3f301e2ae55') in 0.020450 seconds 
+  Import took 0.030905 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000273 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Clear_02.wav
+  artifactKey: Guid(61301ed32bf850e4f804f7e264912170) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Clear_02.wav using Guid(61301ed32bf850e4f804f7e264912170) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f147bb429aa52142b1687315096ed330') in 0.023422 seconds 
+  Import took 0.033143 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000249 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Five.wav
+  artifactKey: Guid(d9a1e760e2842814bbda29bf9fa84d94) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Five.wav using Guid(d9a1e760e2842814bbda29bf9fa84d94) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ae619bbec23e31e7af9c37f0ec8ab622') in 0.020935 seconds 
+  Import took 0.030037 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000260 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Go.wav
+  artifactKey: Guid(d6e46870b394fdd43b2193f95373faf2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Russian announcer pack/Russian Announcer_Go.wav using Guid(d6e46870b394fdd43b2193f95373faf2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '77e0a72f33ac0f4ea1e140403fd7464a') in 0.022274 seconds 
+  Import took 0.030586 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.090990 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_1.wav
+  artifactKey: Guid(e7075bd9285ea7f4f9d850a272b012f6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_1.wav using Guid(e7075bd9285ea7f4f9d850a272b012f6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1d15795e8ddf70ce4f2ec2ca8b8b2ede') in 0.022796 seconds 
+  Import took 0.032421 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000261 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_40.wav
+  artifactKey: Guid(92df1d8ff518ead41a9eca5affb245c8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_40.wav using Guid(92df1d8ff518ead41a9eca5affb245c8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4ceb7410514c8a3a6618de813079e685') in 0.020817 seconds 
+  Import took 0.029104 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000268 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_6.wav
+  artifactKey: Guid(1e08347a88b764747a478d3348bb585f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_6.wav using Guid(1e08347a88b764747a478d3348bb585f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '20ff3869344d8f9ad61ca2a4bb1bff86') in 0.019568 seconds 
+  Import took 0.027760 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000255 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_8.wav
+  artifactKey: Guid(8bfe8802abbacdf4f98c5723687b23e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_8.wav using Guid(8bfe8802abbacdf4f98c5723687b23e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cbaa08112f3ac1d6784657b0e329de95') in 0.021123 seconds 
+  Import took 0.029779 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000246 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_11.wav
+  artifactKey: Guid(e4e2f4ca2369dc94581dea868a768b73) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_11.wav using Guid(e4e2f4ca2369dc94581dea868a768b73) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '97268cdee41b80c0cb4638ee8fc9caa2') in 0.021808 seconds 
+  Import took 0.031278 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000291 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_28.wav
+  artifactKey: Guid(dd0ccf79e329b7d4da8d10b4b8c7a2dc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_28.wav using Guid(dd0ccf79e329b7d4da8d10b4b8c7a2dc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bafd1de5d24919aefaadcffb2703cecf') in 0.022574 seconds 
+  Import took 0.031087 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000253 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_20.wav
+  artifactKey: Guid(3a1a8b87c0bfcc3479f20b58b535c3a2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_20.wav using Guid(3a1a8b87c0bfcc3479f20b58b535c3a2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '09699aa45fd7b0a0d4300c0022b8c2d7') in 0.020837 seconds 
+  Import took 0.029380 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000273 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_27.wav
+  artifactKey: Guid(4523875782ccbff4a8bc9d5b20534c65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_27.wav using Guid(4523875782ccbff4a8bc9d5b20534c65) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f4e88180c262707da38fe47d8f5a73ca') in 0.022291 seconds 
+  Import took 0.031028 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000254 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_2.wav
+  artifactKey: Guid(eb9fae08ea30b3241ad37172bdfa429c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_2.wav using Guid(eb9fae08ea30b3241ad37172bdfa429c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '747c310ffa3c6393391ccb34dfdfbddc') in 0.020747 seconds 
+  Import took 0.029650 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000418 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_9.wav
+  artifactKey: Guid(bd5564f25824d3849beddf45ac4f7eb2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_9.wav using Guid(bd5564f25824d3849beddf45ac4f7eb2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e13c950e341cb1ae64ab28d6a93d4000') in 0.021917 seconds 
+  Import took 0.030970 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000303 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_29.wav
+  artifactKey: Guid(bb20755b6d761764d8893ae213154ae4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_29.wav using Guid(bb20755b6d761764d8893ae213154ae4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6b62e45835baf77856ee140ce9f1a49e') in 0.021542 seconds 
+  Import took 0.030587 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000246 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_30.wav
+  artifactKey: Guid(c4e55fccb2d5ee04096461f3b151cb11) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_30.wav using Guid(c4e55fccb2d5ee04096461f3b151cb11) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1711261d18e5f061e69b3c7dba6df544') in 0.020445 seconds 
+  Import took 0.029147 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000300 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_33.wav
+  artifactKey: Guid(24b0a6e7df618d74ab4c2d83e1b3e739) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_33.wav using Guid(24b0a6e7df618d74ab4c2d83e1b3e739) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '55072bcfd071e4b2735d24ee6ecdff48') in 0.019884 seconds 
+  Import took 0.028961 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000229 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_1.wav
+  artifactKey: Guid(4cb479ef66a1fed4399841d09943e07d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_1.wav using Guid(4cb479ef66a1fed4399841d09943e07d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2c4333583f6c1c0a045e0c3b4cb7a2ea') in 0.022638 seconds 
+  Import took 0.031616 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000264 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_13.wav
+  artifactKey: Guid(31b1205b90f321a4eb7bb220c2c298ea) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_13.wav using Guid(31b1205b90f321a4eb7bb220c2c298ea) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9c4223b3922670d469dec16c1c91251c') in 0.023810 seconds 
+  Import took 0.032164 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000266 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_19.wav
+  artifactKey: Guid(c5cc6fb6d1c778849bc12ca735dac410) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_19.wav using Guid(c5cc6fb6d1c778849bc12ca735dac410) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6ca434fb4dca66a04e3ae82461ff6b79') in 0.020266 seconds 
+  Import took 0.028688 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000311 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_39.wav
+  artifactKey: Guid(9b71c933bfdb76b44afd1f16c4e43373) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_39.wav using Guid(9b71c933bfdb76b44afd1f16c4e43373) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd55e12b8604111f68ca32470b5a801e7') in 0.022427 seconds 
+  Import took 0.031108 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000263 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_38.wav
+  artifactKey: Guid(0391bfd2465842a48a574dfae3136ee4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_38.wav using Guid(0391bfd2465842a48a574dfae3136ee4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '11cdc5caf24ac4795db1ba621b31144c') in 0.021037 seconds 
+  Import took 0.029448 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000244 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_32.wav
+  artifactKey: Guid(395c845504a591445af193f550f76adc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_32.wav using Guid(395c845504a591445af193f550f76adc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '00f2013adcac5876fe034c7d27fc1bb0') in 0.020769 seconds 
+  Import took 0.029494 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000244 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_34.wav
+  artifactKey: Guid(c6d73e8121a9af1488fa2cf3bab96c7c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_34.wav using Guid(c6d73e8121a9af1488fa2cf3bab96c7c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '832b341926e3bc5c1ca27be70dd224e9') in 0.023059 seconds 
+  Import took 0.031901 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000252 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_10.wav
+  artifactKey: Guid(c8a77466937998c43bbcbdfc519a0a99) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_10.wav using Guid(c8a77466937998c43bbcbdfc519a0a99) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'db4635508d0989494af74241232be235') in 0.023597 seconds 
+  Import took 0.032843 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000340 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_16.wav
+  artifactKey: Guid(8ad5b65b95675e5409af059c3c30b441) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_16.wav using Guid(8ad5b65b95675e5409af059c3c30b441) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '838988e647cbe0d895f1a4f9f96f8fd2') in 0.025566 seconds 
+  Import took 0.033938 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000315 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_4.wav
+  artifactKey: Guid(f435fc1eb9bb3944a894a6bacbe30b42) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_4.wav using Guid(f435fc1eb9bb3944a894a6bacbe30b42) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '45ccf84054482ec4b886f07198117e42') in 0.019717 seconds 
+  Import took 0.028322 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000383 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_31.wav
+  artifactKey: Guid(280080c63c6044a489d3ee83deddb853) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_31.wav using Guid(280080c63c6044a489d3ee83deddb853) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'df02d7e5031e3ec11e75ed376bd2e1e4') in 0.021126 seconds 
+  Import took 0.029950 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000273 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_23.wav
+  artifactKey: Guid(370c8ffb2282bc14b9adcb91e48d9862) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_23.wav using Guid(370c8ffb2282bc14b9adcb91e48d9862) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bc98e5f4e5fc3fa9766a4440926612d4') in 0.021706 seconds 
+  Import took 0.030315 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000319 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_3.wav
+  artifactKey: Guid(48d679675a6d3ed418ea82227776d950) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_3.wav using Guid(48d679675a6d3ed418ea82227776d950) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8c4c15ce4b6d61beff7e215ec7a8ce12') in 0.021058 seconds 
+  Import took 0.030832 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000266 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_12.wav
+  artifactKey: Guid(96e0141453baae5418333b4c6c894300) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_12.wav using Guid(96e0141453baae5418333b4c6c894300) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '41bfcf5ae2860bdea0b796f6deb6ab10') in 0.021298 seconds 
+  Import took 0.029938 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000245 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_37.wav
+  artifactKey: Guid(cfd4efccbfefe4943b13957925989f1e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_37.wav using Guid(cfd4efccbfefe4943b13957925989f1e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b0746302197f4dabd7f67b4e5b4fb8a4') in 0.023103 seconds 
+  Import took 0.031934 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000245 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_7.wav
+  artifactKey: Guid(3a32476cb4a237642a021ecc999acc02) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_7.wav using Guid(3a32476cb4a237642a021ecc999acc02) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c11dbab8a93ab4f4d720fa8396148634') in 0.022369 seconds 
+  Import took 0.030967 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000260 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_15.wav
+  artifactKey: Guid(9139698a1a5fbd644a396fd87a81c8ab) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_15.wav using Guid(9139698a1a5fbd644a396fd87a81c8ab) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '80ebbfac803b6312aa576e9f94e46979') in 0.022589 seconds 
+  Import took 0.032617 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000306 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_3.wav
+  artifactKey: Guid(7c2db01d30632f84b8448da77b2f19d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_3.wav using Guid(7c2db01d30632f84b8448da77b2f19d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a1ef6756d8fb4af458e825f5c31cd54f') in 0.023401 seconds 
+  Import took 0.034247 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000266 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_35.wav
+  artifactKey: Guid(2abc7ad7ad9f7244ca8a6716df610a75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_35.wav using Guid(2abc7ad7ad9f7244ca8a6716df610a75) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '07ad118976f4cc6e6bb48392dec436e6') in 0.021978 seconds 
+  Import took 0.031374 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000309 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_18.wav
+  artifactKey: Guid(c3e730b3a68c1cc41b80296b63518d21) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_18.wav using Guid(c3e730b3a68c1cc41b80296b63518d21) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f57c9dbe7871e97122250b5936e8356d') in 0.024655 seconds 
+  Import took 0.033200 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000295 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_26.wav
+  artifactKey: Guid(57b4610d58a9adc4b8dfedf3018aa90f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_26.wav using Guid(57b4610d58a9adc4b8dfedf3018aa90f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '17796fd2c331d434bdc217e4f46cb42d') in 0.021309 seconds 
+  Import took 0.031176 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000335 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_25.wav
+  artifactKey: Guid(1448bda42ed31cf47ab21240a2bfe70b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_25.wav using Guid(1448bda42ed31cf47ab21240a2bfe70b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5214126b5a5ef671d68f3b14e6f8c19e') in 0.022014 seconds 
+  Import took 0.030342 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000322 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_2.wav
+  artifactKey: Guid(19c56ce92676db04d8205c65377e9f24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_2.wav using Guid(19c56ce92676db04d8205c65377e9f24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e3491d0003f7fd7a14f131fdfe07173e') in 0.020870 seconds 
+  Import took 0.030811 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000252 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_17.wav
+  artifactKey: Guid(d5e9c0009bc21f64689bc716bfd79154) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_17.wav using Guid(d5e9c0009bc21f64689bc716bfd79154) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '05b9cdf593739f61ed508f1a5fe12a7a') in 0.022894 seconds 
+  Import took 0.033093 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000303 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_24.wav
+  artifactKey: Guid(3f5441e0db9385a438fae9c1f8065761) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_24.wav using Guid(3f5441e0db9385a438fae9c1f8065761) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b2fa0abb04d2566886da810628fa153f') in 0.022250 seconds 
+  Import took 0.032317 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000264 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_21.wav
+  artifactKey: Guid(e039cbe2953d5ad48aedaef11014e05d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_21.wav using Guid(e039cbe2953d5ad48aedaef11014e05d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'cc7e134802c717920ed38b86e7ea2c18') in 0.020950 seconds 
+  Import took 0.029933 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000317 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_22.wav
+  artifactKey: Guid(86d2bb14b642b1e4a9102a194c963941) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_CLOSE_22.wav using Guid(86d2bb14b642b1e4a9102a194c963941) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '81f5fad61ed048ce3d2b4abbcbdb14e3') in 0.020365 seconds 
+  Import took 0.029228 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.343682 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_4.wav
+  artifactKey: Guid(b20531446013c9d4ba0409416c3aa5cc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_4.wav using Guid(b20531446013c9d4ba0409416c3aa5cc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b272030fa00085979bc635f797ad8937') in 0.029040 seconds 
+  Import took 0.039009 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000258 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_14.wav
+  artifactKey: Guid(a1f54861e997fcc4eb0dbfa66329543c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_14.wav using Guid(a1f54861e997fcc4eb0dbfa66329543c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a3a4e8e9f7407a32d827baf3d3ce0486') in 0.029017 seconds 
+  Import took 0.039551 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000263 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_13.wav
+  artifactKey: Guid(842dde7dda89cd049b394c8fc27faccb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_13.wav using Guid(842dde7dda89cd049b394c8fc27faccb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a6c2735b9edbbafa0af5da81ca675cf8') in 0.020179 seconds 
+  Import took 0.028546 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000266 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_24.wav
+  artifactKey: Guid(712b89c70818d044ebbf38aaeeb561b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_24.wav using Guid(712b89c70818d044ebbf38aaeeb561b4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4d0df6ed356c18de7ef86eb94ebb5ad5') in 0.021221 seconds 
+  Import took 0.029011 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000274 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_22.wav
+  artifactKey: Guid(945afb7ed2d606047947a01e16f5b437) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_22.wav using Guid(945afb7ed2d606047947a01e16f5b437) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aeedd502ea4269c7e4e59e622ad9dd2f') in 0.021541 seconds 
+  Import took 0.030266 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000266 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_8.wav
+  artifactKey: Guid(8a6da5caf1a3cc548879227575245dd9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_8.wav using Guid(8a6da5caf1a3cc548879227575245dd9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2d6131912c6b7f647a7b94df3591123d') in 0.023843 seconds 
+  Import took 0.032137 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000285 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_7.wav
+  artifactKey: Guid(11e1ef212991ec444abc096333e5e625) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_7.wav using Guid(11e1ef212991ec444abc096333e5e625) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b50af3b1855c51b889126029f353a449') in 0.023480 seconds 
+  Import took 0.032395 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000315 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_17.wav
+  artifactKey: Guid(2ab26d9c1f8ba9445a19aafbdbd29dd6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_17.wav using Guid(2ab26d9c1f8ba9445a19aafbdbd29dd6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'dc75035150c00260aea823d7581a4114') in 0.022592 seconds 
+  Import took 0.031064 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000253 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_20.wav
+  artifactKey: Guid(f3e5b5583a6880f4eb91ec9a35674daf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_20.wav using Guid(f3e5b5583a6880f4eb91ec9a35674daf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5332497eaaf84394f1e9ddbe35de8da4') in 0.021678 seconds 
+  Import took 0.029927 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000436 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_21.wav
+  artifactKey: Guid(3aa32eed2646f8942964c83794a083b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_21.wav using Guid(3aa32eed2646f8942964c83794a083b3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3c9c5b600b08311c4b5523a5c44cedaa') in 0.019999 seconds 
+  Import took 0.030113 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000239 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_10.wav
+  artifactKey: Guid(8e0d52f2788202344b477b21b6b14edd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_10.wav using Guid(8e0d52f2788202344b477b21b6b14edd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ef25f94089086c7fee01518f75e33de3') in 0.021028 seconds 
+  Import took 0.029355 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000300 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_18.wav
+  artifactKey: Guid(f445cd7570bb2a54ea963a0f6ea8a12d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_18.wav using Guid(f445cd7570bb2a54ea963a0f6ea8a12d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f65dc2b506e29ab777f2059ada12df73') in 0.021842 seconds 
+  Import took 0.030465 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000261 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_9.wav
+  artifactKey: Guid(8a0199a865d7daf4ab6654e7edfbca64) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_9.wav using Guid(8a0199a865d7daf4ab6654e7edfbca64) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '08c6677180e5ba0fd6b0242ba9b874bd') in 0.022996 seconds 
+  Import took 0.032732 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000281 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_6.wav
+  artifactKey: Guid(da8b5b255c0a10d48b99383bf53dbbf3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_6.wav using Guid(da8b5b255c0a10d48b99383bf53dbbf3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c4cde65da54a994ebe8e247522763484') in 0.021277 seconds 
+  Import took 0.031087 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000242 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_5.wav
+  artifactKey: Guid(2ed7196782faca946ab5c8023da88f22) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_5.wav using Guid(2ed7196782faca946ab5c8023da88f22) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3d18f72ca5f2c1f278ede610c8ecb26c') in 0.026362 seconds 
+  Import took 0.034568 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000271 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_12.wav
+  artifactKey: Guid(21d0189b0002f1d48bb65eeccc502f8e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_12.wav using Guid(21d0189b0002f1d48bb65eeccc502f8e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '58db28dfee842a17b3b10b25ade22cf7') in 0.020824 seconds 
+  Import took 0.029347 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000264 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_26.wav
+  artifactKey: Guid(20fa69603e89f0e43836db087bbe1802) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_26.wav using Guid(20fa69603e89f0e43836db087bbe1802) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13bf121030f71f23907c505186d07e5d') in 0.020592 seconds 
+  Import took 0.029592 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000406 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_36.wav
+  artifactKey: Guid(b94f886e70c39aa4bbca6cc23ace83da) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_36.wav using Guid(b94f886e70c39aa4bbca6cc23ace83da) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '93a3847c09be7d3e26e8c24c31059416') in 0.021365 seconds 
+  Import took 0.029811 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000329 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_28.wav
+  artifactKey: Guid(e443edf4f0cdf864ca926bc2c2193c21) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_28.wav using Guid(e443edf4f0cdf864ca926bc2c2193c21) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e07475d38e654a65e4ddd3b4f3c1e533') in 0.022399 seconds 
+  Import took 0.031627 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000286 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_39.wav
+  artifactKey: Guid(62698e7e712a2944996530e61d58a1a5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_39.wav using Guid(62698e7e712a2944996530e61d58a1a5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '22bf2c63d0aa8ffffa28bb56697242a2') in 0.021405 seconds 
+  Import took 0.029665 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000255 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_31.wav
+  artifactKey: Guid(2a5610e4fa2fe8047b350b9be9c4f750) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_31.wav using Guid(2a5610e4fa2fe8047b350b9be9c4f750) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ba59da51f4f9a3ca6a54e15802b8c4d1') in 0.020714 seconds 
+  Import took 0.028451 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000265 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_32.wav
+  artifactKey: Guid(c2ea8d69e8782a640a2207b8ac7922f5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_32.wav using Guid(c2ea8d69e8782a640a2207b8ac7922f5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6f796877ba79cefffd4b3788c67024d3') in 0.024137 seconds 
+  Import took 0.032458 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000331 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_30.wav
+  artifactKey: Guid(c758c247b4a955a4a9b4c8750d452429) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_30.wav using Guid(c758c247b4a955a4a9b4c8750d452429) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '410ea1232324f9a4d0a22fbf72afa0e4') in 0.022287 seconds 
+  Import took 0.033254 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000321 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_40.wav
+  artifactKey: Guid(e2f195955c2d97e4aa5e454aa13b62f5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_40.wav using Guid(e2f195955c2d97e4aa5e454aa13b62f5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7b856ae62af3e83bea3f50c72dec43fb') in 0.024246 seconds 
+  Import took 0.032351 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000268 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_35.wav
+  artifactKey: Guid(4947045ca2f3bbd4ba734a6bbb6b01c0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_35.wav using Guid(4947045ca2f3bbd4ba734a6bbb6b01c0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fd5fc87fba89e823b066faaebac3fd18') in 0.020764 seconds 
+  Import took 0.029344 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000274 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_38.wav
+  artifactKey: Guid(8113811c12494044bb02c4f22c96b3e1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_38.wav using Guid(8113811c12494044bb02c4f22c96b3e1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '782408572a6386b62e8d20380dddb7a8') in 0.020453 seconds 
+  Import took 0.028954 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000216 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_29.wav
+  artifactKey: Guid(b0779e69311b96e47b66894981596cbc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_29.wav using Guid(b0779e69311b96e47b66894981596cbc) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7ebfc278ec056cd38a3e3b48f88aacf5') in 0.020946 seconds 
+  Import took 0.029560 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000253 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_37.wav
+  artifactKey: Guid(4cd63a739828f0f4790b01363911d88c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_37.wav using Guid(4cd63a739828f0f4790b01363911d88c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7798e089df8530042769fcfb74081dc7') in 0.021769 seconds 
+  Import took 0.030716 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000304 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_34.wav
+  artifactKey: Guid(a47b8f7af8bf4424bab2f92a733844a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_34.wav using Guid(a47b8f7af8bf4424bab2f92a733844a4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '591bfb5d63258f92619f444fd55d4b33') in 0.020386 seconds 
+  Import took 0.028886 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000290 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_16.wav
+  artifactKey: Guid(dcd32ae4baa6a944085d0e6ca7565f24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_16.wav using Guid(dcd32ae4baa6a944085d0e6ca7565f24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '13872973e09082d885cae73963d49fd4') in 0.026513 seconds 
+  Import took 0.034757 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000284 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_25.wav
+  artifactKey: Guid(fbc0f3c3fdf4a304d8fd54f89c444bb1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_25.wav using Guid(fbc0f3c3fdf4a304d8fd54f89c444bb1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '24b1c80b19a292f49c66fa26b2e7fb2d') in 0.023250 seconds 
+  Import took 0.031950 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000790 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_27.wav
+  artifactKey: Guid(76bff53e48ebd684eafbd55a59ce8074) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/SCI FI DOORS/DOOR_OPEN_27.wav using Guid(76bff53e48ebd684eafbd55a59ce8074) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bdec45dc538473c38c35eb9c6d932b3e') in 0.022870 seconds 
+  Import took 0.033457 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 149.249739 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Flintlock fire/Flintlock fire 2.wav
+  artifactKey: Guid(66daebdd684270c4583b41c8e1b4c30b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Flintlock fire/Flintlock fire 2.wav using Guid(66daebdd684270c4583b41c8e1b4c30b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a74f698d8606e785be5742fabe62684') in 0.020697 seconds 
+  Import took 0.030339 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.034672 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Footsteps on ship deck/Footsteps on ship deck 7.wav
+  artifactKey: Guid(da8185b1248e0014e93e1cd00987933e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Footsteps on ship deck/Footsteps on ship deck 7.wav using Guid(da8185b1248e0014e93e1cd00987933e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ded8d75a05b08917ef337eb239eb99df') in 0.017044 seconds 
+  Import took 0.025554 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 22.745343 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 1.wav
+  artifactKey: Guid(13a0cd892b7d5a4429cecf0a1e16055e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 1.wav using Guid(13a0cd892b7d5a4429cecf0a1e16055e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e3645ad6b167c492711a3f71796f1ef') in 0.015805 seconds 
+  Import took 0.023931 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.829084 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 2.wav
+  artifactKey: Guid(b2a505a689748ed43bdca38882cf0d08) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 2.wav using Guid(b2a505a689748ed43bdca38882cf0d08) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c1b8b31139eaf1786d37fe6f077192f3') in 0.017324 seconds 
+  Import took 0.028534 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2.136602 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 4.wav
+  artifactKey: Guid(088c493bd34856d478554694f89167bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 4.wav using Guid(088c493bd34856d478554694f89167bf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '150b4e7abff1b44a29179d91ec8dd650') in 0.015514 seconds 
+  Import took 0.025014 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.328256 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 5.wav
+  artifactKey: Guid(282bb5d643ddb4e4bbdcb24ef0de1fa2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Pirate Sounds Pro/Ship hitting another ship/Ship hitting another ship 5.wav using Guid(282bb5d643ddb4e4bbdcb24ef0de1fa2) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8f898ec71c919c3bcbeb1ee0e1272c29') in 0.016048 seconds 
+  Import took 0.025221 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 84.058635 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON LANDING
+  artifactKey: Guid(9125fbb21c8acf14d8e5cf480487b98a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON LANDING using Guid(9125fbb21c8acf14d8e5cf480487b98a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9f5edd6ba5639bc48cd3b7e0e4332491') in 0.008531 seconds 
+  Import took 0.017151 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.859746 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON LANDING/Dragon landing.wav
+  artifactKey: Guid(5f9474f998c47ec47b80c9e40dce2274) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON LANDING/Dragon landing.wav using Guid(5f9474f998c47ec47b80c9e40dce2274) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8e29eee70ed757bbb9929b4148b08412') in 0.015856 seconds 
+  Import took 0.024378 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 219.946714 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _2.wav
+  artifactKey: Guid(2ff34af6512327545831c6f640cac29e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _2.wav using Guid(2ff34af6512327545831c6f640cac29e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a367cbe4c2728447fd04b00a12b0b4f2') in 0.016684 seconds 
+  Import took 0.025619 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.650244 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _3.wav
+  artifactKey: Guid(3f81cb5d81b1a484c806510cc189eda7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _3.wav using Guid(3f81cb5d81b1a484c806510cc189eda7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0565b1b198b2b6800e1766abe81cc3e8') in 0.015499 seconds 
+  Import took 0.023979 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.400437 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _5.wav
+  artifactKey: Guid(b27451ee59daa354bab0dfeff8b6d988) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _5.wav using Guid(b27451ee59daa354bab0dfeff8b6d988) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9f289c7dcbe541b05a25077186ebdea9') in 0.015136 seconds 
+  Import took 0.023547 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.593636 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _6.wav
+  artifactKey: Guid(54be45184eced9a409cf1545c80c5948) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _6.wav using Guid(54be45184eced9a409cf1545c80c5948) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f69150bf5d21160f0fa164b910961968') in 0.015466 seconds 
+  Import took 0.024498 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.780385 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _7.wav
+  artifactKey: Guid(b1e275598c1af1a498ff6c7b7085d781) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _7.wav using Guid(b1e275598c1af1a498ff6c7b7085d781) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1feaf12a468e2607272165d3b7fa4db0') in 0.015472 seconds 
+  Import took 0.023853 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.636397 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _8.wav
+  artifactKey: Guid(47f04bb125807f14e831b9af15c7ec0a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _8.wav using Guid(47f04bb125807f14e831b9af15c7ec0a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2e9bf0b3bc520a49d25fc40bc5c5280a') in 0.015284 seconds 
+  Import took 0.023491 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.355284 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _9.wav
+  artifactKey: Guid(77856f5258c9a794ba635d8bbedb0ac1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/FLAPPING WINGS/FLAPPING WINGS _9.wav using Guid(77856f5258c9a794ba635d8bbedb0ac1) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '14b927cae91dba7bcf25636da62ff5c4') in 0.015867 seconds 
+  Import took 0.024527 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 7.869672 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 2.wav
+  artifactKey: Guid(7e45fe1a12e44df47a250c90ee1a3e8a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 2.wav using Guid(7e45fe1a12e44df47a250c90ee1a3e8a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ec2a31c050f1445f450301c9356fca2e') in 0.015991 seconds 
+  Import took 0.024511 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.799599 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 3.wav
+  artifactKey: Guid(4b5e42bdb7f1c274688fc9406003530b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 3.wav using Guid(4b5e42bdb7f1c274688fc9406003530b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8559c883d2a4f3bcb8f049950b69ac80') in 0.025709 seconds 
+  Import took 0.033898 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.291140 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 1.wav
+  artifactKey: Guid(c31a1019f0327c443899ce0479252bca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 1.wav using Guid(c31a1019f0327c443899ce0479252bca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '899384680133d94fef6abe89518de507') in 0.015100 seconds 
+  Import took 0.023540 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.199441 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 4.wav
+  artifactKey: Guid(0e375dd42f2f0c24abb1d27247972563) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 4.wav using Guid(0e375dd42f2f0c24abb1d27247972563) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '90c3343f5ae82aa4af8770a5164ce297') in 0.015522 seconds 
+  Import took 0.023689 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.023019 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 5.wav
+  artifactKey: Guid(1fd09e97390bd634c87acdbe6dc437e8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON AGGRO/Aggro 5.wav using Guid(1fd09e97390bd634c87acdbe6dc437e8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '978253503724d6edaf77bb99f824b9d2') in 0.014968 seconds 
+  Import took 0.023046 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 20.582093 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 1.wav
+  artifactKey: Guid(a05b34745cff7c1449f98d557d0c90b8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 1.wav using Guid(a05b34745cff7c1449f98d557d0c90b8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7dab969d807e538c2411d7780b32e671') in 0.030408 seconds 
+  Import took 0.040940 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.194799 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 2.wav
+  artifactKey: Guid(6520943d2f43e834ca1623ff205a3782) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 2.wav using Guid(6520943d2f43e834ca1623ff205a3782) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0187bb7d91937852be3110127afd4362') in 0.015535 seconds 
+  Import took 0.023989 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.741729 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 3.wav
+  artifactKey: Guid(2b197ac3edc06f847bd47086ed6839ed) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 3.wav using Guid(2b197ac3edc06f847bd47086ed6839ed) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1448dedcd5a72a82f1c6b8161a5541b1') in 0.015520 seconds 
+  Import took 0.023859 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2.436444 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 4.wav
+  artifactKey: Guid(51d5704b2570c7a4fbbe8aefc5c2922e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 4.wav using Guid(51d5704b2570c7a4fbbe8aefc5c2922e) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '781efa13b9e5b32ae9a6e04838bc8c3f') in 0.015249 seconds 
+  Import took 0.024180 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.314446 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 5.wav
+  artifactKey: Guid(9eaff3864d44aa4479586b3a9ecfcf4c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 5.wav using Guid(9eaff3864d44aa4479586b3a9ecfcf4c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4dac17bd100af7d5043f38464442683b') in 0.014877 seconds 
+  Import took 0.023102 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.728503 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 6.wav
+  artifactKey: Guid(ba7988a0f22a7e448ac67ee3932db90d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 6.wav using Guid(ba7988a0f22a7e448ac67ee3932db90d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'da5b25ad949e81c98c200c6cfb006708') in 0.015565 seconds 
+  Import took 0.025173 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.643350 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 7.wav
+  artifactKey: Guid(a0472670fa8baf443852f05e4009ee39) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 7.wav using Guid(a0472670fa8baf443852f05e4009ee39) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '32d9cab2438f27d634fa84ed9b3604d4') in 0.015017 seconds 
+  Import took 0.023868 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.580305 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 8.wav
+  artifactKey: Guid(a2e7e2f3eb6c8784585b2414cf4f16e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 8.wav using Guid(a2e7e2f3eb6c8784585b2414cf4f16e9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '39ee5ee8b23653c394474a13bb5d410f') in 0.015648 seconds 
+  Import took 0.023932 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.566747 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 9.wav
+  artifactKey: Guid(133d1c2c415acd5478253084846f46a8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 9.wav using Guid(133d1c2c415acd5478253084846f46a8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f2ee930d98ab0164557fec061027f595') in 0.017650 seconds 
+  Import took 0.026120 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.340473 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 10.wav
+  artifactKey: Guid(0f90e071946d2a0499f85f754d58e1f8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON ATTACKS/Dragon Attacks 10.wav using Guid(0f90e071946d2a0499f85f754d58e1f8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7f7b589612a99c2384c490f39e48d78d') in 0.015333 seconds 
+  Import took 0.024203 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 3.833441 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 08.wav
+  artifactKey: Guid(0b9ba11fb30a1a84182dc723bc491583) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 08.wav using Guid(0b9ba11fb30a1a84182dc723bc491583) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '2b77ef9bd1e80215347ef5ceef660a95') in 0.015155 seconds 
+  Import took 0.023356 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.833144 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 09.wav
+  artifactKey: Guid(9fe89496289b2dc4382ae660d970cd85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 09.wav using Guid(9fe89496289b2dc4382ae660d970cd85) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8e31cadcf52d30613d7d92c176e514fe') in 0.016558 seconds 
+  Import took 0.025159 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.668573 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 16.wav
+  artifactKey: Guid(431f91ceae04d5c448082a5426095d14) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 16.wav using Guid(431f91ceae04d5c448082a5426095d14) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6f01d9b97eeb74b6d13ba2211dc7d751') in 0.016513 seconds 
+  Import took 0.024717 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.653682 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 20.wav
+  artifactKey: Guid(ac9208abafb792b48ae5010a1e1893b5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 20.wav using Guid(ac9208abafb792b48ae5010a1e1893b5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5976b080be763e038f39a8d53b8b7f09') in 0.017430 seconds 
+  Import took 0.025563 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.453436 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 24.wav
+  artifactKey: Guid(9a360c9591f7e7244820b40ae9791e70) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING/Dragon Breath 24.wav using Guid(9a360c9591f7e7244820b40ae9791e70) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '17b1ce569316f223574e51e9d19bed78') in 0.015209 seconds 
+  Import took 0.024721 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.321156 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_6.wav
+  artifactKey: Guid(35a6ce8b60d9325409a83e52867fa3a0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_6.wav using Guid(35a6ce8b60d9325409a83e52867fa3a0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '042d920d113c6a79d4a33183f65fec2d') in 0.016397 seconds 
+  Import took 0.024837 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.342767 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_1.wav
+  artifactKey: Guid(fa942bbc07513d54e8a43f89466b6402) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_1.wav using Guid(fa942bbc07513d54e8a43f89466b6402) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fb70a34a4615ce4af9e6e483f6abf194') in 0.016796 seconds 
+  Import took 0.025362 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.346427 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_12.wav
+  artifactKey: Guid(bd5799d171573d44ebb6ec1e96bcfa24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_12.wav using Guid(bd5799d171573d44ebb6ec1e96bcfa24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ec4deb50290e017fb6f4049beda062b1') in 0.016368 seconds 
+  Import took 0.025156 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.676125 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_19.wav
+  artifactKey: Guid(0f8b2bb82e504274dac7cc38afa00e5d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON BREATHING FIRE/Dragon Breath Fire_19.wav using Guid(0f8b2bb82e504274dac7cc38afa00e5d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e34ce63f8410694807f58cd30cc60cc') in 0.015618 seconds 
+  Import took 0.023852 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 3.350333 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep_8.wav
+  artifactKey: Guid(75b6ec97150e5bc4f9994c5159291a24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep_8.wav using Guid(75b6ec97150e5bc4f9994c5159291a24) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e59fce1a9c3ddb12e038a91140dd1b35') in 0.021573 seconds 
+  Import took 0.030059 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.830000 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep_12.wav
+  artifactKey: Guid(6305b42bb3b09364792d909fa7f804ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep_12.wav using Guid(6305b42bb3b09364792d909fa7f804ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7e0d37b9f35b663aac090286728ca0f3') in 0.016304 seconds 
+  Import took 0.024510 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.076335 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep_19.wav
+  artifactKey: Guid(6acc351344fd4e64f9705425446db3a7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep_19.wav using Guid(6acc351344fd4e64f9705425446db3a7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '764bd3de38876ef5b49fdbbcbbd16f52') in 0.016733 seconds 
+  Import took 0.025001 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.126619 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep.wav
+  artifactKey: Guid(a4458178ce9b27948a38b2364cdf0b9b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Dragon Sounds Pro - HD Remake/DRAGONS/DRAGON FOOTSTEPS/Dragon Footstep.wav using Guid(a4458178ce9b27948a38b2364cdf0b9b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'c05d6024b5bf44408fdf2165c0645a54') in 0.015244 seconds 
+  Import took 0.023506 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 7.469328 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ghost Sounds Pro/Ghost Attack_02.wav
+  artifactKey: Guid(9550eeb367936ca4a93952a4cc299e59) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ghost Sounds Pro/Ghost Attack_02.wav using Guid(9550eeb367936ca4a93952a4cc299e59) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9184f180379a958f0c1fa10e1d5e5df3') in 0.015561 seconds 
+  Import took 0.024057 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2.374559 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ghost Sounds Pro/Ghost Death_03.wav
+  artifactKey: Guid(1d11b7a88a2366e49ab1a1bff09f740c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ghost Sounds Pro/Ghost Death_03.wav using Guid(1d11b7a88a2366e49ab1a1bff09f740c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '27e8256ee08565ef3dbd80b3305bb5f6') in 0.016646 seconds 
+  Import took 0.024958 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.362891 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ghost Sounds Pro/Ghost Kiss_01.wav
+  artifactKey: Guid(bb595ca5bca4eb64ba09867359900300) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Ghost Sounds Pro/Ghost Kiss_01.wav using Guid(bb595ca5bca4eb64ba09867359900300) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a684ee980de0af9071933f5f9a90a530') in 0.016932 seconds 
+  Import took 0.025506 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.416418 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Eating Guts
+  artifactKey: Guid(bd4ca7242cf2ac647839c563b6d6679b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Eating Guts using Guid(bd4ca7242cf2ac647839c563b6d6679b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fc65f6325abad8d53b09beb86da98d04') in 0.008440 seconds 
+  Import took 0.016658 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2.343049 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Creaking door
+  artifactKey: Guid(454b63696d1018740952689d6eb10cee) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Creaking door using Guid(454b63696d1018740952689d6eb10cee) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '987a6e897ae80475e088f330fde2798f') in 0.007337 seconds 
+  Import took 0.016085 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1.289804 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Creaking door/Creaking door 2.wav
+  artifactKey: Guid(4812ab77bbfb9914b917ec87e1bd83d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Creaking door/Creaking door 2.wav using Guid(4812ab77bbfb9914b917ec87e1bd83d0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9a276f1db5304b03d8c41b9d9e7e3e0c') in 0.015475 seconds 
+  Import took 0.023973 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.479892 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Creaking door/Creaking door 1.wav
+  artifactKey: Guid(273f7e2cdccbc4d4c8ac4c8fd4a1d7cd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Gore Sounds Pro/Creaking door/Creaking door 1.wav using Guid(273f7e2cdccbc4d4c8ac4c8fd4a1d7cd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a8752d81f827871413665f854dca2887') in 0.015655 seconds 
+  Import took 0.024143 seconds .
+
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015506 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.99 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.563 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1564ms)
+		BeginReloadAssembly (172ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (45ms)
+		EndReloadAssembly (1296ms)
+			LoadAssemblies (148ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (407ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (75ms)
+			SetupLoadedEditorAssemblies (522ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (176ms)
+				ProcessInitializeOnLoadAttributes (307ms)
+				ProcessInitializeOnLoadMethodAttributes (18ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 4.60 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.0 MB.
+System memory in use after: 310.2 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5373.
+Total: 4.222400 ms (FindLiveObjects: 0.393400 ms CreateObjectMapping: 0.118100 ms MarkObjects: 3.616500 ms  DeleteObjects: 0.092600 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015320 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.77 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.598 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1599ms)
+		BeginReloadAssembly (166ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (43ms)
+		EndReloadAssembly (1354ms)
+			LoadAssemblies (152ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (418ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (82ms)
+			SetupLoadedEditorAssemblies (549ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (180ms)
+				ProcessInitializeOnLoadAttributes (327ms)
+				ProcessInitializeOnLoadMethodAttributes (20ms)
+				AfterProcessingInitializeOnLoad (14ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (17ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.90 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.0 MB.
+System memory in use after: 310.3 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5375.
+Total: 4.976700 ms (FindLiveObjects: 0.747400 ms CreateObjectMapping: 0.464300 ms MarkObjects: 3.742600 ms  DeleteObjects: 0.021400 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.016095 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.76 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.555 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1555ms)
+		BeginReloadAssembly (171ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (41ms)
+		EndReloadAssembly (1285ms)
+			LoadAssemblies (168ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (391ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (75ms)
+			SetupLoadedEditorAssemblies (510ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (171ms)
+				ProcessInitializeOnLoadAttributes (300ms)
+				ProcessInitializeOnLoadMethodAttributes (19ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (16ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.29 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.1 MB.
+System memory in use after: 310.3 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5377.
+Total: 4.954500 ms (FindLiveObjects: 0.467600 ms CreateObjectMapping: 0.134400 ms MarkObjects: 4.322900 ms  DeleteObjects: 0.028100 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015721 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 4.77 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.666 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1666ms)
+		BeginReloadAssembly (158ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (44ms)
+		EndReloadAssembly (1426ms)
+			LoadAssemblies (153ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (468ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (82ms)
+			SetupLoadedEditorAssemblies (536ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (5ms)
+				BeforeProcessingInitializeOnLoad (182ms)
+				ProcessInitializeOnLoadAttributes (312ms)
+				ProcessInitializeOnLoadMethodAttributes (19ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (18ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.78 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.1 MB.
+System memory in use after: 310.4 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5379.
+Total: 5.197100 ms (FindLiveObjects: 0.390500 ms CreateObjectMapping: 0.115800 ms MarkObjects: 4.658300 ms  DeleteObjects: 0.031100 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.018538 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.84 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.536 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1536ms)
+		BeginReloadAssembly (167ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (8ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (47ms)
+		EndReloadAssembly (1285ms)
+			LoadAssemblies (154ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (391ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (76ms)
+			SetupLoadedEditorAssemblies (521ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (176ms)
+				ProcessInitializeOnLoadAttributes (305ms)
+				ProcessInitializeOnLoadMethodAttributes (19ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.89 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 309.9 MB.
+System memory in use after: 310.2 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5381.
+Total: 4.896700 ms (FindLiveObjects: 0.412300 ms CreateObjectMapping: 0.118500 ms MarkObjects: 4.333900 ms  DeleteObjects: 0.029900 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.017376 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.76 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.538 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1538ms)
+		BeginReloadAssembly (158ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (38ms)
+		EndReloadAssembly (1296ms)
+			LoadAssemblies (144ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (403ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (80ms)
+			SetupLoadedEditorAssemblies (514ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (4ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (171ms)
+				ProcessInitializeOnLoadAttributes (304ms)
+				ProcessInitializeOnLoadMethodAttributes (19ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.85 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.1 MB.
+System memory in use after: 310.4 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5383.
+Total: 5.308900 ms (FindLiveObjects: 0.398600 ms CreateObjectMapping: 0.116500 ms MarkObjects: 4.767100 ms  DeleteObjects: 0.025000 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015960 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 4.15 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.617 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1618ms)
+		BeginReloadAssembly (181ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (11ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (51ms)
+		EndReloadAssembly (1353ms)
+			LoadAssemblies (151ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (421ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (80ms)
+			SetupLoadedEditorAssemblies (546ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (4ms)
+				BeforeProcessingInitializeOnLoad (191ms)
+				ProcessInitializeOnLoadAttributes (314ms)
+				ProcessInitializeOnLoadMethodAttributes (18ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (17ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.83 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.1 MB.
+System memory in use after: 310.4 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5385.
+Total: 4.996200 ms (FindLiveObjects: 0.399200 ms CreateObjectMapping: 0.115800 ms MarkObjects: 4.454300 ms  DeleteObjects: 0.025100 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.018156 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.80 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.513 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1513ms)
+		BeginReloadAssembly (163ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (41ms)
+		EndReloadAssembly (1269ms)
+			LoadAssemblies (144ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (392ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (77ms)
+			SetupLoadedEditorAssemblies (509ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (172ms)
+				ProcessInitializeOnLoadAttributes (298ms)
+				ProcessInitializeOnLoadMethodAttributes (18ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.15 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.4 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5387.
+Total: 4.602000 ms (FindLiveObjects: 0.385700 ms CreateObjectMapping: 0.128200 ms MarkObjects: 4.063100 ms  DeleteObjects: 0.023400 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.017469 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 3.67 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.546 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1547ms)
+		BeginReloadAssembly (157ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (40ms)
+		EndReloadAssembly (1309ms)
+			LoadAssemblies (142ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (400ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (79ms)
+			SetupLoadedEditorAssemblies (535ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (6ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (4ms)
+				BeforeProcessingInitializeOnLoad (173ms)
+				ProcessInitializeOnLoadAttributes (320ms)
+				ProcessInitializeOnLoadMethodAttributes (19ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (19ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.15 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.4 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5389.
+Total: 5.055600 ms (FindLiveObjects: 0.538600 ms CreateObjectMapping: 0.165700 ms MarkObjects: 4.324300 ms  DeleteObjects: 0.025700 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015939 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.83 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.639 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1640ms)
+		BeginReloadAssembly (186ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (8ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (45ms)
+		EndReloadAssembly (1368ms)
+			LoadAssemblies (168ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (427ms)
+			ReleaseScriptCaches (3ms)
+			RebuildScriptCaches (83ms)
+			SetupLoadedEditorAssemblies (547ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (4ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (179ms)
+				ProcessInitializeOnLoadAttributes (324ms)
+				ProcessInitializeOnLoadMethodAttributes (21ms)
+				AfterProcessingInitializeOnLoad (15ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (17ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 7.16 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.0 MB.
+System memory in use after: 310.2 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5391.
+Total: 5.947800 ms (FindLiveObjects: 0.494300 ms CreateObjectMapping: 0.161000 ms MarkObjects: 5.262800 ms  DeleteObjects: 0.028200 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015880 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.80 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.532 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1533ms)
+		BeginReloadAssembly (157ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (8ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (42ms)
+		EndReloadAssembly (1293ms)
+			LoadAssemblies (163ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (396ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (76ms)
+			SetupLoadedEditorAssemblies (515ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (172ms)
+				ProcessInitializeOnLoadAttributes (302ms)
+				ProcessInitializeOnLoadMethodAttributes (20ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.88 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.4 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5393.
+Total: 5.323100 ms (FindLiveObjects: 0.535900 ms CreateObjectMapping: 0.129300 ms MarkObjects: 4.624000 ms  DeleteObjects: 0.032100 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015382 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.95 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.542 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1543ms)
+		BeginReloadAssembly (173ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (8ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (44ms)
+		EndReloadAssembly (1284ms)
+			LoadAssemblies (161ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (400ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (76ms)
+			SetupLoadedEditorAssemblies (507ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (173ms)
+				ProcessInitializeOnLoadAttributes (294ms)
+				ProcessInitializeOnLoadMethodAttributes (18ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.99 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.5 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5395.
+Total: 4.367500 ms (FindLiveObjects: 0.405000 ms CreateObjectMapping: 0.118400 ms MarkObjects: 3.815500 ms  DeleteObjects: 0.027300 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015322 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.77 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.644 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1645ms)
+		BeginReloadAssembly (165ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (42ms)
+		EndReloadAssembly (1394ms)
+			LoadAssemblies (161ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (452ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (81ms)
+			SetupLoadedEditorAssemblies (544ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (183ms)
+				ProcessInitializeOnLoadAttributes (319ms)
+				ProcessInitializeOnLoadMethodAttributes (20ms)
+				AfterProcessingInitializeOnLoad (14ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.79 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.5 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5397.
+Total: 4.267200 ms (FindLiveObjects: 0.413800 ms CreateObjectMapping: 0.115600 ms MarkObjects: 3.715400 ms  DeleteObjects: 0.020900 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015374 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 3.22 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.628 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1629ms)
+		BeginReloadAssembly (163ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (42ms)
+		EndReloadAssembly (1387ms)
+			LoadAssemblies (144ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (394ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (76ms)
+			SetupLoadedEditorAssemblies (626ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (4ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (173ms)
+				ProcessInitializeOnLoadAttributes (414ms)
+				ProcessInitializeOnLoadMethodAttributes (18ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 2.80 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.5 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5399.
+Total: 5.207300 ms (FindLiveObjects: 0.441100 ms CreateObjectMapping: 0.119800 ms MarkObjects: 4.619300 ms  DeleteObjects: 0.025600 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.016010 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 3.72 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.573 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1573ms)
+		BeginReloadAssembly (170ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (7ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (44ms)
+		EndReloadAssembly (1318ms)
+			LoadAssemblies (151ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (386ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (75ms)
+			SetupLoadedEditorAssemblies (547ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (6ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (4ms)
+				BeforeProcessingInitializeOnLoad (193ms)
+				ProcessInitializeOnLoadAttributes (312ms)
+				ProcessInitializeOnLoadMethodAttributes (18ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.20 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.0 MB.
+System memory in use after: 310.3 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5401.
+Total: 4.405200 ms (FindLiveObjects: 0.416800 ms CreateObjectMapping: 0.118500 ms MarkObjects: 3.842700 ms  DeleteObjects: 0.025400 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Prepare
+Registering precompiled user dll's ...
+Registered in 0.015829 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 2.90 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.567 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1568ms)
+		BeginReloadAssembly (171ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (8ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (43ms)
+		EndReloadAssembly (1315ms)
+			LoadAssemblies (157ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (414ms)
+			ReleaseScriptCaches (2ms)
+			RebuildScriptCaches (81ms)
+			SetupLoadedEditorAssemblies (511ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (1ms)
+				RefreshPlugins (3ms)
+				BeforeProcessingInitializeOnLoad (170ms)
+				ProcessInitializeOnLoadAttributes (301ms)
+				ProcessInitializeOnLoadMethodAttributes (19ms)
+				AfterProcessingInitializeOnLoad (12ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (15ms)
+Platform modules already initialized, skipping
+Refreshing native plugins compatible for Editor in 3.15 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4687 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 310.2 MB.
+System memory in use after: 310.5 MB.
+
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 5403.
+Total: 4.330000 ms (FindLiveObjects: 0.408100 ms CreateObjectMapping: 0.116200 ms MarkObjects: 3.784400 ms  DeleteObjects: 0.019900 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
 AssetImportWorkerClient::OnTransportError - code=2 error=End of file

@@ -866,11 +866,11 @@ public class Ascii_AI : MonoBehaviour
         WorldSpawner.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
         List<Character> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
-        foreach (Character enemyManager in enemys)
+        foreach (Character chracter in enemys)
         {
             // 보스 본인이 아닐때
-            if (enemyManager != this.character)
-                enemyManager.stopCount = 3f;
+            if (chracter != this.character)
+                chracter.stopCount = 3f;
         }
 
         //감시 시간
@@ -1112,6 +1112,6 @@ public class Ascii_AI : MonoBehaviour
     //     }
 
     //     // 쿨타임 끝나면 idle로 전환
-    //     enemyManager.nowAction = EnemyManager.Action.Idle;
+    //     chracter.nowAction = Chracter.Action.Idle;
     // }
 }

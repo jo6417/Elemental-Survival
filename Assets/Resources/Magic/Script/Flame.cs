@@ -71,7 +71,7 @@ public class Flame : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         // 지속 불타는 사운드 끄기
-        SoundManager.Instance.StopSound(burnAudio);
+        SoundManager.Instance.StopSound(burnAudio, 0.2f);
 
         // 파티클 끄고 마법 디스폰
         particleManager.SmoothDespawn();

@@ -454,7 +454,7 @@ public class HotDog_AI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        // if (enemyManager.nowAction != EnemyManager.Action.Idle)
+        // if (chracter.nowAction != Chracter.Action.Idle)
         //     return;
 
         // 시간 멈추면 리턴
@@ -622,7 +622,7 @@ public class HotDog_AI : MonoBehaviour
             * runSpeed //달리기 속도 배율
             * speedMultiple; // 페이즈별로 속도 배율
 
-            // print(enemyManager.rigid.velocity);
+            // print(chracter.rigid.velocity);
         }
 
         // 상태값 Idle로 초기화

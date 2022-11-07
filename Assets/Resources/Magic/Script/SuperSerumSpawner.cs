@@ -39,7 +39,7 @@ public class SuperSerumSpawner : MonoBehaviour
     }
 
     // 슈퍼세럼 오브 드랍하기
-    public void DropSerumOrb(Character enemyManager)
+    public void DropSerumOrb(Character chracter)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -49,7 +49,7 @@ public class SuperSerumSpawner : MonoBehaviour
         if (isDrop)
         {
             // 적을 체력 오브 드랍
-            GameObject serumOrb = LeanPool.Spawn(serumOrbPrefab, enemyManager.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject serumOrb = LeanPool.Spawn(serumOrbPrefab, chracter.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
 
             // 매직홀더 찾기
             MagicHolder orbMagicHolder = serumOrb.GetComponentInChildren<MagicHolder>();

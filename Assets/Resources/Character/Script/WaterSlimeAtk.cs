@@ -139,7 +139,7 @@ public class WaterSlimeAtk : MonoBehaviour
         });
 
         // // 플레이어 방향 계산
-        // targetDir = enemyManager.targetObj.transform.position - transform.position;
+        // targetDir = chracter.targetObj.transform.position - transform.position;
         // // 공격 오브젝트 각도 계산
         // float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 

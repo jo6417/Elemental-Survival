@@ -108,7 +108,7 @@ public class PlayerManager : MonoBehaviour
     public InventorySlot activeSlot_C;
 
     [Header("Sound")]
-    IEnumerator stepSound;
+    int lastStepSound = -1;
 
     private void Awake()
     {
@@ -557,6 +557,39 @@ public class PlayerManager : MonoBehaviour
         return magicPower;
     }
 
+    public void StepSound()
+    {
+        string soundName = "";
+
+        // 발자국 소리 인덱스 풀 만들기
+        List<int> stepSounds = new List<int>();
+        for (int i = 0; i < 3; i++)
+        {
+            stepSounds.Add(i);
+        }
+
+        // 마지막 발자국 소리 인덱스 삭제
+        if (lastStepSound != -1)
+            stepSounds.Remove(lastStepSound);
+
+        // 새로운 발자국 소리 뽑기
+        lastStepSound = stepSounds[Random.Range(0, stepSounds.Count)];
+
+        switch (lastStepSound)
+        {
+            case 0:
+                soundName = "Step1";
+                break;
+            case 1:
+                soundName = "Step2";
+                break;
+            case 2:
+                soundName = "Step3";
+                break;
+        }
+
+        SoundManager.Instance.PlaySound(soundName);
+    }
     public void PlaySound(string name)
     {
         SoundManager.Instance.PlaySound(name);

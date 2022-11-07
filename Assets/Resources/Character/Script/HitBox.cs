@@ -151,7 +151,7 @@ public class HitBox : MonoBehaviour
                 yield break;
 
             // 타격한 적이 비활성화 되었으면 리턴
-            // if (!hitEnemyManager.enabled)
+            // if (!hitChracter.enabled)
             //     return;
 
             // 고정 데미지가 있으면 아군 피격이라도 적용
@@ -403,7 +403,7 @@ public class HitBox : MonoBehaviour
 
     public IEnumerator HitDelay(float damage)
     {
-        // EnemyManager character = character as EnemyManager;
+        // Chracter character = character as Chracter;
 
         // Hit 상태로 변경
         this.character.nowState = Character.State.Hit;

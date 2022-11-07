@@ -33,7 +33,7 @@ public class Vacuum_AI : MonoBehaviour
         yield return new WaitUntil(() => SoundManager.Instance.init);
 
         //todo 청소기 사운드 무한 반복 재생
-        // SoundManager.Instance.PlaySound("Vacuum_Suck", enemyManager.transform, 0.1f, 0, -1, true);
+        // SoundManager.Instance.PlaySound("Vacuum_Suck", chracter.transform, 0.1f, 0, -1, true);
 
         // 젬 보유량 표시 컬러 갱신
         fillAmount.material.SetColor("Tint", fillColor);
@@ -147,7 +147,7 @@ public class Vacuum_AI : MonoBehaviour
         character.nowAction = Character.Action.Attack;
 
         // 밀리지 않게 kinematic으로 전환
-        // enemyManager.rigid.bodyType = RigidbodyType2D.Kinematic;
+        // chracter.rigid.bodyType = RigidbodyType2D.Kinematic;
 
         //플레이어 방향 다시 계산
         Vector2 targetDir = character.TargetObj.transform.position - transform.position;
@@ -198,7 +198,7 @@ public class Vacuum_AI : MonoBehaviour
             yield return delta;
         }
 
-        // enemyManager.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);        
+        // chracter.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);        
         // yield return new WaitForSeconds(0.5f);
 
         // 속도 멈추기
