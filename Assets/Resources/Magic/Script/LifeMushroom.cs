@@ -67,12 +67,14 @@ public class LifeMushroom : MonoBehaviour
         transform.SetParent(PlayerManager.Instance.shadowSprite.transform);
         transform.localPosition = Vector3.zero;
 
-        // 수동 시전일때
-        if (magicHolder.isManualCast)
-        {
-            // 타겟 위치로 이동
-            transform.DOMove(magicHolder.targetPos, speed);
-        }
+        // 플레이어가 쓴 마법일때
+        if (magicHolder.GetTarget() == Attack.TargetType.Enemy)
+            // 수동 시전일때
+            if (magicHolder.isManualCast)
+            {
+                // 타겟 위치로 이동
+                transform.DOMove(magicHolder.targetPos, speed);
+            }
 
         // 효과음 재생
         SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0, 0.05f, atkNum, true);

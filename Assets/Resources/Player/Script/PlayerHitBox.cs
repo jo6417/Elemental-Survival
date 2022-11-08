@@ -12,6 +12,7 @@ public class PlayerHitBox : MonoBehaviour
     public IEnumerator hitDelayCoroutine;
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
     [SerializeField] GameObject hitEffect;
+    [SerializeField] GameObject healEffect;
 
     [Header("<State>")]
     float hitDelayTime = 0.2f; //피격 무적시간
@@ -47,8 +48,8 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.Move();
 
         // 공격 오브젝트와 충돌 했을때
-        Attack attack = other.transform.GetComponentInChildren<Attack>();
-        if (attack)
+        Attack attack = other.transform.GetComponent<Attack>();
+        if (attack != null && attack.enabled)
         {
             StartCoroutine(Hit(attack));
         }
@@ -62,8 +63,8 @@ public class PlayerHitBox : MonoBehaviour
             return;
 
         // 공격 오브젝트와 충돌 했을때
-        Attack attack = other.GetComponentInChildren<Attack>();
-        if (attack)
+        Attack attack = other.GetComponent<Attack>();
+        if (attack != null && attack.enabled)
         {
             StartCoroutine(Hit(attack));
         }
@@ -72,11 +73,10 @@ public class PlayerHitBox : MonoBehaviour
     public IEnumerator Hit(Attack attacker)
     {
         // 피격 위치 산출
-        Collider2D attackerColl = attacker.GetComponent<Collider2D>();
         Vector2 hitPos = default;
         // 콜라이더 찾으면 가까운 포인트
-        if (attackerColl != null)
-            hitPos = attackerColl.ClosestPoint(transform.position);
+        if (attacker.atkColl != null)
+            hitPos = attacker.atkColl.ClosestPoint(transform.position);
         // 콜라이더 못찾으면 본인 위치
         else
             hitPos = transform.position;
@@ -291,9 +291,6 @@ public class PlayerHitBox : MonoBehaviour
 
     public void Damage(float damage, bool isCritical, Vector2 hitPos = default)
     {
-        // 피격 이펙트 재생
-        HitEffect(hitPos);
-
         //피격 딜레이 무적시간 시작
         hitDelayCoroutine = HitDelay(damage);
         StartCoroutine(hitDelayCoroutine);
@@ -309,15 +306,29 @@ public class PlayerHitBox : MonoBehaviour
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 
-        // 데미지 사운드 재생
+        // 데미지 있을때
         if (damage > 0)
+        {
+            // 데미지 사운드 재생
             SoundManager.Instance.PlaySound("Hit");
+
+            // 피격 이펙트 재생
+            HitEffect(hitPos);
+        }
+
         // 회피 사운드 재생
         if (damage == 0)
             SoundManager.Instance.PlaySound("Miss");
-        // 힐 사운드 재생
+
+        // 데미지 마이너스일때
         if (damage < 0)
+        {
+            // 힐 사운드 재생
             SoundManager.Instance.PlaySound("Heal");
+
+            // 힐 이펙트 생성
+            LeanPool.Spawn(healEffect, transform.position, Quaternion.identity, transform);
+        }
 
         // 데미지 적용
         playerManager.PlayerStat_Now.hpNow -= damage;
@@ -413,7 +424,9 @@ public class PlayerHitBox : MonoBehaviour
         //스프라이트 색 변환
         if (damage > 0)
             playerManager.sprite.color = SystemManager.Instance.hitColor;
-        else
+        if (damage == 0)
+            playerManager.sprite.color = Color.white;
+        if (damage < 0)
             playerManager.sprite.color = SystemManager.Instance.healColor;
 
         yield return new WaitUntil(() => hitCoolCount <= 0);

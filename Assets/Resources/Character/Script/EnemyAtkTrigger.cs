@@ -59,7 +59,7 @@ public class EnemyAtkTrigger : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         // 공격 트리거 켜진 상태면 리턴
         if (atkTrigger)

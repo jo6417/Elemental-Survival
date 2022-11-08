@@ -6,7 +6,7 @@ using Lean.Pool;
 using TMPro;
 using UnityEngine;
 
-public class HotDog_AI : MonoBehaviour
+public class HotDog_AI : EnemyAI
 {
     [Header("State")]
     [SerializeField]
@@ -15,7 +15,6 @@ public class HotDog_AI : MonoBehaviour
     bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
-    public Character character;
     public EnemyAtkTrigger biteTrigger;
 
     [Header("Phase")]
@@ -52,8 +51,8 @@ public class HotDog_AI : MonoBehaviour
     public ParticleManager breathEffect; //숨쉴때 입에서 나오는 불꽃
     public ParticleSystem handDust;
     public ParticleSystem footDust;
-    public Vector2 moveToPos; // 목표 위치
-    public float moveResetCount; // 목표위치 갱신 시간 카운트
+    // public Vector2 moveToPos; // 목표 위치
+    // public float moveResetCount; // 목표위치 갱신 시간 카운트
 
     [Header("Stealth Atk")]
     public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
@@ -88,6 +87,15 @@ public class HotDog_AI : MonoBehaviour
     public float stealthCooltime = 3f;
     public float meteorCooltime = 5f;
     public float hellfireCooltime = 8f;
+
+    [Header("Sound")]
+    [SerializeField] string[] breathSounds = { "HotDog_Breath1", "HotDog_Breath2", "HotDog_Breath3" };
+    int breath_lastIndex = -1;
+    [SerializeField] string[] walkSounds = { };
+    int walk_lastIndex = -1;
+    [SerializeField] string[] runSounds = { };
+    int run_lastIndex = -1;
+    AudioSource laserSound;
 
     private void Awake()
     {
@@ -247,13 +255,10 @@ public class HotDog_AI : MonoBehaviour
         .SetEase(Ease.Linear);
 
         // 범위 채우는 시간 대기
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
-        // 온몸에서 불꽃 뿜기 이펙트 재생
-        LeakFire();
-
-        // 밀어내는 시간 대기
-        yield return new WaitForSeconds(0.5f);
+        // 하울링 사운드 재생
+        SoundManager.Instance.PlaySound("HotDog_Howling", transform.position);
 
         // 범위 오브젝트 투명해지며 끄기
         pushFillSprite.DOColor(Color.clear, 0.5f)
@@ -340,7 +345,7 @@ public class HotDog_AI : MonoBehaviour
 
         // 한번에 소환할 개수
         int summonNum = 20;
-        // 소환 최대 범위
+        // 소환 최소 범위
         float maxDistance = 18f;
         // 각 Flame 위치 저장할 배열
         Vector3[] lastPos = new Vector3[summonNum];
@@ -357,7 +362,7 @@ public class HotDog_AI : MonoBehaviour
                 // print(angle + " : " + summonDir);
 
                 // 소환 반경 계산
-                float radius = maxDistance / 5 * (j + 1);
+                float radius = maxDistance / 5f * (j + 1);
                 radius = Mathf.Clamp(radius, 1f, radius);
 
                 // Flame 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
@@ -389,6 +394,9 @@ public class HotDog_AI : MonoBehaviour
             // 다음 사이즈 전개까지 대기
             yield return new WaitForSeconds(0.2f);
         }
+
+        // 온몸에서 불꽃 뿜기 이펙트 재생
+        LeakFire();
 
         // Flame 마법 전개, 색 변화 시간 대기
         yield return new WaitForSeconds(1f);
@@ -432,6 +440,10 @@ public class HotDog_AI : MonoBehaviour
 
     void Update()
     {
+        // 이동 리셋 카운트 차감
+        if (searchCoolCount > 0)
+            searchCoolCount -= Time.deltaTime;
+
         if (character.enemy == null)
             return;
 
@@ -512,7 +524,7 @@ public class HotDog_AI : MonoBehaviour
         }
 
         // 공격 범위내에 있고 공격 쿨타임 됬을때
-        if (playerDistance <= farDistance && coolCount <= 0)
+        if (playerDistance <= closeDistance && coolCount <= 0)
         {
             //! 거리 확인용
             stateText.text = "Attack : " + playerDistance;
@@ -543,6 +555,11 @@ public class HotDog_AI : MonoBehaviour
         // 움직이는 동안 공격 쿨타임 차감
         if (coolCount >= 0)
             coolCount -= Time.deltaTime;
+
+        // 호흡 이펙트 꺼져있으면
+        if (!breathEffect.gameObject.activeSelf)
+            // 호흡 사운드 재생
+            SoundManager.Instance.PlaySoundPool(breathSounds.ToList(), mouthSparkEffect.transform.position, breath_lastIndex);
 
         // 호흡 이펙트 켜기
         breathEffect.gameObject.SetActive(true);
@@ -576,21 +593,21 @@ public class HotDog_AI : MonoBehaviour
             runSpeed = 2f;
         }
 
-        // 목표 위치 갱신 시간 됬을때
-        if (moveResetCount < Time.time)
-        {
-            moveResetCount = Time.time + 3f;
+        // // 목표 위치 갱신 시간 됬을때
+        // if (moveResetCount < Time.time)
+        // {
+        //     moveResetCount = Time.time + 3f;
 
-            // 방향에 거리 곱해서 목표 위치 벡터 갱신
-            moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(closeDistance, farDistance);
+        //     // 방향에 거리 곱해서 목표 위치 벡터 갱신
+        //     moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(closeDistance, farDistance);
 
-            // print(moveToPos);
-        }
+        //     // print(moveToPos);
+        // }
 
-        //움직일 방향, moveToPos를 목표로 움직이기
-        Vector2 moveDir = moveToPos - (Vector2)transform.position;
+        // 이동할 방향 캐싱
+        character.targetDir = character.targetPos - transform.position;
         // 목표 위치까지 거리
-        float moveDistance = moveDir.magnitude;
+        float moveDistance = character.targetDir.magnitude;
 
         // 목표 위치에 근접했을때
         if (moveDistance < 1f)
@@ -605,7 +622,7 @@ public class HotDog_AI : MonoBehaviour
         else
         {
             // 이동 방향 쪽으로 쳐다보기
-            if (moveDir.x > 0)
+            if (character.targetDir.x > 0)
             {
                 transform.rotation = Quaternion.Euler(0, 180, 0);
             }
@@ -616,7 +633,7 @@ public class HotDog_AI : MonoBehaviour
 
             //해당 방향으로 가속
             character.rigid.velocity =
-            moveDir.normalized // 이동 방향
+            character.targetDir.normalized // 이동 방향
             * character.speedNow //몬스터 정보 속도
             * SystemManager.Instance.globalTimeScale //시간 비율 계산
             * runSpeed //달리기 속도 배율
@@ -627,6 +644,18 @@ public class HotDog_AI : MonoBehaviour
 
         // 상태값 Idle로 초기화
         character.nowAction = Character.Action.Idle;
+    }
+
+    public void RunSound()
+    {
+        // 달리기 발소리 재생
+        SoundManager.Instance.PlaySoundPool(runSounds.ToList(), transform.position, run_lastIndex);
+    }
+
+    public void WalkSound()
+    {
+        // 걷기 발소리 재생
+        SoundManager.Instance.PlaySoundPool(walkSounds.ToList(), transform.position, walk_lastIndex);
     }
 
     IEnumerator ChooseAttack()
@@ -783,6 +812,9 @@ public class HotDog_AI : MonoBehaviour
 
         // 불꽃 호흡 이펙트 켜기
         breathEffect.gameObject.SetActive(true);
+
+        // 불꽃 새는 사운드 재생
+        SoundManager.Instance.PlaySound("HotDog_Leak", transform.position);
     }
 
     void FinishEat()
@@ -885,6 +917,16 @@ public class HotDog_AI : MonoBehaviour
         character.animList[0].SetTrigger(AnimState.Launch.ToString());
     }
 
+    public void LaserSound(int playToggle)
+    {
+        if (playToggle == 0)
+            // 레이저 사운드 반복 재생
+            laserSound = SoundManager.Instance.PlaySound("HotDog_Ball_Laser", mouthSparkEffect.transform.position, 0.5f, 0, -1, true);
+        else
+            // 레이저 사운드 끄기
+            SoundManager.Instance.StopSound(laserSound, 0.5f);
+    }
+
     // meteor 애니메이션 끝날때쯤 meteor 소환 함수
     public void CastMeteor()
     {
@@ -938,8 +980,14 @@ public class HotDog_AI : MonoBehaviour
         // 안개 생성
         MakeFog();
 
+        // 스모크 사운드 재생
+        SoundManager.Instance.PlaySound("HotDog_Stealth", 1f);
+
         // 투명해질때까지 대기
         yield return new WaitUntil(() => character.spriteList[0].color == Color.clear);
+
+        // 스모크 사운드 정지
+        SoundManager.Instance.StopSound("HotDog_Stealth", 1f);
 
         // 짖기 애니메이션 트리거 끄기
         character.animList[0].SetBool(AnimState.isBark.ToString(), false);
@@ -996,6 +1044,9 @@ public class HotDog_AI : MonoBehaviour
             // 눈빛 켜기
             eyeGlow.gameObject.SetActive(true);
             eyeGlow.DOColor(Color.white, 0.2f);
+
+            // 돌진 시작 경고음 재생
+            SoundManager.Instance.PlaySound("HotDog_DashWarning");
 
             // 히트박스 전부 켜기
             for (int j = 0; j < character.hitBoxList.Count; j++)

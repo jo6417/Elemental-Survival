@@ -7,6 +7,7 @@ public class Attack : MonoBehaviour
     [Header("Refer")]
     // public GameObject atkEffect; // 타격시 타격지점에서 발생할 이펙트
     [SerializeField] string playSoundName; // 타격시 발생할 사운드
+    public Collider2D atkColl;
 
     [Header("State")]
     public int pierceCount = 0; // 남은 관통 횟수
@@ -32,6 +33,12 @@ public class Attack : MonoBehaviour
     public float flatTime = 0f; // 납작해지는 디버프 지속시간
     public float stopTime; // 시간정지 지속시간
     public float stunTime; // 스턴 지속시간
+
+    private void Awake()
+    {
+        if (atkColl == null)
+            atkColl = GetComponent<Collider2D>();
+    }
 
     private void OnEnable()
     {

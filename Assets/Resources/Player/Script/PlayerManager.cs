@@ -590,6 +590,7 @@ public class PlayerManager : MonoBehaviour
 
         SoundManager.Instance.PlaySound(soundName);
     }
+
     public void PlaySound(string name)
     {
         SoundManager.Instance.PlaySound(name);

@@ -46,12 +46,14 @@ public class Flame : MonoBehaviour
         ParticleSystemRenderer particleRenderer = particleManager.particle.GetComponent<ParticleSystemRenderer>();
         particleRenderer.material = fireMaterial;
 
-        if (magicHolder.isManualCast)
-            // 타겟 위치로 이동
-            transform.position = magicHolder.targetPos;
-        else
-            // 범위 내 랜덤 위치로 이동
-            transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
+        // 플레이어가 쓴 마법일때
+        if (magicHolder.GetTarget() == Attack.TargetType.Enemy)
+            if (magicHolder.isManualCast)
+                // 타겟 위치로 이동
+                transform.position = magicHolder.targetPos;
+            else
+                // 범위 내 랜덤 위치로 이동
+                transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
         // 범위만큼 스케일 반영
         transform.localScale = Vector2.one * range / 10f;

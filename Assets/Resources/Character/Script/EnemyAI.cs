@@ -12,7 +12,7 @@ public class EnemyAI : MonoBehaviour
     public Character character;
 
     [Header("Walk")]
-    public Vector3 targetDir; //플레이어 방향
+    // public Vector3 targetDir; //플레이어 방향
     public float searchCoolTime = 1f; // 타겟 위치 추적 시간
     public float searchCoolCount; // 타겟 위치 추적 시간 카운트
     [SerializeField]
@@ -94,7 +94,7 @@ public class EnemyAI : MonoBehaviour
         character.movePos = Vector3.Lerp(character.movePos, character.targetPos, Time.deltaTime * 0.5f);
 
         // 목표 방향 계산
-        targetDir = character.movePos - transform.position;
+        character.targetDir = character.movePos - transform.position;
 
         // 상태 이상 있으면 리턴
         if (!character.ManageState())
@@ -119,7 +119,7 @@ public class EnemyAI : MonoBehaviour
         // 방향따라 기울이기
         if (directionTilt)
         {
-            float angleZ = -Mathf.Abs(Mathf.Clamp(targetDir.x, -20f, 20f));
+            float angleZ = -Mathf.Abs(Mathf.Clamp(character.targetDir.x, -20f, 20f));
             Quaternion rotation = Quaternion.Lerp(character.spriteObj.localRotation, Quaternion.Euler(0, 0, angleZ), 0.1f);
 
             // 스프라이트 몸체 기울이기
@@ -136,7 +136,7 @@ public class EnemyAI : MonoBehaviour
         if (character.moveType == Character.MoveType.Jump)
         {
             // 점프 쿨타임 아닐때, 플레이어가 공격 범위보다 멀때
-            if (jumpCoolCount <= 0 && targetDir.magnitude > character.attackRange)
+            if (jumpCoolCount <= 0 && character.targetDir.magnitude > character.attackRange)
                 JumpStart();
             else
             {
@@ -163,19 +163,19 @@ public class EnemyAI : MonoBehaviour
         }
 
         // 목표위치 도착했으면 위치 다시 갱신
-        if (targetDir.magnitude < 0.5f)
+        if (character.targetDir.magnitude < 0.5f)
         {
             searchCoolCount = 0f;
         }
         else
         {
             //해당 방향으로 가속
-            character.rigid.velocity = targetDir.normalized * character.speedNow * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+            character.rigid.velocity = character.targetDir.normalized * character.speedNow * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
             //움직일 방향에따라 회전
             float leftAngle = character.lookLeft ? 180f : 0f;
             float rightAngle = character.lookLeft ? 0f : 180f;
-            if (targetDir.x > 0)
+            if (character.targetDir.x > 0)
                 character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
             else
                 character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
@@ -222,18 +222,18 @@ public class EnemyAI : MonoBehaviour
         //움직일 방향에따라 회전
         float leftAngle = character.lookLeft ? 180f : 0f;
         float rightAngle = character.lookLeft ? 0f : 180f;
-        if (targetDir.x > 0)
+        if (character.targetDir.x > 0)
             character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
         else
             character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
-        float distance = targetDir.magnitude > character.speedNow ? character.speedNow : targetDir.magnitude;
+        float distance = character.targetDir.magnitude > character.speedNow ? character.speedNow : character.targetDir.magnitude;
 
-        // print(targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
+        // print(character.targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
 
         //해당 방향으로 가속
-        character.rigid.velocity = targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+        character.rigid.velocity = character.targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
         // print(chracter.rigid.velocity);
     }

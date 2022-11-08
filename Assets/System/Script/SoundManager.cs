@@ -342,13 +342,14 @@ public class SoundManager : MonoBehaviour
                 yield return new WaitForSecondsRealtime(fadeoutTime);
         }
 
-        // 디스폰일때
-        if (isDespawn)
-            // 오디오 오브젝트 디스폰
-            LeanPool.Despawn(audio.gameObject);
-        else
-            // 오디오 정지
-            audio.Stop();
+        if (audio != null)
+            // 디스폰일때
+            if (isDespawn)
+                // 오디오 오브젝트 디스폰
+                LeanPool.Despawn(audio.gameObject);
+            else
+                // 오디오 정지
+                audio.Stop();
     }
 
     public void SoundTimeScale(float scale)
@@ -389,5 +390,21 @@ public class SoundManager : MonoBehaviour
             // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
             audio.pitch = sound.pitch * scale;
         }
+    }
+
+    public void PlaySoundPool(List<string> soundPool, Vector2 playPos, int remove_lastIndex = -1)
+    {
+        // 마지막으로 재생된 사운드의 인덱스는 풀에서 제거
+        if (remove_lastIndex != -1)
+            soundPool.RemoveAt(remove_lastIndex);
+
+        // 풀에서 뽑힌 인덱스 저장
+        remove_lastIndex = UnityEngine.Random.Range(0, soundPool.Count);
+
+        // 뽑은 사운드 이름
+        string soundName = soundPool[remove_lastIndex];
+
+        // 사운드 이름으로 찾아 재생
+        SoundManager.Instance.PlaySound(soundName, playPos);
     }
 }

@@ -36,12 +36,14 @@ public class ElectroBolt : MonoBehaviour
         //콜라이더 끄기
         atkColl.enabled = false;
 
-        if (magicHolder.isManualCast)
-            // 타겟 위치로 이동
-            transform.position = magicHolder.targetPos;
-        else
-            // 범위 내 랜덤 위치로 이동
-            transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
+        // 플레이어가 쓴 마법일때
+        if (magicHolder.GetTarget() == Attack.TargetType.Enemy)
+            if (magicHolder.isManualCast)
+                // 타겟 위치로 이동
+                transform.position = magicHolder.targetPos;
+            else
+                // 범위 내 랜덤 위치로 이동
+                transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
         // 그림자 사이즈 초기화
         shadow.localScale = new Vector3(1, 0.4f, 1);

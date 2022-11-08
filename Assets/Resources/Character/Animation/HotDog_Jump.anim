@@ -5171,9 +5171,23 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
+  - time: 0.05
+    functionName: SoundPlay
+    data: HotDog_Jump
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.6666667
     functionName: SummonHellfire
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.6666667
+    functionName: SoundPlay
+    data: HotDog_Land
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

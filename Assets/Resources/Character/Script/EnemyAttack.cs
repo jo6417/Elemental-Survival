@@ -18,14 +18,15 @@ public class EnemyAttack : Attack
     [Header("Refer")]
     public Character character;
     public string enemyName;
-    public Collider2D atkColl; //공격 콜라이더
     public GameObject dashEffect;
     public GameObject rangeObj; //공격시 활성화할 오브젝트
 
     private void Awake()
     {
-        character = character == null ? GetComponentInChildren<Character>() : character;
-        atkColl = atkColl == null ? GetComponentInChildren<Collider2D>() : atkColl;
+        if (character == null)
+            character = GetComponentInChildren<Character>();
+        if (atkColl == null)
+            atkColl = GetComponentInChildren<Collider2D>();
     }
 
     private void OnEnable()
@@ -110,7 +111,7 @@ public class EnemyAttack : Attack
             //공격 준비로 전환
             attackReady = true;
 
-            StartCoroutine(ChooseAttack());
+            // StartCoroutine(ChooseAttack());
         }
     }
 

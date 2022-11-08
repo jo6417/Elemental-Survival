@@ -55,7 +55,7 @@ public class Character : MonoBehaviour
         Dash, // 범위안에 들어오면 대쉬
         Custom // 자체 AI로 컨트롤
     };
-    GameObject targetObj; // 공격 목표
+    [SerializeField] GameObject targetObj; // 공격 목표
     public GameObject TargetObj
     {
         get
@@ -91,7 +91,7 @@ public class Character : MonoBehaviour
     }
 
     [Header("Move")]
-    public float targetResetTime = 3f; //타겟 재설정 시간
+    public float targetResetTime = 0.5f; //타겟 재설정 시간
     public float targetResetCount = 0; //타겟 재설정 시간 카운트
     public Vector3 movePos; // 이동하려는 위치
     public Vector3 targetPos; // 추적한 타겟 위치
@@ -834,5 +834,10 @@ public class Character : MonoBehaviour
     void SoundPlay(string soundName)
     {
         SoundManager.Instance.PlaySound(soundName, transform.position);
+    }
+
+    void SoundStop(string soundName)
+    {
+        SoundManager.Instance.StopSound(soundName, 0.5f);
     }
 }
