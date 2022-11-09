@@ -20,6 +20,14 @@ public class Sound
     public AudioSource source;
 }
 
+[System.Serializable]
+public class SoundBundle
+{
+    public string name;
+
+    public Sound[] sounds;
+}
+
 public class SoundManager : MonoBehaviour
 {
     #region Singleton
@@ -54,13 +62,7 @@ public class SoundManager : MonoBehaviour
 
     [Header("Sounds")]
     private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
-    public Sound[] UI_Sounds;
-    public Sound[] music_Sounds;
-    public Sound[] player_Sounds;
-    public Sound[] magic_Sounds;
-    public Sound[] item_Sounds;
-    public Sound[] enemy_Sounds;
-    public Sound[] effect_Sounds;
+    [SerializeField] List<SoundBundle> soundBundles = new List<SoundBundle>();
 
     private void Awake()
     {
@@ -72,41 +74,39 @@ public class SoundManager : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 거리에 상관없이 똑같이 재생되는 사운드
-        AudioMake(player_Sounds, nameof(player_Sounds));
-        AudioMake(UI_Sounds, nameof(UI_Sounds));
-        AudioMake(music_Sounds, nameof(music_Sounds));
+        int soundsNum = 0;
 
-        // 거리에 따라 음량 변하는 사운드
-        AudioMake(magic_Sounds, nameof(magic_Sounds));
-        AudioMake(item_Sounds, nameof(item_Sounds));
-        AudioMake(enemy_Sounds, nameof(enemy_Sounds));
-        AudioMake(effect_Sounds, nameof(effect_Sounds));
+        foreach (SoundBundle bundle in soundBundles)
+        {
+            // 번들마다 오디오소스 만들기
+            AudioMake(bundle);
+
+            // 총 개수 더하기
+            soundsNum += bundle.sounds.Length;
+
+            yield return null;
+        }
 
         // 모든 사운드 추가 될때까지 대기
-        yield return new WaitUntil(() => all_Sounds.Count ==
-        UI_Sounds.Length +
-        music_Sounds.Length +
-        player_Sounds.Length +
-        magic_Sounds.Length +
-        item_Sounds.Length +
-        enemy_Sounds.Length +
-        effect_Sounds.Length);
+        yield return new WaitUntil(() => all_Sounds.Count == soundsNum);
 
         // 초기화 완료
         print("SoundManager Init");
         init = true;
     }
 
-    void AudioMake(Sound[] sounds, string bundleName)
+    void AudioMake(SoundBundle soundBundle)
     {
         // 빈 오브젝트 만들어 자식으로 넣기
-        GameObject soundsBundle = new GameObject(bundleName);
-        soundsBundle.transform.SetParent(transform);
+        GameObject bundleObj = new GameObject(soundBundle.name);
+        bundleObj.transform.SetParent(transform);
 
         // 입력된 오디오 클립을 오디오 소스로 생성
-        foreach (Sound sound in sounds)
+        foreach (Sound sound in soundBundle.sounds)
         {
+            // 사운드 리스트에 종합
+            all_Sounds.Add(sound);
+
             // 사운드 안넣었으면 넘기기
             if (sound.clip == null)
             {
@@ -115,16 +115,13 @@ public class SoundManager : MonoBehaviour
             }
 
             // 오디오 소스 컴포넌트 생성
-            sound.source = soundsBundle.AddComponent<AudioSource>();
+            sound.source = bundleObj.AddComponent<AudioSource>();
             // 오디오 클립 넣기
             sound.source.clip = sound.clip;
 
             // 볼륨 및 피치 동기화
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
-
-            // 사운드 리스트에 종합
-            all_Sounds.Add(sound);
         }
     }
 
@@ -362,20 +359,24 @@ public class SoundManager : MonoBehaviour
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => init);
 
-        // 플레이어 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        foreach (Sound sound in player_Sounds)
-            sound.source.pitch = sound.pitch * scale;
-        // 마법 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        foreach (Sound sound in magic_Sounds)
-            sound.source.pitch = sound.pitch * scale;
-        // 아이템 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        foreach (Sound sound in item_Sounds)
-            sound.source.pitch = sound.pitch * scale;
-        // 몬스터 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        foreach (Sound sound in enemy_Sounds)
-            sound.source.pitch = sound.pitch * scale;
-        // 이펙트 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        foreach (Sound sound in effect_Sounds)
+        // // 플레이어 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        // foreach (Sound sound in player_Sounds)
+        //     sound.source.pitch = sound.pitch * scale;
+        // // 마법 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        // foreach (Sound sound in magic_Sounds)
+        //     sound.source.pitch = sound.pitch * scale;
+        // // 아이템 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        // foreach (Sound sound in item_Sounds)
+        //     sound.source.pitch = sound.pitch * scale;
+        // // 몬스터 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        // foreach (Sound sound in enemy_Sounds)
+        //     sound.source.pitch = sound.pitch * scale;
+        // // 이펙트 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
+        // foreach (Sound sound in effect_Sounds)
+        //     sound.source.pitch = sound.pitch * scale;
+
+        // 모든 사운드의 디폴트 pitch 값에 타임스케일 곱하기
+        foreach (Sound sound in all_Sounds)
             sound.source.pitch = sound.pitch * scale;
 
         // 모든 자식 오디오소스 오브젝트의 피치에 타임스케일 곱하기
@@ -392,7 +393,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void PlaySoundPool(List<string> soundPool, Vector2 playPos, int remove_lastIndex = -1)
+    public int PlaySoundPool(List<string> soundPool, Vector2 playPos, int remove_lastIndex = -1)
     {
         // 마지막으로 재생된 사운드의 인덱스는 풀에서 제거
         if (remove_lastIndex != -1)
@@ -406,5 +407,8 @@ public class SoundManager : MonoBehaviour
 
         // 사운드 이름으로 찾아 재생
         SoundManager.Instance.PlaySound(soundName, playPos);
+
+        // 선택된 인덱스 리턴
+        return remove_lastIndex;
     }
 }

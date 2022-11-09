@@ -11,8 +11,8 @@ public class Ascii_AI : MonoBehaviour
 {
     [Header("State")]
     bool initDone = false;
-    // public NowState nowState;
-    // public enum NowState { Idle, Walk, Attack, Rest, Hit, Dead, TimeStop, SystemStop }
+    [SerializeField] Patten patten = Patten.None;
+    enum Patten { PunchAttack, StopLaserAtk, GroundAttack, Skip, None };
     public float farDistance = 10f;
     public float closeDistance = 5f;
     float speed;
@@ -68,6 +68,10 @@ public class Ascii_AI : MonoBehaviour
     public float laserCooltime = 3f; //무궁화꽃 쿨타임
     public float groundPunchCooltime = 5f; // 그라운드 펀치 쿨타임
     public float earthGroundCooltime = 8f; //접지 패턴 쿨타임
+
+    [Header("Sound")]
+    [SerializeField] string[] walkSounds = { "Ascii_Walk1", "Ascii_Walk2", "Ascii_Walk3" };
+    int walk_lastIndex = -1;
 
     //! 테스트
     [Header("Debug")]
@@ -217,8 +221,8 @@ public class Ascii_AI : MonoBehaviour
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
 
-            // 현재 액션 변경
-            character.nowAction = Character.Action.Attack;
+            // // 현재 액션 변경
+            // character.nowAction = Character.Action.Attack;
 
             //공격 패턴 결정하기
             ChooseAttack();
@@ -278,8 +282,18 @@ public class Ascii_AI : MonoBehaviour
         character.nowAction = Character.Action.Idle;
     }
 
+    public void WalkSound()
+    {
+        // 걷기 발소리 재생
+        walk_lastIndex = SoundManager.Instance.PlaySoundPool(walkSounds.ToList(), transform.position, walk_lastIndex);
+    }
+
     void ChooseAttack()
     {
+        //! 패턴 스킵
+        if (patten == Patten.Skip)
+            return;
+
         // 공격 상태로 전환
         character.nowAction = Character.Action.Attack;
 
@@ -301,24 +315,25 @@ public class Ascii_AI : MonoBehaviour
             atkList.Add(1);
 
         // 가능한 공격 중에서 랜덤 뽑기
-        int randAtk = -1;
+        int atkType = -1;
         if (atkList.Count > 0)
         {
-            randAtk = atkList[Random.Range(0, atkList.Count)];
+            atkType = atkList[Random.Range(0, atkList.Count)];
         }
 
-        //! 디버그용 숫자 고정
-        // randAtk = 1;
+        //! 테스트를 위해 패턴 고정
+        if (patten != Patten.None)
+            atkType = (int)patten;
 
         // 결정된 공격 패턴 실행
-        switch (randAtk)
+        switch (atkType)
         {
             case 0:
                 StartCoroutine(PunchAttack());
                 break;
 
             case 1:
-                StartCoroutine(LaserAtk());
+                StartCoroutine(StopLaserAtk());
                 break;
 
             case 2:
@@ -423,6 +438,9 @@ public class Ascii_AI : MonoBehaviour
         // 인디케이터 사이즈 초기화
         fallRangeIndicator.transform.localScale = Vector3.zero;
 
+        // 넘어지기 전 알림 사운드 재생
+        SoundManager.Instance.PlaySound("Ascii_Falldown_Warning", transform.position);
+
         // 인디케이터 사이즈 늘리기
         fallRangeIndicator.transform.DOScale(Vector3.one, 1f)
         .SetEase(Ease.Linear)
@@ -447,6 +465,12 @@ public class Ascii_AI : MonoBehaviour
 
         // 먼지 파티클 활성화
         fallDustEffect.gameObject.SetActive(true);
+
+        // 카메라 흔들기
+        Camera.main.transform.DOShakePosition(0.5f, 0.3f, 50, 90f, false, false);
+
+        // 넘어지기 사운드 재생
+        SoundManager.Instance.PlaySound("Ascii_Falldown", transform.position);
     }
 
     void FallAtkDisable()
@@ -628,12 +652,12 @@ public class Ascii_AI : MonoBehaviour
         // 정해진 횟수만큼 전기 방출
         for (int i = 0; i < atkNum; i++)
         {
+            // 방출 할때마다 딜레이
+            yield return new WaitForSeconds(1f);
+
             // 전기 방출
             StartCoroutine(ElectroRelease(true, 50));
             yield return StartCoroutine(ElectroRelease(false, 50));
-
-            // 방출마다 후딜레이
-            yield return new WaitForSeconds(1f);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -706,17 +730,18 @@ public class Ascii_AI : MonoBehaviour
 
         // 플러그 컨트롤러 아래로 이동
         plugHead.transform.DOMove(downPos, 1f)
-        .SetEase(Ease.InBack)
-        .OnComplete(() =>
-        {
-            // 이동 완료되면 플러그 멈추기
-            plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-
-            // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
-            LeanPool.Spawn(groundCrackEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
-        });
+        .SetEase(Ease.InBack);
 
         yield return new WaitForSeconds(1f);
+
+        // 케이블 땅에 꽂는 사운드 재생
+        SoundManager.Instance.PlaySound("Ascii_CableGround", plugTip.transform.position);
+
+        // 이동 완료되면 플러그 멈추기
+        plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+
+        // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
+        LeanPool.Spawn(groundCrackEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 
     IEnumerator ElectroRelease(bool isLeft, int summonNum)
@@ -725,9 +750,16 @@ public class Ascii_AI : MonoBehaviour
         Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
         LineRenderer cableLine = isLeft ? L_Cable : R_Cable; // 케이블 라인 오브젝트
         GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark; // 케이블 타고 흐르는 스파크 이펙트
+        Transform cableTip = isLeft ? L_PlugAtk.transform : R_PlugAtk.transform; // 케이블 타고 흐르는 스파크 이펙트
+        SpriteRenderer cableTipRange = cableTip.GetComponent<SpriteRenderer>();
+
+        // 케이블 공격범위 켜기
+        cableTip.gameObject.SetActive(true);
+        // 인디케이터 범위 색깔 초기화
+        cableTipRange.color = new Color(1, 0, 0, 0.5f);
 
         // 스파크 켜기
-        StartCoroutine(CableSpark(isLeft));
+        yield return StartCoroutine(CableSpark(isLeft));
 
         // 페이즈 배율 적용
         // summonNum = (int)(summonNum * projectileMultiple);
@@ -754,13 +786,13 @@ public class Ascii_AI : MonoBehaviour
             // print(angle + " : " + summonDir);
 
             // 투사체 소환 위치, 케이블 끝에서 summonDir 각도로 범위만큼 곱하기 
-            Vector3 targetPos = cableSpark.transform.position + summonDir * 5f;
+            Vector3 targetPos = cableTip.transform.position + summonDir * 5f;
 
             // 각 투사체의 소환 위치 저장
             lastPos[i] = targetPos;
 
             // 전기 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(groundElectro, cableSpark.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject magicObj = LeanPool.Spawn(groundElectro, cableTip.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
 
             // summonDir 방향으로 발사
             magicObj.GetComponent<Rigidbody2D>().velocity = summonDir * 10f;
@@ -782,17 +814,29 @@ public class Ascii_AI : MonoBehaviour
             magicHolder.targetObj = PlayerManager.Instance.gameObject;
         }
 
+        // 전기 방출 사운드 재생
+        SoundManager.Instance.PlaySound("Ascii_ElectroWave", cableTip.transform.position);
+
         // 플러그 떨림
         plugHead.transform.DOShakePosition(0.2f, 0.3f, 50, 90, false, false);
+
+        // 케이블 끝에서 전기 방출 이펙트
+        cableTip.GetComponent<ParticleSystem>().Play();
+        // 빨간 인디케이터 투명하게
+        cableTipRange.DOColor(Color.clear, 1f);
+
         // 방출 시간 대기
         yield return new WaitForSeconds(1f);
+
+        // 케이블 공격범위 끄기
+        cableTip.gameObject.SetActive(false);
     }
 
     #endregion
 
     #region LaserAttack
 
-    IEnumerator LaserAtk()
+    IEnumerator StopLaserAtk()
     {
         // print("laser atk");
 
@@ -1000,6 +1044,9 @@ public class Ascii_AI : MonoBehaviour
     {
         LineRenderer cableLine = isLeft ? L_Cable : R_Cable; // 케이블 라인 오브젝트
         GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark; // 케이블 타고 흐르는 스파크 이펙트
+
+        // 찌릿 사운드 재생
+        SoundManager.Instance.PlaySound("Ascii_Sting", cableSpark.transform.position);
 
         // 스파크 켜기
         cableSpark.SetActive(true);

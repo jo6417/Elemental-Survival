@@ -9,8 +9,7 @@ using UnityEngine;
 public class HotDog_AI : EnemyAI
 {
     [Header("State")]
-    [SerializeField]
-    Patten patten = Patten.None;
+    [SerializeField] Patten patten = Patten.None;
     enum Patten { None, Hellfire, Meteor, Stealth };
     bool initDone = false;
     AnimState animState;
@@ -694,14 +693,14 @@ public class HotDog_AI : EnemyAI
         breathEffect.SmoothDisable();
 
         // 랜덤 패턴 결정
-        int randomNum = Random.Range(0, 3);
-        print("randomNum : " + randomNum);
+        int atkType = Random.Range(0, 3);
+        print("randomNum : " + atkType);
 
         //! 테스트를 위해 패턴 고정
         if (patten != Patten.None)
-            randomNum = (int)patten;
+            atkType = (int)patten;
 
-        switch (randomNum)
+        switch (atkType)
         {
             case (int)Patten.Hellfire:
                 // 근거리 및 중거리 헬파이어 패턴
