@@ -185,15 +185,15 @@ public class Ascii_AI : MonoBehaviour
         // 플레이어와의 거리
         float playerDistance = playerDir.magnitude;
 
-        //!
-        fallAtkDone = false;
+        // //! 
+        // fallAtkDone = false;
+
+        //! 거리 및 쿨타임 디버깅
+        stateText.text = $"Distance : {string.Format("{0:0.00}", playerDistance)} \n CoolCount : {string.Format("{0:0.00}", coolCount)}";
 
         // 폴어택 범위에 들어왔을때, 마지막 공격이 폴어택이 아닐때
         if (fallRangeTrigger.atkTrigger && !fallAtkDone)
         {
-            //! 거리 확인용
-            stateText.text = "Fall : " + playerDistance;
-
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
 
@@ -215,9 +215,6 @@ public class Ascii_AI : MonoBehaviour
         // 공격 범위내에 있고 공격 쿨타임 됬을때
         if (playerDistance <= farDistance && playerDistance >= closeDistance && coolCount <= 0)
         {
-            //! 거리 확인용
-            stateText.text = "Attack : " + playerDistance;
-
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
 
@@ -229,9 +226,6 @@ public class Ascii_AI : MonoBehaviour
         }
         else
         {
-            //! 거리 확인용
-            stateText.text = "Move : " + playerDistance;
-
             // 공격 범위 내 위치로 이동
             Move();
         }
@@ -348,7 +342,7 @@ public class Ascii_AI : MonoBehaviour
         atkList.Clear();
     }
 
-    void ToggleCable(bool isPutIn)
+    void ToggleCable(bool showCable)
     {
         // 케이블 시작점은 모니터 뒤로 이동
         L_CableStart.DOLocalMove(new Vector2(5, 0), 0.5f);
@@ -359,7 +353,7 @@ public class Ascii_AI : MonoBehaviour
         R_PlugHead.transform.rotation = Quaternion.Euler(Vector3.zero);
 
         // 케이블 집어넣기
-        if (isPutIn)
+        if (!showCable)
         {
             // 이미 케이블 꺼져있으면 리턴
             if (!L_PlugHead.enabled && !R_PlugHead.enabled)
@@ -428,8 +422,8 @@ public class Ascii_AI : MonoBehaviour
         // 엎어질 준비 애니메이션 시작
         anim.SetTrigger("FallReady");
 
-        // 케이블 집어넣기
-        ToggleCable(true);
+        // 케이블 숨기기
+        ToggleCable(false);
 
         // 엎어질 범위 활성화
         fallRangeBackground.enabled = true;
@@ -505,6 +499,9 @@ public class Ascii_AI : MonoBehaviour
         // 얼굴 바꾸기
         faceText.text = "Ϟ( ◕.̫ ◕ )Ϟ";
 
+        // 케이블 꺼내기
+        ToggleCable(true);
+
         // 케이블 애니메이션 끄기
         L_Plug.enabled = false;
         R_Plug.enabled = false;
@@ -528,13 +525,13 @@ public class Ascii_AI : MonoBehaviour
 
         //좌측 플러그 떨면서 조준 사격
         L_Plug.transform.DOShakePosition(aimTime, 0.3f, 50, 90, false, false);
-        StartCoroutine(ShotPunch(aimTime, true));
+        StartCoroutine(ShotPunch(true, aimTime));
 
         aimTime += 0.5f;
 
         // 우측 플러그 떨면서 조준 사격
         R_Plug.transform.DOShakePosition(aimTime, 0.3f, 50, 90, false, false);
-        yield return StartCoroutine(ShotPunch(aimTime, false));
+        yield return StartCoroutine(ShotPunch(false, aimTime));
 
         yield return new WaitForSeconds(0.5f);
 
@@ -546,7 +543,7 @@ public class Ascii_AI : MonoBehaviour
         StartCoroutine(RestAnim());
     }
 
-    IEnumerator ShotPunch(float aimTime, bool isLeft)
+    IEnumerator ShotPunch(bool isLeft, float aimTime)
     {
         // 케이블 방향에 따라 변수 정하기
         Animator plugControler = isLeft ? L_Plug : R_Plug;
@@ -557,8 +554,8 @@ public class Ascii_AI : MonoBehaviour
         Transform plugHead = isLeft ? L_PlugHead.transform : R_PlugHead.transform;
         Transform plugTip = isLeft ? L_PlugTip : R_PlugTip;
 
-        // 케이블 끝 전기 파티클 켜기
-        plugTip.gameObject.SetActive(true);
+        // 전선 타고 스파크
+        StartCoroutine(CableSpark(isLeft, aimTime));
 
         float aimCount = aimTime;
         while (aimCount > 0)
@@ -566,17 +563,20 @@ public class Ascii_AI : MonoBehaviour
             //시간 차감
             aimCount -= Time.deltaTime;
 
+            // 플러그에서 플레이어 방향
+            Quaternion rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, plugControler.transform.position) - 90f);
+
             // 플러그가 플레이어 방향 조준
-            plugHead.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, plugControler.transform.position) - 90f);
+            plugHead.rotation = rotation;
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
 
-        // 케이블 끝 전기 파티클 끄기
-        plugTip.gameObject.SetActive(false);
+        // 케이블 끝 전기 파티클 켜기
+        plugTip.gameObject.SetActive(true);
 
         // 케이블 끝이 반짝 빛나는 파티클 인디케이터
-        plugHead.transform.GetChild(1).gameObject.SetActive(true);
+        // plugHead.transform.GetChild(1).gameObject.SetActive(true);
 
         Vector2 playerPos = PlayerManager.Instance.transform.position;
         // 플레이어 위치로 플러그 헤드 이동
@@ -587,6 +587,7 @@ public class Ascii_AI : MonoBehaviour
             // 이동 완료되면 플러그 멈추기
             plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
         });
+
         // 플레이어 위치로 플러그 컨트롤러 이동
         plugControler.transform.DOMove(playerPos, 0.5f)
         .SetEase(Ease.InBack)
@@ -598,17 +599,20 @@ public class Ascii_AI : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        yield return StartCoroutine(CableSpark(isLeft));
-
         // 도달 완료하면 공격 콜라이더 켜기
         plugAtk.gameObject.SetActive(true);
-        StartCoroutine(plugAtk.AttackNDisable());
 
         // 플러그 흔들기
-        plugControler.transform.DOShakePosition(0.5f, 0.3f, 50, 90, false, false);
+        plugControler.transform.DOShakePosition(0.2f, 0.3f, 50, 90, false, false);
 
         // 공격 시간동안 대기
         yield return new WaitForSeconds(0.5f);
+
+        // 공격 콜라이더 끄기
+        plugAtk.gameObject.SetActive(false);
+
+        //todo 케이블 스파크 시작
+        //todo 플러그에서 전기 원형 방출
 
         // 공격 완료하면 플러그 이동 재개
         plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
@@ -641,6 +645,9 @@ public class Ascii_AI : MonoBehaviour
     {
         // 얼굴 바꾸기
         faceText.text = "Ϟ( ◕.̫ ◕ )Ϟ";
+
+        // 케이블 꺼내기
+        ToggleCable(true);
 
         // 플러그 땅에 꼽기
         StartCoroutine(Grounding(true));
@@ -758,7 +765,7 @@ public class Ascii_AI : MonoBehaviour
         // 인디케이터 범위 색깔 초기화
         cableTipRange.color = new Color(1, 0, 0, 0.5f);
 
-        // 스파크 켜기
+        // 전선 타고 스파크 흘리기
         yield return StartCoroutine(CableSpark(isLeft));
 
         // 페이즈 배율 적용
@@ -854,7 +861,7 @@ public class Ascii_AI : MonoBehaviour
         pulseEffect.SetActive(true);
 
         // 케이블 꺼내기
-        ToggleCable(false);
+        ToggleCable(true);
 
         // 공격 케이블 시작점은 모니터 모서리로 이동
         L_CableStart.DOLocalMove(Vector3.zero, 0.5f);
@@ -868,6 +875,7 @@ public class Ascii_AI : MonoBehaviour
         yield return new WaitUntil(() => angryGauge.fillAmount >= 1f);
 
         //todo 무궁화꽃 주문 끝날때까지 보스 무적상태 만들기
+        character.invinsible = true;
 
         // 레이저 충전 애니메이션 시작
         anim.SetTrigger("LaserSet");
@@ -922,7 +930,7 @@ public class Ascii_AI : MonoBehaviour
         //플레이어 현재 위치 기억하기
         Vector3 playerPos = PlayerManager.Instance.transform.position;
 
-        print("watch start : " + Time.time);
+        // print("watch start : " + Time.time);
 
         // 플레이어 조준 코루틴 실행
         IEnumerator aimCable = AimCable();
@@ -1014,13 +1022,17 @@ public class Ascii_AI : MonoBehaviour
         // 조준 코루틴 멈추기
         StopCoroutine(aimCable);
 
-        print("watch end : " + Time.time);
+        // print("watch end : " + Time.time);
 
         // 감시 종료
         anim.SetBool("isLaserWatch", false);
 
+        // 보스 무적 해제
+        character.invinsible = false;
+
         //몬스터 스폰 재개
-        WorldSpawner.Instance.spawnSwitch = true;
+        if (!WorldSpawner.Instance.spawnSwitch)
+            WorldSpawner.Instance.spawnSwitch = true;
         // 모든 몬스터 움직임 재개
         SystemManager.Instance.globalTimeScale = 1f;
 

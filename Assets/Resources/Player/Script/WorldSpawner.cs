@@ -57,7 +57,8 @@ public class WorldSpawner : MonoBehaviour
     public GameObject slotMachinePrefab; // 슬롯머신 프리팹
     [SerializeField] GameObject mobPortal; //몬스터 등장할 포탈 프리팹
     public GameObject healRange; // Heal 엘리트 몬스터의 힐 범위
-    public GameObject hitEffect; // 몬스터 피격시 이펙트
+    public GameObject hitEffect; // 몬스터 피격 이펙트
+    public GameObject blockEffect; // 몬스터 무적시 피격 이펙트
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
     public BoxCollider2D spawnColl; // 스포너 테두리 콜라이더

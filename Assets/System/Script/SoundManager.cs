@@ -377,7 +377,8 @@ public class SoundManager : MonoBehaviour
 
         // 모든 사운드의 디폴트 pitch 값에 타임스케일 곱하기
         foreach (Sound sound in all_Sounds)
-            sound.source.pitch = sound.pitch * scale;
+            if (sound.source != null)
+                sound.source.pitch = sound.pitch * scale;
 
         // 모든 자식 오디오소스 오브젝트의 피치에 타임스케일 곱하기
         for (int i = 0; i < soundPool.childCount; i++)

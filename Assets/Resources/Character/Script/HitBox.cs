@@ -11,6 +11,7 @@ public class HitBox : MonoBehaviour
     [Header("Refer")]
     public Character character;
     public List<Collider2D> hitColls;
+    enum DamageType { Damaged, Heal, Miss, Block }
 
     private void Awake()
     {
@@ -276,6 +277,11 @@ public class HitBox : MonoBehaviour
         // if (attack.atkEffect != null)
         //     hitEffect = attack.atkEffect;
 
+        // 현재 무적 상태면
+        if (character.invinsible)
+            // block 이펙트로 교체
+            hitEffect = WorldSpawner.Instance.blockEffect;
+
         // 피격 지점에 히트 이펙트 소환
         LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, SystemManager.Instance.effectPool);
     }
@@ -497,17 +503,13 @@ public class HitBox : MonoBehaviour
         if (character.isDead)
             return;
 
-        // 무적 상태면 리턴
-        if (character.invinsible)
-            return;
-
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 
-        // 데미지 있을때만
-        if (damage > 0)
-            // 피격 이펙트 재생
-            HitEffect(hitPos);
+        // // 데미지 있을때만
+        // if (damage > 0)
+        // 피격 이펙트 재생
+        HitEffect(hitPos);
 
         // 데미지 적용
         character.hpNow -= damage;
@@ -515,8 +517,15 @@ public class HitBox : MonoBehaviour
         //체력 범위 제한
         character.hpNow = Mathf.Clamp(character.hpNow, 0, character.hpMax);
 
-        //데미지 UI 띄우기
-        StartCoroutine(DamageText(damage, isCritical));
+        // 무적 상태일때, 방어
+        if (character.invinsible)
+            StartCoroutine(DamageText(DamageType.Block, damage, isCritical));
+        // 데미지 0일때, 회피
+        else if (damage == 0)
+            StartCoroutine(DamageText(DamageType.Miss, damage, isCritical));
+        // 데미지 양수일때, 피격
+        else
+            StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical));
 
         //보스면 체력 UI 띄우기
         if (character.enemy != null && character.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
@@ -537,37 +546,46 @@ public class HitBox : MonoBehaviour
         }
     }
 
-    public IEnumerator DamageText(float damage, bool isCritical)
+    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
-        // 크리티컬 떴을때 추가 강조효과 UI
-        if (damage > 0)
+        switch (damageType)
         {
-            if (isCritical)
-            {
-                dmgTxt.color = Color.yellow;
-            }
-            else
-            {
-                dmgTxt.color = Color.white;
-            }
+            // 데미지 있을때
+            case DamageType.Damaged:
+                // 크리티컬 떴을때 추가 강조효과 UI
+                if (isCritical)
+                {
+                    dmgTxt.color = Color.yellow;
+                }
+                else
+                {
+                    dmgTxt.color = Color.white;
+                }
 
-            dmgTxt.text = damage.ToString();
-        }
-        // 데미지 없을때
-        else if (damage == 0)
-        {
-            dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
-            dmgTxt.text = "MISS";
-        }
-        // 데미지가 마이너스일때 (체력회복일때)
-        else if (damage < 0)
-        {
-            dmgTxt.color = Color.green;
-            dmgTxt.text = "+" + (-damage).ToString();
+                dmgTxt.text = damage.ToString();
+                break;
+
+            // 데미지가 마이너스일때 (체력회복일때)
+            case DamageType.Heal:
+                dmgTxt.color = Color.green;
+                dmgTxt.text = "+" + (-damage).ToString();
+                break;
+
+            // 회피 했을때
+            case DamageType.Miss:
+                dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
+                dmgTxt.text = "MISS";
+                break;
+
+            // 방어 했을때
+            case DamageType.Block:
+                dmgTxt.color = new Color(30f / 255f, 100f / 255f, 200f / 255f);
+                dmgTxt.text = "Block";
+                break;
         }
 
         // 데미지 양수일때
