@@ -10,7 +10,6 @@ public class MagicHolder : Attack
     public MagicCastCallback magicCastCallback; // 패시브를 액티브 사용 했을때 콜백
     public delegate void MagicCastCallback();
     public MagicInfo magic; //보유한 마법 데이터
-    public Collider2D coll;
 
     [Header("Status")]
     public bool autoCoolDown = true; // 마법 시전 즉시 쿨타임 자동 차감 (쿨타임 수동 제어 여부)
@@ -37,7 +36,7 @@ public class MagicHolder : Attack
     private void Awake()
     {
         // 변수 없으면 찾기
-        // coll = coll == null ? GetComponentInChildren<Collider2D>() : coll;
+        atkColl = atkColl == null ? GetComponentInChildren<Collider2D>() : atkColl;
     }
 
     private void OnEnable()
@@ -52,8 +51,8 @@ public class MagicHolder : Attack
         initDone = false;
 
         // 마법 정보 알기 전까지 콜라이더 끄기
-        if (coll != null)
-            coll.enabled = false;
+        if (atkColl != null)
+            atkColl.enabled = false;
 
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
@@ -72,8 +71,8 @@ public class MagicHolder : Attack
             SetTarget(targetType);
 
         // 마법 정보 찾은 뒤 콜라이더 활성화
-        if (coll != null)
-            coll.enabled = true;
+        if (atkColl != null)
+            atkColl.enabled = true;
 
         //! 마법 이름 확인
         magicName = magic.name;

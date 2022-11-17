@@ -79,14 +79,17 @@ public class ParticleManager : MonoBehaviour
         }
     }
 
-    public void SmoothDespawn()
+    public void SmoothDespawn(float delay = 0)
     {
         if (gameObject.activeSelf)
-            StartCoroutine(SmoothDespawnCoroutine());
+            StartCoroutine(SmoothDespawnCoroutine(delay));
     }
 
-    IEnumerator SmoothDespawnCoroutine()
+    IEnumerator SmoothDespawnCoroutine(float delay = 0)
     {
+        // 딜레이 동안 대기
+        yield return new WaitForSeconds(delay);
+
         //파티클 재생 정지
         particle.Stop();
 

@@ -45,6 +45,7 @@ public class Ascii_AI : MonoBehaviour
     public GameObject R_CableSpark; //케이블 타고 흐르는 스파크
     public ParticleSystem groundCrackEffect; //땅 갈라지는 이펙트
     public GameObject groundElectro; //바닥 전기 공격 프리팹
+    public ParticleSystem electroBlastEffect; // 전기 디스폰 이펙트
 
     [Header("FallAtk")]
     public Collider2D fallAtkColl; // 해당 컴포넌트를 켜야 fallAtk 타격 가능
@@ -575,10 +576,11 @@ public class Ascii_AI : MonoBehaviour
         // 케이블 끝 전기 파티클 켜기
         plugTip.gameObject.SetActive(true);
 
-        // 케이블 끝이 반짝 빛나는 파티클 인디케이터
-        // plugHead.transform.GetChild(1).gameObject.SetActive(true);
+        // 찌릿 사운드 재생
+        SoundManager.Instance.PlaySound("Ascii_Sting", cableSpark.transform.position);
 
-        Vector2 playerPos = PlayerManager.Instance.transform.position;
+        Vector2 playerPos = PlayerManager.Instance.transform.position - (PlayerManager.Instance.transform.position - plugHead.transform.position).normalized * 2.7f;
+
         // 플레이어 위치로 플러그 헤드 이동
         plugHead.transform.DOMove(playerPos, 0.5f)
         .SetEase(Ease.InBack)
@@ -595,6 +597,9 @@ public class Ascii_AI : MonoBehaviour
         {
             // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
             LeanPool.Spawn(groundCrackEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            // 땅 충돌 사운드 재생
+            SoundManager.Instance.PlaySound("Ascii_CableGround", plugTip.transform.position);
         });
 
         yield return new WaitForSeconds(0.5f);
@@ -611,8 +616,56 @@ public class Ascii_AI : MonoBehaviour
         // 공격 콜라이더 끄기
         plugAtk.gameObject.SetActive(false);
 
-        //todo 케이블 스파크 시작
-        //todo 플러그에서 전기 원형 방출
+        // 케이블 스파크 시작
+        yield return StartCoroutine(CableSpark(isLeft, aimTime));
+
+        int shotNum = 3;
+        for (int i = 0; i < shotNum; i++)
+        {
+            // 플러그에서 전기 방출
+            GameObject groundSpark = LeanPool.Spawn(groundElectro, plugAtk.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+
+            // 뒤쪽 랜덤 위치
+            Vector2 backPos = (Vector2)plugAtk.transform.position + Random.insideUnitCircle * 10f;
+
+            // 플레이어 - 랜덤 위치 거리
+            float backDis = Vector2.Distance(PlayerManager.Instance.transform.position, backPos);
+            // 플레이어 - 플러그 거리
+            float plugDis = Vector2.Distance(PlayerManager.Instance.transform.position, plugAtk.transform.position);
+
+            // 플레이어쪽에 더 가까우면 뒤쪽으로 가게 수정
+            if (backDis < plugDis)
+                backPos = (Vector2)plugAtk.transform.position + ((Vector2)plugAtk.transform.position - backPos);
+
+            // 도착 위치, 플레이어 근처
+            Vector2 endPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * 3f;
+
+            // 베지어 곡선 위치 잡기
+            Vector3[] bezierCurve = { plugAtk.transform.position, backPos, endPos };
+
+            // 도착 지점까지 거리
+            float endDis = Vector2.Distance(endPos, backPos);
+            print(endDis);
+
+            // 추적 시간
+            float followTime = endDis / 20f;
+
+            // 전기가 플레이어 추적
+            groundSpark.transform.DOPath(bezierCurve, followTime, PathType.CatmullRom, PathMode.TopDown2D, 10, Color.red)
+            .SetEase(Ease.InExpo)
+            .OnComplete(() =>
+            {
+                // 파괴 이펙트 생성
+                LeanPool.Spawn(electroBlastEffect, groundSpark.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                // 디스폰
+                groundSpark.GetComponent<ParticleManager>().SmoothDespawn();
+            });
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // 공격 시간동안 대기
+        yield return new WaitForSeconds(1f);
 
         // 공격 완료하면 플러그 이동 재개
         plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
@@ -1057,11 +1110,12 @@ public class Ascii_AI : MonoBehaviour
         LineRenderer cableLine = isLeft ? L_Cable : R_Cable; // 케이블 라인 오브젝트
         GameObject cableSpark = isLeft ? L_CableSpark : R_CableSpark; // 케이블 타고 흐르는 스파크 이펙트
 
-        // 찌릿 사운드 재생
-        SoundManager.Instance.PlaySound("Ascii_Sting", cableSpark.transform.position);
+        // 전선 찌릿 사운드 재생
+        AudioSource cableSound = SoundManager.Instance.PlaySound("Ascii_ElectroStream", cableSpark.transform.position);
 
         // 스파크 켜기
         cableSpark.SetActive(true);
+
         // 전기 파티클이 전선을 타고 플러그까지 빠르게 도달
         for (int i = 0; i < cableLine.positionCount; i++)
         {
@@ -1071,6 +1125,10 @@ public class Ascii_AI : MonoBehaviour
             // (1 / 링크개수) 만큼 대기
             yield return new WaitForSeconds(duration / cableLine.positionCount);
         }
+
+        // 전선 사운드 끄기
+        SoundManager.Instance.StopSound(cableSound, 1f);
+
         // 스파크 끄기
         cableSpark.SetActive(false);
 

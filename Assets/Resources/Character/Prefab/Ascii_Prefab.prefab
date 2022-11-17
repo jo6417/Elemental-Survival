@@ -28243,6 +28243,8 @@ MonoBehaviour:
     type: 3}
   groundElectro: {fileID: 5119122287556352963, guid: f2871a836eb14ad4fa24d9cffa18fe84,
     type: 3}
+  electroBlastEffect: {fileID: 6846269628387522840, guid: 0c4b89cb023439f4fbb6e27f9db5b895,
+    type: 3}
   fallAtkColl: {fileID: 9097308635735847014}
   fallRangeTrigger: {fileID: 6909717035306626906}
   fallRangeBackground: {fileID: 9177898890322600236}

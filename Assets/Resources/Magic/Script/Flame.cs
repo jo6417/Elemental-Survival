@@ -32,7 +32,7 @@ public class Flame : MonoBehaviour
     IEnumerator Init()
     {
         // 콜라이더 끄기
-        magicHolder.coll.enabled = false;
+        magicHolder.atkColl.enabled = false;
 
         //magic 불러올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
@@ -59,7 +59,7 @@ public class Flame : MonoBehaviour
         transform.localScale = Vector2.one * range / 10f;
 
         // 콜라이더 켜기
-        magicHolder.coll.enabled = true;
+        magicHolder.atkColl.enabled = true;
 
         // 화염 파티클 재생
         particleManager.particle.Play();

@@ -59,6 +59,7 @@ public class SoundManager : MonoBehaviour
     [Header("Refer")]
     [SerializeField] GameObject emptyAudio;
     [SerializeField] Transform soundPool;
+    [SerializeField] AnimationCurve curve_3D;
 
     [Header("Sounds")]
     private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
@@ -171,7 +172,8 @@ public class SoundManager : MonoBehaviour
         // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
         audio.spatialBlend = 1f;
         audio.rolloffMode = AudioRolloffMode.Custom;
-        audio.maxDistance = 35f;
+        audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
+        audio.maxDistance = 50f;
 
         // 재생 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
