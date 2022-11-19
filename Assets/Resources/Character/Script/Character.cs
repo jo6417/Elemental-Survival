@@ -831,6 +831,11 @@ public class Character : MonoBehaviour
         }
     }
 
+    void GlobalSoundPlay(string soundName)
+    {
+        SoundManager.Instance.PlaySound(soundName);
+    }
+
     void SoundPlay(string soundName)
     {
         SoundManager.Instance.PlaySound(soundName, transform.position);

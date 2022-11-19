@@ -1262,7 +1262,6 @@ public class HotDog_AI : EnemyAI
     void Hit()
     {
         // 체력이 2/3 ~ 3/3 사이일때 1페이즈
-
         // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
         if (nowPhase == 1 && character.hpNow / character.hpMax <= 2f / 3f)
         {

@@ -222,25 +222,6 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_IsActive
-    path: Canvas/CanvasChildren/LaserText
-    classID: 1
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
         value: 1
         inSlope: Infinity
         outSlope: Infinity
@@ -334,22 +315,42 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 4854717294251204818, guid: 18ad9fabdf9015e41b8bc31cff448daa,
+      value: {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa,
         type: 3}
     - time: 0.25
-      value: {fileID: -3570135257023498171, guid: 18ad9fabdf9015e41b8bc31cff448daa,
+      value: {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa,
         type: 3}
     - time: 0.5
-      value: {fileID: 6662618489849775281, guid: 18ad9fabdf9015e41b8bc31cff448daa,
+      value: {fileID: 6355973998906905200, guid: 18ad9fabdf9015e41b8bc31cff448daa,
         type: 3}
     - time: 0.75
-      value: {fileID: 1727079075786078967, guid: 18ad9fabdf9015e41b8bc31cff448daa,
+      value: {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa,
         type: 3}
     - time: 1
-      value: {fileID: 4854717294251204818, guid: 18ad9fabdf9015e41b8bc31cff448daa,
+      value: {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa,
         type: 3}
     attribute: m_Sprite
     path: 
+    classID: 212
+    script: {fileID: 0}
+  - curve:
+    - time: 0
+      value: {fileID: 2036740103066496371, guid: c5ed30b6b69fd45449768c50c0951d25,
+        type: 3}
+    - time: 0.25
+      value: {fileID: -6020203867105147014, guid: c5ed30b6b69fd45449768c50c0951d25,
+        type: 3}
+    - time: 0.5
+      value: {fileID: -5852371515150893303, guid: c5ed30b6b69fd45449768c50c0951d25,
+        type: 3}
+    - time: 0.75
+      value: {fileID: -6020203867105147014, guid: c5ed30b6b69fd45449768c50c0951d25,
+        type: 3}
+    - time: 1
+      value: {fileID: 2036740103066496371, guid: c5ed30b6b69fd45449768c50c0951d25,
+        type: 3}
+    attribute: m_Sprite
+    path: Screen
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
@@ -395,13 +396,6 @@ AnimationClip:
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2191660409
-      attribute: 2086281974
-      script: {fileID: 0}
-      typeID: 1
-      customType: 0
-      isPPtrCurve: 0
-    - serializedVersion: 2
       path: 1041616152
       attribute: 2086281974
       script: {fileID: 0}
@@ -430,6 +424,13 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     - serializedVersion: 2
+      path: 3638584326
+      attribute: 0
+      script: {fileID: 0}
+      typeID: 212
+      customType: 23
+      isPPtrCurve: 1
+    - serializedVersion: 2
       path: 2721278254
       attribute: 2537237887
       script: {fileID: 0}
@@ -444,11 +445,16 @@ AnimationClip:
       customType: 0
       isPPtrCurve: 0
     pptrCurveMapping:
-    - {fileID: 4854717294251204818, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
-    - {fileID: -3570135257023498171, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
-    - {fileID: 6662618489849775281, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
-    - {fileID: 1727079075786078967, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
-    - {fileID: 4854717294251204818, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+    - {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+    - {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+    - {fileID: 6355973998906905200, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+    - {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+    - {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
+    - {fileID: 2036740103066496371, guid: c5ed30b6b69fd45449768c50c0951d25, type: 3}
+    - {fileID: -6020203867105147014, guid: c5ed30b6b69fd45449768c50c0951d25, type: 3}
+    - {fileID: -5852371515150893303, guid: c5ed30b6b69fd45449768c50c0951d25, type: 3}
+    - {fileID: -6020203867105147014, guid: c5ed30b6b69fd45449768c50c0951d25, type: 3}
+    - {fileID: 2036740103066496371, guid: c5ed30b6b69fd45449768c50c0951d25, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -781,25 +787,6 @@ AnimationClip:
       m_RotationOrder: 4
     attribute: m_IsActive
     path: Canvas/CanvasChildren/BlueScreen
-    classID: 1
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_IsActive
-    path: Canvas/CanvasChildren/LaserText
     classID: 1
     script: {fileID: 0}
   - curve:

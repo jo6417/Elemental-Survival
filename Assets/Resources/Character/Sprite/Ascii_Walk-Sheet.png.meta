@@ -14,6 +14,18 @@ TextureImporter:
   - first:
       213: 6662618489849775281
     second: Screen_Walk-Sheet_3
+  - first:
+      213: 7872801947101234692
+    second: Ascii_Walk-Sheet_0
+  - first:
+      213: -1650762901199698024
+    second: Ascii_Walk-Sheet_1
+  - first:
+      213: 6355973998906905200
+    second: Ascii_Walk-Sheet_2
+  - first:
+      213: 1996168882681719883
+    second: Ascii_Walk-Sheet_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -103,7 +115,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Screen_Walk-Sheet_0
+      name: Ascii_Walk-Sheet_0
       rect:
         serializedVersion: 2
         x: 0
@@ -117,14 +129,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7fa3d3bd441d7f710800000000000000
-      internalID: 1727079075786078967
+      spriteID: 40609f3b8afc14d60800000000000000
+      internalID: 7872801947101234692
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screen_Walk-Sheet_1
+      name: Ascii_Walk-Sheet_1
       rect:
         serializedVersion: 2
         x: 176
@@ -138,14 +150,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d0e9c068ab6f5340800000000000000
-      internalID: 4854717294251204818
+      spriteID: 897499133ef4719e0800000000000000
+      internalID: -1650762901199698024
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screen_Walk-Sheet_2
+      name: Ascii_Walk-Sheet_2
       rect:
         serializedVersion: 2
         x: 352
@@ -159,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 548340d26e4547ec0800000000000000
-      internalID: -3570135257023498171
+      spriteID: 07217763da4f43850800000000000000
+      internalID: 6355973998906905200
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Screen_Walk-Sheet_3
+      name: Ascii_Walk-Sheet_3
       rect:
         serializedVersion: 2
         x: 528
@@ -180,8 +192,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1b402796730667c50800000000000000
-      internalID: 6662618489849775281
+      spriteID: b4caeebc501d3bb10800000000000000
+      internalID: 1996168882681719883
       vertices: []
       indices: 
       edges: []

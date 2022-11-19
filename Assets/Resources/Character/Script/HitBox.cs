@@ -189,58 +189,64 @@ public class HitBox : MonoBehaviour
                 yield break;
             }
 
-            // 목표가 미설정 되었을때
-            if (magicHolder.targetType == MagicHolder.TargetType.None)
+            // 목표가 미설정 혹은 플레이어일때
+            if (magicHolder.targetType == MagicHolder.TargetType.None
+            || magicHolder.targetType == MagicHolder.TargetType.Player)
             {
                 // print("타겟 미설정");
                 yield break;
             }
 
-            // 히트 콜백 있으면 실행
-            if (magicHolder.hitAction != null)
-                magicHolder.hitAction.Invoke();
-
-            // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
-            if (magicHolder.pierceCount > 0)
-                // 관통 횟수 차감
-                magicHolder.pierceCount--;
-
-            // 마법 파워 계산
-            float power = MagicDB.Instance.MagicPower(magic);
-            //크리티컬 성공 여부 계산
-            isCritical = MagicDB.Instance.MagicCritical(magic);
-            //크리티컬 데미지 계산
-            float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
-
-            // print(attacker.gameObject.name + " : " + magic.name);
-
-            // 데미지가 있으면
-            if (power > 0)
+            // 몬스터가 타겟일때
+            if (magicHolder.targetType == MagicHolder.TargetType.Enemy
+            || magicHolder.targetType == MagicHolder.TargetType.Both)
             {
-                //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
-                damage = magicHolder.fixedPower > 0 ? magicHolder.fixedPower : power;
-                // 고정 데미지에 확률 계산
-                damage = Random.Range(damage * 0.8f, damage * 1.2f);
+                // 히트 콜백 있으면 실행
+                if (magicHolder.hitAction != null)
+                    magicHolder.hitAction.Invoke();
 
-                // 크리티컬이면, 크리티컬 배율 반영시 기존 데미지보다 크면
-                if (isCritical)
+                // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
+                if (magicHolder.pierceCount > 0)
+                    // 관통 횟수 차감
+                    magicHolder.pierceCount--;
+
+                // 마법 파워 계산
+                float power = MagicDB.Instance.MagicPower(magic);
+                //크리티컬 성공 여부 계산
+                isCritical = MagicDB.Instance.MagicCritical(magic);
+                //크리티컬 데미지 계산
+                float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+
+                // print(attacker.gameObject.name + " : " + magic.name);
+
+                // 데미지가 있으면
+                if (power > 0)
                 {
-                    // 크리티컬 파워를 곱해도 데미지가 같으면
-                    if (damage == damage * criticalPower)
-                        // 데미지 1 상승
-                        damage++;
-                    // 배율을 해서 데미지가 높아진다면
-                    else
-                        // 크리티컬 배율 곱한것으로 데미지 결정
-                        damage = damage * criticalPower;
-                }
+                    //데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
+                    damage = magicHolder.fixedPower > 0 ? magicHolder.fixedPower : power;
+                    // 고정 데미지에 확률 계산
+                    damage = Random.Range(damage * 0.8f, damage * 1.2f);
 
-                // // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈)
-                // if (attacker.poisonTime == 0
-                // && attacker.burnTime == 0
-                // && attacker.bleedTime == 0)
-                // 데미지 주기
-                Damage(damage, isCritical, hitPos);
+                    // 크리티컬이면, 크리티컬 배율 반영시 기존 데미지보다 크면
+                    if (isCritical)
+                    {
+                        // 크리티컬 파워를 곱해도 데미지가 같으면
+                        if (damage == damage * criticalPower)
+                            // 데미지 1 상승
+                            damage++;
+                        // 배율을 해서 데미지가 높아진다면
+                        else
+                            // 크리티컬 배율 곱한것으로 데미지 결정
+                            damage = damage * criticalPower;
+                    }
+
+                    // // 도트 피해 옵션 없을때만 데미지 (독, 화상, 출혈)
+                    // if (attacker.poisonTime == 0
+                    // && attacker.burnTime == 0
+                    // && attacker.bleedTime == 0)
+                    // 데미지 주기
+                    Damage(damage, isCritical, hitPos);
+                }
             }
         }
         // 그냥 Attack 컴포넌트일때
@@ -253,12 +259,16 @@ public class HitBox : MonoBehaviour
             Damage(damage, isCritical, hitPos);
         }
 
-        // 디버프 판단해서 적용
-        AfterEffect(attacker, isCritical, damage);
+        // 무적 아닐때
+        if (!character.invinsible)
+        {
+            // 디버프 판단해서 적용
+            AfterEffect(attacker, isCritical, damage);
 
-        //피격 딜레이 무적시간 시작
-        character.hitCoroutine = HitDelay(damage);
-        StartCoroutine(character.hitCoroutine);
+            //피격 딜레이 무적시간 시작
+            character.hitCoroutine = HitDelay(damage);
+            StartCoroutine(character.hitCoroutine);
+        }
     }
 
     void HitEffect(Vector2 hitPos = default)
