@@ -17,7 +17,7 @@ public class ParticleManager : MonoBehaviour
 
     private void Awake()
     {
-        particle = GetComponentInChildren<ParticleSystem>();
+        particle = GetComponent<ParticleSystem>();
         coll = GetComponentInChildren<Collider2D>();
     }
 

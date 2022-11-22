@@ -359,7 +359,7 @@ public class SystemManager : MonoBehaviour
         return rateList.Count - 1;
     }
 
-    public List<int> RandomIndexes(int listNum, int indexNum, bool overlap = false)
+    public List<int> RandomIndexes(int listNum, int getNum, bool overlap = false)
     {
         List<int> indexes = new List<int>();
         List<int> returnIndexes = new List<int>();
@@ -371,7 +371,7 @@ public class SystemManager : MonoBehaviour
         }
 
         // 필요한 인덱스 수만큼 반복
-        for (int i = 0; i < indexNum; i++)
+        for (int i = 0; i < getNum; i++)
         {
             // 랜덤 인덱스 하나 뽑기
             int randomIndex = UnityEngine.Random.Range(0, indexes.Count);

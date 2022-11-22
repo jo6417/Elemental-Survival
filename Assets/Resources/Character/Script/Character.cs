@@ -43,8 +43,7 @@ public class Character : MonoBehaviour
             return isGhost;
         }
     }
-    public State nowState; //현재 상태
-    public enum State { Idle, Hit, Dead, TimeStop, MagicStop }
+
     public Action nowAction = Action.Idle; //현재 행동
     public enum Action { Idle, Rest, Walk, Jump, Attack }
     public MoveType moveType;
@@ -477,14 +476,15 @@ public class Character : MonoBehaviour
             }
         }
 
-        //죽음 여부 초기화
-        isDead = false;
-
-        // idle 상태로 전환
-        nowState = State.Idle;
-
-        if (enemy != null)
+        // 죽음 상태일때
+        if (isDead)
         {
+            //죽음 여부 초기화
+            isDead = false;
+
+            // idle 상태로 전환
+            nowAction = Action.Idle;
+
             for (int i = 0; i < animList.Count; i++)
             {
                 // 애니메이터 켜기
@@ -494,22 +494,20 @@ public class Character : MonoBehaviour
                 // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
                 animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
             }
+        }
 
+        if (enemy != null)
             //보스면 체력 UI 띄우기
             if (enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
             {
                 StartCoroutine(UIManager.Instance.UpdateBossHp(this));
             }
-        }
 
         // 히트박스 전부 켜기
         for (int i = 0; i < hitBoxList.Count; i++)
         {
             hitBoxList[i].enabled = true;
         }
-
-        // Idle로 초기화
-        nowAction = Action.Idle;
 
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;
@@ -629,8 +627,6 @@ public class Character : MonoBehaviour
         //전역 타임스케일이 0 일때
         if (SystemManager.Instance.globalTimeScale == 0)
         {
-            nowState = State.MagicStop;
-
             // 애니메이션 멈추기
             if (animList.Count > 0)
             {
@@ -652,8 +648,6 @@ public class Character : MonoBehaviour
         // 멈춤 디버프일때
         if (stopCount > 0)
         {
-            nowState = State.TimeStop;
-
             // transform.DOPause();
 
             rigid.velocity = Vector2.zero; //이동 초기화

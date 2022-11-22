@@ -421,9 +421,6 @@ public class HitBox : MonoBehaviour
     {
         // Chracter character = character as Chracter;
 
-        // Hit 상태로 변경
-        this.character.nowState = Character.State.Hit;
-
         // 몬스터 정보가 있을때
         if (character.enemy != null)
             character.hitDelayCount = character.enemy.hitDelay;
@@ -521,21 +518,24 @@ public class HitBox : MonoBehaviour
         // 피격 이펙트 재생
         HitEffect(hitPos);
 
-        // 데미지 적용
-        character.hpNow -= damage;
+        // 무적 상태일때, 방어
+        if (character.invinsible)
+            StartCoroutine(DamageText(DamageType.Block, damage, isCritical, hitPos));
+        // 데미지 0일때, 회피
+        else if (damage == 0)
+            StartCoroutine(DamageText(DamageType.Miss, damage, isCritical, hitPos));
+        // 데미지 양수일때, 피격
+        else
+            StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical, hitPos));
+
+
+        // 무적 아닐때
+        if (!character.invinsible)
+            // 데미지 적용
+            character.hpNow -= damage;
 
         //체력 범위 제한
         character.hpNow = Mathf.Clamp(character.hpNow, 0, character.hpMax);
-
-        // 무적 상태일때, 방어
-        if (character.invinsible)
-            StartCoroutine(DamageText(DamageType.Block, damage, isCritical));
-        // 데미지 0일때, 회피
-        else if (damage == 0)
-            StartCoroutine(DamageText(DamageType.Miss, damage, isCritical));
-        // 데미지 양수일때, 피격
-        else
-            StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical));
 
         //보스면 체력 UI 띄우기
         if (character.enemy != null && character.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
@@ -556,10 +556,10 @@ public class HitBox : MonoBehaviour
         }
     }
 
-    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical)
+    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, hitPos, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
         switch (damageType)
@@ -767,7 +767,6 @@ public class HitBox : MonoBehaviour
 
         // 경직 시간 추가
         // hitCount += 1f;
-        character.nowState = Character.State.Dead;
 
         // 몬스터 정보가 있을때
         if (character.enemy != null)

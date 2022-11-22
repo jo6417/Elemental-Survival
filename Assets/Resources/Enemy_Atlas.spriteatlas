@@ -92,7 +92,8 @@ SpriteAtlas:
   - {fileID: -1663401755257356396, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
   - {fileID: 21300000, guid: ce887cd5410bca540b8cee733684af69, type: 3}
   - {fileID: 21300000, guid: 5e2b48e53eb32ec429289f916c1cae0b, type: 3}
-  - {fileID: 21300000, guid: 04eec946ba73a0646b3153b584dbf0be, type: 3}
+  - {fileID: -1162136021802136116, guid: 04eec946ba73a0646b3153b584dbf0be, type: 3}
+  - {fileID: 6615824175737537757, guid: 04eec946ba73a0646b3153b584dbf0be, type: 3}
   - {fileID: 21300000, guid: cb83cf563e311094d9af76686d41bef5, type: 3}
   - {fileID: 21300000, guid: 44896786367228440b7f236064f0c38b, type: 3}
   - {fileID: 21300000, guid: fd2ec896f18588247a5a07a6063bbf21, type: 3}
@@ -246,7 +247,8 @@ SpriteAtlas:
   - A-800_Attack_Sheet_4
   - VacuumFin
   - KingSlime_Skin
-  - Ascii_Screen
+  - Ascii_Screen_0
+  - Ascii_Screen_1
   - B_800_Icon
   - WaterSlime_Icon
   - Ascii_Idle_Icon

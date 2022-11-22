@@ -42,14 +42,16 @@ public class EnemyAI : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => character.enemy != null);
 
-        //애니메이션 스피드 초기화
-        if (character.animList != null)
-        {
-            foreach (Animator anim in character.animList)
+        // 죽은 상태일때
+        if (character.isDead)
+            //애니메이션 스피드 초기화
+            if (character.animList != null)
             {
-                anim.speed = 1f;
+                foreach (Animator anim in character.animList)
+                {
+                    anim.speed = 1f;
+                }
             }
-        }
 
         //속도 초기화
         character.rigid.velocity = Vector2.zero;
