@@ -175,6 +175,9 @@ public class PlayerHitBox : MonoBehaviour
 
             // 데미지 입기
             Damage(damage, isCritical, hitPos);
+
+            // 디버프를 위해 크리티컬 true로 고정
+            isCritical = true;
         }
 
         // 디버프 판단해서 적용

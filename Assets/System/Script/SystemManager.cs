@@ -15,8 +15,9 @@ using System;
 using UnityEditor;
 
 [Serializable]
-public class LayerList
+public class PhysicsLayerList
 {
+    // 물리 충돌 레이어
     public LayerMask PlayerPhysics_Mask;
     public LayerMask EnemyPhysics_Mask;
     public LayerMask PlayerHit_Mask;
@@ -26,8 +27,6 @@ public class LayerList
     public LayerMask AllAttack_Mask;
     public LayerMask Item_Mask;
     public LayerMask Object_Mask;
-
-    // public int pl {get{return LayerMask.NameToLayer("PlayerPhysics");}}
 
     public int PlayerPhysics_Layer { get { return LayerMask.NameToLayer("PlayerPhysics"); } }
     public int EnemyPhysics_Layer { get { return LayerMask.NameToLayer("EnemyPhysics"); } }
@@ -90,7 +89,7 @@ public class SystemManager : MonoBehaviour
     public GameObject markPrefab; //! 위치 체크용 마크 프리팹
 
     [Header("Tag&Layer")]
-    public LayerList layerList;
+    public PhysicsLayerList layerList;
     public enum TagNameList { Player, Enemy, Magic, Item, Object };
 
     [Header("Pool")]
@@ -359,7 +358,8 @@ public class SystemManager : MonoBehaviour
         return rateList.Count - 1;
     }
 
-    public List<int> RandomIndexes(int listNum, int getNum, bool overlap = false)
+    // 중복 없이 인덱스 뽑기
+    public List<int> RandomIndexes(int listNum, int getNum)
     {
         List<int> indexes = new List<int>();
         List<int> returnIndexes = new List<int>();
@@ -377,12 +377,10 @@ public class SystemManager : MonoBehaviour
             int randomIndex = UnityEngine.Random.Range(0, indexes.Count);
 
             // 해당 인덱스를 리턴 리스트에 넣기
-            returnIndexes.Add(randomIndex);
+            returnIndexes.Add(indexes[randomIndex]);
 
-            // 중복 방지 옵션 켜졌으면
-            if (overlap)
-                // 해당 인덱스 삭제해 중복방지
-                indexes.RemoveAt(randomIndex);
+            // 해당 인덱스를 인덱스 풀에서 삭제해 중복방지
+            indexes.RemoveAt(randomIndex);
         }
 
         return returnIndexes;

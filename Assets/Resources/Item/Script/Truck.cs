@@ -177,7 +177,7 @@ public class Truck : MonoBehaviour
         });
 
         // 랜덤 자판기 종류 뽑기 (중복 방지)
-        List<int> randomShops = SystemManager.Instance.RandomIndexes(shopGlass.transform.GetChild(0).childCount, 2, false);
+        List<int> randomShops = SystemManager.Instance.RandomIndexes(shopGlass.transform.GetChild(0).childCount, 2);
 
         // 자판기 개수만큼 반복
         for (int i = 0; i < shopGlass.transform.childCount; i++)
