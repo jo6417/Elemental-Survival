@@ -59,7 +59,8 @@ public class EnemyAI : MonoBehaviour
         character.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 콜라이더 충돌 초기화
-        character.physicsColl.isTrigger = false;
+        if (character.physicsColl != null)
+            character.physicsColl.isTrigger = false;
     }
 
     private void Update()

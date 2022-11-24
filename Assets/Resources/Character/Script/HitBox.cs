@@ -743,14 +743,14 @@ public class HitBox : MonoBehaviour
 
     public IEnumerator FlatDebuff(float flatTime)
     {
-        //정지 시간 추가
-        character.flatCount = flatTime;
+        // 정지 시간 초기화
+        character.stopCount = flatTime;
 
         //스케일 납작하게
         character.transform.localScale = new Vector2(1f, 0.5f);
 
         // stopCount 풀릴때까지 대기
-        yield return new WaitUntil(() => character.flatCount <= 0);
+        yield return new WaitUntil(() => character.stopCount <= 0);
         // yield return new WaitForSeconds(flatTime);
 
         //스케일 복구
@@ -775,7 +775,8 @@ public class HitBox : MonoBehaviour
             character.rigid.velocity = Vector2.zero;
 
             // 물리 콜라이더 끄기
-            character.physicsColl.enabled = false;
+            if (character.physicsColl != null)
+                character.physicsColl.enabled = false;
         }
 
         // 피격 콜라이더 모두 끄기

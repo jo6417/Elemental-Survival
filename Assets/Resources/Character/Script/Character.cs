@@ -45,7 +45,7 @@ public class Character : MonoBehaviour
     }
 
     public Action nowAction = Action.Idle; //현재 행동
-    public enum Action { Idle, Rest, Walk, Jump, Attack }
+    public enum Action { Idle, Rest, Walk, Jump, Attack, Die }
     public MoveType moveType;
     public enum MoveType
     {
@@ -169,9 +169,9 @@ public class Character : MonoBehaviour
         TargetObj = PlayerManager.Instance.gameObject;
 
         // 공격 트리거 찾기
-        enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
+        // enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
         // 공격 콜라이더 찾기
-        enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
+        // enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
 
         // 히트 이펙트가 없으면 기본 이펙트 가져오기
         if (hitEffect == null)
@@ -210,7 +210,8 @@ public class Character : MonoBehaviour
         if (enemy != null)
         {
             // 물리 콜라이더 끄기
-            physicsColl.enabled = false;
+            if (physicsColl != null)
+                physicsColl.enabled = false;
 
             //스케일 초기화
             transform.localScale = Vector3.one;
@@ -463,7 +464,8 @@ public class Character : MonoBehaviour
             if (enemy != null)
             {
                 // 물리 콜라이더 켜기
-                physicsColl.enabled = true;
+                if (physicsColl != null)
+                    physicsColl.enabled = true;
 
                 // 공격 트리거 레이어를 몬스터 공격으로 바꾸기
                 if (enemyAtkTrigger)

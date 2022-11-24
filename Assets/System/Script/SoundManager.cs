@@ -132,6 +132,13 @@ public class SoundManager : MonoBehaviour
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
+        // 없으면 리턴
+        if (sound == null)
+        {
+            Debug.Log("Sound Not Found");
+            return;
+        }
+
         // 볼륨 및 피치 초기화
         sound.source.volume = sound.volume;
         sound.source.pitch = sound.pitch;

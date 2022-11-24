@@ -562,7 +562,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.transform.localScale = new Vector2(1f, 0.5f);
 
         //위치 얼리기
-        playerManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
+        // playerManager.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
 
         //플레이어 멈추기
         playerManager.Move();
@@ -576,7 +576,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.transform.localScale = Vector2.one;
 
         //위치 얼리기 해제
-        playerManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+        // playerManager.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 플레이어 움직임 다시 재생
         playerManager.Move();
