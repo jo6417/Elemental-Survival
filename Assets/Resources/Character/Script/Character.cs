@@ -45,7 +45,7 @@ public class Character : MonoBehaviour
     }
 
     public Action nowAction = Action.Idle; //현재 행동
-    public enum Action { Idle, Rest, Walk, Jump, Attack, Die }
+    public enum Action { Idle, Rest, Walk, Jump, Attack, Dead }
     public MoveType moveType;
     public enum MoveType
     {
@@ -622,7 +622,7 @@ public class Character : MonoBehaviour
         // 죽는 중일때
         if (isDead)
         {
-            // 행동불능이므로 false 리턴
+            // 행동불능이므로 false 리턴 
             return false;
         }
 
@@ -701,27 +701,27 @@ public class Character : MonoBehaviour
         // 모든 문제 없으면 idle 상태로 전환
         // state = State.Idle;
 
-        // 고스트일때
-        if (IsGhost)
-            // rigid, sprite, 트윈, 애니메이션 상태 초기화
-            for (int i = 0; i < spriteList.Count; i++)
-            {
-                // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
-                spriteList[i].material = SystemManager.Instance.outLineMat;
-                spriteList[i].color = new Color(0, 1, 1, 0.5f);
-            }
-        // 고스트 아닐때
-        else
-            // rigid, sprite, 트윈, 애니메이션 상태 초기화
-            for (int i = 0; i < spriteList.Count; i++)
-            {
-                // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
-                spriteList[i].color = originColorList[i];
+        // // 고스트일때
+        // if (IsGhost)
+        //     // rigid, sprite, 트윈, 애니메이션 상태 초기화
+        //     for (int i = 0; i < spriteList.Count; i++)
+        //     {
+        //         // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
+        //         spriteList[i].material = SystemManager.Instance.outLineMat;
+        //         spriteList[i].color = new Color(0, 1, 1, 0.5f);
+        //     }
+        // // 고스트 아닐때
+        // else
+        //     // rigid, sprite, 트윈, 애니메이션 상태 초기화
+        //     for (int i = 0; i < spriteList.Count; i++)
+        //     {
+        //         // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
+        //         spriteList[i].color = originColorList[i];
 
-                // 엘리트 아닐때
-                if (eliteClass == EliteClass.None)
-                    spriteList[i].material = originMatList[i];
-            }
+        //         // 엘리트 아닐때
+        //         if (eliteClass == EliteClass.None)
+        //             spriteList[i].material = originMatList[i];
+        //     }
 
         // transform.DOPlay();
 

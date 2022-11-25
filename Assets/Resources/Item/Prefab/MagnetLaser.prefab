@@ -5005,7 +5005,7 @@ MonoBehaviour:
   startTime: 0.5
   expandTime: 0.2
   pulseDelay: 0.1
-  durationTime: 5
+  durationTime: 1
 --- !u!1 &2110571523205595188
 GameObject:
   m_ObjectHideFlags: 0
