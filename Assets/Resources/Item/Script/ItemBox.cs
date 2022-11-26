@@ -9,7 +9,7 @@ public class ItemBox : Character
     [SerializeField] Sprite[] boxSpriteList = new Sprite[2];
     [SerializeField] SpriteRenderer boxSprite;
     [SerializeField] List<ItemInfo> dropList = new List<ItemInfo>();
-    Collider2D coll;
+    [SerializeField] Collider2D coll;
 
     [Header("State")]
     [SerializeField] float boxHp = 5f; // 박스 체력 기본값
@@ -35,6 +35,9 @@ public class ItemBox : Character
 
     IEnumerator Init()
     {
+        // 콜라이더 끄기
+        coll.enabled = false;
+
         // 닫힌 상자 스프라이트로 초기화
         boxSprite.sprite = boxSpriteList[0];
 
@@ -108,6 +111,9 @@ public class ItemBox : Character
         // 캐릭터 초기화 완료
         initialStart = true;
         initialFinish = true;
+
+        // 콜라이더 켜기
+        // coll.enabled = true;
     }
 
     // private void OnTriggerExit2D(Collider2D other)

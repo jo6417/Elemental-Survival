@@ -272,9 +272,16 @@ public class SoundManager : MonoBehaviour
                 audio.Play();
             }
         }
+        // 무한 반복 아닐때
         else
             for (int i = 0; i < loopNum; i++)
             {
+                // 스케일타임에 따라 딜레이 동안 대기
+                if (scaledTime)
+                    yield return waitScaled_Delay;
+                else
+                    yield return waitUnScaled_Delay;
+
                 // 사운드 있으면 재생
                 if (audio != null)
                 {
@@ -283,12 +290,6 @@ public class SoundManager : MonoBehaviour
 
                     audio.Play();
                 }
-
-                // 스케일타임에 따라 딜레이 동안 대기
-                if (scaledTime)
-                    yield return waitScaled_Delay;
-                else
-                    yield return waitUnScaled_Delay;
             }
 
         WaitForSeconds waitScaled_Delta = new WaitForSeconds(Time.deltaTime);

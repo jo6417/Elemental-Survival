@@ -50,6 +50,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 1224538208914636612}
+  hitColls:
+  - {fileID: 1224538208914632891}
 --- !u!114 &1224538208914636612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,9 +80,9 @@ MonoBehaviour:
   attackRange: 0
   healCount: 0
   isGhost: 0
-  nowState: 0
   nowAction: 0
   moveType: 0
+  targetObj: {fileID: 0}
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
@@ -101,6 +103,7 @@ MonoBehaviour:
   particleHitCount: 0
   hitDelayCount: 0
   stopCount: 0
+  stunCount: 0
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
@@ -119,6 +122,7 @@ MonoBehaviour:
   - {fileID: 5120486892498621822, guid: 1003ec31f5de91641936c27bd61683fc, type: 3}
   - {fileID: -9164616227387703759, guid: 1003ec31f5de91641936c27bd61683fc, type: 3}
   boxSprite: {fileID: 5681405427148299961}
+  coll: {fileID: 1224538208914632891}
   boxHp: 3
   productName: 
   randomRate: []
