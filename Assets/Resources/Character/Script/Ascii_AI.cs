@@ -15,7 +15,6 @@ public class Ascii_AI : MonoBehaviour
     enum Face { Idle, CloseEye, Dizzy, Hit, Electro, Rage, Watch, Rest, Fall }
     [SerializeField] float attackDistance = 10f;
     float speed;
-    List<int> atkList = new List<int>(); //공격 패턴 담을 변수
     // 보스 좌우 반전 여부를 리턴
     // float flip
     // {
@@ -649,17 +648,14 @@ public class Ascii_AI : MonoBehaviour
         // 플레이어 방향
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
 
-        // 플레이어와의 거리
-        float playerDistance = playerDir.magnitude;
-
         // //! 
         // fallAtkDone = false;
 
         //! 거리 및 쿨타임 디버깅
-        stateText.text = $"Distance : {string.Format("{0:0.00}", playerDistance)} \n CoolCount : {string.Format("{0:0.00}", coolCount)}";
+        stateText.text = $"Distance : {string.Format("{0:0.00}", playerDir.magnitude)} \n CoolCount : {string.Format("{0:0.00}", coolCount)}";
 
         // 공격 쿨타임 됬을때, 공격 범위내에 들어왔을때
-        if (coolCount <= 0 && playerDistance <= attackDistance)
+        if (coolCount <= 0 && playerDir.magnitude <= attackDistance)
         {
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
@@ -744,19 +740,8 @@ public class Ascii_AI : MonoBehaviour
         // 걷기 애니메이션 끝내기
         anim.SetBool("isWalk", false);
 
-        //공격 리스트 비우기
-        atkList.Clear();
-
-        // Laser 콜라이더에 플레이어 있으면 리스트에 Laser 공격패턴 담기
-        if (LaserRangeTrigger.atkTrigger)
-            atkList.Add(1);
-
         // 가능한 공격 중에서 랜덤 뽑기
-        int atkType = -1;
-        if (atkList.Count > 0)
-        {
-            atkType = atkList[Random.Range(0, atkList.Count)];
-        }
+        int atkType = Random.Range(0, 4);
 
         //! 테스트를 위해 패턴 고정
         if (patten != Patten.None)
@@ -784,9 +769,6 @@ public class Ascii_AI : MonoBehaviour
 
         // 랜덤 쿨타임 입력
         coolCount = Random.Range(1f, 5f);
-
-        //패턴 리스트 비우기
-        atkList.Clear();
     }
 
     IEnumerator ToggleCable(bool showCable)

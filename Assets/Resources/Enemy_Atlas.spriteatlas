@@ -85,6 +85,7 @@ SpriteAtlas:
   - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802, type: 3}
+  - {fileID: 21300000, guid: 7e073dc4fc879d84e93b5c955aa1d2a2, type: 3}
   - {fileID: -8450179102024045516, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
   - {fileID: -1632396277479673420, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
   - {fileID: -3639187444971196714, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
@@ -168,6 +169,7 @@ SpriteAtlas:
   - {fileID: -2878197938310053564, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: 5396712418122877333, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: 2321343539104585878, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 21300000, guid: 229d2c0e80105254ea3c37731fcf7575, type: 3}
   - {fileID: 40661236521451113, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: 9117267712165489306, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: -1564529393729310769, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
@@ -240,6 +242,7 @@ SpriteAtlas:
   - Golem-Sheet_4
   - Golem-Sheet_5
   - Vacuum
+  - KingSlime_Inside
   - A-800_Attack_Sheet_3
   - A-800_Attack_Sheet_2
   - A-800_Attack_Sheet_1
@@ -323,6 +326,7 @@ SpriteAtlas:
   - Back_Leg
   - Jaw_Down
   - Body
+  - KingSlimeFill2
   - DroneFan_3
   - DroneFan_2
   - DroneFan_1
