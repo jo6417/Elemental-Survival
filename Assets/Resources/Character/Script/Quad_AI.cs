@@ -192,7 +192,7 @@ public class Quad_AI : MonoBehaviour
         float playerAngle = Mathf.Atan2(character.targetDir.y, character.targetDir.x) * Mathf.Rad2Deg;
 
         // 휴식 아닐때만
-        if (character.nowAction != Character.Action.Rest)
+        if (character.nowAction != Character.State.Rest)
         {
             // 눈동자 플레이어 방향으로 이동
             eye.position = head.position + character.targetDir.normalized * 1f;
@@ -211,7 +211,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         // Idle 상태 아니면 리턴
-        if (character.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.State.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -229,7 +229,7 @@ public class Quad_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (character.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.State.Idle)
             return;
 
         // 공격 쿨타임 차감
@@ -268,7 +268,7 @@ public class Quad_AI : MonoBehaviour
     void ChooseAttack()
     {
         // 현재 액션 변경
-        character.nowAction = Character.Action.Attack;
+        character.nowAction = Character.State.Attack;
 
         // 애니메이터 끄기
         character.animList[0].enabled = false;
@@ -316,7 +316,7 @@ public class Quad_AI : MonoBehaviour
 
     void Walk()
     {
-        character.nowAction = Character.Action.Walk;
+        character.nowAction = Character.State.Walk;
 
         //애니메이터 켜기
         character.animList[0].enabled = true;
@@ -351,7 +351,7 @@ public class Quad_AI : MonoBehaviour
         * SystemManager.Instance.globalTimeScale
         * nearSpeed;
 
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     private void OnDrawGizmosSelected()
@@ -1039,7 +1039,7 @@ public class Quad_AI : MonoBehaviour
         });
 
         // Idle 상태로 전환
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     IEnumerator FanSmash()
@@ -1198,7 +1198,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator OverloadRest()
     {
         // Rest 상태로 전환
-        character.nowAction = Character.Action.Rest;
+        character.nowAction = Character.State.Rest;
 
         // 몸체 위로 다시 올라가기
         body.DOLocalMove(new Vector3(0, 5.5f, 0), 0.5f)
@@ -1334,6 +1334,6 @@ public class Quad_AI : MonoBehaviour
         character.animList[0].enabled = false;
 
         // Idle 상태로 전환
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 }

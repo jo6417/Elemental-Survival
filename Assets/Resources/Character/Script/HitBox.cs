@@ -525,8 +525,11 @@ public class HitBox : MonoBehaviour
         else if (damage == 0)
             StartCoroutine(DamageText(DamageType.Miss, damage, isCritical, hitPos));
         // 데미지 양수일때, 피격
-        else
+        else if (damage > 0)
             StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical, hitPos));
+        // 데미지 음수일때, 회복
+        else if (damage < 0)
+            StartCoroutine(DamageText(DamageType.Heal, damage, isCritical, hitPos));
 
 
         // 무적 아닐때

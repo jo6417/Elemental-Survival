@@ -59,6 +59,7 @@ public class Ascii_AI : MonoBehaviour
     [SerializeField, ReadOnly] float projectileMultiple = 1; // 페이즈에 따른 투사체 배율
     [SerializeField] Material effectMat; // 현재 모든 전기 이펙트 머터리얼
     [SerializeField] ParticleSystem circleElectro; // 원형 전기 장판 범위
+    [SerializeField] Transform glassEffect;
 
     [Header("Cable")]
     [SerializeField] LineRenderer L_Cable;
@@ -137,7 +138,7 @@ public class Ascii_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 휴식 상태로 초기화
-        character.nowAction = Character.Action.Rest;
+        character.nowAction = Character.State.Rest;
 
         // 무적 상태로 변경
         character.invinsible = true;
@@ -146,6 +147,9 @@ public class Ascii_AI : MonoBehaviour
 
         // 신호등 끄기
         trafficLedList[0].transform.parent.gameObject.SetActive(false);
+
+        // 스크린 유리 이펙트 위치 초기화
+        glassEffect.localPosition = new Vector3(10f, 15f);
 
         // 케이블 숨기기
         // 케이블 머리 부유 애니메이션 끄기
@@ -308,13 +312,11 @@ public class Ascii_AI : MonoBehaviour
         // 천천히 얼굴 나타내기
         faceText.DOColor(text_phaseColor[1], 1f);
 
-        // 화면 정전기 소리 bzzzz...사운드
+        // 화면 정전기 소리 bzzzz...사운드 재생
         SoundManager.Instance.PlaySound("Ascii_Screen_Bzz", 0.5f);
-        yield return new WaitForSeconds(0.5f);
-
-        // 화면 정전기 소리 끄기
-        SoundManager.Instance.StopSound("Ascii_Screen_Bzz", 0.5f);
-        yield return new WaitForSeconds(0.5f);
+        // 화면 정전기 소리 끄기 예약
+        SoundManager.Instance.StopSound("Ascii_Screen_Bzz", 0.5f, 0.5f);
+        yield return new WaitForSeconds(1f);
 
         // 눈 깜빡이기
         faceText.text = FaceReturn(Face.CloseEye);
@@ -341,7 +343,7 @@ public class Ascii_AI : MonoBehaviour
         monitorSprite.material = SystemManager.Instance.spriteLitMat;
 
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     string FaceReturn(Face face)
@@ -410,15 +412,34 @@ public class Ascii_AI : MonoBehaviour
         character.invinsible = true;
         monitorSprite.material = SystemManager.Instance.outLineMat;
 
+        // 스크린 마스크 찾기
+        SpriteMask screenMask = screenSprite.GetComponent<SpriteMask>();
+
+        // 스크린 글래스 이펙트 움직이기
+        glassEffect.DOLocalMove(new Vector3(-10f, 0f), 0.5f)
+        .OnUpdate(() =>
+        {
+            // 이펙트 재생하는 동안 스크린 스프라이트 복제
+            screenMask.sprite = screenSprite.sprite;
+        })
+        .OnStart(() =>
+        {
+            glassEffect.localPosition = new Vector3(10f, 15f);
+        })
+        .OnComplete(() =>
+        {
+            glassEffect.localPosition = new Vector3(10f, 15f);
+        });
+
         // Idle 상태가 될때까지 대기
-        yield return new WaitUntil(() => character.nowAction == Character.Action.Idle);
+        yield return new WaitUntil(() => character.nowAction == Character.State.Idle);
 
         // 무적 상태로 전환
         character.invinsible = true;
         monitorSprite.material = SystemManager.Instance.outLineMat;
 
         // 휴식 상태로 변경
-        character.nowAction = Character.Action.Rest;
+        character.nowAction = Character.State.Rest;
 
         // 속도 초기화
         character.rigid.velocity = Vector3.zero;
@@ -574,11 +595,14 @@ public class Ascii_AI : MonoBehaviour
             //todo 당황하는 표정
 
             // 죽음 상태로 전환
-            character.nowAction = Character.Action.Dead;
+            character.nowAction = Character.State.Dead;
 
             //todo 진행 중이던 동작 모두 취소
             // 애니메이션 idle로 전환
             anim.SetTrigger("Die");
+
+            // 전기 예고 사운드 재생중이었으면 중지
+            SoundManager.Instance.StopSound("Ascii_ElectroStream", 0f);
 
             //todo 소환 했던 모든 공격 없에기
 
@@ -615,7 +639,7 @@ public class Ascii_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (character.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.State.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -678,7 +702,7 @@ public class Ascii_AI : MonoBehaviour
     void Move()
     {
         // 걷기 상태로 전환
-        character.nowAction = Character.Action.Walk;
+        character.nowAction = Character.State.Walk;
 
         //걸을때 표정
         faceText.text = FaceReturn(Face.Idle);
@@ -719,7 +743,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // idle 상태로 전환
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     public void WalkSound()
@@ -735,7 +759,7 @@ public class Ascii_AI : MonoBehaviour
             return;
 
         // 공격 상태로 전환
-        character.nowAction = Character.Action.Attack;
+        character.nowAction = Character.State.Attack;
 
         // 걷기 애니메이션 끝내기
         anim.SetBool("isWalk", false);
@@ -1090,7 +1114,7 @@ public class Ascii_AI : MonoBehaviour
         anim.SetBool("isRest", true);
 
         // 휴식 상태로 변경
-        character.nowAction = Character.Action.Rest;
+        character.nowAction = Character.State.Rest;
 
         //휴식할때 표정
         faceText.text = FaceReturn(Face.Rest);
@@ -1123,7 +1147,7 @@ public class Ascii_AI : MonoBehaviour
         monitorSprite.material = SystemManager.Instance.spriteLitMat;
 
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     #region PunchAtk

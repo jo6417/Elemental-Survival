@@ -9,6 +9,7 @@ public class PlayerHitBox : MonoBehaviour
 {
     [Header("Refer")]
     PlayerManager playerManager;
+    enum DamageType { Damaged, Heal, Miss, Block }
     public IEnumerator hitDelayCoroutine;
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
     [SerializeField] GameObject hitEffect;
@@ -294,43 +295,19 @@ public class PlayerHitBox : MonoBehaviour
 
     public void Damage(float damage, bool isCritical, Vector2 hitPos = default)
     {
-        //피격 딜레이 무적시간 시작
-        hitDelayCoroutine = HitDelay(damage);
-        StartCoroutine(hitDelayCoroutine);
-
         //! 갓모드 켜져 있으면 데미지 0
         if (SystemManager.Instance.godMod && damage > 0)
-            damage = 0;
-
-        // 회피율에 따라 데미지 0
-        if (playerManager.PlayerStat_Now.evade > Random.value && damage > 0)
             damage = 0;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 
-        // 데미지 있을때
-        if (damage > 0)
+        // 데미지 0 아닐때
+        if (damage != 0)
         {
-            // 데미지 사운드 재생
-            SoundManager.Instance.PlaySound("Hit");
-
-            // 피격 이펙트 재생
-            HitEffect(hitPos);
-        }
-
-        // 회피 사운드 재생
-        if (damage == 0)
-            SoundManager.Instance.PlaySound("Miss");
-
-        // 데미지 마이너스일때
-        if (damage < 0)
-        {
-            // 힐 사운드 재생
-            SoundManager.Instance.PlaySound("Heal");
-
-            // 힐 이펙트 생성
-            LeanPool.Spawn(healEffect, transform.position, Quaternion.identity, transform);
+            //피격 딜레이 무적시간 시작
+            hitDelayCoroutine = HitDelay(damage);
+            StartCoroutine(hitDelayCoroutine);
         }
 
         // 데미지 적용
@@ -339,12 +316,42 @@ public class PlayerHitBox : MonoBehaviour
         //체력 범위 제한
         playerManager.PlayerStat_Now.hpNow = Mathf.Clamp(playerManager.PlayerStat_Now.hpNow, 0, playerManager.PlayerStat_Now.hpMax);
 
-        //혈흔 파티클 생성
-        if (damage > 0)
+        // // 무적 상태일때, 방어
+        // if (character.invinsible)
+        //     StartCoroutine(DamageText(DamageType.Block, damage, isCritical, hitPos));
+
+        // 회피 성공했을때, 데미지가 0일때
+        if (damage > 0 && playerManager.PlayerStat_Now.evade > Random.value)
+        {
+            StartCoroutine(DamageText(DamageType.Miss, damage, isCritical, hitPos));
+
+            SoundManager.Instance.PlaySound("Miss");
+        }
+        // 데미지 양수일때, 피격
+        else if (damage > 0)
+        {
+            StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical, hitPos));
+
+            // 혈흔 파티클 생성
             LeanPool.Spawn(playerManager.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
-        //데미지 UI 띄우기
-        StartCoroutine(DamageText(damage, false));
+            // 데미지 사운드 재생
+            SoundManager.Instance.PlaySound("Hit");
+
+            // 피격 이펙트 재생
+            HitEffect(hitPos);
+        }
+        // 데미지 음수일때, 회복
+        else if (damage < 0)
+        {
+            StartCoroutine(DamageText(DamageType.Heal, damage, isCritical, hitPos));
+
+            // 힐 사운드 재생
+            SoundManager.Instance.PlaySound("Heal");
+
+            // 힐 이펙트 생성
+            LeanPool.Spawn(healEffect, transform.position, Quaternion.identity, transform);
+        }
 
         UIManager.Instance.UpdateHp(); //체력 UI 업데이트
 
@@ -356,38 +363,48 @@ public class PlayerHitBox : MonoBehaviour
         }
     }
 
-    public IEnumerator DamageText(float damage, bool isCritical)
+    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
-        // 데미지가 양수일때
-        if (damage > 0)
+        switch (damageType)
         {
-            // 크리티컬 떴을때 추가 강조효과 UI
-            if (isCritical)
-            {
-                // dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
-            }
-            else
-            {
-                dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
-            }
+            // 데미지 있을때
+            case DamageType.Damaged:
+                // 크리티컬 떴을때
+                if (isCritical)
+                {
+                    // 보라색
+                    dmgTxt.color = new Color(200f / 255f, 30f / 255f, 200f / 255f);
+                }
+                else
+                {
+                    // 빨간색
+                    dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
+                }
 
-            dmgTxt.text = damage.ToString();
-        }
-        // 데미지 없을때
-        else if (damage == 0)
-        {
-            dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
-            dmgTxt.text = "MISS";
-        }
-        // 데미지가 음수일때 (체력회복일때)
-        else if (damage < 0)
-        {
-            dmgTxt.color = Color.green;
-            dmgTxt.text = "+" + (-damage).ToString();
+                dmgTxt.text = damage.ToString();
+                break;
+
+            // 데미지가 마이너스일때 (체력회복일때)
+            case DamageType.Heal:
+                dmgTxt.color = Color.green;
+                dmgTxt.text = "+" + (-damage).ToString();
+                break;
+
+            // 회피 했을때
+            case DamageType.Miss:
+                dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
+                dmgTxt.text = "MISS";
+                break;
+
+            // 방어 했을때
+            case DamageType.Block:
+                dmgTxt.color = new Color(30f / 255f, 100f / 255f, 200f / 255f);
+                dmgTxt.text = "Block";
+                break;
         }
 
         // 데미지 양수일때

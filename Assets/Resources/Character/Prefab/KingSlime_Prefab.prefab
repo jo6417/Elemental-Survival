@@ -126,7 +126,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 983713359}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.54, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2130532650}
@@ -174,7 +174,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 229d2c0e80105254ea3c37731fcf7575, type: 3}
-  m_Color: {r: 0.7139659, g: 0, b: 1, a: 0.5882353}
+  m_Color: {r: 0, g: 1, b: 0, a: 0.39215687}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -402,7 +402,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2130532649}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1, y: 1, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 983713360}
@@ -449,7 +449,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 229d2c0e80105254ea3c37731fcf7575, type: 3}
-  m_Color: {r: 0.7139659, g: 0, b: 1, a: 0.5882353}
+  m_Color: {r: 0, g: 1, b: 0, a: 0.39215687}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -529,7 +529,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -724,6 +724,7 @@ GameObject:
   - component: {fileID: 1881259223782753332}
   - component: {fileID: 8450094565903836153}
   - component: {fileID: 5207479966467118523}
+  - component: {fileID: 259137732}
   m_Layer: 9
   m_Name: KingSlime_Sprite
   m_TagString: Enemy
@@ -849,6 +850,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!210 &259137732
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881259223782753333}
+  m_Enabled: 1
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1 &2968854241953988930
 GameObject:
   m_ObjectHideFlags: 0
@@ -859,9 +871,11 @@ GameObject:
   m_Component:
   - component: {fileID: 3968844381350155092}
   - component: {fileID: 7627721046065992434}
-  m_Layer: 7
-  m_Name: FillMask
-  m_TagString: Untagged
+  - component: {fileID: 6760053348531158270}
+  - component: {fileID: 2527236338356803401}
+  m_Layer: 11
+  m_Name: AbsorbAttack
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -931,6 +945,50 @@ SpriteMask:
   m_BackSortingOrder: 0
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
+--- !u!114 &6760053348531158270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2968854241953988930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb68539df0be55b4f8ba4cd50ab97063, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playSoundName: 
+  atkColl: {fileID: 2527236338356803401}
+  pierceCount: 0
+  targetType: 2
+  fixedPower: 1
+  knockbackForce: 0
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 1
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
+  stunTime: 0
+--- !u!70 &2527236338356803401
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2968854241953988930}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 3.5}
+  m_Size: {x: 9.5, y: 7.3}
+  m_Direction: 1
 --- !u!1 &5253666311182787132
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,7 +1085,6 @@ GameObject:
   - component: {fileID: 3569926881157058607}
   - component: {fileID: 5989012684935532658}
   - component: {fileID: 944842427137493207}
-  - component: {fileID: 1435789728}
   m_Layer: 7
   m_Name: KingSlime_Prefab
   m_TagString: Enemy
@@ -1094,9 +1151,10 @@ MonoBehaviour:
   shadow: {fileID: 0}
   spriteList:
   - {fileID: 1881259223782753332}
-  - {fileID: 0}
   - {fileID: 4756061381538660826}
   - {fileID: 7490917040800435122}
+  - {fileID: 983713361}
+  - {fileID: 2130532651}
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -1138,7 +1196,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   patten: 1
-  nowAbsorb: 0
   attackDistance: 15
   stateText: {fileID: 1760578303}
   nowPhase: 1
@@ -1149,7 +1206,8 @@ MonoBehaviour:
   poisonAtkCoolTime: 5
   character: {fileID: 5018633298159146536}
   crownObj: {fileID: 5663970052114893258}
-  sorting: {fileID: 1435789728}
+  sorting: {fileID: 259137732}
+  absorbAttack: {fileID: 6760053348531158270}
   landEffect: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
     type: 3}
   jumpLandPos: {x: 0, y: 0}
@@ -1157,6 +1215,8 @@ MonoBehaviour:
   - KingSlime_Jump1
   - KingSlime_Jump2
   - KingSlime_Jump3
+  poisonColor: {r: 1, g: 0, b: 1, a: 0.39215687}
+  poisonFillTime: 5
   spriteFill: {fileID: 983713361}
   poisonDrop: {fileID: 6339984483763077785, guid: 305197dd86cc6be43a663fcdc9630bb5,
     type: 3}
@@ -1195,8 +1255,11 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  summonFillTime: 7
+  summonColor: {r: 0, g: 1, b: 0, a: 0.39215687}
   slimePrefab: {fileID: 5485836661786715591, guid: f38322a01d9b7f84d9914275f0eff236,
     type: 3}
+  debugCanvas: {fileID: 1444775457}
 --- !u!95 &3569926881157058607
 Animator:
   serializedVersion: 3
@@ -1253,17 +1316,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!210 &1435789728
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8274267318279845521}
-  m_Enabled: 1
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 0
 --- !u!1001 &3281849280407359058
 PrefabInstance:
   m_ObjectHideFlags: 0

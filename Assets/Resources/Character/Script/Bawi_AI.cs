@@ -133,7 +133,7 @@ public class Bawi_AI : EnemyAI
             return;
 
         // 공격 중일때 리턴
-        if (character.nowAction == Character.Action.Attack)
+        if (character.nowAction == Character.State.Attack)
             return;
 
         // 상태 이상 있으면 리턴
@@ -167,7 +167,7 @@ public class Bawi_AI : EnemyAI
         }
 
         // Idle 아니면 리턴
-        if (character.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.State.Idle)
             return;
 
         // 쿨타임 차감
@@ -204,7 +204,7 @@ public class Bawi_AI : EnemyAI
 
     void Walk()
     {
-        character.nowAction = Character.Action.Walk;
+        character.nowAction = Character.State.Walk;
 
         // if (moveSound == null)
         //     //todo 이동 사운드 반복 재생
@@ -231,7 +231,7 @@ public class Bawi_AI : EnemyAI
         //해당 방향으로 가속
         character.rigid.velocity = character.targetDir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale;
 
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     public void Floating()
@@ -311,7 +311,7 @@ public class Bawi_AI : EnemyAI
     void ChooseAttack()
     {
         // 현재 액션 변경
-        character.nowAction = Character.Action.Attack;
+        character.nowAction = Character.State.Attack;
 
         // 랜덤 패턴 결정
         int randomNum = Random.Range(0, 5);
@@ -542,7 +542,7 @@ public class Bawi_AI : EnemyAI
         .OnComplete(() =>
         {
             // Idle 액션으로 전환
-            character.nowAction = Character.Action.Idle;
+            character.nowAction = Character.State.Idle;
 
             // 일반 주먹으로 변경
             fistSprite.sprite = emptyFistSprite;
@@ -782,7 +782,7 @@ public class Bawi_AI : EnemyAI
         // Idle 애니메이션 재생
         character.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
 
         // 파츠 호버링 사운드 재생
         SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
@@ -996,7 +996,7 @@ public class Bawi_AI : EnemyAI
         // Idle 애니메이션 재생
         character.animList[0].SetBool("UseFist", false);
         // Idle 상태로 전환
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
 
         // 파츠 호버링 사운드 재생
         SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
@@ -1170,7 +1170,7 @@ public class Bawi_AI : EnemyAI
         // Idle 애니메이션으로 전환
         character.animList[0].SetBool("UseDrill", false);
         // Idle 상태로 전환
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
 
         // 파츠 호버링 사운드 재생
         SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);

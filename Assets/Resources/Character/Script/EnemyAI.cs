@@ -112,7 +112,7 @@ public class EnemyAI : MonoBehaviour
     void ManageAction()
     {
         // Idle 아니면 리턴
-        if (character.nowAction != Character.Action.Idle)
+        if (character.nowAction != Character.State.Idle)
             return;
 
         // 시간 멈추면 리턴
@@ -154,7 +154,7 @@ public class EnemyAI : MonoBehaviour
 
     void Walk()
     {
-        character.nowAction = Character.Action.Walk;
+        character.nowAction = Character.State.Walk;
 
         // 애니메이터 켜기
         if (character.animList.Count > 0)
@@ -185,7 +185,7 @@ public class EnemyAI : MonoBehaviour
         }
 
 
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     private void OnDrawGizmosSelected()
@@ -211,7 +211,7 @@ public class EnemyAI : MonoBehaviour
     void JumpStart()
     {
         // 현재 행동 점프로 전환
-        character.nowAction = Character.Action.Jump;
+        character.nowAction = Character.State.Jump;
 
         // 점프 애니메이션으로 전환
         character.animList[0].SetBool("Jump", true);
@@ -257,7 +257,7 @@ public class EnemyAI : MonoBehaviour
             LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
         // 현재 행동 끝내기
-        character.nowAction = Character.Action.Idle;
+        character.nowAction = Character.State.Idle;
     }
 
     Vector3 PlayerNearPos(float range = 3f)

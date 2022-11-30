@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Attack : MonoBehaviour
 {
     [Header("Refer")]
-    // public GameObject atkEffect; // 타격시 타격지점에서 발생할 이펙트
+    public Action attackCallback; // 공격시 발생할 액션 콜백
     [SerializeField] string playSoundName; // 타격시 발생할 사운드
     public Collider2D atkColl;
 
@@ -44,6 +45,16 @@ public class Attack : MonoBehaviour
     {
         if (playSoundName != "")
             StartCoroutine(AttackSound());
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // 목표한 타겟에 충돌했을때
+        if (targetType == TargetType.Player && other.CompareTag(SystemManager.TagNameList.Player.ToString())
+        || targetType == TargetType.Enemy && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+            // 공격 콜백 함수가 있으면 실행
+            if (attackCallback != null)
+                attackCallback.Invoke();
     }
 
     IEnumerator AttackSound()
