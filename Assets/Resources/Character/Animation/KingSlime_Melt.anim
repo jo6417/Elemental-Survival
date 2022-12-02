@@ -1213,9 +1213,23 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 1
+    functionName: GlobalSoundPlay
+    data: KingSlime_Melting
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 1.25
     functionName: CrownLanding
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.3333334
+    functionName: GlobalSoundPlay
+    data: KingSlime_CrownFall
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

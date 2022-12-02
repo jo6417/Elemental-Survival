@@ -623,6 +623,12 @@ public class KingSlime_AI : MonoBehaviour
         // 플레이어 주변에서 색을 드러내며 울렁이는 슬라임색 장판 생성
         Transform iceAtk = LeanPool.Spawn(iceDrill, atkPos, Quaternion.identity, SystemManager.Instance.effectPool);
 
+        // 물 웅덩이 생성 소리 랜덤 재생
+        if (Random.value > 0.5f)
+            SoundManager.Instance.PlaySound("KingSlime_Ice_WaterRising1", atkPos);
+        else
+            SoundManager.Instance.PlaySound("KingSlime_Ice_WaterRising2", atkPos);
+
         // 물 웅덩이 이펙트
         Transform waterPool = iceAtk.Find("GroundWaterRising");
         // 얼음 송곳 마스크 오브젝트
@@ -642,7 +648,12 @@ public class KingSlime_AI : MonoBehaviour
 
         // 장판에서 아이스 드릴 솟아오름        
         drillSprite.DOLocalMove(Vector2.zero, 0.5f)
-        .SetEase(Ease.InBack);
+        .SetEase(Ease.InBack)
+        .OnComplete(() =>
+        {
+            // 드릴 올라오는 소리 재생
+            SoundManager.Instance.PlaySound("KingSlime_Ice_Drill", atkPos);
+        });
 
         // 아이스 드릴 길쭉하게 뻗기
         drillMask.DOPunchScale(new Vector2(-0.3f, 0.3f), 0.2f, 10, 1)
@@ -658,6 +669,7 @@ public class KingSlime_AI : MonoBehaviour
         // 고드름은 점점 세게 진동하다가
         drillMask.DOShakePosition(1f, new Vector2(0.3f, 0), 50, 90f, false, false)
         .SetEase(Ease.InCirc);
+
         yield return new WaitForSeconds(1f);
 
         // 콜라이더 사이즈 초기화
@@ -668,8 +680,14 @@ public class KingSlime_AI : MonoBehaviour
         // 터지며 물방울 파티클 튀기기
         waterExplosion.SetActive(true);
 
+        // 드릴 터지는 소리 재생
+        SoundManager.Instance.PlaySound("KingSlime_Ice_Explosion", atkPos);
+
         // 터지며 슬로우 액체 장판 남기기
         LeanPool.Spawn(slowPool, iceAtk.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 슬로우 장판 생성 소리 재생
+        SoundManager.Instance.PlaySound("KingSlime_Poison_Pool", atkPos);
 
         yield return new WaitForSeconds(1f);
 

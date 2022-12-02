@@ -13,7 +13,7 @@ public class Quad_AI : MonoBehaviour
     [Header("State")]
     [SerializeField]
     Patten testPatten = Patten.None;
-    enum Patten { PushSide, PushCircle, SingleShot, FanSmash, None };
+    enum Patten { PushSide, PushCircle, SingleShot, FanSmash, None, Skip };
     bool moveFanTilt = true; // 팬 기울이기 여부
     bool fanHorizon = true; // 팬 수평유지 여부
     private float atkCoolCount;
@@ -23,12 +23,16 @@ public class Quad_AI : MonoBehaviour
     public float fanSmashCoolTime;
     public float atkRange = 30f; // 공격 범위
     public float fanSensitive = 0.1f; //프로펠러 기울기 감도 조절
+    [SerializeField] float maxSpeed = 0.2f; // 보스 최대 속도
+    [SerializeField] Vector3 lastPos; // 마지막 위치 기억
 
     [Header("Walk")]
     float targetSearchCount; // 타겟 위치 추적 시간 카운트
     [SerializeField]
     float targetSearchTime = 3f; // 타겟 위치 추적 시간
     Vector3[] fanDefaultPos = new Vector3[4]; // 프로펠러 원위치 리스트
+    [SerializeField] float minVolume = 0.1f; // 팬 소음 최소 음량
+    AudioSource flySound; // 재생중인 비행 사운드 
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
@@ -148,7 +152,7 @@ public class Quad_AI : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        // 헬파이어 마법 데이터 찾기
+        // 윈드커터 마법 데이터 찾기
         if (windMagic == null)
         {
             // 찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
@@ -161,6 +165,9 @@ public class Quad_AI : MonoBehaviour
             // 지속시간 고정
             windMagic.duration = 2.5f;
         }
+
+        //todo 비행 사운드 켜기
+        flySound = SoundManager.Instance.PlaySound("Quad_Fly", transform, 0, 0, -1, true);
     }
 
     private void Update()
@@ -168,6 +175,26 @@ public class Quad_AI : MonoBehaviour
         // 몬스터 정보 없으면 리턴
         if (character.enemy == null)
             return;
+
+        // 위치 변경됬을때
+        if (lastPos != transform.position)
+        //todo 비행 속도에 따라 볼륨 조절
+        {
+            float velocity = Mathf.Abs((lastPos - transform.position).magnitude);
+            // 마지막 위치 갱신
+            lastPos = transform.position;
+
+            // 볼륨 제한
+            float volume = Mathf.Clamp(velocity / maxSpeed * 0.1f, minVolume, 1f);
+
+            print(velocity + " / " + maxSpeed * 0.1f + " = " + volume);
+            SoundManager.Instance.VolumeChange("Quad_Fly", volume, Time.deltaTime);
+        }
+        else
+        {
+            // 최소 볼륨으로 전환
+            SoundManager.Instance.VolumeChange("Quad_Fly", minVolume, Time.deltaTime);
+        }
 
         // 타겟 추적 쿨타임 차감
         if (targetSearchCount > 0)
@@ -267,6 +294,10 @@ public class Quad_AI : MonoBehaviour
 
     void ChooseAttack()
     {
+        //! 스킵이면 공격 취소
+        if (testPatten == Patten.Skip)
+            return;
+
         // 현재 액션 변경
         character.nowState = Character.State.Attack;
 
@@ -342,13 +373,13 @@ public class Quad_AI : MonoBehaviour
         // 범위 안에 있을때
         ? character.targetDir.magnitude - atkRange
         // 범위 밖에 있을때
-        : 1f;
+        : maxSpeed;
 
         //해당 방향으로 가속
         character.rigid.velocity =
         character.targetDir.normalized
-        * character.speedNow
         * SystemManager.Instance.globalTimeScale
+        * character.speedNow
         * nearSpeed;
 
         character.nowState = Character.State.Idle;
@@ -1152,45 +1183,6 @@ public class Quad_AI : MonoBehaviour
             sparkEffects[i].SmoothDisable();
         }
 
-        // WaitForSeconds wait_deltaTime = new WaitForSeconds(Time.deltaTime);
-
-        // // 점점 빠르게 회전, 공격 끝나면 점점 느려짐
-        // while (true)
-        // {
-        //     // 가속도 점점 증가 혹은 감소
-        //     accel = isFaster ? accel + 0.5f : accel - 0.5f;
-
-        //     // 속도 감소중에, 가속도 1 이하로 내려가면 반복문 중단
-        //     if (!isFaster && accel <= 1f)
-        //         break;
-
-        //     // 가속도 제한
-        //     accel = Mathf.Clamp(accel, 0, 10f);
-
-        //     // 가속도 합산
-        //     targetAngle += accel * Time.deltaTime * 80f;
-
-        //     // 360도 넘지않게 보정
-        //     if (targetAngle > 360f)
-        //         targetAngle -= 360f;
-        //     // 마이너스 되지않게 보정
-        //     if (targetAngle < 0f)
-        //         targetAngle += 360f;
-
-        //     Quaternion fanRotate = Quaternion.Lerp(fanParent.localRotation, Quaternion.Euler(70, 0, targetAngle), Time.deltaTime * 10f);
-
-        //     // 프로펠러들 회전
-        //     fanParent.localRotation = fanRotate;
-
-        //     // 프로펠러들의 각도 유지
-        //     for (int i = 0; i < 4; i++)
-        //     {
-        //         fans[i].rotation = Quaternion.Euler(0, 0, 0);
-        //     }
-
-        //     yield return wait_deltaTime;
-        // }
-
         // 과부하로 착지해서 휴식
         StartCoroutine(OverloadRest());
     }
@@ -1199,6 +1191,9 @@ public class Quad_AI : MonoBehaviour
     {
         // Rest 상태로 전환
         character.nowState = Character.State.Rest;
+
+        //todo 비행 사운드 끄기
+        SoundManager.Instance.VolumeChange("Quad_Fly", minVolume, 1f);
 
         // 몸체 위로 다시 올라가기
         body.DOLocalMove(new Vector3(0, 5.5f, 0), 0.5f)
@@ -1326,6 +1321,9 @@ public class Quad_AI : MonoBehaviour
 
         // idle 복귀 시간 대기
         yield return wait_1;
+
+        //todo 비행 사운드 켜기
+        flySound = SoundManager.Instance.PlaySound("Quad_Fly", transform, 0, 0, -1, true);
 
         // 전체 레이어 1로 올리기
         sortingLayer.sortingOrder = 1;

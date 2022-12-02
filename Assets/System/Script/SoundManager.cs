@@ -62,6 +62,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AnimationCurve curve_3D;
 
     [Header("Sounds")]
+    private List<AudioSource> attached_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드 
     private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
     [SerializeField] List<SoundBundle> soundBundles = new List<SoundBundle>();
 
@@ -232,6 +233,9 @@ public class SoundManager : MonoBehaviour
         audio.rolloffMode = AudioRolloffMode.Custom;
         audio.maxDistance = 35f;
 
+        // 붙은 오디오를 기억
+        attached_Sounds.Add(audio);
+
         // 재생하고 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
 
@@ -303,8 +307,13 @@ public class SoundManager : MonoBehaviour
 
             // 오디오 살아있으면
             if (audio != null)
+            {
+                // 오디오 리스트에서삭제
+                attached_Sounds.Remove(audio);
+
                 // 해당 오디오 오브젝트 제거
                 LeanPool.Despawn(audio.gameObject);
+            }
         }
     }
 
@@ -369,26 +378,20 @@ public class SoundManager : MonoBehaviour
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => init);
 
-        // // 플레이어 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        // foreach (Sound sound in player_Sounds)
-        //     sound.source.pitch = sound.pitch * scale;
-        // // 마법 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        // foreach (Sound sound in magic_Sounds)
-        //     sound.source.pitch = sound.pitch * scale;
-        // // 아이템 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        // foreach (Sound sound in item_Sounds)
-        //     sound.source.pitch = sound.pitch * scale;
-        // // 몬스터 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        // foreach (Sound sound in enemy_Sounds)
-        //     sound.source.pitch = sound.pitch * scale;
-        // // 이펙트 사운드들의 pitch 디폴트 값에 타임스케일 곱하기
-        // foreach (Sound sound in effect_Sounds)
-        //     sound.source.pitch = sound.pitch * scale;
-
         // 모든 사운드의 디폴트 pitch 값에 타임스케일 곱하기
         foreach (Sound sound in all_Sounds)
             if (sound.source != null)
                 sound.source.pitch = sound.pitch * scale;
+
+        // 오브젝트에 붙인 사운드들 피치값 조정
+        foreach (AudioSource audio in attached_Sounds)
+            if (audio != null)
+            {
+                // 오브젝트 이름으로 사운드 찾기
+                Sound sound = all_Sounds.Find(x => x.name == audio.name);
+
+                audio.pitch = sound.pitch * scale;
+            }
 
         // 모든 자식 오디오소스 오브젝트의 피치에 타임스케일 곱하기
         for (int i = 0; i < soundPool.childCount; i++)
@@ -421,5 +424,86 @@ public class SoundManager : MonoBehaviour
 
         // 선택된 인덱스 리턴
         return remove_lastIndex;
+    }
+
+    public float GetVolume(string soundName)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        if (sound == null)
+            print("Sound Not Found");
+
+        return sound.source.volume;
+    }
+
+    public float GetVolume(string soundName, Transform attachor = null)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        if (sound == null)
+            print("Sound Not Found");
+
+        if (attachor == null)
+            return sound.source.volume;
+        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
+        else
+        {
+            if (attachor.TryGetComponent(out AudioSource audioSource))
+            {
+                if (audioSource.clip == sound.clip
+                && audioSource.pitch == sound.pitch)
+                    return audioSource.volume;
+            }
+
+            return -1;
+        }
+    }
+
+    public void VolumeChange(string soundName, float volumeMultiple, float changeTime = 0)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        if (sound == null)
+            print("Sound Not Found");
+
+        // 볼륨 교체 시간이 있으면
+        if (changeTime > 0)
+        {
+            // 부드럽게 체인지
+            DOTween.To(() => sound.source.volume, x => sound.source.volume = x, volumeMultiple, changeTime);
+        }
+        else
+            // 볼륨 및 피치 초기화
+            sound.source.volume = sound.volume * volumeMultiple;
+    }
+
+    public void VolumeChange(string soundName, Transform attachor, float volumeMultiple, float changeTime = 0)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        if (sound == null)
+            print("Sound Not Found");
+
+        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
+        if (attachor.TryGetComponent(out AudioSource audioSource))
+        {
+            if (audioSource.clip == sound.clip
+            && audioSource.pitch == sound.pitch)
+            {
+                // 볼륨 교체 시간이 있으면
+                if (changeTime > 0)
+                {
+                    // 부드럽게 체인지
+                    DOTween.To(() => sound.source.volume, x => sound.source.volume = x, volumeMultiple, changeTime);
+                }
+                else
+                    // 볼륨 및 피치 초기화
+                    sound.source.volume = sound.volume * volumeMultiple;
+            }
+        }
     }
 }
