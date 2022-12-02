@@ -11,7 +11,7 @@ public class KingSlime_AI : MonoBehaviour
 {
     [Header("State")]
     [SerializeField] Patten patten = Patten.None;
-    enum Patten { BabySlimeSummon, PoisonShot, Skip, None };
+    enum Patten { BabySlimeSummon, PoisonShot, IceDrill, Skip, None };
     public float attackDistance; // 공격 가능 범위
     [SerializeField] TextMeshProUGUI stateText;
     Vector3 playerDir; // 실시간 플레이어 방향
@@ -21,14 +21,18 @@ public class KingSlime_AI : MonoBehaviour
     [SerializeField, ReadOnly] int nextPhase = 1;
 
     [Header("Cooltime")]
-    public float coolCount; //패턴 쿨타임 카운트
-    public float absorbCoolCount; //체력 흡수 쿨타임 카운트
-    public float babyAtkCoolTime; // 새끼 슬라임 소환 쿨타임
-    public float poisonAtkCoolTime; // 독 뿜기 쿨타임
+    [SerializeField] float coolCount; //패턴 쿨타임 카운트
+    [SerializeField] float absorbCoolCount; //체력 흡수 쿨타임 카운트
+    [SerializeField] float babyAtkCoolTime; // 새끼 슬라임 소환 쿨타임
+    [SerializeField] float poisonAtkCoolTime; // 독 뿜기 쿨타임
+    [SerializeField] float iceDrillCoolTime; // 아이스드릴 쿨타임
 
     [Header("Refer")]
     public Character character;
-    public Transform crownObj;
+    Animator anim;
+    public Transform crownObj; // 왕관
+    public SpriteRenderer bodySprite; // 몸체
+    public SpriteRenderer shadowSprite; // 그림자
     [SerializeField] SortingGroup sorting; // 보스 전체 레이어 관리
     [SerializeField] Attack absorbAttack; // 흡수 공격 컴포넌트
 
@@ -40,7 +44,7 @@ public class KingSlime_AI : MonoBehaviour
 
     [Header("PoisonShot")]
     [SerializeField] Color poisonColor;
-    [SerializeField] float poisonFillTime = 5f;
+    [SerializeField] float poisonFillTime = 5f; // 독뿜기 준비 시간
     [SerializeField] SpriteRenderer spriteFill; // 독 뿜기 기모을때 차오르는 스프라이트
     [SerializeField] Transform poisonDrop; // 독방울 프리팹
     [SerializeField] Transform poisonPool; // 독장판 프리팹
@@ -48,9 +52,15 @@ public class KingSlime_AI : MonoBehaviour
     [SerializeField] AnimationCurve dropCurve; // 독방울 날아가는 커브
 
     [Header("BabySlimeSummon")]
-    [SerializeField] float summonFillTime = 7f;
+    [SerializeField] float summonFillTime = 7f; // 슬라임 소환 준비 시간
     [SerializeField] Color summonColor;
     public GameObject slimePrefab; //새끼 슬라임 프리팹
+
+    [Header("IceDrill")]
+    [SerializeField] float iceReadyTime = 3f; // 아이스 드릴 준비 시간
+    [SerializeField] ParticleManager sweatEffect; // 땀 파티클
+    [SerializeField] Transform iceDrill; // 아이스 드릴 공격 프리팹
+    [SerializeField] GameObject slowPool; // 슬로우 장판 공격 프리팹
 
     [Header("Debug")]
     [SerializeField] Transform debugCanvas;
@@ -68,7 +78,7 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 휴식으로 초기화
-        character.nowAction = Character.State.Rest;
+        character.nowState = Character.State.Rest;
 
         // 독 채우기 이미지 끄기
         spriteFill.gameObject.SetActive(false);
@@ -83,9 +93,12 @@ public class KingSlime_AI : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => character.enemy != null);
 
+        // 애니메이터 참조
+        anim = character.animList[0];
+
         //애니메이션 스피드 초기화
         if (character.animList != null)
-            character.animList[0].speed = 1f;
+            anim.speed = 1f;
 
         //속도 초기화
         character.rigid.velocity = Vector2.zero;
@@ -100,7 +113,7 @@ public class KingSlime_AI : MonoBehaviour
         character.spriteList[0].material.SetColor("_Color", outLineColor);
 
         // 초기화 끝 행동 시작
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
     }
 
     private void Update()
@@ -113,7 +126,7 @@ public class KingSlime_AI : MonoBehaviour
             absorbCoolCount -= Time.deltaTime;
 
         // 공격중 아닐때
-        if (character.nowAction != Character.State.Attack)
+        if (character.nowState != Character.State.Attack)
         {
             // 쿨타임 카운트 차감
             if (coolCount > 0)
@@ -127,7 +140,7 @@ public class KingSlime_AI : MonoBehaviour
         stateText.text = $"Distance : {string.Format("{0:0.00}", playerDir.magnitude)} \n CoolCount : {string.Format("{0:0.00}", coolCount)}";
 
         // Idle 아니면 리턴
-        if (character.nowAction != Character.State.Idle)
+        if (character.nowState != Character.State.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -193,7 +206,7 @@ public class KingSlime_AI : MonoBehaviour
         if (coolCount <= 0 && playerDir.magnitude <= attackDistance)
         {
             // 현재 행동 공격으로 전환
-            character.nowAction = Character.State.Attack;
+            character.nowState = Character.State.Attack;
 
             //공격 패턴 선택
             ChooseAttack();
@@ -203,7 +216,7 @@ public class KingSlime_AI : MonoBehaviour
         else
         {
             // 현재 행동 점프로 전환
-            character.nowAction = Character.State.Jump;
+            character.nowState = Character.State.Jump;
 
             // 점프 실행
             JumpStart();
@@ -242,12 +255,12 @@ public class KingSlime_AI : MonoBehaviour
                 StartCoroutine(PoisonShot());
                 break;
 
-                // case 2:
-                // // 쿨타임 초기화 
-                // coolCount = ;
-                // // 공격 실행
-                // StartCoroutine();
-                // break;
+            case 2:
+                // 쿨타임 초기화 
+                coolCount = iceDrillCoolTime;
+                // 공격 실행
+                StartCoroutine(IceDrill());
+                break;
         }
     }
 
@@ -256,7 +269,7 @@ public class KingSlime_AI : MonoBehaviour
         // print("점프 시작");
 
         // 점프 애니메이션으로 전환
-        character.animList[0].SetBool("Jump", true);
+        anim.SetBool("Jump", true);
 
         // 스프라이트 전체 레이어 레벨 높이기
         sorting.sortingOrder = 1;
@@ -305,10 +318,10 @@ public class KingSlime_AI : MonoBehaviour
     public void JumpEnd()
     {
         // IDLE 애니메이션 전환
-        character.animList[0].SetBool("Jump", false);
+        anim.SetBool("Jump", false);
 
         // 현재 행동 끝내기
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
     }
 
     IEnumerator WaterFill(Color fillColor, float fillTime)
@@ -317,8 +330,8 @@ public class KingSlime_AI : MonoBehaviour
         fillTime = fillTime - (nowPhase - 1) * 2;
 
         // 떨림 애니메이션 시작
-        character.animList[0].speed = 1f;
-        character.animList[0].SetBool("isShaking", true);
+        anim.speed = 1f;
+        anim.SetBool("isShaking", true);
 
         // 물 차오르는 소리 재생
         SoundManager.Instance.PlaySound("KingSlime_Fill");
@@ -359,7 +372,7 @@ public class KingSlime_AI : MonoBehaviour
         yield return new WaitForSeconds(fillTime);
 
         //떨림 애니메이션 종료
-        character.animList[0].SetBool("isShaking", false);
+        anim.SetBool("isShaking", false);
 
         // 납작해지기
         character.spriteObj.DOScale(new Vector2(1.2f, 0.8f), 0.5f);
@@ -376,6 +389,11 @@ public class KingSlime_AI : MonoBehaviour
         fillSub.DOColor(fillColor, 1f);
     }
 
+    void SetIdle()
+    {
+        character.nowState = Character.State.Idle;
+    }
+
     IEnumerator BabySlimeSummon()
     {
         print("슬라임 소환 패턴");
@@ -384,7 +402,7 @@ public class KingSlime_AI : MonoBehaviour
         yield return StartCoroutine(WaterFill(summonColor, summonFillTime));
 
         // 바운스 애니메이션 시작
-        character.animList[0].SetBool("isBounce", true);
+        anim.SetBool("isBounce", true);
 
         // 페이즈에 따라 소환 횟수 산출
         int summonNum = 5 * nowPhase;
@@ -428,7 +446,7 @@ public class KingSlime_AI : MonoBehaviour
         }
 
         // 바운스 애니메이션 끝
-        character.animList[0].SetBool("isBounce", false);
+        anim.SetBool("isBounce", false);
 
         // 천천히 추욱 쳐지기
         character.spriteObj.DOScale(new Vector2(1.2f, 0.7f), 1f)
@@ -449,7 +467,7 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 현재 행동 초기화
-                character.nowAction = Character.State.Idle;
+                character.nowState = Character.State.Idle;
             });
         });
 
@@ -536,79 +554,132 @@ public class KingSlime_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 현재 행동 초기화
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    IEnumerator IceDrill()
     {
-        // if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()) // 플레이어가 충돌했을때
-        // && !PlayerManager.Instance.isDash // 플레이어 대쉬 아닐때
-        // && absorbAtkTrigger // 흡수 트리거 켜졌을때
-        // && !nowAbsorb) // 현재 흡수중 아닐때
-        // {
-        //     // print("흡수 시작");
-        //     //플레이어 체력 흡수중이면 true
-        //     nowAbsorb = true;
+        // 스케일 떨기
+        // bodySprite.transform.DOShakeScale(1f, 0.1f, 20, 90, false);
+        anim.SetBool("isShaking", true);
 
-        //     //현재 행동 공격으로 전환
-        //     character.nowAction = Character.Action.Attack;
+        // 땀 흘리는 파티클 재생
+        sweatEffect.gameObject.SetActive(true);
 
-        //     // IDLE 애니메이션 전환
-        //     character.animList[0].SetBool("Jump", false);
-        //     // 바운스 애니메이션 시작
-        //     character.animList[0].SetBool("isBounce", true);
+        yield return new WaitForSeconds(1f);
 
-        //     // 플레이어 위치 이동하는 동안 이동 금지
-        //     PlayerManager.Instance.speedDeBuff = 0;
-        //     // 이동 속도 반영
-        //     PlayerManager.Instance.Move();
-        //     // 플레이어 조작 차단
-        //     PlayerManager.Instance.playerInput.Disable();
+        // 땀흘리기 정지
+        sweatEffect.SmoothDisable();
 
-        //     // 플레이어를 슬라임 가운데로 이동 시키기
-        //     PlayerManager.Instance.transform.DOMove(jumpLandPos, 0.5f)
-        //     .OnComplete(() =>
-        //     {
-        //         // 이동 속도 디버프 걸기
-        //         PlayerManager.Instance.speedDeBuff = 0.2f;
-        //         // 이동 속도 반영
-        //         PlayerManager.Instance.Move();
-        //         // 플레이어 조작 활성화
-        //         PlayerManager.Instance.playerInput.Enable();
-        //     });
-        // }
+        // 녹는 애니메이션 실행
+        anim.SetBool("isShaking", false);
+        anim.SetBool("isMelt", true);
+
+        // 물리 콜라이더 끄기
+        character.physicsColl.enabled = false;
+
+        // 다 녹을때까지 대기
+        yield return new WaitUntil(() => bodySprite.transform.localScale.y == 0);
+
+        // 페이즈에 따라 횟수 산출
+        int atkNum = nowPhase * 5;
+
+        // 공격 횟수만큼 공격
+        for (int i = 0; i < atkNum; i++)
+        {
+            // 얼음 드릴 공격 소환
+            StartCoroutine(IceAtk());
+
+            // 공격 딜레이 대기
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // 공격 후딜
+        yield return new WaitForSeconds(1f);
+
+        // 애니메이터 끄기
+        anim.enabled = false;
+
+        // 왕관 DoShake 로 진동하다가 멈추고
+        crownObj.DOShakePosition(2f, 0.3f, 50, 90f, false, false)
+        .SetEase(Ease.InCirc);
+        yield return new WaitForSeconds(2f);
+
+        // 애니메이터 켜기
+        anim.enabled = true;
+
+        // 왕관 밑에서 몸체 및 그림자 높이 복구되면서 다시 올라옴
+        anim.SetBool("isMelt", false);
+
+        // 물리 콜라이더 켜기
+        character.physicsColl.enabled = true;
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    IEnumerator IceAtk()
     {
-        // // 흡수 중일때 플레이어 나가면
-        // if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString())
-        // && nowAbsorb)
-        // {
-        //     // print("흡수 끝");
+        // 랜덤 위치 산출
+        Vector2 atkPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * 5f;
 
-        //     // 플레이어 흡수 정지
-        //     nowAbsorb = false;
+        // 플레이어 주변에서 색을 드러내며 울렁이는 슬라임색 장판 생성
+        Transform iceAtk = LeanPool.Spawn(iceDrill, atkPos, Quaternion.identity, SystemManager.Instance.effectPool);
 
-        //     // 점프 끝날때 초기화 함수 실행
-        //     JumpEnd();
+        // 물 웅덩이 이펙트
+        Transform waterPool = iceAtk.Find("GroundWaterRising");
+        // 얼음 송곳 마스크 오브젝트
+        Transform drillMask = iceAtk.Find("DrillMask");
+        // 얼음 송곳 오브젝트
+        Transform drillSprite = drillMask.GetChild(0);
+        // 얼음 공격 콜라이더
+        Transform drillColl = iceAtk.Find("IceColl");
+        // 얼음 폭파 이펙트
+        GameObject waterExplosion = iceAtk.Find("IceExplosion").gameObject;
 
-        //     // 이동 속도 디버프 해제
-        //     PlayerManager.Instance.speedDeBuff = 1f;
-        //     // 이동 속도 반영
-        //     PlayerManager.Instance.Move();
+        // 드릴 위치 초기화
+        drillSprite.localPosition = new Vector2(0, -3.5f);
 
-        //     // 바운스 애니메이션 끝
-        //     character.animList[0].SetBool("isBounce", false);
+        // 물웅덩이 모두 생성될때까지 대기
+        yield return new WaitForSeconds(1f);
 
-        //     // 스케일 복구
-        //     transform.localScale = Vector2.one;
+        // 장판에서 아이스 드릴 솟아오름        
+        drillSprite.DOLocalMove(Vector2.zero, 0.5f)
+        .SetEase(Ease.InBack);
 
-        //     // 충돌 콜라이더 trigger 비활성화
-        //     character.physicsColl.isTrigger = false;
+        // 아이스 드릴 길쭉하게 뻗기
+        drillMask.DOPunchScale(new Vector2(-0.3f, 0.3f), 0.2f, 10, 1)
+        .SetDelay(0.5f);
 
-        //     //현재 행동 초기화
-        //     character.nowAction = Character.State.Idle;
-        // }
+        // 콜라이더 사이즈 늘리기
+        drillColl.DOScale(Vector2.one, 0.5f)
+        .SetEase(Ease.InBack);
+
+        // 드릴 올라올때까지 대기
+        yield return new WaitForSeconds(1.5f);
+
+        // 고드름은 점점 세게 진동하다가
+        drillMask.DOShakePosition(1f, new Vector2(0.3f, 0), 50, 90f, false, false)
+        .SetEase(Ease.InCirc);
+        yield return new WaitForSeconds(1f);
+
+        // 콜라이더 사이즈 초기화
+        drillColl.localScale = new Vector2(1f, 0f);
+        // 드릴 위치 초기화
+        drillSprite.localPosition = new Vector2(0, -3.5f);
+
+        // 터지며 물방울 파티클 튀기기
+        waterExplosion.SetActive(true);
+
+        // 터지며 슬로우 액체 장판 남기기
+        LeanPool.Spawn(slowPool, iceAtk.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        yield return new WaitForSeconds(1f);
+
+        // 얼음 공격 디스폰
+        LeanPool.Despawn(iceAtk);
+    }
+
+    void CrownLanding(int layer)
+    {
+        // 왕관 레이어 변경
+        crownObj.GetComponent<SpriteRenderer>().sortingOrder = layer;
     }
 }

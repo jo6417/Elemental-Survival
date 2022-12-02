@@ -34,7 +34,7 @@ public class EarthSlime_AI : MonoBehaviour
             return;
 
         // 이미 공격중이면 리턴
-        if (character.nowAction == Character.State.Attack)
+        if (character.nowState == Character.State.Attack)
         {
             // 이동 멈추기
             character.rigid.velocity = Vector3.zero;
@@ -45,7 +45,7 @@ public class EarthSlime_AI : MonoBehaviour
         if (smashTrigger.atkTrigger)
         {
             // 공격 액션으로 전환
-            character.nowAction = Character.State.Attack;
+            character.nowState = Character.State.Attack;
 
             StartCoroutine(SmashAttack());
         }
@@ -73,7 +73,7 @@ public class EarthSlime_AI : MonoBehaviour
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
 
         // 공격 트리거 끄기
         // smashTrigger.atkTrigger = false;

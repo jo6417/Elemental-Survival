@@ -137,14 +137,14 @@ public class Vacuum_AI : MonoBehaviour
     void Dash()
     {
         // 현재 공격중 아니면
-        if (character.nowAction != Character.State.Attack)
+        if (character.nowState != Character.State.Attack)
             StartCoroutine(DashAttack());
     }
 
     public IEnumerator DashAttack()
     {
         // 공격 액션으로 전환
-        character.nowAction = Character.State.Attack;
+        character.nowState = Character.State.Attack;
 
         // 밀리지 않게 kinematic으로 전환
         // chracter.rigid.bodyType = RigidbodyType2D.Kinematic;
@@ -213,6 +213,6 @@ public class Vacuum_AI : MonoBehaviour
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
     }
 }

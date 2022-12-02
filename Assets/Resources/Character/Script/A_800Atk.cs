@@ -47,7 +47,7 @@ public class A_800Atk : MonoBehaviour
             return;
 
         // 이미 공격중이면 리턴
-        if (character.nowAction == Character.State.Attack)
+        if (character.nowState == Character.State.Attack)
         {
             //속도 멈추기
             character.rigid.velocity = Vector3.zero;
@@ -77,7 +77,7 @@ public class A_800Atk : MonoBehaviour
         // print("Melee Attack");
 
         // 공격 액션으로 전환
-        character.nowAction = Character.State.Attack;
+        character.nowState = Character.State.Attack;
 
         //움직일 방향에따라 회전
         if (targetDir.x > 0)
@@ -101,7 +101,7 @@ public class A_800Atk : MonoBehaviour
         atkTrigger.atkTrigger = false;
 
         // Idle 상태로 초기화
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
     }
 
     public void OnMeleeEffect()

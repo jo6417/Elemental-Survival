@@ -132,7 +132,7 @@ public class EnemyAttack : Attack
         if (character.enemyAI && character.enemyAI.jumpCoolCount > 0)
         {
             // Idle 상태 될때까지 대기
-            yield return new WaitUntil(() => character.nowAction == Character.State.Idle);
+            yield return new WaitUntil(() => character.nowState == Character.State.Idle);
         }
 
         // 쿨타임 있으면 주기적으로 켜기
@@ -184,7 +184,7 @@ public class EnemyAttack : Attack
         yield return new WaitUntil(() => initDone);
 
         // 공격 액션으로 전환
-        character.nowAction = Character.State.Attack;
+        character.nowState = Character.State.Attack;
 
         // 밀리지 않게 kinematic으로 전환
         // chracter.rigid.bodyType = RigidbodyType2D.Kinematic;
@@ -231,7 +231,7 @@ public class EnemyAttack : Attack
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
 
         //공격 준비 해제
         attackReady = false;
@@ -244,7 +244,7 @@ public class EnemyAttack : Attack
         yield return new WaitUntil(() => initDone);
 
         // 공격 액션으로 전환
-        character.nowAction = Character.State.Attack;
+        character.nowState = Character.State.Attack;
 
         // 공격 오브젝트 활성화
         rangeObj.SetActive(true);
@@ -257,7 +257,7 @@ public class EnemyAttack : Attack
         // 쿨타임만큼 대기후 초기화
         yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
-        character.nowAction = Character.State.Idle;
+        character.nowState = Character.State.Idle;
 
         //공격 준비 해제
         attackReady = false;

@@ -44,7 +44,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public State nowAction = State.Idle; //현재 행동
+    public State nowState = State.Idle; //현재 행동
     public enum State { Idle, Rest, Walk, Jump, Attack, Dead }
     public MoveType moveType;
     public enum MoveType
@@ -485,7 +485,7 @@ public class Character : MonoBehaviour
             isDead = false;
 
             // idle 상태로 전환
-            nowAction = State.Idle;
+            nowState = State.Idle;
 
             for (int i = 0; i < animList.Count; i++)
             {
