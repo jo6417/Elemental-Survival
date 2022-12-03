@@ -837,8 +837,8 @@ public class Character : MonoBehaviour
         SoundManager.Instance.PlaySound(soundName, transform.position);
     }
 
-    void SoundStop(string soundName)
-    {
-        SoundManager.Instance.StopSound(soundName, 0.5f);
-    }
+    // void SoundStop(string soundName)
+    // {
+    //     SoundManager.Instance.StopSound(soundName, 0.5f);
+    // }
 }

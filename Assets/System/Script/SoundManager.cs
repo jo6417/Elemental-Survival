@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
@@ -62,7 +63,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AnimationCurve curve_3D;
 
     [Header("Sounds")]
-    private List<AudioSource> attached_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드 
+    private List<AudioSource> attached_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드
     private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
     [SerializeField] List<SoundBundle> soundBundles = new List<SoundBundle>();
 
@@ -127,45 +128,14 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // 사운드 매니저에서 전역 사운드 재생
-    public void PlaySound(string soundName, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
+    AudioSource InitAudio(Sound sound, float spatialBlend, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true, Vector2 position = default, Transform attachor = null)
     {
-        // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
-
-        // 없으면 리턴
-        if (sound == null)
-        {
-            Debug.Log("Sound Not Found");
-            return;
-        }
-
-        // 볼륨 및 피치 초기화
-        sound.source.volume = sound.volume;
-        sound.source.pitch = sound.pitch;
-
-        // 오디오 소스가 있으면 플레이
-        if (sound.source != null)
-            StartCoroutine(Play(sound, sound.source, false, fadeIn, delay, loopNum, scaledTime));
-    }
-
-    // 특정 위치에 사운드 재생
-    public AudioSource PlaySound(string soundName, Vector3 position, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = false)
-    {
-        // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
-
-        if (sound == null)
-        {
-            print("Sound Not Found");
-            return null;
-        }
-
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, soundPool);
+        Transform parent = attachor != null ? attachor : soundPool;
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, parent);
 
         // 오브젝트 이름을 사운드 이름으로 동기화
-        audioObj.name = soundName;
+        audioObj.name = sound.name;
 
         // 받은 Sound 데이터를 스폰된 오브젝트에 복사
         AudioSource audio = audioObj.GetComponent<AudioSource>();
@@ -177,14 +147,58 @@ public class SoundManager : MonoBehaviour
         audio.volume = sound.volume;
         audio.pitch = sound.pitch;
 
-        // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
-        audio.spatialBlend = 1f;
-        audio.rolloffMode = AudioRolloffMode.Custom;
-        audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
-        audio.maxDistance = 50f;
+        // 2D 로 초기화
+        if (spatialBlend == 0)
+            audio.spatialBlend = 0f;
+        // 3D 로 초기화
+        else
+        {
+            // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
+            audio.spatialBlend = 1f;
+            audio.rolloffMode = AudioRolloffMode.Custom;
+            audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
+            audio.maxDistance = 50f;
+        }
 
-        // 재생 끝나면 디스폰
+        // 재생하고 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
+
+        return audio;
+    }
+
+    // 사운드 매니저에서 전역 사운드 재생
+    public AudioSource PlaySound(string soundName, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        // 없으면 리턴
+        if (sound == null || sound.source == null)
+        {
+            Debug.Log("Sound Not Found");
+            return null;
+        }
+
+        // 오디오 초기화 후 플레이
+        AudioSource audio = InitAudio(sound, 0, fadeIn, delay, loopNum, scaledTime);
+
+        return audio;
+    }
+
+    // 특정 위치에 사운드 재생
+    public AudioSource PlaySound(string soundName, Vector3 position, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = false)
+    {
+        // 해당 이름으로 사운드 찾기
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+        if (sound == null || sound.source == null)
+        {
+            print("Sound Not Found");
+            return null;
+        }
+
+        // 오디오 초기화 후 플레이
+        AudioSource audio = InitAudio(sound, 1, fadeIn, delay, loopNum, scaledTime, position);
 
         return audio;
     }
@@ -195,12 +209,14 @@ public class SoundManager : MonoBehaviour
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        if (sound == null)
+        if (sound == null || sound.source == null)
             return null;
 
-        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
-        if (attachor.TryGetComponent(out AudioSource audioSource))
+        // attachor에 붙은 모든 오디오 소스 찾기
+        List<AudioSource> audioList = attachor.GetComponentsInChildren<AudioSource>().ToList();
+        foreach (AudioSource audioSource in audioList)
         {
+            // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
             if (audioSource.clip == sound.clip
             && audioSource.volume == sound.volume
             && audioSource.pitch == sound.pitch)
@@ -212,32 +228,11 @@ public class SoundManager : MonoBehaviour
             }
         }
 
-        // 빈 오디오소스 프리팹을 attachor에 자식으로 붙여주기
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, attachor.position, Quaternion.identity, attachor);
-
-        // 오브젝트 이름을 사운드 이름으로 동기화
-        audioObj.name = soundName;
-
-        // 받은 Sound 데이터를 스폰된 오브젝트에 복사
-        AudioSource audio = audioObj.GetComponent<AudioSource>();
-
-        // 오디오 클립 넣기
-        audio.clip = sound.clip;
-
-        // 볼륨 및 피치 초기화
-        audio.volume = sound.volume;
-        audio.pitch = sound.pitch;
-
-        // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
-        audio.spatialBlend = 1f;
-        audio.rolloffMode = AudioRolloffMode.Custom;
-        audio.maxDistance = 35f;
+        // 오디오 초기화 후 플레이
+        AudioSource audio = InitAudio(sound, 1, fadeIn, delay, loopNum, scaledTime, default, attachor);
 
         // 붙은 오디오를 기억
         attached_Sounds.Add(audio);
-
-        // 재생하고 끝나면 디스폰
-        StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
 
         return audio;
     }
@@ -317,15 +312,15 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void StopSound(string soundName, float fadeoutTime, float delay = 0, bool scaledTime = false)
-    {
-        // 해당 이름으로 전역 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+    // public void StopSound(string soundName, float fadeoutTime, float delay = 0, bool scaledTime = false)
+    // {
+    //     // 해당 이름으로 전역 사운드 찾기
+    //     Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        // 사운드 있으면 멈추기
-        if (sound.source != null)
-            StartCoroutine(Stop(sound.source, false, fadeoutTime, delay, scaledTime));
-    }
+    //     // 사운드 있으면 멈추기
+    //     if (sound.source != null)
+    //         StartCoroutine(Stop(sound.source, false, fadeoutTime, delay, scaledTime));
+    // }
 
     public void StopSound(AudioSource audio, float fadeoutTime = 0, float delay = 0, bool scaledTime = false)
     {
@@ -431,7 +426,7 @@ public class SoundManager : MonoBehaviour
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        if (sound == null)
+        if (sound == null || sound.source == null)
             print("Sound Not Found");
 
         return sound.source.volume;
@@ -442,18 +437,22 @@ public class SoundManager : MonoBehaviour
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        if (sound == null)
+        if (sound == null || sound.source == null)
             print("Sound Not Found");
 
+        // attachor 입력 없으면 글로벌 사운드의 볼륨 리턴
         if (attachor == null)
             return sound.source.volume;
-        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
         else
         {
-            if (attachor.TryGetComponent(out AudioSource audioSource))
+            // attachor에 붙은 모든 오디오 소스 찾기
+            List<AudioSource> audioList = attachor.GetComponentsInChildren<AudioSource>().ToList();
+            foreach (AudioSource audioSource in audioList)
             {
+                // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
                 if (audioSource.clip == sound.clip
                 && audioSource.pitch == sound.pitch)
+                    // attachor에 붙은 오디오 볼륨 리턴
                     return audioSource.volume;
             }
 
@@ -466,14 +465,14 @@ public class SoundManager : MonoBehaviour
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        if (sound == null)
+        if (sound == null || sound.source == null)
             print("Sound Not Found");
 
         // 볼륨 교체 시간이 있으면
         if (changeTime > 0)
         {
             // 부드럽게 체인지
-            DOTween.To(() => sound.source.volume, x => sound.source.volume = x, volumeMultiple, changeTime);
+            DOTween.To(() => sound.source.volume, x => sound.source.volume = x, sound.volume * volumeMultiple, changeTime);
         }
         else
             // 볼륨 및 피치 초기화
@@ -485,12 +484,14 @@ public class SoundManager : MonoBehaviour
         // 해당 이름으로 사운드 찾기
         Sound sound = all_Sounds.Find(x => x.name == soundName);
 
-        if (sound == null)
+        if (sound == null || sound.source == null)
             print("Sound Not Found");
 
-        // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
-        if (attachor.TryGetComponent(out AudioSource audioSource))
+        // attachor에 붙은 모든 오디오 소스 찾기
+        List<AudioSource> audioList = attachor.GetComponentsInChildren<AudioSource>().ToList();
+        foreach (AudioSource audioSource in audioList)
         {
+            // 해당 오브젝트에 같은 오디오 소스가 있으면 볼륨 변경 후 리턴
             if (audioSource.clip == sound.clip
             && audioSource.pitch == sound.pitch)
             {
@@ -498,11 +499,13 @@ public class SoundManager : MonoBehaviour
                 if (changeTime > 0)
                 {
                     // 부드럽게 체인지
-                    DOTween.To(() => sound.source.volume, x => sound.source.volume = x, volumeMultiple, changeTime);
+                    DOTween.To(() => audioSource.volume, x => audioSource.volume = x, sound.volume * volumeMultiple, changeTime);
                 }
                 else
                     // 볼륨 및 피치 초기화
-                    sound.source.volume = sound.volume * volumeMultiple;
+                    audioSource.volume = sound.volume * volumeMultiple;
+
+                return;
             }
         }
     }

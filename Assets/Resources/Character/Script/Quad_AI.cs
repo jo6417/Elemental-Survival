@@ -25,6 +25,7 @@ public class Quad_AI : MonoBehaviour
     public float fanSensitive = 0.1f; //프로펠러 기울기 감도 조절
     [SerializeField] float maxSpeed = 0.2f; // 보스 최대 속도
     [SerializeField] Vector3 lastPos; // 마지막 위치 기억
+    [SerializeField] float lastVolumeTime; // 마지막 볼륨 수정 시간
 
     [Header("Walk")]
     float targetSearchCount; // 타겟 위치 추적 시간 카운트
@@ -33,6 +34,7 @@ public class Quad_AI : MonoBehaviour
     Vector3[] fanDefaultPos = new Vector3[4]; // 프로펠러 원위치 리스트
     [SerializeField] float minVolume = 0.1f; // 팬 소음 최소 음량
     AudioSource flySound; // 재생중인 비행 사운드 
+    bool autoVolume; // 비행 사운드 속도에 따라 변경 여부
 
     [Header("Refer")]
     public TextMeshProUGUI stateText; //! 테스트 현재 상태
@@ -62,7 +64,6 @@ public class Quad_AI : MonoBehaviour
 
     [Header("PushCircle")]
     public GameObject windCutterPrefab; // 윈드커터 마법 프리팹
-    MagicInfo windMagic;
     public ParticleSystem wallCircle; // 플레이어 가두는 원형 프리팹
     [SerializeField]
     float spinSpeed = 2f; // 프로펠러 공전 속도
@@ -149,25 +150,16 @@ public class Quad_AI : MonoBehaviour
         wallCircle.GetComponentInChildren<CircleCollider2D>(true).enabled = false;
         wallCircle.GetComponentInChildren<EdgeCollider2D>(true).enabled = false;
 
+        // 프로펠러 콜라이더 켜기
+        for (int i = 0; i < fanParent.childCount; i++)
+            fanParent.GetChild(i).GetComponentInChildren<CapsuleCollider2D>().enabled = true;
+
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        // 윈드커터 마법 데이터 찾기
-        if (windMagic == null)
-        {
-            // 찾은 마법 데이터로 MagicInfo 새 인스턴스 생성
-            windMagic = new MagicInfo(MagicDB.Instance.GetMagicByName("WindCutter"));
-
-            // 데미지 고정
-            windMagic.power = 5f;
-            // 스피드 고정
-            windMagic.speed = 10f;
-            // 지속시간 고정
-            windMagic.duration = 2.5f;
-        }
-
-        //todo 비행 사운드 켜기
+        // 비행 사운드 켜기
         flySound = SoundManager.Instance.PlaySound("Quad_Fly", transform, 0, 0, -1, true);
+        autoVolume = true;
     }
 
     private void Update()
@@ -175,26 +167,6 @@ public class Quad_AI : MonoBehaviour
         // 몬스터 정보 없으면 리턴
         if (character.enemy == null)
             return;
-
-        // 위치 변경됬을때
-        if (lastPos != transform.position)
-        //todo 비행 속도에 따라 볼륨 조절
-        {
-            float velocity = Mathf.Abs((lastPos - transform.position).magnitude);
-            // 마지막 위치 갱신
-            lastPos = transform.position;
-
-            // 볼륨 제한
-            float volume = Mathf.Clamp(velocity / maxSpeed * 0.1f, minVolume, 1f);
-
-            print(velocity + " / " + maxSpeed * 0.1f + " = " + volume);
-            SoundManager.Instance.VolumeChange("Quad_Fly", volume, Time.deltaTime);
-        }
-        else
-        {
-            // 최소 볼륨으로 전환
-            SoundManager.Instance.VolumeChange("Quad_Fly", minVolume, Time.deltaTime);
-        }
 
         // 타겟 추적 쿨타임 차감
         if (targetSearchCount > 0)
@@ -218,12 +190,45 @@ public class Quad_AI : MonoBehaviour
         // 플레이어 방향 각도
         float playerAngle = Mathf.Atan2(character.targetDir.y, character.targetDir.x) * Mathf.Rad2Deg;
 
+        // 볼륨 자동 조정일때만
+        if (autoVolume)
+        {
+            // 쿨타임마다 실행
+            float volumeTime = 0.1f;
+            if (Time.time > lastVolumeTime + volumeTime)
+            {
+                // 위치 변경됬을때
+                if (lastPos != transform.position)
+                {
+                    // 현재 속도 측정
+                    float velocity = Mathf.Abs((lastPos - transform.position).magnitude);
+
+                    // 볼륨 제한
+                    float volume = Mathf.Clamp(velocity / (maxSpeed * 0.1f), minVolume, 1f);
+                    // print(velocity + " / " + maxSpeed * 0.1f + " = " + volume);
+
+                    // 비행 속도에 따라 볼륨 조절
+                    SoundManager.Instance.VolumeChange("Quad_Fly", transform, volume, volumeTime);
+
+                    // 마지막 위치 갱신
+                    lastPos = transform.position;
+                }
+                else
+                {
+                    // 최소 볼륨으로 전환
+                    SoundManager.Instance.VolumeChange("Quad_Fly", transform, minVolume, volumeTime);
+                }
+
+                // 시간 갱신
+                lastVolumeTime = Time.time;
+            }
+        }
+
         // 휴식 아닐때만
         if (character.nowState != Character.State.Rest)
         {
             // 눈동자 플레이어 방향으로 이동
             eye.position = head.position + character.targetDir.normalized * 1f;
-
             // 눈동자 플레이어 방향으로 회전
             eye.rotation = Quaternion.Euler(0, 0, playerAngle + 135f);
         }
@@ -405,7 +410,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator SidePush()
     {
         // 플레이어 위치에 벽 오브젝트 소환해서 플레이어 가두기
-        GameObject wall = LeanPool.Spawn(wallBox, PlayerManager.Instance.transform.position, Quaternion.identity);
+        GameObject wall = LeanPool.Spawn(wallBox, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         // 스프라이트 찾기
         SpriteRenderer wallGround = wall.GetComponentInChildren<SpriteRenderer>();
         // 가두기 콜라이더 찾기
@@ -420,6 +425,9 @@ public class Quad_AI : MonoBehaviour
         // 바닥 사이즈 키우기
         wallGround.transform.localScale = Vector3.zero;
         wallGround.transform.DOScale(new Vector2(50, 30), 0.5f);
+
+        // 패턴 준비 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Push_Ready");
 
         yield return new WaitForSeconds(0.5f);
 
@@ -453,6 +461,10 @@ public class Quad_AI : MonoBehaviour
         {
             // 머리 및 프로펠러 레이어 0으로 내리기
             sortingLayer.sortingOrder = 0;
+
+            // 비행 볼륨 끄기
+            autoVolume = false;
+            SoundManager.Instance.VolumeChange("Quad_Fly", transform, 0f, 1f);
         });
 
         // 해당 벽 파티클 끄기
@@ -488,6 +500,9 @@ public class Quad_AI : MonoBehaviour
         // 팬 수평유지 스위치 끄기
         fanHorizon = false;
 
+        // 바람 소리 재생
+        AudioSource windAudio = SoundManager.Instance.PlaySound("Quad_Push_Wind");
+        // 바람으로 밀어내기
         for (int i = 0; i < 4; i++)
         {
             Transform fan = fans[i];
@@ -556,6 +571,8 @@ public class Quad_AI : MonoBehaviour
             }
         }
 
+        // 바람 소리 정지
+        SoundManager.Instance.StopSound(windAudio, 1f);
         // 바람 밀어내기 이펙트 끄기
         for (int i = 0; i < 4; i++)
         {
@@ -597,7 +614,7 @@ public class Quad_AI : MonoBehaviour
         LeanPool.Despawn(wall);
 
         // 과부하 휴식 트랜지션 재생
-        StartCoroutine(OverloadRest());
+        StartCoroutine(Rest());
     }
 
     IEnumerator ShotBlade(int fanIndex, bool isLeftSide, float horizonSize)
@@ -608,9 +625,29 @@ public class Quad_AI : MonoBehaviour
         // 밀어내기 이펙트 끄기
         pushEffects[fanIndex].SmoothDisable();
 
+        // 충전 소리 재생
+        AudioSource chargeAudio = SoundManager.Instance.PlaySound("Quad_Fan_Charge");
+        // 페이드 아웃으로 끄기
+        SoundManager.Instance.StopSound(chargeAudio, 0.5f);
+
+        // 해당 날개의 차지 이펙트 활성화
+        chargeEffects[fanIndex].gameObject.SetActive(true);
+
         // 프로펠러 빨갛게 달아오르기
         wings[fanIndex].DOColor(wingRageColor, 1f);
+
+        // 바닥 인디케이터 빨갛게
+        SpriteRenderer bladeReady = pushEffects[fanIndex].GetComponentInChildren<SpriteRenderer>();
+        bladeReady.color = new Color(1, 0, 0, 0);
+        bladeReady.DOColor(new Color(1, 0, 0, 80f / 255f), 1f);
+
         yield return wait_1;
+
+        // 인디케이터 끄기
+        bladeReady.DOColor(new Color(1, 0, 0, 0), 0.2f);
+
+        // 해당 날개의 차지 이펙트 끄기
+        chargeEffects[fanIndex].SmoothDisable();
 
         // 프로펠러 날개 오브젝트 끄기
         wings[fanIndex].gameObject.SetActive(false);
@@ -623,7 +660,7 @@ public class Quad_AI : MonoBehaviour
         // 블레이드 생성
         GameObject shotBlade = LeanPool.Spawn(bladePrefab, wings[fanIndex].transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
 
-        // 블레이드에 몬스터 매니저 넣기
+        // 블레이드에 참조할 보스 캐릭터 정보 넣기
         shotBlade.GetComponent<EnemyAttack>().character = character;
 
         // 블레이드 스프라이트 켜기
@@ -637,16 +674,26 @@ public class Quad_AI : MonoBehaviour
         shotBlade.transform.localScale = Vector3.zero;
         shotBlade.transform.DOScale(Vector3.one, 0.2f);
 
-        // 플레이어 쪽으로 프로펠러 블레이드 발사 후 복귀
+        // 플레이어 쪽으로 프로펠러 블레이드 발사 및 복귀
         Vector3 blade_TargetPos = wings[fanIndex].transform.position + innerDir * horizonSize;
         shotBlade.transform.DOMove(blade_TargetPos, 1f)
         .SetLoops(2, LoopType.Yoyo);
+
+        // 프로펠러 발사 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Shot");
+        // 프로펠러 회전 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Spin", 0, 0.1f, 18, true);
+
         yield return wait_1;
 
         // 발사 방향 반대로 블레이드 회전
         shotBlade.transform.rotation = isLeftSide ? Quaternion.Euler(0, 180f, 0) : Quaternion.Euler(0, 0, 0);
+
         // 복귀 시간 대기
         yield return wait_1;
+
+        // 프로펠러 장착 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Equip");
 
         // 블레이드 스프라이트 끄기
         bladeSprite.enabled = false;
@@ -669,6 +716,9 @@ public class Quad_AI : MonoBehaviour
         // 프로펠러 수평으로
         fanParent.DORotate(fanParentDefaultRotation, 2f);
 
+        // 프로펠러 콜라이더 끄기
+        ToggleFans(false);
+
         //플레이어 근처 위치로 이동
         transform.DOMove(PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle.normalized * 2, 0.5f);
 
@@ -680,8 +730,14 @@ public class Quad_AI : MonoBehaviour
         CircleCollider2D pushColl = wallCircle.GetComponentInChildren<CircleCollider2D>();
         // 모든 벽 파티클 찾기
         ParticleSystem[] wallParticles = wallCircle.GetComponentsInChildren<ParticleSystem>(true);
+        // 밀어내기 콜라이더 찾기
+        PointEffector2D pointEffect = wallCircle.GetComponentInChildren<PointEffector2D>();
 
         yield return new WaitForSeconds(0.5f);
+
+        // 비행 볼륨 끄기
+        autoVolume = false;
+        SoundManager.Instance.VolumeChange("Quad_Fly", transform, 0f, 1f);
 
         // 몸체 저공으로 내려오기
         body.DOLocalMove(new Vector3(0, 2.5f, 0), 1f)
@@ -701,17 +757,26 @@ public class Quad_AI : MonoBehaviour
         wallCircle.gameObject.SetActive(true);
         // 원형 바닥 사이즈 키우기
         wallCircle.transform.DOScale(Vector3.one * 20, 0.5f);
+        // 가두기 콜라이더 켜기
+        wallColl.enabled = true;
+
+        // 패턴 준비 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Push_Ready");
 
         yield return new WaitForSeconds(0.5f);
 
         // 원형 테두리 및 밀어내기 파티클 켜기
         wallCircle.Play();
+        // 바람 소리 재생
+        AudioSource windAudio = SoundManager.Instance.PlaySound("Quad_Push_Wind");
 
-        // 가두기 콜라이더 켜기
-        wallColl.enabled = true;
         // 밀어내기 콜라이더 켜기
         pushColl.enabled = true;
+        // 밀어내기 힘 올리기
+        pointEffect.forceMagnitude = 1500f;
 
+        // 팬 수평유지 스위치 끄기
+        fanHorizon = false;
         // 모든 팬 위치 정렬
         for (int i = 0; i < 4; i++)
         {
@@ -729,10 +794,13 @@ public class Quad_AI : MonoBehaviour
             fans[i].GetComponent<SortingGroup>().sortingOrder = 0;
         }
 
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(1f);
 
-        // 팬 수평유지 스위치 끄기
-        fanHorizon = false;
+        // 바닥 밀어내기 힘 내리기
+        pointEffect.forceMagnitude = 100f;
+
+        // 프로펠러 콜라이더 켜기
+        ToggleFans(true);
 
         // 점점 빠르게 반 바퀴만 돌리기
         fanParent.DOLocalRotate(Vector3.forward * 180f, 0.5f / spinSpeed, RotateMode.LocalAxisAdd)
@@ -793,23 +861,24 @@ public class Quad_AI : MonoBehaviour
                 Vector2 targetPos = (Vector2)shotterFan.position + fanDir.normalized * 20f;
 
                 // 윈드커터 생성
-                GameObject magicObj = LeanPool.Spawn(windCutterPrefab, shotterFan.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                GameObject windCutterObj = LeanPool.Spawn(windCutterPrefab, shotterFan.transform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
 
-                // 매직홀더 찾기
-                MagicHolder magicHolder = magicObj.GetComponentInChildren<MagicHolder>();
+                // 어택 컴포넌트 찾기
+                Attack windAtk = windCutterObj.GetComponent<Attack>();
 
-                // magic 데이터 넣기
-                magicHolder.magic = windMagic;
+                //todo 페이즈에 따라 공격력 수정
+                windAtk.fixedPower = 3f;
 
-                // 타겟을 플레이어로 전환
-                magicHolder.SetTarget(MagicHolder.TargetType.Player);
+                // 날아가는 방향으로 회전시키기
+                float rotation = Mathf.Atan2(fanDir.y, fanDir.x) * Mathf.Rad2Deg;
+                windCutterObj.transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
 
-                // 프로펠러 전방을 목표지점으로 설정
-                magicHolder.targetPos = targetPos;
-
-                // 타겟 오브젝트 넣기
-                magicHolder.targetObj = PlayerManager.Instance.gameObject;
+                // 날아가는 방향으로 발사
+                windCutterObj.GetComponent<Rigidbody2D>().velocity = fanDir * 4.5f;
             }
+
+            // 발사할때 사운드 재생
+            SoundManager.Instance.PlaySound("WindCutter_Shot");
 
             // 발사 지연시간
             yield return wait_windShotDelay;
@@ -826,6 +895,9 @@ public class Quad_AI : MonoBehaviour
             wallParticles[i].Stop();
         }
 
+        // 바람 소리 정지
+        SoundManager.Instance.StopSound(windAudio, 1f);
+
         // 바닥 색깔 연해지기
         Color clearColor = wallGround.color;
         clearColor.a = 0;
@@ -841,7 +913,7 @@ public class Quad_AI : MonoBehaviour
         wallCircle.gameObject.SetActive(false);
 
         // 과부하로 착지해서 휴식
-        StartCoroutine(OverloadRest());
+        StartCoroutine(Rest());
     }
 
     IEnumerator SingleShot()
@@ -1184,16 +1256,28 @@ public class Quad_AI : MonoBehaviour
         }
 
         // 과부하로 착지해서 휴식
-        StartCoroutine(OverloadRest());
+        StartCoroutine(Rest());
     }
 
-    IEnumerator OverloadRest()
+    void ToggleFans(bool toggle)
+    {
+        // 프로펠러 콜라이더 토글
+        for (int i = 0; i < fanParent.childCount; i++)
+            fanParent.GetChild(i).GetComponentInChildren<CapsuleCollider2D>().enabled = toggle;
+    }
+
+    IEnumerator Rest()
     {
         // Rest 상태로 전환
         character.nowState = Character.State.Rest;
 
-        //todo 비행 사운드 끄기
-        SoundManager.Instance.VolumeChange("Quad_Fly", minVolume, 1f);
+        // 파지직 소리 재생
+        AudioSource sparkSound = SoundManager.Instance.PlaySound("Quad_Rest_Spark", 0, 0, -1);
+        // 비행 사운드 끄기
+        SoundManager.Instance.VolumeChange("Quad_Fly", transform, 0f, 1f);
+
+        // 프로펠러 콜라이더 끄기
+        ToggleFans(false);
 
         // 몸체 위로 다시 올라가기
         body.DOLocalMove(new Vector3(0, 5.5f, 0), 0.5f)
@@ -1239,6 +1323,9 @@ public class Quad_AI : MonoBehaviour
 
         // 보스 그 자리에서 과부하로 착지해서 휴식 애니메이션
         character.animList[0].SetBool("isRest", true);
+
+        // 추락 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Rest_Fall");
 
         // 모든 레이어 0으로 내리기
         sortingLayer.sortingOrder = 0;
@@ -1295,6 +1382,11 @@ public class Quad_AI : MonoBehaviour
         // 휴식 시간 대기
         yield return new WaitForSeconds(5f);
 
+        // 파지직 소리 끄기
+        SoundManager.Instance.StopSound(sparkSound, 0.5f);
+        // 상승 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Rest_Rise");
+
         // 휴식 애니메이션 종료
         character.animList[0].SetBool("isRest", false);
 
@@ -1322,8 +1414,11 @@ public class Quad_AI : MonoBehaviour
         // idle 복귀 시간 대기
         yield return wait_1;
 
-        //todo 비행 사운드 켜기
-        flySound = SoundManager.Instance.PlaySound("Quad_Fly", transform, 0, 0, -1, true);
+        // 프로펠러 콜라이더 켜기
+        ToggleFans(true);
+
+        // 비행 사운드 켜기
+        SoundManager.Instance.VolumeChange("Quad_Fly", transform, 1f, 1f);
 
         // 전체 레이어 1로 올리기
         sortingLayer.sortingOrder = 1;

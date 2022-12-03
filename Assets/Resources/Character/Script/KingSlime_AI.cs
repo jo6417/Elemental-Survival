@@ -334,9 +334,9 @@ public class KingSlime_AI : MonoBehaviour
         anim.SetBool("isShaking", true);
 
         // 물 차오르는 소리 재생
-        SoundManager.Instance.PlaySound("KingSlime_Fill");
+        AudioSource fillSound = SoundManager.Instance.PlaySound("KingSlime_Fill");
         // 물 차오르는 소리 끄기 예약
-        SoundManager.Instance.StopSound("KingSlime_Fill", 1f, fillTime);
+        SoundManager.Instance.StopSound(fillSound, 1f, fillTime);
 
         // 채우기 서브 스프라이트 찾기
         SpriteRenderer fillSub = spriteFill.transform.GetChild(0).GetComponent<SpriteRenderer>();

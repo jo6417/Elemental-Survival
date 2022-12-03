@@ -980,13 +980,13 @@ public class HotDog_AI : EnemyAI
         MakeFog();
 
         // 스모크 사운드 재생
-        SoundManager.Instance.PlaySound("HotDog_Stealth", 1f);
+        AudioSource stealthSound = SoundManager.Instance.PlaySound("HotDog_Stealth", 1f);
 
         // 투명해질때까지 대기
         yield return new WaitUntil(() => character.spriteList[0].color == Color.clear);
 
         // 스모크 사운드 정지
-        SoundManager.Instance.StopSound("HotDog_Stealth", 1f);
+        SoundManager.Instance.StopSound(stealthSound, 1f);
 
         // 짖기 애니메이션 트리거 끄기
         character.animList[0].SetBool(AnimState.isBark.ToString(), false);

@@ -42,6 +42,7 @@ public class Ascii_AI : MonoBehaviour
     [SerializeField] Rigidbody2D rigid;
     [SerializeField] SpriteRenderer shadow;
     [SerializeField] ParticleSystem bodyElectro; // 모니터 본체 전기 이펙트
+    AudioSource electroStreamSound;
 
     [Header("Phase")]
     [SerializeField] Color[] screen_phaseColor;
@@ -249,7 +250,7 @@ public class Ascii_AI : MonoBehaviour
         monitorSprite.enabled = true;
 
         // 전기 흐르는 사운드 재생
-        SoundManager.Instance.PlaySound("Ascii_ElectroStream", 1f, 0, -1);
+        electroStreamSound = SoundManager.Instance.PlaySound("Ascii_ElectroStream", 1f, 0, -1);
 
         // 몸체 전기 파티클 켜기
         bodyElectro.Play();
@@ -313,9 +314,9 @@ public class Ascii_AI : MonoBehaviour
         faceText.DOColor(text_phaseColor[1], 1f);
 
         // 화면 정전기 소리 bzzzz...사운드 재생
-        SoundManager.Instance.PlaySound("Ascii_Screen_Bzz", 0.5f);
+        AudioSource screenSound = SoundManager.Instance.PlaySound("Ascii_Screen_Bzz", 0.5f);
         // 화면 정전기 소리 끄기 예약
-        SoundManager.Instance.StopSound("Ascii_Screen_Bzz", 0.5f, 0.5f);
+        SoundManager.Instance.StopSound(screenSound, 0.5f, 0.5f);
         yield return new WaitForSeconds(1f);
 
         // 눈 깜빡이기
@@ -386,7 +387,7 @@ public class Ascii_AI : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         // 원형 인디케이터 사운드 중지
-        SoundManager.Instance.StopSound("Ascii_ElectroStream", 1f);
+        SoundManager.Instance.StopSound(electroStreamSound, 1f);
 
         // 인디케이터 중지
         circleAtk.Stop();
@@ -477,7 +478,7 @@ public class Ascii_AI : MonoBehaviour
             fallAtkColl.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
 
         // 전기 흐르는 사운드 재생
-        SoundManager.Instance.PlaySound("Ascii_ElectroStream", 1f, 0, -1);
+        electroStreamSound = SoundManager.Instance.PlaySound("Ascii_ElectroStream", 1f, 0, -1);
 
         yield return new WaitForSeconds(1f);
 
@@ -602,7 +603,7 @@ public class Ascii_AI : MonoBehaviour
             anim.SetTrigger("Die");
 
             // 전기 예고 사운드 재생중이었으면 중지
-            SoundManager.Instance.StopSound("Ascii_ElectroStream", 0f);
+            SoundManager.Instance.StopSound(electroStreamSound, 0f);
 
             //todo 소환 했던 모든 공격 없에기
 
@@ -938,7 +939,7 @@ public class Ascii_AI : MonoBehaviour
                 fallAtkColl.transform.GetChild(i).GetComponent<ParticleSystem>().Play();
 
             // 전기 예고 사운드 재생
-            SoundManager.Instance.PlaySound("Ascii_ElectroStream", 1f, 0, -1);
+            electroStreamSound = SoundManager.Instance.PlaySound("Ascii_ElectroStream", 1f, 0, -1);
 
             // 페이즈에 따라 방향 산출
             chooseAngle = SystemManager.Instance.RandomIndexes(4, atkDirNum);
@@ -983,7 +984,7 @@ public class Ascii_AI : MonoBehaviour
             yield return new WaitForSeconds(1f);
 
             // 전기 예고 사운드 중지
-            SoundManager.Instance.StopSound("Ascii_ElectroStream", 1f);
+            SoundManager.Instance.StopSound(electroStreamSound, 1f);
 
             // 전기 방출 사운드 재생
             SoundManager.Instance.PlaySound("Ascii_ElectroRising");

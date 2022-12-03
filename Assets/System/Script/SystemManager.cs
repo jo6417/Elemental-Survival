@@ -82,7 +82,7 @@ public class SystemManager : MonoBehaviour
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
     [ReadOnly] public bool godMod = false; //! 플레이어 갓모드 여부
-    //! DB 동기화 버튼
+    //! DB 동기화 버튼들
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
     public Button itemDBSyncBtn;
@@ -97,8 +97,10 @@ public class SystemManager : MonoBehaviour
     public Transform itemPool;
     public Transform overlayPool;
     public Transform magicPool;
+    public Transform enemyAtkPool;
     public Transform effectPool;
     public Transform objectPool;
+    // public enum PoolList {enemyPool, itemPool, overlayPool, magicPool, enemyAtkPool, effectPool, objectPool};
 
     [Header("Refer")]
     public Light2D globalLight;
