@@ -96,7 +96,7 @@ public class PlayerHitBox : MonoBehaviour
             // 몬스터 정보 없을때, 고스트일때 리턴
             if (chracter == null || chracter.enemy == null || chracter.IsGhost)
             {
-                Debug.Log($"enemy is null : {chracter.transform.position}");
+                Debug.Log($"enemy is null");
                 yield break;
             }
 

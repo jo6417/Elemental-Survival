@@ -28,9 +28,9 @@ public class Quad_AI : MonoBehaviour
     [SerializeField] float lastVolumeTime; // 마지막 볼륨 수정 시간
 
     [Header("Walk")]
-    float targetSearchCount; // 타겟 위치 추적 시간 카운트
-    [SerializeField]
-    float targetSearchTime = 3f; // 타겟 위치 추적 시간
+    [SerializeField, ReadOnly] float targetSearchCount; // 타겟 위치 추적 시간 카운트
+    [SerializeField] float targetSearchTime = 3f; // 타겟 위치 추적 시간
+    [SerializeField] float targetFollowSpeed = 3f; // 타겟 추적 속도
     Vector3[] fanDefaultPos = new Vector3[4]; // 프로펠러 원위치 리스트
     [SerializeField] float minVolume = 0.1f; // 팬 소음 최소 음량
     AudioSource flySound; // 재생중인 비행 사운드 
@@ -98,7 +98,7 @@ public class Quad_AI : MonoBehaviour
             fanDefaultPos[i] = fans[i].localPosition;
 
             // 프로펠러 하위 오브젝트들 찾기
-            wings[i] = fans[i].GetChild(0).GetComponentInChildren<SpriteRenderer>();
+            wings[i] = fans[i].GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
             flyEffects[i] = fans[i].GetChild(1).GetComponent<ParticleManager>();
             pushEffects[i] = fans[i].GetChild(2).GetComponentInChildren<ParticleManager>(true);
             sparkEffects[i] = fans[i].GetChild(3).GetComponentInChildren<ParticleManager>(true);
@@ -152,7 +152,13 @@ public class Quad_AI : MonoBehaviour
 
         // 프로펠러 콜라이더 켜기
         for (int i = 0; i < fanParent.childCount; i++)
-            fanParent.GetChild(i).GetComponentInChildren<CapsuleCollider2D>().enabled = true;
+        {
+            // 프로펠러 콜라이더 켜기
+            fans[i].GetComponentInChildren<CapsuleCollider2D>().enabled = true;
+
+            // 그룹 레이어 통일
+            fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 1;
+        }
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -175,14 +181,14 @@ public class Quad_AI : MonoBehaviour
         else
         {
             // 플레이어 추정 위치 계산
-            character.targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle * 2f;
+            character.targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle;
 
             // 추적 쿨타임 갱신
             targetSearchCount = targetSearchTime;
         }
 
         // 추적 위치 벡터를 서서히 이동
-        character.movePos = Vector3.Lerp(character.movePos, character.targetPos, Time.deltaTime * 2f);
+        character.movePos = Vector3.Lerp(character.movePos, character.targetPos, Time.deltaTime * targetFollowSpeed);
 
         // 플레이어 방향
         character.targetDir = character.movePos - head.position;
@@ -791,7 +797,7 @@ public class Quad_AI : MonoBehaviour
                 fans[i].DORotate(Vector3.forward * -90f, 0.2f);
 
             // 그룹 레이어 통일
-            fans[i].GetComponent<SortingGroup>().sortingOrder = 0;
+            fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 0;
         }
 
         yield return new WaitForSeconds(1f);
@@ -926,6 +932,9 @@ public class Quad_AI : MonoBehaviour
 
         SpriteRenderer shotWing = wings[wingIndex];
 
+        // 날개 충전 사운드 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Charge");
+
         // 날개 빠르게 돌리며 빨갛게 달아오름
         shotWing.DOColor(wingRageColor, aimTime);
 
@@ -944,6 +953,11 @@ public class Quad_AI : MonoBehaviour
         float targetWidth = 0;
 
         WaitForSeconds wait_deltaTime = new WaitForSeconds(Time.deltaTime);
+
+        // 조준시 느리게 삐삐삐 소리 반복 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Aim", 0f, 0.3f, 6);
+
+        bool warned = false;
 
         // 조준 하는동안 플레이어 위쪽에서 계속 추적
         while (aimCount > 0)
@@ -975,6 +989,15 @@ public class Quad_AI : MonoBehaviour
 
             // 레이저 굵기 점점 얇아짐
             targetWidth = aimCount / aimTime * 0.3f;
+
+            // 경고음 시작 시간 되면
+            if (!warned && aimCount <= 0.3)
+            {
+                // 발사 직전 빠르게 삐삐삐 사운드 재생
+                SoundManager.Instance.PlaySound("Quad_Fan_AimEnd", 0f, 0.1f, 3);
+
+                warned = true;
+            }
 
             // 20% 남았을때
             if (aimCount / aimTime < 0.2f)
@@ -1046,7 +1069,13 @@ public class Quad_AI : MonoBehaviour
             LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
             // 흙 깔아주기
             LeanPool.Spawn(dirtLayEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+            // 땅에 박힐때 사운드 재생
+            SoundManager.Instance.PlaySound("Quad_Fan_Stuck");
         });
+
+        // 블레이드 발사 사운드 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Shot");
 
         // wing 오브젝트 끄기
         shotWing.gameObject.SetActive(false);
@@ -1104,6 +1133,9 @@ public class Quad_AI : MonoBehaviour
         // 뽑힐때 흙 튀기기
         LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
 
+        // 땅에서 뽑히는 사운드 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Pull");
+
         // 블레이드 프로펠러로 날아가기
         shotBlade.DOMove(shotWing.transform.parent.position, 0.2f)
         .SetEase(Ease.Linear);
@@ -1120,6 +1152,9 @@ public class Quad_AI : MonoBehaviour
 
         // 장착할때 불꽃 파티클
         LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+
+        // 블레이드 장착 사운드 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Equip");
 
         // 블레이드 날아온 방향으로 보스 몸 전체 넉백 이동
         transform.DOMove(transform.position - shotDir.normalized * 3f, 0.5f)
@@ -1178,6 +1213,9 @@ public class Quad_AI : MonoBehaviour
         float fanPosX = 0;
         float fanPosY = 0;
 
+        // 팬 충전 소리 재생
+        SoundManager.Instance.PlaySound("Quad_Fan_Charge");
+
         // 프로펠러 각각 이펙트 초기화
         for (int i = 0; i < 4; i++)
         {
@@ -1187,7 +1225,7 @@ public class Quad_AI : MonoBehaviour
             flyEffects[fanIndex].SmoothDisable();
 
             // 그룹 레이어 통일
-            fans[fanIndex].GetComponent<SortingGroup>().sortingOrder = 1;
+            fans[fanIndex].GetComponentInChildren<SortingGroup>().sortingOrder = 1;
 
             // 해당 날개의 차지 이펙트 활성화
             chargeEffects[fanIndex].gameObject.SetActive(true);
@@ -1229,6 +1267,9 @@ public class Quad_AI : MonoBehaviour
             .SetDelay(0.5f)
             .SetLoops(2, LoopType.Yoyo);
         }
+
+        // 프로펠러 스매쉬 사운드 재생
+        SoundManager.Instance.PlaySound("Quad_FanSmash", 0f, 0.55f);
 
         // 프로펠러 전체 회전
         fanParent.DOLocalRotate(new Vector3(0, 0, 360f), smashTime, RotateMode.LocalAxisAdd)
@@ -1310,9 +1351,9 @@ public class Quad_AI : MonoBehaviour
 
             // 앞,뒤 프로펠러 그룹 레이어 구분
             if (i == 0 || i == 3)
-                fans[i].GetComponent<SortingGroup>().sortingOrder = 0;
+                fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 0;
             else
-                fans[i].GetComponent<SortingGroup>().sortingOrder = 1;
+                fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 1;
         }
 
         // 원위치 시간 대기
