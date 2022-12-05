@@ -97,6 +97,16 @@ public class MagicHolder : Attack
         return targetType;
     }
 
+    void GlobalSoundPlay(string soundName)
+    {
+        SoundManager.Instance.PlaySound(soundName);
+    }
+
+    void SoundPlay(string soundName)
+    {
+        SoundManager.Instance.PlaySound(soundName, transform.position);
+    }
+
     // public void SetTarget(TargetType changeTarget)
     // {
     //     //입력된 타겟에 따라 오브젝트 태그 및 레이어 변경

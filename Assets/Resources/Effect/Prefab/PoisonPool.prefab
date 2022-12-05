@@ -9645,7 +9645,7 @@ MonoBehaviour:
   atkColl: {fileID: 5752933701552638270}
   pierceCount: 0
   targetType: 2
-  fixedPower: 0
+  fixedPower: 1
   knockbackForce: 0
   burnTime: 0
   poisonTime: 2

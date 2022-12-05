@@ -187,7 +187,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -4925,9 +4925,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1869315837
-  m_SortingLayer: 1
-  m_SortingOrder: 2
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -5058,7 +5058,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 1
+  moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -9834,6 +9834,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8500939954073941841}
   - component: {fileID: 8500939954073941840}
+  - component: {fileID: 678354388019719891}
   m_Layer: 10
   m_Name: Skull
   m_TagString: Untagged
@@ -9908,6 +9909,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 2
   m_SpriteSortPoint: 1
+--- !u!210 &678354388019719891
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8500939954073941842}
+  m_Enabled: 1
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1 &8500939954579973892
 GameObject:
   m_ObjectHideFlags: 0
@@ -10134,23 +10146,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
+  targetType: 0
   fixedPower: 0
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
   flatTime: 0
   stopTime: 0
-  coll: {fileID: 0}
+  stunTime: 0
+  autoCoolDown: 1
+  fixCoolTime: 0
+  isManualCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 0
   initDone: 0
 --- !u!114 &7662007323859832080
 MonoBehaviour:
@@ -10312,9 +10329,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 0}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0.2
   modify_startLife: 0
-  autoPlay: 1
 --- !u!198 &8590984145777138202
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -15159,6 +15176,11 @@ PrefabInstance:
         type: 3}
       propertyPath: simulationSpeed
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 355133372026791628, guid: d9de1b6b57ddf424f9164127d9476914,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 355133372026791628, guid: d9de1b6b57ddf424f9164127d9476914,
         type: 3}

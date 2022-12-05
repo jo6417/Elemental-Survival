@@ -45,7 +45,7 @@ public class WindCutter : MonoBehaviour
 
     void SliceSound()
     {
-        print("slice!");
+        // print("slice!");
         SoundManager.Instance.PlaySound("WindCutter_Slice", transform.position);
     }
 }

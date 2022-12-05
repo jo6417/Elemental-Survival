@@ -105,7 +105,7 @@ public class DeathMineSpawner : MonoBehaviour
     }
 
     // 지뢰 드랍하기
-    public void DropMine(Character chracter)
+    public void DropMine(Character character)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -120,7 +120,7 @@ public class DeathMineSpawner : MonoBehaviour
         if (isDrop)
         {
             // 지뢰 오브젝트 생성
-            GameObject deathMine = LeanPool.Spawn(minePrefab, chracter.transform.position + Vector3.up * 2f, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject deathMine = LeanPool.Spawn(minePrefab, character.transform.position + Vector3.up * 2f, Quaternion.identity, SystemManager.Instance.magicPool);
 
             // 매직홀더 찾기
             MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>();
@@ -129,7 +129,7 @@ public class DeathMineSpawner : MonoBehaviour
             mineMagicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
             // 마법 타겟 위치 넣기
-            mineMagicHolder.targetPos = chracter.transform.position;
+            mineMagicHolder.targetPos = character.transform.position;
         }
     }
 }

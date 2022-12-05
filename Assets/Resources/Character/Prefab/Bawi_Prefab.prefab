@@ -411,6 +411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
   fixedPower: 0
@@ -431,7 +432,6 @@ MonoBehaviour:
   coolCount: 0
   character: {fileID: 5245483263214611728}
   enemyName: 
-  atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   rangeObj: {fileID: 0}
 --- !u!212 &7791055535698618153
@@ -807,6 +807,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
   fixedPower: 0
@@ -827,7 +828,6 @@ MonoBehaviour:
   coolCount: 0
   character: {fileID: 5245483263214611728}
   enemyName: 
-  atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   rangeObj: {fileID: 0}
 --- !u!212 &7791055535768785944
@@ -1307,7 +1307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7791055536069181064
 Transform:
   m_ObjectHideFlags: 0
@@ -1359,8 +1359,8 @@ MonoBehaviour:
   healCount: 0
   isGhost: 0
   nowState: 0
-  nowAction: 0
   moveType: 3
+  targetObj: {fileID: 0}
   targetResetTime: 0.3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
@@ -1382,7 +1382,7 @@ MonoBehaviour:
   - {fileID: 7791055535698618152}
   physicsColl: {fileID: 7791055536069181111}
   rigid: {fileID: 7791055536069181066}
-  buffParent: {fileID: 0}
+  buffParent: {fileID: 5039230946132900479}
   particleHitCount: 0
   hitDelayCount: 0
   stopCount: 0
@@ -1414,7 +1414,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 5245483263214611728}
-  targetDir: {x: 0, y: 0, z: 0}
   searchCoolTime: 1
   searchCoolCount: 0
   directionTilt: 0

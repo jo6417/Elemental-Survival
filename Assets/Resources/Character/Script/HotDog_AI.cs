@@ -45,13 +45,14 @@ public class HotDog_AI : EnemyAI
         };
 
     [Header("Move")]
-    public float farDistance = 15f;
-    public float closeDistance = 5f;
-    public ParticleManager breathEffect; //숨쉴때 입에서 나오는 불꽃
-    public ParticleSystem handDust;
-    public ParticleSystem footDust;
-    // public Vector2 moveToPos; // 목표 위치
-    // public float moveResetCount; // 목표위치 갱신 시간 카운트
+    [SerializeField] float runRange = 15f;
+    [SerializeField] float attackRange = 5f;
+    [SerializeField] ParticleManager breathEffect; //숨쉴때 입에서 나오는 불꽃
+    [SerializeField] ParticleSystem handDust;
+    [SerializeField] ParticleSystem footDust;
+    [SerializeField] Vector3 walkTargetPos; // 걷기 타겟 위치
+    // [SerializeField] float walkResetTime; // 걷기 갱신 시간
+    // [SerializeField, ReadOnly] float walkResetCount; // 걷기 갱신 시간 카운트
 
     [Header("Stealth Atk")]
     public GameObject eyeTrailPrefab; // 눈에서 나오는 붉은 트레일
@@ -257,7 +258,7 @@ public class HotDog_AI : EnemyAI
         yield return new WaitForSeconds(1.5f);
 
         // 하울링 사운드 재생
-        SoundManager.Instance.PlaySound("HotDog_Howling", transform.position);
+        SoundManager.Instance.PlaySound("HotDog_Howling");
 
         // 범위 오브젝트 투명해지며 끄기
         pushFillSprite.DOColor(Color.clear, 0.5f)
@@ -465,7 +466,7 @@ public class HotDog_AI : EnemyAI
     void ManageAction()
     {
         // Idle 아니면 리턴
-        // if (chracter.nowAction != Chracter.Action.Idle)
+        // if (character.nowAction != Character.Action.Idle)
         //     return;
 
         // 시간 멈추면 리턴
@@ -523,7 +524,7 @@ public class HotDog_AI : EnemyAI
         }
 
         // 공격 범위내에 있고 공격 쿨타임 됬을때
-        if (playerDistance <= closeDistance && coolCount <= 0)
+        if (playerDistance <= attackRange && coolCount <= 0)
         {
             //! 거리 확인용
             stateText.text = "Attack : " + playerDistance;
@@ -558,7 +559,7 @@ public class HotDog_AI : EnemyAI
         // 호흡 이펙트 꺼져있으면
         if (!breathEffect.gameObject.activeSelf)
             // 호흡 사운드 재생
-            SoundManager.Instance.PlaySoundPool(breathSounds.ToList(), mouthSparkEffect.transform.position, breath_lastIndex);
+            SoundManager.Instance.PlaySoundPool(breathSounds.ToList(), default, breath_lastIndex);
 
         // 호흡 이펙트 켜기
         breathEffect.gameObject.SetActive(true);
@@ -574,37 +575,39 @@ public class HotDog_AI : EnemyAI
         // 속도 초기화
         float runSpeed = 1f;
 
-        // 플레이어 가까이 있을때
-        if (playerDistance <= farDistance)
+        // 플레이어 공격 범위 내에 있을때
+        if (playerDistance <= attackRange)
         {
             // Walk 애니메이션으로 전환
             character.animList[0].SetBool(AnimState.isRun.ToString(), false);
             character.animList[0].SetBool(AnimState.isWalk.ToString(), true);
+
+            // 걷기 위치 없으면
+            if (walkTargetPos == default)
+            {
+                // 공격 범위내 플레이어 주변 랜덤 위치 선정
+                walkTargetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * attackRange;
+
+                // 걷기 목표 위치로 이동 방향 수정
+                character.targetDir = walkTargetPos - transform.position;
+            }
         }
-        // 플레이어가 멀리 있을때
         else
         {
+            // 걷기 위치 디폴트로 초기화
+            walkTargetPos = default;
+
             // Run 애니메이션으로 전환
             character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
             character.animList[0].SetBool(AnimState.isRun.ToString(), true);
 
             // 속도 빠르게
-            runSpeed = 2f;
+            runSpeed = 3f;
+
+            // 이동할 방향 수정
+            character.targetDir = character.targetPos - transform.position;
         }
 
-        // // 목표 위치 갱신 시간 됬을때
-        // if (moveResetCount < Time.time)
-        // {
-        //     moveResetCount = Time.time + 3f;
-
-        //     // 방향에 거리 곱해서 목표 위치 벡터 갱신
-        //     moveToPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(closeDistance, farDistance);
-
-        //     // print(moveToPos);
-        // }
-
-        // 이동할 방향 캐싱
-        character.targetDir = character.targetPos - transform.position;
         // 목표 위치까지 거리
         float moveDistance = character.targetDir.magnitude;
 
@@ -638,7 +641,7 @@ public class HotDog_AI : EnemyAI
             * runSpeed //달리기 속도 배율
             * speedMultiple; // 페이즈별로 속도 배율
 
-            // print(chracter.rigid.velocity);
+            // print(character.rigid.velocity);
         }
 
         // 상태값 Idle로 초기화
@@ -648,13 +651,13 @@ public class HotDog_AI : EnemyAI
     public void RunSound()
     {
         // 달리기 발소리 재생
-        SoundManager.Instance.PlaySoundPool(runSounds.ToList(), transform.position, run_lastIndex);
+        SoundManager.Instance.PlaySoundPool(runSounds.ToList(), default, run_lastIndex);
     }
 
     public void WalkSound()
     {
         // 걷기 발소리 재생
-        SoundManager.Instance.PlaySoundPool(walkSounds.ToList(), transform.position, walk_lastIndex);
+        SoundManager.Instance.PlaySoundPool(walkSounds.ToList(), default, walk_lastIndex);
     }
 
     IEnumerator ChooseAttack()
@@ -813,7 +816,7 @@ public class HotDog_AI : EnemyAI
         breathEffect.gameObject.SetActive(true);
 
         // 불꽃 새는 사운드 재생
-        SoundManager.Instance.PlaySound("HotDog_Leak", transform.position);
+        SoundManager.Instance.PlaySound("HotDog_Leak");
     }
 
     void FinishEat()
@@ -850,10 +853,13 @@ public class HotDog_AI : EnemyAI
         // 각 헬파이어 위치 저장할 배열
         Vector3[] lastPos = new Vector3[summonNum];
 
-        // 루프 개수만큼 반복
+        // 각도 기준으로 소환할때 랜덤 각도 추가
+        float randomAngle = Random.Range(0, 360f);
+
+        // 헬파이어 소환 횟수만큼 반복
         for (int j = 0; j < loopNum; j++)
         {
-            // 헬파이어 개수만큼 반복
+            // 한번에 소환할 헬파이어 개수만큼 반복
             for (int i = 0; i < summonNum; i++)
             {
                 // 3번째 공격일때
@@ -868,7 +874,7 @@ public class HotDog_AI : EnemyAI
                 else
                 {
                     // 소환할 각도를 벡터로 바꾸기
-                    float angle = 360f * i / summonNum;
+                    float angle = 360f * i / summonNum + randomAngle;
                     Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
                     // print(angle + " : " + summonDir);
 
@@ -920,7 +926,7 @@ public class HotDog_AI : EnemyAI
     {
         if (playToggle == 0)
             // 레이저 사운드 반복 재생
-            laserSound = SoundManager.Instance.PlaySound("HotDog_Ball_Laser", mouthSparkEffect.transform.position, 0.5f, 0, -1, true);
+            laserSound = SoundManager.Instance.PlaySound("HotDog_Ball_Laser", 0.5f, 0, -1, true);
         else
             // 레이저 사운드 끄기
             SoundManager.Instance.StopSound(laserSound, 0.5f);

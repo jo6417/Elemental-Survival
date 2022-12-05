@@ -208,15 +208,16 @@ public class MagicProjectile : MonoBehaviour
     void LookDirAngle()
     {
         // 날아가는 방향 바라보기
-        if (transform.position != lastPos && sprite != null)
+        if (transform.position != lastPos)
         {
             Vector3 returnDir = (transform.position - lastPos).normalized;
             float rotation = Mathf.Atan2(returnDir.y, returnDir.x) * Mathf.Rad2Deg;
 
-            if (rotation > 90 || rotation < -90)
-                sprite.flipY = true;
-            else
-                sprite.flipY = false;
+            if (sprite != null)
+                if (rotation > 90 || rotation < -90)
+                    sprite.flipY = true;
+                else
+                    sprite.flipY = false;
 
             rigid.rotation = rotation;
             lastPos = transform.position;
@@ -236,7 +237,8 @@ public class MagicProjectile : MonoBehaviour
         // 콜라이더 끄기
         coll.enabled = false;
         // 스프라이트 끄기
-        sprite.enabled = false;
+        if (sprite != null)
+            sprite.enabled = false;
 
         // 디스폰 콜백 함수 있으면 실행
         if (magicHolder.despawnAction != null)
@@ -298,15 +300,16 @@ public class MagicProjectile : MonoBehaviour
         magicHolder.AddDuration = 0f;
         magicHolder.MultipleSpeed = 1f;
 
-        // 오브젝트 투명하게
-        if (sprite != null && isFade)
-        {
-            sprite.DOColor(Color.clear, 0.2f);
-            yield return new WaitForSeconds(0.2f);
-        }
-        // 바로 끄기
-        else
-            sprite.enabled = false;
+        if (sprite != null)
+            // 오브젝트 투명하게
+            if (isFade)
+            {
+                sprite.DOColor(Color.clear, 0.2f);
+                yield return new WaitForSeconds(0.2f);
+            }
+            // 바로 끄기
+            else
+                sprite.enabled = false;
 
         // 파티클 매니저 있으면
         if (particleManager != null)

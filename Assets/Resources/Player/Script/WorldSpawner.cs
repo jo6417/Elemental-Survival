@@ -387,14 +387,14 @@ public class WorldSpawner : MonoBehaviour
         yield return null;
     }
 
-    public void EnemyDespawn(Character chracter)
+    public void EnemyDespawn(Character character)
     {
         // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
         if (SystemManager.Instance.globalEnemyDeadCallback != null)
-            SystemManager.Instance.globalEnemyDeadCallback(chracter);
+            SystemManager.Instance.globalEnemyDeadCallback(character);
 
         // 죽은 적을 리스트에서 제거
-        spawnEnemyList.Remove(chracter);
+        spawnEnemyList.Remove(character);
     }
 
     GameObject SpawnItembox(GameObject itemBox)

@@ -238,7 +238,7 @@ public class EnemyAI : MonoBehaviour
         //해당 방향으로 가속
         character.rigid.velocity = character.targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
-        // print(chracter.rigid.velocity);
+        // print(character.rigid.velocity);
     }
 
     public void JumpMoveStop()

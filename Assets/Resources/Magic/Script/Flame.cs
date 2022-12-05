@@ -67,7 +67,7 @@ public class Flame : MonoBehaviour
         // 화염 시작 사운드 재생
         SoundManager.Instance.PlaySound("Flame_Start", transform.position);
         // 지속 불타는 사운드 재생
-        AudioSource burnAudio = SoundManager.Instance.PlaySound("Flame_Burn", transform.position);
+        AudioSource burnAudio = SoundManager.Instance.PlaySound("Flame_Burn", transform.position, 1f);
 
         // duration 만큼 시간 지나면 디스폰 시작
         yield return new WaitForSeconds(duration);

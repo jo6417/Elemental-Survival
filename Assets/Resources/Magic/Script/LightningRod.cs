@@ -218,7 +218,7 @@ public class LightningRod : MonoBehaviour
             if (enemyObjs.Count >= pierceNum)
                 break;
 
-            Character chracter = null;
+            Character character = null;
             Collider2D targetColl = null;
 
             if (enemyCollList.Count > 0)
@@ -229,20 +229,20 @@ public class LightningRod : MonoBehaviour
                 HitBox targetHitBox = targetColl.GetComponent<HitBox>();
                 if (targetHitBox != null)
                     // 적 매니저 찾기
-                    chracter = targetHitBox.character;
+                    character = targetHitBox.character;
 
                 // 이미 들어있는 오브젝트일때
-                if (enemyObjs.Exists(x => x == chracter)
+                if (enemyObjs.Exists(x => x == character)
                 // 해당 몬스터가 유령일때
-                || (chracter && chracter.IsGhost))
+                || (character && character.IsGhost))
                 {
                     // 넣을 몬스터 정보 다시 초기화
-                    chracter = null;
+                    character = null;
                 }
             }
 
             // 적 오브젝트 변수에 담기
-            enemyObjs.Add(chracter);
+            enemyObjs.Add(character);
 
             // 임시 리스트에서 지우기
             if (targetColl != null)

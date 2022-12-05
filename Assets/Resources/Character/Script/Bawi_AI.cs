@@ -646,7 +646,7 @@ public class Bawi_AI : EnemyAI
         //착지 할때까지 대기
         yield return new WaitUntil(() => !isFloating);
 
-        //todo 드릴 스핀 사운드 반복 재생
+        // 드릴 스핀 사운드 반복 재생
         AudioSource drillSpin = SoundManager.Instance.PlaySound("Bawi_DrillSpin", drillPart.transform, 2f, 0, -1, true);
 
         // 차지 이펙트 켜기
@@ -736,7 +736,7 @@ public class Bawi_AI : EnemyAI
         //돌진하는 동안 대기
         yield return new WaitForSeconds(1f);
 
-        //todo 드릴 스핀 사운드 종료
+        // 드릴 스핀 사운드 종료
         SoundManager.Instance.StopSound(drillSpin, 0.5f);
 
         // 드릴 콜라이더 끄기

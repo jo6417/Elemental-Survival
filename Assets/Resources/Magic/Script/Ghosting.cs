@@ -40,7 +40,7 @@ public class Ghosting : MonoBehaviour
     }
 
     // 몬스터 유령 생성하기
-    public void SummonGhost(Character chracter)
+    public void SummonGhost(Character character)
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
@@ -51,13 +51,13 @@ public class Ghosting : MonoBehaviour
         int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
 
         // 이미 유령 아닐때, 보스 아닐때
-        if (!chracter.IsGhost && chracter.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
+        if (!character.IsGhost && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
         {
             //몬스터 프리팹 찾기
-            GameObject ghostPrefab = EnemyDB.Instance.GetPrefab(chracter.enemy.id);
+            GameObject ghostPrefab = EnemyDB.Instance.GetPrefab(character.enemy.id);
 
             // 몬스터 프리팹 소환 및 비활성화
-            GameObject ghostObj = LeanPool.Spawn(ghostPrefab, chracter.transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            GameObject ghostObj = LeanPool.Spawn(ghostPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
 
             // 몬스터 매니저 찾기
             Character ghostManager = ghostObj.GetComponent<Character>();

@@ -5985,7 +5985,7 @@ MonoBehaviour:
   - {fileID: 3569926881157058607}
   physicsColl: {fileID: 5989012684935532658}
   rigid: {fileID: 944842427137493207}
-  buffParent: {fileID: 0}
+  buffParent: {fileID: 7782616013514085546}
   particleHitCount: 0
   hitDelayCount: 0
   stopCount: 0
@@ -6016,7 +6016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f9561d0b3c63d47a7589c861cd20ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patten: 2
+  patten: 1
   attackDistance: 15
   stateText: {fileID: 1760578303}
   nowPhase: 1

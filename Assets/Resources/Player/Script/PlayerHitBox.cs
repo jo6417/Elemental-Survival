@@ -27,7 +27,7 @@ public class PlayerHitBox : MonoBehaviour
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
 
     [Header("<Buff>")]
-    public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
+    public Transform buffParentObj; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
     public IEnumerator burnCoroutine = null;
     public IEnumerator poisonCoroutine = null;
@@ -91,10 +91,10 @@ public class PlayerHitBox : MonoBehaviour
         if (attacker.TryGetComponent(out EnemyAttack enemyAtk) && enemyAtk.enabled)
         {
             // 몬스터 정보 찾기
-            Character chracter = enemyAtk.character;
+            Character character = enemyAtk.character;
 
             // 몬스터 정보 없을때, 고스트일때 리턴
-            if (chracter == null || chracter.enemy == null || chracter.IsGhost)
+            if (character == null || character.enemy == null || character.IsGhost)
             {
                 Debug.Log($"enemy is null");
                 yield break;
@@ -178,11 +178,11 @@ public class PlayerHitBox : MonoBehaviour
             Damage(damage, isCritical, hitPos);
 
             // 디버프를 위해 크리티컬 true로 고정
-            isCritical = true;
+            // isCritical = true;
         }
 
         // 디버프 판단해서 적용
-        Debuff(attacker, isCritical);
+        Debuff(attacker, damage, isCritical);
     }
 
     void HitEffect(Vector2 hitPos = default)
@@ -205,7 +205,7 @@ public class PlayerHitBox : MonoBehaviour
         LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, SystemManager.Instance.effectPool);
     }
 
-    public void Debuff(Attack attacker, bool isCritical)
+    public void Debuff(Attack attacker, float damage, bool isCritical)
     {
         //시간 정지
         if (attacker.stopTime > 0)
@@ -224,7 +224,7 @@ public class PlayerHitBox : MonoBehaviour
         }
 
         // 슬로우 디버프, 크리티컬 성공일때
-        if (attacker.slowTime > 0 && isCritical)
+        if (attacker.slowTime > 0)
         {
             //이미 슬로우 코루틴 중이면 기존 코루틴 취소
             if (slowCoroutine != null)
@@ -236,7 +236,7 @@ public class PlayerHitBox : MonoBehaviour
         }
 
         // 감전 디버프 && 크리티컬일때
-        if (attacker.shockTime > 0 && isCritical)
+        if (attacker.shockTime > 0)
         {
             //이미 감전 코루틴 중이면 기존 코루틴 취소
             if (shockCoroutine != null)
@@ -256,40 +256,28 @@ public class PlayerHitBox : MonoBehaviour
             StartCoroutine(FlatDebuff(attacker.flatTime));
         }
 
-        // 화상 피해 시간 있으면 도트 피해
+        // 화상 피해 시간 있을때
         if (attacker.burnTime > 0)
         {
-            //이미 화상 코루틴 중이면 기존 코루틴 취소
-            if (burnCoroutine != null)
-                StopCoroutine(burnCoroutine);
-
-            burnCoroutine = BurnDotHit(1, attacker.burnTime);
-
-            StartCoroutine(burnCoroutine);
+            // 도트 데미지 실행
+            DotHit(damage, isCritical, attacker.burnTime, transform,
+            SystemManager.Instance.burnDebuffEffect, Character.Debuff.Burn);
         }
 
         // 포이즌 피해 시간 있으면 도트 피해
         if (attacker.poisonTime > 0)
         {
-            //이미 포이즌 코루틴 중이면 기존 코루틴 취소
-            if (poisonCoroutine != null)
-                StopCoroutine(poisonCoroutine);
-
-            poisonCoroutine = PoisonDotHit(1, attacker.poisonTime);
-
-            StartCoroutine(poisonCoroutine);
+            // 도트 데미지 실행
+            DotHit(damage, isCritical, attacker.poisonTime, transform,
+            SystemManager.Instance.poisonDebuffEffect, Character.Debuff.Poison);
         }
 
         // 출혈 지속시간 있으면 도트 피해
         if (attacker.bleedTime > 0)
         {
-            //이미 출혈 코루틴 중이면 기존 코루틴 취소
-            if (bleedCoroutine != null)
-                StopCoroutine(bleedCoroutine);
-
-            bleedCoroutine = BleedDotHit(1, attacker.bleedTime);
-
-            StartCoroutine(bleedCoroutine);
+            // 도트 데미지 실행
+            DotHit(damage, isCritical, attacker.bleedTime, buffParentObj,
+            SystemManager.Instance.bleedDebuffUI, Character.Debuff.Bleed);
         }
     }
 
@@ -443,10 +431,13 @@ public class PlayerHitBox : MonoBehaviour
 
         //스프라이트 색 변환
         if (damage > 0)
+            // 피격
             playerManager.sprite.color = SystemManager.Instance.hitColor;
         if (damage == 0)
-            playerManager.sprite.color = Color.white;
+            // 회피 또는 방어
+            playerManager.sprite.color = Color.blue;
         if (damage < 0)
+            // 회복
             playerManager.sprite.color = SystemManager.Instance.healColor;
 
         yield return new WaitUntil(() => hitCoolCount <= 0);
@@ -461,94 +452,60 @@ public class PlayerHitBox : MonoBehaviour
         hitDelayCoroutine = null;
     }
 
-    public IEnumerator DotHit(float tickDamage, float duration)
+    public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Character.Debuff debuffType)
     {
-        float damageDuration = duration;
+        //이미 코루틴 실행중이면 기존 코루틴 취소
+        if (playerManager.DebuffList[(int)debuffType] != null)
+        {
+            StopCoroutine(playerManager.DebuffList[(int)debuffType]);
+        }
+
+        // 도트 피해 코루틴 설정
+        playerManager.DebuffList[(int)debuffType] = DotHitCoroutine(tickDamage, isCritical, duration, debuffEffect, buffParent, debuffType);
+
+        StartCoroutine(playerManager.DebuffList[(int)debuffType]);
+    }
+
+    public IEnumerator DotHitCoroutine(float tickDamage, bool isCritical, float duration, GameObject debuffEffect, Transform buffParent, Character.Debuff debuffType)
+    {
+        // 디버프 이펙트
+        Transform effect = null;
+
+        // 해당 디버프 아이콘이 없을때
+        if (!buffParent.Find(debuffEffect.name))
+        {
+            // 디버프 이펙트 붙이기
+            effect = LeanPool.Spawn(debuffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
+
+            // // 이펙트 넣을 부모가 buffParent 가 아닐때
+            // if (buffParent != buffParentObj)
+            //     // 포탈 사이즈 배율만큼 이펙트 배율 키우기
+            //     effect.transform.localScale = Vector3.one * playerManager.portalSize;
+        }
+
+        // 남은 도트 데미지
+        float durationCount = duration;
 
         // 도트 데미지 지속시간이 1초 이상 남았을때
-        while (damageDuration >= 1)
+        while (durationCount >= 1)
         {
-            // 한 틱동안 대기
-            yield return new WaitForSeconds(1f);
-
             // 도트 데미지 입히기
-            Damage(tickDamage, false);
+            Damage(tickDamage, isCritical);
 
             // 남은 지속시간에서 한틱 차감
-            damageDuration -= 1f;
-        }
-    }
+            durationCount -= 1f;
 
-    public IEnumerator BurnDotHit(float tickDamage, float duration)
-    {
-        // 화상 디버프 아이콘
-        Transform burnEffect = null;
-
-        // 이미 화상 디버프 중 아닐때
-        if (!transform.Find(SystemManager.Instance.burnDebuffEffect.name))
-        {
-            // 화상 디버프 이펙트 붙이기
-            burnEffect = LeanPool.Spawn(SystemManager.Instance.burnDebuffEffect, transform.position, Quaternion.identity, transform).transform;
+            // 한 틱동안 대기
+            yield return new WaitForSeconds(1f);
         }
 
-        // 도트 데미지 입히기
-        yield return StartCoroutine(DotHit(tickDamage, duration));
+        // 디버프 이펙트 없에기
+        effect = buffParent.Find(debuffEffect.name);
+        if (effect != null)
+            LeanPool.Despawn(effect);
 
-        // 화상 이펙트 없에기
-        burnEffect = transform.Find(SystemManager.Instance.burnDebuffEffect.name);
-        if (burnEffect != null)
-            LeanPool.Despawn(burnEffect);
-
-        // 화상 코루틴 변수 초기화
-        burnCoroutine = null;
-    }
-
-    public IEnumerator PoisonDotHit(float tickDamage, float duration)
-    {
-        // 포이즌 디버프 이펙트
-        Transform poisonEffect = null;
-
-        // 이미 포이즌 디버프 중 아닐때
-        if (!transform.Find(SystemManager.Instance.poisonDebuffEffect.name))
-        {
-            //포이즌 디버프 이펙트 붙이기
-            poisonEffect = LeanPool.Spawn(SystemManager.Instance.poisonDebuffEffect, transform.position, Quaternion.identity, transform).transform;
-        }
-
-        // 도트 데미지 입히기
-        yield return StartCoroutine(DotHit(tickDamage, duration));
-
-        // 포이즌 이펙트 없에기
-        poisonEffect = transform.Find(SystemManager.Instance.poisonDebuffEffect.name);
-        if (poisonEffect != null)
-            LeanPool.Despawn(poisonEffect);
-
-        // 포이즌 코루틴 변수 초기화
-        poisonCoroutine = null;
-    }
-
-    public IEnumerator BleedDotHit(float tickDamage, float duration)
-    {
-        // 출혈 디버프 이펙트
-        Transform bleedIcon = null;
-
-        // 이미 출혈 디버프 중 아닐때
-        if (!transform.Find(SystemManager.Instance.bleedDebuffUI.name))
-        {
-            //출혈 디버프 이펙트 붙이기
-            bleedIcon = LeanPool.Spawn(SystemManager.Instance.bleedDebuffUI, transform.position, Quaternion.identity, buffParent).transform;
-        }
-
-        // 도트 데미지 입히기
-        yield return StartCoroutine(DotHit(tickDamage, duration));
-
-        // 출혈 아이콘 없에기
-        bleedIcon = buffParent.Find(SystemManager.Instance.bleedDebuffUI.name);
-        if (bleedIcon != null)
-            LeanPool.Despawn(bleedIcon);
-
-        // 코루틴 비우기
-        bleedCoroutine = null;
+        // 디버프 코루틴 변수 초기화
+        playerManager.DebuffList[(int)debuffType] = null;
     }
 
     public IEnumerator Knockback(Attack attacker, float knockbackForce)
@@ -613,9 +570,9 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.speedDeBuff = slowAmount;
 
         // 이미 슬로우 디버프 중 아닐때
-        if (!buffParent.Find(SystemManager.Instance.slowDebuffUI.name))
+        if (!buffParentObj.Find(SystemManager.Instance.slowDebuffUI.name))
             //슬로우 디버프 아이콘 붙이기
-            slowIcon = LeanPool.Spawn(SystemManager.Instance.slowDebuffUI, buffParent.position, Quaternion.identity, buffParent);
+            slowIcon = LeanPool.Spawn(SystemManager.Instance.slowDebuffUI, buffParentObj.position, Quaternion.identity, buffParentObj);
 
         // 슬로우 시간동안 대기
         yield return new WaitForSeconds(slowDuration);
@@ -627,7 +584,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.speedDeBuff = 1f;
 
         // 슬로우 아이콘 없에기
-        slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
+        slowIcon = buffParentObj.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
         if (slowIcon != null)
             LeanPool.Despawn(slowIcon);
 
@@ -693,7 +650,7 @@ public class PlayerHitBox : MonoBehaviour
 
         //슬로우 디버프 해제
         // 슬로우 아이콘 없에기
-        Transform slowIcon = buffParent.Find(SystemManager.Instance.slowDebuffUI.name);
+        Transform slowIcon = buffParentObj.Find(SystemManager.Instance.slowDebuffUI.name);
         if (slowIcon != null)
             LeanPool.Despawn(slowIcon);
         // 코루틴 변수 초기화

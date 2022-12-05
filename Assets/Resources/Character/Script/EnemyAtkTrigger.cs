@@ -68,7 +68,7 @@ public class EnemyAtkTrigger : MonoBehaviour
         // 플레이어가 충돌하면
         if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
-            //todo 액션 실행
+            // 액션 실행
             if (attackAction != null)
                 attackAction.Invoke();
 

@@ -268,7 +268,10 @@ public class SoundManager : MonoBehaviour
                 // 루프로 변경
                 audio.loop = true;
 
+                // 처음부터 재생
+                audio.time = 0;
                 audio.Play();
+
             }
         }
         // 무한 반복 아닐때
@@ -287,6 +290,8 @@ public class SoundManager : MonoBehaviour
                     // 루프 없음
                     audio.loop = false;
 
+                    // 처음부터 재생
+                    audio.time = 0;
                     audio.Play();
                 }
             }
@@ -402,7 +407,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public int PlaySoundPool(List<string> soundPool, Vector2 playPos, int remove_lastIndex = -1)
+    public int PlaySoundPool(List<string> soundPool, Vector2 playPos = default, int remove_lastIndex = -1)
     {
         // 마지막으로 재생된 사운드의 인덱스는 풀에서 제거
         if (remove_lastIndex != -1)
@@ -414,8 +419,12 @@ public class SoundManager : MonoBehaviour
         // 뽑은 사운드 이름
         string soundName = soundPool[remove_lastIndex];
 
-        // 사운드 이름으로 찾아 재생
-        SoundManager.Instance.PlaySound(soundName, playPos);
+        if (playPos == default)
+            // 사운드 이름으로 찾아 재생
+            SoundManager.Instance.PlaySound(soundName);
+        else
+            // 사운드 이름으로 찾아 재생
+            SoundManager.Instance.PlaySound(soundName, playPos);
 
         // 선택된 인덱스 리턴
         return remove_lastIndex;

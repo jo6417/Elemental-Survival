@@ -1759,11 +1759,11 @@ public class Ascii_AI : MonoBehaviour
         WorldSpawner.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
         List<Character> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
-        foreach (Character chracter in enemys)
+        foreach (Character character in enemys)
         {
             // 보스 본인이 아닐때
-            if (chracter != this.character)
-                chracter.stopCount = 3f;
+            if (character != this.character)
+                character.stopCount = 3f;
         }
 
         //감시 시간

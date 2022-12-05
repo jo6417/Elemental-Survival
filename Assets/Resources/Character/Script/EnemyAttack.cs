@@ -187,7 +187,7 @@ public class EnemyAttack : Attack
         character.nowState = Character.State.Attack;
 
         // 밀리지 않게 kinematic으로 전환
-        // chracter.rigid.bodyType = RigidbodyType2D.Kinematic;
+        // character.rigid.bodyType = RigidbodyType2D.Kinematic;
 
         //플레이어 방향 다시 계산
         targetDir = character.TargetObj.transform.position - transform.position;
@@ -205,7 +205,7 @@ public class EnemyAttack : Attack
 
         // 타겟 방향 반대로 살짝 이동
         character.rigid.velocity = -targetDir.normalized * 3f;
-        // chracter.transform.DOMove(transform.position - targetDir.normalized, 1f);
+        // character.transform.DOMove(transform.position - targetDir.normalized, 1f);
         yield return new WaitForSeconds(1f);
 
         // rigid 타입 전환
@@ -216,7 +216,7 @@ public class EnemyAttack : Attack
 
         // 타겟 방향으로 돌진
         character.rigid.velocity = targetDir.normalized * 20f;
-        // chracter.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
+        // character.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);
         yield return new WaitForSeconds(0.5f);
 
         // 속도 멈추기

@@ -152,7 +152,7 @@ public class HitBox : MonoBehaviour
                 yield break;
 
             // 타격한 적이 비활성화 되었으면 리턴
-            // if (!hitChracter.enabled)
+            // if (!hitCharacter.enabled)
             //     return;
 
             // 고정 데미지가 있으면 아군 피격이라도 적용
@@ -419,7 +419,7 @@ public class HitBox : MonoBehaviour
 
     public IEnumerator HitDelay(float damage)
     {
-        // Chracter character = character as Chracter;
+        // Character character = character as Character;
 
         // 몬스터 정보가 있을때
         if (character.enemy != null)
@@ -440,7 +440,11 @@ public class HitBox : MonoBehaviour
                 // 체력 비율에 따라 히트 컬러 넣기
                 this.character.spriteList[i].color = hitColor;
             }
+            if (damage == 0)
+                // 회피 또는 방어
+                this.character.spriteList[i].color = Color.blue;
             else
+                // 회복
                 this.character.spriteList[i].color = SystemManager.Instance.healColor;
         }
 
@@ -509,6 +513,10 @@ public class HitBox : MonoBehaviour
         // 죽었으면 리턴
         if (character.isDead)
             return;
+
+        // 피격 위치안들어오면 현재위치
+        if (hitPos == default)
+            hitPos = transform.position;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);

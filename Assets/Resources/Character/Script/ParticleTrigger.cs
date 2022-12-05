@@ -110,14 +110,14 @@ public class ParticleTrigger : MonoBehaviour
 
     void PoisonTrigger()
     {
-        // 플레이어와 충돌한 독 웅덩이가 있을때, 플레이어 대쉬중 아닐때, 독 쿨타임중 아닐때
-        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitBox.poisonCoroutine == null)
-        {
-            print("poison attack!");
+        // // 플레이어와 충돌한 독 웅덩이가 있을때, 플레이어 대쉬중 아닐때, 독 쿨타임중 아닐때
+        // if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitBox.poisonCoroutine == null)
+        // {
+        //     print("poison attack!");
 
-            // 플레이어 코루틴으로 도트 피해 입히기
-            StartCoroutine(PlayerManager.Instance.hitBox.PoisonDotHit(2f, 5f));
-        }
+        //     // 플레이어 코루틴으로 도트 피해 입히기
+        //     StartCoroutine(PlayerManager.Instance.hitBox.DotHit(1f, 5f));
+        // }
     }
 
     void DamageTrigger()

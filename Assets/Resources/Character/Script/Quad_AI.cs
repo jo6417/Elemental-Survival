@@ -56,7 +56,7 @@ public class Quad_AI : MonoBehaviour
     ParticleManager[] sparkEffects = new ParticleManager[4]; // 프로펠러 스파크 이펙트 리스트
     ParticleManager[] chargeEffects = new ParticleManager[4]; // 프로펠러 차지 이펙트 리스트
     public List<GameObject> restEffects = new List<GameObject>();
-    public SortingGroup sortingLayer; //전체 레이어
+    public SortingGroup headSorting; //전체 레이어
 
     [Header("PushSide")]
     public GameObject wallBox; // 플레이어 가두는 상자 프리팹
@@ -111,8 +111,8 @@ public class Quad_AI : MonoBehaviour
             chargeEffects[i].gameObject.SetActive(false);
         }
 
-        // 레이어 1로 초기화
-        sortingLayer.sortingOrder = 1;
+        // 머리 레이어 1로 초기화
+        headSorting.sortingOrder = 1;
     }
 
     private void OnEnable()
@@ -363,7 +363,7 @@ public class Quad_AI : MonoBehaviour
         //애니메이터 켜기
         character.animList[0].enabled = true;
         // Idle 애니메이션으로 전환
-        // chracter.animList[0].SetBool("UseFist", false);
+        // character.animList[0].SetBool("UseFist", false);
 
         //! 거리 확인
         stateText.text = "Distance : " + character.targetDir.magnitude;
@@ -466,7 +466,7 @@ public class Quad_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 머리 및 프로펠러 레이어 0으로 내리기
-            sortingLayer.sortingOrder = 0;
+            headSorting.sortingOrder = 0;
 
             // 비행 볼륨 끄기
             autoVolume = false;
@@ -605,7 +605,7 @@ public class Quad_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 머리 및 프로펠러 레이어 1로 올리기
-            sortingLayer.sortingOrder = 1;
+            headSorting.sortingOrder = 1;
         });
 
         // 머리 올라간 만큼 프로펠러들 낮추기
@@ -751,7 +751,7 @@ public class Quad_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 머리 및 프로펠러 레이어 0으로 내리기
-            sortingLayer.sortingOrder = 0;
+            headSorting.sortingOrder = 0;
         });
 
         // 바닥 색깔 초기화
@@ -1187,8 +1187,8 @@ public class Quad_AI : MonoBehaviour
         .SetEase(Ease.OutCubic)
         .OnComplete(() =>
         {
-            // 머리 및 프로펠러 레이어 1으로
-            sortingLayer.sortingOrder = 1;
+            // 머리 및 프로펠러 레이어 낮추기
+            headSorting.sortingOrder = 0;
         });
 
         // 프로펠러 부모 수평으로
@@ -1349,12 +1349,16 @@ public class Quad_AI : MonoBehaviour
                 fanHorizon = true;
             });
 
-            // 앞,뒤 프로펠러 그룹 레이어 구분
-            if (i == 0 || i == 3)
-                fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 0;
-            else
-                fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 1;
+            // // 앞,뒤 프로펠러 그룹 레이어 구분
+            // if (i == 0 || i == 3)
+            //     fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 0;
+            // else
+            // 레이어 내리기
+            fans[i].GetComponentInChildren<SortingGroup>().sortingOrder = 0;
         }
+
+        // 머리 레이어 0으로 내리기
+        headSorting.sortingOrder = 0;
 
         // 원위치 시간 대기
         yield return new WaitForSeconds(0.5f);
@@ -1367,9 +1371,6 @@ public class Quad_AI : MonoBehaviour
 
         // 추락 소리 재생
         SoundManager.Instance.PlaySound("Quad_Rest_Fall");
-
-        // 모든 레이어 0으로 내리기
-        sortingLayer.sortingOrder = 0;
 
         // 휴식 이펙트 전부 켜기
         for (int i = 0; i < restEffects.Count; i++)
@@ -1450,7 +1451,13 @@ public class Quad_AI : MonoBehaviour
                 //끝나면 애니메이터 켜기
                 fanAnim.enabled = true;
             });
+
+            // 프로펠러 레이어 올리기
+            fans[i - 1].GetComponentInChildren<SortingGroup>().sortingOrder = 1;
         }
+
+        // 머리 레이어 1으로 올리기
+        headSorting.sortingOrder = 1;
 
         // idle 복귀 시간 대기
         yield return wait_1;
@@ -1460,9 +1467,6 @@ public class Quad_AI : MonoBehaviour
 
         // 비행 사운드 켜기
         SoundManager.Instance.VolumeChange("Quad_Fly", transform, 1f, 1f);
-
-        // 전체 레이어 1로 올리기
-        sortingLayer.sortingOrder = 1;
 
         // 메인 애니메이터 끄기
         character.animList[0].enabled = false;

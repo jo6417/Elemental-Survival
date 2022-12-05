@@ -413,12 +413,12 @@ public class KingSlime_AI : MonoBehaviour
 
             //컴포넌트 초기화
             // Collider2D babyColl = babySlime.GetComponent<Collider2D>();
-            Character babyChracter = babySlime.GetComponent<Character>();
+            Character babyCharacter = babySlime.GetComponent<Character>();
 
             // 소환수 히트박스 끄기
-            for (int j = 0; j < babyChracter.hitBoxList.Count; j++)
+            for (int j = 0; j < babyCharacter.hitBoxList.Count; j++)
             {
-                babyChracter.hitBoxList[j].enabled = false;
+                babyCharacter.hitBoxList[j].enabled = false;
             }
 
             //소환 위치
@@ -429,13 +429,13 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 소환수 히트박스 켜기
-                for (int j = 0; j < babyChracter.hitBoxList.Count; j++)
+                for (int j = 0; j < babyCharacter.hitBoxList.Count; j++)
                 {
-                    babyChracter.hitBoxList[j].enabled = true;
+                    babyCharacter.hitBoxList[j].enabled = true;
                 }
 
                 // 소환수 초기화
-                babyChracter.initialStart = true;
+                babyCharacter.initialStart = true;
             });
 
             // 슬라임 소환 사운드 재생

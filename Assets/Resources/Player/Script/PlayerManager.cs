@@ -31,7 +31,7 @@ public class PlayerStat
     public float range = 1; //마법 범위
     public float luck = 1; //행운
     public float expGain = 1; //경험치 획득량
-    public float getRage = 1; //todo 아이템 획득 범위 (플레이어 상호작용 콜라이더 크기에 반영하기)
+    public float getRage = 1; // 아이템 획득 범위
 
     //원소 공격력
     public float earth_atk = 1;
@@ -99,6 +99,8 @@ public class PlayerManager : MonoBehaviour
     public float camFollowSpeed = 10f; // 캠 따라오는 속도
     public float hpNow;
     public float hpMax;
+    public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
+    public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
 
     [Header("<Pocket>")]
     [SerializeField] List<int> hasGems = new List<int>(); // 테스트용 초기 원소젬 개수

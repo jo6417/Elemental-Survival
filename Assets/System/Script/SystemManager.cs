@@ -41,7 +41,7 @@ public class PhysicsLayerList
 
 public class SystemManager : MonoBehaviour
 {
-    public delegate void EnemyDeadCallback(Character chracter);
+    public delegate void EnemyDeadCallback(Character character);
     public EnemyDeadCallback globalEnemyDeadCallback;
 
     #region Singleton
