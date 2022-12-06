@@ -15,17 +15,6 @@ public class Ascii_AI : MonoBehaviour
     enum Face { Idle, CloseEye, Dizzy, Hit, Electro, Rage, Watch, Rest, Fall }
     [SerializeField] float attackDistance = 10f;
     float speed;
-    // 보스 좌우 반전 여부를 리턴
-    // float flip
-    // {
-    //     get
-    //     {
-    //         if (transform.rotation == Quaternion.Euler(0, 0, 0))
-    //             return 1f;
-    //         else
-    //             return -1f;
-    //     }
-    // }
 
     [Header("Refer")]
     [SerializeField] Character character;

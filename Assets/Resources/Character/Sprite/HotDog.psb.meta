@@ -1683,9 +1683,9 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Jaw_Down
-      position: {x: 21.591034, y: 8.471451, z: 3}
-      rotation: {x: 0, y: 0, z: -0.9999996, w: -0.00092903414}
-      length: 20.116652
+      position: {x: 21.591019, y: 8.471458, z: 3}
+      rotation: {x: 0, y: 0, z: -0.99999964, w: -0.0009290042}
+      length: 20.116646
       parentId: -1
     spriteOutline: []
     vertices:
@@ -1853,8 +1853,8 @@ ScriptedImporter:
     internalID: 0
     spriteBone:
     - name: Jaw_Up
-      position: {x: 21.775177, y: 3.4685745, z: 2}
-      rotation: {x: 0, y: 0, z: -0.9999979, w: 0.002085404}
+      position: {x: 21.775162, y: 3.4685822, z: 2}
+      rotation: {x: 0, y: 0, z: -0.9999979, w: 0.0020854345}
       length: 20.414734
       parentId: -1
     spriteOutline: []
@@ -1970,26 +1970,26 @@ ScriptedImporter:
     - name: Neck_0
       position: {x: 11.443043, y: 2.9241333, z: 1}
       rotation: {x: 0, y: 0, z: -0.9999895, w: -0.0045766383}
-      length: 3.4626198
+      length: 3.4626217
       parentId: -1
     - name: Neck_1
-      position: {x: 3.462622, y: 0.000008611714, z: 1}
+      position: {x: 3.4626238, y: 0.000008629172, z: 1}
       rotation: {x: 0, y: 0, z: 0.009594758, w: 0.99995404}
       length: 4.0219984
       parentId: 0
     - name: Neck_2
-      position: {x: 4.0219984, y: 0.000022679522, z: 1}
-      rotation: {x: 0, y: 0, z: -0.5056535, w: 0.8627367}
-      length: 6.4009824
+      position: {x: 4.0219984, y: 0.000022660379, z: 1}
+      rotation: {x: 0, y: 0, z: -0.50565374, w: 0.86273664}
+      length: 6.4009805
       parentId: 1
     - name: Jaw_Down
-      position: {x: 0.19249077, y: 1.9963411, z: 3}
-      rotation: {x: 0, y: 0, z: -0.0030144951, w: 0.9999955}
+      position: {x: 0.19248025, y: 1.9963399, z: 3}
+      rotation: {x: 0, y: 0, z: -0.0030144297, w: 0.99999547}
       length: 20.116652
       parentId: 4
     - name: Jaw_Up
-      position: {x: 6.400961, y: -0.000014725868, z: 2}
-      rotation: {x: 0, y: 0, z: 0.5031211, w: 0.86421597}
+      position: {x: 6.400979, y: 0.0000018023617, z: 2}
+      rotation: {x: 0, y: 0, z: 0.50312126, w: 0.86421585}
       length: 20.414742
       parentId: 2
     spriteOutline: []
@@ -2788,10 +2788,10 @@ ScriptedImporter:
     - name: Neck_0
       position: {x: 60.83931, y: 5.373053, z: 1}
       rotation: {x: 0, y: 0, z: -0.0065373187, w: 0.99997866}
-      length: 3.4626188
+      length: 3.4626207
       parentId: 0
     - name: Neck_1
-      position: {x: 3.462621, y: 0.000011595901, z: 1}
+      position: {x: 3.462623, y: 0.00001161336, z: 1}
       rotation: {x: 0, y: 0, z: 0.009594758, w: 0.999954}
       length: 4.021997
       parentId: 1
@@ -2886,9 +2886,9 @@ ScriptedImporter:
       length: 13.834512
       parentId: 19
     - name: Neck_2
-      position: {x: 4.021996, y: -0.00000030157952, z: 1}
-      rotation: {x: 0, y: 0, z: -0.5056535, w: 0.86273664}
-      length: 6.4009805
+      position: {x: 4.021996, y: -0.00000032072228, z: 1}
+      rotation: {x: 0, y: 0, z: -0.50565374, w: 0.8627366}
+      length: 6.400978
       parentId: 2
     - name: Jaw_Down
       position: {x: 0.19247188, y: 1.9963356, z: 3}
@@ -2896,8 +2896,8 @@ ScriptedImporter:
       length: 20.116644
       parentId: 23
     - name: Jaw_Up
-      position: {x: 6.400976, y: -0.0000027368617, z: 2}
-      rotation: {x: 0, y: 0, z: 0.5031211, w: 0.86421597}
+      position: {x: 6.4009876, y: 0.0000058947376, z: 2}
+      rotation: {x: 0, y: 0, z: 0.5031213, w: 0.86421585}
       length: 20.414734
       parentId: 21
     parts:

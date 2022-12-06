@@ -134,6 +134,9 @@ SpriteAtlas:
   - {fileID: 3511357318558972208, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: 7844632677255592645, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
+  - {fileID: -2953042054248606983, guid: 5b544c7acdfe49c438c07d3edfce7999, type: 3}
+  - {fileID: 6624841205104831877, guid: 5b544c7acdfe49c438c07d3edfce7999, type: 3}
+  - {fileID: 5242743360017271387, guid: 5b544c7acdfe49c438c07d3edfce7999, type: 3}
   - {fileID: 6355973998906905200, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
@@ -178,6 +181,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
+  - {fileID: -5937801097208924805, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
+  - {fileID: 4636757583066306611, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
+  - {fileID: 2181323241267009101, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
   - {fileID: -6404539822265595652, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -6511475048532732289, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -7901897369145345293, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
@@ -291,6 +297,9 @@ SpriteAtlas:
   - A-800_Walk-Sheet_0
   - A-800_Walk-Sheet_1
   - KingSlime_Crown
+  - SpiderLeg_1
+  - SpiderLeg_0
+  - SpiderLeg_2
   - Ascii_Walk-Sheet_2
   - Ascii_Walk-Sheet_1
   - Ascii_Walk-Sheet_0
@@ -335,6 +344,9 @@ SpriteAtlas:
   - Slime_Light
   - HotDog
   - HotDog_emission
+  - Leg3
+  - Leg2
+  - Leg1
   - Screen_Fall-Sheet_2
   - Screen_Fall-Sheet_3
   - Screen_Fall-Sheet_0
