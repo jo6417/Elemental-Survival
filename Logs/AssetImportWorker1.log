@@ -1,0 +1,651 @@
+Using pre-set license
+Built from '2020.3/staging' branch; Version is '2020.3.25f1 (9b9180224418) revision 10195328'; Using compiler version '192528614'; Build Type 'Release'
+OS: 'Windows 11  (10.0.22621) 64bit Core' Language: 'ko' Physical Memory: 32693 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\2020.3.25f1\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker1
+-projectPath
+C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
+-logFile
+Logs/AssetImportWorker1.log
+-srvPort
+8072
+Successfully changed project path to: C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
+C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival
+Using Asset Import Pipeline V2.
+Refreshing native plugins compatible for Editor in 450.62 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 2020.3.25f1 (9b9180224418)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Javis.JAVIS/Documents/GitHub/Elemental Survival/Assets
+GfxDevice: creating device client; threaded=0
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 2080 Ti (ID=0x1e07)
+    Vendor:   
+    VRAM:     11041 MB
+    Driver:   31.0.15.2698
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56308
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.3.25f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.003776 seconds.
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 463.17 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  1.137 seconds
+Domain Reload Profiling:
+	ReloadAssembly (1137ms)
+		BeginReloadAssembly (82ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (0ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (1ms)
+		EndReloadAssembly (955ms)
+			LoadAssemblies (77ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (162ms)
+			ReleaseScriptCaches (0ms)
+			RebuildScriptCaches (42ms)
+			SetupLoadedEditorAssemblies (613ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (0ms)
+				RefreshPlugins (463ms)
+				BeforeProcessingInitializeOnLoad (15ms)
+				ProcessInitializeOnLoadAttributes (98ms)
+				ProcessInitializeOnLoadMethodAttributes (31ms)
+				AfterProcessingInitializeOnLoad (0ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (0ms)
+Platform modules already initialized, skipping
+Registering precompiled user dll's ...
+Registered in 0.018749 seconds.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Refreshing native plugins compatible for Editor in 457.64 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Mono: successfully reloaded assembly
+- Completed reload, in  9.871 seconds
+Domain Reload Profiling:
+	ReloadAssembly (9877ms)
+		BeginReloadAssembly (174ms)
+			ExecutionOrderSort (0ms)
+			DisableScriptedObjects (6ms)
+			BackupInstance (0ms)
+			ReleaseScriptingObjects (0ms)
+			CreateAndSetChildDomain (22ms)
+		EndReloadAssembly (9616ms)
+			LoadAssemblies (6080ms)
+			RebuildTransferFunctionScriptingTraits (0ms)
+			SetupTypeCache (1242ms)
+			ReleaseScriptCaches (1ms)
+			RebuildScriptCaches (115ms)
+			SetupLoadedEditorAssemblies (2013ms)
+				LogAssemblyErrors (0ms)
+				InitializePlatformSupportModulesInManaged (5ms)
+				SetLoadedEditorAssemblies (0ms)
+				RefreshPlugins (458ms)
+				BeforeProcessingInitializeOnLoad (177ms)
+				ProcessInitializeOnLoadAttributes (578ms)
+				ProcessInitializeOnLoadMethodAttributes (782ms)
+				AfterProcessingInitializeOnLoad (13ms)
+				EditorAssembliesLoaded (0ms)
+			ExecutionOrderSort2 (0ms)
+			AwakeInstancesAfterBackupRestoration (8ms)
+Platform modules already initialized, skipping
+========================================================================
+Worker process is ready to serve import requests
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.10 seconds
+Refreshing native plugins compatible for Editor in 3.17 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 4904 Unused Serialized files (Serialized files now loaded: 0)
+System memory in use before: 323.8 MB.
+System memory in use after: 324.1 MB.
+
+Unloading 42 unused Assets to reduce memory usage. Loaded Objects now: 5364.
+Total: 4.511600 ms (FindLiveObjects: 0.412400 ms CreateObjectMapping: 0.120900 ms MarkObjects: 3.942800 ms  DeleteObjects: 0.034200 ms)
+
+AssetImportParameters requested are different than current active one (requested -> active):
+  custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
+  custom:video-decoder-ogg-theora: a1e56fd34408186e4bbccfd4996cb3dc -> 
+  custom:container-muxer-webm: aa71ff27fc2769a1b78a27578f13a17b -> 
+  custom:container-demuxer-webm: 4f35f7cbe854078d1ac9338744f61a02 -> 
+  custom:container-demuxer-ogg: 62fdf1f143b41e24485cea50d1cbac27 -> 
+  custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
+  custom:video-codec-MediaFoundation-h265: e54d7ab0439102e2317fc1e4b246158d -> 
+  custom:video-decoder-webm-vp8: 9c59270c3fd7afecdb556c50c9e8de78 -> 
+  custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+  custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '54c29fd6d82521bc5212fe9ccb6bfca3') in 0.132989 seconds 
+  Import took 0.143165 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000280 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '7cc3de85324a0a516a265be9c7a014db') in 0.019170 seconds 
+  Import took 0.027589 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 72.634062 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '50384e7da01196fdf1179ee3f719e276') in 0.012589 seconds 
+  Import took 0.022711 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 9.686530 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a535962bafc08c7c013b9e4d9cbb66a5') in 0.017558 seconds 
+  Import took 0.025641 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 387.725191 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '679cd772292bee1a2e1d34540c4c09e6') in 0.060129 seconds 
+  Import took 0.069455 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 9.195675 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '80d7c3dfd3faef63d8fb816ccbbd7d23') in 0.016546 seconds 
+  Import took 0.024677 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 7.666452 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '130846a91212bb8ebdb29ad395833d85') in 0.014235 seconds 
+  Import took 0.023725 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 125.612969 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5b33c2a93fd1698ac76ae7c14ef8efb3') in 0.015590 seconds 
+  Import took 0.024512 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 427.832445 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_1.mp3
+  artifactKey: Guid(18c63de0adff82747958817f4c51f351) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_1.mp3 using Guid(18c63de0adff82747958817f4c51f351) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ac0d1eec09dfd9dba5d9f08523f8289f') in 0.093111 seconds 
+  Import took 0.102743 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000478 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_6.mp3
+  artifactKey: Guid(56c8663728f0c964ea4d166dbd7ded45) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_6.mp3 using Guid(56c8663728f0c964ea4d166dbd7ded45) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9fc03a72be0be0a2e80dd427ba893b06') in 0.021539 seconds 
+  Import took 0.031132 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000327 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_10.mp3
+  artifactKey: Guid(dec0631baf5d73147b3f092e01e1c3dd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_10.mp3 using Guid(dec0631baf5d73147b3f092e01e1c3dd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '86bfb28f49b27b66101128442d190db9') in 0.019638 seconds 
+  Import took 0.028100 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000285 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_3.mp3
+  artifactKey: Guid(fdded367289c4684e9b2c78f2015a05c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_3.mp3 using Guid(fdded367289c4684e9b2c78f2015a05c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd950d438c69aad0199dd85b4d9d8c5ed') in 0.021410 seconds 
+  Import took 0.029686 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000269 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_4.mp3
+  artifactKey: Guid(5f15450131c3301429408aea0dfde9c4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_4.mp3 using Guid(5f15450131c3301429408aea0dfde9c4) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4b4b56834dc8d7bd5d6c4147eab323f4') in 0.020298 seconds 
+  Import took 0.029166 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000255 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_9.mp3
+  artifactKey: Guid(7007241533be39f43839098be392414f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_9.mp3 using Guid(7007241533be39f43839098be392414f) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '496a12f1eebacd84a4a66b336ddd8297') in 0.022245 seconds 
+  Import took 0.030711 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000244 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_7.mp3
+  artifactKey: Guid(f70ad21ac924c0147829592204450fe0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_7.mp3 using Guid(f70ad21ac924c0147829592204450fe0) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '28856f5e3761cb4d13c4792a0e817f31') in 0.020586 seconds 
+  Import took 0.028457 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000277 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_8.mp3
+  artifactKey: Guid(9a39eb56777c33e4b87a654dd18a8a41) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_8.mp3 using Guid(9a39eb56777c33e4b87a654dd18a8a41) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1305517a1e31f8738c343ae267ddf239') in 0.020589 seconds 
+  Import took 0.028886 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000227 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Hero Voice Amy - HD Remake/THATS_SUSPICIOUS.wav
+  artifactKey: Guid(2674ec415a1e90b40a0982de2aef80ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Hero Voice Amy - HD Remake/THATS_SUSPICIOUS.wav using Guid(2674ec415a1e90b40a0982de2aef80ca) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '37ad577bd32e5c3da9ccbef833a88cc3') in 0.024693 seconds 
+  Import took 0.033037 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000266 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_2.mp3
+  artifactKey: Guid(45a5c9d5f7f0ff14d9d40da7f617d1c6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_2.mp3 using Guid(45a5c9d5f7f0ff14d9d40da7f617d1c6) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0b0c841ebdc94d14f8e9ef0002111ec7') in 0.020811 seconds 
+  Import took 0.028873 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000291 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_5.mp3
+  artifactKey: Guid(2ad2afb7dd999df4695a68b6ea484539) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_5.mp3 using Guid(2ad2afb7dd999df4695a68b6ea484539) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3d934b817fd10c9959562b6f118b52b1') in 0.020016 seconds 
+  Import took 0.029376 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000282 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_11.mp3
+  artifactKey: Guid(df65c3572a3cbc3448100b92dd3f8ebb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_11.mp3 using Guid(df65c3572a3cbc3448100b92dd3f8ebb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '8ddc4c2138fe489ef5e2f625d34c7a55') in 0.022270 seconds 
+  Import took 0.031153 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000336 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_12.mp3
+  artifactKey: Guid(7810edb75db87524ea3f0269a70c67fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] HugeUniversal/SFX/Space, Robotic, Futuristic/spike_12.mp3 using Guid(7810edb75db87524ea3f0269a70c67fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5cbde52807a1bf813eb7f6aa3db850f2') in 0.019596 seconds 
+  Import took 0.027851 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000245 seconds.
+  path: Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Hero Voice Jack/That_s suspicious.wav
+  artifactKey: Guid(e956f8b4a7756ec46b106b79488deff9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/MyAssets/[Sound]/[SFX] Ultimate SFX Bundle - HD Remaster/Hero Voice Jack/That_s suspicious.wav using Guid(e956f8b4a7756ec46b106b79488deff9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'edfa708eb18e75b69444a65f4bc5543f') in 0.020092 seconds 
+  Import took 0.029276 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 30.639675 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e89d1ea8eb453bb9ccb21e79b5afba7d') in 0.292434 seconds 
+  Import took 0.443212 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1457.490221 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Tree.png
+  artifactKey: Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Tree.png using Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '28c2e7a9970e63d2a3eb3a1050727f05') in 0.021938 seconds 
+  Import took 0.031406 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 8.905298 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Tree.png
+  artifactKey: Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Tree.png using Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4bf990d71e6d50bcd81d71509dc4f7e3') in 0.015478 seconds 
+  Import took 0.024048 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 12.275528 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Tree.png
+  artifactKey: Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Tree.png using Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '96fc85f4c3c59ebeff40e317e51ab91f') in 0.015632 seconds 
+  Import took 0.024256 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4423.380838 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'def57e318a5d318b011086f2ccba351f') in 0.027244 seconds 
+  Import took 0.038007 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000291 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Tree.png
+  artifactKey: Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Tree.png using Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e23e2b2d6d785e02f5475c6723b19748') in 0.048745 seconds 
+  Import took 0.057507 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 20.539724 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Tree.png
+  artifactKey: Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Tree.png using Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '87e0d97c06f1db4b40a064fc0464e587') in 0.015351 seconds 
+  Import took 0.023827 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 9.307987 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Tree.png
+  artifactKey: Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Tree.png using Guid(d8682200473f97042b342046c6c342d3) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '04a03544f31d354c8d8a492904b58237') in 0.013584 seconds 
+  Import took 0.021620 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 46.453654 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '481936c3f462f8ef60d925e72e957fa8') in 0.040519 seconds 
+  Import took 0.049504 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 10495.619904 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '457538ec9d39822da25e875d337e68c6') in 0.026311 seconds 
+  Import took 0.036981 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1279.325779 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bef9ca4e3f90e1be821c6821a5ea82bd') in 0.020353 seconds 
+  Import took 0.030314 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2352.181264 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a4e036f75a5b25e5de44dcf340d76149') in 0.093252 seconds 
+  Import took 0.102611 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000270 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b48a2413653e00b4bd3c3d03ffae2715') in 0.041048 seconds 
+  Import took 0.050433 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 432.363930 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'be810f4a22b09d30546279a312fe9d8c') in 0.051270 seconds 
+  Import took 0.063023 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 232.570042 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '495f8e8e7118e19a9f72505b8535013b') in 0.019020 seconds 
+  Import took 0.028002 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 11.759625 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '94cd2f17c67daa0325105cd639d05da5') in 0.018649 seconds 
+  Import took 0.027300 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 1246.054765 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '27aba5107db1271488e42a2afd9404c8') in 0.017159 seconds 
+  Import took 0.026355 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 129.625743 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5adc73f541285c99e2c734966e286685') in 0.016212 seconds 
+  Import took 0.025058 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4331.426789 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9356a41687470622deeb159efa2213cd') in 0.023313 seconds 
+  Import took 0.032826 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 844.136589 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0b9c5270941b11b0ae8bcd9f85ec3a9f') in 0.031114 seconds 
+  Import took 0.040156 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 853.742314 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '37027e0ab9caa6f9d17667add4f80904') in 0.020466 seconds 
+  Import took 0.030170 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000324 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '204f0f4e8ffcac72fbc48c868b0d7d79') in 0.018185 seconds 
+  Import took 0.026348 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 29.042508 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'f885abaf44e96eb26f79682e6930f524') in 0.017148 seconds 
+  Import took 0.027529 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 25.488393 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3346bd95bbf0ead8d77e17f6f3989af7') in 0.014128 seconds 
+  Import took 0.022236 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.942674 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6d95e9be78b55b4057d44d6d6e8c6655') in 0.016635 seconds 
+  Import took 0.024677 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.066727 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'b03544b484fe6f2f0bb1412618e4cc22') in 0.012835 seconds 
+  Import took 0.022138 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 6.432689 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Inside.png
+  artifactKey: Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Inside.png using Guid(f2bfe0d9155f0ee42ba898da96ef7c44) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '4bbe9eb5552ba5ef0aa9e9cf12b3e9cb') in 0.015418 seconds 
+  Import took 0.024101 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.065534 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Back.png
+  artifactKey: Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Back.png using Guid(ac4f7d0cb024a40479fc936c08326030) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '064fbeb2c79418475ed71dbdd52f2a55') in 0.012981 seconds 
+  Import took 0.022088 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 47.071379 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Front.png
+  artifactKey: Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Front.png using Guid(3f2a191a466e17341b246f602aaee60b) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'edcefdb260a8275a11d091509b1b7394') in 0.029915 seconds 
+  Import took 0.038249 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 388.452755 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ad96726a58bdd3f6379b5dc236220234') in 0.053756 seconds 
+  Import took 0.063108 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.498275 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e25f3e371f0ae081459e70bc5b42d751') in 0.044595 seconds 
+  Import took 0.052863 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 66.423440 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'bb28b680f3ffab25e44db2e2b3280c80') in 0.046743 seconds 
+  Import took 0.055311 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 23.195708 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6470651a081d081be591007a1e0fb86a') in 0.045087 seconds 
+  Import took 0.053807 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 8.061026 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e51d5baf10871c8ea75f9d06164c1c20') in 0.051126 seconds 
+  Import took 0.059830 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 6.054471 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '5408feef54d5ef9f20ae677c458a8b9f') in 0.042862 seconds 
+  Import took 0.051633 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.307038 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'd7bc1a354242d1840188b4120c211473') in 0.043455 seconds 
+  Import took 0.052839 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 10.109398 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '392862aa51509e0d21a67d65f6f42a5f') in 0.042075 seconds 
+  Import took 0.050501 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 13.560855 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1ce903bd6146d8d7b58e81a723c438e9') in 0.045945 seconds 
+  Import took 0.054541 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.696964 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '565fd9334286609df1c2d18771241cc6') in 0.047702 seconds 
+  Import took 0.056059 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 5.800450 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '011aff598f769a441fb5c93898ee0393') in 0.045993 seconds 
+  Import took 0.054488 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 6.113247 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '49be30c8cb4c9bf8893bab4f63c361bf') in 0.054916 seconds 
+  Import took 0.065596 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 4.021051 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '9f20ae988d1f59aeac5ca6eabf34858c') in 0.045056 seconds 
+  Import took 0.053908 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 166.419882 seconds.
+  path: Assets/Resources/Character/Sprite/Farmer_Leg.psb
+  artifactKey: Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Resources/Character/Sprite/Farmer_Leg.psb using Guid(8ac0504f0c35ec845b98fb6964fb87cf) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0222d89d42dc06692c662f95ddd69e2f') in 0.051776 seconds 
+  Import took 0.060462 seconds .
+
