@@ -75,6 +75,7 @@ SpriteAtlas:
   - {fileID: -3961697549884085189, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
   - {fileID: -682485773742888383, guid: 98d073f0946b28d4e8e8497b0debd728, type: 3}
   - {fileID: 21300000, guid: e64fc031565ffcd4cbd28f6e3f922da9, type: 3}
+  - {fileID: 21300000, guid: 8d74d7c1ab623d64c8799d17be3abda9, type: 3}
   - {fileID: 21300000, guid: f1280ac1b0abf434cbd3500bfc79eec1, type: 3}
   - {fileID: 5770734358756913666, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: -4604887560701781518, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
@@ -134,9 +135,8 @@ SpriteAtlas:
   - {fileID: 3511357318558972208, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: 7844632677255592645, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
-  - {fileID: -2953042054248606983, guid: 5b544c7acdfe49c438c07d3edfce7999, type: 3}
-  - {fileID: 6624841205104831877, guid: 5b544c7acdfe49c438c07d3edfce7999, type: 3}
-  - {fileID: 5242743360017271387, guid: 5b544c7acdfe49c438c07d3edfce7999, type: 3}
+  - {fileID: 21300000, guid: f2bfe0d9155f0ee42ba898da96ef7c44, type: 3}
+  - {fileID: 21300000, guid: 3f2a191a466e17341b246f602aaee60b, type: 3}
   - {fileID: 6355973998906905200, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
@@ -147,6 +147,7 @@ SpriteAtlas:
   - {fileID: 1547395996106482273, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
   - {fileID: 6167343575801733385, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
   - {fileID: -8164322943603081415, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
+  - {fileID: 21300000, guid: ac4f7d0cb024a40479fc936c08326030, type: 3}
   - {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   - {fileID: 21300000, guid: 5c3aac0d2222d6349938891de574401a, type: 3}
   - {fileID: -7541850853189336606, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
@@ -191,6 +192,7 @@ SpriteAtlas:
   - {fileID: -6808187854587747357, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -8221661799491774684, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -1992862642441321592, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
+  - {fileID: 21300000, guid: bfeab15f1a0ae574798b1ab138fa3bd0, type: 3}
   - {fileID: 8005027228808558837, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: 3400582685010864788, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
   - {fileID: -8017327783547284791, guid: 002c9a7f3722782448ae9f06ce83dede, type: 3}
@@ -238,6 +240,7 @@ SpriteAtlas:
   - EarthSlime-Sheet_2
   - EarthSlime-Sheet_3
   - StoneGolem_Icon
+  - Farme_DomeMask
   - Bawi_Icon
   - Golem-Sheet_2
   - Golem-Sheet_3
@@ -297,9 +300,8 @@ SpriteAtlas:
   - A-800_Walk-Sheet_0
   - A-800_Walk-Sheet_1
   - KingSlime_Crown
-  - SpiderLeg_1
-  - SpiderLeg_0
-  - SpiderLeg_2
+  - Farmer_Inside
+  - Farmer_Front
   - Ascii_Walk-Sheet_2
   - Ascii_Walk-Sheet_1
   - Ascii_Walk-Sheet_0
@@ -310,6 +312,7 @@ SpriteAtlas:
   - Bawi_Parts_3
   - Bawi_Parts_0
   - Bawi_Parts_1
+  - Farmer_Back
   - KingSlimeFill
   - Bawi_Head
   - BloodEffect_7
@@ -354,6 +357,7 @@ SpriteAtlas:
   - Screen_Fall-Sheet_6
   - Screen_Fall-Sheet_4
   - Screen_Fall-Sheet_5
+  - Farmer_Caution
   - B-800_Sheet_7
   - B-800_Sheet_6
   - B-800_Sheet_1

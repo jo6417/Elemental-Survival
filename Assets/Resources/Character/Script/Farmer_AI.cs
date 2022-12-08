@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -27,8 +28,15 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] float fallCooltime = 1f;
 
     [Header("Leg")]
-    [SerializeField] Transform[] footObjs; // 발 오브젝트들
-    [SerializeField, ReadOnly] Vector2[] defaultFootPos = new Vector2[4]; // 다리 초기 로컬 포지션
+    [SerializeField] float footMoveDistance = 3f; // 해당 거리보다 멀어지면 발 움직임
+    [SerializeField] float footMoveSpeed = 0.3f; // 발 움직이는 속도
+    [SerializeField] float velocityFactor = 0.3f; // 발 이동 방향 속도로 예측 팩터
+    [SerializeField, ReadOnly] int nowMoveFootNum = 0; // 현재 이동 중인 발 개수
+    [SerializeField] Transform[] footEffectors; // 옮겨질 발 오브젝트
+    [SerializeField] ParticleSystem[] footTargets; // 발이 옮겨질 목표 오브젝트
+    [SerializeField] Vector2[] defaultFootPos = new Vector2[4]; // 발 초기 로컬 포지션
+    [SerializeField, ReadOnly] Vector2[] nowMovePos = new Vector2[4]; // 현재 옮겨지고 있는 발의 위치
+    [SerializeField, ReadOnly] Vector2[] lastFootPos = new Vector2[4]; // 마지막 발 월드 포지션
 
     private void OnEnable()
     {
@@ -37,10 +45,14 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator Init()
     {
-        //todo 모든 다리 초기 위치 초기화
-        for (int i = 0; i < footObjs.Length; i++)
+        // 모든 발 초기 위치 초기화
+        for (int i = 0; i < footTargets.Length; i++)
         {
-            defaultFootPos[i] = footObjs[i].localPosition;
+            // 발의 마지막 월드 위치 초기화
+            lastFootPos[i] = footEffectors[i].position;
+
+            // 발 초기 로컬 위치 초기화
+            // defaultFootPos[i] = footEffectors[i].position - transform.position;
         }
 
         //todo 등장씬
@@ -72,7 +84,7 @@ public class Farmer_AI : MonoBehaviour
         else
         {
             // 플레이어 추정 위치 계산
-            character.targetPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle;
+            character.targetPos = character.TargetObj.transform.position + (Vector3)Random.insideUnitCircle;
 
             // 추적 쿨타임 갱신
             targetSearchCount = targetSearchTime;
@@ -83,9 +95,6 @@ public class Farmer_AI : MonoBehaviour
 
         // 플레이어 방향
         character.targetDir = character.movePos - transform.position;
-
-        //todo 플레이어 따라 움직이기
-        //todo 다리 멀어지면 dojump로 발 위치 변경
 
         // 패턴 정하기
         ManageAction();
@@ -137,7 +146,7 @@ public class Farmer_AI : MonoBehaviour
         // }
 
         // 플레이어 따라가기
-        Walk();
+        Move();
     }
 
     void ChooseAttack()
@@ -176,7 +185,7 @@ public class Farmer_AI : MonoBehaviour
         }
     }
 
-    void Walk()
+    void Move()
     {
         character.nowState = Character.State.Walk;
 
@@ -188,28 +197,83 @@ public class Farmer_AI : MonoBehaviour
 
         // 공격범위 이내 접근 못하게 하는 속도 계수
         float nearSpeed = distance < atkRange
-        // 범위 안에 있을때
+        // 범위 안에 있을때, 거리 비례한 속도
         ? character.targetDir.magnitude - atkRange
-        // 범위 밖에 있을때
+        // 범위 밖에 있을때, 최고 속도
         : maxSpeed;
 
-        // 목표 벡터 초기화
+        // 목표 벡터 계산
         targetVelocity =
         character.targetDir.normalized
         * SystemManager.Instance.globalTimeScale
-        * character.speedNow
         * nearSpeed;
 
-        print(targetVelocity
-        + ":" + character.targetDir.normalized
-        + ":" + SystemManager.Instance.globalTimeScale
-        + ":" + character.speedNow
-        + ":" + nearSpeed);
+        // print(targetVelocity
+        // + ":" + character.targetDir.normalized
+        // + ":" + SystemManager.Instance.globalTimeScale
+        // + ":" + nearSpeed);
 
         // 해당 방향으로 가속
         character.rigid.velocity = Vector3.Lerp(character.rigid.velocity, targetVelocity, Time.deltaTime * targetFollowSpeed);
 
         character.nowState = Character.State.Idle;
+
+        // 다리 움직이기
+        FootCheck(character.rigid.velocity);
+    }
+
+    void FootCheck(Vector2 moveVelocity)
+    {
+        for (int i = 0; i < footTargets.Length; i++)
+        {
+            // 현재 옮겨질 위치가 없으면, 이동중인 발이 2개 이하일때
+            if (nowMovePos[i] == Vector2.zero && nowMoveFootNum <= 2)
+            {
+                // OnComplete 때문에 인덱스 캐싱
+                int footNum = i;
+                // 발 오브젝트 캐싱
+                Transform moveFoot = footTargets[footNum].transform;
+                // 발의 현재 위치에서 마지막 위치까지 거리
+                float distance = Vector2.Distance((Vector2)transform.position + defaultFootPos[footNum], moveFoot.position);
+
+                // 마지막 위치로부터 footMoveDistance 보다 멀어지면
+                if (distance > footMoveDistance * Random.Range(0.8f, 1.2f))
+                {
+                    // 이동 방향 벡터 계산
+                    Vector2 velocity = moveVelocity * velocityFactor;
+                    // 이동 방향 속도 제한
+                    velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude, 0, 5f);
+                    print("velocity : " + velocity.magnitude);
+
+                    // 발이 옮겨질 위치 계산해서 배열에 캐싱
+                    Vector2 movePos = (Vector2)transform.position + defaultFootPos[footNum] + velocity;
+                    nowMovePos[footNum] = movePos;
+
+                    // 발 이동개수 추가
+                    nowMoveFootNum++;
+
+                    //todo 발 그림자 이동
+
+                    // 발 점프해서 이동
+                    moveFoot.DOJump(movePos, 1f, 1, footMoveSpeed * footMoveDistance)
+                    .SetEase(Ease.Linear)
+                    .OnComplete(() =>
+                    {
+                        // 발 마지막 위치 초기화
+                        lastFootPos[footNum] = movePos;
+
+                        // 캐싱한 위치 초기화
+                        nowMovePos[footNum] = Vector2.zero;
+
+                        // 발 이동개수 감소
+                        nowMoveFootNum--;
+
+                        // 발에서 먼지 생성
+                        footTargets[footNum].Play();
+                    });
+                }
+            }
+        }
     }
 
     IEnumerator StabLeg()

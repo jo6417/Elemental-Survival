@@ -166,7 +166,8 @@ public class Character : MonoBehaviour
         buffParent = buffParent == null ? transform : buffParent;
 
         //초기 타겟은 플레이어
-        TargetObj = PlayerManager.Instance.gameObject;
+        if (TargetObj == null)
+            TargetObj = PlayerManager.Instance.gameObject;
 
         // 공격 트리거 찾기
         // enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
