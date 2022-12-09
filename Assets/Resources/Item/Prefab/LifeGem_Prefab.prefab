@@ -47,17 +47,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ccb3a946fc21b4b9bf703f552b66a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amount: 1
-  isBundle: 0
-  gemTypeIndex: -1
-  moveSpeed: 1
-  autoDespawnTime: 0
-  itemName: 
   sprite: {fileID: 0}
   despawnEffect: {fileID: 8136139136538463727, guid: 64c63ea60fcd8f8419c2ee5c45103df5,
     type: 3}
   coll: {fileID: 0}
   gadgetPrefab: {fileID: 0}
+  amount: 1
+  isBundle: 0
+  gemTypeIndex: -1
+  moveSpeed: 1
+  autoDespawnTime: 0
 --- !u!212 &3694098022795033563
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -171,7 +170,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9060693116706104173}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.44, y: 2.17, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7860650265401066554}

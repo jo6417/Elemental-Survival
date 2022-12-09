@@ -14,7 +14,7 @@ public class HotDog_AI : EnemyAI
     bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
-    public EnemyAtkTrigger biteTrigger;
+    [SerializeField] EnemyAtkTrigger biteTrigger;
 
     [Header("Phase")]
     [SerializeField] Transform pushRange; // 페이즈 상승시 플레이어 밀어내는 범위

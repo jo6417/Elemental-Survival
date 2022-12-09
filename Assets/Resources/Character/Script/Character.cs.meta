@@ -4,17 +4,17 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - rigid: {instanceID: 0}
-  - anim: {instanceID: 0}
+  - targetObj: {instanceID: 0}
+  - shadow: {instanceID: 0}
   - enemyAI: {instanceID: 0}
   - enemyAtkTrigger: {instanceID: 0}
   - spriteObj: {instanceID: 0}
-  - shadow: {instanceID: 0}
   - healRange: {instanceID: 0}
   - physicsColl: {instanceID: 0}
-  - hitEffect: {fileID: 1620636520166436, guid: 07757cf211bd45044a1f1917658b9e66,
-      type: 3}
+  - rigid: {instanceID: 0}
   - buffParent: {instanceID: 0}
+  - hitEffect: {fileID: 1620636520166436, guid: ae8e77315cbed89469e78278295e5844,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

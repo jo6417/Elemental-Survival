@@ -7,6 +7,7 @@ public class EnemyAtkTrigger : MonoBehaviour
     public System.Action attackAction;
 
     public GameObject explosionPrefab;
+    [SerializeField] SpriteRenderer indicatorSprite;
     public SpriteRenderer atkRangeBackground;
     public SpriteRenderer atkRangeFill;
     public Character character;
@@ -73,6 +74,9 @@ public class EnemyAtkTrigger : MonoBehaviour
                 attackAction.Invoke();
 
             atkTrigger = true;
+            //todo 인디케이터 활성화
+            if (indicatorSprite != null)
+                indicatorSprite.enabled = true;
 
             // 자폭형 몬스터일때
             if (character && character.selfExplosion && !character.isDead)
@@ -100,7 +104,12 @@ public class EnemyAtkTrigger : MonoBehaviour
             else
                 return;
 
+            // 트리거 활성화
             atkTrigger = true;
+
+            //todo 인디케이터 활성화
+            if (indicatorSprite != null)
+                indicatorSprite.enabled = true;
 
             // 자폭형 몬스터일때
             if (character && character.selfExplosion && !character.isDead)
@@ -117,12 +126,17 @@ public class EnemyAtkTrigger : MonoBehaviour
         if (!atkTrigger)
             return;
 
-        //  고스트 아닐때, 플레이어가 나가면
-        if (!character.IsGhost && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        // 고스트 아닐때, 플레이어가 나가면
+        // 고스트일때, 몬스터가 나가면
+        if ((!character.IsGhost && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        || (character.IsGhost && other.CompareTag(SystemManager.TagNameList.Enemy.ToString())))
+        {
+            // 트리거 비활성화
             atkTrigger = false;
 
-        // 고스트일때, 몬스터가 나가면
-        if (character.IsGhost && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
-            atkTrigger = false;
+            //todo 인디케이터 비활성화
+            if (indicatorSprite != null)
+                indicatorSprite.enabled = false;
+        }
     }
 }

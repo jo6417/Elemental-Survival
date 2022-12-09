@@ -114,6 +114,12 @@ SpriteAtlas:
   - {fileID: 2942071569669718823, guid: a532eb0702be3074e85665488a5b491a, type: 3}
   - {fileID: -3037242049287536965, guid: a532eb0702be3074e85665488a5b491a, type: 3}
   - {fileID: 5737288870410318535, guid: a532eb0702be3074e85665488a5b491a, type: 3}
+  - {fileID: -416019207744178828, guid: 5620b7b7c1a7bf44ca28e74666919015, type: 3}
+  - {fileID: -6887814011075094759, guid: 5620b7b7c1a7bf44ca28e74666919015, type: 3}
+  - {fileID: 2940300967126528945, guid: 5620b7b7c1a7bf44ca28e74666919015, type: 3}
+  - {fileID: 1389956427984919514, guid: 5620b7b7c1a7bf44ca28e74666919015, type: 3}
+  - {fileID: 1913780984639629312, guid: 5620b7b7c1a7bf44ca28e74666919015, type: 3}
+  - {fileID: -4967927857384387954, guid: 5620b7b7c1a7bf44ca28e74666919015, type: 3}
   - {fileID: 21300000, guid: 61d316d755212b74c898ae16e1640c8f, type: 3}
   - {fileID: -640876303977768716, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 1724419166579631514, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
@@ -126,6 +132,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 16bc50a805902cd4383f00f6f3aaa96d, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
   - {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
+  - {fileID: 21300000, guid: 179d4639e49e5e7449272364776b17f4, type: 3}
   - {fileID: 65732626766748736, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: -208958182950929353, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: -7606660565201719112, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
@@ -173,6 +180,7 @@ SpriteAtlas:
   - {fileID: -2878197938310053564, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: 5396712418122877333, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
   - {fileID: 2321343539104585878, guid: 732359dd8ffedb24d97f2720dbce4bb0, type: 3}
+  - {fileID: 21300000, guid: 40a584fd09692fe4eab1d32f6e3bebcf, type: 3}
   - {fileID: 21300000, guid: 229d2c0e80105254ea3c37731fcf7575, type: 3}
   - {fileID: 40661236521451113, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: 9117267712165489306, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
@@ -279,6 +287,12 @@ SpriteAtlas:
   - Golem_Attack-Sheet_5
   - Golem_Attack-Sheet_4
   - Golem_Attack-Sheet_8
+  - Plant-Sheet_5
+  - Plant-Sheet_4
+  - Plant-Sheet_1
+  - Plant-Sheet_0
+  - Plant-Sheet_3
+  - Plant-Sheet_2
   - A_800_Icon
   - BloodEffect_Light_2
   - BloodEffect_Light_3
@@ -291,6 +305,7 @@ SpriteAtlas:
   - Vacuum_PulseLight
   - MiniDrone_Icon
   - KingSlime_Bubble
+  - Seed
   - A-800_Walk-Sheet_6
   - A-800_Walk-Sheet_7
   - A-800_Walk-Sheet_4
@@ -338,6 +353,7 @@ SpriteAtlas:
   - Back_Leg
   - Jaw_Down
   - Body
+  - Plant_Dirt
   - KingSlimeFill2
   - DroneFan_3
   - DroneFan_2

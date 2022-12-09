@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Lean.Pool;
 using TMPro;
 using UnityEngine;
 
@@ -14,29 +15,42 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] Patten patten = Patten.None;
     enum Patten { PlantSeed, BioGas, SunHeal, Skip, None };
 
+    [Header("Cooltime")]
+    [SerializeField] float coolCount;
+    [SerializeField] float StabCooltime = 1f;
+    [SerializeField] float PlantSeedCooltime = 1f;
+    [SerializeField] float BioGasCooltime = 1f;
+    [SerializeField] float SunHealCooltime = 1f;
+
     [Header("Refer")]
     [SerializeField] Character character;
     [SerializeField] TextMeshProUGUI stateText; //! 테스트 현재 상태
+    [SerializeField] Transform bodyTransform; // 몸체 오브젝트
 
     [Header("Walk")]
     [SerializeField, ReadOnly] float targetSearchCount; // 타겟 위치 추적 시간 카운트
     [SerializeField] float targetSearchTime = 3f; // 타겟 위치 추적 시간
     [SerializeField] float targetFollowSpeed = 3f; // 타겟 추적 속도
 
-    [Header("Cooltime")]
-    [SerializeField] float coolCount;
-    [SerializeField] float fallCooltime = 1f;
-
     [Header("Leg")]
     [SerializeField] float footMoveDistance = 3f; // 해당 거리보다 멀어지면 발 움직임
     [SerializeField] float footMoveSpeed = 0.3f; // 발 움직이는 속도
     [SerializeField] float velocityFactor = 0.3f; // 발 이동 방향 속도로 예측 팩터
     [SerializeField, ReadOnly] int nowMoveFootNum = 0; // 현재 이동 중인 발 개수
+    [SerializeField] Transform[] legBones; // 다리 각각 bone 부모 오브젝트
     [SerializeField] Transform[] footEffectors; // 옮겨질 발 오브젝트
     [SerializeField] ParticleSystem[] footTargets; // 발이 옮겨질 목표 오브젝트
     [SerializeField] Vector2[] defaultFootPos = new Vector2[4]; // 발 초기 로컬 포지션
     [SerializeField, ReadOnly] Vector2[] nowMovePos = new Vector2[4]; // 현재 옮겨지고 있는 발의 위치
     [SerializeField, ReadOnly] Vector2[] lastFootPos = new Vector2[4]; // 마지막 발 월드 포지션
+
+    [Header("Stab")]
+    [SerializeField] EnemyAtkTrigger stabTrigger;
+
+    [Header("PlantSeed")]
+    [SerializeField] Transform seedPrefab; // 씨앗 프리팹
+    [SerializeField] Transform plantPrefab; // 식물 프리팹
+    [SerializeField] Transform seedHole; // 씨앗 발사할 구멍들
 
     private void OnEnable()
     {
@@ -53,6 +67,13 @@ public class Farmer_AI : MonoBehaviour
 
             // 발 초기 로컬 위치 초기화
             // defaultFootPos[i] = footEffectors[i].position - transform.position;
+
+            // 다리 콜라이더 모두  끄기
+            Collider2D[] legColls = legBones[i].GetComponentsInChildren<Collider2D>();
+            foreach (Collider2D coll in legColls)
+            {
+                coll.enabled = false;
+            }
         }
 
         //todo 등장씬
@@ -124,36 +145,45 @@ public class Farmer_AI : MonoBehaviour
         Vector2 dir = character.movePos - transform.position;
 
         // 플레이어와의 거리
-        float distance = dir.magnitude;
+        float playerDistance = dir.magnitude;
+
+        // 찌르기 트리거에 플레이어 닿으면 Stab 패턴
+        if (stabTrigger.atkTrigger)
+        {
+            //! 거리 확인용
+            stateText.text = "Stab : " + playerDistance;
+
+            // 찌르기 패턴 실행
+            StartCoroutine(StabLeg());
+
+            return;
+        }
 
         //! 쿨타임 확인
         stateText.text = "CoolCount : " + atkCoolCount;
 
-        // // 범위 내에 있을때
-        // if (distance <= atkRange)
-        // {
-        //     // 쿨타임 됬을때
-        //     if (atkCoolCount <= 0)
-        //     {
-        //         // 속도 초기화
-        //         character.rigid.velocity = Vector3.zero;
+        // 범위 내에 있을때
+        if (playerDistance <= atkRange)
+        {
+            // 쿨타임 됬을때
+            if (atkCoolCount <= 0)
+            {
+                //공격 패턴 결정하기
+                StartCoroutine(ChooseAttack());
 
-        //         //공격 패턴 결정하기
-        //         ChooseAttack();
-
-        //         return;
-        //     }
-        // }
+                return;
+            }
+        }
 
         // 플레이어 따라가기
         Move();
     }
 
-    void ChooseAttack()
+    IEnumerator ChooseAttack()
     {
         //! 패턴 스킵
         if (patten == Patten.Skip)
-            return;
+            yield break;
 
         // 공격 상태로 전환
         character.nowState = Character.State.Attack;
@@ -164,6 +194,9 @@ public class Farmer_AI : MonoBehaviour
         //! 테스트를 위해 패턴 고정
         if (patten != Patten.None)
             atkType = (int)patten;
+
+        // 걷기 멈추기
+        yield return StartCoroutine(StopMove());
 
         // 결정된 공격 패턴 실행
         switch (atkType)
@@ -222,79 +255,219 @@ public class Farmer_AI : MonoBehaviour
         FootCheck(character.rigid.velocity);
     }
 
-    void FootCheck(Vector2 moveVelocity)
+    void FootCheck(Vector2 moveVelocity, bool setDefault = false)
     {
         for (int i = 0; i < footTargets.Length; i++)
         {
             // 현재 옮겨질 위치가 없으면, 이동중인 발이 2개 이하일때
-            if (nowMovePos[i] == Vector2.zero && nowMoveFootNum <= 2)
+            if (
+                (nowMovePos[i] == Vector2.zero && nowMoveFootNum <= 2) || setDefault
+                )
             {
                 // OnComplete 때문에 인덱스 캐싱
                 int footNum = i;
-                // 발 오브젝트 캐싱
-                Transform moveFoot = footTargets[footNum].transform;
                 // 발의 현재 위치에서 마지막 위치까지 거리
-                float distance = Vector2.Distance((Vector2)transform.position + defaultFootPos[footNum], moveFoot.position);
+                float distance = Vector2.Distance((Vector2)transform.position + defaultFootPos[footNum], footTargets[footNum].transform.position);
 
                 // 마지막 위치로부터 footMoveDistance 보다 멀어지면
                 if (distance > footMoveDistance * Random.Range(0.8f, 1.2f))
                 {
-                    // 이동 방향 벡터 계산
-                    Vector2 velocity = moveVelocity * velocityFactor;
-                    // 이동 방향 속도 제한
-                    velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude, 0, 5f);
-                    print("velocity : " + velocity.magnitude);
-
-                    // 발이 옮겨질 위치 계산해서 배열에 캐싱
-                    Vector2 movePos = (Vector2)transform.position + defaultFootPos[footNum] + velocity;
-                    nowMovePos[footNum] = movePos;
-
-                    // 발 이동개수 추가
-                    nowMoveFootNum++;
-
-                    //todo 발 그림자 이동
-
-                    // 발 점프해서 이동
-                    moveFoot.DOJump(movePos, 1f, 1, footMoveSpeed * footMoveDistance)
-                    .SetEase(Ease.Linear)
-                    .OnComplete(() =>
-                    {
-                        // 발 마지막 위치 초기화
-                        lastFootPos[footNum] = movePos;
-
-                        // 캐싱한 위치 초기화
-                        nowMovePos[footNum] = Vector2.zero;
-
-                        // 발 이동개수 감소
-                        nowMoveFootNum--;
-
-                        // 발에서 먼지 생성
-                        footTargets[footNum].Play();
-                    });
+                    // 발 움직이기
+                    FootMove(moveVelocity, footNum);
                 }
             }
         }
     }
 
+    void FootMove(Vector2 moveVelocity, int footIndex)
+    {
+        // 이동 방향 벡터 계산
+        Vector2 velocity = moveVelocity * velocityFactor;
+        // 이동 방향 속도 제한
+        velocity = velocity.normalized * Mathf.Clamp(velocity.magnitude, 0, 5f);
+        // print("velocity : " + velocity.magnitude);
+
+        // 발이 옮겨질 위치 계산해서 배열에 캐싱
+        Vector2 movePos = (Vector2)transform.position + defaultFootPos[footIndex] + velocity;
+        nowMovePos[footIndex] = movePos;
+
+        // 발 이동개수 추가
+        nowMoveFootNum++;
+
+        //todo 발 그림자 이동
+
+        // 발 점프해서 이동
+        footTargets[footIndex].transform.DOJump(movePos, 1f, 1, footMoveSpeed * footMoveDistance)
+        .SetEase(Ease.Linear)
+        .OnComplete(() =>
+        {
+            // 발 마지막 위치 초기화
+            lastFootPos[footIndex] = movePos;
+
+            // 캐싱한 위치 초기화
+            nowMovePos[footIndex] = Vector2.zero;
+
+            // 발 이동개수 감소
+            nowMoveFootNum--;
+
+            // 발에서 먼지 생성
+            footTargets[footIndex].Play();
+        });
+    }
+
+    IEnumerator StopMove()
+    {
+        // 속도 멈추기
+        DOTween.To(() => character.rigid.velocity, x => character.rigid.velocity = x, Vector2.zero, 0.2f);
+
+        // 멈추는 시간 대기
+        yield return new WaitForSeconds(0.2f);
+
+        // 발 모두 원위치
+        for (int i = 0; i < 4; i++)
+            FootMove(Vector2.zero, i);
+    }
+
     IEnumerator StabLeg()
     {
-        yield return null;
-        //todo 거미다리 찌르기 패턴
-        //todo 플레이어 근접하면 발동
-        //todo 좌,우에 따라서 반대 방향으로 살짝몸 기울이고
-        //todo 공격 방향으로 다시 기울이며
-        //todo 찌를 다리 콜라이더 활성화 후에 뻗어서 찌르기
+        // 공격 상태로 변경
+        character.nowState = Character.State.Attack;
+
+        // 걷기 멈추기
+        yield return StartCoroutine(StopMove());
+
+        // 원위치 시간 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 플레이어 방향 좌,우 판단
+        bool isLeft = PlayerManager.Instance.transform.position.x < transform.position.x ? true : false;
+        // 공격할 다리 인덱스
+        int atkLegIndex = isLeft ? 0 : 3;
+        // 공격할 다리 오브젝트
+        Transform atkFoot = footTargets[atkLegIndex].transform;
+        // 공격할 다리 콜라이더 모두 찾기
+        Collider2D[] legColls = legBones[atkLegIndex].GetComponentsInChildren<Collider2D>();
+        // 몸체 기울일 방향
+        Vector3 bodyRotation = Vector3.forward * (isLeft ? -15f : 15f);
+
+        // 플레이어 반대 방향으로 살짝몸 기울이고
+        bodyTransform.transform.DORotate(bodyRotation, 0.5f)
+        .SetEase(Ease.OutSine);
+
+        // 공격 준비 로컬 위치
+        Vector2 atkReadyPos = isLeft ? new Vector2(-3, 1) : new Vector2(3, 1);
+        // 공격 준비 월드 위치
+        atkReadyPos += (Vector2)transform.position;
+
+        // 공격할 다리 오므려서 준비
+        atkFoot.DOMove(atkReadyPos, 0.5f)
+        .SetEase(Ease.OutSine);
+
+        // 몸체 기울이기 및 오므리는 시간 대기
+        yield return new WaitForSeconds(1f);
+
+        // 공격 방향으로 몸체 기울이기
+        bodyTransform.transform.DORotate(-bodyRotation, 0.2f)
+        .SetEase(Ease.OutSine);
+
+        // 공격 다리 콜라이더 모두 활성화
+        for (int i = 0; i < legColls.Length; i++)
+            legColls[i].enabled = true;
+
+        // 찌를 위치
+        Vector2 stabPos = transform.position + (PlayerManager.Instance.transform.position - transform.position).normalized * 20f;
+
+        // 플레이어 위치로 다리 뻗어서 찌르기
+        atkFoot.DOMove(stabPos, 0.2f)
+                .SetEase(Ease.OutBack);
+
+        //todo 찌른 직후 Solver 끄고 관절 사이 늘리기, 라인 렌더러로 관절사이 이어주기
+        // 해당 다리 Solver 끄기
+        // 관절 사이 늘리기
+        // 늘리는동안 라인 렌더러로 관절사이 이어주기 업데이트
+
+        // 찌르고 대기
+        yield return new WaitForSeconds(0.7f);
+
+        // 공격 다리 콜라이더 모두 비활성화
+        for (int i = 0; i < legColls.Length; i++)
+            legColls[i].enabled = false;
+
+        // 몸체 기울기 초기화
+        bodyTransform.transform.DORotate(Vector3.zero, 0.5f)
+        .SetEase(Ease.OutBack);
+
+        // 다리 다시 오므리기
+        atkFoot.DOMove(atkReadyPos, 0.2f)
+        .SetEase(Ease.InBack);
+
+        // 오므리는 시간 대기
+        yield return new WaitForSeconds(0.2f);
+
+        // 공격 다리 위치 초기화
+        atkFoot.DOMove((Vector2)transform.position + defaultFootPos[atkLegIndex], 0.3f)
+        .SetEase(Ease.InBack);
+
+        // 몸체 및 다리 초기화 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 쿨타임 갱신
+        coolCount = StabCooltime;
+
+        // 상태 초기화
+        character.nowState = Character.State.Idle;
     }
 
     IEnumerator PlantSeed()
     {
         yield return null;
-        //todo 씨뿌리기 패턴
-        //todo 거미 머리 위의 나무 테두리에 있는 구멍들에서
-        //todo 원형으로 랜덤 위치에 수십개의 씨를 랜덤 위치로 뿌림
-        //todo 씨는 바닥에 박히고 몇초후 싹이 트며 열매가 맺힐 준비
-        //todo 싹이 튼 상태에서는 피격되어 파괴 가능함 - 체력 10정도
-        //todo 싹이 튼 나무는 플레이어 방향(위치 오차 존재)으로 쿨마다 나뭇잎 발사
+
+        for (int i = 0; i < seedHole.childCount; i++)
+        {
+            // 식물 자라남
+            StartCoroutine(GrowPlant(seedHole.GetChild(i).transform.position));
+
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // 후딜레이 대기
+        yield return new WaitForSeconds(1f);
+
+        // 쿨타임 갱신
+        coolCount = PlantSeedCooltime;
+
+        // 상태 초기화
+        character.nowState = Character.State.Idle;
+    }
+
+    IEnumerator GrowPlant(Vector2 spawnPos)
+    {
+        // 씨앗 소환
+        Transform seedShadow = LeanPool.Spawn(seedPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+        // 씨앗 스프라이트
+        Transform seed = seedShadow.GetChild(0);
+
+        // 씨앗 랜덤 각도로 초기화
+        seed.rotation = Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f));
+
+        // 씨앗 착지 위치
+        Vector2 seedPos = seedShadow.position + (seedShadow.position - seedHole.position).normalized * 10f + Random.insideUnitSphere * 3f;
+
+        // 씨앗 이동 시키기
+        seedShadow.DOMove(seedPos, 1f)
+        .SetEase(Ease.InSine);
+
+        // 씨앗 점프 시키기
+        seed.DOLocalJump(Vector2.zero, 5f, 1, 1f)
+        .SetEase(Ease.InSine);
+
+        yield return new WaitForSeconds(1f);
+
+        // 씨앗 디스폰
+        LeanPool.Despawn(seedShadow);
+
+        // 식물생성
+        Transform plant = LeanPool.Spawn(plantPrefab, seedShadow.transform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
     }
 
     IEnumerator BioGas()
