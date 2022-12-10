@@ -289,6 +289,12 @@ public class PhoneMenu : MonoBehaviour
         Vector3 camPos = SystemManager.Instance.camParent.position;
         camPos.z = 0;
 
+        // 캠 변경된 스케일값
+        float camScale = Camera.main.orthographicSize / UIManager.Instance.defaultCamSize;
+
+        // 메인 카메라의 변경된 스케일 반영한 스케일값
+        Vector3 UIscale = Vector3.one * camScale;
+
         // 화면 라이트 끄기
         lightScreen.DOColor(new Color(1f, 1f, 1f, 0f), 0.4f)
         .SetUpdate(true);
@@ -296,17 +302,15 @@ public class PhoneMenu : MonoBehaviour
         float moveTime = 0.8f;
 
         // 팝업UI 상태일때 위치,회전,스케일로 이동
-        CastMagic.Instance.transform.DOMove(camPos + UIPosition + modifyPos, moveTime)
+        CastMagic.Instance.transform.DOMove(camPos + modifyPos + UIPosition * camScale, moveTime)
         .SetUpdate(true);
-        CastMagic.Instance.transform.DOScale(Vector3.one, moveTime)
+        CastMagic.Instance.transform.DOScale(UIscale, moveTime)
         .SetUpdate(true);
         CastMagic.Instance.transform.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
 
-        yield return new WaitForSecondsRealtime(0.5f);
-
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
-        yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
+        yield return new WaitForSecondsRealtime(moveTime);
 
         // 버튼 상호작용 켜기
         InteractBtnsToggle(true);
@@ -1636,11 +1640,13 @@ public class PhoneMenu : MonoBehaviour
 
         float moveTime = 0.8f;
 
-        // 매직폰 상태일때 위치,회전,스케일로 이동
+        // 매직폰 상태일때 위치로 변경
         CastMagic.Instance.transform.DOMove(phonePosition, moveTime)
         .SetUpdate(true);
+        // 매직폰 상태일때 크기로 변경
         CastMagic.Instance.transform.DOScale(phoneScale, moveTime)
         .SetUpdate(true);
+        // 매직폰 상태일때 회전값으로 변경
         CastMagic.Instance.transform.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
 

@@ -224,7 +224,8 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // 맞을때마다 Hit 함수 실행
-        character.hitCallback += Hit;
+        if (character.hitCallback == null)
+            character.hitCallback += Hit;
 
         // 현재 및 다음 페이즈 초기화
         nowPhase = 1;
@@ -1035,7 +1036,7 @@ public class Ascii_AI : MonoBehaviour
         fallDustEffect.gameObject.SetActive(true);
 
         // 카메라 흔들기
-        Camera.main.transform.DOShakePosition(0.5f, 0.3f, 50, 90f, false, false);
+        UIManager.Instance.CameraShake(0.5f, 0.3f, 50, 90f, false, false);
 
         // 넘어지기 사운드 재생
         SoundManager.Instance.PlaySound("Ascii_Falldown");

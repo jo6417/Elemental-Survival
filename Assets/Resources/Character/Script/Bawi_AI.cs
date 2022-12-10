@@ -956,7 +956,7 @@ public class Bawi_AI : EnemyAI
             landDust.transform.localScale = Vector3.one * (chargeNum + 1);
 
             // 카메라 흔들기
-            Camera.main.transform.DOShakePosition(0.2f, 0.3f, 50, 90f, false, false);
+            UIManager.Instance.CameraShake(0.2f, 0.3f, 50, 90f, false, false);
 
             // 콜라이더 켜기
             fistCrushColl.enabled = true;

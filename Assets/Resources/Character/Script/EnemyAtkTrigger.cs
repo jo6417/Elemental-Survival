@@ -7,6 +7,7 @@ public class EnemyAtkTrigger : MonoBehaviour
     public System.Action attackAction;
 
     public GameObject explosionPrefab;
+    [SerializeField] bool showIndicator;
     [SerializeField] SpriteRenderer indicatorSprite;
     public SpriteRenderer atkRangeBackground;
     public SpriteRenderer atkRangeFill;
@@ -74,8 +75,8 @@ public class EnemyAtkTrigger : MonoBehaviour
                 attackAction.Invoke();
 
             atkTrigger = true;
-            //todo 인디케이터 활성화
-            if (indicatorSprite != null)
+            // 인디케이터 활성화
+            if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
 
             // 자폭형 몬스터일때
@@ -107,8 +108,8 @@ public class EnemyAtkTrigger : MonoBehaviour
             // 트리거 활성화
             atkTrigger = true;
 
-            //todo 인디케이터 활성화
-            if (indicatorSprite != null)
+            // 인디케이터 활성화
+            if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
 
             // 자폭형 몬스터일때
@@ -134,8 +135,8 @@ public class EnemyAtkTrigger : MonoBehaviour
             // 트리거 비활성화
             atkTrigger = false;
 
-            //todo 인디케이터 비활성화
-            if (indicatorSprite != null)
+            // 인디케이터 비활성화
+            if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = false;
         }
     }

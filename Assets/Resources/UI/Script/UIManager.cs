@@ -38,7 +38,11 @@ public class UIManager : MonoBehaviour
 
     public bool enemyPointSwitch = false; //화면 밖의 적 방향 표시 여부
 
-    [Header("<Input>")]
+    [Header("State")]
+    public float defaultCamSize = 16.875f; // 기본 캠 사이즈
+    private Tween zoomTween = null; // 현재 진행중인 줌인 및 줌아웃 트윈
+
+    [Header("Input")]
     public NewInput UI_Input; // UI 인풋 받기
     public Vector2 nowMousePos; // 마우스 마지막 위치 기억
 
@@ -55,7 +59,8 @@ public class UIManager : MonoBehaviour
     public GameObject pausePanel;
     public GameObject gameoverPanel;
 
-    [Header("ReferUI")]
+    [Header("Refer")]
+    [SerializeField] Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
     public GameObject gameoverSlot; //게임 오버 창에 들어갈 마법 슬롯
@@ -280,6 +285,7 @@ public class UIManager : MonoBehaviour
         FollowUICursor();
     }
 
+    #region Cursor
     void FollowUICursor()
     {
         // lastSelected와 현재 선택버튼이 같으면 버튼 깜빡임 코루틴 시작
@@ -508,6 +514,36 @@ public class UIManager : MonoBehaviour
             image.color = targetOriginColor;
         });
     }
+    #endregion
+
+    #region Camera
+
+    public void CameraShake(float duration, float strength = 1, int vibrato = 10,
+    float randomness = 90, bool snapping = false, bool fadeOut = true)
+    {
+        // 메인 카메라 위치 초기화
+        mainCamera.transform.localPosition = Vector3.back * 50f;
+
+        // 카메라 흔들기
+        mainCamera.transform.DOShakePosition(duration, strength, vibrato, randomness, snapping, fadeOut)
+        .OnComplete(() =>
+        {
+            // 메인 카메라 위치 초기화
+            mainCamera.transform.localPosition = Vector3.back * 50f;
+        });
+    }
+
+    public void CameraZoom(float zoomTime, float amount = 0)
+    {
+        // 기존 트윈 죽이기
+        if (zoomTween != null)
+            zoomTween.Kill();
+
+        // 입력된 사이즈대로 줌인/줌아웃 트윈 실행
+        zoomTween = DOTween.To(() => mainCamera.orthographicSize, x => mainCamera.orthographicSize = x, defaultCamSize + amount, zoomTime);
+    }
+
+    #endregion
 
     public void QuitMainMenu()
     {
@@ -802,55 +838,6 @@ public class UIManager : MonoBehaviour
         }
 
     }
-
-    #region Ultimate
-    // public void UpdateUltimateIcon()
-    // {
-    //     //현재 보유중인 궁극기 마법 불러오기
-    //     MagicInfo ultimateMagic = null;
-    //     if (playerManager.ultimateList.Count > 0)
-    //         ultimateMagic = playerManager.ultimateList[0];
-
-    //     Image frame = ultimateMagicSlot.Find("Frame").GetComponent<Image>();
-    //     Image icon = ultimateMagicSlot.Find("Icon").GetComponent<Image>();
-
-    //     //궁극기 마법 등급 및 아이콘 넣기
-    //     if (ultimateMagic != null)
-    //     {
-    //         frame.color = MagicDB.Instance.GradeColor[ultimateMagic.grade];
-    //         icon.sprite = MagicDB.Instance.GetMagicIcon(ultimateMagic.id);
-    //         icon.gameObject.SetActive(true);
-    //     }
-    //     else
-    //     {
-    //         frame.color = Color.white;
-    //         icon.gameObject.SetActive(false);
-    //     }
-    // }
-
-    // public void UltimateCooltime()
-    // {
-    //     // 남은 쿨타임
-    //     float coolTimeRate = 0f;
-
-    //     // 쿨타임 이미지 불러오기
-    //     Image coolTimeImg = ultimateMagicSlot.Find("CoolTime").GetComponent<Image>();
-
-    //     // 마법이 없으면 쿨타임 이미지 비우기
-    //     if (playerManager.ultimateList.Count <= 0)
-    //         coolTimeImg.fillAmount = 0;
-    //     //마법이 있으면 쿨타임만큼 채우기
-    //     else
-    //     {
-    //         coolTimeRate
-    //         = playerManager.ultimateList[0] != null
-    //         ? playerManager.ultimateCoolCount / MagicDB.Instance.MagicCoolTime(playerManager.ultimateList[0])
-    //         : 0;
-
-    //         coolTimeImg.fillAmount = coolTimeRate;
-    //     }
-    // }
-    #endregion
 
     public void UpdateStat()
     {

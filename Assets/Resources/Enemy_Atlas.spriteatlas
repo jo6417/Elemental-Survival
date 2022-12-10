@@ -85,6 +85,7 @@ SpriteAtlas:
   - {fileID: 410387071126374719, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
+  - {fileID: 21300000, guid: ddb4ba828ef300044867c19b13e1ec0a, type: 3}
   - {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802, type: 3}
   - {fileID: 21300000, guid: 7e073dc4fc879d84e93b5c955aa1d2a2, type: 3}
   - {fileID: -8450179102024045516, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
@@ -188,6 +189,7 @@ SpriteAtlas:
   - {fileID: -3341310513498487426, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: -793974024988719969, guid: e7f9192e655a29a4fbce6e677ab172f9, type: 3}
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
+  - {fileID: 21300000, guid: 9f48e77e692eaf8449f16c88b86219b1, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
   - {fileID: -5937801097208924805, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
@@ -258,6 +260,7 @@ SpriteAtlas:
   - Golem-Sheet_7
   - Golem-Sheet_4
   - Golem-Sheet_5
+  - Farmer_Sun
   - Vacuum
   - KingSlime_Inside
   - A-800_Attack_Sheet_3
@@ -315,7 +318,7 @@ SpriteAtlas:
   - A-800_Walk-Sheet_0
   - A-800_Walk-Sheet_1
   - KingSlime_Crown
-  - Farmer_Inside
+  - Farmer_Dirt
   - Farmer_Front
   - Ascii_Walk-Sheet_2
   - Ascii_Walk-Sheet_1
@@ -361,6 +364,7 @@ SpriteAtlas:
   - DroneFan_0
   - DroneFan_4
   - Slime_Light
+  - Farmer_Tree
   - HotDog
   - HotDog_emission
   - Leg3

@@ -560,7 +560,6 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator IceDrill()
     {
         // 스케일 떨기
-        // bodySprite.transform.DOShakeScale(1f, 0.1f, 20, 90, false);
         anim.SetBool("isShaking", true);
 
         // 땀 흘리는 파티클 재생

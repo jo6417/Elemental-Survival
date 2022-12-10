@@ -143,7 +143,7 @@ public class Meteor : MonoBehaviour
         rockSprite.enabled = false;
 
         // 카메라 흔들기
-        Camera.main.transform.DOShakePosition(0.2f, 0.3f, 50, 90f, false, false);
+        UIManager.Instance.CameraShake(0.2f, 0.3f, 50, 90f, false, false);
 
         // 화염 파티클 중지
         fireTrail.Stop();

@@ -128,28 +128,34 @@ public class MagicProjectile : MonoBehaviour
         if (isSpin)
             rigid.angularVelocity = dir.x > 0 ? -speed * 30f : speed * 30f;
 
-        // 목표 위치까지 거리가 가까워지면 파괴
-        float lastDistance = -1;
-        while (gameObject.activeSelf)
-        {
-            // 현재 목표 위치와의 거리 산출
-            float nowDistance = (targetPos - (Vector2)transform.position).magnitude;
+        // duration 만큼 날아간후에
+        yield return new WaitForSeconds(duration);
 
-            // 목표위치와 거리가 이전 보다 멀어졌으면
-            if (lastDistance != -1 && nowDistance > lastDistance)
-            {
-                //마법 자동 디스폰
-                StartCoroutine(DespawnMagic());
+        // 자동 디스폰
+        StartCoroutine(DespawnMagic());
 
-                break;
-            }
-            // 이전보다 가까워졌으면
-            else
-                // 이전 거리를 현재 거리로 갱신
-                lastDistance = nowDistance;
+        // // 목표 위치까지 거리가 가까워지면 파괴
+        // float lastDistance = -1;
+        // while (gameObject.activeSelf)
+        // {
+        //     // 현재 목표 위치와의 거리 산출
+        //     float nowDistance = (targetPos - (Vector2)transform.position).magnitude;
 
-            yield return new WaitForSeconds(Time.deltaTime);
-        }
+        //     // 목표위치와 거리가 이전 보다 멀어졌으면
+        //     if (lastDistance != -1 && nowDistance > lastDistance)
+        //     {
+        //         //마법 자동 디스폰
+        //         StartCoroutine(DespawnMagic());
+
+        //         break;
+        //     }
+        //     // 이전보다 가까워졌으면
+        //     else
+        //         // 이전 거리를 현재 거리로 갱신
+        //         lastDistance = nowDistance;
+
+        //     yield return new WaitForSeconds(Time.deltaTime);
+        // }
     }
 
     private void Update()

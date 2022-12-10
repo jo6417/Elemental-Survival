@@ -4,19 +4,20 @@ using DG.Tweening;
 using Lean.Pool;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class Farmer_AI : MonoBehaviour
 {
     [Header("State")]
-    private float atkCoolCount;
-    public float atkRange = 30f; // 공격 범위
+    [SerializeField] float atkRange = 30f; // 공격 범위
+    [SerializeField] float followRange = 10f; // 타겟과의 거리
     [SerializeField, ReadOnly] Vector3 targetVelocity; // 현재 이동속도
     [SerializeField] float maxSpeed = 1f; // 최대 이동속도
     [SerializeField] Patten patten = Patten.None;
     enum Patten { PlantSeed, BioGas, SunHeal, Skip, None };
 
     [Header("Cooltime")]
-    [SerializeField] float coolCount;
+    [SerializeField] float atkCoolCount;
     [SerializeField] float StabCooltime = 1f;
     [SerializeField] float PlantSeedCooltime = 1f;
     [SerializeField] float BioGasCooltime = 1f;
@@ -26,6 +27,7 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] Character character;
     [SerializeField] TextMeshProUGUI stateText; //! 테스트 현재 상태
     [SerializeField] Transform bodyTransform; // 몸체 오브젝트
+    [SerializeField] Transform treeTransform; // 나무 오브젝트
 
     [Header("Walk")]
     [SerializeField, ReadOnly] float targetSearchCount; // 타겟 위치 추적 시간 카운트
@@ -48,9 +50,20 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] EnemyAtkTrigger stabTrigger;
 
     [Header("PlantSeed")]
+    [SerializeField] Light2D treeLight; // 나무 모양 라이트
     [SerializeField] Transform seedPrefab; // 씨앗 프리팹
     [SerializeField] Transform plantPrefab; // 식물 프리팹
     [SerializeField] Transform seedHole; // 씨앗 발사할 구멍들
+
+    // [Header("BioGas")]
+
+    [Header("SunHeal")]
+    [SerializeField] int sunNum; // 태양광 소환 횟수
+    [SerializeField] float sunRange = 50f; // 태양광 소환 거리
+    [SerializeField] float sunSpeed = 5f; // 태양광 이동 속도
+    [SerializeField] GameObject landDustPrefab; // 땅에 착지시 먼지 이펙트
+    [SerializeField] GameObject sunPrefab; // 태양광 프리팹
+    [SerializeField] List<GameObject> sunList = new List<GameObject>();
 
     private void OnEnable()
     {
@@ -76,6 +89,10 @@ public class Farmer_AI : MonoBehaviour
             }
         }
 
+        // 맞을때마다 Hit 함수 실행
+        if (character.hitCallback == null)
+            character.hitCallback += Hit;
+
         //todo 등장씬
         // 일어 서기전 땅이 갈라지고
         // 땅에 박혀있던 나무가 흔들리며 일어서기
@@ -90,6 +107,51 @@ public class Farmer_AI : MonoBehaviour
         character.rigid.velocity = Vector2.zero;
         // 위치 고정 해제
         character.rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    void Hit()
+    {
+        //todo 페이즈 변화
+        // // 현재 1페이즈일때, 체력이 2/3 이하일때
+        // if (nowPhase == 1 && character.hpNow / character.hpMax <= 2f / 3f)
+        // {
+        //     // 페이즈업 함수 실행 안됬을때
+        //     if (nowPhase == nextPhase)
+        //     {
+        //         // 다음 페이스 숫자 올리기
+        //         nextPhase = 2;
+
+        //         // 다음 페이즈 예약
+        //         StartCoroutine(PhaseChange());
+        //     }
+        // }
+
+        // // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
+        // if (nowPhase == 2 && character.hpNow / character.hpMax <= 1f / 3f)
+        // {
+        //     // 페이즈업 함수 실행 안됬을때
+        //     if (nowPhase == nextPhase)
+        //     {
+        //         // 다음 페이스 숫자 올리기
+        //         nextPhase = 3;
+
+        //         // 다음 페이즈 예약
+        //         StartCoroutine(PhaseChange());
+        //     }
+        // }
+
+        // 체력이 0 이하일때, 죽었을때
+        if (character.hpNow <= 0)
+        {
+            //todo 태양광 모두 없에기
+            for (int i = 0; i < sunList.Count; i++)
+                // 태양광 디스폰
+                LeanPool.Despawn(sunList[i]);
+
+            //todo 보스 전용 죽음 트랜지션 시작
+            //todo 넘어지고 폭발 인디케이터 확장
+            //todo 거대한 폭발남기며 디스폰
+        }
     }
 
     private void Update()
@@ -226,12 +288,12 @@ public class Farmer_AI : MonoBehaviour
         stateText.text = "Distance : " + character.targetDir.magnitude;
 
         // 플레이어까지 거리
-        float distance = Vector3.Distance(character.movePos, transform.position);
+        float distance = Vector3.Distance(character.movePos, bodyTransform.position);
 
         // 공격범위 이내 접근 못하게 하는 속도 계수
-        float nearSpeed = distance < atkRange
+        float nearSpeed = distance < followRange
         // 범위 안에 있을때, 거리 비례한 속도
-        ? character.targetDir.magnitude - atkRange
+        ? character.targetDir.magnitude - followRange
         // 범위 밖에 있을때, 최고 속도
         : maxSpeed;
 
@@ -267,7 +329,7 @@ public class Farmer_AI : MonoBehaviour
                 // OnComplete 때문에 인덱스 캐싱
                 int footNum = i;
                 // 발의 현재 위치에서 마지막 위치까지 거리
-                float distance = Vector2.Distance((Vector2)transform.position + defaultFootPos[footNum], footTargets[footNum].transform.position);
+                float distance = Vector2.Distance((Vector2)bodyTransform.position + defaultFootPos[footNum], footTargets[footNum].transform.position);
 
                 // 마지막 위치로부터 footMoveDistance 보다 멀어지면
                 if (distance > footMoveDistance * Random.Range(0.8f, 1.2f))
@@ -288,7 +350,7 @@ public class Farmer_AI : MonoBehaviour
         // print("velocity : " + velocity.magnitude);
 
         // 발이 옮겨질 위치 계산해서 배열에 캐싱
-        Vector2 movePos = (Vector2)transform.position + defaultFootPos[footIndex] + velocity;
+        Vector2 movePos = (Vector2)bodyTransform.position + defaultFootPos[footIndex] + velocity;
         nowMovePos[footIndex] = movePos;
 
         // 발 이동개수 추가
@@ -340,7 +402,7 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 플레이어 방향 좌,우 판단
-        bool isLeft = PlayerManager.Instance.transform.position.x < transform.position.x ? true : false;
+        bool isLeft = PlayerManager.Instance.transform.position.x < bodyTransform.position.x ? true : false;
         // 공격할 다리 인덱스
         int atkLegIndex = isLeft ? 0 : 3;
         // 공격할 다리 오브젝트
@@ -357,7 +419,7 @@ public class Farmer_AI : MonoBehaviour
         // 공격 준비 로컬 위치
         Vector2 atkReadyPos = isLeft ? new Vector2(-3, 1) : new Vector2(3, 1);
         // 공격 준비 월드 위치
-        atkReadyPos += (Vector2)transform.position;
+        atkReadyPos += (Vector2)bodyTransform.position;
 
         // 공격할 다리 오므려서 준비
         atkFoot.DOMove(atkReadyPos, 0.5f)
@@ -375,7 +437,7 @@ public class Farmer_AI : MonoBehaviour
             legColls[i].enabled = true;
 
         // 찌를 위치
-        Vector2 stabPos = transform.position + (PlayerManager.Instance.transform.position - transform.position).normalized * 20f;
+        Vector2 stabPos = legBones[atkLegIndex].position + (PlayerManager.Instance.transform.position - legBones[atkLegIndex].position).normalized * 20f;
 
         // 플레이어 위치로 다리 뻗어서 찌르기
         atkFoot.DOMove(stabPos, 0.2f)
@@ -386,12 +448,15 @@ public class Farmer_AI : MonoBehaviour
         // 관절 사이 늘리기
         // 늘리는동안 라인 렌더러로 관절사이 이어주기 업데이트
 
-        // 찌르고 대기
-        yield return new WaitForSeconds(0.7f);
+        // 찌르는 시간 대기
+        yield return new WaitForSeconds(0.2f);
 
         // 공격 다리 콜라이더 모두 비활성화
         for (int i = 0; i < legColls.Length; i++)
             legColls[i].enabled = false;
+
+        // 찌르기 후딜
+        yield return new WaitForSeconds(0.5f);
 
         // 몸체 기울기 초기화
         bodyTransform.transform.DORotate(Vector3.zero, 0.5f)
@@ -405,14 +470,14 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         // 공격 다리 위치 초기화
-        atkFoot.DOMove((Vector2)transform.position + defaultFootPos[atkLegIndex], 0.3f)
+        atkFoot.DOMove((Vector2)bodyTransform.position + defaultFootPos[atkLegIndex], 0.3f)
         .SetEase(Ease.InBack);
 
         // 몸체 및 다리 초기화 대기
         yield return new WaitForSeconds(0.5f);
 
         // 쿨타임 갱신
-        coolCount = StabCooltime;
+        atkCoolCount = StabCooltime;
 
         // 상태 초기화
         character.nowState = Character.State.Idle;
@@ -434,7 +499,7 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // 쿨타임 갱신
-        coolCount = PlantSeedCooltime;
+        atkCoolCount = PlantSeedCooltime;
 
         // 상태 초기화
         character.nowState = Character.State.Idle;
@@ -485,14 +550,124 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator SunHeal()
     {
-        yield return null;
-        //todo 자힐 패턴
-        //todo 자세를 낮춰 앉은 뒤에
-        //todo 머리 위의 나무가 빛나며 광합성
-        //todo 노랗고 동그란 태양 입자가 모든 방향에서 생성되어 보스쪽으로 이동
-        //todo 흡수가 하나씩 될때마다 보스는 체력 회복
-        //todo 플레이어는 다가오는 태양 입자를 파괴 가능
-        //todo 태양 입자 플레이어 충돌하면 데미지 주고 통과
+        // 애니메이터 끄기
+        bodyTransform.GetComponent<Animator>().enabled = false;
+        // 털썩 주저 앉음
+        bodyTransform.DOLocalMove(Vector2.zero, 1f)
+        .SetEase(Ease.OutBounce);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 착지 먼지 이펙트 생성
+        LeanPool.Spawn(landDustPrefab, bodyTransform.position, Quaternion.Euler(Vector3.zero), SystemManager.Instance.effectPool);
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 나무 라이트 반짝임 반복
+        treeLight.intensity = 0;
+        Tween lightTween = DOTween.To(() => treeLight.intensity, x => treeLight.intensity = x, 2f, 0.5f)
+        .SetEase(Ease.OutSine)
+        .SetLoops(-1, LoopType.Yoyo);
+
+        // 카메라 반복 줌아웃
+        StartCoroutine(CameraZoomOut(3));
+
+        float sunDelay = 2f;
+        WaitForSeconds wait = new WaitForSeconds(sunDelay);
+
+        for (int i = 0; i < sunNum; i++)
+        {
+            // 태양 입자가 모든 방향에서 생성되어 천천히 보스쪽으로 이동
+            StartCoroutine(SunMove());
+
+            yield return wait;
+        }
+
+        // 마지막 태양관 들어갈때까지 대기
+        yield return new WaitForSeconds(sunRange / sunSpeed);
+
+        // 나무 반짝임 정지
+        lightTween.Kill();
+        // 나무 라이트 초기화
+        DOTween.To(() => treeLight.intensity, x => treeLight.intensity = x, 0f, 1f);
+
+        // 후딜레이
+        yield return new WaitForSeconds(1f);
+
+        // 일어서기
+        bodyTransform.DOLocalMove(new Vector2(0, 1.5f), 2f)
+        .SetEase(Ease.OutBack);
+
+        // 일어서기 대기
+        yield return new WaitForSeconds(2f);
+
+        // 카메라 줌 초기화
+        UIManager.Instance.CameraZoom(2f, 0);
+
+        // 애니메이터 켜기
+        bodyTransform.GetComponent<Animator>().enabled = true;
+
+        // 쿨타임 갱신
+        atkCoolCount = SunHealCooltime;
+
+        // 상태 초기화
+        character.nowState = Character.State.Idle;
+    }
+
+    IEnumerator CameraZoomOut(int loopNum)
+    {
+        // 반짝이며 카메라 천천히 줌아웃
+        for (int i = 0; i < loopNum; i++)
+        {
+            // 입력된 사이즈대로 줌인/줌아웃 트윈 실행
+            DOTween.To(() => Camera.main.orthographicSize, x => Camera.main.orthographicSize = x, UIManager.Instance.defaultCamSize + (i + 1) * 3f, 0.5f)
+            .SetEase(Ease.OutSine);
+
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    IEnumerator SunMove()
+    {
+        // 태양광 소환 위치
+        Vector2 sunPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * sunRange;
+
+        // 태양광 소환
+        GameObject sunObj = LeanPool.Spawn(sunPrefab, sunPos, Quaternion.Euler(Vector3.forward * Random.value * 360f), SystemManager.Instance.enemyAtkPool);
+
+        // 태양광을 리스트에 저장
+        sunList.Add(sunObj);
+
+        // 이동 시간
+        float moveTime = sunRange / sunSpeed;
+
+        // 태양광 캐릭터 컴포넌트
+        Character sunCharacter = sunObj.GetComponent<Character>();
+        // 캐릭터 초기화 까지 대기
+        yield return new WaitUntil(() => sunCharacter.initialFinish);
+
+        // 나무 위치로 움직이기
+        sunObj.transform.DOMove(treeTransform.position + Vector3.up * 4.5f, moveTime)
+        .SetEase(Ease.Linear)
+        .OnUpdate(() =>
+        {
+            // 도중에 태양광 죽으면 멈추기
+            if (sunCharacter.isDead)
+            {
+                sunObj.transform.DOKill();
+            }
+        })
+        .OnComplete(() =>
+        {
+            // 이동 완료하면 체력 회복
+            character.hitBoxList[0].Damage(-1, false);
+
+            // 나무 스프라이트 스케일 바운스
+            treeTransform.DOPunchScale(Vector2.one * 0.1f, 0.5f);
+
+            // 디스폰
+            LeanPool.Despawn(sunObj);
+        });
     }
 
     private void OnDrawGizmosSelected()

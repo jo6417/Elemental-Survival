@@ -432,7 +432,7 @@ public class HitBox : MonoBehaviour
         {
             this.character.spriteList[i].material = SystemManager.Instance.hitMat;
 
-            if (damage >= 0)
+            if (damage > 0)
             {
                 // 현재 체력이 max에 가까울수록 빨간색, 0에 가까울수록 흰색
                 Color hitColor = Color.Lerp(SystemManager.Instance.hitColor, SystemManager.Instance.DeadColor, this.character.hpNow / this.character.hpMax);
@@ -443,7 +443,7 @@ public class HitBox : MonoBehaviour
             if (damage == 0)
                 // 회피 또는 방어
                 this.character.spriteList[i].color = Color.blue;
-            else
+            if (damage < 0)
                 // 회복
                 this.character.spriteList[i].color = SystemManager.Instance.healColor;
         }

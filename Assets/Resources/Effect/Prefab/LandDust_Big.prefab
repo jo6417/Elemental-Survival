@@ -45,8 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  particle: {fileID: 3222180882172883119}
   autoDespawn: 1
+  despawnDelay: 0
   collOverTime: 0.2
+  modify_startLife: 0
 --- !u!198 &3222180882172883119
 ParticleSystem:
   m_ObjectHideFlags: 0

@@ -166,8 +166,7 @@ public class Character : MonoBehaviour
         buffParent = buffParent == null ? transform : buffParent;
 
         //초기 타겟은 플레이어
-        if (TargetObj == null)
-            TargetObj = PlayerManager.Instance.gameObject;
+        TargetObj = PlayerManager.Instance.gameObject;
 
         // 공격 트리거 찾기
         // enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
@@ -202,6 +201,9 @@ public class Character : MonoBehaviour
             hitBoxList[i].enabled = false;
         }
 
+        // rigid 초기화
+        rigid.velocity = Vector3.zero;
+
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
@@ -216,10 +218,6 @@ public class Character : MonoBehaviour
 
             //스케일 초기화
             transform.localScale = Vector3.one;
-
-            // rigid 초기화
-            rigid.velocity = Vector3.zero;
-            // rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
             // 초기화 스위치 켜질때까지 대기
             yield return new WaitUntil(() => initialStart);
@@ -495,7 +493,8 @@ public class Character : MonoBehaviour
 
                 // 애니메이션 속도 초기화
                 // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
-                animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
+                // animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
+                animList[i].speed = 1f * speedNow;
             }
         }
 
