@@ -21,7 +21,6 @@ public class PlayerHitBox : MonoBehaviour
     public Vector2 knockbackDir; //넉백 벡터
     public bool isFlat; //깔려서 납작해졌을때
     public float particleHitCount = 0; // 파티클 피격 카운트
-    public float hitDelayCount = 0; // 피격 딜레이 카운트
     public float stopCount = 0; // 시간 정지 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
@@ -104,10 +103,6 @@ public class PlayerHitBox : MonoBehaviour
             if (hitCoolCount > 0)
                 yield break;
 
-            // 이미 피격 딜레이 코루틴 중이었으면 취소
-            if (hitDelayCoroutine != null)
-                StopCoroutine(hitDelayCoroutine);
-
             // 데미지 적용
             Damage(enemyAtk.character.powerNow, false, hitPos);
         }
@@ -143,10 +138,6 @@ public class PlayerHitBox : MonoBehaviour
             // 크리티컬 데미지 계산
             float criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
 
-            // 이미 피격 딜레이 코루틴 중이었으면 취소
-            if (hitDelayCoroutine != null)
-                StopCoroutine(hitDelayCoroutine);
-
             // 데미지 계산, 고정 데미지 setPower가 없으면 마법 파워로 계산
             damage = magicHolder.fixedPower != 0 ? magicHolder.fixedPower : power;
             // 고정 데미지에 확률 계산
@@ -176,9 +167,6 @@ public class PlayerHitBox : MonoBehaviour
 
             // 데미지 입기
             Damage(damage, isCritical, hitPos);
-
-            // 디버프를 위해 크리티컬 true로 고정
-            // isCritical = true;
         }
 
         // 디버프 판단해서 적용
@@ -290,6 +278,10 @@ public class PlayerHitBox : MonoBehaviour
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
 
+        // 이미 피격 딜레이 코루틴 중이었으면 취소
+        if (hitDelayCoroutine != null)
+            StopCoroutine(hitDelayCoroutine);
+
         // 데미지 0 아닐때
         if (damage != 0)
         {
@@ -325,6 +317,7 @@ public class PlayerHitBox : MonoBehaviour
 
             // 데미지 사운드 재생
             SoundManager.Instance.PlaySound("Hit");
+            print("HitSound");
 
             // 피격 이펙트 재생
             HitEffect(hitPos);
@@ -455,9 +448,10 @@ public class PlayerHitBox : MonoBehaviour
     public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Character.Debuff debuffType)
     {
         //이미 코루틴 실행중이면 기존 코루틴 취소
-        if (playerManager.DebuffList[(int)debuffType] != null)
+        IEnumerator dotHitCoroutine = playerManager.DebuffList[(int)debuffType];
+        if (dotHitCoroutine != null)
         {
-            StopCoroutine(playerManager.DebuffList[(int)debuffType]);
+            StopCoroutine(dotHitCoroutine);
         }
 
         // 도트 피해 코루틴 설정
@@ -483,19 +477,15 @@ public class PlayerHitBox : MonoBehaviour
             //     effect.transform.localScale = Vector3.one * playerManager.portalSize;
         }
 
-        // 남은 도트 데미지
-        float durationCount = duration;
+        // 도트 지속시간을 횟수로 환산
+        int hitNum = (int)duration;
 
-        // 도트 데미지 지속시간이 1초 이상 남았을때
-        while (durationCount >= 1)
+        for (int i = 0; i < hitNum; i++)
         {
             // 도트 데미지 입히기
             Damage(tickDamage, isCritical);
 
-            // 남은 지속시간에서 한틱 차감
-            durationCount -= 1f;
-
-            // 한 틱동안 대기
+            // 도트 딜레이 대기
             yield return new WaitForSeconds(1f);
         }
 

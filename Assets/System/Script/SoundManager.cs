@@ -293,6 +293,8 @@ public class SoundManager : MonoBehaviour
                     // 처음부터 재생
                     audio.time = 0;
                     audio.Play();
+
+                    print(sound.name + " : Play");
                 }
             }
 
@@ -310,6 +312,9 @@ public class SoundManager : MonoBehaviour
             {
                 // 오디오 리스트에서삭제
                 attached_Sounds.Remove(audio);
+
+                // 오디오 클립 비우기
+                audio.clip = null;
 
                 // 해당 오디오 오브젝트 제거
                 LeanPool.Despawn(audio.gameObject);
@@ -359,13 +364,20 @@ public class SoundManager : MonoBehaviour
         }
 
         if (audio != null)
+        {
+            // 오디오 정지
+            audio.Stop();
+
             // 디스폰일때
             if (isDespawn)
+            {
+                // 오디오 클립 비우기
+                audio.clip = null;
+
                 // 오디오 오브젝트 디스폰
                 LeanPool.Despawn(audio.gameObject);
-            else
-                // 오디오 정지
-                audio.Stop();
+            }
+        }
     }
 
     public void SoundTimeScale(float scale)

@@ -514,17 +514,17 @@ public class HitBox : MonoBehaviour
         if (character.isDead)
             return;
 
+        // 피격 위치가 있을때만
+        if (hitPos != default)
+            // 피격 이펙트 재생
+            HitEffect(hitPos);
+
         // 피격 위치안들어오면 현재위치
         if (hitPos == default)
             hitPos = transform.position;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
-
-        // // 데미지 있을때만
-        // if (damage > 0)
-        // 피격 이펙트 재생
-        HitEffect(hitPos);
 
         // 무적 상태일때, 방어
         if (character.invinsible)

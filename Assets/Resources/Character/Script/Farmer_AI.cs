@@ -54,8 +54,13 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] Transform seedPrefab; // 씨앗 프리팹
     [SerializeField] Transform plantPrefab; // 식물 프리팹
     [SerializeField] Transform seedHole; // 씨앗 발사할 구멍들
+    [SerializeField] List<Transform> seedList; // 씨앗 목록
 
-    // [Header("BioGas")]
+    [Header("BioGas")]
+    [SerializeField] Rigidbody2D poisonPrefab; // 독구름 프리팹
+    [SerializeField] int poisonLoopNum; // 공격 횟수
+    [SerializeField] int poisonNum; // 한번에 독구름 생성 개수
+    [SerializeField] float poisonSpeed; // 독구름 이동 속도
 
     [Header("SunHeal")]
     [SerializeField] int sunNum; // 태양광 소환 횟수
@@ -160,6 +165,10 @@ public class Farmer_AI : MonoBehaviour
         if (character.enemy == null)
             return;
 
+        // 공격 쿨타임 차감
+        if (atkCoolCount > 0)
+            atkCoolCount -= Time.deltaTime;
+
         // 타겟 추적 쿨타임 차감
         if (targetSearchCount > 0)
             targetSearchCount -= Time.deltaTime;
@@ -179,14 +188,14 @@ public class Farmer_AI : MonoBehaviour
         // 플레이어 방향
         character.targetDir = character.movePos - transform.position;
 
+        //! 쿨타임 및 거리 확인
+        stateText.text = "CoolCount : " + atkCoolCount + "\nDistance : " + character.targetDir.magnitude;
+
         // 패턴 정하기
         ManageAction();
 
         // 패시브 패턴
-        //todo 패시브 스킬로 뿌렸던 씨 근처에 가면 자동으로 물을 줌
-        //todo 파란 물 모양 라인렌더러로 구현, 베지어 곡선 포물선
-        //todo 일정 시간 이상 물 먹은 나무는 슬라임으로 변함
-        //todo 슬라임 스프라이트 알파값 올리고 나무 디스폰, 슬라임 초기화
+        Passive();
     }
 
     void ManageAction()
@@ -199,33 +208,8 @@ public class Farmer_AI : MonoBehaviour
         if (character.nowState != Character.State.Idle)
             return;
 
-        // 공격 쿨타임 차감
-        if (atkCoolCount > 0)
-            atkCoolCount -= Time.deltaTime;
-
-        // 플레이어 방향
-        Vector2 dir = character.movePos - transform.position;
-
-        // 플레이어와의 거리
-        float playerDistance = dir.magnitude;
-
-        // 찌르기 트리거에 플레이어 닿으면 Stab 패턴
-        if (stabTrigger.atkTrigger)
-        {
-            //! 거리 확인용
-            stateText.text = "Stab : " + playerDistance;
-
-            // 찌르기 패턴 실행
-            StartCoroutine(StabLeg());
-
-            return;
-        }
-
-        //! 쿨타임 확인
-        stateText.text = "CoolCount : " + atkCoolCount;
-
         // 범위 내에 있을때
-        if (playerDistance <= atkRange)
+        if (character.targetDir.magnitude <= atkRange)
         {
             // 쿨타임 됬을때
             if (atkCoolCount <= 0)
@@ -237,8 +221,51 @@ public class Farmer_AI : MonoBehaviour
             }
         }
 
+        // 찌르기 트리거에 플레이어 닿으면 Stab 패턴
+        if (stabTrigger.atkTrigger)
+        {
+            // 찌르기 패턴 실행
+            StartCoroutine(StabLeg());
+
+            return;
+        }
+
         // 플레이어 따라가기
         Move();
+    }
+
+    void Passive()
+    {
+        // 삭제될 인덱스들
+        List<int> removeIndexes = new List<int>();
+
+        // 씨앗 모두 검사
+        for (int i = 0; i < seedList.Count; i++)
+        {
+            //todo 씨앗이 디스폰 됬으면
+            if (!seedList[i].gameObject.activeInHierarchy)
+            {
+                //todo 해당 인덱스 삭제 예약
+                removeIndexes.Add(i);
+                // 다음으로 넘기기
+                continue;
+            }
+
+            //todo 씨앗이 공격 범위 내에 들어오면
+            if (Vector3.Distance(seedList[i].position, transform.position) <= atkRange)
+            {
+                //todo 패시브 스킬로 뿌렸던 씨 근처에 가면 자동으로 물을 줌
+                //todo 파란 물 모양 라인렌더러로 구현, 베지어 곡선 포물선
+                //todo 일정 시간 이상 물 먹은 나무는 슬라임으로 변함
+                //todo 슬라임 스프라이트 알파값 올리고 나무 디스폰, 슬라임 초기화
+            }
+        }
+
+        // 디스폰된 모든 씨앗 리스트에서 삭제
+        for (int i = 0; i < removeIndexes.Count; i++)
+        {
+            seedList.RemoveAt(i);
+        }
     }
 
     IEnumerator ChooseAttack()
@@ -283,9 +310,6 @@ public class Farmer_AI : MonoBehaviour
     void Move()
     {
         character.nowState = Character.State.Walk;
-
-        //! 거리 확인
-        stateText.text = "Distance : " + character.targetDir.magnitude;
 
         // 플레이어까지 거리
         float distance = Vector3.Distance(character.movePos, bodyTransform.position);
@@ -477,7 +501,7 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 쿨타임 갱신
-        atkCoolCount = StabCooltime;
+        // atkCoolCount = StabCooltime;
 
         // 상태 초기화
         character.nowState = Character.State.Idle;
@@ -512,6 +536,9 @@ public class Farmer_AI : MonoBehaviour
         // 씨앗 스프라이트
         Transform seed = seedShadow.GetChild(0);
 
+        // 씨앗을 리스트에 저장
+        seedList.Add(seedShadow);
+
         // 씨앗 랜덤 각도로 초기화
         seed.rotation = Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f));
 
@@ -538,14 +565,62 @@ public class Farmer_AI : MonoBehaviour
     IEnumerator BioGas()
     {
         yield return null;
-        //todo 바이오 가스 패턴
-        //todo 다리를 아래로 뻗어 높이 올라간 다음
-        //todo 다리를 굽히며 아래로 내려가면서
-        //todo 구름모양 로컬 파티클이 원형 사방으로 여러번 퍼지며
-        //todo 파티클 하나로 shape 스케일 키우기
-        //todo 플레이어는 닿으면 독 데미지, 구르기로 회피 가능
-        //todo 파티클에 원형 엣지 콜라이더 굵게 적용, 스케일따라 커지도록
+
+        // 애니메이터 끄기
+        bodyTransform.GetComponent<Animator>().enabled = false;
+
+        // 공격 횟수만큼 반복
+        for (int j = 0; j < poisonLoopNum; j++)
+        {
+            // 다리를 아래로 뻗어 높이 올라간 다음
+            bodyTransform.DOLocalMove(new Vector2(0, 5f), 1f)
+            .SetEase(Ease.InBack);
+
+            yield return new WaitForSeconds(1f);
+
+            // 다리를 굽히며 아래로 내려가면서
+            bodyTransform.DOLocalMove(new Vector2(0, -1f), 1f)
+            .SetEase(Ease.OutCirc);
+
+            yield return new WaitForSeconds(0.5f);
+
+            // 독구름 생성 개수 초기화
+            int atkNum = poisonNum;
+
+            // 독구름이 원형으로 퍼짐
+            for (int i = 0; i < atkNum; i++)
+            {
+                // 독구름 생성
+                Rigidbody2D poisonObj = LeanPool.Spawn(poisonPrefab, bodyTransform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+
+                // 목표 각도
+                float targetAngle = 360f * i / atkNum;
+                // 독구름 목표 방향
+                Vector3 targetDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * targetAngle), Mathf.Cos(Mathf.Deg2Rad * targetAngle), 0);
+
+                poisonObj.velocity = targetDir.normalized * poisonSpeed;
+            }
+
+            yield return new WaitForSeconds(1f);
+        }
+
         //todo 싹이 튼 씨앗들에 닿으면 Life 슬라임으로 변함
+
+        // 일어서기
+        bodyTransform.DOLocalMove(new Vector2(0, 1.5f), 2f)
+        .SetEase(Ease.OutBack);
+
+        // 일어서기 대기
+        yield return new WaitForSeconds(2f);
+
+        // 애니메이터 켜기
+        bodyTransform.GetComponent<Animator>().enabled = true;
+
+        // 쿨타임 갱신
+        atkCoolCount = BioGasCooltime;
+
+        // 상태 초기화
+        character.nowState = Character.State.Idle;
     }
 
     IEnumerator SunHeal()
@@ -553,7 +628,7 @@ public class Farmer_AI : MonoBehaviour
         // 애니메이터 끄기
         bodyTransform.GetComponent<Animator>().enabled = false;
         // 털썩 주저 앉음
-        bodyTransform.DOLocalMove(Vector2.zero, 1f)
+        bodyTransform.DOLocalMove(new Vector2(0, -1f), 1f)
         .SetEase(Ease.OutBounce);
 
         yield return new WaitForSeconds(0.5f);

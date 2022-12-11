@@ -191,6 +191,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
   - {fileID: 21300000, guid: 9f48e77e692eaf8449f16c88b86219b1, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
+  - {fileID: 21300000, guid: 8521fb0f1d8dfcc478990ea6d8e09e7b, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
   - {fileID: -5937801097208924805, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
   - {fileID: 4636757583066306611, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
@@ -364,8 +365,9 @@ SpriteAtlas:
   - DroneFan_0
   - DroneFan_4
   - Slime_Light
-  - Farmer_Tree
+  - Farmer_TreeLeaf
   - HotDog
+  - Farmer_TreeWood
   - HotDog_emission
   - Leg3
   - Leg2

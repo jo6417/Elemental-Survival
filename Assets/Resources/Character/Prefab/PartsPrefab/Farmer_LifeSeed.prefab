@@ -9,9 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4085318196067283807}
-  m_Layer: 0
+  - component: {fileID: 79777017290187914}
+  - component: {fileID: 1362709670140078540}
+  - component: {fileID: 5086635184828875180}
+  m_Layer: 17
   m_Name: Farmer_LifeSeed
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32,6 +35,101 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &79777017290187914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938633301857589887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1d68ebfaf8978a40b539562b3185532, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 0}
+  hitColls: []
+--- !u!58 &1362709670140078540
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938633301857589887}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.5}
+  serializedVersion: 2
+  m_Radius: 1
+--- !u!114 &5086635184828875180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4938633301857589887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9e4b94fc4c0f3044bc37412b2f51df3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultHasItem: 
+  initialStart: 0
+  initialFinish: 0
+  eliteClass: 0
+  lookLeft: 0
+  hpNow: 0
+  hpMax: 0
+  isDead: 0
+  changeGhost: 0
+  portalSize: 1
+  afterEffect: 0
+  invinsible: 1
+  selfExplosion: 0
+  attackRange: 0
+  healCount: 0
+  isGhost: 0
+  nowState: 0
+  moveType: 0
+  targetObj: {fileID: 0}
+  targetResetTime: 0.5
+  targetResetCount: 0
+  movePos: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  targetDir: {x: 0, y: 0, z: 0}
+  shadow: {fileID: 0}
+  spriteList: []
+  enemyAI: {fileID: 0}
+  enemyAtkTrigger: {fileID: 0}
+  enemyAtkList: []
+  spriteObj: {fileID: 0}
+  healRange: {fileID: 0}
+  animList: []
+  physicsColl: {fileID: 0}
+  rigid: {fileID: 0}
+  buffParent: {fileID: 0}
+  particleHitCount: 0
+  hitDelayCount: 0
+  stopCount: 0
+  stunCount: 0
+  flatCount: 0
+  oppositeCount: 0
+  moveSpeedDebuff: 1
+  hitEffect: {fileID: 1620636520166436, guid: ae8e77315cbed89469e78278295e5844, type: 3}
+  hitBoxList: []
+  originMatList: []
+  originMatColorList: []
+  originColorList: []
+  powerNow: 0
+  speedNow: 0
+  rangeNow: 0
+  cooltimeNow: 0
+  enemyName: 
+  enemyType: 
 --- !u!1 &5557969531718069895
 GameObject:
   m_ObjectHideFlags: 0
