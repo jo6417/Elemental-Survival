@@ -11,16 +11,14 @@ public class Plant_AI : MonoBehaviour
     [SerializeField, ReadOnly] float coolCount;
     [SerializeField] float shotSpeed = 30f;
 
-    // private void OnEnable()
-    // {
-    //     StartCoroutine(Init());
-    // }
+    private void OnEnable()
+    {
+        // 쿨타임 카운트 초기화
+        coolCount = 1f;
 
-    // IEnumerator Init()
-    // {
-    //     // 초기화 대기
-    //     yield return new WaitUntil(() => initialFinish);
-    // }
+        // 스케일 초기화
+        transform.localScale = Vector3.one;
+    }
 
     private void Update()
     {

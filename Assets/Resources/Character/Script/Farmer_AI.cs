@@ -51,10 +51,14 @@ public class Farmer_AI : MonoBehaviour
 
     [Header("PlantSeed")]
     [SerializeField] Light2D treeLight; // 나무 모양 라이트
-    [SerializeField] Transform seedPrefab; // 씨앗 프리팹
     [SerializeField] Transform plantPrefab; // 식물 프리팹
     [SerializeField] Transform seedHole; // 씨앗 발사할 구멍들
-    [SerializeField] List<Transform> seedList; // 씨앗 목록
+    [SerializeField] Seed_AI seedPrefab; // 씨앗 프리팹
+    [SerializeField] List<Seed_AI> seedList; // 씨앗 목록
+    [SerializeField] float waterRange = 10f; // 물주기 거리
+    [SerializeField] float seedRange = 20f; // 씨앗 발사 거리
+    [SerializeField] float waterPos_Y = 5f; // 베지어 곡선 가운데 높이
+    [SerializeField] float vertexCount = 12; // 베지어 곡선 포인트 개수
 
     [Header("BioGas")]
     [SerializeField] Rigidbody2D poisonPrefab; // 독구름 프리팹
@@ -186,7 +190,7 @@ public class Farmer_AI : MonoBehaviour
         character.movePos = Vector3.Lerp(character.movePos, character.targetPos, Time.deltaTime * targetFollowSpeed);
 
         // 플레이어 방향
-        character.targetDir = character.movePos - transform.position;
+        character.targetDir = character.movePos - bodyTransform.position;
 
         //! 쿨타임 및 거리 확인
         stateText.text = "CoolCount : " + atkCoolCount + "\nDistance : " + character.targetDir.magnitude;
@@ -237,35 +241,84 @@ public class Farmer_AI : MonoBehaviour
     void Passive()
     {
         // 삭제될 인덱스들
-        List<int> removeIndexes = new List<int>();
+        List<Seed_AI> removeIndexes = new List<Seed_AI>();
 
         // 씨앗 모두 검사
         for (int i = 0; i < seedList.Count; i++)
         {
-            //todo 씨앗이 디스폰 됬으면
-            if (!seedList[i].gameObject.activeInHierarchy)
+            // 씨앗이 죽었으면
+            if (seedList[i].seedCharacter.isDead)
             {
-                //todo 해당 인덱스 삭제 예약
-                removeIndexes.Add(i);
+                // 해당 인덱스 삭제 예약
+                removeIndexes.Add(seedList[i]);
                 // 다음으로 넘기기
                 continue;
             }
 
-            //todo 씨앗이 공격 범위 내에 들어오면
-            if (Vector3.Distance(seedList[i].position, transform.position) <= atkRange)
+            // 씨앗 초기화 안됬으면
+            if (!seedList[i].initStart)
+                // 다음으로 넘기기
+                continue;
+
+            // 씨앗이 공격 범위 내에 들어오면
+            if (Vector3.Distance(seedList[i].transform.position, bodyTransform.position) <= waterRange)
             {
-                //todo 패시브 스킬로 뿌렸던 씨 근처에 가면 자동으로 물을 줌
-                //todo 파란 물 모양 라인렌더러로 구현, 베지어 곡선 포물선
-                //todo 일정 시간 이상 물 먹은 나무는 슬라임으로 변함
-                //todo 슬라임 스프라이트 알파값 올리고 나무 디스폰, 슬라임 초기화
+                // 자동으로 물 주기
+                WaterFill(seedList[i]);
+            }
+            // 범위 바깥으로 나가면
+            else
+            {
+                // 물 끄기
+                seedList[i].waterLine.enabled = false;
             }
         }
 
         // 디스폰된 모든 씨앗 리스트에서 삭제
         for (int i = 0; i < removeIndexes.Count; i++)
         {
-            seedList.RemoveAt(i);
+            seedList.Remove(removeIndexes[i]);
         }
+    }
+
+    void WaterFill(Seed_AI seed_AI)
+    {
+        // 형태 변하는 중이면 리턴
+        if (seed_AI.turning)
+            return;
+        // 죽었으면 리턴
+        if (seed_AI.seedCharacter.hpNow <= 0)
+            return;
+
+        // 물줄기 끝지점
+        Vector3 endPoint = seed_AI.transform.position + Vector3.up * 0.5f;
+
+        // 물줄기 시작지점
+        Vector3 startPoint = bodyTransform.position + Vector3.up * 9f;
+        // 시작지점을 씨앗 방향으로 조정
+        Vector3 seedDir = Vector3.ClampMagnitude(endPoint - startPoint, 1f);
+        startPoint += seedDir;
+
+        // 물줄기 중간 지점 베지어 포인트 위치 정하기
+        Vector3 middlePoint = (startPoint + endPoint) / 2f + Vector3.up * waterPos_Y;
+        var pointList = new List<Vector3>();
+
+        // 베지어 포인트 vertexCount 개수만큼 정하기
+        for (float ratio = 0; ratio <= 1; ratio += 1 / vertexCount)
+        {
+            var tangent1 = Vector3.Lerp(startPoint, middlePoint, ratio);
+            var tangent2 = Vector3.Lerp(middlePoint, endPoint, ratio);
+            var curve = Vector3.Lerp(tangent1, tangent2, ratio);
+
+            pointList.Add(curve);
+        }
+
+        // 라인렌더러에 벡터 리스트 넘겨서 그리기
+        seed_AI.waterLine.positionCount = pointList.Count;
+        seed_AI.waterLine.SetPositions(pointList.ToArray());
+
+        // 물 채우기
+        seed_AI.FillWater();
     }
 
     IEnumerator ChooseAttack()
@@ -278,7 +331,7 @@ public class Farmer_AI : MonoBehaviour
         character.nowState = Character.State.Attack;
 
         // 가능한 공격 중에서 랜덤 뽑기
-        int atkType = Random.Range(0, 4);
+        int atkType = Random.Range(0, 3);
 
         //! 테스트를 위해 패턴 고정
         if (patten != Patten.None)
@@ -437,7 +490,7 @@ public class Farmer_AI : MonoBehaviour
         Vector3 bodyRotation = Vector3.forward * (isLeft ? -15f : 15f);
 
         // 플레이어 반대 방향으로 살짝몸 기울이고
-        bodyTransform.transform.DORotate(bodyRotation, 0.5f)
+        bodyTransform.DORotate(bodyRotation, 0.5f)
         .SetEase(Ease.OutSine);
 
         // 공격 준비 로컬 위치
@@ -453,7 +506,7 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // 공격 방향으로 몸체 기울이기
-        bodyTransform.transform.DORotate(-bodyRotation, 0.2f)
+        bodyTransform.DORotate(-bodyRotation, 0.2f)
         .SetEase(Ease.OutSine);
 
         // 공격 다리 콜라이더 모두 활성화
@@ -483,7 +536,7 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 몸체 기울기 초기화
-        bodyTransform.transform.DORotate(Vector3.zero, 0.5f)
+        bodyTransform.DORotate(Vector3.zero, 0.5f)
         .SetEase(Ease.OutBack);
 
         // 다리 다시 오므리기
@@ -532,34 +585,32 @@ public class Farmer_AI : MonoBehaviour
     IEnumerator GrowPlant(Vector2 spawnPos)
     {
         // 씨앗 소환
-        Transform seedShadow = LeanPool.Spawn(seedPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+        Seed_AI seedObj = LeanPool.Spawn(seedPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
         // 씨앗 스프라이트
-        Transform seed = seedShadow.GetChild(0);
-
-        // 씨앗을 리스트에 저장
-        seedList.Add(seedShadow);
+        Transform seedSprite = seedObj.transform.GetChild(0);
 
         // 씨앗 랜덤 각도로 초기화
-        seed.rotation = Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f));
+        seedSprite.rotation = Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f));
 
         // 씨앗 착지 위치
-        Vector2 seedPos = seedShadow.position + (seedShadow.position - seedHole.position).normalized * 10f + Random.insideUnitSphere * 3f;
+        // Vector2 seedPos = seedObj.transform.position + (seedObj.transform.position - seedHole.position).normalized * seedRange + Random.insideUnitSphere * 0f;
+        Vector2 seedPos = character.targetPos + Random.insideUnitSphere * 3f;
 
         // 씨앗 이동 시키기
-        seedShadow.DOMove(seedPos, 1f)
+        seedObj.transform.DOMove(seedPos, 1f)
         .SetEase(Ease.InSine);
 
         // 씨앗 점프 시키기
-        seed.DOLocalJump(Vector2.zero, 5f, 1, 1f)
+        seedSprite.DOLocalJump(Vector2.up * 0.5f, 5f, 1, 1f)
         .SetEase(Ease.InSine);
 
         yield return new WaitForSeconds(1f);
 
-        // 씨앗 디스폰
-        LeanPool.Despawn(seedShadow);
+        // 씨앗 초기화 시작
+        seedObj.initStart = true;
 
-        // 식물생성
-        Transform plant = LeanPool.Spawn(plantPrefab, seedShadow.transform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+        // 씨앗을 리스트에 저장
+        seedList.Add(seedObj);
     }
 
     IEnumerator BioGas()
@@ -705,7 +756,7 @@ public class Farmer_AI : MonoBehaviour
     IEnumerator SunMove()
     {
         // 태양광 소환 위치
-        Vector2 sunPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * sunRange;
+        Vector2 sunPos = (Vector2)bodyTransform.position + Random.insideUnitCircle.normalized * sunRange;
 
         // 태양광 소환
         GameObject sunObj = LeanPool.Spawn(sunPrefab, sunPos, Quaternion.Euler(Vector3.forward * Random.value * 360f), SystemManager.Instance.enemyAtkPool);
@@ -749,7 +800,7 @@ public class Farmer_AI : MonoBehaviour
     {
         // 보스부터 이동 위치까지 직선
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, character.movePos);
+        Gizmos.DrawLine(bodyTransform.position, character.movePos);
 
         // 이동 위치 기즈모
         Gizmos.DrawIcon(character.movePos, "Circle.png", true, new Color(1, 0, 0, 0.5f));

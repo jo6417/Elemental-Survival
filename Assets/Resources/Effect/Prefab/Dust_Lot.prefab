@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 0}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0.2
   modify_startLife: 0
 --- !u!198 &1994870664517383051
@@ -4852,9 +4853,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 918817935
-  m_SortingLayer: 5
-  m_SortingOrder: -1
+  m_SortingLayerID: -1869315837
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0

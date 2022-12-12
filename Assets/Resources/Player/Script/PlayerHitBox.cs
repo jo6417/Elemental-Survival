@@ -317,7 +317,6 @@ public class PlayerHitBox : MonoBehaviour
 
             // 데미지 사운드 재생
             SoundManager.Instance.PlaySound("Hit");
-            print("HitSound");
 
             // 피격 이펙트 재생
             HitEffect(hitPos);

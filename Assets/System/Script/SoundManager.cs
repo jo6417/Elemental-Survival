@@ -293,8 +293,6 @@ public class SoundManager : MonoBehaviour
                     // 처음부터 재생
                     audio.time = 0;
                     audio.Play();
-
-                    print(sound.name + " : Play");
                 }
             }
 

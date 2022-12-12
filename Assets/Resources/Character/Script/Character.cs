@@ -202,7 +202,8 @@ public class Character : MonoBehaviour
         }
 
         // rigid 초기화
-        rigid.velocity = Vector3.zero;
+        if (rigid != null)
+            rigid.velocity = Vector3.zero;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
@@ -494,7 +495,10 @@ public class Character : MonoBehaviour
                 // 애니메이션 속도 초기화
                 // 기본값 속도에 비례해서 현재 속도만큼 배율 넣기
                 // animList[i].speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
-                animList[i].speed = 1f * speedNow;
+                if (speedNow != 0)
+                    animList[i].speed = 1f * speedNow;
+                else
+                    animList[i].speed = 1f;
             }
         }
 
@@ -639,7 +643,8 @@ public class Character : MonoBehaviour
             }
 
             // 이동 멈추기
-            rigid.velocity = Vector2.zero;
+            if (rigid != null)
+                rigid.velocity = Vector2.zero;
 
             transform.DOPause();
 
@@ -651,8 +656,8 @@ public class Character : MonoBehaviour
         if (stopCount > 0)
         {
             // transform.DOPause();
-
-            rigid.velocity = Vector2.zero; //이동 초기화
+            if (rigid != null)
+                rigid.velocity = Vector2.zero; //이동 초기화
 
             // rigid.constraints = RigidbodyConstraints2D.FreezeAll;
             // 애니메이션 멈추기
@@ -680,7 +685,8 @@ public class Character : MonoBehaviour
         //스폰 콜라이더에 닿아 반대편으로 보내질때 잠시대기
         if (oppositeCount > 0)
         {
-            rigid.velocity = Vector2.zero; //이동 초기화
+            if (rigid != null)
+                rigid.velocity = Vector2.zero; //이동 초기화
 
             // 행동불능이므로 false 리턴
             return false;

@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 7717009590255825392}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0
   modify_startLife: 0
 --- !u!198 &7717009590255825392
