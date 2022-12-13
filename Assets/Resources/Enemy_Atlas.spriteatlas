@@ -86,6 +86,9 @@ SpriteAtlas:
   - {fileID: 485505065437969550, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 5864148994154767218, guid: 1fceaa62b5d10fd43bf9bccedeca8c86, type: 3}
   - {fileID: 21300000, guid: ddb4ba828ef300044867c19b13e1ec0a, type: 3}
+  - {fileID: -3773487525413083146, guid: 1d5b6fe2c07f87649990bf69bc6aed56, type: 3}
+  - {fileID: -5624190396727887371, guid: 1d5b6fe2c07f87649990bf69bc6aed56, type: 3}
+  - {fileID: -932273163796677084, guid: 1d5b6fe2c07f87649990bf69bc6aed56, type: 3}
   - {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802, type: 3}
   - {fileID: 21300000, guid: 7e073dc4fc879d84e93b5c955aa1d2a2, type: 3}
   - {fileID: -8450179102024045516, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
@@ -132,7 +135,9 @@ SpriteAtlas:
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: 16bc50a805902cd4383f00f6f3aaa96d, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
+  - {fileID: 21300000, guid: 688a01e8fa9c27c458deb96d0f007e0c, type: 3}
   - {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
+  - {fileID: 21300000, guid: d8ad641965c56ec4c8aabe0b6d423eb7, type: 3}
   - {fileID: 21300000, guid: 179d4639e49e5e7449272364776b17f4, type: 3}
   - {fileID: 65732626766748736, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
   - {fileID: -208958182950929353, guid: 044ebf59e4d142244a7d652a46d495c8, type: 3}
@@ -156,6 +161,7 @@ SpriteAtlas:
   - {fileID: 6167343575801733385, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
   - {fileID: -8164322943603081415, guid: 303afedbdbb77c54d850c89e8a4288f0, type: 3}
   - {fileID: 21300000, guid: ac4f7d0cb024a40479fc936c08326030, type: 3}
+  - {fileID: 21300000, guid: d069c56cc663ccc4b9cb6192304165cb, type: 3}
   - {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   - {fileID: 21300000, guid: 5c3aac0d2222d6349938891de574401a, type: 3}
   - {fileID: -7541850853189336606, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
@@ -191,11 +197,14 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
   - {fileID: 21300000, guid: 9f48e77e692eaf8449f16c88b86219b1, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
+  - {fileID: -8425265181046065715, guid: 50e3019e57874e34f959435de1349e38, type: 3}
+  - {fileID: 7150920459821829022, guid: 50e3019e57874e34f959435de1349e38, type: 3}
+  - {fileID: -43870522669230738, guid: 50e3019e57874e34f959435de1349e38, type: 3}
   - {fileID: 21300000, guid: 8521fb0f1d8dfcc478990ea6d8e09e7b, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
-  - {fileID: -5937801097208924805, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
-  - {fileID: 4636757583066306611, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
-  - {fileID: 2181323241267009101, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
+  - {fileID: -1660650877068796821, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
+  - {fileID: 9085853911953523442, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
+  - {fileID: 6571252978914008438, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
   - {fileID: -6404539822265595652, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -6511475048532732289, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
   - {fileID: -7901897369145345293, guid: 0eafaa4f5ea5ff440a7f43f1b06f29ab, type: 3}
@@ -262,6 +271,9 @@ SpriteAtlas:
   - Golem-Sheet_4
   - Golem-Sheet_5
   - Farmer_Sun
+  - Farmer_Legs_2
+  - Farmer_Legs_1
+  - Farmer_Legs_0
   - Vacuum
   - KingSlime_Inside
   - A-800_Attack_Sheet_3
@@ -308,7 +320,9 @@ SpriteAtlas:
   - BloodEffect_Light_5
   - Vacuum_PulseLight
   - MiniDrone_Icon
+  - Farmer_Legs
   - KingSlime_Bubble
+  - Farmer_Eye
   - Seed
   - A-800_Walk-Sheet_6
   - A-800_Walk-Sheet_7
@@ -332,6 +346,7 @@ SpriteAtlas:
   - Bawi_Parts_0
   - Bawi_Parts_1
   - Farmer_Back
+  - Farmer_Vent
   - KingSlimeFill
   - Bawi_Head
   - BloodEffect_7
@@ -367,6 +382,9 @@ SpriteAtlas:
   - Slime_Light
   - Farmer_TreeLeaf
   - HotDog
+  - Leg3
+  - Leg2
+  - Leg1
   - Farmer_TreeWood
   - HotDog_emission
   - Leg3

@@ -5,6 +5,7 @@ using Lean.Pool;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
+using UnityEngine.Rendering;
 
 public class Farmer_AI : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] TextMeshProUGUI stateText; //! 테스트 현재 상태
     [SerializeField] Transform bodyTransform; // 몸체 오브젝트
     [SerializeField] Transform treeTransform; // 나무 오브젝트
+    [SerializeField] Transform treeParticle; // 나무에서 떨어지는 파티클
 
     [Header("Walk")]
     [SerializeField, ReadOnly] float targetSearchCount; // 타겟 위치 추적 시간 카운트
@@ -45,26 +47,30 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] Vector2[] defaultFootPos = new Vector2[4]; // 발 초기 로컬 포지션
     [SerializeField, ReadOnly] Vector2[] nowMovePos = new Vector2[4]; // 현재 옮겨지고 있는 발의 위치
     [SerializeField, ReadOnly] Vector2[] lastFootPos = new Vector2[4]; // 마지막 발 월드 포지션
+    [SerializeField] Material legAtkMat; // 공격할때 다리 머터리얼
+    [SerializeField] ParticleSystem L_legTipFlash;
+    [SerializeField] ParticleSystem R_legTipFlash;
 
     [Header("Stab")]
     [SerializeField] EnemyAtkTrigger stabTrigger;
 
     [Header("PlantSeed")]
     [SerializeField] Light2D treeLight; // 나무 모양 라이트
-    [SerializeField] Transform plantPrefab; // 식물 프리팹
+    [SerializeField] ParticleSystem seedPulse; // 씨앗 패턴 인디케이터
     [SerializeField] Transform seedHole; // 씨앗 발사할 구멍들
     [SerializeField] Seed_AI seedPrefab; // 씨앗 프리팹
     [SerializeField] List<Seed_AI> seedList; // 씨앗 목록
     [SerializeField] float waterRange = 10f; // 물주기 거리
-    [SerializeField] float seedRange = 20f; // 씨앗 발사 거리
+    [SerializeField] float seedRange = 5f; // 씨앗 발사 거리
     [SerializeField] float waterPos_Y = 5f; // 베지어 곡선 가운데 높이
     [SerializeField] float vertexCount = 12; // 베지어 곡선 포인트 개수
 
     [Header("BioGas")]
-    [SerializeField] Rigidbody2D poisonPrefab; // 독구름 프리팹
-    [SerializeField] int poisonLoopNum; // 공격 횟수
-    [SerializeField] int poisonNum; // 한번에 독구름 생성 개수
-    [SerializeField] float poisonSpeed; // 독구름 이동 속도
+    [SerializeField] Rigidbody2D bioGasPrefab; // 독구름 프리팹
+    [SerializeField] ParticleSystem bioPulse; // 가스 패턴 인디케이터
+    [SerializeField] int gasLoopNum = 3; // 공격 횟수
+    [SerializeField] int gasNum = 36; // 한번에 독구름 생성 개수
+    [SerializeField] float gasSpeed = 5f; // 독구름 이동 속도
 
     [Header("SunHeal")]
     [SerializeField] int sunNum; // 태양광 소환 횟수
@@ -96,6 +102,11 @@ public class Farmer_AI : MonoBehaviour
             {
                 coll.enabled = false;
             }
+
+            // 공격할 다리의 머터리얼 모두 초기화
+            SpriteRenderer[] legSprites = legBones[i].GetComponentsInChildren<SpriteRenderer>();
+            for (int j = 0; j < legSprites.Length; j++)
+                legSprites[j].material = SystemManager.Instance.spriteLitMat;
         }
 
         // 맞을때마다 Hit 함수 실행
@@ -152,7 +163,7 @@ public class Farmer_AI : MonoBehaviour
         // 체력이 0 이하일때, 죽었을때
         if (character.hpNow <= 0)
         {
-            //todo 태양광 모두 없에기
+            // 태양광 모두 없에기
             for (int i = 0; i < sunList.Count; i++)
                 // 태양광 디스폰
                 LeanPool.Despawn(sunList[i]);
@@ -251,6 +262,8 @@ public class Farmer_AI : MonoBehaviour
             {
                 // 해당 인덱스 삭제 예약
                 removeIndexes.Add(seedList[i]);
+                // 물 끄기
+                seedList[i].waterLine.enabled = false;
                 // 다음으로 넘기기
                 continue;
             }
@@ -288,13 +301,17 @@ public class Farmer_AI : MonoBehaviour
             return;
         // 죽었으면 리턴
         if (seed_AI.seedCharacter.hpNow <= 0)
+        {
+            // 물 끄기
+            seed_AI.waterLine.enabled = false;
             return;
+        }
 
         // 물줄기 끝지점
         Vector3 endPoint = seed_AI.transform.position + Vector3.up * 0.5f;
 
         // 물줄기 시작지점
-        Vector3 startPoint = bodyTransform.position + Vector3.up * 9f;
+        Vector3 startPoint = treeParticle.position;
         // 시작지점을 씨앗 방향으로 조정
         Vector3 seedDir = Vector3.ClampMagnitude(endPoint - startPoint, 1f);
         startPoint += seedDir;
@@ -427,7 +444,7 @@ public class Farmer_AI : MonoBehaviour
         // print("velocity : " + velocity.magnitude);
 
         // 발이 옮겨질 위치 계산해서 배열에 캐싱
-        Vector2 movePos = (Vector2)bodyTransform.position + defaultFootPos[footIndex] + velocity;
+        Vector2 movePos = (Vector2)bodyTransform.position + new Vector2(0, 1.5f) + defaultFootPos[footIndex] + velocity;
         nowMovePos[footIndex] = movePos;
 
         // 발 이동개수 추가
@@ -486,6 +503,8 @@ public class Farmer_AI : MonoBehaviour
         Transform atkFoot = footTargets[atkLegIndex].transform;
         // 공격할 다리 콜라이더 모두 찾기
         Collider2D[] legColls = legBones[atkLegIndex].GetComponentsInChildren<Collider2D>();
+        // 공격할 다리 스프라이트 모두 찾기
+        SpriteRenderer[] legSprites = legBones[atkLegIndex].GetComponentsInChildren<SpriteRenderer>();
         // 몸체 기울일 방향
         Vector3 bodyRotation = Vector3.forward * (isLeft ? -15f : 15f);
 
@@ -503,7 +522,16 @@ public class Farmer_AI : MonoBehaviour
         .SetEase(Ease.OutSine);
 
         // 몸체 기울이기 및 오므리는 시간 대기
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
+
+        // 발 끝에서 반짝이는 인디케이터
+        if (isLeft)
+            L_legTipFlash.Play();
+        else
+            R_legTipFlash.Play();
+
+        // 인디케이터 시간 대기
+        yield return new WaitForSeconds(0.5f);
 
         // 공격 방향으로 몸체 기울이기
         bodyTransform.DORotate(-bodyRotation, 0.2f)
@@ -512,6 +540,10 @@ public class Farmer_AI : MonoBehaviour
         // 공격 다리 콜라이더 모두 활성화
         for (int i = 0; i < legColls.Length; i++)
             legColls[i].enabled = true;
+
+        // 공격할 다리의 머터리얼 모두 아웃라인으로 변경
+        for (int i = 0; i < legSprites.Length; i++)
+            legSprites[i].material = legAtkMat;
 
         // 찌를 위치
         Vector2 stabPos = legBones[atkLegIndex].position + (PlayerManager.Instance.transform.position - legBones[atkLegIndex].position).normalized * 20f;
@@ -527,31 +559,46 @@ public class Farmer_AI : MonoBehaviour
 
         // 찌르는 시간 대기
         yield return new WaitForSeconds(0.2f);
+        // 찌르기 후 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 플레이어 반대 방향으로 기울이기
+        bodyTransform.DORotate(bodyRotation, 1f)
+        .SetEase(Ease.InBack);
+
+        // 다리 리셋 위치
+        Vector2 legResetPos = (Vector2)bodyTransform.position + new Vector2(0, 1.5f) + defaultFootPos[atkLegIndex];
+        // 리셋 직전 들어올리기 위치
+        Vector2 legUpPos = legResetPos + Vector2.up * 5f;
+
+        // 다리 들어올리기
+        atkFoot.DOMove(legUpPos, 1f)
+        .SetEase(Ease.InBack);
+
+        // 오므리는 시간 대기
+        yield return new WaitForSeconds(1f);
+
+        // 공격 다리 위치 초기화
+        atkFoot.DOMove(legResetPos, 0.5f)
+        .SetEase(Ease.InBack);
+
+        // 몸체 기울기 초기화
+        bodyTransform.DORotate(Vector3.zero, 0.5f)
+        .SetEase(Ease.InBack);
+
+        // 아웃라인 끄기 대기
+        yield return new WaitForSeconds(0.2f);
 
         // 공격 다리 콜라이더 모두 비활성화
         for (int i = 0; i < legColls.Length; i++)
             legColls[i].enabled = false;
 
-        // 찌르기 후딜
-        yield return new WaitForSeconds(0.5f);
-
-        // 몸체 기울기 초기화
-        bodyTransform.DORotate(Vector3.zero, 0.5f)
-        .SetEase(Ease.OutBack);
-
-        // 다리 다시 오므리기
-        atkFoot.DOMove(atkReadyPos, 0.2f)
-        .SetEase(Ease.InBack);
-
-        // 오므리는 시간 대기
-        yield return new WaitForSeconds(0.2f);
-
-        // 공격 다리 위치 초기화
-        atkFoot.DOMove((Vector2)bodyTransform.position + defaultFootPos[atkLegIndex], 0.3f)
-        .SetEase(Ease.InBack);
+        // 공격할 다리의 머터리얼 모두 초기화
+        for (int i = 0; i < legSprites.Length; i++)
+            legSprites[i].material = SystemManager.Instance.spriteLitMat;
 
         // 몸체 및 다리 초기화 대기
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
 
         // 쿨타임 갱신
         // atkCoolCount = StabCooltime;
@@ -562,14 +609,17 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator PlantSeed()
     {
-        yield return null;
+        // 씨앗 인디케이터 재생
+        seedPulse.Play();
+        // 인디케이터 딜레이
+        yield return new WaitForSeconds(2f);
 
         for (int i = 0; i < seedHole.childCount; i++)
         {
             // 식물 자라남
             StartCoroutine(GrowPlant(seedHole.GetChild(i).transform.position));
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
         }
 
         // 후딜레이 대기
@@ -589,12 +639,16 @@ public class Farmer_AI : MonoBehaviour
         // 씨앗 스프라이트
         Transform seedSprite = seedObj.transform.GetChild(0);
 
+        // 씨앗 레이어 변경
+        SortingGroup seedSort = seedObj.GetComponentInChildren<SortingGroup>();
+        seedSort.sortingOrder = 1;
+
         // 씨앗 랜덤 각도로 초기화
         seedSprite.rotation = Quaternion.Euler(Vector3.forward * Random.Range(0f, 360f));
 
-        // 씨앗 착지 위치
+        // 플레이어 주변 씨앗 착지 위치
         // Vector2 seedPos = seedObj.transform.position + (seedObj.transform.position - seedHole.position).normalized * seedRange + Random.insideUnitSphere * 0f;
-        Vector2 seedPos = character.targetPos + Random.insideUnitSphere * 3f;
+        Vector2 seedPos = character.targetPos + Random.insideUnitSphere * seedRange;
 
         // 씨앗 이동 시키기
         seedObj.transform.DOMove(seedPos, 1f)
@@ -606,6 +660,9 @@ public class Farmer_AI : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        // 씨앗 레이어 초기화
+        seedSort.sortingOrder = 0;
+
         // 씨앗 초기화 시작
         seedObj.initStart = true;
 
@@ -615,19 +672,22 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator BioGas()
     {
-        yield return null;
-
         // 애니메이터 끄기
         bodyTransform.GetComponent<Animator>().enabled = false;
 
         // 공격 횟수만큼 반복
-        for (int j = 0; j < poisonLoopNum; j++)
+        for (int j = 0; j < gasLoopNum; j++)
         {
             // 다리를 아래로 뻗어 높이 올라간 다음
             bodyTransform.DOLocalMove(new Vector2(0, 5f), 1f)
             .SetEase(Ease.InBack);
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
+
+            // 포이즌 인디케이터 재생
+            bioPulse.Play();
+
+            yield return new WaitForSeconds(0.5f);
 
             // 다리를 굽히며 아래로 내려가면서
             bodyTransform.DOLocalMove(new Vector2(0, -1f), 1f)
@@ -636,26 +696,24 @@ public class Farmer_AI : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
 
             // 독구름 생성 개수 초기화
-            int atkNum = poisonNum;
+            int atkNum = gasNum;
 
             // 독구름이 원형으로 퍼짐
             for (int i = 0; i < atkNum; i++)
             {
                 // 독구름 생성
-                Rigidbody2D poisonObj = LeanPool.Spawn(poisonPrefab, bodyTransform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+                Rigidbody2D poisonObj = LeanPool.Spawn(bioGasPrefab, bodyTransform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
 
                 // 목표 각도
                 float targetAngle = 360f * i / atkNum;
                 // 독구름 목표 방향
                 Vector3 targetDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * targetAngle), Mathf.Cos(Mathf.Deg2Rad * targetAngle), 0);
 
-                poisonObj.velocity = targetDir.normalized * poisonSpeed;
+                poisonObj.velocity = targetDir.normalized * gasSpeed;
             }
 
             yield return new WaitForSeconds(1f);
         }
-
-        //todo 싹이 튼 씨앗들에 닿으면 Life 슬라임으로 변함
 
         // 일어서기
         bodyTransform.DOLocalMove(new Vector2(0, 1.5f), 2f)

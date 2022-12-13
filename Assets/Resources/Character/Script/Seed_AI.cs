@@ -86,7 +86,7 @@ public class Seed_AI : MonoBehaviour
 
         // 독구름 충돌 감지
         if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
-        && other.name == "PoisonGas")
+        && other.name == "BioGas")
         {
             // 형태 변환 시작
             turning = true;

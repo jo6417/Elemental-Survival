@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using Lean.Pool;
 using UnityEngine.Rendering;
+using System.Text;
 
 public class Bawi_AI : EnemyAI
 {
@@ -71,6 +72,7 @@ public class Bawi_AI : EnemyAI
     public Animator ghostDrillAnim; // 고스트 드릴 회전 애니메이터
     public ParticleSystem drillChargeGathering; // 드릴차지 기모으는 이펙트
     public ParticleManager drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    AudioSource drillSpin; // 드릴 스핀 사운드
 
     private void Awake()
     {
@@ -646,9 +648,6 @@ public class Bawi_AI : EnemyAI
         //착지 할때까지 대기
         yield return new WaitUntil(() => !isFloating);
 
-        // 드릴 스핀 사운드 반복 재생
-        AudioSource drillSpin = SoundManager.Instance.PlaySound("Bawi_DrillSpin", drillPart.transform, 2f, 0, -1, true);
-
         // 차지 이펙트 켜기
         drillChargeGathering.gameObject.SetActive(true);
         drillChargeGathering.Play();
@@ -733,11 +732,11 @@ public class Bawi_AI : EnemyAI
         transform.DOMove(dashPos, 1f)
         .SetEase(Ease.OutExpo);
 
+        // 드릴 스핀 사운드 종료
+        SoundManager.Instance.StopSound(drillSpin, 1f);
+
         //돌진하는 동안 대기
         yield return new WaitForSeconds(1f);
-
-        // 드릴 스핀 사운드 종료
-        SoundManager.Instance.StopSound(drillSpin, 0.5f);
 
         // 드릴 콜라이더 끄기
         drillGhostColl.enabled = false;
@@ -816,6 +815,20 @@ public class Bawi_AI : EnemyAI
             //무기 차지 시간
             float reboundUpTime = 0.8f;
 
+            // 드릴일때
+            if (partObj != fistPart)
+            {
+                // 드릴 사운드 이름 계산
+                StringBuilder spinSound = new StringBuilder();
+                spinSound.Append("Bawi_DrillSpin");
+                spinSound.Append(i);
+
+                print(spinSound.ToString());
+
+                // 드릴 스핀 사운드 반복 재생
+                drillSpin = SoundManager.Instance.PlaySound(spinSound.ToString(), 1f, 0, -1, true);
+            }
+
             // 무기 차지 시퀀스 (1 ~ 3번 랜덤 차지)
             Sequence chargeSeq = DOTween.Sequence();
             chargeSeq
@@ -870,6 +883,11 @@ public class Bawi_AI : EnemyAI
 
             // 시퀀스 끝날때까지 대기
             yield return new WaitUntil(() => !chargeSeq.active);
+
+            // 마지막 차지가 아닐때만
+            if (i < chargeNum - 1)
+                // 드릴 스핀 사운드 종료
+                SoundManager.Instance.StopSound(drillSpin, 1f);
         }
 
         // 차지 이펙트 끄기
