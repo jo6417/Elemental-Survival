@@ -134,8 +134,8 @@ SpriteAtlas:
   - {fileID: -1393387521054166907, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: -3388145599357304197, guid: 70154b780ea8d6142bb67e779d26ac83, type: 3}
   - {fileID: 21300000, guid: 16bc50a805902cd4383f00f6f3aaa96d, type: 3}
+  - {fileID: 21300000, guid: 42abd6b89a0dcb049a3c29d66caf19d1, type: 3}
   - {fileID: 21300000, guid: c483abb87f758344f889e0cd66c55f32, type: 3}
-  - {fileID: 21300000, guid: 688a01e8fa9c27c458deb96d0f007e0c, type: 3}
   - {fileID: 21300000, guid: 5a0985f88bebf9c4c907aedfb181d69d, type: 3}
   - {fileID: 21300000, guid: d8ad641965c56ec4c8aabe0b6d423eb7, type: 3}
   - {fileID: 21300000, guid: 179d4639e49e5e7449272364776b17f4, type: 3}
@@ -197,9 +197,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4266056ed77d99d4f94fc2691a613a53, type: 3}
   - {fileID: 21300000, guid: 9f48e77e692eaf8449f16c88b86219b1, type: 3}
   - {fileID: 21300000, guid: 97238f8ef18f5674d9886a9baa7031cd, type: 3}
-  - {fileID: -8425265181046065715, guid: 50e3019e57874e34f959435de1349e38, type: 3}
-  - {fileID: 7150920459821829022, guid: 50e3019e57874e34f959435de1349e38, type: 3}
-  - {fileID: -43870522669230738, guid: 50e3019e57874e34f959435de1349e38, type: 3}
   - {fileID: 21300000, guid: 8521fb0f1d8dfcc478990ea6d8e09e7b, type: 3}
   - {fileID: 21300000, guid: 3fcf9f3fb1650a64db6a5eeb45f2e9ed, type: 3}
   - {fileID: -1660650877068796821, guid: 8ac0504f0c35ec845b98fb6964fb87cf, type: 3}
@@ -319,8 +316,8 @@ SpriteAtlas:
   - BloodEffect_Light_4
   - BloodEffect_Light_5
   - Vacuum_PulseLight
+  - Farmer_Knee
   - MiniDrone_Icon
-  - Farmer_Legs
   - KingSlime_Bubble
   - Farmer_Eye
   - Seed
@@ -382,9 +379,6 @@ SpriteAtlas:
   - Slime_Light
   - Farmer_TreeLeaf
   - HotDog
-  - Leg3
-  - Leg2
-  - Leg1
   - Farmer_TreeWood
   - HotDog_emission
   - Leg3

@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.Rendering;
+using UnityEngine.U2D.IK;
 
 public class Farmer_AI : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class Farmer_AI : MonoBehaviour
 
     [Header("Refer")]
     [SerializeField] Character character;
+    [SerializeField] IKManager2D ikmanager;
     [SerializeField] TextMeshProUGUI stateText; //! 테스트 현재 상태
     [SerializeField] Transform bodyTransform; // 몸체 오브젝트
     [SerializeField] Transform treeTransform; // 나무 오브젝트
@@ -42,17 +44,21 @@ public class Farmer_AI : MonoBehaviour
     [SerializeField] float velocityFactor = 0.3f; // 발 이동 방향 속도로 예측 팩터
     [SerializeField, ReadOnly] int nowMoveFootNum = 0; // 현재 이동 중인 발 개수
     [SerializeField] Transform[] legBones; // 다리 각각 bone 부모 오브젝트
+    [SerializeField] Transform[] solvers; // 다리 IK Solver
     [SerializeField] Transform[] footEffectors; // 옮겨질 발 오브젝트
     [SerializeField] ParticleSystem[] footTargets; // 발이 옮겨질 목표 오브젝트
     [SerializeField] Vector2[] defaultFootPos = new Vector2[4]; // 발 초기 로컬 포지션
     [SerializeField, ReadOnly] Vector2[] nowMovePos = new Vector2[4]; // 현재 옮겨지고 있는 발의 위치
     [SerializeField, ReadOnly] Vector2[] lastFootPos = new Vector2[4]; // 마지막 발 월드 포지션
-    [SerializeField] Material legAtkMat; // 공격할때 다리 머터리얼
-    [SerializeField] ParticleSystem L_legTipFlash;
-    [SerializeField] ParticleSystem R_legTipFlash;
 
     [Header("Stab")]
     [SerializeField] EnemyAtkTrigger stabTrigger;
+    [SerializeField] ParticleSystem L_legTipFlash;
+    [SerializeField] ParticleSystem R_legTipFlash;
+    [SerializeField] LineRenderer[] legCables;
+    [SerializeField] Material legAtkMat; // 공격할때 다리 머터리얼
+    [SerializeField] float stretchRange = 10f; // 관절 뻗는 길이의 합
+    [SerializeField] float stretchTime = 0.2f;
 
     [Header("PlantSeed")]
     [SerializeField] Light2D treeLight; // 나무 모양 라이트
@@ -87,6 +93,8 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator Init()
     {
+        ikmanager.UpdateManager();
+
         // 모든 발 초기 위치 초기화
         for (int i = 0; i < footTargets.Length; i++)
         {
@@ -104,9 +112,22 @@ public class Farmer_AI : MonoBehaviour
             }
 
             // 공격할 다리의 머터리얼 모두 초기화
-            SpriteRenderer[] legSprites = legBones[i].GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] legSprites ={
+                legBones[i].GetChild(1).GetComponent<SpriteRenderer>(),
+                legBones[i].GetChild(2).GetComponent<SpriteRenderer>(),
+                legBones[i].GetChild(3).GetComponent<SpriteRenderer>()
+            };
             for (int j = 0; j < legSprites.Length; j++)
                 legSprites[j].material = SystemManager.Instance.spriteLitMat;
+
+            // 해당 다리 HDR 불빛 초기화
+            SpriteRenderer[] legLights = legBones[i].GetChild(0).GetComponentsInChildren<SpriteRenderer>();
+            for (int j = 0; j < legLights.Length; j++)
+            {
+                Color legColor = legLights[j].color;
+                legColor.a = 0f;
+                legLights[j].color = legColor;
+            }
         }
 
         // 맞을때마다 Hit 함수 실행
@@ -223,19 +244,6 @@ public class Farmer_AI : MonoBehaviour
         if (character.nowState != Character.State.Idle)
             return;
 
-        // 범위 내에 있을때
-        if (character.targetDir.magnitude <= atkRange)
-        {
-            // 쿨타임 됬을때
-            if (atkCoolCount <= 0)
-            {
-                //공격 패턴 결정하기
-                StartCoroutine(ChooseAttack());
-
-                return;
-            }
-        }
-
         // 찌르기 트리거에 플레이어 닿으면 Stab 패턴
         if (stabTrigger.atkTrigger)
         {
@@ -243,6 +251,19 @@ public class Farmer_AI : MonoBehaviour
             StartCoroutine(StabLeg());
 
             return;
+        }
+
+        // 범위 내에 있을때
+        if (character.targetDir.magnitude <= atkRange)
+        {
+            // 쿨타임 됬을때, 스킵 아닐때
+            if (atkCoolCount <= 0 && patten != Patten.Skip)
+            {
+                //공격 패턴 결정하기
+                StartCoroutine(ChooseAttack());
+
+                return;
+            }
         }
 
         // 플레이어 따라가기
@@ -340,10 +361,6 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator ChooseAttack()
     {
-        //! 패턴 스킵
-        if (patten == Patten.Skip)
-            yield break;
-
         // 공격 상태로 전환
         character.nowState = Character.State.Attack;
 
@@ -422,7 +439,7 @@ public class Farmer_AI : MonoBehaviour
             {
                 // OnComplete 때문에 인덱스 캐싱
                 int footNum = i;
-                // 발의 현재 위치에서 마지막 위치까지 거리
+                // 발 초기화 위치에서 현재 발 위치까지 거리
                 float distance = Vector2.Distance((Vector2)bodyTransform.position + defaultFootPos[footNum], footTargets[footNum].transform.position);
 
                 // 마지막 위치로부터 footMoveDistance 보다 멀어지면
@@ -444,13 +461,22 @@ public class Farmer_AI : MonoBehaviour
         // print("velocity : " + velocity.magnitude);
 
         // 발이 옮겨질 위치 계산해서 배열에 캐싱
-        Vector2 movePos = (Vector2)bodyTransform.position + new Vector2(0, 1.5f) + defaultFootPos[footIndex] + velocity;
+        Vector2 movePos = (Vector2)bodyTransform.position + defaultFootPos[footIndex] + velocity;
         nowMovePos[footIndex] = movePos;
+
+        // print(footIndex + " : " + movePos + " : " + (Vector2)bodyTransform.position + " : " + defaultFootPos[footIndex] + " : " + velocity);
 
         // 발 이동개수 추가
         nowMoveFootNum++;
 
-        //todo 발 그림자 이동
+        // 해당 다리 HDR 불빛 밝히기
+        SpriteRenderer[] legLights = legBones[footIndex].GetChild(0).GetComponentsInChildren<SpriteRenderer>();
+        for (int i = 0; i < legLights.Length; i++)
+        {
+            Color color = legLights[i].color;
+            color.a = 1f;
+            legLights[i].color = color;
+        }
 
         // 발 점프해서 이동
         footTargets[footIndex].transform.DOJump(movePos, 1f, 1, footMoveSpeed * footMoveDistance)
@@ -468,6 +494,14 @@ public class Farmer_AI : MonoBehaviour
 
             // 발에서 먼지 생성
             footTargets[footIndex].Play();
+
+            // 불빛 끄기
+            for (int i = 0; i < legLights.Length; i++)
+            {
+                Color color = legLights[i].color;
+                color.a = 0f;
+                legLights[i].DOColor(color, 0.1f);
+            }
         });
     }
 
@@ -504,7 +538,11 @@ public class Farmer_AI : MonoBehaviour
         // 공격할 다리 콜라이더 모두 찾기
         Collider2D[] legColls = legBones[atkLegIndex].GetComponentsInChildren<Collider2D>();
         // 공격할 다리 스프라이트 모두 찾기
-        SpriteRenderer[] legSprites = legBones[atkLegIndex].GetComponentsInChildren<SpriteRenderer>();
+        SpriteRenderer[] legSprites ={
+            legBones[atkLegIndex].GetChild(1).GetComponent<SpriteRenderer>(),
+            legBones[atkLegIndex].GetChild(2).GetComponent<SpriteRenderer>(),
+            legBones[atkLegIndex].GetChild(3).GetComponent<SpriteRenderer>()
+        };
         // 몸체 기울일 방향
         Vector3 bodyRotation = Vector3.forward * (isLeft ? -15f : 15f);
 
@@ -550,33 +588,97 @@ public class Farmer_AI : MonoBehaviour
 
         // 플레이어 위치로 다리 뻗어서 찌르기
         atkFoot.DOMove(stabPos, 0.2f)
-                .SetEase(Ease.OutBack);
-
-        //todo 찌른 직후 Solver 끄고 관절 사이 늘리기, 라인 렌더러로 관절사이 이어주기
-        // 해당 다리 Solver 끄기
-        // 관절 사이 늘리기
-        // 늘리는동안 라인 렌더러로 관절사이 이어주기 업데이트
+                .SetEase(Ease.Linear);
 
         // 찌르는 시간 대기
         yield return new WaitForSeconds(0.2f);
+
+        // 관절 모두 찾기
+        Transform[] bones = {
+            legBones[atkLegIndex].GetChild(0).GetChild(0),
+            legBones[atkLegIndex].GetChild(0).GetChild(0).GetChild(0)
+            };
+        // 관절 사이 케이블 모두 찾기
+        LineRenderer[] cables = {
+            bones[0].GetComponent<LineRenderer>(),
+            bones[1].GetComponent<LineRenderer>()
+            };
+
+        // 해당 다리 Solver 끄기
+        solvers[atkLegIndex].gameObject.SetActive(false);
+
+        // 관절 3개 순서대로 늘리기
+        for (int i = 0; i < 2; i++)
+        {
+            // 해당 관절 캐싱
+            Transform bone = bones[i];
+            // 케이블 캐싱
+            LineRenderer cable = legCables[i];
+
+            // 관절 사이 늘리기
+            bone.DOLocalMove(bone.localPosition + Vector3.right * stretchRange / 2f, stretchTime)
+            .SetEase(Ease.Linear)
+            .OnStart(() =>
+            {
+                // 라인 렌더러 양쪽 포인트 초기화
+                cable.SetPosition(0, bone.position);
+                cable.SetPosition(1, bone.parent.position);
+                // 해당 관절 사이 라인렌더러 켜기
+                cable.gameObject.SetActive(true);
+
+                // 케이블 위치 갱신 시작
+                StartCoroutine(LegCable(cable, bone));
+            });
+
+            // 뻗는 시간 대기
+            yield return new WaitForSeconds(stretchTime);
+        }
+
         // 찌르기 후 대기
         yield return new WaitForSeconds(0.5f);
 
-        // 플레이어 반대 방향으로 기울이기
-        bodyTransform.DORotate(bodyRotation, 1f)
-        .SetEase(Ease.InBack);
+        // 관절 모두 역순으로 좁히기
+        for (int i = 1; i >= 0; i--)
+        {
+            // 해당 관절 캐싱
+            Transform bone = bones[i];
+            // 케이블 캐싱
+            LineRenderer cable = legCables[i];
+
+            // 관절 사이 좁히기
+            bone.DOLocalMove(bone.localPosition + Vector3.left * stretchRange / 2f, stretchTime)
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                // 해당 관절 사이 라인렌더러 끄기
+                cable.gameObject.SetActive(false);
+            });
+
+            // 복귀 시간 대기
+            yield return new WaitForSeconds(stretchTime);
+        }
+
+        // 복귀 시간 대기
+        // yield return new WaitForSeconds(stretchTime);
+
+        // 해당 다리 Solver 켜기
+        solvers[atkLegIndex].gameObject.SetActive(true);
 
         // 다리 리셋 위치
-        Vector2 legResetPos = (Vector2)bodyTransform.position + new Vector2(0, 1.5f) + defaultFootPos[atkLegIndex];
+        Vector2 legResetPos = (Vector2)bodyTransform.position + defaultFootPos[atkLegIndex];
         // 리셋 직전 들어올리기 위치
-        Vector2 legUpPos = legResetPos + Vector2.up * 5f;
+        Vector2 legUpPos = legResetPos + Vector2.up * 4f;
+
+        // 플레이어 반대 방향으로 기울이기
+        bodyTransform.DORotate(bodyRotation, 0.5f)
+        .SetEase(Ease.Linear);
 
         // 다리 들어올리기
-        atkFoot.DOMove(legUpPos, 1f)
-        .SetEase(Ease.InBack);
+        atkFoot.DOMove(legUpPos, 0.5f)
+        .SetEase(Ease.Linear);
 
         // 오므리는 시간 대기
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         // 공격 다리 위치 초기화
         atkFoot.DOMove(legResetPos, 0.5f)
@@ -605,6 +707,21 @@ public class Farmer_AI : MonoBehaviour
 
         // 상태 초기화
         character.nowState = Character.State.Idle;
+    }
+
+    IEnumerator LegCable(LineRenderer cable, Transform bone)
+    {
+        WaitForSeconds wait = new WaitForSeconds(Time.deltaTime);
+
+        // 해당 케이블 켜져있는 동안 반복
+        while (cable.gameObject.activeSelf)
+        {
+            // 늘리는동안 라인 렌더러로 관절사이 이어주기 업데이트
+            cable.SetPosition(0, bone.position);
+            cable.SetPosition(1, bone.parent.position);
+
+            yield return wait;
+        }
     }
 
     IEnumerator PlantSeed()
@@ -716,7 +833,7 @@ public class Farmer_AI : MonoBehaviour
         }
 
         // 일어서기
-        bodyTransform.DOLocalMove(new Vector2(0, 1.5f), 2f)
+        bodyTransform.DOLocalMove(Vector2.zero, 2f)
         .SetEase(Ease.OutBack);
 
         // 일어서기 대기
@@ -779,7 +896,7 @@ public class Farmer_AI : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         // 일어서기
-        bodyTransform.DOLocalMove(new Vector2(0, 1.5f), 2f)
+        bodyTransform.DOLocalMove(Vector2.zero, 2f)
         .SetEase(Ease.OutBack);
 
         // 일어서기 대기
