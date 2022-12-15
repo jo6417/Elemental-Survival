@@ -213,6 +213,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dustPrefab: {fileID: 3222180882172883121, guid: 857e027e861f7f241bc702a0ea89ef2a,
     type: 3}
+  slimeBirthSounds:
+  - Farmer_Seed_SlimeBirth1
+  - Farmer_Seed_SlimeBirth2
   initStart: 0
   turning: 0
   lifeTimeCount: 0

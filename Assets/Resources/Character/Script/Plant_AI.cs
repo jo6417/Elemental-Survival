@@ -19,6 +19,9 @@ public class Plant_AI : MonoBehaviour
 
         // 스케일 초기화
         transform.localScale = Vector3.one;
+
+        // 식물 생성 소리 재생
+        SoundManager.Instance.PlaySound("Farmer_Plant_Birth", transform.position);
     }
 
     private void Update()
@@ -31,7 +34,8 @@ public class Plant_AI : MonoBehaviour
             // 잎날 날아갈 방향,속도 벡터
             Vector2 targetDir = (PlayerManager.Instance.transform.position - leafPos).normalized * shotSpeed;
 
-            if (atkRange <= targetDir.magnitude)
+            // 범위 내에 있을때
+            if ((PlayerManager.Instance.transform.position - leafPos).magnitude <= atkRange)
             {
                 // 잎날 생성
                 Transform leaf = LeanPool.Spawn(leafPrefab, leafPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
@@ -41,6 +45,9 @@ public class Plant_AI : MonoBehaviour
 
                 // 식물 바운스하는 트윈
                 transform.GetChild(0).DOPunchScale(Vector2.up * 0.5f, 0.5f);
+
+                // 잎날 발사 소리 재생
+                SoundManager.Instance.PlaySound("Farmer_Plant_LeafShot", transform.position);
 
                 // 쿨타임 초기화
                 coolCount = cooltime;

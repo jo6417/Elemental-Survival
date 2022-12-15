@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Lean.Pool;
 using TMPro;
@@ -12,11 +13,17 @@ public class Farmer_AI : MonoBehaviour
 {
     [Header("State")]
     [SerializeField] float atkRange = 30f; // 공격 범위
-    [SerializeField] float followRange = 10f; // 타겟과의 거리
+    [SerializeField] float followRange = 10f; // 타겟과의 최소 거리
     [SerializeField, ReadOnly] Vector3 targetVelocity; // 현재 이동속도
+    [SerializeField] float minSpeed = 1f; // 최소 이동속도
     [SerializeField] float maxSpeed = 1f; // 최대 이동속도
     [SerializeField] Patten patten = Patten.None;
     enum Patten { PlantSeed, BioGas, SunHeal, Skip, None };
+
+    [Header("Sound")]
+    [SerializeField] string[] stepSounds = { };
+    int step_lastIndex = -1;
+    [SerializeField] string[] seedLandSounds = { };
 
     [Header("Cooltime")]
     [SerializeField] float atkCoolCount;
@@ -231,7 +238,7 @@ public class Farmer_AI : MonoBehaviour
         ManageAction();
 
         // 패시브 패턴
-        Passive();
+        Watering();
     }
 
     void ManageAction()
@@ -270,7 +277,7 @@ public class Farmer_AI : MonoBehaviour
         Move();
     }
 
-    void Passive()
+    void Watering()
     {
         // 삭제될 인덱스들
         List<Seed_AI> removeIndexes = new List<Seed_AI>();
@@ -284,7 +291,7 @@ public class Farmer_AI : MonoBehaviour
                 // 해당 인덱스 삭제 예약
                 removeIndexes.Add(seedList[i]);
                 // 물 끄기
-                seedList[i].waterLine.enabled = false;
+                seedList[i].StopWater();
                 // 다음으로 넘기기
                 continue;
             }
@@ -304,7 +311,7 @@ public class Farmer_AI : MonoBehaviour
             else
             {
                 // 물 끄기
-                seedList[i].waterLine.enabled = false;
+                seedList[i].StopWater();
             }
         }
 
@@ -324,7 +331,7 @@ public class Farmer_AI : MonoBehaviour
         if (seed_AI.seedCharacter.hpNow <= 0)
         {
             // 물 끄기
-            seed_AI.waterLine.enabled = false;
+            seed_AI.StopWater();
             return;
         }
 
@@ -401,12 +408,15 @@ public class Farmer_AI : MonoBehaviour
         // 플레이어까지 거리
         float distance = Vector3.Distance(character.movePos, bodyTransform.position);
 
-        // 공격범위 이내 접근 못하게 하는 속도 계수
+        // 타겟과의 최소 거리 유지
         float nearSpeed = distance < followRange
         // 범위 안에 있을때, 거리 비례한 속도
         ? character.targetDir.magnitude - followRange
         // 범위 밖에 있을때, 최고 속도
         : maxSpeed;
+
+        // 속도 범위 제한
+        // nearSpeed = Mathf.Clamp(nearSpeed, minSpeed, maxSpeed);
 
         // 목표 벡터 계산
         targetVelocity =
@@ -432,21 +442,45 @@ public class Farmer_AI : MonoBehaviour
     {
         for (int i = 0; i < footTargets.Length; i++)
         {
-            // 현재 옮겨질 위치가 없으면, 이동중인 발이 2개 이하일때
-            if (
-                (nowMovePos[i] == Vector2.zero && nowMoveFootNum <= 2) || setDefault
-                )
+            // OnComplete 때문에 인덱스 캐싱
+            int footIndex = i;
+            // 같은 방향의 다른 다리 인덱스
+            int sameVerticalIndex = -1;
+            int sameHorizonIndex = -1;
+            switch (footIndex)
             {
-                // OnComplete 때문에 인덱스 캐싱
-                int footNum = i;
+                case 0:
+                    sameVerticalIndex = 1;
+                    sameHorizonIndex = 3;
+                    break;
+                case 1:
+                    sameVerticalIndex = 0;
+                    sameHorizonIndex = 2;
+                    break;
+                case 2:
+                    sameVerticalIndex = 3;
+                    sameHorizonIndex = 1;
+                    break;
+                case 3:
+                    sameVerticalIndex = 2;
+                    sameHorizonIndex = 0;
+                    break;
+            }
+
+            // 현재 발이 이동중이지 않고, 같은 가로세로 방향의 발도 이동중이지 않을때
+            if ((nowMovePos[footIndex] == Vector2.zero
+                && nowMovePos[sameVerticalIndex] == Vector2.zero
+                && nowMovePos[sameHorizonIndex] == Vector2.zero
+                && nowMoveFootNum <= 2) || setDefault)
+            {
                 // 발 초기화 위치에서 현재 발 위치까지 거리
-                float distance = Vector2.Distance((Vector2)bodyTransform.position + defaultFootPos[footNum], footTargets[footNum].transform.position);
+                float distance = Vector2.Distance((Vector2)bodyTransform.position + defaultFootPos[footIndex], footTargets[footIndex].transform.position);
 
                 // 마지막 위치로부터 footMoveDistance 보다 멀어지면
                 if (distance > footMoveDistance * Random.Range(0.8f, 1.2f))
                 {
                     // 발 움직이기
-                    FootMove(moveVelocity, footNum);
+                    FootMove(moveVelocity, footIndex);
                 }
             }
         }
@@ -469,17 +503,8 @@ public class Farmer_AI : MonoBehaviour
         // 발 이동개수 추가
         nowMoveFootNum++;
 
-        // 해당 다리 HDR 불빛 밝히기
-        SpriteRenderer[] legLights = legBones[footIndex].GetChild(0).GetComponentsInChildren<SpriteRenderer>();
-        for (int i = 0; i < legLights.Length; i++)
-        {
-            Color color = legLights[i].color;
-            color.a = 1f;
-            legLights[i].color = color;
-        }
-
         // 발 점프해서 이동
-        footTargets[footIndex].transform.DOJump(movePos, 1f, 1, footMoveSpeed * footMoveDistance)
+        footTargets[footIndex].transform.DOJump(movePos, 2f, 1, footMoveSpeed * footMoveDistance)
         .SetEase(Ease.Linear)
         .OnComplete(() =>
         {
@@ -495,14 +520,32 @@ public class Farmer_AI : MonoBehaviour
             // 발에서 먼지 생성
             footTargets[footIndex].Play();
 
+            // 발소리 재생
+            StepSound();
+
+            // 해당 다리 HDR 불빛 밝히기
+            SpriteRenderer[] legLights = legBones[footIndex].GetChild(0).GetComponentsInChildren<SpriteRenderer>();
+            for (int i = 0; i < legLights.Length; i++)
+            {
+                Color color = legLights[i].color;
+                color.a = 1f;
+                legLights[i].color = color;
+            }
+
             // 불빛 끄기
             for (int i = 0; i < legLights.Length; i++)
             {
                 Color color = legLights[i].color;
                 color.a = 0f;
-                legLights[i].DOColor(color, 0.1f);
+                legLights[i].DOColor(color, 0.5f);
             }
         });
+    }
+
+    public void StepSound()
+    {
+        // 걷기 발소리 재생
+        SoundManager.Instance.PlaySoundPool(stepSounds.ToList(), default, step_lastIndex);
     }
 
     IEnumerator StopMove()
@@ -529,6 +572,9 @@ public class Farmer_AI : MonoBehaviour
         // 원위치 시간 대기
         yield return new WaitForSeconds(0.5f);
 
+        // 공격 준비 시간
+        float atkReadyTime = 0.2f;
+
         // 플레이어 방향 좌,우 판단
         bool isLeft = PlayerManager.Instance.transform.position.x < bodyTransform.position.x ? true : false;
         // 공격할 다리 인덱스
@@ -547,7 +593,7 @@ public class Farmer_AI : MonoBehaviour
         Vector3 bodyRotation = Vector3.forward * (isLeft ? -15f : 15f);
 
         // 플레이어 반대 방향으로 살짝몸 기울이고
-        bodyTransform.DORotate(bodyRotation, 0.5f)
+        bodyTransform.DORotate(bodyRotation, atkReadyTime)
         .SetEase(Ease.OutSine);
 
         // 공격 준비 로컬 위치
@@ -556,11 +602,14 @@ public class Farmer_AI : MonoBehaviour
         atkReadyPos += (Vector2)bodyTransform.position;
 
         // 공격할 다리 오므려서 준비
-        atkFoot.DOMove(atkReadyPos, 0.5f)
+        atkFoot.DOMove(atkReadyPos, atkReadyTime)
         .SetEase(Ease.OutSine);
 
-        // 몸체 기울이기 및 오므리는 시간 대기
-        yield return new WaitForSeconds(0.5f);
+        // 공격 준비시간 대기
+        yield return new WaitForSeconds(atkReadyTime);
+
+        // 공격 알림 재생
+        SoundManager.Instance.PlaySound("Farmer_Leg_Alert");
 
         // 발 끝에서 반짝이는 인디케이터
         if (isLeft)
@@ -590,6 +639,9 @@ public class Farmer_AI : MonoBehaviour
         atkFoot.DOMove(stabPos, 0.2f)
                 .SetEase(Ease.Linear);
 
+        // 찌르는 소리 재생
+        SoundManager.Instance.PlaySound("Farmer_Leg_Stab");
+
         // 찌르는 시간 대기
         yield return new WaitForSeconds(0.2f);
 
@@ -607,7 +659,7 @@ public class Farmer_AI : MonoBehaviour
         // 해당 다리 Solver 끄기
         solvers[atkLegIndex].gameObject.SetActive(false);
 
-        // 관절 3개 순서대로 늘리기
+        // 관절 순서대로 늘리기
         for (int i = 0; i < 2; i++)
         {
             // 해당 관절 캐싱
@@ -629,6 +681,9 @@ public class Farmer_AI : MonoBehaviour
                 // 케이블 위치 갱신 시작
                 StartCoroutine(LegCable(cable, bone));
             });
+
+            // 찌르는 소리 재생
+            SoundManager.Instance.PlaySound("Farmer_Leg_Stretch");
 
             // 뻗는 시간 대기
             yield return new WaitForSeconds(stretchTime);
@@ -652,14 +707,14 @@ public class Farmer_AI : MonoBehaviour
             {
                 // 해당 관절 사이 라인렌더러 끄기
                 cable.gameObject.SetActive(false);
+
+                // 다리 장착 소리 재생
+                SoundManager.Instance.PlaySound("Farmer_Leg_Pull");
             });
 
             // 복귀 시간 대기
             yield return new WaitForSeconds(stretchTime);
         }
-
-        // 복귀 시간 대기
-        // yield return new WaitForSeconds(stretchTime);
 
         // 해당 다리 Solver 켜기
         solvers[atkLegIndex].gameObject.SetActive(true);
@@ -679,6 +734,9 @@ public class Farmer_AI : MonoBehaviour
 
         // 오므리는 시간 대기
         yield return new WaitForSeconds(0.5f);
+
+        // 발소리 재생
+        StepSound();
 
         // 공격 다리 위치 초기화
         atkFoot.DOMove(legResetPos, 0.5f)
@@ -728,13 +786,15 @@ public class Farmer_AI : MonoBehaviour
     {
         // 씨앗 인디케이터 재생
         seedPulse.Play();
+        // 인디케이터 사운드 재생
+        SoundManager.Instance.PlaySound("Farmer_Attack_Alert");
         // 인디케이터 딜레이
         yield return new WaitForSeconds(2f);
 
         for (int i = 0; i < seedHole.childCount; i++)
         {
-            // 식물 자라남
-            StartCoroutine(GrowPlant(seedHole.GetChild(i).transform.position));
+            // 씨앗 발사
+            StartCoroutine(SeedShot(seedHole.GetChild(i).transform.position));
 
             yield return new WaitForSeconds(0.1f);
         }
@@ -749,12 +809,15 @@ public class Farmer_AI : MonoBehaviour
         character.nowState = Character.State.Idle;
     }
 
-    IEnumerator GrowPlant(Vector2 spawnPos)
+    IEnumerator SeedShot(Vector2 spawnPos)
     {
         // 씨앗 소환
         Seed_AI seedObj = LeanPool.Spawn(seedPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
         // 씨앗 스프라이트
         Transform seedSprite = seedObj.transform.GetChild(0);
+
+        // 씨앗 꺼내는 소리 재생
+        SoundManager.Instance.PlaySound("Farmer_Seed_Launch");
 
         // 씨앗 레이어 변경
         SortingGroup seedSort = seedObj.GetComponentInChildren<SortingGroup>();
@@ -776,6 +839,9 @@ public class Farmer_AI : MonoBehaviour
         .SetEase(Ease.InSine);
 
         yield return new WaitForSeconds(1f);
+
+        // 씨앗 착지 소리 재생
+        SoundManager.Instance.PlaySoundPool(seedLandSounds.ToList(), seedPos);
 
         // 씨앗 레이어 초기화
         seedSort.sortingOrder = 0;
@@ -803,6 +869,8 @@ public class Farmer_AI : MonoBehaviour
 
             // 포이즌 인디케이터 재생
             bioPulse.Play();
+            // 인디케이터 사운드 재생
+            SoundManager.Instance.PlaySound("Farmer_Attack_Alert");
 
             yield return new WaitForSeconds(0.5f);
 
@@ -811,6 +879,9 @@ public class Farmer_AI : MonoBehaviour
             .SetEase(Ease.OutCirc);
 
             yield return new WaitForSeconds(0.5f);
+
+            // 가스 생성 사운드 재생
+            SoundManager.Instance.PlaySound("Farmer_BioGas");
 
             // 독구름 생성 개수 초기화
             int atkNum = gasNum;
@@ -854,10 +925,13 @@ public class Farmer_AI : MonoBehaviour
         // 애니메이터 끄기
         bodyTransform.GetComponent<Animator>().enabled = false;
         // 털썩 주저 앉음
-        bodyTransform.DOLocalMove(new Vector2(0, -1f), 1f)
+        bodyTransform.DOLocalMove(new Vector2(0, -2f), 1f)
         .SetEase(Ease.OutBounce);
 
         yield return new WaitForSeconds(0.5f);
+
+        // 바닥 충돌 사운드 재생
+        SoundManager.Instance.PlaySound("Farmer_Sit");
 
         // 착지 먼지 이펙트 생성
         LeanPool.Spawn(landDustPrefab, bodyTransform.position, Quaternion.Euler(Vector3.zero), SystemManager.Instance.effectPool);
@@ -869,6 +943,9 @@ public class Farmer_AI : MonoBehaviour
         Tween lightTween = DOTween.To(() => treeLight.intensity, x => treeLight.intensity = x, 2f, 0.5f)
         .SetEase(Ease.OutSine)
         .SetLoops(-1, LoopType.Yoyo);
+
+        // 나무 반짝임 사운드 재생
+        AudioSource treeLightSound = SoundManager.Instance.PlaySound("Farmer_Heal_TreeLight", 0, 1, 1000);
 
         // 카메라 반복 줌아웃
         StartCoroutine(CameraZoomOut(3));
@@ -886,6 +963,9 @@ public class Farmer_AI : MonoBehaviour
 
         // 마지막 태양관 들어갈때까지 대기
         yield return new WaitForSeconds(sunRange / sunSpeed);
+
+        // 나무 반짝임 사운드 정지
+        SoundManager.Instance.StopSound(treeLightSound, 1f);
 
         // 나무 반짝임 정지
         lightTween.Kill();
@@ -960,6 +1040,9 @@ public class Farmer_AI : MonoBehaviour
         })
         .OnComplete(() =>
         {
+            // 회복 사운드 재생
+            SoundManager.Instance.PlaySound("Farmer_Heal_GetSun");
+
             // 이동 완료하면 체력 회복
             character.hitBoxList[0].Damage(-1, false);
 

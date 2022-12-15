@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using Lean.Pool;
 using UnityEngine;
 using DG.Tweening;
+using System.Linq;
 
 public class Seed_AI : MonoBehaviour
 {
     [Header("Refer")]
     [SerializeField] GameObject dustPrefab;
+    [SerializeField] string[] slimeBirthSounds = { };
 
     [Header("State")]
     public bool initStart = false; // 초기화 여부
     public bool turning = false; // 형태 변환 여부
     [SerializeField] float lifeTimeCount; // 남은 수명
     [SerializeField] float lifeTimeMax; // 최대 수명
+    [SerializeField] AudioSource waterSound; // 재생중인 급수 사운드
 
     [Header("Slime")]
     [SerializeField] GameObject lifeSlimePrefab;
@@ -52,8 +55,8 @@ public class Seed_AI : MonoBehaviour
         // 게이지 초기화
         fillGauge.material.SetFloat("_Arc2", 360f);
 
-        // 라인렌더러 끄기
-        waterLine.enabled = false;
+        // 물 끄기
+        StopWater();
 
         // 초기화 시작할때까지 대기
         yield return new WaitUntil(() => initStart);
@@ -98,8 +101,6 @@ public class Seed_AI : MonoBehaviour
 
     void SpawnSlime()
     {
-        print("SpawnSlime");
-
         // 슬라임 스프라이트 알파값 높이기
         slimeSprite.DOColor(Color.white, 1f)
         .OnComplete(() =>
@@ -107,8 +108,11 @@ public class Seed_AI : MonoBehaviour
             // 먼지 이펙트 발생
             LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
 
-            //todo 슬라임 소환
+            // 슬라임 소환
             GameObject slime = LeanPool.Spawn(lifeSlimePrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+
+            // 슬라임 생성 소리 재생
+            SoundManager.Instance.PlaySoundPool(slimeBirthSounds.ToList(), transform.position);
 
             // 몬스터 스폰 리스트에 추가
             WorldSpawner.Instance.spawnEnemyList.Add(slime.GetComponent<Character>());
@@ -133,6 +137,13 @@ public class Seed_AI : MonoBehaviour
         if (seedCharacter.hpNow <= 0)
             return;
 
+        // 물 꺼져있으면
+        if (!waterLine.enabled)
+        {
+            // 급수 소리 반복 재생
+            waterSound = SoundManager.Instance.PlaySound("Farmer_Seed_Watering", transform, 0, 0, -1);
+        }
+
         // 물 라인 켜기
         waterLine.enabled = true;
 
@@ -150,8 +161,8 @@ public class Seed_AI : MonoBehaviour
             // 형태 변환 시작
             turning = true;
 
-            // 라인 끄기
-            waterLine.enabled = false;
+            // 물 라인 끄기
+            StopWater();
 
             // 무적 켜기
             seedCharacter.invinsible = true;
@@ -170,6 +181,16 @@ public class Seed_AI : MonoBehaviour
         }
     }
 
+    public void StopWater()
+    {
+        // 물 끄기
+        waterLine.enabled = false;
+
+        // 급수 소리 끄기
+        if (waterSound != null && waterSound.gameObject.activeInHierarchy)
+            SoundManager.Instance.StopSound(waterSound, 0.5f);
+    }
+
     void SeedDespawn()
     {
         // 초기화 해제
@@ -177,6 +198,9 @@ public class Seed_AI : MonoBehaviour
 
         // 게이지 초기화
         fillGauge.material.SetFloat("_Arc2", 360f);
+
+        // 물 끄기
+        StopWater();
 
         // 디스폰
         LeanPool.Despawn(gameObject);

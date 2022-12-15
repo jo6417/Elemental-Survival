@@ -417,27 +417,28 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public int PlaySoundPool(List<string> soundPool, Vector2 playPos = default, int remove_lastIndex = -1)
+    public int PlaySoundPool(List<string> soundPool, Vector2 playPos = default, int lastPlayed_Index = -1)
     {
-        // 마지막으로 재생된 사운드의 인덱스는 풀에서 제거
-        if (remove_lastIndex != -1)
-            soundPool.RemoveAt(remove_lastIndex);
+        // lastPlayed_Index = 마지막으로 재생된 사운드의 인덱스
+        // 해당 인덱스는 풀에서 제거
+        if (lastPlayed_Index != -1)
+            soundPool.RemoveAt(lastPlayed_Index);
 
         // 풀에서 뽑힌 인덱스 저장
-        remove_lastIndex = UnityEngine.Random.Range(0, soundPool.Count);
+        lastPlayed_Index = UnityEngine.Random.Range(0, soundPool.Count);
 
         // 뽑은 사운드 이름
-        string soundName = soundPool[remove_lastIndex];
+        string soundName = soundPool[lastPlayed_Index];
 
         if (playPos == default)
             // 사운드 이름으로 찾아 재생
             SoundManager.Instance.PlaySound(soundName);
         else
-            // 사운드 이름으로 찾아 재생
+            // 사운드 이름으로 찾아 해당 위치에 재생
             SoundManager.Instance.PlaySound(soundName, playPos);
 
         // 선택된 인덱스 리턴
-        return remove_lastIndex;
+        return lastPlayed_Index;
     }
 
     public float GetVolume(string soundName)
