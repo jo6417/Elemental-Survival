@@ -14,8 +14,11 @@ public class Truck : MonoBehaviour
     [SerializeField] Collider2D stopColl; // 정차시 물리 콜라이더
     [SerializeField] Collider2D attackColl; // 몬스터 충격 콜라이더
     [SerializeField] List<Sprite> truckSpriteList = new List<Sprite>();
+    [SerializeField] Transform truckBody;
     [SerializeField] SpriteRenderer truckSprite;
     [SerializeField] SpriteRenderer shadow;
+    [SerializeField] Transform glassLight; // 유리 반짝 이펙트
+    [SerializeField] ParticleSystem shutterDust; // 셔터 닫을때 먼지 이펙트
     [SerializeField] ParticleManager wheelDust; // 바퀴 파티클 이펙트
     [SerializeField] ParticleManager goEffect; // 배기구 매연 이펙트
     [SerializeField] ParticleManager stopEffect; // 도착 후 이펙트(배기구 매연, 착지 먼지 등)
@@ -31,7 +34,7 @@ public class Truck : MonoBehaviour
         // 충돌 콜라이더 끄기
         stopColl.enabled = false;
         // 스프라이트 끄기
-        truckSprite.gameObject.SetActive(false);
+        truckBody.gameObject.SetActive(false);
         // 정차 충돌용 콜라이더 충돌 끄기
         stopColl.isTrigger = true;
         // 그림자 끄기
@@ -58,6 +61,9 @@ public class Truck : MonoBehaviour
         timerText.color = Color.clear;
         timerText.gameObject.SetActive(false);
 
+        // 스크린 라이트 위치 초기화
+        glassLight.localPosition = new Vector3(-16f, 4f, 0);
+
         yield return new WaitUntil(() => WorldSpawner.Instance != null);
 
         // 플레이어가 오른쪽 보고있을때
@@ -81,7 +87,7 @@ public class Truck : MonoBehaviour
         // 충돌 콜라이더 켜기
         stopColl.enabled = true;
         // 스프라이트 켜기
-        truckSprite.gameObject.SetActive(true);
+        truckBody.gameObject.SetActive(true);
         // 정차 충돌용 콜라이더 충돌 켜기
         stopColl.isTrigger = false;
         // 그림자 켜기
@@ -90,6 +96,9 @@ public class Truck : MonoBehaviour
         wheelDust.gameObject.SetActive(true);
         // 주행 매연 이펙트 켜기
         goEffect.gameObject.SetActive(true);
+
+        // 트럭 시동 떨림 트윈
+        truckSprite.transform.DOShakePosition(100f, 0.05f, 20, 90, false, false);
 
         // 타이머 각도 초기화
         timerText.transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -113,7 +122,7 @@ public class Truck : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 앞으로 기울어지는 애니메이션
-        truckSprite.transform.DOLocalRotate(new Vector3(0f, 0f, -20f), 0.2f)
+        truckBody.transform.DOLocalRotate(new Vector3(0f, 0f, -20f), 0.2f)
         .OnStart(() =>
         {
             // 기울어지기 전에 주행 매연 이펙트 끄기
@@ -124,7 +133,7 @@ public class Truck : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 다시 기울기 복구하는 애니메이션
-        truckSprite.transform.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.2f)
+        truckBody.transform.DOLocalRotate(new Vector3(0f, 0f, 0f), 0.2f)
         .SetEase(Ease.OutBounce)
         .OnComplete(() =>
         {
@@ -139,6 +148,9 @@ public class Truck : MonoBehaviour
 
         // 가판대 열린 스프라이트로 교체
         truckSprite.sprite = truckSpriteList[1];
+
+        // 스크린 라이트 이동
+        glassLight.DOLocalMove(new Vector3(0f, 4f, 0), 1f);
 
         // 타이머 켜기
         timerText.DOColor(new Color32(255, 50, 50, 255), 0.5f);
@@ -180,7 +192,7 @@ public class Truck : MonoBehaviour
         List<int> randomShops = SystemManager.Instance.RandomIndexes(shopGlass.transform.GetChild(0).childCount, 2);
 
         // 자판기 개수만큼 반복
-        for (int i = 0; i < shopGlass.transform.childCount; i++)
+        for (int i = 0; i < 2; i++)
         {
             Transform shop = shopGlass.transform.GetChild(i);
 
@@ -234,6 +246,10 @@ public class Truck : MonoBehaviour
     {
         // 가판대 문 닫기
         truckSprite.sprite = truckSpriteList[0];
+
+        // 가판대 먼지 이펙트 재생
+        shutterDust.Play();
+
         // 자판기 모두 끄기
         for (int i = 0; i < shopGlass.transform.childCount; i++)
         {
@@ -274,7 +290,7 @@ public class Truck : MonoBehaviour
         float accelSpeed = 1f;
 
         // 디스폰 할때까지 반복
-        while (truckSprite.gameObject.activeSelf)
+        while (truckBody.gameObject.activeSelf)
         {
             // 가속도 상승
             accelSpeed += 0.1f;
@@ -307,7 +323,7 @@ public class Truck : MonoBehaviour
         // 충돌 콜라이더 끄기
         stopColl.enabled = false;
         // 스프라이트 끄기
-        truckSprite.gameObject.SetActive(false);
+        truckBody.gameObject.SetActive(false);
         // 그림자 끄기
         shadow.gameObject.SetActive(false);
         // 바퀴 파티클 대기 후 끄기

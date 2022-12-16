@@ -220,7 +220,8 @@ MonoBehaviour:
   turning: 0
   lifeTimeCount: 0
   lifeTimeMax: 0
-  lifeSlimePrefab: {fileID: 5485836661786715591, guid: f38322a01d9b7f84d9914275f0eff236,
+  waterSound: {fileID: 0}
+  lifeSlimePrefab: {fileID: 968746833477717244, guid: 433c50e6391424944b9797db264dd471,
     type: 3}
   seedCharacter: {fileID: 5086635184828875180}
   slimeSprite: {fileID: 2118358521897308776}

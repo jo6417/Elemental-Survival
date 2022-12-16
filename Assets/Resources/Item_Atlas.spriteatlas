@@ -82,6 +82,7 @@ SpriteAtlas:
   - {fileID: 4704088574612128260, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
   - {fileID: 8009083395882017052, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
   - {fileID: -8372854300331179455, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
+  - {fileID: -6848287516985540871, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
   - {fileID: -3726239229719224584, guid: 7d8f81a996a4f4a4aa23c23088ccb87e, type: 3}
   - {fileID: -6265155566855376615, guid: 7d8f81a996a4f4a4aa23c23088ccb87e, type: 3}
   - {fileID: -1246608491812224087, guid: 7d8f81a996a4f4a4aa23c23088ccb87e, type: 3}
@@ -138,6 +139,7 @@ SpriteAtlas:
   - Truck_Idle_0
   - Truck_Idle_1
   - Truck_Idle_2
+  - Truck_Idle_3
   - chest_Sheet_3
   - chest_Sheet_2
   - chest_Sheet_1

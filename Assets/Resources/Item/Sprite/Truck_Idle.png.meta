@@ -11,6 +11,9 @@ TextureImporter:
   - first:
       213: -8372854300331179455
     second: Truck_Idle_2
+  - first:
+      213: -6848287516985540871
+    second: Truck_Idle_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -104,7 +107,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 192
         width: 160
         height: 64
       alignment: 9
@@ -125,7 +128,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 128
         width: 160
         height: 64
       alignment: 9
@@ -146,7 +149,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 64
         width: 160
         height: 64
       alignment: 9
@@ -158,6 +161,27 @@ TextureImporter:
       bones: []
       spriteID: 14288a80065adcb80800000000000000
       internalID: -8372854300331179455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Truck_Idle_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.89, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9feb55e79cef5f0a0800000000000000
+      internalID: -6848287516985540871
       vertices: []
       indices: 
       edges: []

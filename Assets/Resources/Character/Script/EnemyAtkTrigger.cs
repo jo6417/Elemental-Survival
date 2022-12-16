@@ -7,7 +7,7 @@ public class EnemyAtkTrigger : MonoBehaviour
     public System.Action attackAction;
 
     public GameObject explosionPrefab;
-    [SerializeField] bool showIndicator;
+    [SerializeField] bool showIndicator = true;
     [SerializeField] SpriteRenderer indicatorSprite;
     public SpriteRenderer atkRangeBackground;
     public SpriteRenderer atkRangeFill;
@@ -59,6 +59,10 @@ public class EnemyAtkTrigger : MonoBehaviour
             // 몬스터가 공격하는 레이어
             gameObject.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
         }
+
+        // 인디케이터 비활성화
+        if (showIndicator && indicatorSprite != null)
+            indicatorSprite.enabled = false;
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -75,6 +79,7 @@ public class EnemyAtkTrigger : MonoBehaviour
                 attackAction.Invoke();
 
             atkTrigger = true;
+
             // 인디케이터 활성화
             if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
