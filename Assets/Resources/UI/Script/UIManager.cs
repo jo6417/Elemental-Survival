@@ -613,7 +613,7 @@ public class UIManager : MonoBehaviour
     public void UpdateExp()
     {
         // 경험치 바 갱신
-        playerExp.fillAmount = playerManager.PlayerStat_Now.ExpNow / playerManager.PlayerStat_Now.ExpMax;
+        playerExp.fillAmount = playerManager.ExpNow / playerManager.ExpMax;
 
         // 레벨 갱신
         playerLev.text = "Lev. " + playerManager.PlayerStat_Now.Level.ToString();

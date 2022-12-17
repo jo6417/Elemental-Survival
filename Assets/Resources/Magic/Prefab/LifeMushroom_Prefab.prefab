@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2659204387439571941
 Transform:
   m_ObjectHideFlags: 0
@@ -48,7 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
+  targetType: 1
   fixedPower: 0
   knockbackForce: 0
   burnTime: 0
@@ -61,14 +64,12 @@ MonoBehaviour:
   flatTime: 0
   stopTime: 0
   stunTime: 0
-  coll: {fileID: 0}
   autoCoolDown: 1
   fixCoolTime: -1
   isManualCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 1
   initDone: 0
 --- !u!114 &4611365093284124752
 MonoBehaviour:

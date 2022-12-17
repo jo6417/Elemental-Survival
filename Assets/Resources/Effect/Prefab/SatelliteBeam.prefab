@@ -4895,7 +4895,7 @@ GameObject:
   - component: {fileID: 810295793584118292}
   - component: {fileID: 809506665841836648}
   m_Layer: 0
-  m_Name: SatBeam
+  m_Name: SatelliteBeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

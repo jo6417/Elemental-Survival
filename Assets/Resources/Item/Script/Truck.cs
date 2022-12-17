@@ -4,6 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using TMPro;
 using Lean.Pool;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class Truck : MonoBehaviour
 {
@@ -17,6 +18,10 @@ public class Truck : MonoBehaviour
     [SerializeField] Transform truckBody;
     [SerializeField] SpriteRenderer truckSprite;
     [SerializeField] SpriteRenderer shadow;
+    [SerializeField] SpriteRenderer center_Light; // 가운데 전조등
+    [SerializeField] SpriteRenderer L_sideLight; // 방향지시등
+    [SerializeField] SpriteRenderer R_sideLight; // 방향지시등
+    [SerializeField] SpriteRenderer backLight; // 백라이트
     [SerializeField] Transform glassLight; // 유리 반짝 이펙트
     [SerializeField] ParticleSystem shutterDust; // 셔터 닫을때 먼지 이펙트
     [SerializeField] ParticleManager wheelDust; // 바퀴 파티클 이펙트
@@ -63,6 +68,14 @@ public class Truck : MonoBehaviour
 
         // 스크린 라이트 위치 초기화
         glassLight.localPosition = new Vector3(-16f, 4f, 0);
+
+        // 백라이트 끄기
+        backLight.color = new Color(1, 0, 0, 0);
+        // 비상등 끄기
+        L_sideLight.color = new Color(1, 1, 100f / 255f, 0);
+        R_sideLight.color = new Color(1, 1, 100f / 255f, 0);
+        // 전조등 켜기
+        center_Light.color = new Color(1, 1, 100f / 255f, 50f / 255f);
 
         yield return new WaitUntil(() => WorldSpawner.Instance != null);
 
@@ -121,6 +134,13 @@ public class Truck : MonoBehaviour
         });
         yield return new WaitForSeconds(0.5f);
 
+        // 백라이트 켜기
+        backLight.DOColor(new Color(1, 0, 0, 150f / 255f), 0.5f)
+       .SetEase(Ease.OutQuart);
+        // 전조등 끄기
+        center_Light.DOColor(new Color(1, 1, 100f / 255f, 0), 0.5f)
+        .SetEase(Ease.OutQuart);
+
         // 앞으로 기울어지는 애니메이션
         truckBody.transform.DOLocalRotate(new Vector3(0f, 0f, -20f), 0.2f)
         .OnStart(() =>
@@ -144,7 +164,32 @@ public class Truck : MonoBehaviour
             attackColl.enabled = false;
         });
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
+
+        // 백라이트 끄기
+        backLight.DOColor(new Color(1, 0, 0, 0), 0.5f)
+       .SetEase(Ease.OutQuart);
+
+        // 비상등 깜빡임 시작
+        L_sideLight.DOColor(new Color(1, 1, 100f / 255f, 80f / 255f), 0.5f)
+        .SetLoops(-1, LoopType.Yoyo)
+        .OnKill(() =>
+        {
+            // 비상등 끄기
+            L_sideLight.DOColor(new Color(1, 1, 100f / 255f, 0), 0.5f)
+            .SetEase(Ease.OutQuart);
+        });
+        R_sideLight.DOColor(new Color(1, 1, 100f / 255f, 80f / 255f), 0.5f)
+        .SetLoops(-1, LoopType.Yoyo)
+        .OnKill(() =>
+        {
+            // 비상등 끄기
+            R_sideLight.DOColor(new Color(1, 1, 100f / 255f, 0), 0.5f)
+            .SetEase(Ease.OutQuart);
+
+        });
+
+        yield return new WaitForSeconds(0.3f);
 
         // 가판대 열린 스프라이트로 교체
         truckSprite.sprite = truckSpriteList[1];
@@ -244,6 +289,10 @@ public class Truck : MonoBehaviour
 
     public IEnumerator ExitMove()
     {
+        // 비상등 깜빡임 종료
+        L_sideLight.DOKill();
+        R_sideLight.DOKill();
+
         // 가판대 문 닫기
         truckSprite.sprite = truckSpriteList[0];
 
@@ -270,7 +319,19 @@ public class Truck : MonoBehaviour
         Vector3 backPos = transform.rotation.y == 0f ? -Vector2.right * 3f : Vector2.right * 3f;
         transform.DOMove(transform.position + backPos, 0.5f)
         .SetEase(Ease.OutCubic);
+
+        // 백라이트 켜기
+        backLight.DOColor(new Color(1, 0, 0, 150f / 255f), 0.5f)
+        .SetEase(Ease.OutQuart);
+        // 전조등 켜기
+        center_Light.DOColor(new Color(1, 1, 100f / 255f, 50f / 255f), 0.5f)
+        .SetEase(Ease.OutQuart);
+
         yield return new WaitForSeconds(0.5f);
+
+        // 백라이트 끄기
+        backLight.DOColor(new Color(1, 0, 0, 0), 0.5f)
+        .SetEase(Ease.OutQuart);
 
         // 정차 이펙트 끄기
         stopEffect.SmoothDisable();

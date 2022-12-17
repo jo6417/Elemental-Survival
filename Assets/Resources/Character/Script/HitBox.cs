@@ -158,7 +158,10 @@ public class HitBox : MonoBehaviour
             // 고정 데미지가 있으면 아군 피격이라도 적용
             if (enemyAtk.fixedPower > 0)
             {
-                Damage(enemyAtk.fixedPower, false, hitPos);
+                // 데미지 갱신
+                damage = enemyAtk.fixedPower;
+
+                Damage(damage, false, hitPos);
             }
 
             // 피격 대상이 고스트일때
@@ -166,14 +169,24 @@ public class HitBox : MonoBehaviour
             {
                 //고스트 아닌 적이 때렸을때만 데미지
                 if (!atkCharacter.IsGhost)
-                    Damage(enemyAtk.character.powerNow, false, hitPos);
+                {
+                    // 데미지 갱신
+                    damage = enemyAtk.character.powerNow;
+
+                    Damage(damage, false, hitPos);
+                }
             }
             // 피격 대상이 고스트 아닐때
             else
             {
                 //고스트가 때렸으면 데미지
                 if (atkCharacter.IsGhost)
-                    Damage(enemyAtk.character.powerNow, false, hitPos);
+                {
+                    // 데미지 갱신
+                    damage = enemyAtk.character.powerNow;
+
+                    Damage(damage, false, hitPos);
+                }
             }
         }
         //마법 정보 찾기
@@ -516,8 +529,10 @@ public class HitBox : MonoBehaviour
 
         // 피격 위치가 있을때만
         if (hitPos != default)
-            // 피격 이펙트 재생
-            HitEffect(hitPos);
+            // 데미지가 0 이상일때
+            if (damage >= 0)
+                // 피격 이펙트 재생
+                HitEffect(hitPos);
 
         // 피격 위치안들어오면 현재위치
         if (hitPos == default)

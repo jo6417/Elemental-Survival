@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3447598208887485790}
-  - component: {fileID: 2484292095713291046}
+  - component: {fileID: 3806340833919714265}
   - component: {fileID: 3447598208887485776}
   - component: {fileID: 8806678124127412712}
   m_Layer: 10
@@ -34,7 +34,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2484292095713291046
+--- !u!114 &3806340833919714265
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,30 +43,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 3447598208887485781}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 049e113eecc6dd84eb707d7a02f1a70c, type: 3}
+  m_Script: {fileID: 11500000, guid: bb68539df0be55b4f8ba4cd50ab97063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
+  targetType: 0
   fixedPower: -1
   knockbackForce: 0
+  burnTime: 0
   poisonTime: 0
   bleedTime: 0
   slowTime: 0
-  burnTime: 0
   wetTime: 0
   shockTime: 0
   freezeTime: 0
   flatTime: 0
   stopTime: 0
-  activeAngleOffset: 0
-  defaultCollOn: 1
-  cooltime: 0
-  coolCount: 0
-  enemyManager: {fileID: 0}
-  enemyName: 
-  atkColl: {fileID: 0}
-  dashEffect: {fileID: 0}
-  rangeObj: {fileID: 0}
+  stunTime: 0
 --- !u!212 &3447598208887485776
 SpriteRenderer:
   m_ObjectHideFlags: 0

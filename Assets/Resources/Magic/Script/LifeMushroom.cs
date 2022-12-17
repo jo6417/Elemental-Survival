@@ -15,7 +15,7 @@ public class LifeMushroom : MonoBehaviour
     float speed;
     int atkNum;
     float coolTime;
-    float respawnRecord;
+    float respawnRecord = 0;
     IEnumerator cooldownCoroutine;
 
     private void OnEnable()
@@ -56,6 +56,8 @@ public class LifeMushroom : MonoBehaviour
 
         if (magicHolder.magicCastCallback == null)
             magicHolder.magicCastCallback = SummonMushroom;
+
+
     }
 
     void SummonMushroom()
@@ -72,8 +74,14 @@ public class LifeMushroom : MonoBehaviour
             // 수동 시전일때
             if (magicHolder.isManualCast)
             {
-                // 타겟 위치로 이동
-                transform.DOMove(magicHolder.targetPos, speed);
+                // 부모 바꾸기
+                transform.SetParent(SystemManager.Instance.magicPool);
+
+                // 마우스 근처 위치
+                Vector2 targetPos = PlayerManager.Instance.GetMousePos() + Random.insideUnitCircle * 2f;
+
+                // 마우스 위치로 이동
+                transform.DOMove(targetPos, speed);
             }
 
         // 효과음 재생

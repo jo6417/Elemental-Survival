@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DefaultMagic : MonoBehaviour
 {
     [SerializeField] Image panel;
+    [SerializeField] CanvasGroup screen;
     [SerializeField] CanvasGroup slots;
     [SerializeField] Image blockScreen; // 화면 가림막
     [SerializeField] ParticleSystem slotParticle;
@@ -22,6 +23,13 @@ public class DefaultMagic : MonoBehaviour
     {
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
+
+        // 기본 마법 스크린 보이기
+        screen.alpha = 1f;
+        // 버튼 상호작용 풀기
+        screen.interactable = true;
+        // 레이캐스트 막기
+        screen.blocksRaycasts = true;
 
         // 화면 가림막 켜기
         blockScreen.enabled = true;
@@ -50,7 +58,9 @@ public class DefaultMagic : MonoBehaviour
             slots.transform.GetChild(i).Find("Icon").GetComponent<Image>().sprite = sprite;
 
             // 툴팁 정보 넣기
-            slots.transform.GetChild(i).GetComponent<ToolTipTrigger>()._slotInfo = magic;
+            ToolTipTrigger toolTip = slots.transform.GetChild(i).GetComponent<ToolTipTrigger>();
+            toolTip._slotInfo = magic;
+            toolTip.enabled = true;
 
             // 버튼 이벤트 넣기
             int index = i;
@@ -76,6 +86,11 @@ public class DefaultMagic : MonoBehaviour
 
     public IEnumerator ChooseMagic(int index)
     {
+        // 버튼 상호작용 막기 (중복 선택 방지)
+        screen.interactable = false;
+        // 레이캐스트 풀기
+        screen.blocksRaycasts = false;
+
         Transform slot = slots.transform.GetChild(index);
 
         // 핸드폰 키입력 막기

@@ -15,8 +15,6 @@ public class PlayerStat
     public float hpMax = 1000; // 최대 체력
     public float hpNow = 1000; // 체력
     public float Level = 1; //레벨
-    public float ExpMax = 5; // 경험치 최대치
-    public float ExpNow = 0; // 현재 경험치
     public float moveSpeed = 10; //이동속도
 
     public int atkNum = 0; // 공격 횟수
@@ -93,6 +91,8 @@ public class PlayerManager : MonoBehaviour
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Now; //현재 스탯
+    public float ExpMax = 5; // 경험치 최대치
+    public float ExpNow = 0; // 현재 경험치
 
     [Header("<State>")]
     public bool initFinish = false;
@@ -251,7 +251,7 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.UpdateGem();
 
         // 1레벨 경험치 최대치 갱신
-        PlayerStat_Now.ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
+        ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
 
         //능력치 초기화
         UIManager.Instance.InitialStat();
@@ -446,30 +446,33 @@ public class PlayerManager : MonoBehaviour
         //현재 스탯에 임시 스탯을 넣기
         PlayerStat_Now = PlayerStat_Temp;
 
-        string allBuff = " atkNum : " + PlayerStat_Temp.atkNum + ", " +
-            "\n hpMax : " + PlayerStat_Temp.hpMax + ", " +
-            "\n power : " + PlayerStat_Temp.power + ", " +
-            "\n armor : " + PlayerStat_Temp.armor + ", " +
-            "\n speed : " + PlayerStat_Temp.speed + ", " +
-            "\n evade : " + PlayerStat_Temp.evade + ", " +
-            "\n coolTime : " + PlayerStat_Temp.coolTime + ", " +
-            "\n duration : " + PlayerStat_Temp.duration + ", " +
-            "\n range : " + PlayerStat_Temp.range + ", " +
-            "\n luck : " + PlayerStat_Temp.luck + ", " +
-            "\n expGain : " + PlayerStat_Temp.expGain + ", " +
-            "\n moneyGain : " + PlayerStat_Temp.getRage + ", " +
-            "\n moveSpeed : " + PlayerStat_Temp.moveSpeed;
-
+        // string allBuff = " atkNum : " + PlayerStat_Temp.atkNum + ", " +
+        //     "\n hpMax : " + PlayerStat_Temp.hpMax + ", " +
+        //     "\n power : " + PlayerStat_Temp.power + ", " +
+        //     "\n armor : " + PlayerStat_Temp.armor + ", " +
+        //     "\n speed : " + PlayerStat_Temp.speed + ", " +
+        //     "\n evade : " + PlayerStat_Temp.evade + ", " +
+        //     "\n coolTime : " + PlayerStat_Temp.coolTime + ", " +
+        //     "\n duration : " + PlayerStat_Temp.duration + ", " +
+        //     "\n range : " + PlayerStat_Temp.range + ", " +
+        //     "\n luck : " + PlayerStat_Temp.luck + ", " +
+        //     "\n expGain : " + PlayerStat_Temp.expGain + ", " +
+        //     "\n moneyGain : " + PlayerStat_Temp.getRage + ", " +
+        //     "\n moveSpeed : " + PlayerStat_Temp.moveSpeed;
         // print(allBuff);
     }
 
     public void AddGem(ItemInfo item, int amount)
     {
+        print(amount + " : " + PlayerStat_Now.Level + " : " + ExpNow + " : " + ExpMax);
+
         // 어떤 원소든지 젬 개수만큼 경험치 증가
-        PlayerStat_Now.ExpNow += amount;
+        ExpNow += amount;
+
+        print(amount + " : " + PlayerStat_Now.Level + " : " + ExpNow + " : " + ExpMax);
 
         //경험치 다 찼을때
-        if (PlayerStat_Now.ExpNow >= PlayerStat_Now.ExpMax)
+        if (ExpNow >= ExpMax)
         {
             //레벨업
             Levelup();
@@ -481,7 +484,7 @@ public class PlayerManager : MonoBehaviour
         hasItems[gemTypeIndex].amount += amount;
 
         // 플레이어 버프 업데이트
-        BuffUpdate();
+        // BuffUpdate();
 
         //해당 젬 UI 인디케이터
         UIManager.Instance.GemIndicator(gemTypeIndex, Color.green);
@@ -516,12 +519,12 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now.Level++;
 
         //경험치 초기화
-        PlayerStat_Now.ExpNow = 0;
+        ExpNow = 0;
 
         //경험치 최대치 갱신
-        PlayerStat_Now.ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
+        ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
         //! 테스트용 맥스 경험치
-        PlayerStat_Now.ExpMax = 3;
+        ExpMax = 3;
 
         // 마법 합성 메뉴 띄우기
         // UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);

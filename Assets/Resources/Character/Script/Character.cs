@@ -253,8 +253,8 @@ public class Character : MonoBehaviour
                 healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
                 // 힐 오브젝트 크기 초기화
                 healRange.transform.localScale = Vector2.one * portalSize;
-                // character 넣어주기
-                healRange.GetComponent<EnemyAttack>().character = this;
+                // 회복량 넣어주기
+                healRange.GetComponent<Attack>().fixedPower = -powerNow;
 
                 // 초록 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
