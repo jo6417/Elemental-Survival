@@ -39,6 +39,7 @@ public class WorldSpawner : MonoBehaviour
 
     [Header("State")]
     [SerializeField] int modifyEnemyPower; //! 전투력 임의 수정값
+    public int nowDifficultGrade = 0; // 현재 난이도 등급
     [SerializeField, ReadOnly] int MaxEnemyPower; //최대 몬스터 전투력
     public int NowEnemyPower; //현재 몬스터 전투력
     [SerializeField] float enemySpawnCount; //몬스터 스폰 쿨타임 카운트
@@ -159,12 +160,14 @@ public class WorldSpawner : MonoBehaviour
         if (!spawnSwitch)
             yield break;
 
-        // 30초 단위로 시간 계수 증가
         float time = SystemManager.Instance.time_current;
+        // 30초 단위로 시간 계수 증가
         float timePower = time / 30f;
+        // 난이도 계수 반영
+        timePower = time * nowDifficultGrade * 0.2f;
 
         //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수
-        MaxEnemyPower = PlayerManager.Instance.PlayerStat_Now.playerPower + Mathf.FloorToInt(timePower) + modifyEnemyPower;
+        MaxEnemyPower = Mathf.FloorToInt(timePower) + modifyEnemyPower;
 
         //max 전투력 넘었으면 중단
         if (MaxEnemyPower <= NowEnemyPower)

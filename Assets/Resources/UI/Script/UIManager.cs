@@ -41,6 +41,7 @@ public class UIManager : MonoBehaviour
     [Header("State")]
     public float defaultCamSize = 16.875f; // 기본 캠 사이즈
     private Tween zoomTween = null; // 현재 진행중인 줌인 및 줌아웃 트윈
+    [SerializeField] float fill_Max = 600f; // 단일 난이도 최대치, 기본 10분
 
     [Header("Input")]
     public NewInput UI_Input; // UI 인풋 받기
@@ -64,7 +65,10 @@ public class UIManager : MonoBehaviour
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
     public GameObject gameoverSlot; //게임 오버 창에 들어갈 마법 슬롯
-    public TextMeshProUGUI timer;
+    public TextMeshProUGUI timer; // 누적 시간
+    [SerializeField] Image timerFrame; // 타이머 프레임 및 뒷배경
+    [SerializeField] Image timerEffect; // 타이머 뒷배경 이펙트
+    [SerializeField] SlicedFilledImage timerInside; // 타이머 내부 배경
     public TextMeshProUGUI killCountTxt;
     public GameObject bossHp;
     public GameObject arrowPrefab; //적 방향 가리킬 화살표 UI
@@ -149,6 +153,24 @@ public class UIManager : MonoBehaviour
     {
         // SystemManager 에서 켜기
         // UI_Input.Enable();
+
+        // 초기화
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        yield return null;
+
+        // 난이도 등급 변수 초기화
+        WorldSpawner.Instance.nowDifficultGrade = 1;
+
+        // 타이머 프레임 색 변경
+        timerFrame.color = MagicDB.Instance.GradeColor[WorldSpawner.Instance.nowDifficultGrade - 1];
+        // 타이머 내부 배경 색 변경
+        Color InsideColor = MagicDB.Instance.GradeColor[WorldSpawner.Instance.nowDifficultGrade];
+        InsideColor.a = 200f / 255f;
+        timerInside.color = InsideColor;
     }
 
     private void OnDisable()
@@ -586,22 +608,79 @@ public class UIManager : MonoBehaviour
 
     public string UpdateTimer()
     {
-        SystemManager.Instance.time_current = (int)(Time.time - SystemManager.Instance.time_start);
+        // 현재 시간 갱신
+        float nowTime = (int)(Time.time - SystemManager.Instance.time_start) + SystemManager.Instance.modifyTime;
+        SystemManager.Instance.time_current = nowTime;
 
         //시간을 3600으로 나눈 몫
-        string hour = 0 < (int)(SystemManager.Instance.time_current / 3600f) ? string.Format("{0:00}", Mathf.FloorToInt(SystemManager.Instance.time_current / 3600f)) + ":" : "";
+        string hour = 0 < (int)(nowTime / 3600f) ? string.Format("{0:00}", Mathf.FloorToInt(nowTime / 3600f)) + ":" : "";
         //시간을 60으로 나눈 몫을 60으로 나눈 나머지
-        string minute = 0 < (int)(SystemManager.Instance.time_current / 60f % 60f) ? string.Format("{0:00}", Mathf.FloorToInt(SystemManager.Instance.time_current / 60f % 60f)) + ":" : "00:";
+        string minute = 0 < (int)(nowTime / 60f % 60f) ? string.Format("{0:00}", Mathf.FloorToInt(nowTime / 60f % 60f)) + ":" : "00:";
         //시간을 60으로 나눈 나머지
-        string second = string.Format("{0:00}", SystemManager.Instance.time_current % 60f);
+        string second = string.Format("{0:00}", nowTime % 60f);
 
-        //시간 출력
+        // 누적 시간 텍스트 출력
         timer.text = hour + minute + second;
 
-        return hour + minute + second;
+        // 총 난이도 시간 최대치, 단일 난이도 최대치를 6단계로 곱셈
+        float difficult_Max = fill_Max * 6f;
 
-        //TODO 시간 UI 색깔 변경
-        //TODO 색깔에 따라 난이도 변경
+        // 누적시간이 1시간 이하일때만
+        if (nowTime <= difficult_Max)
+        {
+            // 현재 난이도 남은시간
+            float difficult_Amount = (nowTime % fill_Max) / fill_Max;
+            // 현재시간을 난이도 최대치로 나눈 나머지만큼 시간 UI 뒷배경 차오르기
+            timerInside.fillAmount = difficult_Amount;
+
+            // 현재 난이도 등급
+            int difficult_Grade = (int)(nowTime / fill_Max) + 1;
+            // 기존 난이도 보다 오르면 프레임 변경
+            if (difficult_Grade > WorldSpawner.Instance.nowDifficultGrade)
+            {
+                // 난이도 등급 변수 상승
+                WorldSpawner.Instance.nowDifficultGrade = difficult_Grade;
+
+                // 난이도 등급 상승 트랜지션
+                TimeGradeChange();
+            }
+
+            // print(nowTime + " : " + difficult_Amount + "% : Grade " + difficult_Grade);
+        }
+
+        return hour + minute + second;
+    }
+
+    void TimeGradeChange()
+    {
+        int nowDifficultGrade = WorldSpawner.Instance.nowDifficultGrade;
+
+        // 내부 배경 색 변경
+        if (nowDifficultGrade < MagicDB.Instance.GradeColor.Length)
+        {
+            Color InsideColor = MagicDB.Instance.GradeColor[nowDifficultGrade];
+            InsideColor.a = 150f / 255f;
+            timerInside.color = InsideColor;
+        }
+
+        // 크기 초기화
+        timerEffect.transform.localScale = Vector3.one;
+        // 타이머 뒷배경 커지는 이펙트 재생
+        timerEffect.transform.DOScale(Vector3.one * 2f, 1f)
+        .SetEase(Ease.OutCubic);
+
+        // 이펙트 색 초기화
+        Color difficultColor = MagicDB.Instance.GradeColor[nowDifficultGrade - 1];
+        timerEffect.color = difficultColor;
+        // 타이머 뒷배경 투명해지며 사라지는 이펙트 재생
+        difficultColor.a = 0f;
+        timerEffect.DOColor(difficultColor, 1f)
+        .SetEase(Ease.OutCubic);
+
+        // 타이머 뒷배경 현재 난이도 색으로 변하기
+        Color frameColor = MagicDB.Instance.GradeColor[nowDifficultGrade - 1];
+        timerFrame.DOColor(frameColor, 1f)
+        .SetEase(Ease.OutCubic);
     }
 
     public void UpdateKillCount()

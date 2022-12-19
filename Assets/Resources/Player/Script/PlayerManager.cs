@@ -464,12 +464,8 @@ public class PlayerManager : MonoBehaviour
 
     public void AddGem(ItemInfo item, int amount)
     {
-        print(amount + " : " + PlayerStat_Now.Level + " : " + ExpNow + " : " + ExpMax);
-
         // 어떤 원소든지 젬 개수만큼 경험치 증가
         ExpNow += amount;
-
-        print(amount + " : " + PlayerStat_Now.Level + " : " + ExpNow + " : " + ExpMax);
 
         //경험치 다 찼을때
         if (ExpNow >= ExpMax)

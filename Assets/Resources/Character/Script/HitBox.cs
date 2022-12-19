@@ -844,19 +844,22 @@ public class HitBox : MonoBehaviour
             // 자폭 경고 사운드 재생
             SoundManager.Instance.PlaySound("MiniDrone_Warning", transform.position);
 
-            // 폭발 반경 표시
-            character.enemyAtkTrigger.atkRangeBackground.enabled = true;
-            character.enemyAtkTrigger.atkRangeFill.enabled = true;
-
-            // 폭발 반경 인디케이터 사이즈 초기화
-            character.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
-            // 폭발 반경 인디케이터 사이즈 키우기
-            character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
-            .OnComplete(() =>
+            if (character.enemyAtkTrigger.atkRangeFill)
             {
-                character.enemyAtkTrigger.atkRangeBackground.enabled = false;
-                character.enemyAtkTrigger.atkRangeFill.enabled = false;
-            });
+                // 폭발 반경 표시
+                character.enemyAtkTrigger.atkRangeBackground.enabled = true;
+                character.enemyAtkTrigger.atkRangeFill.enabled = true;
+
+                // 폭발 반경 인디케이터 사이즈 초기화
+                character.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
+                // 폭발 반경 인디케이터 사이즈 키우기
+                character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
+                .OnComplete(() =>
+                {
+                    character.enemyAtkTrigger.atkRangeBackground.enabled = false;
+                    character.enemyAtkTrigger.atkRangeFill.enabled = false;
+                });
+            }
         }
 
         // 흰색으로 변하는 시간 대기
@@ -917,6 +920,10 @@ public class HitBox : MonoBehaviour
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
         // dust.tag = "Enemy";
+
+        // 죽을때 콜백 호출
+        if (character.deadCallback != null)
+            character.deadCallback(character);
 
         // 트윈 및 시퀀스 끝내기
         character.transform.DOKill();

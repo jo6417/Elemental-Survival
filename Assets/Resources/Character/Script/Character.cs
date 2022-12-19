@@ -10,9 +10,15 @@ using System.Text;
 
 public class Character : MonoBehaviour
 {
-    [Header("Initial")]
-    public HitCallback hitCallback; //캐릭터 피격시 실행될 콜백
+    [Header("CallBack")]
+    public InitCallback initCallback; // 캐릭터 생성시 실행될 콜백
+    public delegate void InitCallback();
+    public HitCallback hitCallback; // 캐릭터 피격시 실행될 콜백
     public delegate void HitCallback();
+    public DeadCallback deadCallback; // 캐릭터 사망시 실행될 콜백
+    public delegate void DeadCallback(Character character);
+
+    [Header("Initial")]
     public EnemyInfo enemy;
     public List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템

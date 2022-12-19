@@ -134,6 +134,9 @@ public class SoundManager : MonoBehaviour
         Transform parent = attachor != null ? attachor : soundPool;
         GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, parent);
 
+        // 위치 안들어왔으면 초기화
+        audioObj.transform.localPosition = Vector2.zero;
+
         // 오브젝트 이름을 사운드 이름으로 동기화
         audioObj.name = sound.name;
 

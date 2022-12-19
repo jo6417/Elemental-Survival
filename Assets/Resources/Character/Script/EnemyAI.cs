@@ -13,6 +13,7 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Walk")]
     // public Vector3 targetDir; //플레이어 방향
+    [SerializeField] float targetRange; // 타겟 오차 범위
     public float searchCoolTime = 1f; // 타겟 위치 추적 시간
     public float searchCoolCount; // 타겟 위치 추적 시간 카운트
     [SerializeField]
@@ -90,7 +91,7 @@ public class EnemyAI : MonoBehaviour
             else
                 // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
                 character.targetPos = character.TargetObj.transform.position
-                + (Vector3)Random.insideUnitCircle;
+                + (Vector3)Random.insideUnitCircle * targetRange;
         }
 
         // 목표 위치를 추적 위치로 서서히 바꾸기
