@@ -22,6 +22,7 @@ public class Character : MonoBehaviour
     public EnemyInfo enemy;
     public List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
+    public bool usePortal = true; // 등장시 포탈 사용 여부
     public bool initialStart = false;
     public bool initialFinish = false;
     public EliteClass eliteClass = EliteClass.None; // 엘리트 여부
@@ -32,6 +33,7 @@ public class Character : MonoBehaviour
     public float hpNow;
     public float hpMax;
     public bool isDead; //죽음 코루틴 진행중 여부
+    public float deadDelay = 1f; // 죽는 트랜지션 진행 시간
     public bool changeGhost = false;
     public float portalSize = 1f; //포탈 사이즈 지정값
     public bool afterEffect = false; // 상태이상 여부

@@ -79,6 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
   fixedPower: 0
@@ -99,7 +100,6 @@ MonoBehaviour:
   coolCount: 0
   character: {fileID: 367713317556661536}
   enemyName: 
-  atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   rangeObj: {fileID: 0}
 --- !u!212 &1117852762
@@ -257,6 +257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
   fixedPower: 0
@@ -277,7 +278,6 @@ MonoBehaviour:
   coolCount: 0
   character: {fileID: 367713317556661536}
   enemyName: 
-  atkColl: {fileID: 0}
   dashEffect: {fileID: 0}
   rangeObj: {fileID: 0}
 --- !u!212 &1169140570
@@ -5322,7 +5322,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2282559697499699900
 Transform:
   m_ObjectHideFlags: 0
@@ -5360,6 +5360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHasItem: ffffffff
+  usePortal: 1
   initialStart: 1
   initialFinish: 0
   eliteClass: 0
@@ -5376,8 +5377,8 @@ MonoBehaviour:
   healCount: 0
   isGhost: 0
   nowState: 0
-  nowAction: 0
   moveType: 0
+  targetObj: {fileID: 0}
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
@@ -5428,9 +5429,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 367713317556661536}
-  targetDir: {x: 0, y: 0, z: 0}
-  moveCoolTime: 1
-  moveCoolCount: 0
+  targetRange: 1
+  searchCoolTime: 1
+  searchCoolCount: 0
   directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
@@ -5465,7 +5466,7 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 4382194502455059326}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 7ed4cb80a6124944aacc00e610714c2b, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -5783,6 +5784,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: 
+  atkColl: {fileID: 7146421470627484963}
   pierceCount: 0
   targetType: 0
   fixedPower: 0
@@ -5803,7 +5805,6 @@ MonoBehaviour:
   coolCount: 0
   character: {fileID: 367713317556661536}
   enemyName: 
-  atkColl: {fileID: 7146421470627484963}
   dashEffect: {fileID: 2245917149986370186}
   rangeObj: {fileID: 0}
 --- !u!70 &7146421470627484963
@@ -5928,6 +5929,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
+  showIndicator: 1
+  indicatorSprite: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
   character: {fileID: 367713317556661536}

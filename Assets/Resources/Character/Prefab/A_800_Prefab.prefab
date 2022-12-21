@@ -5067,6 +5067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: 
+  atkColl: {fileID: 1016044293152676191}
   pierceCount: 0
   targetType: 0
   fixedPower: 0
@@ -5087,7 +5088,6 @@ MonoBehaviour:
   coolCount: 0
   character: {fileID: 2609816229949297132}
   enemyName: 
-  atkColl: {fileID: 1016044293152676191}
   dashEffect: {fileID: 0}
   rangeObj: {fileID: 0}
 --- !u!58 &1016044293152676191
@@ -10004,6 +10004,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
+  showIndicator: 1
+  indicatorSprite: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
   character: {fileID: 2609816229949297132}
@@ -10066,7 +10068,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8165655979838027244
 Transform:
   m_ObjectHideFlags: 0
@@ -10100,6 +10102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHasItem: ffffffff
+  usePortal: 1
   initialStart: 1
   initialFinish: 0
   eliteClass: 0
@@ -10116,8 +10119,8 @@ MonoBehaviour:
   healCount: 0
   isGhost: 0
   nowState: 0
-  nowAction: 0
   moveType: 0
+  targetObj: {fileID: 0}
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
@@ -10167,7 +10170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 2609816229949297132}
-  targetDir: {x: 0, y: 0, z: 0}
+  targetRange: 1
   searchCoolTime: 1
   searchCoolCount: 0
   directionTilt: 0
@@ -10226,7 +10229,7 @@ Rigidbody2D:
   m_LinearDrag: 1
   m_AngularDrag: 1
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 7ed4cb80a6124944aacc00e610714c2b, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0

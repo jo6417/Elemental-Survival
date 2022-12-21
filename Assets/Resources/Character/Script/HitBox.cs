@@ -834,7 +834,7 @@ public class HitBox : MonoBehaviour
             sprite.color = SystemManager.Instance.hitColor;
 
             // 색깔 점점 흰색으로
-            sprite.DOColor(SystemManager.Instance.DeadColor, 1f)
+            sprite.DOColor(SystemManager.Instance.DeadColor, character.deadDelay)
             .SetEase(Ease.OutQuad);
         }
 
@@ -853,7 +853,7 @@ public class HitBox : MonoBehaviour
                 // 폭발 반경 인디케이터 사이즈 초기화
                 character.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
                 // 폭발 반경 인디케이터 사이즈 키우기
-                character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, 1f)
+                character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, character.deadDelay)
                 .OnComplete(() =>
                 {
                     character.enemyAtkTrigger.atkRangeBackground.enabled = false;
@@ -862,8 +862,8 @@ public class HitBox : MonoBehaviour
             }
         }
 
-        // 흰색으로 변하는 시간 대기
-        yield return new WaitForSeconds(1f);
+        // 죽음 딜레이 대기
+        yield return new WaitForSeconds(character.deadDelay);
 
         // 고스트가 아닐때
         if (!character.IsGhost)

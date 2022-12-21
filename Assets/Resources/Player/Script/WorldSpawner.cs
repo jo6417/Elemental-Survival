@@ -272,17 +272,27 @@ public class WorldSpawner : MonoBehaviour
         GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, SystemManager.Instance.enemyPool);
         // 소환된 몬스터 위치 이동
         enemyObj.transform.position = spawnEndPos;
-        // 몬스터 비활성화
-        enemyObj.SetActive(false);
+
+        // 캐릭터 찾기
+        Character character = enemyObj.GetComponentInChildren<Character>();
+
+        // 포탈 사용 안하는 몬스터
+        if (!character.usePortal)
+        {
+            // 소환된 몬스터 초기화 시작
+            character.initialStart = true;
+
+            yield break;
+        }
+        else
+            // 몬스터 비활성화
+            enemyObj.SetActive(false);
 
         //프리팹에서 스프라이트 컴포넌트 찾기
         SpriteRenderer enemySprite = enemyObj.GetComponentInChildren<SpriteRenderer>();
 
         //EnemyInfo 인스턴스 생성
         EnemyInfo enemyInfo = new EnemyInfo(enemy);
-
-        // 캐릭터 찾기
-        Character character = enemyObj.GetComponentInChildren<Character>();
 
         // 보스일때
         if (isBoss)

@@ -22,6 +22,7 @@ public class ItemManager : MonoBehaviour
     [ReadOnly] public bool isBundle; //합쳐진 아이템인지
     [ReadOnly] public int gemTypeIndex = -1;
     [ReadOnly] private string itemName;
+    [ReadOnly] public float getRange = 0.5f; // 아이템 획득되는 거리
     private bool isGet = false; //플레이어가 획득했는지
     public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
     public float autoDespawnTime = 0; //자동 디스폰 시간
@@ -236,8 +237,8 @@ public class ItemManager : MonoBehaviour
             //방향 벡터 갱신
             dir = Getter.position - transform.position;
 
-            // 벡터 거리가 0.5f 이하일때 획득
-            if (dir.magnitude <= 0.5f)
+            // 벡터 거리가 getRange 이하일때 획득
+            if (dir.magnitude <= getRange)
             {
                 GetItem();
                 break;

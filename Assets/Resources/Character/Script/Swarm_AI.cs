@@ -7,6 +7,7 @@ using UnityEngine;
 public class Swarm_AI : MonoBehaviour
 {
     [SerializeField] Rigidbody2D rigid;
+    [SerializeField] Character character;
     public GameObject enemyPrefab; // 소환할 몬스터 프리팹
     public int amount = 10; // 군집 소환 개수
     public float duration = 60f; // 군집 유지 시간
@@ -38,24 +39,38 @@ public class Swarm_AI : MonoBehaviour
             // 몬스터 생성
             GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyPool);
 
+            // 몬스터 정보 찾기
+            EnemyInfo enemy = EnemyDB.Instance.GetEnemyByName(enemyObj.name.Split('_')[0]);
+
+            // 현재 몬스터 총 전투력에 포함
+            WorldSpawner.Instance.NowEnemyPower += enemy.grade;
+
             // 리스트에 몬스터 넣기
             mobList.Add(enemyObj);
 
-            Character character = enemyObj.GetComponent<Character>();
+            // 단일 몬스터 캐릭터
+            Character mobCharacter = enemyObj.GetComponent<Character>();
 
             // 몬스터 타겟 정하기
-            character.TargetObj = gameObject;
+            mobCharacter.TargetObj = gameObject;
 
             // 몬스터 스피드를 타겟 스피드와 동기화
-            character.speedNow = moveSpeed;
+            // character.speedNow = moveSpeed;
 
             // 몬스터 죽을때 리스트에서 제거를 이벤트로 넣기
-            if (character.deadCallback == null)
-                character.deadCallback += RemoveList;
+            if (mobCharacter.deadCallback == null)
+                mobCharacter.deadCallback += RemoveList;
+
+            // 초기화 시작
+            mobCharacter.initialStart = true;
         }
 
-        // 이동 방향
+        // 초기화 끝날때까지 대기
+        yield return new WaitUntil(() => character.initialFinish);
+
+        // 플레이어 방향 계산
         moveDir = PlayerManager.Instance.transform.position - transform.position;
+
         // 플레이어 방향으로 타겟 계속 움직이기
         rigid.velocity = moveDir.normalized * moveSpeed / 2f;
     }
@@ -78,41 +93,35 @@ public class Swarm_AI : MonoBehaviour
         // 스포너 밖에 나갔을때
         if (other.CompareTag(SystemManager.TagNameList.Respawn.ToString()))
         {
-            // 이동 멈추기
-            rigid.velocity = Vector3.zero;
+            // 플레이어 위치로 이동
+            transform.position = PlayerManager.Instance.transform.position;
 
-            // 스포너 모서리 랜덤위치로 이동
-            transform.position = WorldSpawner.Instance.BorderRandPos();
-
-            // 이동 방향
-            moveDir = PlayerManager.Instance.transform.position - transform.position;
-            // 플레이어 방향으로 타겟 계속 움직이기
-            rigid.velocity = moveDir.normalized * moveSpeed / 2f;
-
-            // 몬스터들도 함께 이동
-            for (int i = 0; i < mobList.Count; i++)
-            {
-                mobList[i].transform.position = transform.position + (Vector3)Random.insideUnitCircle * 3f;
-            }
+            // 기존 방향의 반대로 이동
+            rigid.velocity = -rigid.velocity;
         }
     }
 
     void EndSwarm()
     {
+        // 다른 몬스터 죽을때 이미 디스폰 됬으면 리턴
+        if (!gameObject.activeInHierarchy)
+            return;
+
         // 이동 멈추기
         rigid.velocity = Vector3.zero;
-
-        // 적 프리팹 정보 지우기
-        enemyPrefab = null;
 
         // 해당 군집 오브젝트 디스폰
         LeanPool.Despawn(gameObject);
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
+        // 스웜 현재 위치
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(transform.position, Vector3.one);
+
         // 추적 위치부터 이동 위치까지 직선
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3)moveDir);
+        Gizmos.DrawLine(transform.position, transform.position + (Vector3)moveDir.normalized * 3f);
     }
 }

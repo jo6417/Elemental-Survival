@@ -143,6 +143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 5086723795068245898}
+  hitColls: []
 --- !u!61 &2428378071422653662
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -320,7 +321,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5485836661786715577
 Transform:
   m_ObjectHideFlags: 0
@@ -351,6 +352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHasItem: ffffffff
+  usePortal: 1
   initialStart: 1
   initialFinish: 0
   eliteClass: 0
@@ -367,8 +369,8 @@ MonoBehaviour:
   healCount: 0
   isGhost: 0
   nowState: 0
-  nowAction: 0
   moveType: 1
+  targetObj: {fileID: 0}
   targetResetTime: 3
   targetResetCount: 0
   movePos: {x: 0, y: 0, z: 0}
@@ -390,6 +392,7 @@ MonoBehaviour:
   particleHitCount: 0
   hitDelayCount: 0
   stopCount: 0
+  stunCount: 0
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
@@ -418,9 +421,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 5086723795068245898}
-  targetDir: {x: 0, y: 0, z: 0}
-  moveCoolTime: 1
-  moveCoolCount: 0
+  targetRange: 1
+  searchCoolTime: 1
+  searchCoolCount: 0
   directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
@@ -475,7 +478,7 @@ Rigidbody2D:
   m_LinearDrag: 1
   m_AngularDrag: 1
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 7ed4cb80a6124944aacc00e610714c2b, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
