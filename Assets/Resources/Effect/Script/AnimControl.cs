@@ -8,7 +8,7 @@ public class AnimControl : MonoBehaviour
     public Animator anim;
     public float animSpeed = 1f;
 
-    private void Awake()
+    private void OnEnable()
     {
         anim = GetComponent<Animator>();
         anim.speed = animSpeed;

@@ -7,6 +7,7 @@ using Lean.Pool;
 [System.Serializable]
 public class Prop
 {
+    public string name;
     public GameObject propPrefab; // 사물 프리팹
     public GameObject propObj; // 생성된 사물 인스턴스
 
