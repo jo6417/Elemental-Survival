@@ -1,117 +1,153 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Networking;
-using SimpleJSON;
 using UnityEngine.UI;
-using System.Linq;
 
 public class LevelupMenu : MonoBehaviour
 {
-    [Header("Refer")]
-    public GameObject btnParent; //레벨업 시 마법 버튼들의 부모 오브젝트
-    // public GameObject elementIcon; //마법 재료 원소 아이콘 프리팹
-    // public GameObject elementPlus; //마법 재료 사이 플러스 아이콘 프리팹
+    [SerializeField] Image panel;
+    [SerializeField] CanvasGroup screen;
+    [SerializeField] Transform slots;
+    [SerializeField] ParticleSystem slotParticle;
+    [SerializeField] Transform attractor;
+    private enum GetSlotType { Magic, Shard, Gem };
 
-    // List<MagicInfo> notHasMagic = new List<MagicInfo>(); //플레이어가 보유하지 않은 마법 리스트
-
-    void Awake()
-    {
-        // 보유하지 않은 마법만 DB에서 파싱
-        // notHasMagic.Clear();
-        // notHasMagic = MagicDB.Instance.magicDB.FindAll(x => x.magicLevel == 0);
-    }
-
-    // 오브젝트가 active 될때 호출함수
     private void OnEnable()
     {
-        // 레벨업 메뉴에 마법 정보 넣기
-        if (MagicDB.Instance.loadDone)
-            SetArtifact();
+        // 아이콘 초기화
+        StartCoroutine(Init());
     }
 
-    void SetArtifact()
+    IEnumerator Init()
     {
-        //아이템 타입이 아티팩트인 모든아이템 리스트
-        List<ItemInfo> artifactList = ItemDB.Instance.itemDB.Values.ToList().FindAll(x => x.itemType == ItemDB.ItemType.Artifact.ToString());
-        // 랜덤 아티팩트ID 뽑기, 중복제거됨
-        // int[] randomIDs = ItemDB.Instance.RandomItemIndex(3);
-        int[] randomIDs = null;
+        // 패널 숨기기
+        screen.alpha = 0f;
 
-        // 고정된 3개 아티팩트 버튼에 정보 (아티팩트ID, 아이콘, 등급색깔, 이름, 설명)
-        for (int i = 0; i < randomIDs.Length; i++)
+        // 시간 멈추기
+        SystemManager.Instance.TimeScaleChange(0f);
+
+        // 파티클 끄기
+        slotParticle.gameObject.SetActive(false);
+
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        // 해당 패널로 팝업 초기화
+        UIManager.Instance.PopupSet(gameObject);
+
+        // 아이템 3개 랜덤 뽑기
+        for (int i = 0; i < 3; i++)
         {
-            int itmeID = randomIDs[i];
-            ItemInfo item = ItemDB.Instance.GetItemByID(randomIDs[i]);
-            Transform magicBtnObj = btnParent.transform.GetChild(i); //마법 버튼 UI
+            // 얻을 아이템
+            SlotInfo getItem = new SlotInfo();
 
-            // 아티팩트 ID, 버튼타입 넣기
-            InfoHolder infoHolder = magicBtnObj.GetComponent<InfoHolder>();
-            infoHolder.holderType = InfoHolder.HolderType.itemHolder;
-            infoHolder.id = itmeID;
-            infoHolder.popupMenu = gameObject;
-
-            // 신규 아이템 여부 표시
-            Transform newTxt = magicBtnObj.transform.Find("Background/Icon/New");
-            if (item.amount > 0)
+            // 언락 마법, 샤드, 원소젬 중에서 결정
+            switch (Random.Range(0, 3))
             {
-                //New 아이템 아님
-                newTxt.gameObject.SetActive(false);
+                case (int)GetSlotType.Magic:
+
+                    // 언락 마법 중 하나 뽑기
+                    getItem = MagicDB.Instance.GetMagicByID(i);
+
+                    break;
+                case (int)GetSlotType.Shard:
+
+                    // 1~6등급 중에 샤드 하나 뽑기
+                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard);
+
+                    break;
+                case (int)GetSlotType.Gem:
+
+                    // 원소젬 중에 하나 뽑기
+                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
+
+                    // 원소젬 개수 랜덤
+                    ItemInfo item = getItem as ItemInfo;
+                    item.amount = Random.Range(1, 11) * 10;
+
+                    break;
             }
-            else
+
+            // 아이콘 찾기
+            Sprite sprite = null;
+            if (getItem as MagicInfo != null)
+                sprite = MagicDB.Instance.GetIcon(getItem.id);
+            if (getItem as ItemInfo != null)
+                sprite = ItemDB.Instance.GetIcon(getItem.id);
+
+            // 아이콘 넣기
+            slots.transform.GetChild(i).Find("Icon").GetComponent<Image>().sprite = sprite;
+
+            // 툴팁 정보 넣기
+            ToolTipTrigger toolTip = slots.transform.GetChild(i).GetComponent<ToolTipTrigger>();
+            toolTip._slotInfo = getItem;
+            toolTip.enabled = true;
+
+            //todo 아래에 아이템 설명 넣기
+
+            // 버튼 이벤트 넣기
+            int index = i;
+            slots.transform.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
             {
-                //New 아이템
-                newTxt.gameObject.SetActive(true);
-            }
-
-            // 아티팩트 아이콘 넣기
-            Image icon = magicBtnObj.Find("Background/Icon").GetComponent<Image>();
-            //! 마법 아이콘 스프라이트 그려지면 0에서 num으로 바꾸기
-            icon.sprite = ItemDB.Instance.itemIcon.Find(x => x.name == item.name.Replace(" ", "") + "_Icon");
-
-            // 아티팩트 등급 넣기
-            Image btnBackground = magicBtnObj.GetComponent<Image>();
-            btnBackground.color = MagicDB.Instance.GradeColor[item.grade];
-
-            // 아티팩트 이름 넣기
-            Text name = magicBtnObj.Find("Background/Descript/Name").GetComponent<Text>();
-            name.text = item.name;
-
-            // 아티팩트 설명 넣기
-            Text descript = magicBtnObj.Find("Background/Descript/Descript").GetComponent<Text>();
-            descript.text = item.description;
+                ClickSlot(index, getItem);
+            });
         }
-        //TODO 플레이어가 보유하지 않은 아이템은 New Item 표시
+
+        // 패널 나타내기
+        DOTween.To(() => screen.alpha, x => screen.alpha = x, 1f, 0.5f)
+        .SetUpdate(true);
+        // 버튼 상호작용 풀기
+        screen.interactable = true;
+        // 레이캐스트 막기
+        screen.blocksRaycasts = true;
+
+        yield return new WaitForSeconds(0.5f);
+
+        //todo 가운데 슬롯 선택하기
+        // Button btn = slots.transform.GetChild(1).GetComponent<Button>();
+        // UIManager.Instance.lastSelected = btn;
+        // UIManager.Instance.SelectObject(slots.transform.GetChild(1).gameObject);
+        // btn.Select();
     }
 
-    bool isBasicElement(string element)
+    void ClickSlot(int index, SlotInfo slotInfo)
     {
-        //기본 원소 이름과 일치하는 요소가 있는지 확인
-        bool isExist = System.Array.Exists(MagicDB.Instance.ElementNames, x => x == element);
-
-        return isExist;
+        // 아이템 선택
+        StartCoroutine(ChooseSlot(index, slotInfo));
     }
 
-    // void ElementalSorting(List<string> elements, string element)
-    // {
-    //     //첫번째 원소가 기본 원소일때
-    //     if (isBasicElement(element))
-    //     {
-    //         //이 마법 원소에 해당 원소 없을때
-    //         if (!elements.Exists(x => x == element))
-    //             elements.Add(element);
-    //     }
-    //     //첫번째 원소가 기본 원소 아닐때
-    //     else
-    //     {
-    //         if (MagicDB.Instance.magicInfo.Exists(x => x.magicName == element))
-    //         {
-    //             // 원소 이름을 마법 이름에 넣어 마법 찾기
-    //             MagicInfo magicInfo = MagicDB.Instance.magicInfo.Find(x => x.magicName == element);
-    //             // 해당 마법의 원소 두가지 다시 정렬하기
-    //             ElementalSorting(elements, magicInfo.element_A);
-    //             ElementalSorting(elements, magicInfo.element_B);
-    //         }
-    //     }
-    // }
+    public IEnumerator ChooseSlot(int index, SlotInfo slotInfo)
+    {
+        // 버튼 상호작용 막기 (중복 선택 방지)
+        screen.interactable = false;
+        // 레이캐스트 풀기
+        screen.blocksRaycasts = false;
+
+        Transform slot = slots.transform.GetChild(index);
+
+        // 패널 투명해지며 숨기기
+        DOTween.To(() => screen.alpha, x => screen.alpha = x, 0f, 0.2f)
+        .SetUpdate(true);
+
+        // UI 커서 끄기
+        UIManager.Instance.UICursorToggle(false);
+
+        // 드랍위치 계산
+        Vector2 dropPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * 2f;
+
+        //todo 아이템 드랍 위치로 어트랙터 옮기기
+        attractor.position = Camera.main.WorldToScreenPoint(dropPos);
+
+        // 선택된 슬롯 뒤에 슬롯모양 파티클 생성
+        slotParticle.transform.position = slot.position;
+        slotParticle.gameObject.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        // 드랍 위치 해당 아이템 드랍
+        StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, dropPos));
+
+        // 패널 닫고 시간정지 해제        
+        UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel, false);
+    }
 }

@@ -148,10 +148,10 @@ public class ProductToolTip : MonoBehaviour
         }
 
         //마법 or 아이템 정보 넣기
-        this.magic = slotInfo as MagicInfo;
-        this.item = slotInfo as ItemInfo;
+        magic = slotInfo as MagicInfo;
+        item = slotInfo as ItemInfo;
 
-        if (slotInfo != null)
+        if (magic != null)
         {
             SetDone = SetMagicInfo();
         }
@@ -224,8 +224,8 @@ public class ProductToolTip : MonoBehaviour
         else
         {
             // 재료 A,B 아이콘 넣기, 미해금 마법이면 물음표 넣기
-            elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicA.id) : SystemManager.Instance.questionMark;
-            elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetMagicIcon(magicB.id) : SystemManager.Instance.questionMark;
+            elementIcon_A.sprite = isUnlock ? MagicDB.Instance.GetIcon(magicA.id) : SystemManager.Instance.questionMark;
+            elementIcon_B.sprite = isUnlock ? MagicDB.Instance.GetIcon(magicB.id) : SystemManager.Instance.questionMark;
 
             // 재료 A,B 등급 넣기, 재료가 원소젬일때는 1등급 흰색
             elementGrade_A.color = MagicDB.Instance.GradeColor[magicA.grade];

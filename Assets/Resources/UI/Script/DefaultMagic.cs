@@ -13,7 +13,7 @@ public class DefaultMagic : MonoBehaviour
     [SerializeField] ParticleSystem slotParticle;
     [SerializeField] Transform attractor;
 
-    private void Awake()
+    private void OnEnable()
     {
         // 아이콘 초기화
         StartCoroutine(Init());
@@ -52,7 +52,7 @@ public class DefaultMagic : MonoBehaviour
             // 마법 정보 찾기
             MagicInfo magic = MagicDB.Instance.GetMagicByID(i);
             // 아이콘 찾기
-            Sprite sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            Sprite sprite = MagicDB.Instance.GetIcon(magic.id);
 
             // 아이콘 넣기
             slots.transform.GetChild(i).Find("Icon").GetComponent<Image>().sprite = sprite;

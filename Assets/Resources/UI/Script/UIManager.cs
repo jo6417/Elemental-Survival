@@ -48,15 +48,14 @@ public class UIManager : MonoBehaviour
     public Vector2 nowMousePos; // 마우스 마지막 위치 기억
 
     [Header("PopupUI")]
-    public GameObject nowOpenPopup; //현재 열려있는 팝업 UI
+    [ReadOnly] public GameObject nowOpenPopup; //현재 열려있는 팝업 UI
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
-    // public GameObject mixMagicPanel;
     public GameObject phonePanel;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
     public GameObject magicMachinePanel;
-    // public GameObject magicUpgradePanel;
+    public GameObject levelupPanel;
     public GameObject pausePanel;
     public GameObject gameoverPanel;
 
@@ -851,7 +850,7 @@ public class UIManager : MonoBehaviour
             showCool.magic = sharedMagic;
 
             //아이콘 넣기
-            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(slot.id);
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(slot.id);
 
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -899,7 +898,7 @@ public class UIManager : MonoBehaviour
             toolTipTrigger._slotInfo = magic;
 
             //스프라이트 넣기
-            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            magicIcon.GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
             // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
             //마법 개수 넣기, 2개 이상부터 표시
@@ -1075,6 +1074,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void SelectObject(GameObject gameObject)
+    {
+        // 오브젝트 선택하기
+        EventSystem.current.SetSelectedGameObject(gameObject);
+    }
+
     // 화면 밖 오브젝트 방향 표시 Nav UI
     public IEnumerator PointObject(GameObject targetObj, Sprite icon)
     {
@@ -1182,7 +1187,7 @@ public class UIManager : MonoBehaviour
             //프레임 색 넣기
             slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
             //아이콘 넣기
-            slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
             //레벨 넣기
             slot.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
         }

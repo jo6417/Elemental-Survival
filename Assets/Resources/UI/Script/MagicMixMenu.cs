@@ -236,7 +236,7 @@ public class MagicMixMenu : MonoBehaviour
                     magicIcon.transform.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[i];
 
                     // 마법 아이콘 이미지 넣기
-                    magicIcon.transform.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                    magicIcon.transform.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
                     // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
                     // 아이콘의 마법 정보 넣기
@@ -257,7 +257,7 @@ public class MagicMixMenu : MonoBehaviour
                         selectIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
 
                         // 마법 아이콘 이미지 넣기
-                        selectIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                        selectIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
                         // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
                         // 이름 테두리에 등급 색깔 넣기
@@ -425,7 +425,7 @@ public class MagicMixMenu : MonoBehaviour
                     magicIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[i];
 
                     //마법 아이콘 찾기
-                    Sprite iconSprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                    Sprite iconSprite = MagicDB.Instance.GetIcon(magic.id);
                     // MagicDB.Instance.magicIcon.Find(x => x.name == magic.magicName.Replace(" ", "") + "_Icon");
 
                     //! 미구현 아이콘은 물음표 넣기
@@ -454,7 +454,7 @@ public class MagicMixMenu : MonoBehaviour
                     element_A.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[elementA.grade];
                     // 마법 아이콘 이미지 넣기, 미획득이면 물음표 스프라이트 넣기
                     element_A.Find("Icon").GetComponent<Image>().sprite = unlockMagic
-                    ? MagicDB.Instance.GetMagicIcon(magic.id)
+                    ? MagicDB.Instance.GetIcon(magic.id)
                     : SystemManager.Instance.questionMark;
 
                     // 툴팁 컴포넌트에 마법 정보 넣기
@@ -468,7 +468,7 @@ public class MagicMixMenu : MonoBehaviour
                     element_B.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[elementB.grade];
                     // 마법 아이콘 이미지 넣기
                     element_B.Find("Icon").GetComponent<Image>().sprite = unlockMagic
-                    ? MagicDB.Instance.GetMagicIcon(magic.id)
+                    ? MagicDB.Instance.GetIcon(magic.id)
                     : SystemManager.Instance.questionMark;
 
                     // 툴팁 컴포넌트에 마법 정보 넣기
@@ -634,7 +634,7 @@ public class MagicMixMenu : MonoBehaviour
 
         //아이콘 및 등급색 넣기
         Transform mixedIcon = effectMask.Find("MagicIcon");
-        mixedIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetMagicIcon(mixedMagic.id);
+        mixedIcon.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(mixedMagic.id);
         // MagicDB.Instance.magicIcon.Find(x => x.name == mixedMagic.magicName.Replace(" ", "") + "_Icon");
         mixedIcon.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[mixedMagic.grade];
         mixedIcon.localScale = Vector2.zero;

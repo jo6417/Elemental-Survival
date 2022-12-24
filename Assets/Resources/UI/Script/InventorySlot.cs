@@ -127,7 +127,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 레벨 초기화
             level = magic.magicLevel;
             // 아이콘 찾기
-            iconSprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            iconSprite = MagicDB.Instance.GetIcon(magic.id);
 
             // 레벨 활성화
             slotLevel.gameObject.SetActive(true);
@@ -142,7 +142,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 등급 초기화
             grade = item.grade;
             // 아이콘 찾기
-            iconSprite = ItemDB.Instance.GetItemIcon(item.id);
+            iconSprite = ItemDB.Instance.GetIcon(item.id);
 
             // 레벨 비활성화
             slotLevel.gameObject.SetActive(false);
@@ -473,8 +473,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 // 마우스 아이콘에 현재 슬롯 아이콘 넣기
                 PhoneMenu.Instance.nowSelectIcon.sprite
                 = slotInfo as MagicInfo != null
-                ? MagicDB.Instance.GetMagicIcon(slotInfo.id)
-                : ItemDB.Instance.GetItemIcon(slotInfo.id);
+                ? MagicDB.Instance.GetIcon(slotInfo.id)
+                : ItemDB.Instance.GetIcon(slotInfo.id);
 
                 // 마우스의 슬롯 정보에 현재 슬롯 정보 넣기
                 PhoneMenu.Instance.nowSelectSlotInfo = slotInfo;

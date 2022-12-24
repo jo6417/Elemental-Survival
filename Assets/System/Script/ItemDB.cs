@@ -323,7 +323,7 @@ public class ItemDB : MonoBehaviour
         return item;
     }
 
-    public Sprite GetItemIcon(int id)
+    public Sprite GetIcon(int id)
     {
         //프리팹의 이름
         string itemName = GetItemByID(id).name.Replace(" ", "") + "_Icon";
@@ -363,7 +363,7 @@ public class ItemDB : MonoBehaviour
             dropObj.transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[slotInfo.grade];
 
             // 아이템 아이콘 넣기
-            dropObj.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetMagicIcon(slotInfo.id);
+            dropObj.transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetIcon(slotInfo.id);
         }
 
         // 아이템일때

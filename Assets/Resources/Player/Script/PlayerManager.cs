@@ -522,8 +522,8 @@ public class PlayerManager : MonoBehaviour
         //! 테스트용 맥스 경험치
         ExpMax = 3;
 
-        // 마법 합성 메뉴 띄우기
-        // UIManager.Instance.PopupUI(UIManager.Instance.mergeMagicPanel);
+        // 레벨업 메뉴 띄우기
+        UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel);
     }
 
     public void PayGem(int gemIndex, int price)

@@ -566,7 +566,7 @@ public class PhoneMenu : MonoBehaviour
         else
         {
             // 합성된 마법 아이콘 넣기
-            mergedSlot.slotIcon.sprite = MagicDB.Instance.GetMagicIcon(mergedMagic.id);
+            mergedSlot.slotIcon.sprite = MagicDB.Instance.GetIcon(mergedMagic.id);
             // 합성된 마법 프레임 색 넣기
             mergedSlot.slotFrame.color = MagicDB.Instance.GradeColor[mergedMagic.grade];
             // 합성된 마법 레벨 합산
@@ -989,7 +989,7 @@ public class PhoneMenu : MonoBehaviour
             // 랜덤 스크롤 컨텐츠 자식으로 슬롯 넣기
             Transform magicSlot = LeanPool.Spawn(magicSlotPrefab, randomScroll.Content);
 
-            Sprite icon = MagicDB.Instance.GetMagicIcon(randomList[i].id);
+            Sprite icon = MagicDB.Instance.GetIcon(randomList[i].id);
 
             // 마법 아이콘 넣기
             magicSlot.Find("Icon").GetComponent<Image>().sprite = icon == null ? SystemManager.Instance.questionMark : icon;
@@ -1416,10 +1416,10 @@ public class PhoneMenu : MonoBehaviour
             main_Icon.color = unlocked ? Color.white : Color.black;
 
             // 메인 아이콘 표시
-            main_Icon.sprite = MagicDB.Instance.GetMagicIcon(magic.id);
+            main_Icon.sprite = MagicDB.Instance.GetIcon(magic.id);
             // 재료 아이콘 해금됬으면 표시, 아니면 물음표
-            elementA_Icon.sprite = unlocked && elementA != null ? MagicDB.Instance.GetMagicIcon(elementA.id) : SystemManager.Instance.questionMark;
-            elementB_Icon.sprite = unlocked && elementB != null ? MagicDB.Instance.GetMagicIcon(elementB.id) : SystemManager.Instance.questionMark;
+            elementA_Icon.sprite = unlocked && elementA != null ? MagicDB.Instance.GetIcon(elementA.id) : SystemManager.Instance.questionMark;
+            elementB_Icon.sprite = unlocked && elementB != null ? MagicDB.Instance.GetIcon(elementB.id) : SystemManager.Instance.questionMark;
 
             // 메인 아이콘 프레임 색 넣기
             main_Frame.color = MagicDB.Instance.GradeColor[magic.grade];

@@ -128,7 +128,7 @@ public class VendMachineUI : MonoBehaviour
                 // isNew = magic.magicLevel > 0 ? false : true;
 
                 // 마법 아이콘 찾기
-                productSprite = MagicDB.Instance.GetMagicIcon(magic.id);
+                productSprite = MagicDB.Instance.GetIcon(magic.id);
             }
             //아이템일때 정보 넣기
             if (item != null)
@@ -137,7 +137,7 @@ public class VendMachineUI : MonoBehaviour
                 // isNew = item.amount > 0 ? false : true;
 
                 //아이템 아이콘 찾기
-                productSprite = ItemDB.Instance.GetItemIcon(item.id);
+                productSprite = ItemDB.Instance.GetIcon(item.id);
             }
 
             // 마법 등급 프레임 및 색깔

@@ -274,7 +274,7 @@ public class MagicDB : MonoBehaviour
             return null;
     }
 
-    public Sprite GetMagicIcon(int id)
+    public Sprite GetIcon(int id)
     {
         //아이콘의 이름
         string magicName = GetMagicByID(id).name.Replace(" ", "") + "_Icon";
