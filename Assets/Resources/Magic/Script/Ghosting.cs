@@ -57,7 +57,7 @@ public class Ghosting : MonoBehaviour
             GameObject ghostPrefab = EnemyDB.Instance.GetPrefab(character.enemy.id);
 
             // 몬스터 프리팹 소환 및 비활성화
-            GameObject ghostObj = LeanPool.Spawn(ghostPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            GameObject ghostObj = LeanPool.Spawn(ghostPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 몬스터 매니저 찾기
             Character ghostManager = ghostObj.GetComponent<Character>();

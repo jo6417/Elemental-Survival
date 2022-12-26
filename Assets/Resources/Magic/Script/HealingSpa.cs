@@ -80,7 +80,7 @@ public class HealingSpa : MonoBehaviour
         .OnComplete(() =>
         {
             // 먼지 퍼지는 이펙트 소환
-            LeanPool.Spawn(dustEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(dustEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 연못 디스폰
             LeanPool.Despawn(gameObject);
@@ -117,7 +117,7 @@ public class HealingSpa : MonoBehaviour
                 StartCoroutine(character.hitBoxList[0].Hit(magicHolder));
 
                 // 충돌한 캐릭터 발밑에 물결 일으키기
-                LeanPool.Spawn(pulsePrefab, other.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(pulsePrefab, other.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 연못 안에 플레이어 있으면
                 if (inPlayer)
@@ -126,7 +126,7 @@ public class HealingSpa : MonoBehaviour
                     PlayerManager.Instance.hitBox.Damage(-healPower, false);
 
                     // 플레이어 발밑에 물결 일으키기
-                    LeanPool.Spawn(pulsePrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                    LeanPool.Spawn(pulsePrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
                 }
             }
         }

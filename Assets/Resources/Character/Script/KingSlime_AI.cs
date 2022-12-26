@@ -306,7 +306,7 @@ public class KingSlime_AI : MonoBehaviour
 
         // 착지 이펙트 생성
         if (landEffect != null)
-            LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 스프라이트 레이어 레벨 초기화
         sorting.sortingOrder = 0;
@@ -409,7 +409,7 @@ public class KingSlime_AI : MonoBehaviour
         for (int i = 0; i < summonNum; i++)
         {
             //슬라임 소환
-            GameObject babySlime = LeanPool.Spawn(slimePrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            GameObject babySlime = LeanPool.Spawn(slimePrefab, transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             //컴포넌트 초기화
             // Collider2D babyColl = babySlime.GetComponent<Collider2D>();
@@ -496,7 +496,7 @@ public class KingSlime_AI : MonoBehaviour
                 startAngle -= 45f;
 
             // 독방울 소환
-            Transform poisonDropObj = LeanPool.Spawn(poisonDrop, transform.position, Quaternion.Euler(Vector3.forward * startAngle), SystemManager.Instance.effectPool);
+            Transform poisonDropObj = LeanPool.Spawn(poisonDrop, transform.position, Quaternion.Euler(Vector3.forward * startAngle), ObjectPool.Instance.effectPool);
 
             // 독방울 투척 소리 재생
             SoundManager.Instance.PlaySound("KingSlime_Poison_Drop");
@@ -508,7 +508,7 @@ public class KingSlime_AI : MonoBehaviour
             Vector2 dropPos = (Vector2)transform.position + playerDir + Random.insideUnitCircle * poisonRange / 2f;
 
             // 떨어질 위치에 마커 생성
-            GameObject marker = LeanPool.Spawn(atkMarker, dropPos, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject marker = LeanPool.Spawn(atkMarker, dropPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 독방울 점프 높이
             float jumpPower = playerDir.magnitude / 2f;
@@ -528,7 +528,7 @@ public class KingSlime_AI : MonoBehaviour
                 LeanPool.Despawn(marker);
 
                 // 떨어진 위치에 독장판 소환
-                LeanPool.Spawn(poisonPool, poisonDropObj.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(poisonPool, poisonDropObj.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 독방울 디스폰
                 LeanPool.Despawn(poisonDropObj);
@@ -620,7 +620,7 @@ public class KingSlime_AI : MonoBehaviour
         Vector2 atkPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * 5f;
 
         // 플레이어 주변에서 색을 드러내며 울렁이는 슬라임색 장판 생성
-        Transform iceAtk = LeanPool.Spawn(iceDrill, atkPos, Quaternion.identity, SystemManager.Instance.effectPool);
+        Transform iceAtk = LeanPool.Spawn(iceDrill, atkPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 물 웅덩이 생성 소리 랜덤 재생
         if (Random.value > 0.5f)
@@ -683,7 +683,7 @@ public class KingSlime_AI : MonoBehaviour
         SoundManager.Instance.PlaySound("KingSlime_Ice_Explosion", atkPos);
 
         // 터지며 슬로우 액체 장판 남기기
-        LeanPool.Spawn(slowPool, iceAtk.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(slowPool, iceAtk.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 슬로우 장판 생성 소리 재생
         SoundManager.Instance.PlaySound("KingSlime_Poison_Pool", atkPos);

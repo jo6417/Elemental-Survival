@@ -823,7 +823,7 @@ public class Character : MonoBehaviour
                 //     print(item.name + " : not found");
 
                 //아이템 오브젝트 소환
-                GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+                GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, ObjectPool.Instance.itemPool);
 
                 //아이템 정보 넣기
                 if (itemObj.TryGetComponent(out ItemManager itemManager))

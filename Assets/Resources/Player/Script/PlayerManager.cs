@@ -67,7 +67,7 @@ public class PlayerManager : MonoBehaviour
     #endregion
 
     [Header("<Input>")]
-    public NewInput playerInput;
+    public NewInput player_Input;
     Vector2 inputMoveDir; // 현재 이동 입력 벡터
     Vector2 nowMoveDir; // 현재 이동 벡터
     public Vector2 lastDir; // 마지막 이동 벡터
@@ -130,10 +130,10 @@ public class PlayerManager : MonoBehaviour
 
     void InputInit()
     {
-        playerInput = new NewInput();
+        player_Input = new NewInput();
 
         // 방향키 눌렀을때
-        playerInput.Player.Move.performed += val =>
+        player_Input.Player.Move.performed += val =>
         {
             //! 사운드 테스트
             // SoundManager.Instance.SoundPlay("Test");
@@ -146,7 +146,7 @@ public class PlayerManager : MonoBehaviour
         };
 
         // 방향키 안누를때
-        playerInput.Player.Move.canceled += val =>
+        player_Input.Player.Move.canceled += val =>
         {
             //현재 이동방향 입력
             inputMoveDir = val.ReadValue<Vector2>();
@@ -156,7 +156,7 @@ public class PlayerManager : MonoBehaviour
         };
 
         // 대쉬 버튼 매핑
-        playerInput.Player.Dash.performed += val =>
+        player_Input.Player.Dash.performed += val =>
         {
             // 대쉬중 아닐때, 현재 이동 정지 아닐때
             if (!isDash && inputMoveDir != Vector2.zero)
@@ -164,21 +164,21 @@ public class PlayerManager : MonoBehaviour
         };
 
         // 상호작용 버튼 눌렀을때
-        playerInput.Player.Interact.performed += val =>
+        player_Input.Player.Interact.performed += val =>
         {
             // 현재 상호작용 가능한 오브젝트 상호작용 하기
             InteractSubmit(true);
         };
 
         // 상호작용 버튼 뗐을때
-        playerInput.Player.Interact.canceled += val =>
+        player_Input.Player.Interact.canceled += val =>
         {
             // 현재 상호작용 가능한 오브젝트 상호작용 하기
             InteractSubmit(false);
         };
 
         // A슬롯 마법 시전
-        playerInput.Player.ActiveMagic_A.performed += val =>
+        player_Input.Player.ActiveMagic_A.performed += val =>
         {
             // 0번째 액티브 슬롯 마법 불러오기
             MagicInfo magic = activeSlot_A.slotInfo as MagicInfo;
@@ -187,7 +187,7 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_A, magic));
         };
         // B슬롯 마법 시전
-        playerInput.Player.ActiveMagic_B.performed += val =>
+        player_Input.Player.ActiveMagic_B.performed += val =>
         {
             // 1번째 액티브 슬롯 마법 불러오기
             MagicInfo magic = activeSlot_B.slotInfo as MagicInfo;
@@ -196,7 +196,7 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_B, magic));
         };
         // C슬롯 마법 시전
-        playerInput.Player.ActiveMagic_C.performed += val =>
+        player_Input.Player.ActiveMagic_C.performed += val =>
         {
             // 2번째 액티브 슬롯 마법 불러오기
             MagicInfo magic = activeSlot_C.slotInfo as MagicInfo;
@@ -205,13 +205,16 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_C, magic));
         };
 
+        //플레이어 입력 켜기
+        player_Input.Enable();
+
         // 초기화 완료
         initFinish = true;
     }
 
     public Vector2 GetMousePos()
     {
-        return Camera.main.ScreenToWorldPoint(PlayerManager.Instance.playerInput.Player.MousePosition.ReadValue<Vector2>());
+        return Camera.main.ScreenToWorldPoint(PlayerManager.Instance.player_Input.Player.MousePosition.ReadValue<Vector2>());
     }
 
     public Vector2 GetMouseDir()
@@ -259,7 +262,7 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        playerInput.Disable();
+        player_Input.Disable();
     }
 
     private void Update()
@@ -268,7 +271,7 @@ public class PlayerManager : MonoBehaviour
             return;
 
         // 카메라 플레이어 부드럽게 따라오기
-        SystemManager.Instance.camParent.position = Vector3.Lerp(SystemManager.Instance.camParent.position, transform.position, Time.deltaTime * camFollowSpeed);
+        Camera.main.transform.parent.position = Vector3.Lerp(Camera.main.transform.parent.position, transform.position, Time.deltaTime * camFollowSpeed);
 
         //몬스터 스포너 따라오기
         if (mobSpawner.activeSelf)

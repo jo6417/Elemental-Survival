@@ -60,7 +60,7 @@ public class Attack : MonoBehaviour
     IEnumerator AttackSound()
     {
         // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance.init);
+        yield return new WaitUntil(() => SoundManager.Instance.loadDone);
 
         // 공격 시작시 사운드 재생
         SoundManager.Instance.PlaySound(playSoundName, transform.position);

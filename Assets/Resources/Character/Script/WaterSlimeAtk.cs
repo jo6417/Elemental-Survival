@@ -144,7 +144,7 @@ public class WaterSlimeAtk : MonoBehaviour
         // float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 
         // 공격 오브젝트 생성
-        GameObject bubbleAtk = LeanPool.Spawn(bubblePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        GameObject bubbleAtk = LeanPool.Spawn(bubblePrefab, transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
         // 마법 정보 찾기
         MagicHolder bubbleMagic = bubbleAtk.GetComponent<MagicHolder>();

@@ -372,7 +372,7 @@ public class HotDog_AI : EnemyAI
                 lastPos[i] = targetPos;
 
                 // Flame 생성
-                GameObject magicObj = LeanPool.Spawn(flamePrefab, lastPos[i], Quaternion.identity, SystemManager.Instance.magicPool);
+                GameObject magicObj = LeanPool.Spawn(flamePrefab, lastPos[i], Quaternion.identity, ObjectPool.Instance.magicPool);
 
                 // Flame 색깔 및 머터리얼 바꾸기
                 Flame flame = magicObj.GetComponent<Flame>();
@@ -822,7 +822,7 @@ public class HotDog_AI : EnemyAI
     void FinishEat()
     {
         // 입에 스파크 이펙트 소환
-        LeanPool.Spawn(mouthSparkEffect, breathEffect.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(mouthSparkEffect, breathEffect.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
     void SummonHellfire()
@@ -886,7 +886,7 @@ public class HotDog_AI : EnemyAI
                 }
 
                 // 헬파이어 생성
-                GameObject magicObj = LeanPool.Spawn(hellFirePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                GameObject magicObj = LeanPool.Spawn(hellFirePrefab, transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
                 // 매직홀더 찾기
                 MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
@@ -947,7 +947,7 @@ public class HotDog_AI : EnemyAI
             Vector2 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * meteorRange * projectileMultiple;
 
             // 메테오 생성
-            GameObject magicObj = LeanPool.Spawn(meteorPrefab, targetPos, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject magicObj = LeanPool.Spawn(meteorPrefab, targetPos, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             MagicHolder magicHolder = magicObj.GetComponent<MagicHolder>();
             // magic 데이터 넣기
@@ -1085,7 +1085,7 @@ public class HotDog_AI : EnemyAI
                 if (Vector2.Distance(flameLastPos, transform.position) > flameInverval)
                 {
                     // 마법 오브젝트 생성
-                    GameObject magicObj = LeanPool.Spawn(flamePrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                    GameObject magicObj = LeanPool.Spawn(flamePrefab, transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
                     // 매직홀더 찾기
                     MagicHolder flameHolder = magicObj.GetComponent<MagicHolder>();
@@ -1103,7 +1103,7 @@ public class HotDog_AI : EnemyAI
             .OnComplete(() =>
             {
                 // 아이 트레일 부모 바꾸기
-                eyeTrail.transform.SetParent(SystemManager.Instance.effectPool);
+                eyeTrail.transform.SetParent(ObjectPool.Instance.effectPool);
 
                 // 아이 아키라 트레일 1초후 디스폰
                 LeanPool.Despawn(eyeTrail, moveSpeed + 0.1f);

@@ -96,14 +96,14 @@ public class LightningRod : MonoBehaviour
         for (int i = 0; i < atkPosList.Count; i++)
         {
             // 리스트의 모든 적 위치마다 전기 구체 소환
-            ParticleManager electroBall = LeanPool.Spawn(electroBallPrefab, atkPosList[i], Quaternion.identity, SystemManager.Instance.magicPool);
+            ParticleManager electroBall = LeanPool.Spawn(electroBallPrefab, atkPosList[i], Quaternion.identity, ObjectPool.Instance.magicPool);
             ballList.Add(electroBall);
 
             // 마지막 인덱스 아닐때
             if (i < atkPosList.Count - 1)
             {
                 // 각 포인트 사이마다 전기 라인 프리팹 소환하고 전기라인 리스트에 추가
-                LineRenderer electroLine = LeanPool.Spawn(electroLinePrefab, atkPosList[i], Quaternion.identity, SystemManager.Instance.magicPool);
+                LineRenderer electroLine = LeanPool.Spawn(electroLinePrefab, atkPosList[i], Quaternion.identity, ObjectPool.Instance.magicPool);
                 lineList.Add(electroLine);
 
                 // 전기 라인 컴포넌트 찾기
@@ -121,7 +121,7 @@ public class LightningRod : MonoBehaviour
                 float subDistance = Vector2.Distance(lightningLine.StartObject.transform.position, lightningLine.EndObject.transform.position);
 
                 // 전기 라인 주변부 서브 전기 파티클 추가하기
-                ParticleManager subLight = LeanPool.Spawn(subLightPrefab, subPos, Quaternion.identity, SystemManager.Instance.magicPool);
+                ParticleManager subLight = LeanPool.Spawn(subLightPrefab, subPos, Quaternion.identity, ObjectPool.Instance.magicPool);
                 lineSubEffectList.Add(subLight);
 
                 // 시작,끝 부분 사이 거리만큼 Y 스케일 늘리기

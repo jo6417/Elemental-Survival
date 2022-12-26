@@ -11,7 +11,7 @@ public class HitBox : MonoBehaviour
     [Header("Refer")]
     public Character character;
     public List<Collider2D> hitColls;
-    enum DamageType { Damaged, Heal, Miss, Block }
+
 
     private void Awake()
     {
@@ -306,7 +306,7 @@ public class HitBox : MonoBehaviour
             hitEffect = WorldSpawner.Instance.blockEffect;
 
         // 피격 지점에 히트 이펙트 소환
-        LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
     public void AfterEffect(Attack attacker, bool isCritical, float damage = 0)
@@ -543,16 +543,16 @@ public class HitBox : MonoBehaviour
 
         // 무적 상태일때, 방어
         if (character.invinsible)
-            StartCoroutine(DamageText(DamageType.Block, damage, isCritical, hitPos));
+            UIManager.Instance.DamageUI(UIManager.DamageType.Block, damage, isCritical, hitPos);
         // 데미지 0일때, 회피
         else if (damage == 0)
-            StartCoroutine(DamageText(DamageType.Miss, damage, isCritical, hitPos));
+            UIManager.Instance.DamageUI(UIManager.DamageType.Miss, damage, isCritical, hitPos);
         // 데미지 양수일때, 피격
         else if (damage > 0)
-            StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical, hitPos));
+            UIManager.Instance.DamageUI(UIManager.DamageType.Damaged, damage, isCritical, hitPos);
         // 데미지 음수일때, 회복
         else if (damage < 0)
-            StartCoroutine(DamageText(DamageType.Heal, damage, isCritical, hitPos));
+            UIManager.Instance.DamageUI(UIManager.DamageType.Heal, damage, isCritical, hitPos);
 
 
         // 무적 아닐때
@@ -582,73 +582,7 @@ public class HitBox : MonoBehaviour
         }
     }
 
-    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
-    {
-        // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, hitPos, Quaternion.identity, SystemManager.Instance.overlayPool);
-        TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
-        switch (damageType)
-        {
-            // 데미지 있을때
-            case DamageType.Damaged:
-                // 크리티컬 떴을때 추가 강조효과 UI
-                if (isCritical)
-                {
-                    dmgTxt.color = Color.yellow;
-                }
-                else
-                {
-                    dmgTxt.color = Color.white;
-                }
-
-                dmgTxt.text = damage.ToString();
-                break;
-
-            // 데미지가 마이너스일때 (체력회복일때)
-            case DamageType.Heal:
-                dmgTxt.color = Color.green;
-                dmgTxt.text = "+" + (-damage).ToString();
-                break;
-
-            // 회피 했을때
-            case DamageType.Miss:
-                dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
-                dmgTxt.text = "MISS";
-                break;
-
-            // 방어 했을때
-            case DamageType.Block:
-                dmgTxt.color = new Color(30f / 255f, 100f / 255f, 200f / 255f);
-                dmgTxt.text = "Block";
-                break;
-        }
-
-        // 데미지 양수일때
-        if (damage > 0)
-            // 오른쪽으로 DOJump
-            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 0.5f)
-            .SetEase(Ease.OutBounce);
-        // 데미지 음수일때
-        else
-            // 위로 DoMove
-            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 0.5f)
-            .SetEase(Ease.OutSine);
-
-        //제로 사이즈로 시작
-        damageUI.transform.localScale = Vector3.zero;
-
-        //원래 크기로 늘리기
-        damageUI.transform.DOScale(Vector3.one, 0.5f);
-        yield return new WaitForSeconds(0.8f);
-
-        //줄어들어 사라지기
-        damageUI.transform.DOScale(Vector3.zero, 0.2f);
-        yield return new WaitForSeconds(0.2f);
-
-        // 데미지 텍스트 디스폰
-        LeanPool.Despawn(damageUI);
-    }
 
     public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Character.Debuff debuffType)
     {
@@ -879,7 +813,7 @@ public class HitBox : MonoBehaviour
                 UIManager.Instance.UpdateKillCount();
 
                 //혈흔 이펙트 생성
-                GameObject blood = LeanPool.Spawn(WorldSpawner.Instance.bloodPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                GameObject blood = LeanPool.Spawn(WorldSpawner.Instance.bloodPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
             }
 
             //아이템 드랍
@@ -893,7 +827,7 @@ public class HitBox : MonoBehaviour
         if (character.selfExplosion)
         {
             // 폭발 이펙트 스폰
-            GameObject effect = LeanPool.Spawn(character.enemyAtkTrigger.explosionPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject effect = LeanPool.Spawn(character.enemyAtkTrigger.explosionPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 일단 비활성화
             effect.SetActive(false);
@@ -918,7 +852,7 @@ public class HitBox : MonoBehaviour
         DebuffRemove();
 
         // 먼지 이펙트 생성
-        GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, character.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
         // dust.tag = "Enemy";
 
         // 죽을때 콜백 호출

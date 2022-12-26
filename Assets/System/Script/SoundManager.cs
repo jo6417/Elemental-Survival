@@ -55,11 +55,16 @@ public class SoundManager : MonoBehaviour
     }
     #endregion
 
-    [ReadOnly] public bool init = false;
+    [Header("State")]
+    [ReadOnly] public bool loadDone = false;
+    [SerializeField] float bgmFadeTime = 1f; // 배경음 페이드인, 페이드아웃 시간
+    public AudioSource nowBGM; // 현재 재생중인 배경음
+    public bool bgmPause = false; // 배경음 일시정지
+    public IEnumerator BGMCoroutine; // 배경음 코루틴
 
     [Header("Refer")]
     [SerializeField] GameObject emptyAudio;
-    [SerializeField] Transform soundPool;
+    public Transform soundPool;
     [SerializeField] AnimationCurve curve_3D;
 
     [Header("Sounds")]
@@ -69,7 +74,13 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        // 최초 생성 됬을때
+        if (instance == null)
+            // 사운드 매니저 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
 
         // 초기화
         StartCoroutine(Init());
@@ -94,8 +105,8 @@ public class SoundManager : MonoBehaviour
         yield return new WaitUntil(() => all_Sounds.Count == soundsNum);
 
         // 초기화 완료
-        print("SoundManager Init");
-        init = true;
+        print("SoundManager Loaded!");
+        loadDone = true;
     }
 
     void AudioMake(SoundBundle soundBundle)
@@ -128,10 +139,52 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    public IEnumerator BGMPlayer()
+    {
+        // 사운드 매니저 초기화 대기
+        yield return new WaitUntil(() => SoundManager.Instance.loadDone);
+
+        while (gameObject)
+        {
+            string soundName = "InGameBGM_" + UnityEngine.Random.Range(1, 4);
+
+            print(soundName);
+
+            // 배경음 중에 랜덤 재생
+            // nowBGM = SoundManager.Instance.PlaySound(soundName, bgmFadeTime);
+
+            Sound sound = all_Sounds.Find(x => x.name == soundName);
+
+            // 오디오 클립 넣기
+            nowBGM.clip = sound.clip;
+            // 볼륨 및 피치 초기화
+            nowBGM.volume = sound.volume;
+            nowBGM.pitch = sound.pitch;
+
+            // 루프 없음
+            nowBGM.loop = false;
+            // 처음부터 재생
+            nowBGM.time = 0;
+            nowBGM.Play();
+
+            // 볼륨 0으로 초기화
+            nowBGM.volume = 0;
+            // 서서히 원래 볼륨까지 올리기
+            DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume, bgmFadeTime)
+            .SetUpdate(true);
+
+            // 음악 끝날때까지 대기, 일시정지 아닐때
+            yield return new WaitUntil(() => !bgmPause && !nowBGM.isPlaying);
+
+            // 오디오 정지
+            nowBGM.Stop();
+        }
+    }
+
     AudioSource InitAudio(Sound sound, float spatialBlend, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true, Vector2 position = default, Transform attachor = null)
     {
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        Transform parent = attachor != null ? attachor : soundPool;
+        Transform parent = attachor != null ? attachor : ObjectPool.Instance.soundPool;
         GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, parent);
 
         // 위치 안들어왔으면 초기화
@@ -244,7 +297,7 @@ public class SoundManager : MonoBehaviour
     IEnumerator Play(Sound sound, AudioSource audio, bool autoDespawn, float fadeinTime, float delay, int loopNum, bool scaledTime)
     {
         // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => init);
+        yield return new WaitUntil(() => loadDone);
 
         WaitForSeconds waitScaled_Delay = new WaitForSeconds(delay);
         WaitForSecondsRealtime waitUnScaled_Delay = new WaitForSecondsRealtime(delay);
@@ -390,7 +443,9 @@ public class SoundManager : MonoBehaviour
     IEnumerator ChangePitch(float scale)
     {
         // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => init);
+        yield return new WaitUntil(() => loadDone);
+        // 사운드풀 불러올때까지 대기
+        yield return new WaitUntil(() => ObjectPool.Instance.soundPool != null);
 
         // 모든 사운드의 디폴트 pitch 값에 타임스케일 곱하기
         foreach (Sound sound in all_Sounds)
@@ -408,10 +463,10 @@ public class SoundManager : MonoBehaviour
             }
 
         // 모든 자식 오디오소스 오브젝트의 피치에 타임스케일 곱하기
-        for (int i = 0; i < soundPool.childCount; i++)
+        for (int i = 0; i < ObjectPool.Instance.soundPool.childCount; i++)
         {
             // 자식중에 오디오 찾기
-            AudioSource audio = soundPool.GetChild(i).GetComponent<AudioSource>();
+            AudioSource audio = ObjectPool.Instance.soundPool.GetChild(i).GetComponent<AudioSource>();
 
             // 오브젝트 이름으로 사운드 찾기
             Sound sound = all_Sounds.Find(x => x.name == audio.name);

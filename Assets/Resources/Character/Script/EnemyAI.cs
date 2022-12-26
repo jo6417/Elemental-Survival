@@ -255,7 +255,7 @@ public class EnemyAI : MonoBehaviour
 
         // 착지 이펙트 생성
         if (landEffect != null)
-            LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(landEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 현재 행동 끝내기
         character.nowState = Character.State.Idle;

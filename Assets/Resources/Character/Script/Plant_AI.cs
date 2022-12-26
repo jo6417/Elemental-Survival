@@ -38,7 +38,7 @@ public class Plant_AI : MonoBehaviour
             if ((PlayerManager.Instance.transform.position - leafPos).magnitude <= atkRange)
             {
                 // 잎날 생성
-                Transform leaf = LeanPool.Spawn(leafPrefab, leafPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+                Transform leaf = LeanPool.Spawn(leafPrefab, leafPos, Quaternion.identity, ObjectPool.Instance.enemyAtkPool);
 
                 // 타겟을 향해 잎날 발사
                 leaf.GetComponentInChildren<Rigidbody2D>().velocity = targetDir;

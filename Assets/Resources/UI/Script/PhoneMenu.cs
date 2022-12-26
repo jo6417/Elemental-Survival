@@ -89,8 +89,8 @@ public class PhoneMenu : MonoBehaviour
     public SimpleScrollSnap recipeScroll; // 레시피 슬롯 스크롤
     public GameObject recipePrefab; // 단일 레시피 프리팹
     public bool recipeInit = false;
-    [SerializeField] Button recipeUpBtn; // 레시피 위로 스크롤
-    [SerializeField] Button recipeDownBtn; // 레시피 아래로 스크롤
+    [SerializeField] public Button recipeUpBtn; // 레시피 위로 스크롤
+    [SerializeField] public Button recipeDownBtn; // 레시피 아래로 스크롤
 
     [Header("Random Panel")]
     public Transform animSlot; // 애니메이션용 슬롯
@@ -133,41 +133,56 @@ public class PhoneMenu : MonoBehaviour
         yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
 
         // 방향키 입력
-        UIManager.Instance.UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
+        UIManager.Instance.UI_Input.UI.NavControl.performed += val =>
+        {
+            // 핸드폰 오브젝트 있을때
+            if (PhoneMenu.Instance != null)
+                NavControl(val.ReadValue<Vector2>());
+        };
         // 마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => MousePos();
+        UIManager.Instance.UI_Input.UI.MousePosition.performed += val =>
+        {
+            // 핸드폰 오브젝트 있을때
+            if (PhoneMenu.Instance != null)
+                MousePos();
+        };
         // 마우스 클릭
         UIManager.Instance.UI_Input.UI.Click.performed += val =>
         {
-            if (gameObject.activeSelf)
+            // 핸드폰 오브젝트 있을때
+            if (PhoneMenu.Instance != null)
                 StartCoroutine(CancelMoveItem());
         };
         // 마우스 휠 스크롤
         UIManager.Instance.UI_Input.UI.MouseWheel.performed += val =>
         {
-            // 마우스 휠 입력하면 레시피 스크롤 하기
-            if (val.ReadValue<Vector2>().y > 0)
-                recipeUpBtn.onClick.Invoke();
-            else
-                recipeDownBtn.onClick.Invoke();
+            // 핸드폰 오브젝트 있을때
+            if (PhoneMenu.Instance != null)
+                // 마우스 휠 입력하면 레시피 스크롤 하기
+                if (val.ReadValue<Vector2>().y > 0)
+                    recipeUpBtn.onClick.Invoke();
+                else
+                    recipeDownBtn.onClick.Invoke();
         };
 
         // 스마트폰 버튼 입력
         UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
         {
-            // 로딩 패널 꺼져있을때
-            if (!loadingPanel.activeSelf)
-            {
-                //백 버튼 액션 실행
-                StartCoroutine(BackBtnAction());
-            }
+            // 핸드폰 오브젝트 있을때
+            if (PhoneMenu.Instance != null)
+                // 로딩 패널 꺼져있을때
+                if (!loadingPanel.activeSelf)
+                {
+                    //백 버튼 액션 실행
+                    StartCoroutine(BackBtnAction());
+                }
         };
 
         // 핸드폰 패널 끄기
         phonePanel.SetActive(false);
     }
 
-    IEnumerator CancelMoveItem()
+    public IEnumerator CancelMoveItem()
     {
         // 클릭시 select 오브젝트 바뀔때까지 1프레임 대기
         yield return new WaitForSeconds(Time.deltaTime);
@@ -188,7 +203,7 @@ public class PhoneMenu : MonoBehaviour
     }
 
     // 방향키 입력되면 실행
-    void NavControl(Vector2 arrowDir)
+    public void NavControl(Vector2 arrowDir)
     {
         // 머지 패널 꺼져있으면 리턴
         if (!gameObject.activeSelf)
@@ -203,10 +218,6 @@ public class PhoneMenu : MonoBehaviour
     // 마우스 위치 입력되면 실행
     public void MousePos()
     {
-        // 머지 패널 꺼져있으면 리턴
-        if (!gameObject.activeSelf)
-            return;
-
         // print(mousePosInput);
 
         if (nowSelectIcon.enabled)
@@ -286,7 +297,7 @@ public class PhoneMenu : MonoBehaviour
         phoneRotation = CastMagic.Instance.transform.rotation.eulerAngles;
 
         //카메라 위치
-        Vector3 camPos = SystemManager.Instance.camParent.position;
+        Vector3 camPos = Camera.main.transform.parent.position;
         camPos.z = 0;
 
         // 캠 변경된 스케일값

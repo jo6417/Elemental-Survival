@@ -111,7 +111,7 @@ public class TruckButton : MonoBehaviour
         btnSprite.sprite = btnSpriteList[1];
 
         // 트럭 소환
-        LeanPool.Spawn(truckPrefab, transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+        LeanPool.Spawn(truckPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.itemPool);
 
         // 버튼 사라지기
         btnSprite.DOColor(Color.clear, 1f);

@@ -25,11 +25,11 @@ public class UIManager : MonoBehaviour
                 {
                     instance = obj;
                 }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<UIManager>();
-                    instance = newObj;
-                }
+                // else
+                // {
+                //     var newObj = new GameObject().AddComponent<UIManager>();
+                //     instance = newObj;
+                // }
             }
             return instance;
         }
@@ -42,6 +42,7 @@ public class UIManager : MonoBehaviour
     public float defaultCamSize = 16.875f; // 기본 캠 사이즈
     private Tween zoomTween = null; // 현재 진행중인 줌인 및 줌아웃 트윈
     [SerializeField] float fill_Max = 600f; // 단일 난이도 최대치, 기본 10분
+    public enum DamageType { Damaged, Heal, Miss, Block }
 
     [Header("Input")]
     public NewInput UI_Input; // UI 인풋 받기
@@ -112,8 +113,16 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        // // 최초 생성 됬을때
+        // if (instance == null)
+        //     // 파괴되지 않게 설정
+        //     DontDestroyOnLoad(gameObject);
+        // else
+        //     // 해당 오브젝트 파괴
+        //     Destroy(gameObject);
+
         //입력 초기화
-        InputInit();
+        StartCoroutine(InputInit());
 
         // 시작할때 머지 캔버스 켜놓기
         phonePanel.SetActive(true);
@@ -122,20 +131,48 @@ public class UIManager : MonoBehaviour
         PhoneNotice(0);
     }
 
-    void InputInit()
+    IEnumerator InputInit()
     {
         UI_Input = new NewInput();
 
+        // null 이 아닐때까지 대기
+        yield return new WaitUntil(() => SystemManager.Instance != null && UI_Input != null);
+
         // 방향키 입력
-        UI_Input.UI.NavControl.performed += val => NavControl(val.ReadValue<Vector2>());
+        UI_Input.UI.NavControl.performed += val =>
+        {
+            // 오브젝트 켜져있을때
+            if (UIManager.Instance)
+                NavControl(val.ReadValue<Vector2>());
+        };
         // 마우스 위치 입력
-        UI_Input.UI.MousePosition.performed += val => MousePos(val.ReadValue<Vector2>());
+        UI_Input.UI.MousePosition.performed += val =>
+        {
+            // 오브젝트 켜져있을때
+            if (UIManager.Instance)
+                MousePos(val.ReadValue<Vector2>());
+        };
         // 확인 입력
-        UI_Input.UI.Accept.performed += val => Submit();
+        UI_Input.UI.Accept.performed += val =>
+        {
+            // 오브젝트 켜져있을때
+            if (UIManager.Instance)
+                Submit();
+        };
         // 취소 입력
-        UI_Input.UI.Cancel.performed += val => Cancel();
+        UI_Input.UI.Cancel.performed += val =>
+        {
+            // 오브젝트 켜져있을때
+            if (UIManager.Instance)
+                Cancel();
+        };
         // 스마트폰 버튼 입력
-        UI_Input.UI.PhoneMenu.performed += val => PhoneOpen();
+        UI_Input.UI.PhoneMenu.performed += val =>
+        {
+            // 오브젝트 켜져있을때
+            if (UIManager.Instance)
+                PhoneOpen();
+        };
         // 마우스 클릭
         UI_Input.UI.Click.performed += val =>
         {
@@ -144,13 +181,65 @@ public class UIManager : MonoBehaviour
             // && EventSystem.current.currentSelectedGameObject.TryGetComponent(out Selectable selectable))
             //     lastSelected = selectable;
 
-            Click();
+            // 오브젝트 켜져있을때
+            if (UIManager.Instance)
+                Click();
         };
+
+        // // 핸드폰 관련 인풋 함수
+        // // 방향키 입력
+        // UI_Input.UI.NavControl.performed += val =>
+        // {
+        //     // 핸드폰 오브젝트 있을때
+        //     if (PhoneMenu.Instance != null)
+        //         PhoneMenu.Instance.NavControl(val.ReadValue<Vector2>());
+        // };
+        // // 마우스 위치 입력
+        // UI_Input.UI.MousePosition.performed += val =>
+        // {
+        //     // 핸드폰 오브젝트 있을때
+        //     if (PhoneMenu.Instance != null)
+        //         PhoneMenu.Instance.MousePos();
+        // };
+        // // 마우스 클릭
+        // UI_Input.UI.Click.performed += val =>
+        // {
+        //     // 핸드폰 오브젝트 있을때
+        //     if (PhoneMenu.Instance != null)
+        //         StartCoroutine(PhoneMenu.Instance.CancelMoveItem());
+        // };
+        // // 마우스 휠 스크롤
+        // UI_Input.UI.MouseWheel.performed += val =>
+        // {
+        //     // 핸드폰 오브젝트 있을때
+        //     if (PhoneMenu.Instance != null)
+        //         // 마우스 휠 입력하면 레시피 스크롤 하기
+        //         if (val.ReadValue<Vector2>().y > 0)
+        //             PhoneMenu.Instance.recipeUpBtn.onClick.Invoke();
+        //         else
+        //             PhoneMenu.Instance.recipeDownBtn.onClick.Invoke();
+        // };
+
+        // // 스마트폰 버튼 입력
+        // UI_Input.UI.PhoneMenu.performed += val =>
+        // {
+        //     // 핸드폰 오브젝트 있을때
+        //     if (PhoneMenu.Instance != null)
+        //         // 로딩 패널 꺼져있을때
+        //         if (!PhoneMenu.Instance.loadingPanel.activeSelf)
+        //         {
+        //             //백 버튼 액션 실행
+        //             StartCoroutine(PhoneMenu.Instance.BackBtnAction());
+        //         }
+        // };
+
+        // UI 인풋 활성화
+        UI_Input.Enable();
     }
 
     private void OnEnable()
     {
-        // SystemManager 에서 켜기
+        // UI 인풋 켜기
         // UI_Input.Enable();
 
         // 초기화
@@ -258,7 +347,7 @@ public class UIManager : MonoBehaviour
             StartCoroutine(PhoneMenu.Instance.OpenPhone(modifyPos));
 
             //플레이어 입력 끄기
-            playerManager.playerInput.Disable();
+            playerManager.player_Input.Disable();
 
             //현재 열려있는 팝업 갱신
             nowOpenPopup = phonePanel;
@@ -379,6 +468,10 @@ public class UIManager : MonoBehaviour
         // 커서 켜져있을때 끄기
         if (!setToggle && UI_Cursor.activeSelf)
         {
+            // UI 커서 투명하게
+            UI_Cursor.GetComponent<Image>().DOColor(SystemManager.Instance.HexToRGBA("59AFFF", 0), 0.3f)
+            .SetUpdate(true);
+
             //UI커서 크기 및 위치 초기화
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
             cursorRect.DOSizeDelta(cursorCanvasRect.sizeDelta, 0.3f)
@@ -425,7 +518,7 @@ public class UIManager : MonoBehaviour
         Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
 
         //커서 사이즈 + 여백 추가
-        Vector2 size = lastRect.sizeDelta + lastRect.sizeDelta * 0.1f;
+        Vector2 size = lastRect.sizeDelta * 1.1f;
 
         //마지막 선택된 버튼의 캔버스
         Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
@@ -436,16 +529,19 @@ public class UIManager : MonoBehaviour
             //렌더 모드 일치 시키기
             UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
 
-            // 바뀐 렌더모드에 따라 커서 스케일 정의
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+            RectTransform selectedCanvasRect = selectedCanvas.GetComponent<RectTransform>();
+
+            // 스케일 일치
+            cursorCanvasRect.localScale = selectedCanvasRect.localScale;
+
+            // 바뀐 렌더모드에 따라 커서 스케일 정의
             if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
-                cursorCanvasRect.localScale = Vector2.one;
+                // cursorCanvasRect.localScale = Vector2.one;
             }
             else
             {
-                cursorCanvasRect.localScale = Vector2.one / 64f;
-
                 //캔버스 z축을 선택된 캔버스에 맞추기
                 Vector3 canvasPos = cursorCanvasRect.position;
                 canvasPos.z = selectedCanvas.transform.position.z;
@@ -472,6 +568,10 @@ public class UIManager : MonoBehaviour
 
         // 타겟 위치로 이동
         UI_Cursor.transform.DOMove(btnPos, flickTime)
+        .SetUpdate(true);
+
+        // UI 커서 색깔 초기화
+        UI_Cursor.GetComponent<Image>().DOColor(SystemManager.Instance.HexToRGBA("59AFFF"), flickTime)
         .SetUpdate(true);
 
         // 타겟과 사이즈 맞추기
@@ -511,10 +611,13 @@ public class UIManager : MonoBehaviour
         //깜빡임 시작
         isFlicking = true;
 
+        if (cursorRect == null)
+            yield break;
+
         //사이즈 초기화
         cursorRect.sizeDelta = size;
         // 사이즈 커졌다 작아졌다 무한 반복
-        cursorRect.DOSizeDelta(size + size * 0.1f, flickTime)
+        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
         .SetLoops(-1, LoopType.Yoyo)
         .SetUpdate(true)
         .OnKill(() =>
@@ -568,6 +671,14 @@ public class UIManager : MonoBehaviour
 
     public void QuitMainMenu()
     {
+        // // 오브젝트 풀 파괴
+        // Destroy(ObjectPool.Instance.gameObject);
+
+        // 배경음 코루틴 끄기
+        StopCoroutine(SoundManager.Instance.BGMCoroutine);
+        // 배경음 정지
+        SoundManager.Instance.nowBGM.Pause();
+
         // 메인메뉴 씬 불러오기
         SceneManager.LoadScene("MainMenuScene", LoadSceneMode.Single);
     }
@@ -578,9 +689,26 @@ public class UIManager : MonoBehaviour
 
     }
 
-    //게임 재개
+    //게임 일시정지,재개
     public void Resume()
     {
+        if (!pausePanel.activeSelf)
+        {
+            // 브금 일시정지 상태로 변경
+            SoundManager.Instance.bgmPause = true;
+
+            // 배경음 정지
+            SoundManager.Instance.nowBGM.Pause();
+        }
+        else
+        {
+            // 브금 재개 상태로 변경
+            SoundManager.Instance.bgmPause = true;
+
+            // 배경음 재개
+            SoundManager.Instance.nowBGM.Play();
+        }
+
         //일시정지 메뉴 UI 토글
         PopupUI(pausePanel);
     }
@@ -1058,7 +1186,7 @@ public class UIManager : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
             //플레이어 입력 켜기
-            playerManager.playerInput.Enable();
+            playerManager.player_Input.Enable();
 
             //현재 열려있는 팝업 비우기
             nowOpenPopup = null;
@@ -1067,7 +1195,7 @@ public class UIManager : MonoBehaviour
         else
         {
             //플레이어 입력 끄기
-            playerManager.playerInput.Disable();
+            playerManager.player_Input.Disable();
 
             //현재 열려있는 팝업 갱신
             nowOpenPopup = popup;
@@ -1084,7 +1212,7 @@ public class UIManager : MonoBehaviour
     public IEnumerator PointObject(GameObject targetObj, Sprite icon)
     {
         // 오버레이 풀에서 화살표 UI 생성
-        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetObj.transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetObj.transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);
 
         //rect 찾기
         RectTransform rect = arrowUI.GetComponent<RectTransform>();
@@ -1135,6 +1263,80 @@ public class UIManager : MonoBehaviour
 
         //화살표 디스폰
         LeanPool.Despawn(arrowUI);
+    }
+
+    public void DamageUI(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
+    {
+        // 데미지 UI 재생
+        StartCoroutine(DamageText(damageType, damage, isCritical, hitPos));
+    }
+
+    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
+    {
+        // 데미지 UI 띄우기
+        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, hitPos, Quaternion.identity, ObjectPool.Instance.overlayPool);
+        TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
+
+        switch (damageType)
+        {
+            // 데미지 있을때
+            case DamageType.Damaged:
+                // 크리티컬 떴을때 추가 강조효과 UI
+                if (isCritical)
+                {
+                    dmgTxt.color = Color.yellow;
+                }
+                else
+                {
+                    dmgTxt.color = Color.white;
+                }
+
+                dmgTxt.text = damage.ToString();
+                break;
+
+            // 데미지가 마이너스일때 (체력회복일때)
+            case DamageType.Heal:
+                dmgTxt.color = Color.green;
+                dmgTxt.text = "+" + (-damage).ToString();
+                break;
+
+            // 회피 했을때
+            case DamageType.Miss:
+                dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
+                dmgTxt.text = "MISS";
+                break;
+
+            // 방어 했을때
+            case DamageType.Block:
+                dmgTxt.color = new Color(30f / 255f, 100f / 255f, 200f / 255f);
+                dmgTxt.text = "Block";
+                break;
+        }
+
+        // 데미지 양수일때
+        if (damage > 0)
+            // 오른쪽으로 DOJump
+            damageUI.transform.DOJump((Vector2)damageUI.transform.position + Vector2.right * 2f, 1f, 1, 0.5f)
+            .SetEase(Ease.OutBounce);
+        // 데미지 음수일때
+        else
+            // 위로 DoMove
+            damageUI.transform.DOMove((Vector2)damageUI.transform.position + Vector2.up * 2f, 0.5f)
+            .SetEase(Ease.OutSine);
+
+        //제로 사이즈로 시작
+        damageUI.transform.localScale = Vector3.zero;
+
+        //원래 크기로 늘리기
+        damageUI.transform.DOScale(Vector3.one, 0.5f);
+        yield return new WaitForSeconds(0.8f);
+
+        //줄어들어 사라지기
+        damageUI.transform.DOScale(Vector3.zero, 0.2f);
+        yield return new WaitForSeconds(0.2f);
+
+        // 데미지 텍스트 디스폰
+        LeanPool.Despawn(damageUI);
     }
 
     public void GameOver(bool isClear = false)

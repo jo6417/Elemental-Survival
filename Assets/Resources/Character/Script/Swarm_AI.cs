@@ -37,7 +37,7 @@ public class Swarm_AI : MonoBehaviour
             Vector2 spawnPos = (Vector2)transform.position + Random.insideUnitCircle * 3f;
 
             // 몬스터 생성
-            GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyPool);
+            GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 몬스터 정보 찾기
             EnemyInfo enemy = EnemyDB.Instance.GetEnemyByName(enemyObj.name.Split('_')[0]);

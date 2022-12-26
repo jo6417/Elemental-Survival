@@ -42,7 +42,7 @@ public class SaveManager : MonoBehaviour
         {
             if (instance == null)
             {
-                //비활성화된 오브젝트도 포함
+                // 비활성화된 오브젝트도 포함 찾기
                 var obj = FindObjectOfType<SaveManager>(true);
                 if (obj != null)
                 {
@@ -127,7 +127,8 @@ public class SaveManager : MonoBehaviour
     public IEnumerator DBSyncCheck(SystemManager.DBType dbType, Button syncBtn, string uri)
     {
         // 동기화 버튼 노랑불
-        syncBtn.targetGraphic.color = Color.yellow;
+        if (syncBtn != null)
+            syncBtn.targetGraphic.color = Color.yellow;
 
         // 로컬에 저장된 세이브 불러와 변수에 넣기
         yield return StartCoroutine(LoadData());
@@ -155,27 +156,30 @@ public class SaveManager : MonoBehaviour
 
         // print($"{string.Equals(localDBJson, webDBJson)}, {localDBJson.Length} : {webDBJson.Length}");
 
-        // 해당 DB 종류의 로컬 json 문자열과 웹 json 문자열 비교
-        if (string.Equals(localDBJson, webDBJson))
+        if (syncBtn != null)
         {
-            // 동기화 버튼 초록불
-            syncBtn.targetGraphic.color = Color.green;
+            // 해당 DB 종류의 로컬 json 문자열과 웹 json 문자열 비교
+            if (string.Equals(localDBJson, webDBJson))
+            {
+                // 동기화 버튼 초록불
+                syncBtn.targetGraphic.color = Color.green;
 
-            // 버튼 상호작용 끄기
-            // syncBtn.interactable = false;
+                // 버튼 상호작용 끄기
+                // syncBtn.interactable = false;
+            }
+            else
+            {
+                // 동기화 버튼 빨간불
+                syncBtn.targetGraphic.color = Color.red;
+
+                // 버튼 상호작용 켜기
+                // syncBtn.interactable = true;
+            }
+
+            // 동기화 아이콘 애니메이션 멈추고 각도 초기화
+            syncBtn.transform.Find("SyncIcon").GetComponent<Animator>().enabled = false;
+            syncBtn.transform.Find("SyncIcon").rotation = Quaternion.Euler(Vector3.zero);
         }
-        else
-        {
-            // 동기화 버튼 빨간불
-            syncBtn.targetGraphic.color = Color.red;
-
-            // 버튼 상호작용 켜기
-            // syncBtn.interactable = true;
-        }
-
-        // 동기화 아이콘 애니메이션 멈추고 각도 초기화
-        syncBtn.transform.Find("SyncIcon").GetComponent<Animator>().enabled = false;
-        syncBtn.transform.Find("SyncIcon").rotation = Quaternion.Euler(Vector3.zero);
     }
 
     public IEnumerator WebDataLoad(SystemManager.DBType dbType, string uri)

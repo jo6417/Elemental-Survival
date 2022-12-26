@@ -32,6 +32,7 @@ public class MagicDB : MonoBehaviour
     }
     #endregion
 
+    [ReadOnly] public bool loadDone = false; //로드 완료 여부
     public enum CastType { active, passive };
 
     public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
@@ -42,8 +43,6 @@ public class MagicDB : MonoBehaviour
 
     public List<int> unlockMagics = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
     public List<int> savedMagics = new List<int>(); //이번 게임에서 한번이라도 소지했던 마법들
-
-    [HideInInspector] public bool loadDone = false; //로드 완료 여부
 
     [SerializeField, ReadOnly] Color[] gradeColor = new Color[7]; //마법 등급 색깔
     public Color[] GradeColor
@@ -210,7 +209,7 @@ public class MagicDB : MonoBehaviour
         // 로컬 세이브에서 언락된 마법들 불러오기
         LoadUnlockMagics();
 
-        loadDone = true;
+        this.loadDone = true;
         print("MagicDB Loaded!");
     }
 

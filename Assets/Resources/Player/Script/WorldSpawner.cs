@@ -20,11 +20,11 @@ public class WorldSpawner : MonoBehaviour
                 {
                     instance = obj;
                 }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<WorldSpawner>();
-                    instance = newObj;
-                }
+                // else
+                // {
+                //     var newObj = new GameObject().AddComponent<WorldSpawner>();
+                //     instance = newObj;
+                // }
             }
             return instance;
         }
@@ -79,6 +79,13 @@ public class WorldSpawner : MonoBehaviour
     void Start()
     {
         spawnColl = GetComponent<BoxCollider2D>();
+    }
+
+    private void OnEnable()
+    {
+        // 배경음 재생
+        SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
+        StartCoroutine(SoundManager.Instance.BGMCoroutine);
     }
 
     void Update()
@@ -269,7 +276,7 @@ public class WorldSpawner : MonoBehaviour
             spawnEndPos = BorderRandPos();
 
         // 몬스터 프리팹 소환
-        GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, SystemManager.Instance.enemyPool);
+        GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
         // 소환된 몬스터 위치 이동
         enemyObj.transform.position = spawnEndPos;
 
@@ -329,7 +336,7 @@ public class WorldSpawner : MonoBehaviour
         // print(transform.name + ":" + spawnStartPos + ":" + spawnEndPos);
 
         // 몬스터 발밑에서 포탈생성
-        GameObject portal = LeanPool.Spawn(mobPortal, portalPos, Quaternion.identity, SystemManager.Instance.enemyPool);
+        GameObject portal = LeanPool.Spawn(mobPortal, portalPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
         // 포탈 스프라이트 켜기
         portal.GetComponent<SpriteRenderer>().enabled = true;
@@ -444,7 +451,7 @@ public class WorldSpawner : MonoBehaviour
         }
 
         // 아이템 박스 생성
-        GameObject itembox = LeanPool.Spawn(itemBox, boxPos, Quaternion.identity, SystemManager.Instance.itemPool);
+        GameObject itembox = LeanPool.Spawn(itemBox, boxPos, Quaternion.identity, ObjectPool.Instance.itemPool);
 
         // print($"loopNum : {loopNum}");
 
@@ -530,7 +537,7 @@ public class WorldSpawner : MonoBehaviour
     IEnumerator PointEnemyDir(GameObject enemyObj)
     {
         // 오버레이 풀에서 화살표 UI 생성
-        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);
 
         //몬스터 활성화 되어있으면
         while (enemyObj.activeSelf)

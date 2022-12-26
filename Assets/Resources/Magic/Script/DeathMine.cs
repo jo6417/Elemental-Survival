@@ -125,7 +125,7 @@ public class DeathMine : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // 폭발 이펙트 스폰
-        GameObject explosionHit = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject explosionHit = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 일단 비활성화
         explosionHit.SetActive(false);
@@ -142,7 +142,7 @@ public class DeathMine : MonoBehaviour
         explosionHit.SetActive(true);
 
         // 그을음 남기기
-        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 지뢰 디스폰
         LeanPool.Despawn(transform);

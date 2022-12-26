@@ -812,7 +812,7 @@ public class Farmer_AI : MonoBehaviour
     IEnumerator SeedShot(Vector2 spawnPos)
     {
         // 씨앗 소환
-        Seed_AI seedObj = LeanPool.Spawn(seedPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+        Seed_AI seedObj = LeanPool.Spawn(seedPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.enemyAtkPool);
         // 씨앗 스프라이트
         Transform seedSprite = seedObj.transform.GetChild(0);
 
@@ -890,7 +890,7 @@ public class Farmer_AI : MonoBehaviour
             for (int i = 0; i < atkNum; i++)
             {
                 // 독구름 생성
-                Rigidbody2D poisonObj = LeanPool.Spawn(bioGasPrefab, bodyTransform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+                Rigidbody2D poisonObj = LeanPool.Spawn(bioGasPrefab, bodyTransform.position, Quaternion.identity, ObjectPool.Instance.enemyAtkPool);
 
                 // 목표 각도
                 float targetAngle = 360f * i / atkNum;
@@ -934,7 +934,7 @@ public class Farmer_AI : MonoBehaviour
         SoundManager.Instance.PlaySound("Farmer_Sit");
 
         // 착지 먼지 이펙트 생성
-        LeanPool.Spawn(landDustPrefab, bodyTransform.position, Quaternion.Euler(Vector3.zero), SystemManager.Instance.effectPool);
+        LeanPool.Spawn(landDustPrefab, bodyTransform.position, Quaternion.Euler(Vector3.zero), ObjectPool.Instance.effectPool);
 
         yield return new WaitForSeconds(0.5f);
 
@@ -1014,7 +1014,7 @@ public class Farmer_AI : MonoBehaviour
         Vector2 sunPos = (Vector2)bodyTransform.position + Random.insideUnitCircle.normalized * sunRange;
 
         // 태양광 소환
-        GameObject sunObj = LeanPool.Spawn(sunPrefab, sunPos, Quaternion.Euler(Vector3.forward * Random.value * 360f), SystemManager.Instance.enemyAtkPool);
+        GameObject sunObj = LeanPool.Spawn(sunPrefab, sunPos, Quaternion.Euler(Vector3.forward * Random.value * 360f), ObjectPool.Instance.enemyAtkPool);
 
         // 태양광을 리스트에 저장
         sunList.Add(sunObj);

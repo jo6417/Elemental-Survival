@@ -416,7 +416,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator SidePush()
     {
         // 플레이어 위치에 벽 오브젝트 소환해서 플레이어 가두기
-        GameObject wall = LeanPool.Spawn(wallBox, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject wall = LeanPool.Spawn(wallBox, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
         // 스프라이트 찾기
         SpriteRenderer wallGround = wall.GetComponentInChildren<SpriteRenderer>();
         // 가두기 콜라이더 찾기
@@ -664,7 +664,7 @@ public class Quad_AI : MonoBehaviour
         fans[fanIndex].transform.DOPunchPosition(-innerDir, 0.4f);
 
         // 블레이드 생성
-        GameObject shotBlade = LeanPool.Spawn(bladePrefab, wings[fanIndex].transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+        GameObject shotBlade = LeanPool.Spawn(bladePrefab, wings[fanIndex].transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
         // 블레이드에 참조할 보스 캐릭터 정보 넣기
         shotBlade.GetComponent<EnemyAttack>().character = character;
@@ -867,7 +867,7 @@ public class Quad_AI : MonoBehaviour
                 Vector2 targetPos = (Vector2)shotterFan.position + fanDir.normalized * 20f;
 
                 // 윈드커터 생성
-                GameObject windCutterObj = LeanPool.Spawn(windCutterPrefab, shotterFan.transform.position, Quaternion.identity, SystemManager.Instance.enemyAtkPool);
+                GameObject windCutterObj = LeanPool.Spawn(windCutterPrefab, shotterFan.transform.position, Quaternion.identity, ObjectPool.Instance.enemyAtkPool);
 
                 // 어택 컴포넌트 찾기
                 Attack windAtk = windCutterObj.GetComponent<Attack>();
@@ -1030,10 +1030,10 @@ public class Quad_AI : MonoBehaviour
         chargeEffects[wingIndex].SmoothDisable();
 
         // 프로펠러에서 불씨 파티클 생성
-        LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 목표 위치에 블레이드 마스크 생성
-        GameObject bladeMask = LeanPool.Spawn(maskedBladePrefab, character.movePos, Quaternion.identity, SystemManager.Instance.enemyPool);
+        GameObject bladeMask = LeanPool.Spawn(maskedBladePrefab, character.movePos, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
         // 자식중에 블레이드 오브젝트 찾기
         Transform shotBlade = bladeMask.GetComponentInChildren<Animator>().transform;
@@ -1066,9 +1066,9 @@ public class Quad_AI : MonoBehaviour
             shotBlade.GetComponentInChildren<Animator>().enabled = false;
 
             // 박힐때 흙 튀기기
-            LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
             // 흙 깔아주기
-            LeanPool.Spawn(dirtLayEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(dirtLayEffect, bladeMask.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 땅에 박힐때 사운드 재생
             SoundManager.Instance.PlaySound("Quad_Fan_Stuck");
@@ -1131,7 +1131,7 @@ public class Quad_AI : MonoBehaviour
         shotBlade.GetComponentInChildren<Animator>().enabled = true;
 
         // 뽑힐때 흙 튀기기
-        LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(dirtSlashEffect, bladeMask.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 땅에서 뽑히는 사운드 재생
         SoundManager.Instance.PlaySound("Quad_Fan_Pull");
@@ -1151,7 +1151,7 @@ public class Quad_AI : MonoBehaviour
         flyEffects[wingIndex].gameObject.SetActive(true);
 
         // 장착할때 불꽃 파티클
-        LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(fanSparkEffect, shotWing.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 블레이드 장착 사운드 재생
         SoundManager.Instance.PlaySound("Quad_Fan_Equip");

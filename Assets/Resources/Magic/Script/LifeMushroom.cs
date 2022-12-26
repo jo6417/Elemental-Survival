@@ -75,7 +75,7 @@ public class LifeMushroom : MonoBehaviour
             if (magicHolder.isManualCast)
             {
                 // 부모 바꾸기
-                transform.SetParent(SystemManager.Instance.magicPool);
+                transform.SetParent(ObjectPool.Instance.magicPool);
 
                 // 마우스 근처 위치
                 Vector2 targetPos = PlayerManager.Instance.GetMousePos() + Random.insideUnitCircle * 2f;

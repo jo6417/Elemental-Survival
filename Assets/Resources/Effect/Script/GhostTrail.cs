@@ -34,7 +34,7 @@ public class GhostTrail : MonoBehaviour
                 rotation = Quaternion.Euler(-originRotation);
 
                 // 복사본 스프라이트를 가진 고스트를 복사해서 생성
-                GhostManager ghostManager = LeanPool.Spawn(ghostPrefab, transform.position, rotation, SystemManager.Instance.effectPool);
+                GhostManager ghostManager = LeanPool.Spawn(ghostPrefab, transform.position, rotation, ObjectPool.Instance.effectPool);
 
                 // 스케일 동기화
                 ghostManager.transform.localScale = targetSprite.transform.lossyScale;

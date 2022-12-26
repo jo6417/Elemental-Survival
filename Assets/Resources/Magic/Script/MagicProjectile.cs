@@ -253,7 +253,7 @@ public class MagicProjectile : MonoBehaviour
         //파괴 이펙트 있으면 남기기
         if (hitEffect)
         {
-            GameObject effect = LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject effect = LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             //마법 정보 넘겨주기
             if (effect.TryGetComponent(out MagicHolder magicholder))

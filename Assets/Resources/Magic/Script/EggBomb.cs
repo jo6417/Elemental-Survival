@@ -173,7 +173,7 @@ public class EggBomb : MonoBehaviour
         Vector2 spawnPos = (Vector2)transform.position + Random.insideUnitCircle * 2f;
 
         // 달걀 생성
-        Egg egg = LeanPool.Spawn(eggPrefab, spawnPos, Quaternion.identity, SystemManager.Instance.magicPool);
+        Egg egg = LeanPool.Spawn(eggPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.magicPool);
 
         // 사이즈 키우기
         egg.transform.localScale = Vector3.zero;

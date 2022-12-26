@@ -82,7 +82,7 @@ public class Egg : MonoBehaviour
         eggSprite.color = Color.white;
 
         // 폭발 프리팹 생성
-        LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
         // 콜라이더 켜기
         coll.enabled = true;

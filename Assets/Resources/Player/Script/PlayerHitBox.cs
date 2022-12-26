@@ -190,7 +190,7 @@ public class PlayerHitBox : MonoBehaviour
         //     hitEffect = attack.atkEffect;
 
         // 피격 지점에 히트 이펙트 소환
-        LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
     public void Debuff(Attack attacker, float damage, bool isCritical)
@@ -313,7 +313,7 @@ public class PlayerHitBox : MonoBehaviour
             StartCoroutine(DamageText(DamageType.Damaged, damage, isCritical, hitPos));
 
             // 혈흔 파티클 생성
-            LeanPool.Spawn(playerManager.bloodPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(playerManager.bloodPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 데미지 사운드 재생
             SoundManager.Instance.PlaySound("Hit");
@@ -346,7 +346,7 @@ public class PlayerHitBox : MonoBehaviour
     IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
     {
         // 데미지 UI 띄우기
-        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.overlayPool);
+        GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);
         TextMeshProUGUI dmgTxt = damageUI.GetComponent<TextMeshProUGUI>();
 
         switch (damageType)

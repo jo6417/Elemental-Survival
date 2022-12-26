@@ -169,7 +169,7 @@ public class MagicFalling : MonoBehaviour
 
             // 이펙트 오브젝트 생성
             if (despawnEffectPrefab)
-                LeanPool.Spawn(despawnEffectPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(despawnEffectPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             //이펙트 켜기
             if (despawnEffect)

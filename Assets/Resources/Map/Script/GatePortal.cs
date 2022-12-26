@@ -108,7 +108,7 @@ public class GatePortal : MonoBehaviour
         if (distance >= farDistance)
         {
             //포탈이 생성될 위치
-            Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * SystemManager.Instance.portalRange;
+            Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * MapManager.Instance.portalRange;
 
             // 플레이어 주변으로 재이동
             transform.position = pos;

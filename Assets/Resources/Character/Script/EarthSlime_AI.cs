@@ -86,7 +86,7 @@ public class EarthSlime_AI : MonoBehaviour
         smashColl.gameObject.SetActive(true);
 
         // 착지 이펙트 소환
-        LeanPool.Spawn(character.enemyAI.landEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(character.enemyAI.landEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
     public void SmashColliderOff()

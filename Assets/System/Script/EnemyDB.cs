@@ -112,12 +112,12 @@ public class EnemyDB : MonoBehaviour
     }
     #endregion
 
+    [ReadOnly] public bool loadDone = false; //로드 완료 여부
+    public enum EnemyType { Normal, Boss };
+
     public Dictionary<int, EnemyInfo> enemyDB = new Dictionary<int, EnemyInfo>(); //몬스터 정보 DB
     public Dictionary<string, Sprite> enemyIcon = new Dictionary<string, Sprite>(); //몬스터 아이콘 리스트
     public Dictionary<string, GameObject> enemyPrefab = new Dictionary<string, GameObject>(); //몬스터 프리팹 리스트
-    [HideInInspector]
-    public bool loadDone = false; //로드 완료 여부
-    public enum EnemyType { Normal, Boss };
 
     void Awake()
     {

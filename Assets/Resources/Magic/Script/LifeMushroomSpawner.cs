@@ -97,7 +97,7 @@ public class LifeMushroomSpawner : MonoBehaviour
         // HealSeed 마법 크리티컬 확률에 따라 드랍
         if (isDrop)
         {
-            GameObject mushroom = LeanPool.Spawn(lifeMushroom, character.transform.position, Quaternion.identity, SystemManager.Instance.itemPool);
+            GameObject mushroom = LeanPool.Spawn(lifeMushroom, character.transform.position, Quaternion.identity, ObjectPool.Instance.itemPool);
 
             //todo 버섯 드랍시 사운드 재생
             // SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position);
@@ -128,7 +128,7 @@ public class LifeMushroomSpawner : MonoBehaviour
                     LeanPool.Despawn(mushroom);
 
                     //이펙트 소환
-                    LeanPool.Spawn(poisonSmokeEffect, mushroom.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                    LeanPool.Spawn(poisonSmokeEffect, mushroom.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
                 }
             });
         }

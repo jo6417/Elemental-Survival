@@ -84,7 +84,7 @@ public class Heist : MonoBehaviour
                 ringSprite.enabled = false;
 
                 // 먼지 이펙트 생성
-                LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 플레이어 스프라이트 끄기
                 PlayerManager.Instance.sprite.DOColor(new Color(1, 1, 1, 0), 0.2f);
@@ -106,7 +106,7 @@ public class Heist : MonoBehaviour
                 ringSprite.enabled = true;
 
                 // 먼지 이펙트 생성
-                // LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                // LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 플레이어 스프라이트 켜기
                 PlayerManager.Instance.sprite.DOColor(new Color(1, 1, 1, 1), 0.2f);
@@ -140,7 +140,7 @@ public class Heist : MonoBehaviour
     IEnumerator GhostTransition()
     {
         //잔상 오브젝트 소환
-        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, SystemManager.Instance.effectPool);
+        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, ObjectPool.Instance.effectPool);
 
         //잔상 리스트에 오브젝트 저장
         ghostList.Add(ghostObj);
@@ -183,7 +183,7 @@ public class Heist : MonoBehaviour
         Vector2 playerPos = PlayerManager.Instance.transform.position;
 
         //마법 오브젝트 생성
-        GameObject magicObj = LeanPool.Spawn(electroTrail, playerPos, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject magicObj = LeanPool.Spawn(electroTrail, playerPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 오브젝트 사이즈에 범위 반영
         magicObj.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic);

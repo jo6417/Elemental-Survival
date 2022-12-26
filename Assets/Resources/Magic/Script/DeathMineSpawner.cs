@@ -120,7 +120,7 @@ public class DeathMineSpawner : MonoBehaviour
         if (isDrop)
         {
             // 지뢰 오브젝트 생성
-            GameObject deathMine = LeanPool.Spawn(minePrefab, character.transform.position + Vector3.up * 2f, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject deathMine = LeanPool.Spawn(minePrefab, character.transform.position + Vector3.up * 2f, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             // 매직홀더 찾기
             MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>();

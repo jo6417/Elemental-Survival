@@ -30,7 +30,7 @@ public class Vacuum_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance.init);
+        yield return new WaitUntil(() => SoundManager.Instance.loadDone);
 
         //todo 청소기 사운드 무한 반복 재생
         // SoundManager.Instance.PlaySound("Vacuum_Suck", character.transform, 0.1f, 0, -1, true);

@@ -13,6 +13,7 @@ using System.Text;
 using Pixeye.Unity;
 using System;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 
 [Serializable]
 public class PhysicsLayerList
@@ -70,7 +71,6 @@ public class SystemManager : MonoBehaviour
 
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
-    public float portalRange = 100f; //포탈게이트 생성될 범위
     public float time_start; //시작 시간
     public float time_current; // 현재 스테이지 플레이 타임
     public float modifyTime; //! 디버깅 시간 추가
@@ -93,19 +93,9 @@ public class SystemManager : MonoBehaviour
     public PhysicsLayerList layerList;
     public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn };
 
-    [Header("Pool")]
-    public Transform enemyPool;
-    public Transform itemPool;
-    public Transform overlayPool;
-    public Transform magicPool;
-    public Transform enemyAtkPool;
-    public Transform effectPool;
-    public Transform objectPool;
-    // public enum PoolList {enemyPool, itemPool, overlayPool, magicPool, enemyAtkPool, effectPool, objectPool};
-
     [Header("Refer")]
     public Light2D globalLight;
-    public Transform camParent;
+    // public Transform camParent;
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
@@ -115,7 +105,6 @@ public class SystemManager : MonoBehaviour
     public enum DBType { Magic, Enemy, Item };
 
     [Header("Prefab")]
-    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
     public GameObject bleedDebuffUI; // 캐릭터 머리위에 붙는 출혈 디버프 아이콘
     public GameObject stunDebuffEffect; // 캐릭터 머리위에 붙는 스턴 디버프 이펙트
@@ -143,6 +132,18 @@ public class SystemManager : MonoBehaviour
 
     private void Awake()
     {
+        // 최초 생성 됬을때
+        if (instance == null)
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        // else
+        //     // 해당 오브젝트 파괴
+        //     Destroy(gameObject);
+
+        // // 인풋 초기화
+        // UI_Input = new NewInput();
+        // UI_Input.Enable();
+
         //초기화
         StartCoroutine(Init());
     }
@@ -175,30 +176,22 @@ public class SystemManager : MonoBehaviour
         MagicDB.Instance.loadDone
         && ItemDB.Instance.loadDone
         && EnemyDB.Instance.loadDone
+        && SoundManager.Instance.loadDone
         );
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
 
         // 플레이어 입력 켜기
-        PlayerManager.Instance.playerInput.Enable();
+        // PlayerManager.Instance.playerInput.Enable();
         // ui 입력 켜기
-        UIManager.Instance.UI_Input.Enable();
+        // UI_Input.Enable();
     }
 
     private void OnEnable()
     {
-        //다음맵으로 넘어가는 포탈게이트 생성하기
-        SpawnPortalGate();
-    }
-
-    void SpawnPortalGate()
-    {
-        //포탈이 생성될 위치
-        Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + UnityEngine.Random.insideUnitCircle.normalized * portalRange;
-
-        //포탈 게이트 생성
-        GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity, objectPool);
+        // 시간 속도 초기화
+        TimeScaleChange(1f);
     }
 
     public Color HexToRGBA(string hex, float alpha = 1)
@@ -251,13 +244,13 @@ public class SystemManager : MonoBehaviour
 
         if (Time.timeScale == 0f)
         {
-            SystemManager.Instance.TimeScaleChange(1f);
+            TimeScaleChange(1f);
 
             timeImg.color = Color.green;
         }
         else
         {
-            SystemManager.Instance.TimeScaleChange(0f);
+            TimeScaleChange(0f);
 
             timeImg.color = Color.red;
         }
@@ -408,5 +401,16 @@ public class SystemManager : MonoBehaviour
             }
             transform.position = targetPosition;
         }
+    }
+
+    public IEnumerator LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+
+        // 로딩씬 초기화 대기
+        yield return new WaitUntil(() => Loading.Instance != null);
+
+        // 게임 플레이 씬 로딩 시작
+        StartCoroutine(Loading.Instance.LoadScene(sceneName));
     }
 }

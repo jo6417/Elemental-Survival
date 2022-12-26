@@ -27,6 +27,9 @@ public class MainMenuBtn : MonoBehaviour
         // if (EventSystem.current.firstSelectedGameObject.TryGetComponent(out Button btn))
         //     preSelectedObj = btn;
 
+        // 시간 속도 초기화
+        Time.timeScale = 1f;
+
         yield return null;
     }
 
@@ -69,7 +72,10 @@ public class MainMenuBtn : MonoBehaviour
     public void Play()
     {
         // 인게임 씬 불러오기
-        SceneManager.LoadScene("InGameScene", LoadSceneMode.Single);
+        // SceneManager.LoadScene("InGameScene", LoadSceneMode.Single);
+
+        //todo 로딩하고 인게임 씬 띄우기
+        StartCoroutine(SystemManager.Instance.LoadScene("InGameScene"));
     }
 
     public void Shop()

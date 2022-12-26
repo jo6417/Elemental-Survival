@@ -32,6 +32,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
+    [ReadOnly] public bool loadDone = false; //로드 완료 여부
     public enum ItemType { Gem, Heal, Shard, Artifact, Gadget, Magic }; // 아이템 타입 정의
 
     public Dictionary<int, ItemInfo> itemDB = new Dictionary<int, ItemInfo>(); //아이템 정보 DB
@@ -40,8 +41,6 @@ public class ItemDB : MonoBehaviour
     public List<GameObject> itemPrefab = null; //아이템 프리팹 리스트
     public int[] outGemNum = new int[6]; //카메라 밖으로 나간 원소젬 개수
     public List<GameObject> outGem = new List<GameObject>(); //카메라 밖으로 나간 원소젬 리스트
-    [HideInInspector]
-    public bool loadDone = false; //로드 완료 여부
     public GameObject magicItemPrefab; // 마법 슬롯 아이템 프리팹
 
     void Awake()
@@ -357,7 +356,7 @@ public class ItemDB : MonoBehaviour
         if (magicInfo != null)
         {
             // 마법 슬롯 아이템 만들기
-            dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
+            dropObj = LeanPool.Spawn(ItemDB.Instance.magicItemPrefab, dropPos, Quaternion.identity, ObjectPool.Instance.itemPool);
 
             // 아이템 프레임 색 넣기
             dropObj.transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[slotInfo.grade];
@@ -369,7 +368,7 @@ public class ItemDB : MonoBehaviour
         // 아이템일때
         if (itemInfo != null)
         {
-            dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(itemInfo.id), dropPos, Quaternion.identity, SystemManager.Instance.itemPool);
+            dropObj = LeanPool.Spawn(ItemDB.Instance.GetItemPrefab(itemInfo.id), dropPos, Quaternion.identity, ObjectPool.Instance.itemPool);
         }
 
         // 아이템 정보 넣기

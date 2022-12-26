@@ -329,7 +329,7 @@ public class ItemManager : MonoBehaviour
 
         //디스폰 이펙트 있으면 생성
         if (despawnEffect)
-            LeanPool.Spawn(despawnEffect, transform.position, transform.rotation, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(despawnEffect, transform.position, transform.rotation, ObjectPool.Instance.effectPool);
 
         //아이템 비활성화
         LeanPool.Despawn(transform);
@@ -347,7 +347,7 @@ public class ItemManager : MonoBehaviour
         {
             //디스폰 이펙트 있으면 생성
             if (despawnEffect)
-                LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 아이템 디스폰
             LeanPool.Despawn(transform);

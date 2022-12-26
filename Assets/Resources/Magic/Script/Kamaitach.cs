@@ -77,7 +77,7 @@ public class Kamaitach : MonoBehaviour
             SystemManager.Instance.TimeScaleChange(0.1f);
 
             // 플레이어, UI 키입력 막기
-            PlayerManager.Instance.playerInput.Disable();
+            PlayerManager.Instance.player_Input.Disable();
             UIManager.Instance.UI_Input.Disable();
 
             // 플레이어 애니메이터 끄기
@@ -110,7 +110,7 @@ public class Kamaitach : MonoBehaviour
             PlayerManager.Instance.anim.enabled = true;
 
             // 플레이어, UI 키입력 풀기
-            PlayerManager.Instance.playerInput.Enable();
+            PlayerManager.Instance.player_Input.Enable();
             UIManager.Instance.UI_Input.Enable();
 
             // 이동 끝나면 파티클 실행
@@ -161,7 +161,7 @@ public class Kamaitach : MonoBehaviour
             Vector3 ghostRotation = moveDir.x > 0 ? Vector3.zero : Vector3.up * -180f;
 
             // 잔상 단일 소환
-            AfterImage ghostObj = LeanPool.Spawn(ghostPrefab, ghostPos, Quaternion.Euler(ghostRotation), SystemManager.Instance.effectPool);
+            AfterImage ghostObj = LeanPool.Spawn(ghostPrefab, ghostPos, Quaternion.Euler(ghostRotation), ObjectPool.Instance.effectPool);
 
             // 대쉬 스프라이트 넣기
             ghostObj.targetSprite = dashSprite;

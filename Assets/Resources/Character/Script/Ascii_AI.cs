@@ -357,7 +357,7 @@ public class Ascii_AI : MonoBehaviour
     IEnumerator CircleGroundElectro()
     {
         // 원형 전기 공격 소환
-        ParticleSystem circleAtk = LeanPool.Spawn(circleElectro, circleElectro.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        ParticleSystem circleAtk = LeanPool.Spawn(circleElectro, circleElectro.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 전기 공격 끄기
         circleAtk.transform.GetChild(0).gameObject.SetActive(false);
@@ -949,7 +949,7 @@ public class Ascii_AI : MonoBehaviour
                 Vector2 atkPos = (Vector2)PlayerManager.Instance.transform.position - atkDir * 1.28f * 30f;
 
                 // 공격 준비 오브젝트 소환
-                ParticleSystem readyElectro = LeanPool.Spawn(groundElectroAtk, atkPos, atkRotation, SystemManager.Instance.effectPool);
+                ParticleSystem readyElectro = LeanPool.Spawn(groundElectroAtk, atkPos, atkRotation, ObjectPool.Instance.effectPool);
 
                 // 공격 오브젝트 리스트업
                 groundAtks.Add(readyElectro);
@@ -1246,7 +1246,7 @@ public class Ascii_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 땅에 꽂힐때 이펙트 소환 : 흙 파티클 튀기, 바닥 갈라지는 애니메이션
-            LeanPool.Spawn(craterEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(craterEffect, plugTip.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 땅 충돌 사운드 재생
             SoundManager.Instance.PlaySound("Ascii_CableGround", plugTip.transform.position);
@@ -1262,7 +1262,7 @@ public class Ascii_AI : MonoBehaviour
         plugControler.transform.DOShakePosition(0.2f, 0.3f, 50, 90, false, false);
 
         // 플러그에서 공격 펄스 방출
-        LeanPool.Spawn(pulseAtk, plugTip.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        LeanPool.Spawn(pulseAtk, plugTip.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
         // 공격 시간동안 대기
         yield return new WaitForSeconds(0.5f);
@@ -1280,7 +1280,7 @@ public class Ascii_AI : MonoBehaviour
             for (int i = 0; i < shotNum; i++)
             {
                 // 플러그에서 전기 방출
-                GameObject groundSpark = LeanPool.Spawn(electroMisile, plugAtk.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                GameObject groundSpark = LeanPool.Spawn(electroMisile, plugAtk.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
                 // 뒤쪽 랜덤 위치
                 Vector2 backPos = (Vector2)plugAtk.transform.position + Random.insideUnitCircle * 10f;
@@ -1316,12 +1316,12 @@ public class Ascii_AI : MonoBehaviour
                     if (nowPhase >= 3)
                     {
                         // 투사체 사라질때 전기 공격 남김
-                        LeanPool.Spawn(electroSpreadAtk, groundSpark.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                        LeanPool.Spawn(electroSpreadAtk, groundSpark.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
                     }
                     else
                     {
                         // 투사체 사라질때 파동 공격 남김
-                        LeanPool.Spawn(pulseAtk, groundSpark.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+                        LeanPool.Spawn(pulseAtk, groundSpark.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
                     }
 
                     // 디스폰
@@ -1466,7 +1466,7 @@ public class Ascii_AI : MonoBehaviour
         Vector2 atkPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * 5f;
 
         // 번개 공격 소환
-        SpriteRenderer thunderSprite = LeanPool.Spawn(thunderReady, atkPos, Quaternion.identity, SystemManager.Instance.magicPool);
+        SpriteRenderer thunderSprite = LeanPool.Spawn(thunderReady, atkPos, Quaternion.identity, ObjectPool.Instance.magicPool);
 
         // 번개 인디케이터 파티클
         ParticleManager thunderReadyEffect = thunderSprite.GetComponent<ParticleManager>();
@@ -1516,7 +1516,7 @@ public class Ascii_AI : MonoBehaviour
         thunderReadyEffect.particle.Stop();
 
         // 번개 이펙트 소환
-        LeanPool.Spawn(thunderbolt, thunderSprite.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(thunderbolt, thunderSprite.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         yield return new WaitForSeconds(0.3f);
 
@@ -1529,7 +1529,7 @@ public class Ascii_AI : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
 
             // 번개공격 디스폰시 번개 장판으로 스플래쉬 데미지
-            LeanPool.Spawn(electroSpreadAtk, atkPos, Quaternion.identity, SystemManager.Instance.magicPool);
+            LeanPool.Spawn(electroSpreadAtk, atkPos, Quaternion.identity, ObjectPool.Instance.magicPool);
         }
         // 1~2 페이즈일때
         else
@@ -1585,7 +1585,7 @@ public class Ascii_AI : MonoBehaviour
         plugHead.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
 
         // 땅에 꽂힐때 바닥 균열 소환 : 흙 파티클 튀기, 바닥 갈라짐
-        LeanPool.Spawn(craterEffect, plugTip.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(craterEffect, plugTip.position, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
     IEnumerator ElectroRelease(bool isLeft, int summonNum)
@@ -1622,7 +1622,7 @@ public class Ascii_AI : MonoBehaviour
             lastPos[i] = targetPos;
 
             // 전기 오브젝트 생성
-            GameObject atkObj = LeanPool.Spawn(electroMisile, cableTip.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject atkObj = LeanPool.Spawn(electroMisile, cableTip.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             // summonDir 방향으로 발사
             atkObj.GetComponent<Rigidbody2D>().velocity = summonDir * 20f;
@@ -1748,7 +1748,7 @@ public class Ascii_AI : MonoBehaviour
         //몬스터 스폰 멈추기
         WorldSpawner.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
-        List<Character> enemys = SystemManager.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
+        List<Character> enemys = ObjectPool.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
         foreach (Character character in enemys)
         {
             // 보스 본인이 아닐때
@@ -1959,7 +1959,7 @@ public class Ascii_AI : MonoBehaviour
             plugTip.parent.DOPunchPosition((plugTip.parent.position - PlayerManager.Instance.transform.position).normalized, 0.2f, 10, 1);
 
             //레이저 생성
-            GameObject magicObj = LeanPool.Spawn(LaserPrefab, plugTip.position, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject magicObj = LeanPool.Spawn(LaserPrefab, plugTip.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             LaserBeam laser = magicObj.GetComponent<LaserBeam>();
             // 레이저 발사할 오브젝트 넣기

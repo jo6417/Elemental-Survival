@@ -215,7 +215,7 @@ public class LaserBeam : MonoBehaviour
         effectColl.enabled = true;
 
         // 그을음 이펙트 남기기
-        LeanPool.Spawn(scorchEffect, explosion.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(scorchEffect, explosion.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         yield return new WaitForSeconds(0.1f);
 

@@ -65,7 +65,7 @@ public class Seed_AI : MonoBehaviour
         seedCharacter.invinsible = false;
 
         // 먼지 이펙트 발생
-        LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+        LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
     }
 
     private void Update()
@@ -106,10 +106,10 @@ public class Seed_AI : MonoBehaviour
         .OnComplete(() =>
         {
             // 먼지 이펙트 발생
-            LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 슬라임 소환
-            GameObject slime = LeanPool.Spawn(lifeSlimePrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            GameObject slime = LeanPool.Spawn(lifeSlimePrefab, transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 슬라임 생성 소리 재생
             SoundManager.Instance.PlaySoundPool(slimeBirthSounds.ToList(), transform.position);
@@ -168,10 +168,10 @@ public class Seed_AI : MonoBehaviour
             seedCharacter.invinsible = true;
 
             // 먼지 이펙트 발생
-            LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 식물 소환
-            GameObject plantObj = LeanPool.Spawn(plantPrefab, transform.position, Quaternion.identity, SystemManager.Instance.enemyPool);
+            GameObject plantObj = LeanPool.Spawn(plantPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 몬스터 스폰 리스트에 추가
             WorldSpawner.Instance.spawnEnemyList.Add(plantObj.GetComponent<Character>());

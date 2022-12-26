@@ -64,7 +64,7 @@ public class Meteor : MonoBehaviour
         Vector2 startPos = startOffset + (Vector2)magicHolder.targetPos;
 
         //떨어질 자리에 인디케이터 표시
-        GameObject shadow = LeanPool.Spawn(indicator, magicHolder.targetPos, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject shadow = LeanPool.Spawn(indicator, magicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 인디케이터 색깔 초기화
         SpriteRenderer shadowSprite = shadow.GetComponent<SpriteRenderer>();
@@ -120,7 +120,7 @@ public class Meteor : MonoBehaviour
         LeanPool.Despawn(shadow);
 
         // 폭발 이펙트 오브젝트 생성
-        GameObject explosionEffect = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        GameObject explosionEffect = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         if (explosionEffect.TryGetComponent(out MagicHolder explosionHolder))
         {
@@ -132,12 +132,12 @@ public class Meteor : MonoBehaviour
         }
 
         // 흙 튀는 파티클 생성
-        LeanPool.Spawn(dirtPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(dirtPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         //TODO 일정 레벨 이상이면 용암 장판 남기기?
 
         // 그을음 남기기
-        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         //스프라이트 끄기
         rockSprite.enabled = false;

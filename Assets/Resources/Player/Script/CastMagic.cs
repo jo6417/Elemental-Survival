@@ -452,7 +452,7 @@ public class CastMagic : MonoBehaviour
         for (int i = 0; i < attackPos.Count; i++)
         {
             // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             // 레이어 바꾸기
             magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
@@ -510,7 +510,7 @@ public class CastMagic : MonoBehaviour
             return;
 
         // 플레이어 위치에 마법 생성
-        GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+        GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
         //마법 정보 넣기
         magicObj.GetComponentInChildren<MagicHolder>().magic = magic;

@@ -275,12 +275,12 @@ public class Bawi_AI : EnemyAI
             character.physicsColl.enabled = true;
 
             // 머리 먼지 파티클 생성
-            LeanPool.Spawn(bigLandDust, transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(bigLandDust, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             if (character.animList[0].GetBool("UseDrill"))
             {
                 // 드릴 먼지 파티클 생성
-                LeanPool.Spawn(smallLandDust, fistParent.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(smallLandDust, fistParent.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 드릴 레이어 올리기
                 drillSprite.GetComponent<SortingGroup>().sortingOrder = 1;
@@ -291,7 +291,7 @@ public class Bawi_AI : EnemyAI
             if (character.animList[0].GetBool("UseFist"))
             {
                 // 주먹 먼지 파티클 생성
-                LeanPool.Spawn(smallLandDust, drillRigid.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+                LeanPool.Spawn(smallLandDust, drillRigid.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 주먹 레이어 올리기
                 fistSprite.GetComponent<SortingGroup>().sortingOrder = 1;
@@ -469,7 +469,7 @@ public class Bawi_AI : EnemyAI
             fistPart.transform.DOPunchPosition(Vector3.up, 0.5f, 50, 1);
 
             // 주먹에서 먼지 파티클 발생
-            LeanPool.Spawn(fistGrabDust, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            LeanPool.Spawn(fistGrabDust, fistPart.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             yield return new WaitForSeconds(0.5f);
         }
@@ -583,7 +583,7 @@ public class Bawi_AI : EnemyAI
         for (int i = 0; i < stoneNum; i++)
         {
             // 중간에 돌 소환
-            GameObject stoneObj = LeanPool.Spawn(stonePrefab, fistPart.transform.position, Quaternion.identity, SystemManager.Instance.magicPool);
+            GameObject stoneObj = LeanPool.Spawn(stonePrefab, fistPart.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             // 돌 스케일 설정
             stoneObj.transform.localScale = stoneScale;
@@ -966,10 +966,10 @@ public class Bawi_AI : EnemyAI
             DirtExplosionCircle.emission.SetBurst(0, burst);
             // 흙 튀는 파티클 재생
             DirtExplosionCircle.Play();
-            // LeanPool.Spawn(DirtExplosion, fistParent.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            // LeanPool.Spawn(DirtExplosion, fistParent.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 착지 먼지 이펙트 생성
-            GameObject landDust = LeanPool.Spawn(smallLandDust, fistParent.position, Quaternion.identity, SystemManager.Instance.effectPool);
+            GameObject landDust = LeanPool.Spawn(smallLandDust, fistParent.position, Quaternion.identity, ObjectPool.Instance.effectPool);
             // 먼지 이펙트 사이즈 설정
             landDust.transform.localScale = Vector3.one * (chargeNum + 1);
 
@@ -1159,7 +1159,7 @@ public class Bawi_AI : EnemyAI
         BurrowTrail.GetComponent<ParticleManager>().SmoothDisable();
 
         // 땅에서 나올때 튀는 흙 파티클
-        LeanPool.Spawn(DirtExplosion, drillRigid.position, Quaternion.identity, SystemManager.Instance.effectPool);
+        LeanPool.Spawn(DirtExplosion, drillRigid.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 드릴 솟아 나오기
         drillPart.transform.DOLocalMove(drillPartLocalPos + Vector2.up * 5f, 1f)
