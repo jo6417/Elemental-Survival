@@ -18,6 +18,8 @@ public class SaveData : System.IDisposable
     public string enemyDBJson; //몬스터 DB json
     public string itemDBJson; //아이템 DB json
 
+    public float[] volumes = { 0, 0, 0 }; // 전체볼륨, 배경음, 효과음
+
     public SaveData()
     {
         //해금 마법 목록
@@ -60,8 +62,8 @@ public class SaveManager : MonoBehaviour
     }
     #endregion
 
-    public GameObject saveIcon; //저장 아이콘
-    private bool isSaving = false; //저장 중 여부
+    [Header("State")]
+    [ReadOnly] public bool nowSaving = false; //저장 중 여부
 
     public SaveData webSaveData; // 웹에서 불러온 세이브 데이터
     public SaveData localSaveData; // 로컬에서 불러온 세이브 데이터
@@ -69,12 +71,23 @@ public class SaveManager : MonoBehaviour
     public IEnumerator Save()
     {
         //저장 시작
-        isSaving = true;
+        nowSaving = true;
         //저장 중일때 저장 아이콘 띄우기
         StartCoroutine(Saving());
 
-        //해금 마법 목록
+        #region SaveData
+
+        // 해금 마법 목록 가져오기
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
+
+        // 오디오 옵션값 가져오기
+        localSaveData.volumes[0] = SoundManager.Instance.masterVolume;
+        localSaveData.volumes[1] = SoundManager.Instance.bgmVolume;
+        localSaveData.volumes[2] = SoundManager.Instance.sfxVolume;
+
+        #endregion
+
+        #region Saving
 
         // SaveData 형태의 데이터를 json 문자열로 변환
         string jsonData = JsonConvert.SerializeObject(localSaveData);
@@ -84,7 +97,9 @@ public class SaveManager : MonoBehaviour
 
         print("저장 완료 - " + Application.persistentDataPath + "/save.json");
 
-        isSaving = false; //저장 끝
+        nowSaving = false; //저장 끝
+
+        #endregion
 
         yield return null;
     }
@@ -92,15 +107,15 @@ public class SaveManager : MonoBehaviour
     IEnumerator Saving()
     {
         // 저장 아이콘 켜기
-        saveIcon.SetActive(true);
+        UIManager.Instance.saveIcon.SetActive(true);
 
         // 최소 저장 시간 대기
         yield return new WaitForSecondsRealtime(1f);
         // 저장 끝날때까지 대기
-        yield return new WaitUntil(() => !isSaving);
+        yield return new WaitUntil(() => !nowSaving);
 
         //저장 아이콘 끄기
-        saveIcon.SetActive(false);
+        UIManager.Instance.saveIcon.SetActive(false);
     }
 
     public IEnumerator LoadData()
@@ -114,6 +129,11 @@ public class SaveManager : MonoBehaviour
 
         // 불러온 json 문자열을 SaveData 형태로 변환해서 변수에 넣기
         localSaveData = JsonConvert.DeserializeObject<SaveData>(loadData);
+
+        // 오디오 옵션값 불러오기
+        SoundManager.Instance.Set_MasterVolume(localSaveData.volumes[0]);
+        SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
+        SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
 
         yield return null;
     }

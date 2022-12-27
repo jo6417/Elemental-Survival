@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
+    [Header("Refer")]
     public Selectable firstBtn;
 
     private void OnEnable()
@@ -15,5 +16,14 @@ public class PauseMenu : MonoBehaviour
 
         //마우스 고정해제
         Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void OpenOptionMenu()
+    {
+        // 옵션 메뉴 켜기
+        UIManager.Instance.optionPanel.SetActive(true);
+
+        // 일시정지 메뉴 끄기
+        gameObject.SetActive(false);
     }
 }

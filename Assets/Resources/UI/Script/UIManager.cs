@@ -58,9 +58,11 @@ public class UIManager : MonoBehaviour
     public GameObject magicMachinePanel;
     public GameObject levelupPanel;
     public GameObject pausePanel;
+    public GameObject optionPanel;
     public GameObject gameoverPanel;
 
     [Header("Refer")]
+    public GameObject saveIcon; //저장 아이콘
     [SerializeField] Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
@@ -185,53 +187,6 @@ public class UIManager : MonoBehaviour
             if (UIManager.Instance)
                 Click();
         };
-
-        // // 핸드폰 관련 인풋 함수
-        // // 방향키 입력
-        // UI_Input.UI.NavControl.performed += val =>
-        // {
-        //     // 핸드폰 오브젝트 있을때
-        //     if (PhoneMenu.Instance != null)
-        //         PhoneMenu.Instance.NavControl(val.ReadValue<Vector2>());
-        // };
-        // // 마우스 위치 입력
-        // UI_Input.UI.MousePosition.performed += val =>
-        // {
-        //     // 핸드폰 오브젝트 있을때
-        //     if (PhoneMenu.Instance != null)
-        //         PhoneMenu.Instance.MousePos();
-        // };
-        // // 마우스 클릭
-        // UI_Input.UI.Click.performed += val =>
-        // {
-        //     // 핸드폰 오브젝트 있을때
-        //     if (PhoneMenu.Instance != null)
-        //         StartCoroutine(PhoneMenu.Instance.CancelMoveItem());
-        // };
-        // // 마우스 휠 스크롤
-        // UI_Input.UI.MouseWheel.performed += val =>
-        // {
-        //     // 핸드폰 오브젝트 있을때
-        //     if (PhoneMenu.Instance != null)
-        //         // 마우스 휠 입력하면 레시피 스크롤 하기
-        //         if (val.ReadValue<Vector2>().y > 0)
-        //             PhoneMenu.Instance.recipeUpBtn.onClick.Invoke();
-        //         else
-        //             PhoneMenu.Instance.recipeDownBtn.onClick.Invoke();
-        // };
-
-        // // 스마트폰 버튼 입력
-        // UI_Input.UI.PhoneMenu.performed += val =>
-        // {
-        //     // 핸드폰 오브젝트 있을때
-        //     if (PhoneMenu.Instance != null)
-        //         // 로딩 패널 꺼져있을때
-        //         if (!PhoneMenu.Instance.loadingPanel.activeSelf)
-        //         {
-        //             //백 버튼 액션 실행
-        //             StartCoroutine(PhoneMenu.Instance.BackBtnAction());
-        //         }
-        // };
 
         // UI 인풋 활성화
         UI_Input.Enable();
@@ -1139,6 +1094,15 @@ public class UIManager : MonoBehaviour
             iconJumpSeq.Restart();
         }
     }
+
+    // public void ChangePopup(GameObject closePopup, GameObject openPopup)
+    // {
+    //     // 기존 팝업 끄기
+    //     closePopup.SetActive(false);
+
+    //     //todo 새로운 팝업 켜기
+    //     PopupUI(openPopup, true);
+    // }
 
     public void PopupUI(GameObject popup)
     {
