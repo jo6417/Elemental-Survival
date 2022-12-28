@@ -182,7 +182,7 @@ public class LevelupMenu : MonoBehaviour
         .SetUpdate(true);
 
         // UI 커서 끄기
-        UIManager.Instance.UICursorToggle(false);
+        UICursor.Instance.UICursorToggle(false);
 
         // 드랍위치 계산
         Vector2 dropPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * 2f;

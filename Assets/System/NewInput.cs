@@ -410,8 +410,8 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""f9963ac0-b43a-4d11-a0d3-4aed05cdc6b9"",
-                    ""path"": ""<Keyboard>/enter"",
+                    ""id"": ""49512e5a-3eb6-456f-bdd8-21112be98f3e"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
@@ -421,8 +421,8 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""49512e5a-3eb6-456f-bdd8-21112be98f3e"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""id"": ""f9963ac0-b43a-4d11-a0d3-4aed05cdc6b9"",
+                    ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",

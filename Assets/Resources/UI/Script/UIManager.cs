@@ -83,17 +83,6 @@ public class UIManager : MonoBehaviour
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
 
-    [Header("UI Cursor")]
-    public GameObject UI_Cursor; //선택된 UI 따라다니는 UI커서
-    public Canvas UI_CursorCanvas; //UI커서 전용 캔버스
-    public Selectable lastSelected; //마지막 선택된 오브젝트
-    public Color targetOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
-    public float UI_CursorPadding; //UI 커서 여백
-    bool isFlicking = false; //커서 깜빡임 여부
-    bool isMove = false; //커서 이동중 여부
-    Sequence cursorSeq; //깜빡임 시퀀스
-    RectTransform cursorRect;
-
     [Header("PlayerUI")]
     [SerializeField] PlayerManager playerManager;
     public CanvasGroup dodgeBar;
@@ -140,7 +129,7 @@ public class UIManager : MonoBehaviour
         // null 이 아닐때까지 대기
         yield return new WaitUntil(() => SystemManager.Instance != null && UI_Input != null);
 
-        // 방향키 입력
+        // 방향키 입력시
         UI_Input.UI.NavControl.performed += val =>
         {
             // 오브젝트 켜져있을때
@@ -239,10 +228,10 @@ public class UIManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
             }
 
-        // UI 커서 컨트롤
-        // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
-        if (!UI_Cursor.activeSelf && lastSelected)
-            lastSelected.Select();
+        // // UI 커서 컨트롤
+        // // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
+        // if (!UI_Cursor.activeSelf && lastSelected)
+        //     lastSelected.Select();
     }
 
     // 마우스 위치 입력되면 실행
@@ -263,7 +252,7 @@ public class UIManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
             // UI 커서 끄기
-            UICursorToggle(false);
+            UICursor.Instance.UICursorToggle(false);
         }
     }
 
@@ -282,6 +271,13 @@ public class UIManager : MonoBehaviour
     {
         //선택된 UI 따라다니기
         // FollowUICursor();
+
+        print("submit");
+
+        //todo 현재 선택된 버튼 누르기
+        // Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        // if(btn != null)
+        //     btn.click;
     }
 
     // 취소 입력
@@ -312,7 +308,6 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         UIRect = GetComponent<RectTransform>();
-        cursorRect = UI_Cursor.GetComponent<RectTransform>();
 
         // GemUI 전부 찾기
         for (int i = 0; i < gemUIParent.childCount; i++)
@@ -345,255 +340,7 @@ public class UIManager : MonoBehaviour
             UpdateTimer();
         else
             ResumeTimer();
-
-        //선택된 UI 따라다니기
-        FollowUICursor();
     }
-
-    #region Cursor
-    void FollowUICursor()
-    {
-        // lastSelected와 현재 선택버튼이 같으면 버튼 깜빡임 코루틴 시작
-        if (EventSystem.current.currentSelectedGameObject == null //현재 선택 버튼이 없을때
-        || !EventSystem.current.currentSelectedGameObject.activeSelf //현재 선택 버튼 비활성화 체크 됬을때
-        || !EventSystem.current.currentSelectedGameObject.activeInHierarchy //현재 선택 버튼 실제로 비활성화 됬을때
-        || lastSelected != EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>() //다른 버튼 선택 됬을때
-        || !lastSelected.interactable //버튼 상호작용 꺼졌을때
-        || Cursor.lockState == CursorLockMode.None //마우스 켜져있을때
-        )
-        {
-            // UI커서 애니메이션 켜져있으면
-            if (isFlicking)
-            {
-                //깜빡임 시퀀스 종료
-                cursorSeq.Pause();
-                cursorSeq.Kill();
-
-                //기억하고 있는 버튼 있으면 색 복구하기
-                if (lastSelected)
-                    lastSelected.targetGraphic.color = targetOriginColor;
-
-                //커서 애니메이션 끝
-                isFlicking = false;
-            }
-
-            // lastSelected 새로 갱신해서 기억하기
-            if (EventSystem.current.currentSelectedGameObject)
-            {
-                //마지막 버튼 기억 갱신
-                lastSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>();
-
-                //원본 컬러 기억하기
-                targetOriginColor = lastSelected.targetGraphic.color;
-            }
-
-            //! 테스트, 현재 선택된 UI 이름 표시
-            if (EventSystem.current.currentSelectedGameObject == null)
-                nowSelectUI.text = "Last Select : null";
-            else
-                nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
-        }
-        //선택된 버튼이 바뀌었을때
-        else
-        {
-            //! 테스트, 현재 선택된 UI 이름 표시
-            if (EventSystem.current.currentSelectedGameObject == null)
-                nowSelectUI.text = "Last Select : null";
-            else
-                nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
-
-            if (!isFlicking)
-            {
-                //커서 애니메이션 시작
-                isFlicking = true;
-                isMove = true;
-
-                //커서 애니메이션 시작
-                StartCoroutine(CursorAnim());
-            }
-
-            // domove 끝났으면 타겟 위치 따라가기
-            if (!isMove)
-                UI_Cursor.transform.position = lastSelected.transform.position;
-        }
-    }
-
-    public void UICursorToggle(bool setToggle)
-    {
-        // 커서 켜져있을때 끄기
-        if (!setToggle && UI_Cursor.activeSelf)
-        {
-            // UI 커서 투명하게
-            UI_Cursor.GetComponent<Image>().DOColor(SystemManager.Instance.HexToRGBA("59AFFF", 0), 0.3f)
-            .SetUpdate(true);
-
-            //UI커서 크기 및 위치 초기화
-            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            cursorRect.DOSizeDelta(cursorCanvasRect.sizeDelta, 0.3f)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                //UI커서 비활성화
-                UI_Cursor.SetActive(false);
-            });
-
-            cursorRect.DOMove(cursorCanvasRect.position, 0.3f)
-            .SetUpdate(true);
-        }
-
-        // 커서 꺼져있을때 켜기
-        if (setToggle && !UI_Cursor.activeSelf)
-        {
-            //UI커서 크기 및 위치 초기화
-            // RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            // cursorRect.sizeDelta = cursorCanvasRect.sizeDelta;
-            // print("cursorCanvasRect.sizeDelta : " + cursorCanvasRect.sizeDelta);
-
-            // cursorRect.position = Vector2.zero;
-
-            //UI커서 활성화
-            UI_Cursor.SetActive(true);
-        }
-    }
-
-    IEnumerator CursorAnim()
-    {
-        // 선택된 타겟 이미지
-        Image image = lastSelected.targetGraphic.GetComponent<Image>();
-        // 선택된 이미지 Rect
-        RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
-
-        //깜빡일 시간
-        float flickTime = 0.3f;
-        //깜빡일 컬러 강조 비율
-        float colorRate = 1.4f;
-        //깜빡일 컬러
-        Color flickColor = new Color(targetOriginColor.r * colorRate, targetOriginColor.g * colorRate, targetOriginColor.b * colorRate, 1f);
-        //이동할 버튼 위치
-        Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
-
-        //커서 사이즈 + 여백 추가
-        Vector2 size = lastRect.sizeDelta * 1.1f;
-
-        //마지막 선택된 버튼의 캔버스
-        Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
-
-        // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
-        if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
-        {
-            //렌더 모드 일치 시키기
-            UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
-
-            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            RectTransform selectedCanvasRect = selectedCanvas.GetComponent<RectTransform>();
-
-            // 스케일 일치
-            cursorCanvasRect.localScale = selectedCanvasRect.localScale;
-
-            // 바뀐 렌더모드에 따라 커서 스케일 정의
-            if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                // cursorCanvasRect.localScale = Vector2.one;
-            }
-            else
-            {
-                //캔버스 z축을 선택된 캔버스에 맞추기
-                Vector3 canvasPos = cursorCanvasRect.position;
-                canvasPos.z = selectedCanvas.transform.position.z;
-                cursorCanvasRect.position = canvasPos;
-            }
-        }
-
-        //UI 커서 활성화
-        UICursorToggle(true);
-        // UI_Cursor.SetActive(true);
-
-        //원래 트윈 있으면 죽이기
-        if (image != null && DOTween.IsTweening(image))
-            image.DOKill();
-
-        if (UI_Cursor.transform != null && DOTween.IsTweening(UI_Cursor.transform))
-            UI_Cursor.transform.DOKill();
-
-        if (cursorRect != null && DOTween.IsTweening(cursorRect))
-            cursorRect.DOKill();
-
-        if (cursorSeq.IsActive())
-            cursorSeq.Kill();
-
-        // 타겟 위치로 이동
-        UI_Cursor.transform.DOMove(btnPos, flickTime)
-        .SetUpdate(true);
-
-        // UI 커서 색깔 초기화
-        UI_Cursor.GetComponent<Image>().DOColor(SystemManager.Instance.HexToRGBA("59AFFF"), flickTime)
-        .SetUpdate(true);
-
-        // 타겟과 사이즈 맞추기
-        cursorRect.DOSizeDelta(size, flickTime)
-        .SetUpdate(true);
-
-        //이동 시간 카운트
-        float moveCount = flickTime;
-        while (isMove && EventSystem.current.currentSelectedGameObject != null)
-        {
-            //남은 이동 시간 차감
-            moveCount -= Time.deltaTime;
-
-            //타겟 위치 변경되면
-            //이동 중 버튼 위치가 바뀌면
-            if (btnPos != EventSystem.current.currentSelectedGameObject.transform.position)
-            {
-                //버튼 위치 갱신
-                btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
-
-                //원래 트윈 죽이기
-                UI_Cursor.transform.DOKill();
-
-                // 새롭게 이동 트윈
-                UI_Cursor.transform.DOMove(btnPos, moveCount)
-                .SetUpdate(true);
-            }
-
-            yield return new WaitForSeconds(Time.unscaledDeltaTime);
-        }
-
-        //이동 시간 대기
-        yield return new WaitForSecondsRealtime(flickTime);
-
-        //이동 끝
-        isMove = false;
-        //깜빡임 시작
-        isFlicking = true;
-
-        if (cursorRect == null)
-            yield break;
-
-        //사이즈 초기화
-        cursorRect.sizeDelta = size;
-        // 사이즈 커졌다 작아졌다 무한 반복
-        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
-        .SetLoops(-1, LoopType.Yoyo)
-        .SetUpdate(true)
-        .OnKill(() =>
-        {
-            //사이즈 초기화
-            cursorRect.sizeDelta = size;
-        });
-
-        // 컬러 초기화
-        image.color = targetOriginColor;
-        // 컬러 깜빡이기 무한 반복
-        image.DOColor(flickColor, flickTime)
-        .SetLoops(-1, LoopType.Yoyo)
-        .SetUpdate(true)
-        .OnKill(() =>
-        {
-            // 컬러 초기화
-            image.color = targetOriginColor;
-        });
-    }
-    #endregion
 
     #region Camera
 
@@ -1144,7 +891,7 @@ public class UIManager : MonoBehaviour
         if (!popup.activeSelf)
         {
             // 팝업 꺼질때 UI 커서 끄기
-            UICursorToggle(false);
+            UICursor.Instance.UICursorToggle(false);
 
             //null 선택하기
             EventSystem.current.SetSelectedGameObject(null);

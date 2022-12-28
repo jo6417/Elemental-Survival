@@ -11,11 +11,8 @@ public class PauseMenu : MonoBehaviour
 
     private void OnEnable()
     {
-        // 버튼 선택 기본값
-        firstBtn.Select();
-
-        //마우스 고정해제
-        Cursor.lockState = CursorLockMode.None;
+        // 마지막 선택 UI 갱신
+        UICursor.Instance.UpdateLastSelect(firstBtn);
     }
 
     public void OpenOptionMenu()

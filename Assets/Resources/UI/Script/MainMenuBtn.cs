@@ -23,45 +23,14 @@ public class MainMenuBtn : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 기본값 선택 대상을 preSelectedObj 에 넣기
-        // if (EventSystem.current.firstSelectedGameObject.TryGetComponent(out Button btn))
-        //     preSelectedObj = btn;
+        //todo 첫번째 버튼 기억
+        UICursor.Instance.UpdateLastSelect(buttonParent.transform.GetChild(0).GetComponent<Button>());
 
         // 시간 속도 초기화
         Time.timeScale = 1f;
 
         yield return null;
     }
-
-    private void Update()
-    {
-        //선택된 대상을 저장하기
-        // SelectSave();
-    }
-
-    // void SelectSave()
-    // {
-    //     // 아무 대상이나 선택 되었을때 preSelectedObj 에 저장
-    //     if (Input.anyKey)
-    //     {
-    //         //선택된 대상이 있을때
-    //         if (EventSystem.current.currentSelectedGameObject != null)
-    //         {
-    //             // 선택된 대상을 preSelectedObj 에 넣기
-    //             if (EventSystem.current.currentSelectedGameObject.TryGetComponent(out Button btn))
-    //                 preSelectedObj = btn;
-    //         }
-    //         //선택된 대상이 null 일때
-    //         else
-    //         {
-    //             //방향키 인풋 들어오면 preSelectedObj를 선택
-    //             float horizonInput = Input.GetAxisRaw("Horizontal");
-    //             float verticalInput = Input.GetAxisRaw("Vertical");
-    //             if (horizonInput != 0 || verticalInput != 0)
-    //                 preSelectedObj.Select();
-    //         }
-    //     }
-    // }
 
     public void CharacterSelect()
     {
@@ -71,10 +40,10 @@ public class MainMenuBtn : MonoBehaviour
 
     public void Play()
     {
-        // 인게임 씬 불러오기
-        // SceneManager.LoadScene("InGameScene", LoadSceneMode.Single);
+        //todo 메인메뉴 배경음 정지
+        SoundManager.Instance.nowBGM.Stop();
 
-        //todo 로딩하고 인게임 씬 띄우기
+        // 로딩하고 인게임 씬 띄우기
         StartCoroutine(SystemManager.Instance.LoadScene("InGameScene"));
     }
 

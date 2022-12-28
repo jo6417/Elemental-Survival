@@ -130,6 +130,9 @@ public class SaveManager : MonoBehaviour
         // 불러온 json 문자열을 SaveData 형태로 변환해서 변수에 넣기
         localSaveData = JsonConvert.DeserializeObject<SaveData>(loadData);
 
+        // 사운드 매니저 초기화 대기
+        yield return new WaitUntil(() => SoundManager.Instance.initFinish);
+
         // 오디오 옵션값 불러오기
         SoundManager.Instance.Set_MasterVolume(localSaveData.volumes[0]);
         SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);

@@ -69,6 +69,8 @@ public class SystemManager : MonoBehaviour
     }
     #endregion
 
+    [Header("Test")]
+    public bool loadDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
     public float time_start; //시작 시간
@@ -176,11 +178,12 @@ public class SystemManager : MonoBehaviour
         MagicDB.Instance.loadDone
         && ItemDB.Instance.loadDone
         && EnemyDB.Instance.loadDone
-        && SoundManager.Instance.loadDone
+        && SoundManager.Instance.initFinish
         );
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
+        loadDone = true;
 
         // 플레이어 입력 켜기
         // PlayerManager.Instance.playerInput.Enable();

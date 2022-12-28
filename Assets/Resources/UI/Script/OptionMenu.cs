@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class OptionMenu : MonoBehaviour
@@ -18,6 +19,11 @@ public class OptionMenu : MonoBehaviour
     [SerializeField] private GameObject graphicOptionPanel; // 그래픽 설정 패널
     // [SerializeField] private GameObject keyBindOptionPanel; // 키설정 설정 패널
 
+    [SerializeField] private Selectable optionSelect_FirstSelect; // 옵션 첫번째 Selectable
+    [SerializeField] private Selectable audio_FirstSelect; // 오디오 첫번째 Selectable
+    [SerializeField] private Selectable graphic_FirstSelect; // 그래픽 첫번째 Selectable
+    // [SerializeField] private Selectable keyBind_FirstSelect; // 키설정 첫번째 Selectable
+
     private void Awake()
     {
         //입력 초기화
@@ -33,11 +39,14 @@ public class OptionMenu : MonoBehaviour
         UIManager.Instance.UI_Input.UI.Cancel.performed += val =>
         {
             // 옵션 선택 패널 켜져있을때
-            if (optionSelectPanel.activeSelf)
+            if (optionSelectPanel.activeInHierarchy)
                 BackToPause();
             // 옵션 선택 패널 꺼져있을때
             else
-                BackToOption();
+            {
+                if (nowOption != null)
+                    BackToOption();
+            }
         };
     }
 
@@ -49,8 +58,11 @@ public class OptionMenu : MonoBehaviour
 
     IEnumerator Init()
     {
-        //todo 옵션 버튼 패널 열기
+        // 옵션 버튼 패널 열기
         optionSelectPanel.SetActive(true);
+
+        // 마지막 선택 UI 갱신
+        UICursor.Instance.UpdateLastSelect(optionSelect_FirstSelect);
 
         // 나머지 패널 모두 닫기
         audioOptionPanel.SetActive(false);
@@ -79,7 +91,7 @@ public class OptionMenu : MonoBehaviour
     public void OpenPanel(GameObject openPanel)
     {
         // UI 커서 끄기
-        UIManager.Instance.UICursorToggle(false);
+        UICursor.Instance.UICursorToggle(false);
 
         // 현재 켜진 패널 갱신
         nowOption = openPanel;
@@ -93,10 +105,20 @@ public class OptionMenu : MonoBehaviour
         // 오디오 옵션 열었을때
         if (openPanel == audioOptionPanel)
         {
+            // 마지막 선택 UI 갱신
+            UICursor.Instance.UpdateLastSelect(audio_FirstSelect);
+
             // 볼륨값 모두 불러와 표시
             materVolume.value = SoundManager.Instance.masterVolume;
             bgmVolume.value = SoundManager.Instance.bgmVolume;
             sfxVolume.value = SoundManager.Instance.sfxVolume;
+        }
+
+        // 그래픽 옵션 열었을때
+        if (openPanel == graphicOptionPanel)
+        {
+            // 마지막 선택 UI 갱신
+            UICursor.Instance.UpdateLastSelect(graphic_FirstSelect);
         }
     }
 
@@ -110,6 +132,9 @@ public class OptionMenu : MonoBehaviour
 
         // 옵션 메뉴 켜기
         optionSelectPanel.SetActive(true);
+
+        // 마지막 선택 UI 갱신
+        UICursor.Instance.UpdateLastSelect(optionSelect_FirstSelect);
 
         // 옵션값 세이브
         StartCoroutine(SaveManager.Instance.Save());

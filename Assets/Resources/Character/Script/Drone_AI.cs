@@ -12,7 +12,7 @@ public class Drone_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 사운드 초기화 될때까지 대기
-        yield return new WaitUntil(() => SoundManager.Instance.loadDone);
+        yield return new WaitUntil(() => SoundManager.Instance.initFinish);
 
         // 시작하면 사운드 재생
         SoundManager.Instance.PlaySound("MiniDrone_Fly", transform, 0, 0, -1, true);

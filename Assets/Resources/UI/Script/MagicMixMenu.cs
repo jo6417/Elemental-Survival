@@ -941,7 +941,7 @@ public class MagicMixMenu : MonoBehaviour
         }
 
         //마지막으로 기억된 버튼 없에기
-        UIManager.Instance.lastSelected = null;
+        UICursor.Instance.lastSelected = null;
         leftSelected = null;
         rightSelected = null;
         firstRecipe = null;

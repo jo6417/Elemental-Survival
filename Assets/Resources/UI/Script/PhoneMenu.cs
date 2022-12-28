@@ -355,8 +355,7 @@ public class PhoneMenu : MonoBehaviour
         }
 
         // 첫번째 인벤 슬롯 선택하기
-        UIManager.Instance.lastSelected = invenSlots[0].slotButton;
-        UIManager.Instance.targetOriginColor = invenSlots[0].GetComponent<Image>().color;
+        UICursor.Instance.UpdateLastSelect(invenSlots[0].slotButton);
 
         // //선택된 슬롯 네비 설정
         // Navigation nav = selectedSlot.navigation;
@@ -1615,7 +1614,7 @@ public class PhoneMenu : MonoBehaviour
             CancelSelectSlot();
 
         // UI 커서 미리 끄기
-        UIManager.Instance.UICursorToggle(false);
+        UICursor.Instance.UICursorToggle(false);
 
         // 로딩 패널 켜기
         loadingPanel.SetActive(true);
