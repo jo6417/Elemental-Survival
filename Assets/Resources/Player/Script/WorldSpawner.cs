@@ -301,11 +301,6 @@ public class WorldSpawner : MonoBehaviour
         //EnemyInfo 인스턴스 생성
         EnemyInfo enemyInfo = new EnemyInfo(enemy);
 
-        // 보스일때
-        if (isBoss)
-            // 게이트에 캐릭터 변수 전달
-            GatePortal.Instance.bossCharacter = character;
-
         //몬스터 리스트에 넣기
         spawnEnemyList.Add(character);
 

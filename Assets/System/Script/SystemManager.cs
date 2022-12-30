@@ -53,23 +53,25 @@ public class SystemManager : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<SystemManager>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
+                return null;
+                // var obj = FindObjectOfType<SystemManager>();
+                // if (obj != null)
+                // {
+                //     instance = obj;
+                // }
                 // else
                 // {
                 //     var newObj = new GameObject().AddComponent<SystemManager>();
                 //     instance = newObj;
                 // }
             }
+
             return instance;
         }
     }
     #endregion
 
-    [Header("Test")]
+    [Header("State")]
     public bool loadDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
@@ -79,9 +81,7 @@ public class SystemManager : MonoBehaviour
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
 
-    [Header("Test")]
-    public GameObject testObject;
-    public LayerMask PlayerPhysics_Mask;
+    [Header("Debug")]
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
     [ReadOnly] public bool godMod = false; //! 플레이어 갓모드 여부
@@ -89,13 +89,13 @@ public class SystemManager : MonoBehaviour
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
     public Button itemDBSyncBtn;
-    public GameObject markPrefab; //! 위치 체크용 마크 프리팹
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
     public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn };
 
     [Header("Refer")]
+    public GameObject saveIcon; //저장 아이콘
     public Light2D globalLight;
     // public Transform camParent;
     MagicInfo lifeSeedMagic;
@@ -136,15 +136,15 @@ public class SystemManager : MonoBehaviour
     {
         // 최초 생성 됬을때
         if (instance == null)
+        {
+            instance = this;
+
             // 파괴되지 않게 설정
             DontDestroyOnLoad(gameObject);
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
-
-        // // 인풋 초기화
-        // UI_Input = new NewInput();
-        // UI_Input.Enable();
+        }
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
 
         //초기화
         StartCoroutine(Init());
@@ -184,11 +184,6 @@ public class SystemManager : MonoBehaviour
         //TODO 로딩 UI 끄기
         print("로딩 완료");
         loadDone = true;
-
-        // 플레이어 입력 켜기
-        // PlayerManager.Instance.playerInput.Enable();
-        // ui 입력 켜기
-        // UI_Input.Enable();
     }
 
     private void OnEnable()

@@ -41,7 +41,8 @@ public class GatePortal : MonoBehaviour
     [SerializeField] float farDistance = 150f; //해당 거리 이상 벌어지면 포탈 이동
     [SerializeField] bool nowPay = false; // 젬 넣고 있는지 여부
     IEnumerator payCoroutine;
-    public Character bossCharacter;
+    [SerializeField] Character bossCharacter;
+    [SerializeField] Character fixedBoss; // 고정된 보스 소환
 
     [Header("Refer")]
     Interacter interacter; //상호작용 콜백 함수 클래스
@@ -51,8 +52,6 @@ public class GatePortal : MonoBehaviour
     [SerializeField] Animator anim; //포탈 이펙트 애니메이션
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
 
-    [Header("Debug")]
-    public Character fixedBoss; //! 고정된 보스 소환
 
     private void Awake()
     {
@@ -223,7 +222,7 @@ public class GatePortal : MonoBehaviour
             bossInfo = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(fixedBoss.name.Split('_')[0]));
 
         //보스 소환 위치
-        Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle * 10f;
+        Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * Random.Range(5f, 10f);
 
         //보스 프리팹 찾기
         GameObject bossPrefab = EnemyDB.Instance.GetPrefab(bossInfo.id);
@@ -231,7 +230,9 @@ public class GatePortal : MonoBehaviour
         print(bossInfo.name);
 
         // 보스 소환
-        StartCoroutine(WorldSpawner.Instance.PortalSpawn(bossInfo, false, bossPos, bossPrefab, true));
+        // StartCoroutine(WorldSpawner.Instance.PortalSpawn(bossInfo, false, bossPos, bossPrefab, true));
+        GameObject bossInstance = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
+        bossCharacter = bossInstance.GetComponent<Character>();
 
         // 보스 죽을때까지 대기
         yield return new WaitUntil(() => bossCharacter != null && bossCharacter.isDead);

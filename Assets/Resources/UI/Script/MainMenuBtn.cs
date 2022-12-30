@@ -8,7 +8,9 @@ using TMPro;
 
 public class MainMenuBtn : MonoBehaviour
 {
+    public Selectable firstBtn;
     public GameObject buttonParent;
+    public GameObject mainMenuPanel;
     public GameObject characterSelectUI;
     public GameObject shopUI;
     public GameObject collectionUI;
@@ -23,11 +25,14 @@ public class MainMenuBtn : MonoBehaviour
 
     IEnumerator Init()
     {
-        //todo 첫번째 버튼 기억
-        UICursor.Instance.UpdateLastSelect(buttonParent.transform.GetChild(0).GetComponent<Button>());
-
         // 시간 속도 초기화
         Time.timeScale = 1f;
+
+        // ui 커서 초기화까지 대기
+        yield return new WaitUntil(() => UICursor.Instance != null);
+
+        // 메인메뉴 패널 켜기        
+        BackToMenu();
 
         yield return null;
     }
@@ -40,7 +45,10 @@ public class MainMenuBtn : MonoBehaviour
 
     public void Play()
     {
-        //todo 메인메뉴 배경음 정지
+        // 버튼 Select 해제
+        UICursor.Instance.UpdateLastSelect(null);
+
+        // 메인메뉴 배경음 정지
         SoundManager.Instance.nowBGM.Stop();
 
         // 로딩하고 인게임 씬 띄우기
@@ -67,8 +75,11 @@ public class MainMenuBtn : MonoBehaviour
 
     public void Option()
     {
-        // 옵션 UI 토글
-        optionUI.SetActive(!optionUI.activeSelf);
+        // 메인메뉴 끄기
+        mainMenuPanel.SetActive(false);
+
+        // 옵션 UI 켜기
+        optionUI.SetActive(true);
     }
 
     public void Quit()
@@ -76,5 +87,20 @@ public class MainMenuBtn : MonoBehaviour
         // 게임 종료
         print("QuitGame");
         Application.Quit();
+    }
+
+    public void BackToMenu()
+    {
+        // 메인메뉴 켜기
+        mainMenuPanel.SetActive(true);
+
+        // 첫번째 버튼 기억
+        UICursor.Instance.UpdateLastSelect(firstBtn);
+
+        // 다른 패널 끄기
+        characterSelectUI.SetActive(false);
+        shopUI.SetActive(false);
+        collectionUI.SetActive(false);
+        optionUI.SetActive(false);
     }
 }

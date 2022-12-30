@@ -37,13 +37,14 @@ public class Loading : MonoBehaviour
 
     private void Awake()
     {
-        // // 최초 생성 됬을때
-        // if (instance == null)
-        //     // 파괴되지 않게 설정
-        //     DontDestroyOnLoad(gameObject);
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
+        // 최초 생성 됬을때
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
 
         // 로딩 인풋 활성화
         loading_Input = new NewInput();
@@ -94,6 +95,8 @@ public class Loading : MonoBehaviour
                 {
                     // 씬 마저 넘기기
                     operation.allowSceneActivation = true;
+
+                    yield break;
                 }
 
             yield return null;

@@ -39,11 +39,12 @@ public class SoundManager : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<SoundManager>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
+                return null;
+                // var obj = FindObjectOfType<SoundManager>();
+                // if (obj != null)
+                // {
+                //     instance = obj;
+                // }
                 // else
                 // {
                 //     var newObj = new GameObject().AddComponent<SoundManager>();
@@ -82,8 +83,12 @@ public class SoundManager : MonoBehaviour
     {
         // 최초 생성 됬을때
         if (instance == null)
-            // 사운드 매니저 파괴되지 않게 설정
+        {
+            instance = this;
+
+            // 파괴되지 않게 설정
             DontDestroyOnLoad(gameObject);
+        }
         else
             // 해당 오브젝트 파괴
             Destroy(gameObject);
@@ -125,6 +130,9 @@ public class SoundManager : MonoBehaviour
         {
             // 해당 이름으로 배경음 찾기
             Sound sound = all_Sounds.Find(x => x.name == startBGM);
+
+            // 배경음 사운드 정보 갱신
+            nowBGM_Sound = sound;
 
             // 오디오 초기화
             nowBGM.clip = sound.clip;
@@ -311,7 +319,7 @@ public class SoundManager : MonoBehaviour
         }
 
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, Vector2.zero, Quaternion.identity, attachor);
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, attachor.position, Quaternion.identity, attachor);
 
         // 오디오 초기화 후 플레이
         AudioSource audio = InitAudio(audioObj, sound, 1, fadeIn, delay, loopNum, scaledTime);

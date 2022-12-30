@@ -20,11 +20,12 @@ public class UIManager : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<UIManager>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
+                return null;
+                // var obj = FindObjectOfType<UIManager>();
+                // if (obj != null)
+                // {
+                //     instance = obj;
+                // }
                 // else
                 // {
                 //     var newObj = new GameObject().AddComponent<UIManager>();
@@ -62,7 +63,6 @@ public class UIManager : MonoBehaviour
     public GameObject gameoverPanel;
 
     [Header("Refer")]
-    public GameObject saveIcon; //저장 아이콘
     [SerializeField] Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
@@ -104,13 +104,17 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        // // 최초 생성 됬을때
-        // if (instance == null)
-        //     // 파괴되지 않게 설정
-        //     DontDestroyOnLoad(gameObject);
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
+        // 최초 생성 됬을때
+        if (instance == null)
+        {
+            instance = this;
+
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
 
         //입력 초기화
         StartCoroutine(InputInit());

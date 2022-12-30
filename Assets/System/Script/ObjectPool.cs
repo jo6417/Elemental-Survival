@@ -12,11 +12,12 @@ public class ObjectPool : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<ObjectPool>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
+                return null;
+                // var obj = FindObjectOfType<ObjectPool>();
+                // if (obj != null)
+                // {
+                //     instance = obj;
+                // }
                 // else
                 // {
                 //     var newObj = new GameObject().AddComponent<ObjectPool>();
@@ -40,12 +41,16 @@ public class ObjectPool : MonoBehaviour
 
     private void Awake()
     {
-        // // 최초 생성 됬을때
-        // if (instance == null)
-        //     // 파괴되지 않게 설정
-        //     DontDestroyOnLoad(gameObject);
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
+        // 최초 생성 됬을때
+        if (instance == null)
+        {
+            instance = this;
+
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
     }
 }

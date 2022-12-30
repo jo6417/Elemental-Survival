@@ -15,11 +15,12 @@ public class UICursor : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<UICursor>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
+                return null;
+                // var obj = FindObjectOfType<UICursor>();
+                // if (obj != null)
+                // {
+                //     instance = obj;
+                // }
                 // else
                 // {
                 //     var newObj = new GameObject().AddComponent<UICursor>();
@@ -33,7 +34,7 @@ public class UICursor : MonoBehaviour
 
     [Header("UI Cursor")]
     public NewInput UI_Input; // UI 인풋 받기
-    public RectTransform UI_Cursor; //선택된 UI 따라다니는 UI커서
+    public Transform UI_Cursor; //선택된 UI 따라다니는 UI커서
     public Canvas UI_CursorCanvas; //UI커서 전용 캔버스
     public Selectable lastSelected; //마지막 선택된 오브젝트
     public Color targetOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
@@ -44,23 +45,24 @@ public class UICursor : MonoBehaviour
 
     private void Awake()
     {
-        // 사운드 매니저 파괴되지 않게 설정
-        DontDestroyOnLoad(gameObject);
+        // 최초 생성 됬을때
+        if (instance == null)
+        {
+            instance = this;
 
-        // // 최초 생성 됬을때
-        // if (instance == null)
-        //     // 사운드 매니저 파괴되지 않게 설정
-        //     DontDestroyOnLoad(gameObject);
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
 
         UI_Input = new NewInput();
         // 방향키 입력시
         UI_Input.UI.NavControl.performed += val =>
         {
             // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
-            if (!UI_Cursor.gameObject.activeInHierarchy && lastSelected)
+            if (!UICursor.Instance.UI_Cursor.gameObject.activeInHierarchy && lastSelected)
                 lastSelected.Select();
         };
         UI_Input.Enable();
@@ -149,12 +151,14 @@ public class UICursor : MonoBehaviour
 
     public void UICursorToggle(bool setToggle)
     {
+        RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
+
         // 커서 켜져있을때 끄기
         if (!setToggle && UI_Cursor.gameObject.activeSelf)
         {
             // 기존 트윈 죽이기
-            UI_Cursor.DOPause();
-            UI_Cursor.DOKill();
+            cursorRect.DOPause();
+            cursorRect.DOKill();
             lastSelected.targetGraphic.GetComponent<Image>().DOKill();
 
             // UI 커서 투명하게
@@ -163,7 +167,7 @@ public class UICursor : MonoBehaviour
 
             //UI커서 크기 및 위치 초기화
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            UI_Cursor.DOSizeDelta(cursorCanvasRect.sizeDelta, 0.3f)
+            cursorRect.DOSizeDelta(cursorCanvasRect.sizeDelta, 0.3f)
             .SetUpdate(true)
             .OnComplete(() =>
             {
@@ -189,8 +193,8 @@ public class UICursor : MonoBehaviour
 
             // UI_Cursor.position = Vector2.zero;
 
-            UI_Cursor.DOPause();
-            UI_Cursor.DOKill();
+            cursorRect.DOPause();
+            cursorRect.DOKill();
 
             //UI커서 활성화
             UI_Cursor.gameObject.SetActive(true);
@@ -199,6 +203,8 @@ public class UICursor : MonoBehaviour
 
     IEnumerator CursorAnim()
     {
+        yield return null;
+
         // 선택된 타겟 이미지
         Image image = lastSelected.targetGraphic.GetComponent<Image>();
         // 선택된 이미지 Rect
@@ -248,8 +254,11 @@ public class UICursor : MonoBehaviour
         //UI커서 활성화
         UI_Cursor.gameObject.SetActive(true);
 
+        RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
+
         //원래 트윈 있으면 죽이기
         image.DOKill();
+        cursorRect.DOKill();
         UI_Cursor.transform.DOKill();
         UI_Cursor.DOKill();
 
@@ -262,22 +271,21 @@ public class UICursor : MonoBehaviour
         .SetUpdate(true);
 
         // 타겟과 사이즈 맞추기
-        UI_Cursor.DOSizeDelta(size * 1.1f, flickTime)
+        cursorRect.DOSizeDelta(size, flickTime)
         .SetUpdate(true);
 
         //이동 시간 대기
-        yield return new WaitForSecondsRealtime(flickTime);
+        yield return new WaitUntil(() => cursorRect.sizeDelta == size);
 
         //사이즈 초기화
-        UI_Cursor.sizeDelta = size;
         // 사이즈 커졌다 작아졌다 무한 반복
-        UI_Cursor.DOSizeDelta(size * 1.1f, flickTime)
+        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
         .SetLoops(-1, LoopType.Yoyo)
         .SetUpdate(true)
         .OnKill(() =>
         {
             //사이즈 초기화
-            UI_Cursor.sizeDelta = size;
+            cursorRect.sizeDelta = size;
         });
 
         // 컬러 초기화

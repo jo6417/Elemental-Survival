@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class LevelupMenu : MonoBehaviour
 {
+    [SerializeField] Selectable firstBtn;
     [SerializeField] Image panel;
     [SerializeField] CanvasGroup screen;
     [SerializeField] Transform slots;
@@ -93,7 +94,7 @@ public class LevelupMenu : MonoBehaviour
                     break;
             }
 
-            print(index + " : " + getItem.name);
+            // print(index + " : " + getItem.name);
 
             // 아이콘 찾기
             Sprite sprite = null;
@@ -153,13 +154,10 @@ public class LevelupMenu : MonoBehaviour
         // 레이캐스트 막기
         screen.blocksRaycasts = true;
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
-        //todo 가운데 슬롯 선택하기
-        Button btn = slots.transform.GetChild(1).GetComponent<Button>();
-        // UIManager.Instance.lastSelected = btn;
-        // UIManager.Instance.SelectObject(slots.transform.GetChild(1).gameObject);
-        btn.Select();
+        // 가운데 슬롯 선택하기
+        UICursor.Instance.UpdateLastSelect(firstBtn);
     }
 
     void ClickSlot(int index, SlotInfo slotInfo)

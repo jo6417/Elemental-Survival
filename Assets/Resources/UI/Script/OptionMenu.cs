@@ -14,6 +14,7 @@ public class OptionMenu : MonoBehaviour
     public enum VolumeType { Master, BGM, SFX };
 
     [Header("Refer")]
+    [SerializeField] private MainMenuBtn mainMenu; // 메인메뉴 컴포넌트
     [SerializeField] private GameObject optionSelectPanel; // 옵션 버튼 패널
     [SerializeField] private GameObject audioOptionPanel; // 오디오 설정 패널
     [SerializeField] private GameObject graphicOptionPanel; // 그래픽 설정 패널
@@ -32,11 +33,13 @@ public class OptionMenu : MonoBehaviour
 
     IEnumerator InputInit()
     {
+        yield return null;
         // null 이 아닐때까지 대기
-        yield return new WaitUntil(() => UIManager.Instance.UI_Input != null);
+        // yield return new WaitUntil(() => UIManager.Instance.UI_Input != null);
 
+        NewInput UI_Input = new NewInput();
         // 취소 입력
-        UIManager.Instance.UI_Input.UI.Cancel.performed += val =>
+        UI_Input.UI.Cancel.performed += val =>
         {
             // 옵션 선택 패널 켜져있을때
             if (optionSelectPanel.activeInHierarchy)
@@ -48,6 +51,9 @@ public class OptionMenu : MonoBehaviour
                     BackToOption();
             }
         };
+
+        // 입력 활성화
+        UI_Input.Enable();
     }
 
     private void OnEnable()
@@ -142,10 +148,23 @@ public class OptionMenu : MonoBehaviour
 
     public void BackToPause()
     {
-        // 일시정지 메뉴 켜기
-        UIManager.Instance.pausePanel.SetActive(true);
+        // UI 매니저 있을때
+        if (UIManager.Instance)
+        {
+            // 일시정지 메뉴 켜기
+            UIManager.Instance.pausePanel.SetActive(true);
 
-        // 옵션 메뉴 끄기
-        UIManager.Instance.optionPanel.SetActive(false);
+            // 옵션 메뉴 끄기
+            UIManager.Instance.optionPanel.SetActive(false);
+        }
+        // 메인메뉴일때
+        else
+        {
+            // 메인 메뉴 켜기
+            mainMenu.BackToMenu();
+
+            // 옵션 메뉴 끄기
+            gameObject.SetActive(false);
+        }
     }
 }

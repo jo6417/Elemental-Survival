@@ -107,7 +107,7 @@ public class SaveManager : MonoBehaviour
     IEnumerator Saving()
     {
         // 저장 아이콘 켜기
-        UIManager.Instance.saveIcon.SetActive(true);
+        SystemManager.Instance.saveIcon.SetActive(true);
 
         // 최소 저장 시간 대기
         yield return new WaitForSecondsRealtime(1f);
@@ -115,7 +115,7 @@ public class SaveManager : MonoBehaviour
         yield return new WaitUntil(() => !nowSaving);
 
         //저장 아이콘 끄기
-        UIManager.Instance.saveIcon.SetActive(false);
+        SystemManager.Instance.saveIcon.SetActive(false);
     }
 
     public IEnumerator LoadData()

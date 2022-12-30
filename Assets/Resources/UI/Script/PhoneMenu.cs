@@ -122,7 +122,10 @@ public class PhoneMenu : MonoBehaviour
 
         // 키 입력 정리
         StartCoroutine(InputInit());
+    }
 
+    private void Start()
+    {
         // 스크롤 컨텐츠 모두 비우기
         SystemManager.Instance.DestroyAllChild(recipeScroll.Content);
     }
