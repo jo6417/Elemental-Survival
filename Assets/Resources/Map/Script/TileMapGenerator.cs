@@ -4,8 +4,20 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditor;
 
+[System.Serializable]
+public class TileLayerPack
+{
+    public RuleTile tile;
+    public float rate;
+}
+
 public class TileMapGenerator : MonoBehaviour
 {
+    [Header("State")]
+    [SerializeField] bool tileReset = false; // 타일 설치시 기존 타일 초기화 여부
+    [SerializeField] RandomType randomType;
+    enum RandomType { random, ground };
+
     [Range(0, 100)]
     public int iniChance;
     [Range(1, 8)]
@@ -17,84 +29,104 @@ public class TileMapGenerator : MonoBehaviour
     public int genNumRange;
     private int count = 0;
 
-    private int[,] terrainMap;
-    public Vector3Int tmpSize;
-    public Tilemap topMap;
-    public Tilemap botMap;
-    public RuleTile topTile;
-    public AnimatedTile botTile;
+    private int[,] tileSetPos;
+    public Vector3Int tilemapSize; // 설치할 사이즈
+    public Vector3Int tilemapPos; // 설치할 위치
+
+    [Header("Refer")]
+    public Tilemap tileMap;
+    public List<TileLayerPack> tileList = new List<TileLayerPack>();
     [SerializeField] GameObject grid;
 
-    int width;
-    int height;
-
-    public void doSim()
+    public void GenTile(Vector3Int genSize, Vector3Int genPos)
     {
-        clearMap(false);
-        width = tmpSize.x;
-        height = tmpSize.y;
+        // 타일맵 생성할 사이즈 갱신
+        tilemapSize = genSize;
+        // 타일맵 생성할 위치 갱신
+        tilemapPos = genPos;
 
-        if (terrainMap == null)
+        // // 육지 형태 랜덤일때 (이미 생성된 육지에 붙여서 생성)
+        // if (randomType == RandomType.ground)
+        //     ClearMap(false);
+        // // 일반 랜덤일때 초기화
+        // else
+        ClearMap(true);
+
+        // 확률에 따라 랜덤 위치에 타일 생성 예약
+        if (tileSetPos == null)
         {
             // 입력된 가로,세로 사이즈만큼 생성
-            terrainMap = new int[width, height];
+            tileSetPos = new int[tilemapSize.x, tilemapSize.y];
+
             // 입력된 모든 타일에 확률로 타일 생성 여부 산출
-            initPos();
+            InitPos();
         }
 
-        for (int i = 0; i < genNumRange; i++)
-        {
-            terrainMap = genTilePos(terrainMap);
-        }
+        // 육지 형태 랜덤일때 (이미 생성된 육지에 붙여서 생성)
+        if (randomType == RandomType.ground)
+            for (int i = 0; i < genNumRange; i++)
+            {
+                tileSetPos = GenTilePos(tileSetPos);
+            }
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < tilemapSize.x; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < tilemapSize.y; y++)
             {
                 // 설치 예약된 위치라면
-                if (terrainMap[x, y] == 1)
-                    // 지상 타일 설치
-                    topMap.SetTile(new Vector3Int(-x + width / 2, -y + height / 2, 0), topTile);
+                if (tileSetPos[x, y] == 1)
+                {
+                    // 랜덤 타일 가중치 확인
+                    List<float> tileRate = new List<float>();
+                    foreach (TileLayerPack tile in tileList)
+                        tileRate.Add(tile.rate);
+                    // 타일 중에 하나 뽑기
+                    int tileIndex = SystemManager.Instance.WeightRandom(tileRate);
 
-                // 아래 배경 타일 설치
-                botMap.SetTile(new Vector3Int(-x + width / 2, -y + height / 2, 0), botTile);
+                    // 설치할 타일
+                    RuleTile setTile = tileList[tileIndex].tile;
+
+                    // 타일 설치
+                    tileMap.SetTile(tilemapPos + new Vector3Int(-x + tilemapSize.x / 2, -y + tilemapSize.y / 2, 0), setTile);
+                }
             }
         }
     }
 
-    public void initPos()
+    public void InitPos()
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < tilemapSize.x; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < tilemapSize.y; y++)
             {
-                terrainMap[x, y] = Random.Range(1, 101) < iniChance ? 1 : 0;
+                // 랜덤 확률 따라서 생성
+                tileSetPos[x, y] = Random.Range(1, 101) <= iniChance ? 1 : 0;
             }
         }
     }
 
-    public int[,] genTilePos(int[,] oldMap)
+    public int[,] GenTilePos(int[,] oldMap)
     {
-        int[,] newMap = new int[width, height];
+        int[,] newMap = new int[tilemapSize.x, tilemapSize.y];
         // 이웃한 타일 개수
         int nearNum;
-        // 
-        BoundsInt myB = new BoundsInt(-1, -1, 0, 3, 3, 1);
+        // 각 타일의 주변 경계
+        BoundsInt boundary = new BoundsInt(-1, -1, 0, 3, 3, 1);
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < tilemapSize.x; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < tilemapSize.y; y++)
             {
                 nearNum = 0;
 
                 // 주변의 타일 전부 검사
-                foreach (Vector3Int bound in myB.allPositionsWithin)
+                foreach (Vector3Int bound in boundary.allPositionsWithin)
                 {
                     //
                     if (bound.x == 0 && bound.y == 0)
                         continue;
 
-                    if (x + bound.x >= 0 && x + bound.x < width && y + bound.y >= 0 && y + bound.y < height)
+                    if (x + bound.x >= 0 && x + bound.x < tilemapSize.x && y + bound.y >= 0 && y + bound.y < tilemapSize.y)
                     {
                         nearNum += oldMap[x + bound.x, y + bound.y];
                     }
@@ -148,7 +180,7 @@ public class TileMapGenerator : MonoBehaviour
         // }
     }
 
-    public void SaveAssetMap()
+    public void SaveMapPrefab()
     {
         string saveName = "tmapXY_" + count;
 
@@ -168,13 +200,16 @@ public class TileMapGenerator : MonoBehaviour
         count++;
     }
 
-    public void clearMap(bool complete = true)
+    public void ClearMap(bool complete = true)
     {
-        topMap.ClearAllTiles();
-        botMap.ClearAllTiles();
+        if (tileReset)
+            // 모든 타일 삭제
+            tileMap.ClearAllTiles();
+
+        // 기존 예약된 설치 위치 초기화
         if (complete)
         {
-            terrainMap = null;
+            tileSetPos = null;
         }
     }
 }

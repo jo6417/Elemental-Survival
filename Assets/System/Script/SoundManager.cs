@@ -122,10 +122,10 @@ public class SoundManager : MonoBehaviour
         print("Sound Loaded!");
         initFinish = true;
 
-        // 세이브 데이터 로드 완료까지 대기
+        // 시스템 매니저 초기화 대기
         yield return new WaitUntil(() => SystemManager.Instance.loadDone);
 
-        // 시작 bgm 재생
+        // 시작 bgm 있으면 재생
         if (startBGM != "")
         {
             // 해당 이름으로 배경음 찾기
@@ -174,8 +174,8 @@ public class SoundManager : MonoBehaviour
 
     public IEnumerator BGMPlayer()
     {
-        // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance.initFinish);
+        // 시스템 매니저 초기화 대기
+        yield return new WaitUntil(() => SystemManager.Instance.loadDone);
 
         while (gameObject)
         {
@@ -521,9 +521,9 @@ public class SoundManager : MonoBehaviour
         masterVolume = setVolume;
 
         // 재생중인 배경음 있을때
-        if (nowBGM != null && nowBGM_Sound != null)
-            // 배경음 볼륨 갱신
-            nowBGM.volume = nowBGM_Sound.volume * masterVolume * bgmVolume;
+        // if (nowBGM != null && nowBGM_Sound != null)
+        // 배경음 볼륨 갱신
+        nowBGM.volume = nowBGM_Sound.volume * masterVolume * bgmVolume;
 
         StartCoroutine(SetAll_Volume());
     }
@@ -533,9 +533,9 @@ public class SoundManager : MonoBehaviour
         bgmVolume = setVolume;
 
         // 재생중인 배경음 있을때
-        if (nowBGM != null && nowBGM_Sound != null)
-            // 배경음 볼륨 갱신
-            nowBGM.volume = nowBGM_Sound.volume * masterVolume * bgmVolume;
+        // if (nowBGM != null && nowBGM_Sound != null)
+        // 배경음 볼륨 갱신
+        nowBGM.volume = nowBGM_Sound.volume * masterVolume * bgmVolume;
     }
     public void Set_SFXVolume(float setVolume)
     {

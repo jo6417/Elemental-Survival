@@ -101,6 +101,7 @@ public class SystemManager : MonoBehaviour
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
+    public GameObject targetPos; // 디버그용 타겟 위치 표시
 
     [Header("DataBase")]
     public DBType dBType;
@@ -147,10 +148,10 @@ public class SystemManager : MonoBehaviour
             Destroy(gameObject);
 
         //초기화
-        StartCoroutine(Init());
+        StartCoroutine(AwakeInit());
     }
 
-    IEnumerator Init()
+    IEnumerator AwakeInit()
     {
         yield return null;
 
@@ -188,6 +189,14 @@ public class SystemManager : MonoBehaviour
 
     private void OnEnable()
     {
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        // 사운드 초기화 대기
+        yield return new WaitUntil(() => SoundManager.Instance != null);
+
         // 시간 속도 초기화
         TimeScaleChange(1f);
     }

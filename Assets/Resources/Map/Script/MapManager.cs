@@ -54,31 +54,40 @@ public class MapManager : MonoBehaviour
     public Transform[] background = null;
     [SerializeField] List<Vector3> initPos = new List<Vector3>(); // 초기화 된 맵위치 리스트
     [SerializeField] List<Prop> propList = new List<Prop>(); // 사물 리스트
+    [SerializeField] List<TileMapGenerator> tileGenList = new List<TileMapGenerator>(); // 타일맵 생성기 리스트
 
     [Header("State")]
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
-    float sizeX;
-    float sizeY;
+    [SerializeField] Vector3Int tilemapSize; // 설치할 사이즈
+    [SerializeField] float boundRate = 0.5f; // 맵 생성 경계 비율
     float rightX;
     float leftX;
     float upY;
     float downY;
+    [SerializeField] List<Vector2> genPosList = new List<Vector2>();
 
     private void OnEnable()
     {
-        sizeX = background[0].GetComponent<SpriteRenderer>().sprite.bounds.size.x;
-        sizeY = background[0].GetComponent<SpriteRenderer>().sprite.bounds.size.y;
+        // tilemapSize.x = background[0].GetComponent<SpriteRenderer>().sprite.bounds.size.x;
+        // tilemapSize.y = background[0].GetComponent<SpriteRenderer>().sprite.bounds.size.y;
+        // rightX = tilemapSize.x / 2;
+        // leftX = -tilemapSize.x / 2;
+        // upY = tilemapSize.y / 2;
+        // downY = -tilemapSize.y / 2;
+        // print(rightX + " : " + leftX + " : " + upY + " : " + downY);
 
-        rightX = sizeX / 2;
-        leftX = -sizeX / 2;
-        upY = sizeY / 2;
-        downY = -sizeY / 2;
+        // 설치할 타일맵 사이즈 절반만큼 경계 설정
+        rightX = tilemapSize.x / 2f;
+        leftX = -tilemapSize.x / 2f;
+        upY = tilemapSize.y / 2f;
+        downY = -tilemapSize.y / 2f;
+
         // print(rightX + " : " + leftX + " : " + upY + " : " + downY);
 
         // 바닥 위치 초기화
-        MoveGround();
+        GenerateMap();
 
         //다음맵으로 넘어가는 포탈게이트 생성하기
         SpawnPortalGate();
@@ -89,38 +98,84 @@ public class MapManager : MonoBehaviour
         // 플레이어가 경계 끝에 왔을때 배경 9개 전부 위치 변경
         if (PlayerManager.Instance.transform.position.x >= rightX)
         {
-            // 바닥 움직이기
-            MoveGround(new Vector3(sizeX, 0));
-            rightX += sizeX;
-            leftX += sizeX;
+
+            // 경계 갱신
+            rightX += tilemapSize.x;
+            leftX += tilemapSize.x;
+            // 새 위치에 타일 설치
+            GenerateMap(new Vector3(tilemapSize.x, 0));
         }
 
         if (PlayerManager.Instance.transform.position.x <= leftX)
         {
-            // 바닥 움직이기
-            MoveGround(new Vector3(-sizeX, 0));
 
-            rightX -= sizeX;
-            leftX -= sizeX;
+            // 경계 갱신
+            rightX -= tilemapSize.x;
+            leftX -= tilemapSize.x;
+            // 새 위치에 타일 설치
+            GenerateMap(new Vector3(-tilemapSize.x, 0));
         }
 
         if (PlayerManager.Instance.transform.position.y >= upY)
         {
-            // 바닥 움직이기
-            MoveGround(new Vector3(0, sizeY));
 
-            upY += sizeY;
-            downY += sizeY;
+            // 경계 갱신
+            upY += tilemapSize.y;
+            downY += tilemapSize.y;
+            // 새 위치에 타일 설치
+            GenerateMap(new Vector3(0, tilemapSize.y));
         }
 
         if (PlayerManager.Instance.transform.position.y <= downY)
         {
-            // 바닥 움직이기
-            MoveGround(new Vector3(0, -sizeY));
 
-            // Y 위치 갱신
-            upY -= sizeY;
-            downY -= sizeY;
+            // 경계 갱신
+            upY -= tilemapSize.y;
+            downY -= tilemapSize.y;
+            // 새 위치에 타일 설치
+            GenerateMap(new Vector3(0, -tilemapSize.y));
+        }
+    }
+
+    void GenerateMap(Vector3 movePos = default)
+    {
+        // 플레이어 서있는 타일셋 중심 위치 계산
+        Vector2 setPos = new Vector2((leftX + rightX) / 2f, (upY + downY) / 2f);
+
+        // 초기 설치 위치
+        Vector2 defaultPos = setPos - new Vector2(tilemapSize.x, tilemapSize.y);
+
+        // 총 9번 설치
+        for (int y = 0; y < 3; y++)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                // 타일셋 사이즈만큼 중심위치 이동
+                Vector2 genPos = defaultPos + new Vector2(tilemapSize.x * x, tilemapSize.y * y);
+
+                // 이미 소환된 위치일때 넘기기
+                if (genPosList.Exists(x => x == genPos))
+                    continue;
+                // 리스트에 없으면
+                else
+                    // 리스트에 저장
+                    genPosList.Add(genPos);
+
+                // LeanPool.Spawn(SystemManager.Instance.targetPos, genPos, Quaternion.identity);
+                // print(genPos);
+
+                // 타일맵 위치로 전환
+                Vector3Int nowMapPos = new Vector3Int((int)(genPos.x / 2f) - 1, (int)(genPos.y / 2f) - 1, 0);
+
+                // 리스트의 모든 타일맵 설치
+                foreach (TileMapGenerator gen in tileGenList)
+                {
+                    gen.GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos);
+                }
+
+                // 장애물 설치하기
+                SpawnProp(new Vector2(genPos.x, genPos.y));
+            }
         }
     }
 
@@ -130,7 +185,7 @@ public class MapManager : MonoBehaviour
         {
             // 현재 바닥 위치 
             Vector3 groundPos = background[i].position;
-            // pos.y -= sizeY;
+            // pos.y -= tilemapSize.y;
 
             // 옮겨질 바닥 위치
             groundPos += movePos;
@@ -168,8 +223,8 @@ public class MapManager : MonoBehaviour
 
                 // 바닥 범위내 랜덤 위치 정하기
                 Vector2 spawnPos = new Vector2(
-                    Random.Range(groundPos.x - sizeX / 2f, groundPos.x + sizeX / 2f),
-                    Random.Range(groundPos.y - sizeY / 2f, groundPos.y + sizeY / 2f));
+                    Random.Range(groundPos.x - tilemapSize.x / 2f, groundPos.x + tilemapSize.x / 2f),
+                    Random.Range(groundPos.y - tilemapSize.y / 2f, groundPos.y + tilemapSize.y / 2f));
 
                 // 시도 횟수 남았으면 계속 반복
                 while (spawnAttemptCount > 0)
@@ -178,7 +233,7 @@ public class MapManager : MonoBehaviour
                     Vector2 moveDir = CheckOverlap(spawnPos, fieldPropList, nowProp);
 
                     // 주변에 사물 없을때
-                    if (moveDir == new Vector2(sizeX, sizeY))
+                    if (moveDir == new Vector2(tilemapSize.x, tilemapSize.y))
                     {
                         // 사물 스폰
                         GameObject propObj = LeanPool.Spawn(nowProp.propPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.objectPool);
@@ -237,7 +292,7 @@ public class MapManager : MonoBehaviour
         }
 
         // 아무도 안겹쳤을때
-        return new Vector2(sizeX, sizeY);
+        return new Vector2(tilemapSize.x, tilemapSize.y);
     }
 
     void SpawnPortalGate()
@@ -247,5 +302,15 @@ public class MapManager : MonoBehaviour
 
         //포탈 게이트 생성
         GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity, ObjectPool.Instance.objectPool);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        // 경계 모서리 표시
+        Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(leftX, upY));
+        Gizmos.DrawLine(new Vector2(rightX, downY), new Vector2(rightX, upY));
+        Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(rightX, downY));
+        Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
     }
 }
