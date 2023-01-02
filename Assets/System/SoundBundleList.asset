@@ -268,6 +268,23 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       source: {fileID: 0}
+  - name: Map_Sounds
+    sounds:
+    - name: Bush_0
+      clip: {fileID: 8300000, guid: 54bfdf40870ab8e4c8ada39831c4f3cf, type: 3}
+      volume: 0.5
+      pitch: 1
+      source: {fileID: 0}
+    - name: Bush_1
+      clip: {fileID: 8300000, guid: e4133866db36dc944bb37707346248ea, type: 3}
+      volume: 0.5
+      pitch: 1
+      source: {fileID: 0}
+    - name: Bush_2
+      clip: {fileID: 8300000, guid: 756ae9c2fe69e214ca16edbaafaea1b6, type: 3}
+      volume: 0.5
+      pitch: 1
+      source: {fileID: 0}
   - name: Enemy_Sounds
     sounds:
     - name: EarthSlime_Jump

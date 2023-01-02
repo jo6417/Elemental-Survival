@@ -4,19 +4,13 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditor;
 
-[System.Serializable]
-public class TileLayerPack
-{
-    public RuleTile tile;
-    public float rate;
-}
-
 public class TileMapGenerator : MonoBehaviour
 {
     [Header("State")]
     [SerializeField] bool tileReset = false; // 타일 설치시 기존 타일 초기화 여부
     [SerializeField] RandomType randomType;
     enum RandomType { random, ground };
+    [SerializeField] bool border = false; // 테두리 타일 설치 여부
 
     [Range(0, 100)]
     public int iniChance;
@@ -35,10 +29,10 @@ public class TileMapGenerator : MonoBehaviour
 
     [Header("Refer")]
     public Tilemap tileMap;
-    public List<TileLayerPack> tileList = new List<TileLayerPack>();
+    // public List<TileLayer> tileList = new List<TileLayer>();
     [SerializeField] GameObject grid;
 
-    public void GenTile(Vector3Int genSize, Vector3Int genPos)
+    public void GenTile(Vector3Int genSize, Vector3Int genPos, List<TileBundle> tileList)
     {
         // 타일맵 생성할 사이즈 갱신
         tilemapSize = genSize;
@@ -78,7 +72,7 @@ public class TileMapGenerator : MonoBehaviour
                 {
                     // 랜덤 타일 가중치 확인
                     List<float> tileRate = new List<float>();
-                    foreach (TileLayerPack tile in tileList)
+                    foreach (TileBundle tile in tileList)
                         tileRate.Add(tile.rate);
                     // 타일 중에 하나 뽑기
                     int tileIndex = SystemManager.Instance.WeightRandom(tileRate);
@@ -108,7 +102,7 @@ public class TileMapGenerator : MonoBehaviour
     public int[,] GenTilePos(int[,] oldMap)
     {
         int[,] newMap = new int[tilemapSize.x, tilemapSize.y];
-        // 이웃한 타일 개수
+        // 현재 검사하는 타일 주변의 설치 예약된 타일 개수
         int nearNum;
         // 각 타일의 주변 경계
         BoundsInt boundary = new BoundsInt(-1, -1, 0, 3, 3, 1);
@@ -126,35 +120,47 @@ public class TileMapGenerator : MonoBehaviour
                     if (bound.x == 0 && bound.y == 0)
                         continue;
 
+                    // 주변 타일이 타일사이즈 범위 내에 있을때
                     if (x + bound.x >= 0 && x + bound.x < tilemapSize.x && y + bound.y >= 0 && y + bound.y < tilemapSize.y)
                     {
+                        // 해당 주변 타일이 이미 예약된 상태면 nearNum 변수 증가
                         nearNum += oldMap[x + bound.x, y + bound.y];
                     }
+                    // 타일 사이즈 범위 밖일때
                     else
                     {
-                        // 이웃한 타일 개수 증가
-                        nearNum++;
+                        // 테두리도 검사할때
+                        if (border)
+                            // nearNum 변수 증가
+                            nearNum++;
                     }
                 }
 
+                // 설치 예약 되어있을때
                 if (oldMap[x, y] == 1)
                 {
                     if (nearNum < deathLimit)
                         newMap[x, y] = 0;
-                    else
-                    {
-                        newMap[x, y] = 1;
-                    }
+                    // else
+                    // {
+                    //     newMap[x, y] = 1;
+                    // }
                 }
 
+                // 설치 예약 되어있지 않을때
                 if (oldMap[x, y] == 0)
                 {
+                    // int borderAdd = 0;
+                    // // 테두리 타일일때
+                    // if (x == 0 || y == 0)
+                    //     borderAdd = -3;
+
                     if (nearNum > birthLimit)
                         newMap[x, y] = 1;
-                    else
-                    {
-                        newMap[x, y] = 0;
-                    }
+                    // else
+                    // {
+                    //     newMap[x, y] = 0;
+                    // }
                 }
             }
         }

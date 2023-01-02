@@ -4,25 +4,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Lean.Pool;
 
-[System.Serializable]
-public class Prop
-{
-    public string name;
-    public GameObject propPrefab; // 사물 프리팹
-    public GameObject propObj; // 생성된 사물 인스턴스
-
-    public float radius = 1f; // 자리 차지 반경
-    public int amount = 1; // 소환 개수
-    public float spawnRate = 0.8f; // 소환 될 확률
-
-    public Prop(Prop prop)
-    {
-        this.radius = prop.radius;
-        this.amount = prop.amount;
-        this.spawnRate = prop.spawnRate;
-    }
-}
-
 public class MapManager : MonoBehaviour
 {
     #region Singleton
@@ -49,35 +30,31 @@ public class MapManager : MonoBehaviour
     }
     #endregion
 
-    [Header("Refer")]
-    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
-    public Transform[] background = null;
-    [SerializeField] List<Vector3> initPos = new List<Vector3>(); // 초기화 된 맵위치 리스트
-    [SerializeField] List<Prop> propList = new List<Prop>(); // 사물 리스트
-    [SerializeField] List<TileMapGenerator> tileGenList = new List<TileMapGenerator>(); // 타일맵 생성기 리스트
-
     [Header("State")]
+    public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
+    public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
     [SerializeField] Vector3Int tilemapSize; // 설치할 사이즈
     [SerializeField] float boundRate = 0.5f; // 맵 생성 경계 비율
-    float rightX;
-    float leftX;
-    float upY;
-    float downY;
+    float rightX, leftX, upY, downY; // 4방향 경계 좌표
     [SerializeField] List<Vector2> genPosList = new List<Vector2>();
+
+    [Header("Refer")]
+    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
+    public Transform[] background = null;
+    [SerializeField] List<Vector3> initPos = new List<Vector3>(); // 초기화 된 맵위치 리스트
+    [SerializeField] List<PropBundle> propBundleList = new List<PropBundle>(); // 속성별 장애물 번들 리스트
+
+    [Header("Tile")]
+    [SerializeField] List<TileLayer> tileBundle_Bottom = new List<TileLayer>(); // 속성별 타일 번들 리스트, 가장 아래층
+    [SerializeField] List<TileLayer> tileBundle_Middle = new List<TileLayer>(); // 속성별 타일 번들 리스트, 중간층
+    [SerializeField] List<TileLayer> tileBundle_Deco = new List<TileLayer>(); // 속성별 타일 번들 리스트, 장식 타일
+    [SerializeField] List<TileMapGenerator> tileGenList = new List<TileMapGenerator>(); // 타일맵 생성기 리스트
 
     private void OnEnable()
     {
-        // tilemapSize.x = background[0].GetComponent<SpriteRenderer>().sprite.bounds.size.x;
-        // tilemapSize.y = background[0].GetComponent<SpriteRenderer>().sprite.bounds.size.y;
-        // rightX = tilemapSize.x / 2;
-        // leftX = -tilemapSize.x / 2;
-        // upY = tilemapSize.y / 2;
-        // downY = -tilemapSize.y / 2;
-        // print(rightX + " : " + leftX + " : " + upY + " : " + downY);
-
         // 설치할 타일맵 사이즈 절반만큼 경계 설정
         rightX = tilemapSize.x / 2f;
         leftX = -tilemapSize.x / 2f;
@@ -98,40 +75,40 @@ public class MapManager : MonoBehaviour
         // 플레이어가 경계 끝에 왔을때 배경 9개 전부 위치 변경
         if (PlayerManager.Instance.transform.position.x >= rightX)
         {
-
             // 경계 갱신
             rightX += tilemapSize.x;
             leftX += tilemapSize.x;
+
             // 새 위치에 타일 설치
             GenerateMap(new Vector3(tilemapSize.x, 0));
         }
 
         if (PlayerManager.Instance.transform.position.x <= leftX)
         {
-
             // 경계 갱신
             rightX -= tilemapSize.x;
             leftX -= tilemapSize.x;
+
             // 새 위치에 타일 설치
             GenerateMap(new Vector3(-tilemapSize.x, 0));
         }
 
         if (PlayerManager.Instance.transform.position.y >= upY)
         {
-
             // 경계 갱신
             upY += tilemapSize.y;
             downY += tilemapSize.y;
+
             // 새 위치에 타일 설치
             GenerateMap(new Vector3(0, tilemapSize.y));
         }
 
         if (PlayerManager.Instance.transform.position.y <= downY)
         {
-
             // 경계 갱신
             upY -= tilemapSize.y;
             downY -= tilemapSize.y;
+
             // 새 위치에 타일 설치
             GenerateMap(new Vector3(0, -tilemapSize.y));
         }
@@ -168,10 +145,9 @@ public class MapManager : MonoBehaviour
                 Vector3Int nowMapPos = new Vector3Int((int)(genPos.x / 2f) - 1, (int)(genPos.y / 2f) - 1, 0);
 
                 // 리스트의 모든 타일맵 설치
-                foreach (TileMapGenerator gen in tileGenList)
-                {
-                    gen.GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos);
-                }
+                tileGenList[0].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Bottom[(int)nowMapElement].tileBundle);
+                tileGenList[1].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Middle[(int)nowMapElement].tileBundle);
+                tileGenList[2].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Deco[(int)nowMapElement].tileBundle);
 
                 // 장애물 설치하기
                 SpawnProp(new Vector2(genPos.x, genPos.y));
@@ -185,7 +161,6 @@ public class MapManager : MonoBehaviour
         {
             // 현재 바닥 위치 
             Vector3 groundPos = background[i].position;
-            // pos.y -= tilemapSize.y;
 
             // 옮겨질 바닥 위치
             groundPos += movePos;
@@ -210,16 +185,19 @@ public class MapManager : MonoBehaviour
         // 해당 맵의 사물 리스트
         List<Prop> fieldPropList = new List<Prop>();
 
+        //todo 맵 속성에 따라 다른 장애물 번들 선택
+        List<Prop> propBundle = propBundleList[(int)nowMapElement].props;
+
         // 모든 사물 반복
-        for (int i = 0; i < propList.Count; i++)
+        for (int i = 0; i < propBundle.Count; i++)
         {
             // 해당 사물 개수만큼 반복
-            for (int j = 0; j < propList[i].amount; j++)
+            for (int j = 0; j < propBundle[i].amount; j++)
             {
                 // 사물 생성 시도 카운트
                 int spawnAttemptCount = maxPropAttempt;
                 // 현재 생성하려는 사물 정보
-                Prop nowProp = propList[i];
+                Prop nowProp = propBundle[i];
 
                 // 바닥 범위내 랜덤 위치 정하기
                 Vector2 spawnPos = new Vector2(
@@ -313,4 +291,45 @@ public class MapManager : MonoBehaviour
         Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(rightX, downY));
         Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
     }
+}
+
+[System.Serializable]
+public class PropBundle
+{
+    public string name;
+    public List<Prop> props = new List<Prop>();
+}
+
+[System.Serializable]
+public class Prop
+{
+    public string name;
+    public GameObject propPrefab; // 사물 프리팹
+    public GameObject propObj; // 생성된 사물 인스턴스
+
+    public float radius = 1f; // 자리 차지 반경
+    public int amount = 1; // 소환 개수
+    public float spawnRate = 0.8f; // 소환 될 확률
+
+    public Prop(Prop prop)
+    {
+        this.radius = prop.radius;
+        this.amount = prop.amount;
+        this.spawnRate = prop.spawnRate;
+    }
+}
+
+[System.Serializable]
+public class TileLayer
+{
+    public string name;
+    public List<TileBundle> tileBundle;
+}
+
+[System.Serializable]
+public class TileBundle
+{
+    public string name;
+    public RuleTile tile;
+    public float rate; // 해당 타일 출현 확률
 }
