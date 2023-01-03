@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StreetLight : MonoBehaviour
+public class AnimSelector : MonoBehaviour
 {
     [SerializeField] Animator anim;
 
-    [SerializeField] int fixPattern = -1; // 가로등 반짝이는 패턴 종류
+    [SerializeField] List<float> patternWeight; // 패턴 가중치
 
     private void OnEnable()
     {
@@ -22,11 +22,10 @@ public class StreetLight : MonoBehaviour
         yield return new WaitForSeconds(Random.value);
 
         // 패턴 고정
-        int pattern = fixPattern;
+        int pattern = SystemManager.Instance.WeightRandom(patternWeight);
 
         // 고정 패턴 없으면 랜덤
-        if (fixPattern == -1)
-            pattern = Random.Range(0, 3);
+        pattern = Random.Range(0, patternWeight.Count);
 
         anim.SetInteger("Pattern", pattern);
 

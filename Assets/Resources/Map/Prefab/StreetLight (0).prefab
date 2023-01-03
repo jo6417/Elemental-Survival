@@ -106,7 +106,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 2612167848822833640}
-  fixPattern: -1
+  patternWeight:
+  - 10
+  - 1
+  - 1
 --- !u!1 &5840446411070178818
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,6 +121,7 @@ GameObject:
   - component: {fileID: 7748295953834819295}
   - component: {fileID: 2063819559178765940}
   - component: {fileID: 710813153075337833}
+  - component: {fileID: 284801550582823390}
   m_Layer: 16
   m_Name: StreetLight (0)
   m_TagString: Object
@@ -219,6 +223,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.35}
   m_EdgeRadius: 0
+--- !u!114 &284801550582823390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5840446411070178818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 324bbf7da24b3004fa6adaaf5444f2c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shuffle: 0
+  flipRate: 0.5
+  rotateMin: 0
+  rotateMax: 360
 --- !u!1001 &1987772058087545256
 PrefabInstance:
   m_ObjectHideFlags: 0

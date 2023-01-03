@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2532242818169481867}
   - component: {fileID: 1866653254197872837}
   - component: {fileID: 2793408781900159709}
+  - component: {fileID: 8394448326141901883}
   m_Layer: 16
   m_Name: Stone4
   m_TagString: Object
@@ -72,7 +73,8 @@ SpriteRenderer:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300108, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
+  m_Sprite: {fileID: -4597261430782620185, guid: c0ccd8dfa0374dc40b2c229a96fb85cc,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -116,3 +118,19 @@ PolygonCollider2D:
       - {x: -0.28603005, y: 0.034309387}
       - {x: 1.4349868, y: 1.0916681}
       - {x: 1.4699085, y: 1.4731293}
+--- !u!114 &8394448326141901883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4441477984295892976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 324bbf7da24b3004fa6adaaf5444f2c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shuffle: 0
+  flipRate: 0.5
+  rotateMin: 0
+  rotateMax: 360

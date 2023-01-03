@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4037532206844703602}
   - component: {fileID: 3792985253549246612}
   - component: {fileID: 970962445274896653}
+  - component: {fileID: -2094039071565104440}
   m_Layer: 16
   m_Name: Stone7
   m_TagString: Object
@@ -72,7 +73,8 @@ SpriteRenderer:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300162, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
+  m_Sprite: {fileID: -7029388294166797180, guid: c0ccd8dfa0374dc40b2c229a96fb85cc,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -96,11 +98,11 @@ PolygonCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.2}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 7.125, y: 5.25}
+    oldSize: {x: 7.125, y: 5.5}
     newSize: {x: 4, y: 4}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -125,3 +127,19 @@ PolygonCollider2D:
       - {x: 3.5726538, y: 2.7302918}
       - {x: 2.6790967, y: 3.9154406}
       - {x: 1.499351, y: 3.8928769}
+--- !u!114 &-2094039071565104440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601322436419733482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 324bbf7da24b3004fa6adaaf5444f2c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shuffle: 0
+  flipRate: 0.5
+  rotateMin: 0
+  rotateMax: 360

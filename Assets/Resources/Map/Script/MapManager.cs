@@ -41,17 +41,17 @@ public class MapManager : MonoBehaviour
     float rightX, leftX, upY, downY; // 4방향 경계 좌표
     [SerializeField] List<Vector2> genPosList = new List<Vector2>();
 
-    [Header("Refer")]
-    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
-    public Transform[] background = null;
-    [SerializeField] List<Vector3> initPos = new List<Vector3>(); // 초기화 된 맵위치 리스트
-    [SerializeField] List<PropBundle> propBundleList = new List<PropBundle>(); // 속성별 장애물 번들 리스트
-
     [Header("Tile")]
     [SerializeField] List<TileLayer> tileBundle_Bottom = new List<TileLayer>(); // 속성별 타일 번들 리스트, 가장 아래층
     [SerializeField] List<TileLayer> tileBundle_Middle = new List<TileLayer>(); // 속성별 타일 번들 리스트, 중간층
     [SerializeField] List<TileLayer> tileBundle_Deco = new List<TileLayer>(); // 속성별 타일 번들 리스트, 장식 타일
     [SerializeField] List<TileMapGenerator> tileGenList = new List<TileMapGenerator>(); // 타일맵 생성기 리스트
+
+    [Header("Refer")]
+    [SerializeField] List<PropBundle> propBundleList = new List<PropBundle>(); // 속성별 장애물 번들 리스트
+    public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
+    public Transform[] background = null;
+    [SerializeField] List<Vector3> initPos = new List<Vector3>(); // 초기화 된 맵위치 리스트
 
     private void OnEnable()
     {
@@ -155,37 +155,37 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    void MoveGround(Vector3 movePos = default)
-    {
-        for (int i = 0; i < background.Length; i++)
-        {
-            // 현재 바닥 위치 
-            Vector3 groundPos = background[i].position;
+    // void MoveGround(Vector3 movePos = default)
+    // {
+    //     for (int i = 0; i < background.Length; i++)
+    //     {
+    //         // 현재 바닥 위치 
+    //         Vector3 groundPos = background[i].position;
 
-            // 옮겨질 바닥 위치
-            groundPos += movePos;
+    //         // 옮겨질 바닥 위치
+    //         groundPos += movePos;
 
-            // 이미 초기화 된 위치가 아니면
-            if (!initPos.Exists(x => x == groundPos))
-            {
-                // 해당 위치 기록
-                initPos.Add(groundPos);
+    //         // 이미 초기화 된 위치가 아니면
+    //         if (!initPos.Exists(x => x == groundPos))
+    //         {
+    //             // 해당 위치 기록
+    //             initPos.Add(groundPos);
 
-                // 해당 바닥 내에 리스트의 모든 오브젝트 설치
-                SpawnProp(groundPos);
-            }
+    //             // 해당 바닥 내에 리스트의 모든 오브젝트 설치
+    //             SpawnProp(groundPos);
+    //         }
 
-            // 바닥 옮기기
-            background[i].position = groundPos;
-        }
-    }
+    //         // 바닥 옮기기
+    //         background[i].position = groundPos;
+    //     }
+    // }
 
     void SpawnProp(Vector2 groundPos)
     {
         // 해당 맵의 사물 리스트
         List<Prop> fieldPropList = new List<Prop>();
 
-        //todo 맵 속성에 따라 다른 장애물 번들 선택
+        // 맵 속성에 따라 다른 장애물 번들 선택
         List<Prop> propBundle = propBundleList[(int)nowMapElement].props;
 
         // 모든 사물 반복
@@ -222,9 +222,6 @@ public class MapManager : MonoBehaviour
 
                         // 사물 리스트에 넣기
                         fieldPropList.Add(spawnProp);
-
-                        // 확률따라 좌우반전
-                        propObj.transform.rotation = Random.value > 0.5f ? Quaternion.Euler(Vector3.zero) : Quaternion.Euler(Vector3.up * 180f);
 
                         break;
                     }
