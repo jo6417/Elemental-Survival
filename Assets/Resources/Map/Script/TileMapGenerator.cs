@@ -9,7 +9,7 @@ public class TileMapGenerator : MonoBehaviour
     [Header("State")]
     [SerializeField] bool tileReset = false; // 타일 설치시 기존 타일 초기화 여부
     [SerializeField] RandomType randomType;
-    enum RandomType { random, ground };
+    enum RandomType { Random, Ground, Prop };
     [SerializeField] bool border = false; // 테두리 타일 설치 여부
 
     [Range(0, 100)]
@@ -32,18 +32,14 @@ public class TileMapGenerator : MonoBehaviour
     // public List<TileLayer> tileList = new List<TileLayer>();
     [SerializeField] GameObject grid;
 
-    public void GenTile(Vector3Int genSize, Vector3Int genPos, List<TileBundle> tileList)
+    public List<Vector2> GenTile(Vector3Int genSize, Vector3Int genPos, List<TileBundle> tileList)
     {
         // 타일맵 생성할 사이즈 갱신
         tilemapSize = genSize;
         // 타일맵 생성할 위치 갱신
         tilemapPos = genPos;
 
-        // // 육지 형태 랜덤일때 (이미 생성된 육지에 붙여서 생성)
-        // if (randomType == RandomType.ground)
-        //     ClearMap(false);
-        // // 일반 랜덤일때 초기화
-        // else
+        // 타일 비우기
         ClearMap(true);
 
         // 확률에 따라 랜덤 위치에 타일 생성 예약
@@ -56,12 +52,15 @@ public class TileMapGenerator : MonoBehaviour
             InitPos();
         }
 
-        // 육지 형태 랜덤일때 (이미 생성된 육지에 붙여서 생성)
-        if (randomType == RandomType.ground)
+        // 육지 타입 랜덤일때 (이미 생성된 육지에 붙여서 생성)
+        if (randomType == RandomType.Ground)
             for (int i = 0; i < genNumRange; i++)
             {
-                tileSetPos = GenTilePos(tileSetPos);
+                tileSetPos = GenGroundTile(tileSetPos);
             }
+
+        // 타일 설치된 리스트
+        List<Vector2> setList = new List<Vector2>();
 
         for (int x = 0; x < tilemapSize.x; x++)
         {
@@ -70,6 +69,9 @@ public class TileMapGenerator : MonoBehaviour
                 // 설치 예약된 위치라면
                 if (tileSetPos[x, y] == 1)
                 {
+                    // 설치 타일 리스트 
+                    setList.Add(new Vector2(x, y));
+
                     // 랜덤 타일 가중치 확인
                     List<float> tileRate = new List<float>();
                     foreach (TileBundle tile in tileList)
@@ -85,6 +87,9 @@ public class TileMapGenerator : MonoBehaviour
                 }
             }
         }
+
+        // 설치된 타일 리스트 리턴
+        return setList;
     }
 
     public void InitPos()
@@ -99,7 +104,7 @@ public class TileMapGenerator : MonoBehaviour
         }
     }
 
-    public int[,] GenTilePos(int[,] oldMap)
+    public int[,] GenGroundTile(int[,] oldMap)
     {
         int[,] newMap = new int[tilemapSize.x, tilemapSize.y];
         // 현재 검사하는 타일 주변의 설치 예약된 타일 개수

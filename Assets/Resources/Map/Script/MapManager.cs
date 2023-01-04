@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Lean.Pool;
+using System.Linq;
 
 public class MapManager : MonoBehaviour
 {
@@ -146,47 +147,35 @@ public class MapManager : MonoBehaviour
 
                 // 리스트의 모든 타일맵 설치
                 tileGenList[0].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Bottom[(int)nowMapElement].tileBundle);
-                tileGenList[1].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Middle[(int)nowMapElement].tileBundle);
+                List<Vector2> setList = tileGenList[1].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Middle[(int)nowMapElement].tileBundle);
                 tileGenList[2].GenTile(new Vector3Int(tilemapSize.x / 2, tilemapSize.y / 2, 0), nowMapPos, tileBundle_Deco[(int)nowMapElement].tileBundle);
 
                 // 장애물 설치하기
-                SpawnProp(new Vector2(genPos.x, genPos.y));
+
+                StartCoroutine(SpawnProp(new Vector2(genPos.x, genPos.y), setList));
             }
         }
     }
 
-    // void MoveGround(Vector3 movePos = default)
-    // {
-    //     for (int i = 0; i < background.Length; i++)
-    //     {
-    //         // 현재 바닥 위치 
-    //         Vector3 groundPos = background[i].position;
-
-    //         // 옮겨질 바닥 위치
-    //         groundPos += movePos;
-
-    //         // 이미 초기화 된 위치가 아니면
-    //         if (!initPos.Exists(x => x == groundPos))
-    //         {
-    //             // 해당 위치 기록
-    //             initPos.Add(groundPos);
-
-    //             // 해당 바닥 내에 리스트의 모든 오브젝트 설치
-    //             SpawnProp(groundPos);
-    //         }
-
-    //         // 바닥 옮기기
-    //         background[i].position = groundPos;
-    //     }
-    // }
-
-    void SpawnProp(Vector2 groundPos)
+    IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> setList)
     {
-        // 해당 맵의 사물 리스트
-        List<Prop> fieldPropList = new List<Prop>();
-
         // 맵 속성에 따라 다른 장애물 번들 선택
         List<Prop> propBundle = propBundleList[(int)nowMapElement].props;
+
+        // 타일 가로x세로 사이즈만큼 빈 타일의 좌표 리스트 만들기
+        List<Vector2> emptyTileList = new List<Vector2>();
+        for (int x = 0; x < tilemapSize.x; x++)
+            for (int y = 0; y < tilemapSize.y; y++)
+            {
+                //todo middle 타일과 겹치지 않게 검사
+
+                // 설치된 타일 리스트에 없으면
+                if (!setList.Exists(a => a == new Vector2(x, y)))
+                    // 빈타일 좌표 넣기
+                    emptyTileList.Add(new Vector2(x, y));
+                // else
+                //     print(new Vector2(x, y));
+            }
 
         // 모든 사물 반복
         for (int i = 0; i < propBundle.Count; i++)
@@ -194,80 +183,78 @@ public class MapManager : MonoBehaviour
             // 해당 사물 개수만큼 반복
             for (int j = 0; j < propBundle[i].amount; j++)
             {
+                // 생성 확률 통과 못하면 넘기기
+                if (Random.value > propBundle[i].spawnRate)
+                    continue;
+
+                yield return null;
+
                 // 사물 생성 시도 카운트
                 int spawnAttemptCount = maxPropAttempt;
                 // 현재 생성하려는 사물 정보
                 Prop nowProp = propBundle[i];
 
-                // 바닥 범위내 랜덤 위치 정하기
-                Vector2 spawnPos = new Vector2(
-                    Random.Range(groundPos.x - tilemapSize.x / 2f, groundPos.x + tilemapSize.x / 2f),
-                    Random.Range(groundPos.y - tilemapSize.y / 2f, groundPos.y + tilemapSize.y / 2f));
+                // 빈 타일 확인용으로 현재의 타일 좌표 리스트 복사
+                List<Vector2> tileCheckList = emptyTileList.ToList();
 
-                // 시도 횟수 남았으면 계속 반복
-                while (spawnAttemptCount > 0)
+                // 설치하려는 장애물의 사이즈 계산
+                Vector2 propSize = nowProp.propPrefab.GetComponent<SpriteRenderer>().sprite.bounds.size;
+                propSize.x = Mathf.CeilToInt(propSize.x);
+                propSize.y = Mathf.CeilToInt(propSize.y);
+                print(propSize);
+
+                for (int k = 0; k < tileCheckList.Count; k++)
                 {
-                    // 현재 맵 이내의 모든 사물들 범위 겹치는지 확인, 이동해야할 벡터 리턴
-                    Vector2 moveDir = CheckOverlap(spawnPos, fieldPropList, nowProp);
+                    // 비어있는 랜덤 좌표 뽑기
+                    Vector2 randomPos = tileCheckList[Random.Range(0, tileCheckList.Count)];
 
-                    // 주변에 사물 없을때
-                    if (moveDir == new Vector2(tilemapSize.x, tilemapSize.y))
-                    {
-                        // 사물 스폰
-                        GameObject propObj = LeanPool.Spawn(nowProp.propPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.objectPool);
+                    // print(tileCheckList.Count + " : " + randomPos);
 
-                        // 장애물 속성 생성 및 초기화
-                        Prop spawnProp = new Prop(nowProp);
-                        spawnProp.propObj = propObj; // 현재 오브젝트 넣기
+                    // 모든 타일 대조해보고 하나라도 빈타일 리스트에 없으면 넘기기
+                    if (!TileCheck(tileCheckList, propSize, randomPos))
+                        continue;
 
-                        // 사물 리스트에 넣기
-                        fieldPropList.Add(spawnProp);
+                    // 확인 리스트에서 해당 좌표 빼기
+                    tileCheckList.Remove(randomPos);
 
-                        break;
-                    }
-                    // 주변에 사물 있을때
-                    else
-                    {
-                        // 소환 위치에 이동벡터 반영
-                        spawnPos += moveDir;
-                    }
+                    // 해당하는 모든 타일 리스트에서 빼기
+                    for (int x = 0; x < propSize.x; x++)
+                        for (int y = 0; y < propSize.y; y++)
+                            emptyTileList.Remove(randomPos + new Vector2(x, y));
 
-                    // 시도횟수 차감
-                    spawnAttemptCount--;
+                    // 설치 좌표 계산
+                    Vector2 spawnPos = randomPos + new Vector2(groundPos.x - tilemapSize.x / 2f, groundPos.y - tilemapSize.y / 2f);
+
+                    // 해당 타일에 장애물 설치하고 끝내기
+                    GameObject propObj = LeanPool.Spawn(nowProp.propPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.objectPool);
+
+                    // 해당 사물 확률에 따라 뒤집기
+                    TransformControl.Shuffle shuffle = propObj.GetComponent<TransformControl>().ShuffleTransform();
+
+                    // 뒤집었으면
+                    if (shuffle == TransformControl.Shuffle.MirrorX)
+                        // 오른쪽으로 X 좌표 절반만큼 이동
+                        propObj.transform.position += Vector3.right * propSize.x / 2f;
+
+                    break;
                 }
             }
         }
     }
 
-    Vector2 CheckOverlap(Vector2 spawnPos, List<Prop> fieldPropList, Prop nowProp)
+    bool TileCheck(List<Vector2> tileCheckList, Vector2 propSize, Vector2 randomPos)
     {
-        for (int k = 0; k < fieldPropList.Count; k++)
-        {
-            // 벌려야하는 최소거리 = 설치하려는 사물과 다른 사물 prop의 range 합산
-            float needDis = fieldPropList[k].radius + nowProp.radius;
+        // 해당 타일 차지공간만큼 반복
+        for (int x = 0; x < propSize.x; x++)
+            for (int y = 0; y < propSize.y; y++)
+                // 랜덤 좌표에 사이즈 좌표 반영한 타일 중에서 하나라도 빈타일 리스트에 없으면
+                if (!tileCheckList.Exists(a => a == randomPos + new Vector2(x, y)))
+                {
+                    // 해당 좌표는 이미 자리 있음
+                    return false;
+                }
 
-            // 현재 계산중인 위치에서 거리
-            Vector2 playerDir = spawnPos - (Vector2)PlayerManager.Instance.transform.position;
-            // 플레이어 가까우면 거리 이격 시키기
-            if (playerDir.magnitude <= playerDistance)
-            {
-                // 이동해야할 벡터를 리턴
-                return playerDir;
-            }
-
-            // 현재 계산중인 위치에서 거리
-            float nowDis = Vector2.Distance(fieldPropList[k].propObj.transform.position, spawnPos);
-            // 거리 이내에 있다면 설치된 사물과 거리 이격 시키기
-            if (nowDis <= needDis)
-            {
-                // 이동해야할 벡터를 리턴
-                Vector2 moveDir = ((Vector2)fieldPropList[k].propObj.transform.position - spawnPos).normalized * (needDis - nowDis);
-                return moveDir;
-            }
-        }
-
-        // 아무도 안겹쳤을때
-        return new Vector2(tilemapSize.x, tilemapSize.y);
+        return true;
     }
 
     void SpawnPortalGate()
@@ -304,16 +291,9 @@ public class Prop
     public GameObject propPrefab; // 사물 프리팹
     public GameObject propObj; // 생성된 사물 인스턴스
 
-    public float radius = 1f; // 자리 차지 반경
     public int amount = 1; // 소환 개수
-    public float spawnRate = 0.8f; // 소환 될 확률
-
-    public Prop(Prop prop)
-    {
-        this.radius = prop.radius;
-        this.amount = prop.amount;
-        this.spawnRate = prop.spawnRate;
-    }
+    [Range(0f, 1f)]
+    public float spawnRate = 1f; // 소환 될 확률
 }
 
 [System.Serializable]
