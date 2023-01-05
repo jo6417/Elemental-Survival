@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEditor;
+using Lean.Pool;
 
 public class TileMapGenerator : MonoBehaviour
 {
@@ -69,9 +70,6 @@ public class TileMapGenerator : MonoBehaviour
                 // 설치 예약된 위치라면
                 if (tileSetPos[x, y] == 1)
                 {
-                    // 설치 타일 리스트 
-                    setList.Add(new Vector2(x, y));
-
                     // 랜덤 타일 가중치 확인
                     List<float> tileRate = new List<float>();
                     foreach (TileBundle tile in tileList)
@@ -82,8 +80,28 @@ public class TileMapGenerator : MonoBehaviour
                     // 설치할 타일
                     RuleTile setTile = tileList[tileIndex].tile;
 
+                    // 타일 설치 위치
+                    Vector3Int tilePos = new Vector3Int(-x + Mathf.CeilToInt(tilemapSize.x / 2f), -y + Mathf.CeilToInt(tilemapSize.y / 2f), 0);
+
+                    // 설치된 위치 월드 포지션으로 전환
+                    Vector2 setPos = new Vector2(x, y);
+
+                    setList.Add(setPos);
+                    // 설치 타일 위치 리스트에 저장
+                    // for (int i = 0; i < 2; i++)
+                    // {
+                    //     for (int j = 0; j < 2; j++)
+                    //     {
+                    //         setList.Add(setPos + new Vector2(i, j));
+                    //     }
+                    // }
+
+                    tilePos = tilePos + tilemapPos;
+
+                    // LeanPool.Spawn(SystemManager.Instance.targetPos, tilePos * 2 + Vector3Int.up, Quaternion.identity, transform);
+
                     // 타일 설치
-                    tileMap.SetTile(tilemapPos + new Vector3Int(-x + tilemapSize.x / 2, -y + tilemapSize.y / 2, 0), setTile);
+                    tileMap.SetTile(tilePos, setTile);
                 }
             }
         }

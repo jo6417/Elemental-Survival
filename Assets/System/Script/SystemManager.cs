@@ -101,7 +101,8 @@ public class SystemManager : MonoBehaviour
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
-    public GameObject targetPos; // 디버그용 타겟 위치 표시
+    public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
+    public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
 
     [Header("DataBase")]
     public DBType dBType;
@@ -419,5 +420,23 @@ public class SystemManager : MonoBehaviour
 
         // 게임 플레이 씬 로딩 시작
         StartCoroutine(Loading.Instance.LoadScene(sceneName));
+    }
+
+    // 화면에 프레임 레이트를 표시해 주는 함수
+    float fps;
+    private void OnGUI()
+    {
+        int w = Screen.width, h = Screen.height;
+
+        GUIStyle style = new GUIStyle();
+
+        Rect rect = new Rect(0, 0, w, h * 2 / 100);
+        style.alignment = TextAnchor.UpperLeft;
+        style.fontSize = h * 2 / 100;
+        style.normal.textColor = new Color(0.0f, 0.0f, 0.5f, 1.0f);
+        float msec = Time.deltaTime * 1000.0f;
+        fps = 1.0f / Time.deltaTime;
+        string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+        GUI.Label(rect, text, style);
     }
 }
