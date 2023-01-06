@@ -1336,7 +1336,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fafe80aadffb40f4daa9ff5a094d4d22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tileReset: 0
   randomType: 0
+  border: 0
   iniChance: 100
   birthLimit: 1
   deathLimit: 1
@@ -1344,9 +1346,6 @@ MonoBehaviour:
   tilemapSize: {x: 50, y: 50, z: 0}
   tilemapPos: {x: 50, y: 50, z: 0}
   tileMap: {fileID: 5259920261794627238}
-  tileList:
-  - tile: {fileID: 11400000, guid: dcc2a95722a98b741b1b993a4dabcf0d, type: 2}
-    rate: 1
   grid: {fileID: 5259920263014806356}
 --- !u!156049354 &5259920263014806357
 Grid:

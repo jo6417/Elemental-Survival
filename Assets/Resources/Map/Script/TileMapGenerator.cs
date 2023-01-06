@@ -33,8 +33,12 @@ public class TileMapGenerator : MonoBehaviour
     // public List<TileLayer> tileList = new List<TileLayer>();
     [SerializeField] GameObject grid;
 
-    public List<Vector2> GenTile(Vector3Int genSize, Vector3Int genPos, List<TileBundle> tileList)
+    public List<Vector2> GenTile(Vector3Int genSize, Vector3Int genPos, List<TileBundle> tileList, List<Vector2> exeptList = null)
     {
+        // 입력된 타일이 없으면 리턴
+        if (tileList.Count <= 0)
+            return null;
+
         // 타일맵 생성할 사이즈 갱신
         tilemapSize = genSize;
         // 타일맵 생성할 위치 갱신
@@ -81,24 +85,16 @@ public class TileMapGenerator : MonoBehaviour
                     RuleTile setTile = tileList[tileIndex].tile;
 
                     // 타일 설치 위치
-                    Vector3Int tilePos = new Vector3Int(-x + Mathf.CeilToInt(tilemapSize.x / 2f), -y + Mathf.CeilToInt(tilemapSize.y / 2f), 0);
+                    Vector3Int tilePos = new Vector3Int(-x - 1 + (int)(tilemapSize.x / 2f), -y - 1 + (int)(tilemapSize.y / 2f), 0);
 
                     // 설치된 위치 월드 포지션으로 전환
-                    Vector2 setPos = new Vector2(x, y);
+                    Vector2 setPos = new Vector2(-x - 1 + (int)(tilemapSize.x), -y - 1 + (int)(tilemapSize.y)) * 2;
 
-                    setList.Add(setPos);
                     // 설치 타일 위치 리스트에 저장
-                    // for (int i = 0; i < 2; i++)
-                    // {
-                    //     for (int j = 0; j < 2; j++)
-                    //     {
-                    //         setList.Add(setPos + new Vector2(i, j));
-                    //     }
-                    // }
+                    setList.Add(setPos);
 
+                    // 중심위치 더하기
                     tilePos = tilePos + tilemapPos;
-
-                    // LeanPool.Spawn(SystemManager.Instance.targetPos, tilePos * 2 + Vector3Int.up, Quaternion.identity, transform);
 
                     // 타일 설치
                     tileMap.SetTile(tilePos, setTile);

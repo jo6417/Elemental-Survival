@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5598417694493909869
+--- !u!1 &4652467824215891714
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5598417694493909865}
-  - component: {fileID: 5598417694493909870}
-  - component: {fileID: 5598417694493909871}
-  - component: {fileID: 5598417694493909868}
-  - component: {fileID: 52297183814099158}
-  - component: {fileID: 7317314023802254192}
+  - component: {fileID: 3243002000838504986}
+  - component: {fileID: 9123696521017351163}
+  - component: {fileID: 6609614107755586700}
+  - component: {fileID: 1346573564653836072}
+  - component: {fileID: 4766696274543665933}
+  - component: {fileID: 6446027478911125767}
   m_Layer: 16
-  m_Name: Bush
+  m_Name: BushSprite
   m_TagString: Object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5598417694493909865
+--- !u!4 &3243002000838504986
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598417694493909869}
+  m_GameObject: {fileID: 4652467824215891714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4924225, y: -5.061282, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 3544761985022155470}
-  m_Father: {fileID: 0}
+  - {fileID: 9000238039243793650}
+  m_Father: {fileID: 5598417694493909865}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &5598417694493909870
+--- !u!212 &9123696521017351163
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598417694493909869}
+  m_GameObject: {fileID: 4652467824215891714}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -88,13 +88,13 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!70 &5598417694493909871
+--- !u!70 &6609614107755586700
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598417694493909869}
+  m_GameObject: {fileID: 4652467824215891714}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -104,13 +104,13 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 3, y: 1}
   m_Direction: 1
---- !u!114 &5598417694493909868
+--- !u!114 &1346573564653836072
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598417694493909869}
+  m_GameObject: {fileID: 4652467824215891714}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 755b5cdf96504fa4fab85cc76d425c74, type: 3}
@@ -120,13 +120,13 @@ MonoBehaviour:
   collisionSound:
   - Bush_0
   - Bush_1
---- !u!114 &52297183814099158
+--- !u!114 &4766696274543665933
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598417694493909869}
+  m_GameObject: {fileID: 4652467824215891714}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9236fd882e9d5ec4581cc92af3ce6e0e, type: 3}
@@ -135,14 +135,14 @@ MonoBehaviour:
   spritePool:
   - {fileID: 2138333159471825285, guid: 080699164a6f69d4b87d85b7f7fbe962, type: 3}
   - {fileID: 942430909456833581, guid: 080699164a6f69d4b87d85b7f7fbe962, type: 3}
-  sprite: {fileID: 5598417694493909870}
---- !u!114 &7317314023802254192
+  sprite: {fileID: 9123696521017351163}
+--- !u!114 &6446027478911125767
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5598417694493909869}
+  m_GameObject: {fileID: 4652467824215891714}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 324bbf7da24b3004fa6adaaf5444f2c1, type: 3}
@@ -152,12 +152,44 @@ MonoBehaviour:
   flipRate: 0.5
   rotateMin: 0
   rotateMax: 360
---- !u!1001 &5598417693839291838
+  pivotMove: {x: 0, y: 0, z: 0}
+--- !u!1 &5598417694493909869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5598417694493909865}
+  m_Layer: 16
+  m_Name: Bush
+  m_TagString: Object
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5598417694493909865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5598417694493909869}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3243002000838504986}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &29081851634453378
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 5598417694493909865}
+    m_TransformParent: {fileID: 3243002000838504986}
     m_Modifications:
     - target: {fileID: 4140196449616097455, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
@@ -236,9 +268,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8e275b3d1cec7444b70a83ff748d47d, type: 3}
---- !u!4 &3544761985022155470 stripped
+--- !u!4 &9000238039243793650 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
-  m_PrefabInstance: {fileID: 5598417693839291838}
+  m_PrefabInstance: {fileID: 29081851634453378}
   m_PrefabAsset: {fileID: 0}

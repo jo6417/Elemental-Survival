@@ -56,6 +56,10 @@ public class MapManager : MonoBehaviour
     public Transform[] background = null;
     [SerializeField] List<Vector3> initPos = new List<Vector3>(); // 초기화 된 맵위치 리스트
 
+    [Header("Debug")]
+    [SerializeField] bool blockTileShow = false; // 장애물 설치 금지 타일 표시
+    [SerializeField] bool propTileShow = false; // 장애물 설치 타일 표시
+
     private void OnEnable()
     {
         // 설치할 타일맵 사이즈 절반만큼 경계 설정
@@ -141,35 +145,48 @@ public class MapManager : MonoBehaviour
                     // 리스트에 저장
                     genPosList.Add(genPos);
 
-                // LeanPool.Spawn(SystemManager.Instance.targetPos, genPos, Quaternion.identity);
-                // print(genPos);
-
                 // 타일셋 사이즈 
                 Vector3Int genSize = new Vector3Int(Mathf.FloorToInt(tilemapSize.x / 2f), Mathf.FloorToInt(tilemapSize.y / 2f), 0);
                 // 타일맵 위치로 전환
                 Vector3Int nowMapPos = new Vector3Int(Mathf.FloorToInt(genPos.x / 2f), Mathf.FloorToInt(genPos.y / 2f), 0);
 
-                // 리스트의 모든 타일맵 설치
-                List<Vector2> setList = tileGenList[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)nowMapElement].tileBundle);
-                tileGenList[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)nowMapElement].tileBundle);
-                tileGenList[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)nowMapElement].tileBundle);
+                // 장애물이 들어갈 수 있는 빈 타일 리스트
+                List<Vector2> emptyTileList = new List<Vector2>();
+                // 타일 전체 사이즈만큼 빈 타일의 좌표 리스트 만들기
+                for (int _x = 0; _x < tilemapSize.x / 2f; _x++)
+                    for (int _y = 0; _y < tilemapSize.y / 2f; _y++)
+                    {
+                        emptyTileList.Add(new Vector2(_x, _y) * 2);
+                    }
 
-                //! 미들 타일 위치 확인
-                for (int i = 0; i < setList.Count; i++)
-                {
-                    Vector2 tilePos = (Vector2)movePos
-                    + new Vector2(setList[i].x * 2f - tilemapSize.x / 2f + 2,
-                    setList[i].y * 2f - tilemapSize.y / 2f + 1);
-                    LeanPool.Spawn(SystemManager.Instance.targetPos_Red, tilePos, Quaternion.identity, transform);
-                }
+                List<Vector2> setList = new List<Vector2>();
+
+                // 하단 레이어 타일 설치
+                tileGenList[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)nowMapElement].tileBundle);
+                // 중간 레이어 타일 설치
+                tileGenList[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)nowMapElement].tileBundle);
+                // 상단 레이어 타일 설치
+                setList = tileGenList[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)nowMapElement].tileBundle);
+
+                // 상단 타일 설치된 좌표 빼기
+                if (setList != null && setList.Count > 0)
+                    for (int i = 0; i < setList.Count; i++)
+                    {
+                        // setList 타일 위치 빼기
+                        emptyTileList.Remove(setList[i]);
+
+                        //! 뺀 타일 위치 표시
+                        if (blockTileShow)
+                            LeanPool.Spawn(SystemManager.Instance.targetPos_Red, setList[i] + genPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f, Quaternion.identity, transform);
+                    }
 
                 // 장애물 설치하기
-                StartCoroutine(SpawnProp(genPos, setList));
+                StartCoroutine(SpawnProp(genPos, emptyTileList));
             }
         }
     }
 
-    IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> setList)
+    IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> emptyTileList)
     {
         //! 시간 측정
         Stopwatch debugTime = new Stopwatch();
@@ -178,24 +195,9 @@ public class MapManager : MonoBehaviour
         // 맵 속성에 따라 다른 장애물 번들 선택
         List<Prop> propBundle = propBundleList[(int)nowMapElement].props;
 
-        // 타일 가로x세로 사이즈만큼 빈 타일의 좌표 리스트 만들기
-        List<Vector2> emptyTileList = new List<Vector2>();
-        for (int x = 0; x < tilemapSize.x; x++)
-            for (int y = 0; y < tilemapSize.y; y++)
-            {
-                emptyTileList.Add(new Vector2(x, y));
-            }
-
-        // middle 타일 위치는 모두 빼기
-        for (int i = 0; i < setList.Count; i++)
-            emptyTileList.Remove(setList[i]);
-
         //! 빈공간 모두 표시
-        // if (groundPos == Vector2.zero)
-        //     for (int i = 0; i < emptyTileList.Count; i++)
-        //     {
-        //         LeanPool.Spawn(SystemManager.Instance.targetPos_Blue, emptyTileList[i] + new Vector2(groundPos.x - tilemapSize.x / 2f, groundPos.y - tilemapSize.y / 2f), Quaternion.identity, transform);
-        //     }
+        // for (int i = 0; i < emptyTileList.Count; i++)
+        //     LeanPool.Spawn(SystemManager.Instance.targetPos_Blue, emptyTileList[i] + groundPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f, Quaternion.identity, transform);
 
         // 장애물 풀을 스택에 쌓고 사이즈 큰것부터 설치
         List<Prop> propStack = new List<Prop>();
@@ -204,16 +206,20 @@ public class MapManager : MonoBehaviour
             // 해당 사물 개수만큼 반복
             for (int j = 0; j < propBundle[i].amount; j++)
             {
-                // // 생성 확률 통과 못하면 넘기기
-                // if (Random.value > propBundle[i].spawnRate)
-                //     continue;
+                // 생성 확률 통과 못하면 넘기기
+                if (Random.value > propBundle[i].spawnRate)
+                    continue;
 
                 Prop nowProp = propBundle[i];
 
-                // 사이즈 알아내서 기억
-                nowProp.propSize = propBundle[i].propPrefab.GetComponent<SpriteRenderer>().sprite.bounds.size;
-                // 올림해서 정수로 만들기, 좌우반전 생각해서 한칸씩 추가
-                nowProp.propSize = new Vector2(Mathf.CeilToInt(nowProp.propSize.x + 1), Mathf.CeilToInt(nowProp.propSize.y + 1));
+                // 사이즈 입력되어 있지 않으면
+                if (nowProp.propSize == Vector2.zero)
+                {
+                    // 사이즈 알아내서 기억
+                    nowProp.propSize = propBundle[i].propPrefab.GetComponentInChildren<SpriteRenderer>().sprite.bounds.size;
+                    // 올림해서 정수로 만들기
+                    nowProp.propSize = new Vector2(Mathf.CeilToInt(nowProp.propSize.x), Mathf.CeilToInt(nowProp.propSize.y)) / 2f;
+                }
 
                 // 스택에 장애물 넣기
                 propStack.Add(nowProp);
@@ -227,9 +233,13 @@ public class MapManager : MonoBehaviour
         {
             yield return null;
 
-            //todo 임의 횟수 반복
-            for (int k = 0; k < 10; k++)
+            // 임의 횟수만큼 반복
+            for (int k = 0; k < maxPropAttempt; k++)
             {
+                // 빈타일 없으면 끝내기
+                if (emptyTileList.Count <= 0)
+                    yield break;
+
                 // 비어있는 랜덤 좌표 뽑기
                 Vector2 randomPos = emptyTileList[Random.Range(0, emptyTileList.Count)];
 
@@ -250,8 +260,8 @@ public class MapManager : MonoBehaviour
                     Vector2 propSize = prop.propSize;
 
                     // 다음 장애물도 해당 사이즈보다 크면 넘기기
-                    if (propSize.x > failSize.x
-                    || propSize.y > failSize.y)
+                    if (propSize.x * 2 > failSize.x
+                    || propSize.y * 2 > failSize.y)
                         continue;
 
                     // 설치 좌표 계산
@@ -264,18 +274,23 @@ public class MapManager : MonoBehaviour
                     for (int x = 0; x < propSize.x; x++)
                         for (int y = 0; y < propSize.y; y++)
                         {
-                            // //! 장애물 차지 위치 표시
-                            // LeanPool.Spawn(SystemManager.Instance.targetPos_Blue, spawnPos + new Vector2(x, y), Quaternion.identity, propObj.transform);
+                            emptyTileList.Remove(randomPos + new Vector2(x, y) * 2);
 
-                            emptyTileList.Remove(randomPos + new Vector2(x, y));
+                            //! 장애물 차지 위치 표시
+                            if (propTileShow)
+                                LeanPool.Spawn(SystemManager.Instance.targetPos_Blue, spawnPos + new Vector2(x, y) * 2, Quaternion.identity, transform);
                         }
 
-                    // // 해당 사물 확률에 따라 뒤집기
-                    // TransformControl.Shuffle shuffle = propObj.GetComponent<TransformControl>().ShuffleTransform();
-                    // // 뒤집었으면
-                    // if (shuffle == TransformControl.Shuffle.MirrorX)
-                    //     // 오른쪽으로 X 좌표 절반만큼 이동
-                    //     propObj.transform.position += Vector3.right * propSize.x;
+                    // 해당 사물 확률에 따라 뒤집기
+                    TransformControl transformControl = propObj.GetComponentInChildren<TransformControl>();
+                    TransformControl.Shuffle shuffle = transformControl.ShuffleTransform();
+
+                    // 뒤집었을때
+                    if (shuffle == TransformControl.Shuffle.MirrorX)
+                        // 뒤집기 컴포넌트가 장애물 본인이면 (피벗이 왼쪽 구석에 있으므로)
+                        if (transformControl.transform == propObj.transform)
+                            // 오른쪽으로 X 좌표 절반만큼 이동
+                            transformControl.transform.position += Vector3.right * propSize.x * 2;
 
                     // 성공시 다음 장애물로 넘어감
                     break;
@@ -288,7 +303,7 @@ public class MapManager : MonoBehaviour
 
         // 걸린 시간 측정
         debugTime.Stop();
-        print($"{new Vector2(groundPos.x / tilemapSize.x, groundPos.y / tilemapSize.y)} : {debugTime.ElapsedMilliseconds / 1000f}ms");
+        print($"{new Vector2(groundPos.x / tilemapSize.x, groundPos.y / tilemapSize.y)} : {debugTime.ElapsedMilliseconds / 1000f}s");
     }
 
     Vector2 TileCheck(List<Vector2> emptyTileList, Vector2 propSize, Vector2 randomPos)
@@ -297,10 +312,10 @@ public class MapManager : MonoBehaviour
         for (int x = 0; x < propSize.x; x++)
             for (int y = 0; y < propSize.y; y++)
                 // 랜덤 좌표에 사이즈 좌표 반영한 타일 중에서 하나라도 빈타일 리스트에 없으면
-                if (!emptyTileList.Exists(a => a == randomPos + new Vector2(x, y)))
+                if (!emptyTileList.Exists(a => a == randomPos + new Vector2(x, y) * 2))
                 {
                     // 해당 좌표는 이미 자리 있음
-                    return new Vector2(x, y);
+                    return new Vector2(x, y) * 2;
                 }
 
         return new Vector2(100, 100);
@@ -314,9 +329,19 @@ public class MapManager : MonoBehaviour
         //포탈 게이트 생성
         GameObject gate = LeanPool.Spawn(portalGate, pos, Quaternion.identity, ObjectPool.Instance.objectPool);
     }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        // 경계 모서리 표시
+        Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(leftX, upY));
+        Gizmos.DrawLine(new Vector2(rightX, downY), new Vector2(rightX, upY));
+        Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(rightX, downY));
+        Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
+    }
 
     private void OnDrawGizmosSelected()
     {
+
         Gizmos.color = Color.blue;
         // 경계 모서리 표시
         Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(leftX, upY));
