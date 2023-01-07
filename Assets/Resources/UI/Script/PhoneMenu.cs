@@ -37,6 +37,7 @@ public class PhoneMenu : MonoBehaviour
     #endregion
 
     [Header("Refer")]
+    public NewInput Phone_Input; // 입력 받기
     public SimpleScrollSnap screenScroll; // 화면 스크롤
     public GameObject phonePanel; // 핸드폰 화면 패널
     [SerializeField] GameObject invenScreen; // 머지 페이지
@@ -132,32 +133,34 @@ public class PhoneMenu : MonoBehaviour
 
     IEnumerator InputInit()
     {
+        Phone_Input = new NewInput();
+
         // 플레이어 초기화 대기
         yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
 
         // 방향키 입력
-        UIManager.Instance.UI_Input.UI.NavControl.performed += val =>
+        Phone_Input.UI.NavControl.performed += val =>
         {
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
                 NavControl(val.ReadValue<Vector2>());
         };
         // 마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val =>
+        Phone_Input.UI.MousePosition.performed += val =>
         {
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
                 MousePos();
         };
         // 마우스 클릭
-        UIManager.Instance.UI_Input.UI.Click.performed += val =>
+        Phone_Input.UI.Click.performed += val =>
         {
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
                 StartCoroutine(CancelMoveItem());
         };
         // 마우스 휠 스크롤
-        UIManager.Instance.UI_Input.UI.MouseWheel.performed += val =>
+        Phone_Input.UI.MouseWheel.performed += val =>
         {
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
@@ -169,7 +172,7 @@ public class PhoneMenu : MonoBehaviour
         };
 
         // 스마트폰 버튼 입력
-        UIManager.Instance.UI_Input.UI.PhoneMenu.performed += val =>
+        Phone_Input.UI.PhoneMenu.performed += val =>
         {
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
@@ -295,9 +298,9 @@ public class PhoneMenu : MonoBehaviour
         blackScreen.color = new Color(70f / 255f, 70f / 255f, 70f / 255f, 1);
 
         //위치 기억하기
-        phonePosition = CastMagic.Instance.transform.position;
+        phonePosition = CastMagic.Instance.phone.position;
         //회전값 기억하기
-        phoneRotation = CastMagic.Instance.transform.rotation.eulerAngles;
+        phoneRotation = CastMagic.Instance.phone.rotation.eulerAngles;
 
         //카메라 위치
         Vector3 camPos = Camera.main.transform.parent.position;
@@ -316,11 +319,11 @@ public class PhoneMenu : MonoBehaviour
         float moveTime = 0.8f;
 
         // 팝업UI 상태일때 위치,회전,스케일로 이동
-        CastMagic.Instance.transform.DOMove(camPos + modifyPos + UIPosition * camScale, moveTime)
+        CastMagic.Instance.phone.DOMove(camPos + modifyPos + UIPosition * camScale, moveTime)
         .SetUpdate(true);
-        CastMagic.Instance.transform.DOScale(UIscale, moveTime)
+        CastMagic.Instance.phone.DOScale(UIscale, moveTime)
         .SetUpdate(true);
-        CastMagic.Instance.transform.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), moveTime, RotateMode.WorldAxisAdd)
+        CastMagic.Instance.phone.DORotate(new Vector3(0, 720f - phoneRotation.y, 0), moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
 
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
@@ -651,7 +654,7 @@ public class PhoneMenu : MonoBehaviour
             .SetUpdate(true);
 
             // 클릭, 확인 누르면 
-            yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
+            yield return new WaitUntil(() => Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Accept.IsPressed());
         }
 
         // 양쪽 슬롯 위치 초기화
@@ -1091,7 +1094,7 @@ public class PhoneMenu : MonoBehaviour
         SoundManager.Instance.PlaySound("MergeComplete");
 
         // 확인, 클릭할때까지 대기
-        yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
+        yield return new WaitUntil(() => Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Accept.IsPressed());
 
         // 팡파레 이펙트 끄기
         slotRayEffect.gameObject.SetActive(false);
@@ -1280,8 +1283,7 @@ public class PhoneMenu : MonoBehaviour
         }
 
         // 클릭,확인 누르면 스킵 켜기
-        if (UIManager.Instance.UI_Input.UI.Click.IsPressed()
-        || UIManager.Instance.UI_Input.UI.Accept.IsPressed())
+        if (Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Accept.IsPressed())
             isSkipped = true;
 
         // 채팅패널 Lerp로 사이즈 반영해서 lerp로 늘어나기
@@ -1654,13 +1656,13 @@ public class PhoneMenu : MonoBehaviour
         float moveTime = 0.8f;
 
         // 매직폰 상태일때 위치로 변경
-        CastMagic.Instance.transform.DOMove(phonePosition, moveTime)
+        CastMagic.Instance.phone.DOMove(phonePosition, moveTime)
         .SetUpdate(true);
         // 매직폰 상태일때 크기로 변경
-        CastMagic.Instance.transform.DOScale(phoneScale, moveTime)
+        CastMagic.Instance.phone.DOScale(phoneScale, moveTime)
         .SetUpdate(true);
         // 매직폰 상태일때 회전값으로 변경
-        CastMagic.Instance.transform.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
+        CastMagic.Instance.phone.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
 
         // 절반쯤 이동했을때 화면 라이트 켜기

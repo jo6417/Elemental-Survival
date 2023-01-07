@@ -76,8 +76,18 @@ public class TileMapGenerator : MonoBehaviour
                 {
                     // 랜덤 타일 가중치 확인
                     List<float> tileRate = new List<float>();
-                    foreach (TileBundle tile in tileList)
-                        tileRate.Add(tile.rate);
+                    for (int i = 0; i < tileList.Count; i++)
+                    {
+                        // 타일 풀에서 가중치 수집
+                        float weight = tileList[i].weightRate;
+
+                        // 확률 못넘기면 가중치 0으로 설정
+                        if (Random.value > tileList[i].rate)
+                            weight = 0;
+
+                        // 가중치 입력
+                        tileRate.Add(weight);
+                    }
                     // 타일 중에 하나 뽑기
                     int tileIndex = SystemManager.Instance.WeightRandom(tileRate);
 

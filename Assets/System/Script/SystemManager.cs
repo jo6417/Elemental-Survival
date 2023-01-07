@@ -80,6 +80,8 @@ public class SystemManager : MonoBehaviour
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
+    public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
+    public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
 
     [Header("Debug")]
     public Button timeBtn; //! 시간 속도 토글 버튼
@@ -195,8 +197,8 @@ public class SystemManager : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 사운드 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance != null);
+        // 모든 로딩 끝날때까지 대기
+        yield return new WaitUntil(() => loadDone);
 
         // 시간 속도 초기화
         TimeScaleChange(1f);
@@ -236,34 +238,25 @@ public class SystemManager : MonoBehaviour
         return angle;
     }
 
-    public void TimeScaleChange(float scale)
-    {
-        // 씬 타임스케일 변경
-        Time.timeScale = scale;
-
-        // 모든 오디오 소스 피치에 반영
-        SoundManager.Instance.SoundTimeScale(scale);
-    }
-
-    public void TimeStopToggle()
+    public void TimeScaleChange(float timeScale)
     {
         Image timeImg = timeBtn.GetComponent<Image>();
         TextMeshProUGUI timeTxt = timeBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-        if (Time.timeScale == 0f)
-        {
-            TimeScaleChange(1f);
+        // 씬 타임스케일 변경
+        Time.timeScale = timeScale;
 
+        // 모든 오디오 소스 피치에 반영
+        SoundManager.Instance.SoundTimeScale(timeScale);
+
+        // 멈추면 빨강 아니면 초록색으로 버튼에 표시
+        if (timeScale > 0f)
             timeImg.color = Color.green;
-        }
         else
-        {
-            TimeScaleChange(0f);
-
             timeImg.color = Color.red;
-        }
 
-        timeTxt.text = "TimeSpeed = " + Time.timeScale;
+        // 시간 진행도 디버그 버튼에 표시
+        timeTxt.text = "TimeSpeed = " + timeScale;
     }
 
     public void GodModeToggle()
@@ -413,12 +406,13 @@ public class SystemManager : MonoBehaviour
 
     public IEnumerator LoadScene(string sceneName)
     {
+        // 로딩씬 켜기
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
 
         // 로딩씬 초기화 대기
         yield return new WaitUntil(() => Loading.Instance != null);
 
-        // 게임 플레이 씬 로딩 시작
+        // 매개변수로 들어온 씬 로딩 시작
         StartCoroutine(Loading.Instance.LoadScene(sceneName));
     }
 

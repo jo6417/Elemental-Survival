@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using Lean.Pool;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GatePortal : MonoBehaviour
 {
@@ -32,22 +33,25 @@ public class GatePortal : MonoBehaviour
     #endregion
 
     [Header("State")]
+    public PortalState portalState; // 현재 포탈상태
+    public enum PortalState { Idle, GemReceive, BossAlive, MobRemain, Clear };
     int gemType; // 필요 젬 타입
-    float maxGem; //필요 젬 개수
-    float nowGem; //현재 젬 개수
+    [SerializeField] float maxGem; //필요 젬 개수
+    [SerializeField] float nowGem; //현재 젬 개수
     float refundRate = 0.2f; // 클리어시 원소젬 환불 계수
     float delayCount; //상호작용 딜레이 카운트
     [SerializeField] float interactDelay = 0.1f; //상호작용 딜레이
     [SerializeField] float farDistance = 150f; //해당 거리 이상 벌어지면 포탈 이동
-    [SerializeField] bool nowPay = false; // 젬 넣고 있는지 여부
     IEnumerator payCoroutine;
     [SerializeField] Character bossCharacter;
     [SerializeField] Character fixedBoss; // 고정된 보스 소환
 
     [Header("Refer")]
     Interacter interacter; //상호작용 콜백 함수 클래스
-    [SerializeField] GameObject showKey; //상호작용 키 표시 UI
-    [SerializeField] TextMeshProUGUI gemNum; //젬 개수 표시 UI
+    [SerializeField] GameObject showKeyUI; //상호작용 키 표시 UI
+    [SerializeField] TextMeshProUGUI pressAction; // 상호작용 기능 설명 텍스트
+    [SerializeField] TextMeshProUGUI gemNum; //젬 개수 표시 텍스트
+    [SerializeField] Image GemIcon; // 젬 아이콘
     [SerializeField] TextMeshProUGUI pressKey; //상호작용 인디케이터
     [SerializeField] Animator anim; //포탈 이펙트 애니메이션
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
@@ -68,30 +72,43 @@ public class GatePortal : MonoBehaviour
         // 보스 변수 초기화
         bossCharacter = null;
 
-        // 필요한 젬 타입 지정
+        // 필요한 젬 타입 초기화
         gemType = Random.Range(0, 6);
-        // 필요한 젬 개수 지정
+        // 필요한 젬 개수 초기화
         maxGem = Random.Range(30, 50);
+        nowGem = 0;
 
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
-
-        // 젬 타입 UI 색깔 갱신
-        gemNum.GetComponentInChildren<Image>().color = MagicDB.Instance.GetElementColor(gemType);
-
-        //젬 개수 UI 갱신
+        // 젬 게이지 머터리얼 초기화
+        gaugeImg.material.SetFloat("_Angle", 302f); // 시작지점 각도 갱신
+        gaugeImg.material.SetFloat("_Arc1", 64f); // 마지막 지점 각도 갱신
+        // 상호작용 텍스트 초기화
+        pressAction.text = "Pay Gem";
+        // 젬 개수 UI 갱신
         UpdateGemNum();
 
         //상호작용 표시 비활성화
-        showKey.SetActive(false);
+        showKeyUI.SetActive(false);
+        // 젬 개수 UI 비활성화
+        gemNum.gameObject.SetActive(false);
 
         //포탈 이펙트 오브젝트 비활성화
         anim.gameObject.SetActive(false);
 
         // 상호작용 트리거 함수 콜백에 연결 시키기
-        interacter.interactTriggerCallback += InteractTrigger;
+        if (interacter.interactTriggerCallback == null)
+            interacter.interactTriggerCallback += InteractTrigger;
 
         // 상호작용 함수 콜백에 연결 시키기
-        interacter.interactSubmitCallback += InteractSubmit;
+        if (interacter.interactSubmitCallback == null)
+            interacter.interactSubmitCallback += InteractSubmit;
+
+        // 원소젬 받기 상태로 초기화
+        portalState = PortalState.Idle;
+
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        // 젬 타입 UI 색깔 갱신
+        GemIcon.color = MagicDB.Instance.GetElementColor(gemType);
     }
 
     private void Update()
@@ -119,46 +136,80 @@ public class GatePortal : MonoBehaviour
         //todo 플레이어 상호작용 키가 어떤 키인지 표시
         // pressKey.text = 
 
-        if (able && nowGem < maxGem)
-            showKey.SetActive(true);
+        //todo 상호작용시 작동할 기능 표시
+        // 젬이 부족할때
+        if (nowGem < maxGem)
+            pressAction.text = "Pay Gem";
+
+        // 맵 클리어시
+        if (portalState == PortalState.Clear)
+            pressAction.text = "Enter Portal";
+
+        // 상호작용 키 표시 켜기
+        if (able)
+        {
+            //todo 젬이 부족할때, 보스 클리어시 상호작용 키 표시
+            if (portalState == PortalState.Idle
+            || portalState == PortalState.GemReceive
+            || portalState == PortalState.Clear)
+                showKeyUI.SetActive(true);
+        }
+        // 끌때는 언제나 끄기
         else
-            showKey.SetActive(false);
+        {
+            print("끄기");
+            showKeyUI.SetActive(false);
+        }
     }
 
     // 포탈 상호작용
     public void InteractSubmit(bool isPress = true)
     {
         // 인디케이터 꺼져있으면 리턴
-        if (!showKey.activeSelf)
+        if (!showKeyUI.activeSelf)
             return;
 
-        // 지불 여부 갱신
-        nowPay = isPress;
-
-        // 젬 넣기 시작
-        if (nowPay && payCoroutine == null)
+        // 첫번째 젬 넣을때
+        if (portalState == PortalState.Idle)
         {
-            payCoroutine = PayGem();
-            StartCoroutine(payCoroutine);
-        }
-        // 젬 넣기 종료
-        else
-        {
-            StopCoroutine(payCoroutine);
-            payCoroutine = null;
-        }
+            // 젬 받기 이후 상태로 전환
+            portalState = PortalState.GemReceive;
 
-        //첫번째 젬 넣을때
-        if (nowGem == 0)
             //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI 켜기
             StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
+        }
+
+        // 젬 넣는 상태일때
+        if (portalState == PortalState.Idle
+        || portalState == PortalState.GemReceive)
+        {
+            // 젬 넣기 시작
+            if (payCoroutine == null)
+            {
+                payCoroutine = PayGem();
+                StartCoroutine(payCoroutine);
+            }
+            // 젬 넣기 종료
+            else
+            {
+                StopCoroutine(payCoroutine);
+                payCoroutine = null;
+            }
+        }
+
+        // 보스 및 잔여 몹 다 잡고 클리어 일때
+        if (portalState == PortalState.Clear)
+        {
+            //todo 상호작용시 포탈 게이트 트랜지션
+            StartCoroutine(ClearTeleport());
+        }
     }
 
     IEnumerator PayGem()
     {
         float payDelay = 0.1f;
         // 계속 지불 중이면 반복
-        while (nowPay && nowGem < maxGem)
+        while (portalState == PortalState.GemReceive && nowGem < maxGem)
         {
             // 플레이어 젬 하나씩 소모
             PlayerManager.Instance.PayGem(gemType, 1);
@@ -172,7 +223,7 @@ public class GatePortal : MonoBehaviour
             if (nowGem == maxGem)
             {
                 // 상호작용 인디케이터 끄기
-                showKey.SetActive(false);
+                showKeyUI.SetActive(false);
 
                 //보스 소환
                 StartCoroutine(SummonBoss());
@@ -191,10 +242,14 @@ public class GatePortal : MonoBehaviour
         //젬 개수 UI 갱신
         gemNum.text = nowGem.ToString() + " / " + maxGem.ToString();
 
-        //젬 개수만큼 테두리 도넛 게이지 갱신
-        float gaugeFill = ((maxGem - nowGem) / maxGem) * 360f;
-        gaugeFill = Mathf.Clamp(gaugeFill, 0, 360f);
+        // 시작 지점 각도 수집
+        float startAngle = gaugeImg.material.GetFloat("_Arc1");
 
+        //젬 개수만큼 테두리 도넛 게이지 갱신
+        float gaugeFill = ((maxGem - nowGem) / maxGem) * (360f - startAngle);
+        gaugeFill = Mathf.Clamp(gaugeFill, 0, (360f - startAngle));
+
+        // 시작부터 마지막 지점까지 채우는 양 갱신
         gaugeImg.material.SetFloat("_Arc2", gaugeFill);
     }
 
@@ -281,6 +336,47 @@ public class GatePortal : MonoBehaviour
             dropNum--;
 
             yield return singleDropTime;
+        }
+
+        //todo 클리어 트리거 켜기
+        portalState = PortalState.Clear;
+    }
+
+    IEnumerator ClearTeleport()
+    {
+        yield return null;
+
+        //todo 시간 멈추고
+        SystemManager.Instance.TimeScaleChange(0f);
+
+        // 현재 맵 속성 조회해서 int로 변환
+        int nowIndex = (int)SystemManager.Instance.nowMapElement;
+
+        // 마지막 스테이지가 아닐때
+        if (nowIndex < 5)
+        {
+            //todo 포탈 가운데로 빛 모이는 파티클
+            //todo 플레이어가 포탈 가운데로 들어가면서 포탈로 카메라 고정
+            //todo 플레이어 및 포탈 하얗게 변하고
+            //todo 포탈 왜곡되면서 디스폰
+            //todo 플레이어 및 포탈 길쭉해지며 승천
+            //todo 천천히 날리는 빛 파티클 조금 남김
+            //todo 화면 암전 했다가 풀면서
+            //todo 왜곡되면서 플레이어 스폰
+            //todo 새로운 맵에 길쭉한 하얀 오브젝트 내려와서
+            //todo 하얀 플레이어로 변하고 플레이어 초기화
+            //todo 새 맵 초기화
+
+            // 다음 맵 인덱스로 증가
+            SystemManager.Instance.nowMapElement = (SystemManager.MapElement)(nowIndex + 1);
+
+            //todo 트랜지션 이후 새로운 인게임 씬 켜기
+            StartCoroutine(SystemManager.Instance.LoadScene("InGameScene"));
+        }
+        // 마지막 스테이지일때
+        else
+        {
+            //todo 게임 클리어 창 켜기
         }
     }
 }

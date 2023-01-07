@@ -34,8 +34,6 @@ public class MapManager : MonoBehaviour
     #endregion
 
     [Header("State")]
-    public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
-    public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
@@ -162,11 +160,11 @@ public class MapManager : MonoBehaviour
                 List<Vector2> setList = new List<Vector2>();
 
                 // 하단 레이어 타일 설치
-                tileGenList[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)nowMapElement].tileBundle);
+                tileGenList[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.nowMapElement].tileBundle);
                 // 중간 레이어 타일 설치
-                tileGenList[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)nowMapElement].tileBundle);
+                tileGenList[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.nowMapElement].tileBundle);
                 // 상단 레이어 타일 설치
-                setList = tileGenList[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)nowMapElement].tileBundle);
+                setList = tileGenList[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.nowMapElement].tileBundle);
 
                 // 상단 타일 설치된 좌표 빼기
                 if (setList != null && setList.Count > 0)
@@ -177,7 +175,7 @@ public class MapManager : MonoBehaviour
 
                         //! 뺀 타일 위치 표시
                         if (blockTileShow)
-                            LeanPool.Spawn(SystemManager.Instance.targetPos_Red, setList[i] + genPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f, Quaternion.identity, transform);
+                            LeanPool.Spawn(SystemManager.Instance.targetPos_Red, setList[i] + genPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f + Vector2.one, Quaternion.identity, transform);
                     }
 
                 // 장애물 설치하기
@@ -193,7 +191,7 @@ public class MapManager : MonoBehaviour
         debugTime.Start();
 
         // 맵 속성에 따라 다른 장애물 번들 선택
-        List<Prop> propBundle = propBundleList[(int)nowMapElement].props;
+        List<Prop> propBundle = propBundleList[(int)SystemManager.Instance.nowMapElement].props;
 
         //! 빈공간 모두 표시
         // for (int i = 0; i < emptyTileList.Count; i++)
@@ -278,7 +276,7 @@ public class MapManager : MonoBehaviour
 
                             //! 장애물 차지 위치 표시
                             if (propTileShow)
-                                LeanPool.Spawn(SystemManager.Instance.targetPos_Blue, spawnPos + new Vector2(x, y) * 2, Quaternion.identity, transform);
+                                LeanPool.Spawn(SystemManager.Instance.targetPos_Blue, spawnPos + new Vector2(x, y) * 2 + Vector2.one, Quaternion.identity, transform);
                         }
 
                     // 해당 사물 확률에 따라 뒤집기
@@ -383,5 +381,6 @@ public class TileBundle
 {
     public string name;
     public RuleTile tile;
-    public float rate; // 해당 타일 출현 확률
+    public float weightRate; // 해당 레이어에서 타일 출현 가중치
+    [Range(0, 1)] public float rate; // 해당 타일 출현 확률
 }

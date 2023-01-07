@@ -114,6 +114,15 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        // 최초 생성 됬을때
+        if (instance == null)
+        {
+            instance = this;
+
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        }
+
         // 위치 초기화
         transform.position = Vector3.zero;
 

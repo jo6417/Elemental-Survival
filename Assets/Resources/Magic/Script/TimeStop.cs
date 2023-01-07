@@ -64,7 +64,7 @@ public class TimeStop : MonoBehaviour
         sprite.color = Color.blue;
 
         // 스마트폰 위치로 이동
-        transform.position = CastMagic.Instance.transform.position;
+        transform.position = CastMagic.Instance.phone.position;
 
         //애니메이션 멈추기
         anim.speed = 0f;

@@ -25,9 +25,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 0
-    - _Angle: 97
-    - _Arc1: 229
-    - _Arc2: 40
+    - _Angle: 302
+    - _Arc1: 64
+    - _Arc2: 238
     - _ClipAngle: 247
     - _Clockwise: 1
     - _Reverse: 0

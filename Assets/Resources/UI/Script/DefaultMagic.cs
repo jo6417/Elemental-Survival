@@ -115,7 +115,7 @@ public class DefaultMagic : MonoBehaviour
         slotParticle.gameObject.SetActive(true);
 
         // 핸드폰 다 열릴때까지 대기
-        yield return new WaitUntil(() => CastMagic.Instance.transform.localScale == Vector3.one);
+        yield return new WaitUntil(() => CastMagic.Instance.phone.localScale == Vector3.one);
 
         // 핸드폰 키입력 막기
         PhoneMenu.Instance.InteractBtnsToggle(false);

@@ -40,6 +40,7 @@ public class CastMagic : MonoBehaviour
     [SerializeField] bool noItem; // 아이템 없이 테스트
 
     [Header("Refer")]
+    public Transform phone;
     [SerializeField] ParticleSystem playerMagicCastEffect; // 플레이어가 마법 사용시 파티클 실행
     [SerializeField] ParticleSystem phoneMagicCastEffect; // 핸드폰이 마법 사용시 파티클 실행
 
@@ -50,10 +51,25 @@ public class CastMagic : MonoBehaviour
     [SerializeField] float hoverRange = 0.5f; // 오르락내리락 하는 범위
     [SerializeField] float hoverHeight = 2f; // 핸드폰이 떠있는 높이
 
+    private void Awake()
+    {
+        // 최초 생성 됬을때
+        if (instance == null)
+        {
+            instance = this;
+
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            // 해당 오브젝트 파괴
+            Destroy(gameObject);
+    }
+
     private void OnEnable()
     {
         // 스케일 초기화
-        transform.localScale = Vector3.one * 0.05f;
+        phone.localScale = Vector3.one * 0.05f;
     }
 
     private void FixedUpdate()
@@ -68,10 +84,10 @@ public class CastMagic : MonoBehaviour
     {
         //오브젝트 각도 초기화, 자전 각도 추가
         orbitAngle += spinSpeed;
-        transform.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
+        phone.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
 
         // 오르락내리락 하는 호버링 무빙
-        transform.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange + hoverHeight, -0.5f);
+        phone.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange + hoverHeight, -0.5f);
     }
 
     public void CastCheck()

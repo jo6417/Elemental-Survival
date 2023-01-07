@@ -110,11 +110,11 @@ public class UIManager : MonoBehaviour
             instance = this;
 
             // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
         }
-        else
-            // 해당 오브젝트 파괴
-            Destroy(gameObject);
+        // else
+        //     // 해당 오브젝트 파괴
+        //     Destroy(gameObject);
 
         //입력 초기화
         StartCoroutine(InputInit());
@@ -211,7 +211,8 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
-        UI_Input.Disable();
+        if (UI_Input != null)
+            UI_Input.Disable();
     }
 
     // 방향키 입력되면 실행

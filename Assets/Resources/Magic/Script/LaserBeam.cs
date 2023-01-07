@@ -59,7 +59,7 @@ public class LaserBeam : MonoBehaviour
         if (magicHolder.GetTarget() == MagicHolder.TargetType.Enemy)
         {
             // 플레이어가 발사 주체면 스마트폰에서 시작
-            startObj = CastMagic.Instance.transform;
+            startObj = CastMagic.Instance.phone;
 
             //조준시간 초기화
             aimTime = 1f;
