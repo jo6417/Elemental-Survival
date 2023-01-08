@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -49,10 +50,17 @@ public class Loading : MonoBehaviour
         // 로딩 인풋 활성화
         loading_Input = new NewInput();
         loading_Input.Enable();
+
+        // 시간 멈추기
+        SystemManager.Instance.TimeScaleChange(0f);
     }
 
     public IEnumerator LoadScene(string sceneName)
     {
+        //! 시간 측정
+        Stopwatch debugTime = new Stopwatch();
+        debugTime.Start();
+
         // 이름으로 씬 불러오기
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         // 로딩 진행도 0.9에서 대기 시키기
@@ -72,13 +80,13 @@ public class Loading : MonoBehaviour
             if (loadingBar.value < 0.9f)
             {
                 // 로딩 바 0.9까지 채우기
-                loadingBar.value = Mathf.MoveTowards(loadingBar.value, 0.9f, Time.deltaTime);
+                loadingBar.value = Mathf.MoveTowards(loadingBar.value, 0.9f, Time.unscaledDeltaTime);
             }
             // 씬 불러오기 완료했으면
             else if (operation.progress >= 0.9f)
             {
                 // 로딩 바 끝까지 채우기
-                loadingBar.value = Mathf.MoveTowards(loadingBar.value, 1f, Time.deltaTime);
+                loadingBar.value = Mathf.MoveTowards(loadingBar.value, 1f, Time.unscaledDeltaTime);
             }
 
             // 로딩 완료시
@@ -101,11 +109,15 @@ public class Loading : MonoBehaviour
 
             yield return null;
         }
+
+        // 걸린 시간 측정
+        debugTime.Stop();
+        print($"Loading Done : {debugTime.ElapsedMilliseconds / 1000f}s");
     }
 
     IEnumerator LoadText()
     {
-        string text = "Loading";
+        string text = "Now Laoding";
 
         for (int i = 0; i < 3; i++)
         {
@@ -119,7 +131,10 @@ public class Loading : MonoBehaviour
                 loadingText.text = text;
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
+
+        // 재실행
+        StartCoroutine(LoadText());
     }
 }

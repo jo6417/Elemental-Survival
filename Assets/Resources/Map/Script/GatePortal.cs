@@ -136,7 +136,6 @@ public class GatePortal : MonoBehaviour
         //todo 플레이어 상호작용 키가 어떤 키인지 표시
         // pressKey.text = 
 
-        //todo 상호작용시 작동할 기능 표시
         // 젬이 부족할때
         if (nowGem < maxGem)
             pressAction.text = "Pay Gem";
@@ -148,7 +147,7 @@ public class GatePortal : MonoBehaviour
         // 상호작용 키 표시 켜기
         if (able)
         {
-            //todo 젬이 부족할때, 보스 클리어시 상호작용 키 표시
+            // 젬이 부족할때, 보스 클리어시 상호작용 키 표시
             if (portalState == PortalState.Idle
             || portalState == PortalState.GemReceive
             || portalState == PortalState.Clear)
@@ -157,7 +156,7 @@ public class GatePortal : MonoBehaviour
         // 끌때는 언제나 끄기
         else
         {
-            print("끄기");
+            print($"끄기 : {Time.time}");
             showKeyUI.SetActive(false);
         }
     }
@@ -200,7 +199,10 @@ public class GatePortal : MonoBehaviour
         // 보스 및 잔여 몹 다 잡고 클리어 일때
         if (portalState == PortalState.Clear)
         {
-            //todo 상호작용시 포탈 게이트 트랜지션
+            // 포탈 상태 초기화
+            portalState = PortalState.Idle;
+
+            // 상호작용시 포탈 게이트 트랜지션
             StartCoroutine(ClearTeleport());
         }
     }
@@ -338,7 +340,7 @@ public class GatePortal : MonoBehaviour
             yield return singleDropTime;
         }
 
-        //todo 클리어 트리거 켜기
+        // 클리어 트리거 켜기
         portalState = PortalState.Clear;
     }
 
@@ -346,7 +348,7 @@ public class GatePortal : MonoBehaviour
     {
         yield return null;
 
-        //todo 시간 멈추고
+        // 시간 멈추고
         SystemManager.Instance.TimeScaleChange(0f);
 
         // 현재 맵 속성 조회해서 int로 변환

@@ -19,7 +19,7 @@ public class TransformControl : MonoBehaviour
     {
         yield return null;
 
-        // ShuffleTransform();
+        ShuffleTransform();
     }
 
     public Shuffle ShuffleTransform()

@@ -60,6 +60,12 @@ public class MapManager : MonoBehaviour
 
     private void OnEnable()
     {
+        // 초기화
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
         // 설치할 타일맵 사이즈 절반만큼 경계 설정
         rightX = tilemapSize.x / 2f;
         leftX = -tilemapSize.x / 2f;
@@ -73,6 +79,11 @@ public class MapManager : MonoBehaviour
 
         //다음맵으로 넘어가는 포탈게이트 생성하기
         SpawnPortalGate();
+
+        yield return null;
+
+        // 시간 초기화
+        SystemManager.Instance.TimeScaleChange(1f);
     }
 
     void Update()

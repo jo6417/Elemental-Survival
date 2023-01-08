@@ -82,8 +82,12 @@ public class TileMapGenerator : MonoBehaviour
                         float weight = tileList[i].weightRate;
 
                         // 확률 못넘기면 가중치 0으로 설정
-                        if (Random.value > tileList[i].rate)
-                            weight = 0;
+                        float random = Random.value;
+                        if (random >= tileList[i].rate)
+                        {
+                            // print(random + " : " + tileList[i].rate);
+                            weight = 0f;
+                        }
 
                         // 가중치 입력
                         tileRate.Add(weight);
@@ -91,23 +95,27 @@ public class TileMapGenerator : MonoBehaviour
                     // 타일 중에 하나 뽑기
                     int tileIndex = SystemManager.Instance.WeightRandom(tileRate);
 
-                    // 설치할 타일
-                    RuleTile setTile = tileList[tileIndex].tile;
+                    // 타일 인덱스가 있을때
+                    if (tileIndex != -1)
+                    {
+                        // 설치할 타일
+                        RuleTile setTile = tileList[tileIndex].tile;
 
-                    // 타일 설치 위치
-                    Vector3Int tilePos = new Vector3Int(-x - 1 + (int)(tilemapSize.x / 2f), -y - 1 + (int)(tilemapSize.y / 2f), 0);
+                        // 타일 설치 위치
+                        Vector3Int tilePos = new Vector3Int(-x - 1 + (int)(tilemapSize.x / 2f), -y - 1 + (int)(tilemapSize.y / 2f), 0);
+
+                        // 중심위치 더하기
+                        tilePos = tilePos + tilemapPos;
+
+                        // 타일 설치
+                        tileMap.SetTile(tilePos, setTile);
+                    }
 
                     // 설치된 위치 월드 포지션으로 전환
                     Vector2 setPos = new Vector2(-x - 1 + (int)(tilemapSize.x), -y - 1 + (int)(tilemapSize.y)) * 2;
 
                     // 설치 타일 위치 리스트에 저장
                     setList.Add(setPos);
-
-                    // 중심위치 더하기
-                    tilePos = tilePos + tilemapPos;
-
-                    // 타일 설치
-                    tileMap.SetTile(tilePos, setTile);
                 }
             }
         }

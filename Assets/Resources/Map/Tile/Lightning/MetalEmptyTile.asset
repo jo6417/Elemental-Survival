@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: MetalEmptyTile
   m_EditorClassIdentifier: 
-  m_DefaultSprite: {fileID: 1164271447420902666, guid: 241edebb9bd071644bfb54c1da592153,
+  m_DefaultSprite: {fileID: -6137313607794455687, guid: 241edebb9bd071644bfb54c1da592153,
     type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 2
   m_TilingRules:
   - m_Id: 0
     m_Sprites:
-    - {fileID: 1164271447420902666, guid: 241edebb9bd071644bfb54c1da592153, type: 3}
-    m_GameObject: {fileID: 0}
+    - {fileID: -6137313607794455687, guid: 241edebb9bd071644bfb54c1da592153, type: 3}
+    m_GameObject: {fileID: 5412754901796739185, guid: a6b51c55071e06d4093c4ca913e865d9,
+      type: 3}
     m_MinAnimationSpeed: 1
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5

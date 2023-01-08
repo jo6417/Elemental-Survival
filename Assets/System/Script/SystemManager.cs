@@ -338,6 +338,10 @@ public class SystemManager : MonoBehaviour
         // 랜덤 목록 개수만큼 반복
         for (int i = 0; i < rateList.Count; i++)
         {
+            // 가중치가 0이면 넘기기
+            if (rateList[i] == 0)
+                continue;
+
             // 랜덤 숫자가 i번 가중치보다 작다면
             if (randomNum <= rateList[i])
             {
@@ -351,8 +355,8 @@ public class SystemManager : MonoBehaviour
             }
         }
 
-        //랜덤 숫자가 1일때 마지막값 반환
-        return rateList.Count - 1;
+        // 아무것도 리턴 못했다면 -1을 리턴
+        return -1;
     }
 
     // 중복 없이 인덱스 뽑기

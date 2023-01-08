@@ -47,7 +47,7 @@ public class ObjectPool : MonoBehaviour
             instance = this;
 
             // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
         }
         else
             // 해당 오브젝트 파괴
