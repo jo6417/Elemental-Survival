@@ -48,9 +48,9 @@ public class GatePortal : MonoBehaviour
 
     [Header("Refer")]
     Interacter interacter; //상호작용 콜백 함수 클래스
-    [SerializeField] GameObject showKeyUI; //상호작용 키 표시 UI
+    [SerializeField] CanvasGroup showKeyUI; //상호작용 키 표시 UI
     [SerializeField] TextMeshProUGUI pressAction; // 상호작용 기능 설명 텍스트
-    [SerializeField] TextMeshProUGUI gemNum; //젬 개수 표시 텍스트
+    [SerializeField] CanvasGroup gemNum; //젬 개수 표시 텍스트
     [SerializeField] Image GemIcon; // 젬 아이콘
     [SerializeField] TextMeshProUGUI pressKey; //상호작용 인디케이터
     [SerializeField] Animator anim; //포탈 이펙트 애니메이션
@@ -87,9 +87,7 @@ public class GatePortal : MonoBehaviour
         UpdateGemNum();
 
         //상호작용 표시 비활성화
-        showKeyUI.SetActive(false);
-        // 젬 개수 UI 비활성화
-        gemNum.gameObject.SetActive(false);
+        showKeyUI.alpha = 0;
 
         //포탈 이펙트 오브젝트 비활성화
         anim.gameObject.SetActive(false);
@@ -147,17 +145,27 @@ public class GatePortal : MonoBehaviour
         // 상호작용 키 표시 켜기
         if (able)
         {
-            // 젬이 부족할때, 보스 클리어시 상호작용 키 표시
+            // 젬이 부족할때 
             if (portalState == PortalState.Idle
-            || portalState == PortalState.GemReceive
-            || portalState == PortalState.Clear)
-                showKeyUI.SetActive(true);
+            || portalState == PortalState.GemReceive)
+            {
+                // 상호작용 키 표시
+                showKeyUI.alpha = 1;
+                // 젬 개수 표시
+                gemNum.alpha = 1;
+            }
+            // 클리어시
+            if (portalState == PortalState.Clear)
+                // 상호작용 키 표시
+                showKeyUI.alpha = 1;
         }
         // 끌때는 언제나 끄기
         else
         {
             print($"끄기 : {Time.time}");
-            showKeyUI.SetActive(false);
+            showKeyUI.alpha = 0;
+            // 젬 개수 UI 비활성화
+            gemNum.alpha = 0;
         }
     }
 
@@ -165,7 +173,7 @@ public class GatePortal : MonoBehaviour
     public void InteractSubmit(bool isPress = true)
     {
         // 인디케이터 꺼져있으면 리턴
-        if (!showKeyUI.activeSelf)
+        if (showKeyUI.alpha == 0)
             return;
 
         // 첫번째 젬 넣을때
@@ -222,10 +230,13 @@ public class GatePortal : MonoBehaviour
             //젬 개수 UI 갱신
             UpdateGemNum();
 
+            // 최대치만큼 넣으면
             if (nowGem == maxGem)
             {
-                // 상호작용 인디케이터 끄기
-                showKeyUI.SetActive(false);
+                // 상호작용 키 끄기
+                showKeyUI.alpha = 0;
+                // 젬 개수 UI 비활성화
+                gemNum.alpha = 0;
 
                 //보스 소환
                 StartCoroutine(SummonBoss());
@@ -242,7 +253,7 @@ public class GatePortal : MonoBehaviour
     void UpdateGemNum()
     {
         //젬 개수 UI 갱신
-        gemNum.text = nowGem.ToString() + " / " + maxGem.ToString();
+        gemNum.GetComponent<TextMeshProUGUI>().text = nowGem.ToString() + " / " + maxGem.ToString();
 
         // 시작 지점 각도 수집
         float startAngle = gaugeImg.material.GetFloat("_Arc1");
@@ -378,7 +389,11 @@ public class GatePortal : MonoBehaviour
         // 마지막 스테이지일때
         else
         {
+            //todo 플레이어 컨트롤 끄기
+            SystemManager.Instance.ToggleInput(true);
+
             //todo 게임 클리어 창 켜기
+            UIManager.Instance.GameOver(true);
         }
     }
 }

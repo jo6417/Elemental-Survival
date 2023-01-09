@@ -209,11 +209,11 @@ public class UIManager : MonoBehaviour
         timerInside.color = InsideColor;
     }
 
-    private void OnDisable()
-    {
-        if (UI_Input != null)
-            UI_Input.Disable();
-    }
+    // private void OnDisable()
+    // {
+    //     if (UI_Input != null)
+    //         UI_Input.Disable();
+    // }
 
     // 방향키 입력되면 실행
     void NavControl(Vector2 arrowDir)
@@ -300,10 +300,11 @@ public class UIManager : MonoBehaviour
             //시간 멈추기
             SystemManager.Instance.TimeScaleChange(0f);
 
+            // 핸드폰 열기
             StartCoroutine(PhoneMenu.Instance.OpenPhone(modifyPos));
 
-            //플레이어 입력 끄기
-            playerManager.player_Input.Disable();
+            // UI 입력 켜기
+            SystemManager.Instance.ToggleInput(true);
 
             //현재 열려있는 팝업 갱신
             nowOpenPopup = phonePanel;
@@ -902,7 +903,7 @@ public class UIManager : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
             //플레이어 입력 켜기
-            playerManager.player_Input.Enable();
+            SystemManager.Instance.ToggleInput(false);
 
             //현재 열려있는 팝업 비우기
             nowOpenPopup = null;
@@ -910,8 +911,8 @@ public class UIManager : MonoBehaviour
         //팝업 on
         else
         {
-            //플레이어 입력 끄기
-            playerManager.player_Input.Disable();
+            // UI 입력 켜기
+            SystemManager.Instance.ToggleInput(true);
 
             //현재 열려있는 팝업 갱신
             nowOpenPopup = popup;
@@ -1078,36 +1079,43 @@ public class UIManager : MonoBehaviour
         }
 
         //TODO 캐릭터 넣기
-        gameoverScreen.Find("Stat/Character/Amount").GetComponent<TextMeshProUGUI>().text = "캐릭터 완료";
+        gameoverScreen.Find("Stat/Character/Amount").GetComponent<TextMeshProUGUI>().text = "Chracter Test";
         //TODO 맵 넣기
-        gameoverScreen.Find("Stat/Map/Amount").GetComponent<TextMeshProUGUI>().text = "맵 완료";
+        gameoverScreen.Find("Stat/Map/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.nowMapElement.ToString();
         // 현재 시간 넣기
         gameoverScreen.Find("Stat/Time/Amount").GetComponent<TextMeshProUGUI>().text = UpdateTimer();
         // 재화 넣기
-        gameoverScreen.Find("Stat/Money/Amount").GetComponent<TextMeshProUGUI>().text = "재화 완료";
+        gameoverScreen.Find("Stat/Money/Amount").GetComponent<TextMeshProUGUI>().text = "Gem Test";
         // 킬 수 넣기
         gameoverScreen.Find("Stat/KillCount/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.killCount.ToString();
         //TODO 사망원인 넣기
-        gameoverScreen.Find("Stat/KilledBy/Amount").GetComponent<TextMeshProUGUI>().text = "사망원인 완료";
+        gameoverScreen.Find("Stat/KilledBy/Amount").GetComponent<TextMeshProUGUI>().text = "Mob Test";
 
-        //TODO id 순으로(등급순) 정렬하기
         // 이번 게임에서 보유 했었던 마법 전부 넣기
         Transform hasMagics = gameoverScreen.Find("HasMagic");
-        SystemManager.Instance.DestroyAllChild(hasMagics); //모든 자식 제거
-        for (int i = 0; i < MagicDB.Instance.savedMagics.Count; i++)
+        // 모든 자식 오브젝트를 제거
+        SystemManager.Instance.DestroyAllChild(hasMagics);
+
+        // 보유한 모든 마법을 리스트로 수집
+        List<MagicInfo> haveMagics = CastMagic.Instance.hasAllMagic();
+        //TODO 마법을 id 순으로(등급순) 정렬하기
+        haveMagics = haveMagics.OrderBy(magic => magic.id).ToList();
+
+        // 보유한 모든 마법 표시
+        for (int i = 0; i < haveMagics.Count; i++)
         {
-            //마법 찾기
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.savedMagics[i]);
-            print(magic.name);
             //마법 슬롯 생성
             Transform slot = LeanPool.Spawn(gameoverSlot, hasMagics.position, Quaternion.identity, hasMagics).transform;
+
+            //마법 찾기
+            MagicInfo magic = haveMagics[i];
 
             //프레임 색 넣기
             slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
             //아이콘 넣기
             slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
             //레벨 넣기
-            slot.Find("Level").GetComponent<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
+            slot.Find("Level").GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
         }
     }
 }

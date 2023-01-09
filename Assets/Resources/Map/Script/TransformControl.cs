@@ -5,6 +5,7 @@ using UnityEngine;
 public class TransformControl : MonoBehaviour
 {
     [SerializeField] Shuffle shuffle; // 뒤집기, 회전 여부
+    [SerializeField] bool autoShuffle = false; // 자동 초기화 여부
     public enum Shuffle { MirrorX, MirrorY, Rotate, None };
     [SerializeField, Range(0f, 1f)] float flipRate = 0.5f; // 뒤집기 확률
     [SerializeField, Range(0f, 360f)] float rotateMin = 0f; // 회전 최소값
@@ -19,7 +20,9 @@ public class TransformControl : MonoBehaviour
     {
         yield return null;
 
-        ShuffleTransform();
+        // 자동일때
+        if (autoShuffle)
+            ShuffleTransform();
     }
 
     public Shuffle ShuffleTransform()

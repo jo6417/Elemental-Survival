@@ -9768,7 +9768,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1230723993437865199}
   - component: {fileID: 1230723993437865200}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DeadZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28397,7 +28397,7 @@ ParticleSystem:
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 512
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
@@ -34519,6 +34519,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Electro_BurstGround
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975926402364631955, guid: a36db5dd1db5820409c1c51be57271ec,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975926402364631955, guid: a36db5dd1db5820409c1c51be57271ec,
+        type: 3}
+      propertyPath: m_TagString
+      value: Magic
       objectReference: {fileID: 0}
     - target: {fileID: 3137758126013027069, guid: a36db5dd1db5820409c1c51be57271ec,
         type: 3}

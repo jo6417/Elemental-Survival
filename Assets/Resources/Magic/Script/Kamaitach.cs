@@ -76,9 +76,8 @@ public class Kamaitach : MonoBehaviour
             // 시간 멈추기
             SystemManager.Instance.TimeScaleChange(0.1f);
 
-            // 플레이어, UI 키입력 막기
-            PlayerManager.Instance.player_Input.Disable();
-            UIManager.Instance.UI_Input.Disable();
+            // 플레이어 키입력 막기
+            SystemManager.Instance.ToggleInput(true);
 
             // 플레이어 애니메이터 끄기
             PlayerManager.Instance.anim.enabled = false;
@@ -101,7 +100,16 @@ public class Kamaitach : MonoBehaviour
             // 고스트 오브젝트 소환, 자동 디스폰
             StartCoroutine(MakeGhost());
 
-            yield return new WaitForSecondsRealtime(0.2f);
+            // 딜레이 초기화
+            float timeCount = 0.2f;
+            // 딜레이 시간동안 대기
+            // yield return new WaitForSecondsRealtime(0.2f);
+            while (timeCount > 0)
+            {
+                // 시간 멈추지 않았으면 카운트 차감
+                if (Time.timeScale > 0)
+                    timeCount -= Time.unscaledDeltaTime;
+            }
 
             // 시간 정상화
             SystemManager.Instance.TimeScaleChange(1f);
@@ -109,9 +117,8 @@ public class Kamaitach : MonoBehaviour
             // 플레이어 애니메이터 켜기
             PlayerManager.Instance.anim.enabled = true;
 
-            // 플레이어, UI 키입력 풀기
-            PlayerManager.Instance.player_Input.Enable();
-            UIManager.Instance.UI_Input.Enable();
+            // 플레이어 키입력 풀기
+            SystemManager.Instance.ToggleInput(false);
 
             // 이동 끝나면 파티클 실행
             particleManager.particle.Play();

@@ -43,10 +43,11 @@ public class MapManager : MonoBehaviour
     [SerializeField] List<Vector2> genPosList = new List<Vector2>();
 
     [Header("Tile")]
+    [SerializeField] List<GameObject> tileSetPrefab = new List<GameObject>(); // 속성별 타일셋 리스트
     [SerializeField] List<TileLayer> tileBundle_Bottom = new List<TileLayer>(); // 속성별 타일 번들 리스트, 가장 아래층
     [SerializeField] List<TileLayer> tileBundle_Middle = new List<TileLayer>(); // 속성별 타일 번들 리스트, 중간층
     [SerializeField] List<TileLayer> tileBundle_Deco = new List<TileLayer>(); // 속성별 타일 번들 리스트, 장식 타일
-    [SerializeField] List<TileMapGenerator> tileGenList = new List<TileMapGenerator>(); // 타일맵 생성기 리스트
+    [SerializeField] TileMapGenerator[] tileGenList = new TileMapGenerator[3]; // 타일맵 생성기 리스트
 
     [Header("Refer")]
     [SerializeField] List<PropBundle> propBundleList = new List<PropBundle>(); // 속성별 장애물 번들 리스트
@@ -73,6 +74,14 @@ public class MapManager : MonoBehaviour
         downY = -tilemapSize.y / 2f;
 
         // print(rightX + " : " + leftX + " : " + upY + " : " + downY);
+
+        //todo 타일셋 프리팹 소환하고 변수 기억하기
+        GameObject tileSet = LeanPool.Spawn(tileSetPrefab[(int)SystemManager.Instance.nowMapElement], Vector2.zero, Quaternion.identity, transform);
+        TileMapGenerator[] tileGens = tileSet.GetComponentsInChildren<TileMapGenerator>();
+        for (int i = 0; i < tileGens.Length; i++)
+        {
+            tileGenList[i] = tileGens[i];
+        }
 
         // 바닥 위치 초기화
         GenerateMap();
@@ -161,38 +170,68 @@ public class MapManager : MonoBehaviour
 
                 // 장애물이 들어갈 수 있는 빈 타일 리스트
                 List<Vector2> emptyTileList = new List<Vector2>();
-                // 타일 전체 사이즈만큼 빈 타일의 좌표 리스트 만들기
-                for (int _x = 0; _x < tilemapSize.x / 2f; _x++)
-                    for (int _y = 0; _y < tilemapSize.y / 2f; _y++)
-                    {
-                        emptyTileList.Add(new Vector2(_x, _y) * 2);
-                    }
+                // // 타일 전체 사이즈만큼 빈 타일의 좌표 리스트 만들기
+                // for (int _x = 0; _x < tilemapSize.x / 2f; _x++)
+                //     for (int _y = 0; _y < tilemapSize.y / 2f; _y++)
+                //     {
+                //         emptyTileList.Add(new Vector2(_x, _y) * 2);
+                //     }
 
-                List<Vector2> setList = new List<Vector2>();
+                // 각 타일맵마다 설치된 타일 리스트
+                List<Vector2> tileSet = new List<Vector2>();
 
                 // 하단 레이어 타일 설치
-                tileGenList[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileSet = tileGenList[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.nowMapElement].tileBundle);
+
+                // 빈 타일에 설치된 좌표 넣기
+                if (tileGenList[0].includePropTile)
+                    emptyTileList = tileSet.ToList();
+                // 빈타일에서 설치된 좌표 빼기
+                if (tileGenList[0].excludePropTile)
+                    emptyTileList = EvadeTile(emptyTileList, tileSet, genPos);
+
                 // 중간 레이어 타일 설치
-                tileGenList[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileSet = tileGenList[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.nowMapElement].tileBundle);
+
+                // 빈 타일에 설치된 좌표 넣기
+                if (tileGenList[1].includePropTile)
+                    for (int i = 0; i < tileSet.Count; i++)
+                        emptyTileList.Add(tileSet[i]);
+                // 빈타일에서 설치된 좌표 빼기
+                if (tileGenList[1].excludePropTile)
+                    emptyTileList = EvadeTile(emptyTileList, tileSet, genPos);
+
                 // 상단 레이어 타일 설치
-                setList = tileGenList[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileSet = tileGenList[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.nowMapElement].tileBundle);
 
-                // 상단 타일 설치된 좌표 빼기
-                if (setList != null && setList.Count > 0)
-                    for (int i = 0; i < setList.Count; i++)
-                    {
-                        // setList 타일 위치 빼기
-                        emptyTileList.Remove(setList[i]);
-
-                        //! 뺀 타일 위치 표시
-                        if (blockTileShow)
-                            LeanPool.Spawn(SystemManager.Instance.targetPos_Red, setList[i] + genPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f + Vector2.one, Quaternion.identity, transform);
-                    }
+                // 빈 타일에 설치된 좌표 넣기
+                if (tileGenList[2].includePropTile)
+                    for (int i = 0; i < tileSet.Count; i++)
+                        emptyTileList.Add(tileSet[i]);
+                // 빈타일에서 설치된 좌표 빼기
+                if (tileGenList[2].excludePropTile)
+                    emptyTileList = EvadeTile(emptyTileList, tileSet, genPos);
 
                 // 장애물 설치하기
                 StartCoroutine(SpawnProp(genPos, emptyTileList));
             }
         }
+    }
+
+    List<Vector2> EvadeTile(List<Vector2> emptyTileList, List<Vector2> setList, Vector2 genPos)
+    {
+        // 상단 타일 설치된 좌표 빼기
+        for (int i = 0; i < setList.Count; i++)
+        {
+            // setList 타일 위치 빼기
+            emptyTileList.Remove(setList[i]);
+
+            //! 뺀 타일 위치 표시
+            if (blockTileShow)
+                LeanPool.Spawn(SystemManager.Instance.targetPos_Red, setList[i] + genPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f + Vector2.one, Quaternion.identity, transform);
+        }
+
+        return emptyTileList;
     }
 
     IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> emptyTileList)

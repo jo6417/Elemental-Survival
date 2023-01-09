@@ -53,7 +53,7 @@ public class OptionMenu : MonoBehaviour
         };
 
         // 입력 활성화
-        UI_Input.Enable();
+        SystemManager.Instance.ToggleInput(true);
     }
 
     private void OnEnable()

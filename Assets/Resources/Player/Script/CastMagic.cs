@@ -90,6 +90,67 @@ public class CastMagic : MonoBehaviour
         phone.localPosition = new Vector3(0, Mathf.Sin(Time.time * hoverSpeed) * hoverRange + hoverHeight, -0.5f);
     }
 
+    public List<MagicInfo> hasAllMagic()
+    {
+        // 인벤토리에서 레벨 합산해서 리스트 만들기
+        List<MagicInfo> magicList = new List<MagicInfo>();
+
+        // 액티브 슬롯의 마법 수집
+        MagicInfo activeMagic = null;
+        activeMagic = PlayerManager.Instance.activeSlot_A.slotInfo as MagicInfo;
+        if (activeMagic != null) magicList.Add(activeMagic);
+        activeMagic = PlayerManager.Instance.activeSlot_B.slotInfo as MagicInfo;
+        if (activeMagic != null) magicList.Add(activeMagic);
+        activeMagic = PlayerManager.Instance.activeSlot_C.slotInfo as MagicInfo;
+        if (activeMagic != null) magicList.Add(activeMagic);
+
+        // 인벤토리에서 마법 찾기
+        for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
+        {
+            // 마법 정보 불러오기
+            MagicInfo magic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
+
+            // 마법이 있으면
+            if (magic != null)
+                magicList.Add(magic);
+        }
+
+        // 인벤토리에서 레벨 합산해서 리스트 만들기
+        List<MagicInfo> returnMagics = new List<MagicInfo>();
+
+        // 같은 마법끼리 합산해서 통합
+        for (int i = 0; i < magicList.Count; i++)
+        {
+            // 마법 정보 불러오기
+            MagicInfo magic = magicList[i];
+
+            // 기존의 합산 리스트에서 마법 찾기
+            MagicInfo findMagic = returnMagics.Find(x => x.id == magic.id);
+
+            // ID가 같은 마법이 없으면 (처음 들어가는 마법이면)
+            if (findMagic == null)
+            {
+                // 해당 마법으로 새 인스턴스 생성
+                MagicInfo referMagic = new MagicInfo(magic);
+
+                // 마법 레벨 초기화
+                referMagic.magicLevel = magic.magicLevel;
+
+                // 리턴 마법 리스트에 추가
+                returnMagics.Add(referMagic);
+            }
+            // 이미 합산 리스트에 마법이 있을때
+            else
+            {
+                // 기존 사용중이던 마법에 레벨만 더하기
+                findMagic.magicLevel += magic.magicLevel;
+            }
+        }
+
+        // 최종 마법 리스트를 리턴
+        return returnMagics;
+    }
+
     public void CastCheck()
     {
         // 인벤토리에서 레벨 합산해서 리스트 만들기

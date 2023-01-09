@@ -214,8 +214,8 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_C, magic));
         };
 
-        //플레이어 입력 켜기
-        player_Input.Enable();
+        // 플레이어 입력 켜기
+        SystemManager.Instance.ToggleInput(false);
 
         // 초기화 완료
         initFinish = true;
@@ -269,10 +269,10 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.InitialStat();
     }
 
-    private void OnDisable()
-    {
-        player_Input.Disable();
-    }
+    // private void OnDisable()
+    // {
+    //     player_Input.Disable();
+    // }
 
     private void Update()
     {

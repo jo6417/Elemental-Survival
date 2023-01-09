@@ -65,6 +65,8 @@ public class UICursor : MonoBehaviour
             if (!UICursor.Instance.UI_Cursor.gameObject.activeInHierarchy && lastSelected)
                 lastSelected.Select();
         };
+
+        // UI 입력 켜기
         UI_Input.Enable();
     }
 

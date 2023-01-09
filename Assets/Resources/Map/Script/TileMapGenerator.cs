@@ -12,16 +12,13 @@ public class TileMapGenerator : MonoBehaviour
     [SerializeField] RandomType randomType;
     enum RandomType { Random, Ground, Prop };
     [SerializeField] bool border = false; // 테두리 타일 설치 여부
+    public bool includePropTile = false; // 장애물이 해당 타일 안에서 생성됨
+    public bool excludePropTile = false; // 장애물이 해당 타일 밖에서 생성됨
 
-    [Range(0, 100)]
-    public int iniChance;
-    [Range(1, 8)]
-    public int birthLimit;
-    [Range(1, 8)]
-    public int deathLimit;
-
-    [Range(1, 10)]
-    public int genNumRange;
+    [Range(0, 100)] public int iniChance;
+    [Range(1, 8)] public int birthLimit;
+    [Range(1, 8)] public int deathLimit;
+    [Range(1, 10)] public int genNumRange;
     private int count = 0;
 
     private int[,] tileSetPos;
@@ -65,7 +62,7 @@ public class TileMapGenerator : MonoBehaviour
             }
 
         // 타일 설치된 리스트
-        List<Vector2> setList = new List<Vector2>();
+        List<Vector2> banTileList = new List<Vector2>();
 
         for (int x = 0; x < tilemapSize.x; x++)
         {
@@ -115,13 +112,13 @@ public class TileMapGenerator : MonoBehaviour
                     Vector2 setPos = new Vector2(-x - 1 + (int)(tilemapSize.x), -y - 1 + (int)(tilemapSize.y)) * 2;
 
                     // 설치 타일 위치 리스트에 저장
-                    setList.Add(setPos);
+                    banTileList.Add(setPos);
                 }
             }
         }
 
         // 설치된 타일 리스트 리턴
-        return setList;
+        return banTileList;
     }
 
     public void InitPos()
@@ -136,7 +133,7 @@ public class TileMapGenerator : MonoBehaviour
         }
     }
 
-    public int[,] GenGroundTile(int[,] oldMap)
+    public int[,] GenGroundTile(int[,] tileSetPos)
     {
         int[,] newMap = new int[tilemapSize.x, tilemapSize.y];
         // 현재 검사하는 타일 주변의 설치 예약된 타일 개수
@@ -151,17 +148,17 @@ public class TileMapGenerator : MonoBehaviour
                 nearNum = 0;
 
                 // 주변의 타일 전부 검사
-                foreach (Vector3Int bound in boundary.allPositionsWithin)
+                foreach (Vector3Int boundTilePos in boundary.allPositionsWithin)
                 {
                     //
-                    if (bound.x == 0 && bound.y == 0)
+                    if (boundTilePos.x == 0 && boundTilePos.y == 0)
                         continue;
 
                     // 주변 타일이 타일사이즈 범위 내에 있을때
-                    if (x + bound.x >= 0 && x + bound.x < tilemapSize.x && y + bound.y >= 0 && y + bound.y < tilemapSize.y)
+                    if (x + boundTilePos.x >= 0 && x + boundTilePos.x < tilemapSize.x && y + boundTilePos.y >= 0 && y + boundTilePos.y < tilemapSize.y)
                     {
                         // 해당 주변 타일이 이미 예약된 상태면 nearNum 변수 증가
-                        nearNum += oldMap[x + bound.x, y + bound.y];
+                        nearNum += tileSetPos[x + boundTilePos.x, y + boundTilePos.y];
                     }
                     // 타일 사이즈 범위 밖일때
                     else
@@ -174,30 +171,25 @@ public class TileMapGenerator : MonoBehaviour
                 }
 
                 // 설치 예약 되어있을때
-                if (oldMap[x, y] == 1)
+                if (tileSetPos[x, y] == 1)
                 {
                     if (nearNum < deathLimit)
                         newMap[x, y] = 0;
-                    // else
-                    // {
-                    //     newMap[x, y] = 1;
-                    // }
+                    else
+                    {
+                        newMap[x, y] = 1;
+                    }
                 }
 
                 // 설치 예약 되어있지 않을때
-                if (oldMap[x, y] == 0)
+                if (tileSetPos[x, y] == 0)
                 {
-                    // int borderAdd = 0;
-                    // // 테두리 타일일때
-                    // if (x == 0 || y == 0)
-                    //     borderAdd = -3;
-
                     if (nearNum > birthLimit)
                         newMap[x, y] = 1;
-                    // else
-                    // {
-                    //     newMap[x, y] = 0;
-                    // }
+                    else
+                    {
+                        newMap[x, y] = 0;
+                    }
                 }
             }
         }

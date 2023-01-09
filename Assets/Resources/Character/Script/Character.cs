@@ -316,6 +316,8 @@ public class Character : MonoBehaviour
 
                 // 가중치 확률로 원소젬 인덱스 뽑기
                 int gemIndex = SystemManager.Instance.WeightRandom(PhoneMenu.Instance.elementWeitght.ToList());
+                if (gemIndex == -1)
+                    gemIndex = 0;
 
                 // gem 인스턴스 생성
                 item = new ItemInfo(gems[gemIndex]);

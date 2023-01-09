@@ -420,6 +420,22 @@ public class SystemManager : MonoBehaviour
         StartCoroutine(Loading.Instance.LoadScene(sceneName));
     }
 
+    public void ToggleInput(bool UI_enable)
+    {
+        // UI 인풋 켤때
+        if (UI_enable)
+        {
+            UIManager.Instance.UI_Input.Enable();
+            PlayerManager.Instance.player_Input.Disable();
+        }
+        // 플레이어 인풋 켤때
+        else
+        {
+            PlayerManager.Instance.player_Input.Enable();
+            UIManager.Instance.UI_Input.Disable();
+        }
+    }
+
     // 화면에 프레임 레이트를 표시해 주는 함수
     float fps;
     private void OnGUI()

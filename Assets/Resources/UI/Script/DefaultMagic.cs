@@ -95,11 +95,12 @@ public class DefaultMagic : MonoBehaviour
 
         // 핸드폰 키입력 막기
         PhoneMenu.Instance.InteractBtnsToggle(false);
-
         // 핸드폰 열기
         StartCoroutine(PhoneMenu.Instance.OpenPhone());
+
         //플레이어 입력 끄기
-        PlayerManager.Instance.player_Input.Disable();
+        SystemManager.Instance.ToggleInput(false);
+
         //현재 열려있는 팝업 갱신
         UIManager.Instance.nowOpenPopup = UIManager.Instance.phonePanel;
 
