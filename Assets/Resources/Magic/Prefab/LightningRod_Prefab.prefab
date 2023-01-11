@@ -14610,7 +14610,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playSoundName: 
+  atkColl: {fileID: 0}
   pierceCount: 0
+  targetType: 0
   fixedPower: 0
   knockbackForce: 0
   burnTime: 0
@@ -14622,11 +14625,13 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
-  coll: {fileID: 0}
+  stunTime: 0
+  autoCoolDown: 1
+  fixCoolTime: 0
+  isManualCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 0
   initDone: 0
 --- !u!114 &5312836890631344842
 MonoBehaviour:
@@ -19942,6 +19947,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ElectroBurstMove
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975926402364631955, guid: a36db5dd1db5820409c1c51be57271ec,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975926402364631955, guid: a36db5dd1db5820409c1c51be57271ec,
+        type: 3}
+      propertyPath: m_TagString
+      value: Magic
       objectReference: {fileID: 0}
     - target: {fileID: 3137758126013027069, guid: a36db5dd1db5820409c1c51be57271ec,
         type: 3}

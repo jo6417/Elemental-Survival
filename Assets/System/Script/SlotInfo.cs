@@ -12,6 +12,7 @@ public class SlotInfo
     public int price; // 가격
 }
 
+[SerializeField]
 public class MagicInfo : SlotInfo
 {
     //수정 가능한 변수들

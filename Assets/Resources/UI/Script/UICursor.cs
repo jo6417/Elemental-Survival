@@ -45,17 +45,21 @@ public class UICursor : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance != null)
+        {
+            // 파괴 후 리턴
+            Destroy(gameObject);
+            return;
+        }
         // 최초 생성 됬을때
-        if (instance == null)
+        else
         {
             instance = this;
 
             // 파괴되지 않게 설정
             DontDestroyOnLoad(gameObject);
         }
-        else
-            // 해당 오브젝트 파괴
-            Destroy(gameObject);
 
         UI_Input = new NewInput();
         // 방향키 입력시
@@ -68,6 +72,12 @@ public class UICursor : MonoBehaviour
 
         // UI 입력 켜기
         UI_Input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        UI_Input.Disable();
+        UI_Input.Dispose();
     }
 
     private void Update()

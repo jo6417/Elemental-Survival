@@ -89,7 +89,7 @@ public class MagicHolder : Attack
         fixedPower = 0f;
 
         // 마법정보 초기화
-        magic = null;
+        // magic = null;
     }
 
     public TargetType GetTarget()

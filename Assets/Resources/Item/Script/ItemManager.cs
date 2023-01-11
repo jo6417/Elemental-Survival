@@ -75,6 +75,14 @@ public class ItemManager : MonoBehaviour
         //아이템 번들 여부 초기화
         isBundle = false;
 
+        // 아이템, 마법 정보 들어올때까지 대기
+        yield return new WaitUntil(() => itemInfo != null || magicInfo != null);
+
+        if (itemInfo != null)
+            itemName = itemInfo.name;
+        if (magicInfo != null)
+            itemName = magicInfo.name;
+
         // 콜라이더 초기화
         coll.enabled = true;
 
@@ -321,6 +329,9 @@ public class ItemManager : MonoBehaviour
                 LeanPool.Spawn(gadgetPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
             }
         }
+
+        // 이름 초기화
+        itemName = "";
 
         //아이템 속도 초기화
         if (gameObject.activeSelf && rigid)

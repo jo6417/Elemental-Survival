@@ -105,6 +105,7 @@ public class SystemManager : MonoBehaviour
     public Sprite questionMark; //물음표 스프라이트
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
     public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
+    public GameoverMenu gameoverMenu; // 게임오버 메뉴
 
     [Header("DataBase")]
     public DBType dBType;
@@ -177,13 +178,16 @@ public class SystemManager : MonoBehaviour
         // 갓모드 false 초기화
         // GodModeToggle();
 
-        // 모두 로딩 완료시까지 대기
-        yield return new WaitUntil(() =>
-        MagicDB.Instance.loadDone
-        && ItemDB.Instance.loadDone
-        && EnemyDB.Instance.loadDone
-        && SoundManager.Instance.initFinish
-        );
+        // 마법 DB 로딩 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        // 아이템 DB 로딩 대기
+        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        // 몬스터 DB 로딩 대기
+        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+        // 사운드 매니저 초기화 대기
+        yield return new WaitUntil(() => SoundManager.Instance.initFinish);
+        // 플레이어 초기화 대기
+        yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
@@ -408,18 +412,6 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public IEnumerator LoadScene(string sceneName)
-    {
-        // 로딩씬 켜기
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
-
-        // 로딩씬 초기화 대기
-        yield return new WaitUntil(() => Loading.Instance != null);
-
-        // 매개변수로 들어온 씬 로딩 시작
-        StartCoroutine(Loading.Instance.LoadScene(sceneName));
-    }
-
     public void ToggleInput(bool UI_enable)
     {
         // UI 인풋 켤때
@@ -452,5 +444,36 @@ public class SystemManager : MonoBehaviour
         fps = 1.0f / Time.deltaTime;
         string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
         GUI.Label(rect, text, style);
+    }
+
+    IEnumerator LoadScene(string sceneName)
+    {
+        // 로딩씬 켜기
+        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+
+        // 로딩씬 초기화 대기
+        yield return new WaitUntil(() => Loading.Instance != null);
+
+        // 매개변수로 들어온 씬 로딩 시작
+        StartCoroutine(Loading.Instance.LoadScene(sceneName));
+    }
+
+    public void StartGame()
+    {
+        // 인게임 씬 켜기
+        StartCoroutine(LoadScene("InGameScene"));
+    }
+
+    public void QuitMainMenu()
+    {
+        // 메인메뉴 씬 켜기
+        // StartCoroutine(LoadScene("MainMenuScene"));
+        //todo 로딩 없이 바로 메인메뉴로 이동
+        SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
+    }
+
+    public void GameOver(bool isClear)
+    {
+        gameoverMenu.GameOver(isClear);
     }
 }

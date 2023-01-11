@@ -48,19 +48,19 @@ public class PlayerManager : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                var obj = FindObjectOfType<PlayerManager>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<PlayerManager>();
-                    instance = newObj;
-                }
-            }
+            // if (instance == null)
+            // {
+            //     var obj = FindObjectOfType<PlayerManager>();
+            //     if (obj != null)
+            //     {
+            //         instance = obj;
+            //     }
+            //     // else
+            //     // {
+            //     //     var newObj = new GameObject().AddComponent<PlayerManager>();
+            //     //     instance = newObj;
+            //     // }
+            // }
             return instance;
         }
     }
@@ -105,17 +105,21 @@ public class PlayerManager : MonoBehaviour
     [Header("<Pocket>")]
     [SerializeField] List<int> hasGems = new List<int>(); // 테스트용 초기 원소젬 개수
     public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
-    public InventorySlot activeSlot_A;
-    public InventorySlot activeSlot_B;
-    public InventorySlot activeSlot_C;
 
     [Header("Sound")]
     int lastStepSound = -1;
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance != null)
+        {
+            // 파괴 후 리턴
+            Destroy(gameObject);
+            return;
+        }
         // 최초 생성 됬을때
-        if (instance == null)
+        else
         {
             instance = this;
 
@@ -134,10 +138,10 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now = new PlayerStat();
 
         // 입력값 초기화
-        InputInit();
+        StartCoroutine(InputInit());
     }
 
-    void InputInit()
+    IEnumerator InputInit()
     {
         player_Input = new NewInput();
 
@@ -186,36 +190,38 @@ public class PlayerManager : MonoBehaviour
             InteractSubmit(false);
         };
 
+        yield return new WaitUntil(() => UIManager.Instance != null && CastMagic.Instance != null);
+
         // A슬롯 마법 시전
         player_Input.Player.ActiveMagic_A.performed += val =>
         {
             // 0번째 액티브 슬롯 마법 불러오기
-            MagicInfo magic = activeSlot_A.slotInfo as MagicInfo;
+            MagicInfo magic = UIManager.Instance.activeSlot_A.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_A, magic));
+            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_A, magic));
         };
         // B슬롯 마법 시전
         player_Input.Player.ActiveMagic_B.performed += val =>
         {
             // 1번째 액티브 슬롯 마법 불러오기
-            MagicInfo magic = activeSlot_B.slotInfo as MagicInfo;
+            MagicInfo magic = UIManager.Instance.activeSlot_B.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_B, magic));
+            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_B, magic));
         };
         // C슬롯 마법 시전
         player_Input.Player.ActiveMagic_C.performed += val =>
         {
             // 2번째 액티브 슬롯 마법 불러오기
-            MagicInfo magic = activeSlot_C.slotInfo as MagicInfo;
+            MagicInfo magic = UIManager.Instance.activeSlot_C.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(activeSlot_C, magic));
+            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_C, magic));
         };
 
         // 플레이어 입력 켜기
-        SystemManager.Instance.ToggleInput(false);
+        player_Input.Enable();
 
         // 초기화 완료
         initFinish = true;
@@ -259,20 +265,23 @@ public class PlayerManager : MonoBehaviour
         // 플레이어 버프 업데이트
         BuffUpdate();
 
+        yield return new WaitUntil(() => UIManager.Instance != null);
+
         // 원소젬 전체 UI 업데이트
         UIManager.Instance.UpdateGem();
 
-        // 1레벨 경험치 최대치 갱신
-        ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
-
         //능력치 초기화
         UIManager.Instance.InitialStat();
+
+        // 1레벨 경험치 최대치 갱신
+        ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
     }
 
-    // private void OnDisable()
-    // {
-    //     player_Input.Disable();
-    // }
+    private void OnDisable()
+    {
+        player_Input.Disable();
+        player_Input.Dispose();
+    }
 
     private void Update()
     {

@@ -59,6 +59,22 @@ public class GatePortal : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance != null)
+        {
+            // 파괴 후 리턴
+            Destroy(gameObject);
+            return;
+        }
+        // 최초 생성 됬을때
+        else
+        {
+            instance = this;
+
+            // 파괴되지 않게 설정
+            DontDestroyOnLoad(gameObject);
+        }
+
         interacter = GetComponent<Interacter>();
     }
 
@@ -111,6 +127,9 @@ public class GatePortal : MonoBehaviour
 
     private void Update()
     {
+        if (!SystemManager.Instance.loadDone)
+            return;
+
         // 플레이어와 거리 너무 멀어지면 위치 이동
         MoveClose();
     }
@@ -162,7 +181,7 @@ public class GatePortal : MonoBehaviour
         // 끌때는 언제나 끄기
         else
         {
-            print($"끄기 : {Time.time}");
+            // print($"끄기 : {Time.time}");
             showKeyUI.alpha = 0;
             // 젬 개수 UI 비활성화
             gemNum.alpha = 0;
@@ -383,17 +402,25 @@ public class GatePortal : MonoBehaviour
             // 다음 맵 인덱스로 증가
             SystemManager.Instance.nowMapElement = (SystemManager.MapElement)(nowIndex + 1);
 
-            //todo 트랜지션 이후 새로운 인게임 씬 켜기
-            StartCoroutine(SystemManager.Instance.LoadScene("InGameScene"));
+            // 트랜지션 이후 새로운 인게임 씬 켜기
+            SystemManager.Instance.StartGame();
+
+            // 포탈 게이트 디스폰
+            LeanPool.Despawn(gameObject);
         }
         // 마지막 스테이지일때
         else
         {
-            //todo 플레이어 컨트롤 끄기
+            // 플레이어 컨트롤 끄기
             SystemManager.Instance.ToggleInput(true);
 
-            //todo 게임 클리어 창 켜기
-            UIManager.Instance.GameOver(true);
+            // 게임 오버 UI 켜기
+            SystemManager.Instance.GameOver(true);
+
+            //todo 게임오버 BGM 재생
+
+            // 포탈 게이트 디스폰
+            LeanPool.Despawn(gameObject);
         }
     }
 }

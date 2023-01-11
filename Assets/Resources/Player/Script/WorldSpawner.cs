@@ -90,8 +90,8 @@ public class WorldSpawner : MonoBehaviour
 
     void Update()
     {
-        //DB 로드 되어야 진행
-        if (!EnemyDB.Instance.loadDone)
+        // 초기화 안됬으면 리턴
+        if (!SystemManager.Instance.loadDone)
             return;
 
         // 스폰 스위치 켜져있을때

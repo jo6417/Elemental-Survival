@@ -86,6 +86,9 @@ public class MapManager : MonoBehaviour
         // 바닥 위치 초기화
         GenerateMap();
 
+        // 플레이어 초기화 대기
+        yield return new WaitUntil(() => PlayerManager.Instance);
+
         //다음맵으로 넘어가는 포탈게이트 생성하기
         SpawnPortalGate();
 
@@ -97,6 +100,10 @@ public class MapManager : MonoBehaviour
 
     void Update()
     {
+        if (!SystemManager.Instance.loadDone
+        || PlayerManager.Instance == null)
+            return;
+
         // 플레이어가 경계 끝에 왔을때 배경 9개 전부 위치 변경
         if (PlayerManager.Instance.transform.position.x >= rightX)
         {
@@ -237,8 +244,8 @@ public class MapManager : MonoBehaviour
     IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> emptyTileList)
     {
         //! 시간 측정
-        Stopwatch debugTime = new Stopwatch();
-        debugTime.Start();
+        // Stopwatch debugTime = new Stopwatch();
+        // debugTime.Start();
 
         // 맵 속성에 따라 다른 장애물 번들 선택
         List<Prop> propBundle = propBundleList[(int)SystemManager.Instance.nowMapElement].props;
@@ -350,8 +357,8 @@ public class MapManager : MonoBehaviour
         }
 
         // 걸린 시간 측정
-        debugTime.Stop();
-        print($"{new Vector2(groundPos.x / tilemapSize.x, groundPos.y / tilemapSize.y)} : {debugTime.ElapsedMilliseconds / 1000f}s");
+        // debugTime.Stop();
+        // print($"{new Vector2(groundPos.x / tilemapSize.x, groundPos.y / tilemapSize.y)} : {debugTime.ElapsedMilliseconds / 1000f}s");
     }
 
     Vector2 TileCheck(List<Vector2> emptyTileList, Vector2 propSize, Vector2 randomPos)

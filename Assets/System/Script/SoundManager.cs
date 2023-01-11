@@ -81,17 +81,21 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance != null)
+        {
+            // 파괴 후 리턴
+            Destroy(gameObject);
+            return;
+        }
         // 최초 생성 됬을때
-        if (instance == null)
+        else
         {
             instance = this;
 
             // 파괴되지 않게 설정
             DontDestroyOnLoad(gameObject);
         }
-        else
-            // 해당 오브젝트 파괴
-            Destroy(gameObject);
 
         // SO에서 사운드 리스트 불러오기
         soundBundleList = soundBundleDB.soundBundles;

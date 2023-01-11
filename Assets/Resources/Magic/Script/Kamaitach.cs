@@ -77,7 +77,7 @@ public class Kamaitach : MonoBehaviour
             SystemManager.Instance.TimeScaleChange(0.1f);
 
             // 플레이어 키입력 막기
-            SystemManager.Instance.ToggleInput(true);
+            PlayerManager.Instance.player_Input.Disable();
 
             // 플레이어 애니메이터 끄기
             PlayerManager.Instance.anim.enabled = false;
@@ -118,7 +118,7 @@ public class Kamaitach : MonoBehaviour
             PlayerManager.Instance.anim.enabled = true;
 
             // 플레이어 키입력 풀기
-            SystemManager.Instance.ToggleInput(false);
+            PlayerManager.Instance.player_Input.Enable();
 
             // 이동 끝나면 파티클 실행
             particleManager.particle.Play();

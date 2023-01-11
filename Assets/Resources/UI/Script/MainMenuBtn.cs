@@ -52,7 +52,7 @@ public class MainMenuBtn : MonoBehaviour
         SoundManager.Instance.nowBGM.Stop();
 
         // 로딩하고 인게임 씬 띄우기
-        StartCoroutine(SystemManager.Instance.LoadScene("InGameScene"));
+        SystemManager.Instance.StartGame();
     }
 
     public void Shop()

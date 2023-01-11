@@ -66,6 +66,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
+    public Transform gameLog; // 게임 플레이 기록
     public GameObject gameoverSlot; //게임 오버 창에 들어갈 마법 슬롯
     public TextMeshProUGUI timer; // 누적 시간
     [SerializeField] Image timerFrame; // 타이머 프레임 및 뒷배경
@@ -79,6 +80,10 @@ public class UIManager : MonoBehaviour
     int noticeNum; // 현재 스마트폰 알림 개수
     Sequence iconJumpSeq;
     public bool phoneLoading; //스마트폰 로딩중 여부
+    public Image nowSelectIcon; // 마우스로 집은 아이콘
+    public InventorySlot activeSlot_A;
+    public InventorySlot activeSlot_B;
+    public InventorySlot activeSlot_C;
 
     //! 테스트, 선택된 UI 이름
     public TextMeshProUGUI nowSelectUI;
@@ -104,17 +109,21 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance != null)
+        {
+            // 파괴 후 리턴
+            Destroy(gameObject);
+            return;
+        }
         // 최초 생성 됬을때
-        if (instance == null)
+        else
         {
             instance = this;
 
             // 파괴되지 않게 설정
-            // DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
 
         //입력 초기화
         StartCoroutine(InputInit());
@@ -194,6 +203,12 @@ public class UIManager : MonoBehaviour
         StartCoroutine(Init());
     }
 
+    private void OnDisable()
+    {
+        UI_Input.Disable();
+        UI_Input.Dispose();
+    }
+
     IEnumerator Init()
     {
         yield return null;
@@ -208,12 +223,6 @@ public class UIManager : MonoBehaviour
         InsideColor.a = 200f / 255f;
         timerInside.color = InsideColor;
     }
-
-    // private void OnDisable()
-    // {
-    //     if (UI_Input != null)
-    //         UI_Input.Disable();
-    // }
 
     // 방향키 입력되면 실행
     void NavControl(Vector2 arrowDir)
@@ -376,20 +385,6 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
-
-    public void QuitMainMenu()
-    {
-        // // 오브젝트 풀 파괴
-        // Destroy(ObjectPool.Instance.gameObject);
-
-        // 배경음 코루틴 끄기
-        StopCoroutine(SoundManager.Instance.BGMCoroutine);
-        // 배경음 정지
-        SoundManager.Instance.nowBGM.Pause();
-
-        // 메인메뉴 씬 불러오기
-        SceneManager.LoadScene("MainMenuScene", LoadSceneMode.Single);
-    }
 
     //옵션 메뉴 띄우기
     public void Option()
@@ -903,7 +898,7 @@ public class UIManager : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
             //플레이어 입력 켜기
-            SystemManager.Instance.ToggleInput(false);
+            playerManager.player_Input.Enable();
 
             //현재 열려있는 팝업 비우기
             nowOpenPopup = null;
@@ -1054,68 +1049,5 @@ public class UIManager : MonoBehaviour
 
         // 데미지 텍스트 디스폰
         LeanPool.Despawn(damageUI);
-    }
-
-    public void GameOver(bool isClear = false)
-    {
-        // 시간 멈추기
-        SystemManager.Instance.TimeScaleChange(0f);
-        // 게임 오버 UI 켜기
-        gameoverPanel.SetActive(true);
-
-        // 클리어 여부에 따라 타이틀 바꾸기
-        TextMeshProUGUI title = gameoverScreen.Find("Title").GetComponent<TextMeshProUGUI>();
-        // 클리어 여부에 따라 스크린 배경색 바꾸기
-        Image background = gameoverScreen.Find("ScreenBackground").GetComponent<Image>();
-        if (isClear)
-        {
-            title.text = "CLEAR";
-            background.color = SystemManager.Instance.HexToRGBA("00903E");
-        }
-        else
-        {
-            title.text = "GAME OVER";
-            background.color = SystemManager.Instance.HexToRGBA("006090");
-        }
-
-        //TODO 캐릭터 넣기
-        gameoverScreen.Find("Stat/Character/Amount").GetComponent<TextMeshProUGUI>().text = "Chracter Test";
-        //TODO 맵 넣기
-        gameoverScreen.Find("Stat/Map/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.nowMapElement.ToString();
-        // 현재 시간 넣기
-        gameoverScreen.Find("Stat/Time/Amount").GetComponent<TextMeshProUGUI>().text = UpdateTimer();
-        // 재화 넣기
-        gameoverScreen.Find("Stat/Money/Amount").GetComponent<TextMeshProUGUI>().text = "Gem Test";
-        // 킬 수 넣기
-        gameoverScreen.Find("Stat/KillCount/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.killCount.ToString();
-        //TODO 사망원인 넣기
-        gameoverScreen.Find("Stat/KilledBy/Amount").GetComponent<TextMeshProUGUI>().text = "Mob Test";
-
-        // 이번 게임에서 보유 했었던 마법 전부 넣기
-        Transform hasMagics = gameoverScreen.Find("HasMagic");
-        // 모든 자식 오브젝트를 제거
-        SystemManager.Instance.DestroyAllChild(hasMagics);
-
-        // 보유한 모든 마법을 리스트로 수집
-        List<MagicInfo> haveMagics = CastMagic.Instance.hasAllMagic();
-        //TODO 마법을 id 순으로(등급순) 정렬하기
-        haveMagics = haveMagics.OrderBy(magic => magic.id).ToList();
-
-        // 보유한 모든 마법 표시
-        for (int i = 0; i < haveMagics.Count; i++)
-        {
-            //마법 슬롯 생성
-            Transform slot = LeanPool.Spawn(gameoverSlot, hasMagics.position, Quaternion.identity, hasMagics).transform;
-
-            //마법 찾기
-            MagicInfo magic = haveMagics[i];
-
-            //프레임 색 넣기
-            slot.Find("Frame").GetComponent<Image>().color = MagicDB.Instance.GradeColor[magic.grade];
-            //아이콘 넣기
-            slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
-            //레벨 넣기
-            slot.Find("Level").GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
-        }
     }
 }

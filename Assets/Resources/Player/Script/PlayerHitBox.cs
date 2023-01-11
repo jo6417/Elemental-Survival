@@ -36,6 +36,13 @@ public class PlayerHitBox : MonoBehaviour
 
     private void Awake()
     {
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        yield return new WaitUntil(() => PlayerManager.Instance != null);
+
         playerManager = PlayerManager.Instance;
     }
 
@@ -622,8 +629,10 @@ public class PlayerHitBox : MonoBehaviour
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
 
-        //TODO 게임오버 UI 띄우기
-        UIManager.Instance.GameOver();
+        //todo 플레이어 사망 트랜지션
+
+        // 게임 오버 UI 켜기
+        SystemManager.Instance.GameOver(false);
 
         yield return null;
     }

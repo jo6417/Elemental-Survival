@@ -390,12 +390,12 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 InventorySlot emptyActiveSlot = null;
 
                 // 비어있는 액티브 슬롯 찾기
-                if (PlayerManager.Instance.activeSlot_A.slotInfo == null)
-                    emptyActiveSlot = PlayerManager.Instance.activeSlot_A;
-                else if (PlayerManager.Instance.activeSlot_B.slotInfo == null)
-                    emptyActiveSlot = PlayerManager.Instance.activeSlot_B;
-                else if (PlayerManager.Instance.activeSlot_C.slotInfo == null)
-                    emptyActiveSlot = PlayerManager.Instance.activeSlot_C;
+                if (UIManager.Instance.activeSlot_A.slotInfo == null)
+                    emptyActiveSlot = UIManager.Instance.activeSlot_A;
+                else if (UIManager.Instance.activeSlot_B.slotInfo == null)
+                    emptyActiveSlot = UIManager.Instance.activeSlot_B;
+                else if (UIManager.Instance.activeSlot_C.slotInfo == null)
+                    emptyActiveSlot = UIManager.Instance.activeSlot_C;
 
                 // 비어있는 액티브 슬롯이 있을때
                 if (emptyActiveSlot != null)
@@ -418,8 +418,8 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (secondInput == -1)
             {
                 // 마우스 아이콘에 해당 슬롯 아이콘 넣기
-                PhoneMenu.Instance.nowSelectIcon.enabled = true;
-                PhoneMenu.Instance.nowSelectIcon.sprite = slotIcon.sprite;
+                UIManager.Instance.nowSelectIcon.enabled = true;
+                UIManager.Instance.nowSelectIcon.sprite = slotIcon.sprite;
 
                 // 아이콘 마우스 위치로 이동
                 PhoneMenu.Instance.MousePos();
@@ -471,7 +471,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (slotInfo != null)
             {
                 // 마우스 아이콘에 현재 슬롯 아이콘 넣기
-                PhoneMenu.Instance.nowSelectIcon.sprite
+                UIManager.Instance.nowSelectIcon.sprite
                 = slotInfo as MagicInfo != null
                 ? MagicDB.Instance.GetIcon(slotInfo.id)
                 : ItemDB.Instance.GetIcon(slotInfo.id);
@@ -486,7 +486,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             else
             {
                 // 마우스 아이콘 끄기
-                PhoneMenu.Instance.nowSelectIcon.enabled = false;
+                UIManager.Instance.nowSelectIcon.enabled = false;
 
                 // 현재 슬롯에 선택된 슬롯 아이템 넣기
                 slotInfo = selectSlotInfo;

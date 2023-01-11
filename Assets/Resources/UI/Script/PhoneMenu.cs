@@ -72,8 +72,7 @@ public class PhoneMenu : MonoBehaviour
     public List<InventorySlot> invenSlots = new List<InventorySlot>(); //각각 슬롯 오브젝트
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public InventorySlot nowSelectSlot; // 현재 선택된 슬롯
-    public SlotInfo nowSelectSlotInfo; // 현재 선택된 슬롯 정보
-    public Image nowSelectIcon; //마우스 따라다닐 아이콘
+    public SlotInfo nowSelectSlotInfo; // 현재 선택된 슬롯 정보    
     RectTransform nowSelectIconRect;
 
     [Header("Merge Panel")]
@@ -110,6 +109,14 @@ public class PhoneMenu : MonoBehaviour
 
     private void Awake()
     {
+        StartCoroutine(AwakeInit());
+    }
+
+    IEnumerator AwakeInit()
+    {
+        // 키 입력 정리
+        StartCoroutine(InputInit());
+
         // 인벤토리 슬롯 컴포넌트 모두 저장
         for (int i = 0; i < invenParent.childCount; i++)
         {
@@ -118,11 +125,10 @@ public class PhoneMenu : MonoBehaviour
             invenSlots.Add(invenSlot);
         }
 
-        // 선택된 마법 rect 찾기
-        nowSelectIconRect = nowSelectIcon.transform.parent.GetComponent<RectTransform>();
+        yield return new WaitUntil(() => UIManager.Instance != null);
 
-        // 키 입력 정리
-        StartCoroutine(InputInit());
+        // 선택된 마법 rect 찾기
+        nowSelectIconRect = UIManager.Instance.nowSelectIcon.transform.parent.GetComponent<RectTransform>();
     }
 
     private void Start()
@@ -136,7 +142,7 @@ public class PhoneMenu : MonoBehaviour
         Phone_Input = new NewInput();
 
         // 플레이어 초기화 대기
-        yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
+        yield return new WaitUntil(() => PlayerManager.Instance && PlayerManager.Instance.initFinish);
 
         // 방향키 입력
         Phone_Input.UI.NavControl.performed += val =>
@@ -184,6 +190,8 @@ public class PhoneMenu : MonoBehaviour
                 }
         };
 
+        Phone_Input.Enable();
+
         // 핸드폰 패널 끄기
         phonePanel.SetActive(false);
     }
@@ -194,7 +202,7 @@ public class PhoneMenu : MonoBehaviour
         yield return new WaitForSeconds(Time.deltaTime);
 
         //마우스에 아이콘 들고 있을때
-        if (nowSelectIcon.enabled)
+        if (UIManager.Instance.nowSelectIcon.enabled)
         {
             // null 선택했을때, 메뉴버튼, 백버튼, 홈버튼 클릭했을때
             if (EventSystem.current.currentSelectedGameObject == null
@@ -216,7 +224,7 @@ public class PhoneMenu : MonoBehaviour
             return;
 
         //마우스에 아이콘 들고 있을때
-        if (nowSelectIcon.enabled)
+        if (UIManager.Instance.nowSelectIcon.enabled)
             //커서 및 빈 스택 슬롯 초기화 하기
             CancelSelectSlot();
     }
@@ -226,7 +234,7 @@ public class PhoneMenu : MonoBehaviour
     {
         // print(mousePosInput);
 
-        if (nowSelectIcon.enabled)
+        if (UIManager.Instance.nowSelectIcon.enabled)
         {
             // 캔버스 스케일을 해상도로 나눈 비율을 곱해서 마우스 위치값 보정
             Vector3 mousePos = UIManager.Instance.nowMousePos * (GetComponent<CanvasScaler>().referenceResolution.x / Screen.width);
@@ -241,6 +249,12 @@ public class PhoneMenu : MonoBehaviour
     {
         //초기화
         StartCoroutine(Init());
+    }
+
+    private void OnDisable()
+    {
+        Phone_Input.Disable();
+        Phone_Input.Dispose();
     }
 
     IEnumerator Init()
@@ -259,7 +273,7 @@ public class PhoneMenu : MonoBehaviour
         animSlot.gameObject.SetActive(false);
 
         // 선택 아이콘 끄기
-        nowSelectIcon.enabled = false;
+        UIManager.Instance.nowSelectIcon.enabled = false;
 
         // 팡파레 이펙트 끄기
         slotRayEffect.gameObject.SetActive(false);
@@ -333,9 +347,9 @@ public class PhoneMenu : MonoBehaviour
         InteractBtnsToggle(true);
 
         // 액티브 슬롯 3개 상호작용 켜기
-        PlayerManager.Instance.activeSlot_A.slotButton.interactable = true;
-        PlayerManager.Instance.activeSlot_B.slotButton.interactable = true;
-        PlayerManager.Instance.activeSlot_C.slotButton.interactable = true;
+        UIManager.Instance.activeSlot_A.slotButton.interactable = true;
+        UIManager.Instance.activeSlot_B.slotButton.interactable = true;
+        UIManager.Instance.activeSlot_C.slotButton.interactable = true;
 
         // 핸드폰 화면 패널 켜기
         phonePanel.SetActive(true);
@@ -1341,7 +1355,7 @@ public class PhoneMenu : MonoBehaviour
         //     return;
 
         // 마우스의 아이콘 끄기
-        nowSelectIcon.enabled = false;
+        UIManager.Instance.nowSelectIcon.enabled = false;
 
         // 선택된 슬롯에 슬롯 정보 넣기
         nowSelectSlot.slotInfo = nowSelectSlotInfo;
@@ -1366,17 +1380,17 @@ public class PhoneMenu : MonoBehaviour
     public void ShakeMouseIcon()
     {
         // 현재 트윈 멈추기
-        nowSelectIcon.transform.DOPause();
+        UIManager.Instance.nowSelectIcon.transform.DOPause();
 
         // 원래 위치 저장
-        Vector2 originPos = nowSelectIcon.transform.localPosition;
+        Vector2 originPos = UIManager.Instance.nowSelectIcon.transform.localPosition;
 
         // 마우스 아이콘 흔들기
-        nowSelectIcon.transform.DOPunchPosition(Vector2.right * 30f, 1f, 10, 1)
+        UIManager.Instance.nowSelectIcon.transform.DOPunchPosition(Vector2.right * 30f, 1f, 10, 1)
         .SetEase(Ease.Linear)
         .OnPause(() =>
         {
-            nowSelectIcon.transform.localPosition = originPos;
+            UIManager.Instance.nowSelectIcon.transform.localPosition = originPos;
         })
         .SetUpdate(true);
     }
@@ -1497,7 +1511,7 @@ public class PhoneMenu : MonoBehaviour
             return;
 
         //마우스로 아이콘 들고 있으면 복귀시키기
-        if (nowSelectIcon.enabled)
+        if (UIManager.Instance.nowSelectIcon.enabled)
             CancelSelectSlot();
 
         // 선택된게 인벤 스크린일때
@@ -1530,7 +1544,7 @@ public class PhoneMenu : MonoBehaviour
             yield break;
 
         //마우스로 아이콘 들고 있으면 복귀시키기
-        if (nowSelectIcon.enabled)
+        if (UIManager.Instance.nowSelectIcon.enabled)
             CancelSelectSlot();
 
         // 툴팁 끄기
@@ -1610,12 +1624,12 @@ public class PhoneMenu : MonoBehaviour
         InteractBtnsToggle(false);
 
         // 액티브 슬롯 3개 상호작용 막기
-        PlayerManager.Instance.activeSlot_A.slotButton.interactable = false;
-        PlayerManager.Instance.activeSlot_B.slotButton.interactable = false;
-        PlayerManager.Instance.activeSlot_C.slotButton.interactable = false;
+        UIManager.Instance.activeSlot_A.slotButton.interactable = false;
+        UIManager.Instance.activeSlot_B.slotButton.interactable = false;
+        UIManager.Instance.activeSlot_C.slotButton.interactable = false;
 
         //마우스로 아이콘 들고 있으면 복귀시키기
-        if (nowSelectIcon.enabled)
+        if (UIManager.Instance.nowSelectIcon.enabled)
             CancelSelectSlot();
 
         // UI 커서 미리 끄기
