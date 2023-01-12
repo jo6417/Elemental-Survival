@@ -76,8 +76,11 @@ public class UICursor : MonoBehaviour
 
     private void OnDisable()
     {
-        UI_Input.Disable();
-        UI_Input.Dispose();
+        if (UI_Input != null)
+        {
+            UI_Input.Disable();
+            UI_Input.Dispose();
+        }
     }
 
     private void Update()
@@ -144,9 +147,9 @@ public class UICursor : MonoBehaviour
         //! 현재 선택된 UI 이름 표시
         if (UIManager.Instance != null)
             if (EventSystem.current.currentSelectedGameObject == null)
-                UIManager.Instance.nowSelectUI.text = "Last Select : null";
+                SystemManager.Instance.nowSelectUI.text = "Last Select : null";
             else
-                UIManager.Instance.nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
+                SystemManager.Instance.nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
     }
 
     public void UpdateLastSelect(Selectable selectable)

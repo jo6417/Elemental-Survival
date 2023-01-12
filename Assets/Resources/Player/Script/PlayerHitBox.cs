@@ -14,6 +14,7 @@ public class PlayerHitBox : MonoBehaviour
     Sequence damageTextSeq; //데미지 텍스트 시퀀스
     [SerializeField] GameObject hitEffect;
     [SerializeField] GameObject healEffect;
+    [SerializeField] GameObject deathEffect;
 
     [Header("<State>")]
     float hitDelayTime = 0.2f; //피격 무적시간
@@ -44,6 +45,9 @@ public class PlayerHitBox : MonoBehaviour
         yield return new WaitUntil(() => PlayerManager.Instance != null);
 
         playerManager = PlayerManager.Instance;
+
+        // 죽음 이펙트 끄기
+        deathEffect.SetActive(false);
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -346,7 +350,7 @@ public class PlayerHitBox : MonoBehaviour
         if (playerManager.PlayerStat_Now.hpNow <= 0)
         {
             print("Game Over");
-            Dead();
+            StartCoroutine(Dead());
         }
     }
 
@@ -626,15 +630,63 @@ public class PlayerHitBox : MonoBehaviour
 
     public IEnumerator Dead()
     {
-        // 시간 멈추기
-        SystemManager.Instance.TimeScaleChange(0f);
+        // 몬스터 스폰 멈추기
+        WorldSpawner.Instance.spawnSwitch = false;
 
-        //todo 플레이어 사망 트랜지션
+        // 히트 딜레이 코루틴 끄기
+        StopCoroutine(hitDelayCoroutine);
+
+        // 플레이어 조작 끄기
+        playerManager.player_Input.Disable();
+
+        // 플레이어 충돌 콜라이더 끄기
+        playerManager.coll.enabled = false;
+        // 플레이어 히트 콜라이더 끄기
+        Collider2D[] hitColls = GetComponents<Collider2D>();
+        for (int i = 0; i < hitColls.Length; i++)
+            hitColls[i].enabled = false;
+
+        //todo 핸드폰이 플레이어에게 가면서
+        //todo 핸드폰 천천히 하얗게 변함
+        //todo 핸드폰에서 새어나오는 빛줄기 파티클 이펙트
+
+        // 타임스케일 멈추는 시간
+        float stopTime = 3f;
+
+        // 플레이어 머터리얼 변환
+        playerManager.sprite.material = SystemManager.Instance.hitMat;
+        // 플레이어 하얗게 변환
+        playerManager.sprite.color = SystemManager.Instance.hitColor;
+        playerManager.sprite.DOColor(SystemManager.Instance.DeadColor, stopTime / 2f)
+        .SetEase(Ease.OutQuad)
+        .SetUpdate(true);
+
+        // 시간 천천히 멈추기
+        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 0f, stopTime / 2f)
+        .SetEase(Ease.OutQuad)
+        .SetUpdate(true);
+        // SystemManager.Instance.TimeScaleChange(0, stopTime);
+
+        // 사운드 느려지다가 정지
+        SoundManager.Instance.SoundTimeScale(0, stopTime, true);
+
+        yield return new WaitForSecondsRealtime(stopTime / 2f);
+
+        //todo 핸드폰 미니 폭파
+        //todo 핸드폰 미니 폭파음
+
+        //todo 플레이어 사망 사운드
+        // 플레이어에서 하얀 빛 파티클 터짐
+        deathEffect.SetActive(true);
+
+        // 플레이어, 핸드폰 끄기
+        playerManager.sprite.enabled = false;
+        CastMagic.Instance.gameObject.SetActive(false);
+
+        yield return new WaitForSecondsRealtime(1f);
 
         // 게임 오버 UI 켜기
         SystemManager.Instance.GameOver(false);
-
-        yield return null;
     }
 
     public void DebuffRemove()

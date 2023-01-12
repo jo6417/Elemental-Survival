@@ -60,6 +60,7 @@ public class SoundManager : MonoBehaviour
     [ReadOnly] public float masterVolume = 1f; // 전체 음량
     [ReadOnly] public float bgmVolume = 1f; // 배경음 음량
     [ReadOnly] public float sfxVolume = 1f; // 효과음 음량
+    [ReadOnly] public float globalPitch = 1f; // 전체 사운드 속도 계수
     [ReadOnly] public bool initFinish = false;
     [SerializeField] float bgmFadeTime = 1f; // 배경음 페이드인, 페이드아웃 시간
     public Sound nowBGM_Sound; // 현재 재생중인 배경음 정보
@@ -141,7 +142,7 @@ public class SoundManager : MonoBehaviour
             // 오디오 초기화
             nowBGM.clip = sound.clip;
             nowBGM.volume = sound.volume * masterVolume * bgmVolume;
-            nowBGM.pitch = sound.pitch;
+            nowBGM.pitch = sound.pitch * globalPitch;
             nowBGM.Play();
         }
     }
@@ -172,7 +173,7 @@ public class SoundManager : MonoBehaviour
 
             // 볼륨 및 피치 동기화
             sound.source.volume = sound.volume;
-            sound.source.pitch = sound.pitch;
+            sound.source.pitch = sound.pitch * globalPitch;
         }
     }
 
@@ -198,7 +199,7 @@ public class SoundManager : MonoBehaviour
             nowBGM.clip = sound.clip;
             // 볼륨 및 피치 초기화
             nowBGM.volume = sound.volume * masterVolume * bgmVolume;
-            nowBGM.pitch = sound.pitch;
+            nowBGM.pitch = sound.pitch * globalPitch;
 
             // 루프 없음
             nowBGM.loop = false;
@@ -233,7 +234,7 @@ public class SoundManager : MonoBehaviour
 
         // 볼륨 및 피치 초기화
         audio.volume = sound.volume * masterVolume * sfxVolume;
-        audio.pitch = sound.pitch;
+        audio.pitch = sound.pitch * globalPitch;
 
         // 2D 로 초기화
         if (spatialBlend == 0)
@@ -313,7 +314,7 @@ public class SoundManager : MonoBehaviour
             // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
             if (audioSource.clip == sound.clip
             && audioSource.volume == sound.volume * masterVolume * sfxVolume
-            && audioSource.pitch == sound.pitch)
+            && audioSource.pitch == sound.pitch * globalPitch)
             {
                 // 재생하고 끝나면 디스폰
                 StartCoroutine(Play(sound, audioSource, true, fadeIn, delay, loopNum, scaledTime));
@@ -349,11 +350,8 @@ public class SoundManager : MonoBehaviour
             audio.volume = 0;
 
             // 서서히 원래 볼륨까지 올리기
-            if (scaledTime)
-                DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * sfxVolume, fadeinTime);
-            else
-                DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * sfxVolume, fadeinTime)
-                .SetUpdate(true);
+            DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * sfxVolume, fadeinTime)
+            .SetUpdate(!scaledTime);
         }
 
         // 무한 반복일때
@@ -475,12 +473,12 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void SoundTimeScale(float scale)
+    public void SoundTimeScale(float scale, float fadeTime, bool unscaledTime = true)
     {
-        StartCoroutine(ChangeAll_Pitch(scale));
+        StartCoroutine(ChangeAll_Pitch(scale, fadeTime, unscaledTime));
     }
 
-    IEnumerator ChangeAll_Pitch(float scale)
+    IEnumerator ChangeAll_Pitch(float scale, float fadeTime, bool unscaledTime)
     {
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => initFinish);
@@ -490,22 +488,28 @@ public class SoundManager : MonoBehaviour
         // 사운드풀 불러올때까지 대기
         yield return new WaitUntil(() => soundPool != null);
 
-        // 모든 사운드의 디폴트 pitch 값에 타임스케일 곱하기
+        // 글로벌 피치값 수정
+        DOTween.To(() => globalPitch, x => globalPitch = x, scale, fadeTime)
+        .SetUpdate(unscaledTime);
+
+        // 월드에서 재생중인 오디오들의 피치값 조정
         foreach (Sound sound in all_Sounds)
             if (sound.source != null)
-                sound.source.pitch = sound.pitch * scale;
+                DOTween.To(() => sound.source.pitch, x => sound.source.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+                .SetUpdate(unscaledTime);
 
-        // 오브젝트에 붙인 사운드들 피치값 조정
+        // 오브젝트에 붙인 오디오들의 피치값 조정
         foreach (AudioSource audio in attached_Sounds)
             if (audio != null)
             {
                 // 오브젝트 이름으로 사운드 찾기
                 Sound sound = all_Sounds.Find(x => x.name == audio.name);
 
-                audio.pitch = sound.pitch * scale;
+                DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+                .SetUpdate(unscaledTime);
             }
 
-        // 모든 자식 오디오소스 오브젝트의 피치에 타임스케일 곱하기
+        // 사운드풀 하위 오디오들의 피치값 조정
         for (int i = 0; i < soundPool.childCount; i++)
         {
             // 자식중에 오디오 찾기
@@ -515,7 +519,8 @@ public class SoundManager : MonoBehaviour
             Sound sound = all_Sounds.Find(x => x.name == audio.name);
 
             // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
-            audio.pitch = sound.pitch * scale;
+            DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+            .SetUpdate(unscaledTime);
         }
     }
 
@@ -642,7 +647,7 @@ public class SoundManager : MonoBehaviour
             {
                 // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
                 if (audioSource.clip == sound.clip
-                && audioSource.pitch == sound.pitch)
+                && audioSource.pitch == sound.pitch * globalPitch)
                     // attachor에 붙은 오디오 볼륨 리턴
                     return audioSource.volume;
             }
@@ -684,7 +689,7 @@ public class SoundManager : MonoBehaviour
         {
             // 해당 오브젝트에 같은 오디오 소스가 있으면 볼륨 변경 후 리턴
             if (audioSource.clip == sound.clip
-            && audioSource.pitch == sound.pitch)
+            && audioSource.pitch == sound.pitch * globalPitch)
             {
                 // 볼륨 교체 시간이 있으면
                 if (changeTime > 0)

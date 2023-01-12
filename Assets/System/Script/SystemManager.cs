@@ -51,20 +51,20 @@ public class SystemManager : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                return null;
-                // var obj = FindObjectOfType<SystemManager>();
-                // if (obj != null)
-                // {
-                //     instance = obj;
-                // }
-                // else
-                // {
-                //     var newObj = new GameObject().AddComponent<SystemManager>();
-                //     instance = newObj;
-                // }
-            }
+            // if (instance == null)
+            // {
+            //     return null;
+            //     var obj = FindObjectOfType<SystemManager>();
+            //     if (obj != null)
+            //     {
+            //         instance = obj;
+            //     }
+            //     else
+            //     {
+            //         var newObj = new GameObject().AddComponent<SystemManager>();
+            //         instance = newObj;
+            //     }
+            // }
 
             return instance;
         }
@@ -72,6 +72,7 @@ public class SystemManager : MonoBehaviour
     #endregion
 
     [Header("State")]
+    private bool sceneChanging = false; // 씬 변경중 여부
     public bool loadDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
@@ -84,6 +85,7 @@ public class SystemManager : MonoBehaviour
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
 
     [Header("Debug")]
+    public TextMeshProUGUI nowSelectUI; //! 선택된 UI 이름
     public Button timeBtn; //! 시간 속도 토글 버튼
     public Button godModBtn; //! 갓모드 토글 버튼
     [ReadOnly] public bool godMod = false; //! 플레이어 갓모드 여부
@@ -98,14 +100,13 @@ public class SystemManager : MonoBehaviour
 
     [Header("Refer")]
     public GameObject saveIcon; //저장 아이콘
+    public Animator cutoutMask;
     public Light2D globalLight;
-    // public Transform camParent;
     MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
-    public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
-    public GameoverMenu gameoverMenu; // 게임오버 메뉴
+    public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시   
 
     [Header("DataBase")]
     public DBType dBType;
@@ -139,17 +140,21 @@ public class SystemManager : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance != null)
+        {
+            // 파괴 후 리턴
+            Destroy(gameObject);
+            return;
+        }
         // 최초 생성 됬을때
-        if (instance == null)
+        else
         {
             instance = this;
 
             // 파괴되지 않게 설정
             DontDestroyOnLoad(gameObject);
         }
-        else
-            // 해당 오브젝트 파괴
-            Destroy(gameObject);
 
         //초기화
         StartCoroutine(AwakeInit());
@@ -187,7 +192,7 @@ public class SystemManager : MonoBehaviour
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance.initFinish);
         // 플레이어 초기화 대기
-        yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
+        // yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
@@ -242,6 +247,27 @@ public class SystemManager : MonoBehaviour
         return angle;
     }
 
+    public void TimeScaleChange(float timeScale, float fadeTime)
+    {
+        StartCoroutine(TimeScaleFadeChange(timeScale, fadeTime));
+    }
+
+    IEnumerator TimeScaleFadeChange(float timeScale, float fadeTime)
+    {
+        // 타임스케일 변화 적용 시간
+        float timeCount = fadeTime;
+        // 프레임당 시간값 계산
+        WaitForSecondsRealtime wait = new WaitForSecondsRealtime(Time.unscaledDeltaTime);
+        while (timeCount > 0)
+        {
+            TimeScaleChange(Mathf.MoveTowards(Time.timeScale, timeScale, Time.unscaledDeltaTime));
+
+            timeCount -= Time.unscaledDeltaTime;
+
+            yield return wait;
+        }
+    }
+
     public void TimeScaleChange(float timeScale)
     {
         Image timeImg = timeBtn.GetComponent<Image>();
@@ -251,7 +277,7 @@ public class SystemManager : MonoBehaviour
         Time.timeScale = timeScale;
 
         // 모든 오디오 소스 피치에 반영
-        SoundManager.Instance.SoundTimeScale(timeScale);
+        SoundManager.Instance.SoundTimeScale(timeScale, 0);
 
         // 멈추면 빨강 아니면 초록색으로 버튼에 표시
         if (timeScale > 0f)
@@ -448,6 +474,9 @@ public class SystemManager : MonoBehaviour
 
     IEnumerator LoadScene(string sceneName)
     {
+        // 화면 마스크로 덮고 끝날때까지 대기
+        yield return StartCoroutine(SceneMask(true));
+
         // 로딩씬 켜기
         SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
 
@@ -466,14 +495,60 @@ public class SystemManager : MonoBehaviour
 
     public void QuitMainMenu()
     {
-        // 메인메뉴 씬 켜기
-        // StartCoroutine(LoadScene("MainMenuScene"));
-        //todo 로딩 없이 바로 메인메뉴로 이동
+        StartCoroutine(QuitTransition());
+    }
+
+    IEnumerator QuitTransition()
+    {
+        // 화면 마스크로 덮고 끝날때까지 대기
+        yield return StartCoroutine(SceneMask(true));
+
+        // 종료 전 초기화
+        GameQuit();
+
+        // 화면 보이기
+        yield return StartCoroutine(SceneMask(false));
+
+        // 로딩 없이 바로 메인메뉴로 이동
         SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
     }
 
     public void GameOver(bool isClear)
     {
-        gameoverMenu.GameOver(isClear);
+        UIManager.Instance.gameoverPanel.GetComponent<GameoverMenu>().GameOver(isClear);
+    }
+
+    public void GameQuit()
+    {
+        //todo dontDestroy 오브젝트 모두 파괴
+        // 오브젝트 풀 파괴
+        Destroy(ObjectPool.Instance.gameObject);
+        // UI 매니저 파괴
+        Destroy(UIManager.Instance.gameObject);
+        // 플레이어 초기화
+        Destroy(PlayerManager.Instance.gameObject);
+        //todo 핸드폰 파괴
+        Destroy(CastMagic.Instance.gameObject);
+
+        // 배경음 코루틴 끄기
+        StopCoroutine(SoundManager.Instance.BGMCoroutine);
+        // 배경음 정지
+        SoundManager.Instance.nowBGM.Pause();
+    }
+
+    public IEnumerator SceneMask(bool isFadeout)
+    {
+        // 씬 변경 시작
+        sceneChanging = true;
+
+        // 씬 마스크 켜기
+        cutoutMask.gameObject.SetActive(true);
+
+        cutoutMask.SetBool("isFadeout", isFadeout);
+
+        yield return new WaitForSecondsRealtime(2f);
+
+        // 씬 마스크 끄기
+        // cutoutMask.gameObject.SetActive(false);
     }
 }

@@ -14,6 +14,7 @@ public class OptionMenu : MonoBehaviour
     public enum VolumeType { Master, BGM, SFX };
 
     [Header("Refer")]
+    private NewInput Option_Input;
     [SerializeField] private MainMenuBtn mainMenu; // 메인메뉴 컴포넌트
     [SerializeField] private GameObject optionSelectPanel; // 옵션 버튼 패널
     [SerializeField] private GameObject audioOptionPanel; // 오디오 설정 패널
@@ -37,9 +38,10 @@ public class OptionMenu : MonoBehaviour
         // null 이 아닐때까지 대기
         // yield return new WaitUntil(() => UIManager.Instance.UI_Input != null);
 
-        NewInput UI_Input = new NewInput();
+        Option_Input = new NewInput();
+
         // 취소 입력
-        UI_Input.UI.Cancel.performed += val =>
+        Option_Input.UI.Cancel.performed += val =>
         {
             // 옵션 선택 패널 켜져있을때
             if (optionSelectPanel.activeInHierarchy)
@@ -53,13 +55,22 @@ public class OptionMenu : MonoBehaviour
         };
 
         // 입력 활성화
-        SystemManager.Instance.ToggleInput(true);
+        Option_Input.Enable();
     }
 
     private void OnEnable()
     {
         // 초기화
         StartCoroutine(Init());
+    }
+
+    private void OnDisable()
+    {
+        if (Option_Input != null)
+        {
+            Option_Input.Disable();
+            Option_Input.Dispose();
+        }
     }
 
     IEnumerator Init()

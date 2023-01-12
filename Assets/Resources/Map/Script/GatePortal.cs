@@ -131,7 +131,8 @@ public class GatePortal : MonoBehaviour
             return;
 
         // 플레이어와 거리 너무 멀어지면 위치 이동
-        MoveClose();
+        if (PlayerManager.Instance != null)
+            MoveClose();
     }
 
     void MoveClose()

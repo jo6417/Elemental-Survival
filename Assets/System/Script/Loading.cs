@@ -101,8 +101,14 @@ public class Loading : MonoBehaviour
                 // 로딩 완료일때
                 if (loadingBar.value >= 1f)
                 {
+                    // 화면 마스크로 덮고 끝날때까지 대기
+                    yield return StartCoroutine(SystemManager.Instance.SceneMask(true));
+
                     // 씬 마저 넘기기
                     operation.allowSceneActivation = true;
+
+                    // 마스크 커져서 화면 보이기
+                    yield return StartCoroutine(SystemManager.Instance.SceneMask(false));
 
                     yield break;
                 }

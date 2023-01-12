@@ -9,11 +9,12 @@ using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+[System.Serializable]
 public class PlayerStat
 {
     public int playerPower; //플레이어 전투력
-    public float hpMax = 1000; // 최대 체력
-    public float hpNow = 1000; // 체력
+    public float hpMax = 100; // 최대 체력
+    public float hpNow = 100; // 체력
     public float Level = 1; //레벨
     public float moveSpeed = 10; //이동속도
 
@@ -38,6 +39,37 @@ public class PlayerStat
     public float lightning_atk = 1;
     public float water_atk = 1;
     public float wind_atk = 1;
+
+    public PlayerStat() { }
+    public PlayerStat(PlayerStat playerStat)
+    {
+        this.playerPower = playerStat.playerPower; //플레이어 전투력
+        this.hpMax = playerStat.hpMax; // 최대 체력
+        this.hpNow = playerStat.hpNow; // 체력
+        this.Level = playerStat.Level; //레벨
+        this.moveSpeed = playerStat.moveSpeed; //이동속도
+        this.atkNum = playerStat.atkNum; // 공격 횟수
+        this.pierce = playerStat.pierce; // 관통 횟수
+        this.power = playerStat.power; //마법 공격력
+        this.armor = playerStat.armor; //방어력
+        this.speed = playerStat.speed; //마법 공격속도
+        this.evade = playerStat.evade; // 회피율
+        this.knockbackForce = playerStat.knockbackForce; //넉백 파워
+        this.coolTime = playerStat.coolTime; //마법 쿨타임
+        this.duration = playerStat.duration; //마법 지속시간
+        this.range = playerStat.range; //마법 범위
+        this.luck = playerStat.luck; //행운
+        this.expGain = playerStat.expGain; //경험치 획득량
+        this.getRage = playerStat.getRage; // 아이템 획득 범위
+
+        // 원소 공격력
+        this.earth_atk = playerStat.earth_atk;
+        this.fire_atk = playerStat.fire_atk;
+        this.life_atk = playerStat.life_atk;
+        this.lightning_atk = playerStat.lightning_atk;
+        this.water_atk = playerStat.water_atk;
+        this.wind_atk = playerStat.wind_atk;
+    }
 }
 
 public class PlayerManager : MonoBehaviour
@@ -87,10 +119,12 @@ public class PlayerManager : MonoBehaviour
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Light2D playerLight;
     public Rigidbody2D rigid;
+    public Collider2D coll;
     public Animator anim;
 
     [Header("<Stat>")] //플레이어 스탯
-    public PlayerStat PlayerStat_Now; //현재 스탯
+    public PlayerStat PlayerStat_Now; // 현재 스탯
+    private PlayerStat PlayerStat_Default; // 초기 스탯
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
 
@@ -127,6 +161,8 @@ public class PlayerManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
+        print("Player Awake");
+
         // 위치 초기화
         transform.position = Vector3.zero;
 
@@ -134,8 +170,8 @@ public class PlayerManager : MonoBehaviour
         anim = anim == null ? GetComponent<Animator>() : anim;
         sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
 
-        //플레이어 스탯 인스턴스 생성
-        PlayerStat_Now = new PlayerStat();
+        // 플레이어 초기 스탯 저장
+        PlayerStat_Default = new PlayerStat(PlayerStat_Now);
 
         // 입력값 초기화
         StartCoroutine(InputInit());
@@ -279,8 +315,11 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        player_Input.Disable();
-        player_Input.Dispose();
+        if (player_Input != null)
+        {
+            player_Input.Disable();
+            player_Input.Dispose();
+        }
     }
 
     private void Update()
@@ -437,7 +476,7 @@ public class PlayerManager : MonoBehaviour
     void BuffUpdate()
     {
         //초기 스탯을 임시 스탯으로 복사
-        PlayerStat PlayerStat_Temp = new PlayerStat();
+        PlayerStat PlayerStat_Temp = new PlayerStat(PlayerStat_Default);
 
         //임시 스탯에 현재 아이템의 모든 버프 넣기
         foreach (ItemInfo item in hasItems)
@@ -541,7 +580,11 @@ public class PlayerManager : MonoBehaviour
         //경험치 최대치 갱신
         ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
         //! 테스트용 맥스 경험치
-        ExpMax = 3;
+        // ExpMax = 3;
+
+        // 죽었으면 리턴
+        if (PlayerStat_Now.hpNow <= 0)
+            return;
 
         // 레벨업 메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel);

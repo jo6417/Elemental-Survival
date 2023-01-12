@@ -86,6 +86,9 @@ public class WorldSpawner : MonoBehaviour
         // 배경음 재생
         SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
         StartCoroutine(SoundManager.Instance.BGMCoroutine);
+
+        // 글로벌 피치값 초기화
+        SoundManager.Instance.globalPitch = 1f;
     }
 
     void Update()

@@ -253,8 +253,11 @@ public class PhoneMenu : MonoBehaviour
 
     private void OnDisable()
     {
-        Phone_Input.Disable();
-        Phone_Input.Dispose();
+        if (Phone_Input != null)
+        {
+            Phone_Input.Disable();
+            Phone_Input.Dispose();
+        }
     }
 
     IEnumerator Init()

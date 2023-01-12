@@ -59,7 +59,7 @@ public class MapManager : MonoBehaviour
     [SerializeField] bool blockTileShow = false; // 장애물 설치 금지 타일 표시
     [SerializeField] bool propTileShow = false; // 장애물 설치 타일 표시
 
-    private void OnEnable()
+    private void Awake()
     {
         // 초기화
         StartCoroutine(Init());
@@ -75,7 +75,7 @@ public class MapManager : MonoBehaviour
 
         // print(rightX + " : " + leftX + " : " + upY + " : " + downY);
 
-        //todo 타일셋 프리팹 소환하고 변수 기억하기
+        // 타일셋 프리팹 소환하고 변수 기억하기
         GameObject tileSet = LeanPool.Spawn(tileSetPrefab[(int)SystemManager.Instance.nowMapElement], Vector2.zero, Quaternion.identity, transform);
         TileMapGenerator[] tileGens = tileSet.GetComponentsInChildren<TileMapGenerator>();
         for (int i = 0; i < tileGens.Length; i++)

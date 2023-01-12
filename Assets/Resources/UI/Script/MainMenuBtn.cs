@@ -25,6 +25,8 @@ public class MainMenuBtn : MonoBehaviour
 
     IEnumerator Init()
     {
+        yield return new WaitUntil(() => SystemManager.Instance != null);
+
         // 시간 속도 초기화
         SystemManager.Instance.TimeScaleChange(1f);
 
@@ -33,8 +35,6 @@ public class MainMenuBtn : MonoBehaviour
 
         // 메인메뉴 패널 켜기        
         BackToMenu();
-
-        yield return null;
     }
 
     public void CharacterSelect()

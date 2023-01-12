@@ -85,9 +85,6 @@ public class UIManager : MonoBehaviour
     public InventorySlot activeSlot_B;
     public InventorySlot activeSlot_C;
 
-    //! 테스트, 선택된 UI 이름
-    public TextMeshProUGUI nowSelectUI;
-
     [Header("PlayerUI")]
     [SerializeField] PlayerManager playerManager;
     public CanvasGroup dodgeBar;
@@ -205,8 +202,11 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
-        UI_Input.Disable();
-        UI_Input.Dispose();
+        if (UI_Input != null)
+        {
+            UI_Input.Disable();
+            UI_Input.Dispose();
+        }
     }
 
     IEnumerator Init()
@@ -275,9 +275,9 @@ public class UIManager : MonoBehaviour
     {
         //! 테스트, 현재 선택된 UI 이름 표시
         if (EventSystem.current.currentSelectedGameObject == null)
-            nowSelectUI.text = "Last Select : null";
+            SystemManager.Instance.nowSelectUI.text = "Last Select : null";
         else
-            nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
+            SystemManager.Instance.nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
     }
 
     // 확인 입력

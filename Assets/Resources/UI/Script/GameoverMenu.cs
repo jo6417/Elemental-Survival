@@ -80,28 +80,10 @@ public class GameoverMenu : MonoBehaviour
         }
     }
 
-    void GameInitDestroy()
-    {
-        //todo dontDestroy 오브젝트 모두 파괴
-        // 오브젝트 풀 파괴
-        Destroy(ObjectPool.Instance.gameObject);
-        // UI 매니저 파괴
-        Destroy(UIManager.Instance.gameObject);
-        // 플레이어 초기화
-        Destroy(PlayerManager.Instance.gameObject);
-        //todo 핸드폰 파괴
-        Destroy(CastMagic.Instance.gameObject);
-
-        // 배경음 코루틴 끄기
-        StopCoroutine(SoundManager.Instance.BGMCoroutine);
-        // 배경음 정지
-        SoundManager.Instance.nowBGM.Pause();
-    }
-
     public void RetryGame()
     {
         // 게임 종료시 초기화
-        GameInitDestroy();
+        SystemManager.Instance.GameQuit();
 
         // 맵 속성 초기화
         SystemManager.Instance.nowMapElement = 0;
@@ -118,7 +100,7 @@ public class GameoverMenu : MonoBehaviour
     public void QuitMainMenu()
     {
         // 게임 종료시 초기화
-        GameInitDestroy();
+        SystemManager.Instance.GameQuit();
 
         // 배경음 코루틴 끄기
         StopCoroutine(SoundManager.Instance.BGMCoroutine);

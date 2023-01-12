@@ -18,12 +18,14 @@ public class ItemManager : MonoBehaviour
     [SerializeField] GameObject gadgetPrefab;
 
     [Header("State")]
+    [SerializeField] ItemState itemState = 0;
+    [SerializeField] enum ItemState { Idle, Ready, Follow, Get };
     [ReadOnly] public int amount = 1; //아이템 개수
     [ReadOnly] public bool isBundle; //합쳐진 아이템인지
     [ReadOnly] public int gemTypeIndex = -1;
     [ReadOnly] private string itemName;
     [ReadOnly] public float getRange = 0.5f; // 아이템 획득되는 거리
-    private bool isGet = false; //플레이어가 획득했는지
+    // private bool isGet = false; //플레이어가 획득했는지
     public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
     public float autoDespawnTime = 0; //자동 디스폰 시간
 
@@ -67,7 +69,8 @@ public class ItemManager : MonoBehaviour
         }
 
         // 아이템 획득여부 초기화
-        isGet = false;
+        // isGet = false;
+
         // 사이즈 초기화
         transform.localScale = Vector2.one;
         //아이템 개수 초기화
@@ -82,6 +85,9 @@ public class ItemManager : MonoBehaviour
             itemName = itemInfo.name;
         if (magicInfo != null)
             itemName = magicInfo.name;
+
+        // 아이템 상태 초기화
+        itemState = ItemState.Idle;
 
         // 콜라이더 초기화
         coll.enabled = true;
@@ -107,15 +113,23 @@ public class ItemManager : MonoBehaviour
         // 플레이어와 충돌 했을때
         if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
-            PlayerCollision();
+            // idle 상태일때
+            if (itemState == ItemState.Idle)
+                PlayerCollision();
+
+            // 플레이어 쫓아가는 상태일때
+            if (itemState == ItemState.Follow)
+                GetItem();
         }
 
         // 자석 레이저와 충돌 했을때
         if (other.gameObject.CompareTag(SystemManager.TagNameList.Item.ToString()))
         {
-            // 원소젬일때만 획득
-            if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
-                PlayerCollision();
+            // idle 상태일때
+            if (itemState == ItemState.Idle)
+                // 원소젬일때만 획득
+                if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
+                    PlayerCollision();
         }
     }
 
@@ -124,7 +138,13 @@ public class ItemManager : MonoBehaviour
         // 플레이어와 충돌 했을때
         if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
-            PlayerCollision();
+            // idle 상태일때
+            if (itemState == ItemState.Idle)
+                PlayerCollision();
+
+            // 플레이어 쫓아가는 상태일때
+            if (itemState == ItemState.Follow)
+                GetItem();
         }
     }
 
@@ -138,7 +158,7 @@ public class ItemManager : MonoBehaviour
             if (PhoneMenu.Instance.GetEmptySlot() != -1)
             {
                 //이중 충돌 방지
-                coll.enabled = false;
+                // coll.enabled = false;
 
                 // 자동 디스폰 중지
                 sprite.DOKill();
@@ -157,7 +177,7 @@ public class ItemManager : MonoBehaviour
             || itemInfo.itemType == ItemDB.ItemType.Gadget.ToString())
             {
                 //이중 충돌 방지
-                coll.enabled = false;
+                // coll.enabled = false;
 
                 // 자동 디스폰 중지
                 sprite.DOKill();
@@ -224,6 +244,9 @@ public class ItemManager : MonoBehaviour
 
     public IEnumerator GetMove(Transform Getter)
     {
+        // 준비 상태로 변경
+        itemState = ItemState.Ready;
+
         // 아이템 위치부터 플레이어 쪽으로 방향 벡터
         Vector2 dir = Getter.position - transform.position;
 
@@ -232,25 +255,28 @@ public class ItemManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
 
+        // 따라가기 상태로 변경
+        itemState = ItemState.Follow;
+
         // 플레이어 이동 속도 계수
         float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed;
         // 가속도값
         float accelSpeed = 1.5f;
 
         // 플레이어 방향으로 날아가기, 아이템 사라질때까지 방향 갱신하며 반복
-        while (!isGet || gameObject.activeSelf)
+        while (itemState == ItemState.Follow && gameObject.activeSelf)
         {
             accelSpeed += 0.05f;
 
             //방향 벡터 갱신
             dir = Getter.position - transform.position;
 
-            // 벡터 거리가 getRange 이하일때 획득
-            if (dir.magnitude <= getRange)
-            {
-                GetItem();
-                break;
-            }
+            // // 벡터 거리가 getRange 이하일때 획득
+            // if (dir.magnitude <= getRange)
+            // {
+            //     GetItem();
+            //     break;
+            // }
 
             // 플레이어 속도 및 가속도 반영
             dir = dir.normalized * playerSpeed * accelSpeed;
@@ -267,7 +293,8 @@ public class ItemManager : MonoBehaviour
 
     void GetItem()
     {
-        isGet = true;
+        // 아이템 획득 상태로 변경
+        itemState = ItemState.Get;
 
         // 마법일때
         if (magicInfo != null)
