@@ -23,4 +23,9 @@ public class PauseMenu : MonoBehaviour
         // 일시정지 메뉴 끄기
         gameObject.SetActive(false);
     }
+
+    public void QuitMainMenu()
+    {
+        SystemManager.Instance.QuitMainMenu();
+    }
 }

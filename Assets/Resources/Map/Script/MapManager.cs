@@ -6,6 +6,7 @@ using Lean.Pool;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class MapManager : MonoBehaviour
 {
@@ -34,6 +35,7 @@ public class MapManager : MonoBehaviour
     #endregion
 
     [Header("State")]
+    int propInit = 0; // 장애물 초기화 카운터
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
@@ -50,6 +52,7 @@ public class MapManager : MonoBehaviour
     [SerializeField] TileMapGenerator[] tileGenList = new TileMapGenerator[3]; // 타일맵 생성기 리스트
 
     [Header("Refer")]
+    public Light2D globalLight;
     [SerializeField] List<PropBundle> propBundleList = new List<PropBundle>(); // 속성별 장애물 번들 리스트
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public Transform[] background = null;
@@ -83,19 +86,22 @@ public class MapManager : MonoBehaviour
             tileGenList[i] = tileGens[i];
         }
 
-        // 바닥 위치 초기화
-        GenerateMap();
-
         // 플레이어 초기화 대기
         yield return new WaitUntil(() => PlayerManager.Instance);
-
         //다음맵으로 넘어가는 포탈게이트 생성하기
         SpawnPortalGate();
 
-        yield return null;
+        // 바닥 위치 초기화
+        GenerateMap();
+
+        // 초기맵 모든 장애물 설치 될때까지 대기
+        yield return new WaitUntil(() => propInit >= 9);
+
+        // 씬 변경 끝내기
+        SystemManager.Instance.sceneChanging = false;
 
         // 시간 초기화
-        SystemManager.Instance.TimeScaleChange(1f);
+        // SystemManager.Instance.TimeScaleChange(1f);
     }
 
     void Update()
@@ -359,6 +365,9 @@ public class MapManager : MonoBehaviour
         // 걸린 시간 측정
         // debugTime.Stop();
         // print($"{new Vector2(groundPos.x / tilemapSize.x, groundPos.y / tilemapSize.y)} : {debugTime.ElapsedMilliseconds / 1000f}s");
+
+        // 장애물 초기화 카운트 증가
+        propInit++;
     }
 
     Vector2 TileCheck(List<Vector2> emptyTileList, Vector2 propSize, Vector2 randomPos)

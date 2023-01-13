@@ -383,6 +383,15 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AnyKey"",
+                    ""type"": ""Button"",
+                    ""id"": ""1fe2ae24-3bd5-475e-8bb1-f45a8843e175"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -605,6 +614,17 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""action"": ""MouseWheel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4ad87803-6e43-4093-943f-26b812b55317"",
+                    ""path"": ""<Keyboard>/anyKey"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AnyKey"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -645,6 +665,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         m_UI_NavControl = m_UI.FindAction("NavControl", throwIfNotFound: true);
         m_UI_Shift = m_UI.FindAction("Shift", throwIfNotFound: true);
         m_UI_Ctrl = m_UI.FindAction("Ctrl", throwIfNotFound: true);
+        m_UI_AnyKey = m_UI.FindAction("AnyKey", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -803,6 +824,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_NavControl;
     private readonly InputAction m_UI_Shift;
     private readonly InputAction m_UI_Ctrl;
+    private readonly InputAction m_UI_AnyKey;
     public struct UIActions
     {
         private @NewInput m_Wrapper;
@@ -817,6 +839,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         public InputAction @NavControl => m_Wrapper.m_UI_NavControl;
         public InputAction @Shift => m_Wrapper.m_UI_Shift;
         public InputAction @Ctrl => m_Wrapper.m_UI_Ctrl;
+        public InputAction @AnyKey => m_Wrapper.m_UI_AnyKey;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -856,6 +879,9 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @Ctrl.started -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
                 @Ctrl.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
                 @Ctrl.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnCtrl;
+                @AnyKey.started -= m_Wrapper.m_UIActionsCallbackInterface.OnAnyKey;
+                @AnyKey.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnAnyKey;
+                @AnyKey.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnAnyKey;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -890,6 +916,9 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @Ctrl.started += instance.OnCtrl;
                 @Ctrl.performed += instance.OnCtrl;
                 @Ctrl.canceled += instance.OnCtrl;
+                @AnyKey.started += instance.OnAnyKey;
+                @AnyKey.performed += instance.OnAnyKey;
+                @AnyKey.canceled += instance.OnAnyKey;
             }
         }
     }
@@ -926,5 +955,6 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         void OnNavControl(InputAction.CallbackContext context);
         void OnShift(InputAction.CallbackContext context);
         void OnCtrl(InputAction.CallbackContext context);
+        void OnAnyKey(InputAction.CallbackContext context);
     }
 }

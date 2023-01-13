@@ -35,6 +35,9 @@ public class MainMenuBtn : MonoBehaviour
 
         // 메인메뉴 패널 켜기        
         BackToMenu();
+
+        // 씬이동 끝내기
+        SystemManager.Instance.sceneChanging = false;
     }
 
     public void CharacterSelect()

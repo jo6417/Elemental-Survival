@@ -686,7 +686,7 @@ public class PlayerHitBox : MonoBehaviour
         yield return new WaitForSecondsRealtime(1f);
 
         // 게임 오버 UI 켜기
-        SystemManager.Instance.GameOver(false);
+        SystemManager.Instance.GameOverPanelOpen(false);
     }
 
     public void DebuffRemove()

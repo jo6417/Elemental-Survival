@@ -72,7 +72,7 @@ public class SystemManager : MonoBehaviour
     #endregion
 
     [Header("State")]
-    private bool sceneChanging = false; // 씬 변경중 여부
+    public bool sceneChanging = false; // 씬 변경중 여부
     public bool loadDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
@@ -100,9 +100,6 @@ public class SystemManager : MonoBehaviour
 
     [Header("Refer")]
     public GameObject saveIcon; //저장 아이콘
-    public Animator cutoutMask;
-    public Light2D globalLight;
-    MagicInfo lifeSeedMagic;
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
@@ -209,8 +206,8 @@ public class SystemManager : MonoBehaviour
         // 모든 로딩 끝날때까지 대기
         yield return new WaitUntil(() => loadDone);
 
-        // 시간 속도 초기화
-        TimeScaleChange(1f);
+        // // 시간 속도 초기화
+        // TimeScaleChange(1f);
     }
 
     public Color HexToRGBA(string hex, float alpha = 1)
@@ -472,16 +469,37 @@ public class SystemManager : MonoBehaviour
         GUI.Label(rect, text, style);
     }
 
+    public void GameQuit()
+    {
+        // dontDestroy 오브젝트 모두 파괴
+        if (ObjectPool.Instance != null)
+            Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴
+        if (UIManager.Instance != null)
+            Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
+        if (PlayerManager.Instance != null)
+            Destroy(PlayerManager.Instance.gameObject); // 플레이어 초기화
+        if (CastMagic.Instance != null)
+            Destroy(CastMagic.Instance.gameObject); // 핸드폰 파괴
+
+        if (SoundManager.Instance.BGMCoroutine != null)
+        {
+            // 배경음 코루틴 끄기
+            StopCoroutine(SoundManager.Instance.BGMCoroutine);
+            // 배경음 정지
+            SoundManager.Instance.nowBGM.Pause();
+        }
+    }
+
     IEnumerator LoadScene(string sceneName)
     {
-        // 화면 마스크로 덮고 끝날때까지 대기
-        yield return StartCoroutine(SceneMask(true));
+        // 씬 변경 시작
+        sceneChanging = true;
 
-        // 로딩씬 켜기
-        SceneManager.LoadScene("LoadingScene", LoadSceneMode.Additive);
+        // 화면 마스크로 덮기
+        yield return StartCoroutine(Loading.Instance.SceneMask(true));
 
-        // 로딩씬 초기화 대기
-        yield return new WaitUntil(() => Loading.Instance != null);
+        // 종료 전 초기화
+        GameQuit();
 
         // 매개변수로 들어온 씬 로딩 시작
         StartCoroutine(Loading.Instance.LoadScene(sceneName));
@@ -495,60 +513,24 @@ public class SystemManager : MonoBehaviour
 
     public void QuitMainMenu()
     {
-        StartCoroutine(QuitTransition());
+        StartCoroutine(LoadScene("MainMenuScene"));
     }
 
-    IEnumerator QuitTransition()
-    {
-        // 화면 마스크로 덮고 끝날때까지 대기
-        yield return StartCoroutine(SceneMask(true));
+    // IEnumerator QuitTransition()
+    // {
+    //     // 화면 마스크로 덮기
+    //     yield return StartCoroutine(Loading.Instance.SceneMask(true));
 
-        // 종료 전 초기화
-        GameQuit();
+    //     // 종료 전 초기화
+    //     GameQuit();
 
-        // 화면 보이기
-        yield return StartCoroutine(SceneMask(false));
+    //     // 메인메뉴로 이동
+    //     StartCoroutine(Loading.Instance.LoadScene("MainMenuScene"));
+    //     // SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
+    // }
 
-        // 로딩 없이 바로 메인메뉴로 이동
-        SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
-    }
-
-    public void GameOver(bool isClear)
+    public void GameOverPanelOpen(bool isClear)
     {
         UIManager.Instance.gameoverPanel.GetComponent<GameoverMenu>().GameOver(isClear);
-    }
-
-    public void GameQuit()
-    {
-        //todo dontDestroy 오브젝트 모두 파괴
-        // 오브젝트 풀 파괴
-        Destroy(ObjectPool.Instance.gameObject);
-        // UI 매니저 파괴
-        Destroy(UIManager.Instance.gameObject);
-        // 플레이어 초기화
-        Destroy(PlayerManager.Instance.gameObject);
-        //todo 핸드폰 파괴
-        Destroy(CastMagic.Instance.gameObject);
-
-        // 배경음 코루틴 끄기
-        StopCoroutine(SoundManager.Instance.BGMCoroutine);
-        // 배경음 정지
-        SoundManager.Instance.nowBGM.Pause();
-    }
-
-    public IEnumerator SceneMask(bool isFadeout)
-    {
-        // 씬 변경 시작
-        sceneChanging = true;
-
-        // 씬 마스크 켜기
-        cutoutMask.gameObject.SetActive(true);
-
-        cutoutMask.SetBool("isFadeout", isFadeout);
-
-        yield return new WaitForSecondsRealtime(2f);
-
-        // 씬 마스크 끄기
-        // cutoutMask.gameObject.SetActive(false);
     }
 }

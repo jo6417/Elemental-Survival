@@ -83,6 +83,14 @@ public class WorldSpawner : MonoBehaviour
 
     private void OnEnable()
     {
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
+    {
+        // 게임 시작할때까지 대기
+        yield return new WaitUntil(() => Time.timeScale == 1f);
+
         // 배경음 재생
         SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
         StartCoroutine(SoundManager.Instance.BGMCoroutine);
@@ -95,6 +103,9 @@ public class WorldSpawner : MonoBehaviour
     {
         // 초기화 안됬으면 리턴
         if (!SystemManager.Instance.loadDone)
+            return;
+        // 시간 멈췄으면 리턴
+        if (Time.timeScale == 0f)
             return;
 
         // 스폰 스위치 켜져있을때

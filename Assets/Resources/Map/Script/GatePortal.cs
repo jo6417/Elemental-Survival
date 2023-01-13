@@ -416,7 +416,7 @@ public class GatePortal : MonoBehaviour
             SystemManager.Instance.ToggleInput(true);
 
             // 게임 오버 UI 켜기
-            SystemManager.Instance.GameOver(true);
+            SystemManager.Instance.GameOverPanelOpen(true);
 
             //todo 게임오버 BGM 재생
 

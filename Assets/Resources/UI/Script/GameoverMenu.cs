@@ -82,9 +82,6 @@ public class GameoverMenu : MonoBehaviour
 
     public void RetryGame()
     {
-        // 게임 종료시 초기화
-        SystemManager.Instance.GameQuit();
-
         // 맵 속성 초기화
         SystemManager.Instance.nowMapElement = 0;
 
@@ -94,22 +91,15 @@ public class GameoverMenu : MonoBehaviour
         SystemManager.Instance.StartGame();
 
         // 게임 오버 팝업 끄기
-        UIManager.Instance.PopupUI(UIManager.Instance.gameoverPanel, false);
+        // UIManager.Instance.PopupUI(UIManager.Instance.gameoverPanel, false);
     }
 
     public void QuitMainMenu()
     {
         // 게임 종료시 초기화
-        SystemManager.Instance.GameQuit();
-
-        // 배경음 코루틴 끄기
-        StopCoroutine(SoundManager.Instance.BGMCoroutine);
-        // 배경음 정지
-        SoundManager.Instance.nowBGM.Pause();
-
-        //todo 화면 전환 트랜지션
+        SystemManager.Instance.QuitMainMenu();
 
         //todo 로딩 없이 바로 메인메뉴로 이동
-        SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
+        // SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
     }
 }
