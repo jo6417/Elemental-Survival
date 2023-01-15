@@ -46,6 +46,8 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] float itemboxSpawnCount; //아이템 박스 스폰 쿨타임 카운트
     [SerializeField] float lockerSpawnCount; //아이템 금고 스폰 쿨타임 카운트
     [SerializeField, ReadOnly] bool nowSpawning; //스폰중일때
+
+    [Header("Pool")]
     public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
     public List<Character> spawnEnemyList = new List<Character>(); //현재 스폰된 몬스터 리스트
     public List<GameObject> itemBoxList = new List<GameObject>(); // 현재 스폰된 아이템 박스 리스트
@@ -88,6 +90,30 @@ public class WorldSpawner : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 몬스터 DB 초기화 대기
+        yield return new WaitUntil(() => EnemyDB.Instance != null && EnemyDB.Instance.loadDone);
+
+        // 현재 맵속성으로 몬스터 풀 만들기
+        foreach (KeyValuePair<int, EnemyInfo> enemy in EnemyDB.Instance.enemyDB)
+        {
+            // 해당 몹의 원소 속성 반환
+            int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
+
+            // 현재 맵의 속성과 같은 원소속성의 일반몹이면
+            if (enemyElement == (int)SystemManager.Instance.nowMapElement && enemy.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
+            {
+                GameObject enemyObj = EnemyDB.Instance.GetPrefab(enemy.Value.id);
+                Character character = null;
+
+                if (enemyObj != null)
+                    character = enemyObj.GetComponent<Character>();
+
+                if (character != null)
+                    // 스폰 가능리스트에 포함
+                    spawnAbleList.Add(character);
+            }
+        }
+
         // 게임 시작할때까지 대기
         yield return new WaitUntil(() => Time.timeScale == 1f);
 
@@ -221,6 +247,7 @@ public class WorldSpawner : MonoBehaviour
                 //enemy 찾기
                 enemy = EnemyDB.Instance.GetEnemyByID(enemyId);
 
+                // 몬스터 정보 없으면 넘기기
                 if (enemy == null)
                     continue;
 
@@ -549,7 +576,7 @@ public class WorldSpawner : MonoBehaviour
         GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);
 
         //몬스터 활성화 되어있으면
-        while (enemyObj.activeSelf)
+        while (enemyObj && enemyObj.activeSelf)
         {
             // 몬스터가 화면 안에 있으면 화살표 비활성화, 밖에 있으면 활성화
             Vector3 arrowPos = Camera.main.WorldToViewportPoint(enemyObj.transform.position);
@@ -584,7 +611,7 @@ public class WorldSpawner : MonoBehaviour
         }
 
         //몬스터 비활성화되면
-        yield return new WaitUntil(() => !enemyObj.activeSelf);
+        yield return new WaitUntil(() => !enemyObj || !enemyObj.activeSelf);
 
         //화살표 디스폰
         LeanPool.Despawn(arrowUI);

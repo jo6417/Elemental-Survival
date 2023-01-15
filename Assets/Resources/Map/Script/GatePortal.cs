@@ -292,17 +292,22 @@ public class GatePortal : MonoBehaviour
         List<EnemyInfo> bosses = new List<EnemyInfo>();
 
         //타입이 보스인 몬스터 찾기
-        foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
+        foreach (KeyValuePair<int, EnemyInfo> enemy in EnemyDB.Instance.enemyDB)
         {
-            //타입이 보스면
-            if (value.Value.enemyType == EnemyDB.EnemyType.Boss.ToString())
+            // 타입이 보스면
+            if (enemy.Value.enemyType == EnemyDB.EnemyType.Boss.ToString())
             {
-                //리스트에 포함
-                bosses.Add(value.Value);
+                // 해당 몹의 원소 속성 반환
+                int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
+
+                // 해당 월드 속성과 같으면
+                if (enemyElement == (int)SystemManager.Instance.nowMapElement)
+                    // 보스 풀에 넣기
+                    bosses.Add(enemy.Value);
             }
         };
 
-        // 보스 정보 찾기
+        // 보스풀에서 하나 랜덤 선택
         EnemyInfo bossInfo = bosses[Random.Range(0, bosses.Count)];
 
         //! 보스 정보 고정
@@ -314,8 +319,6 @@ public class GatePortal : MonoBehaviour
 
         //보스 프리팹 찾기
         GameObject bossPrefab = EnemyDB.Instance.GetPrefab(bossInfo.id);
-
-        print(bossInfo.name);
 
         // 보스 소환
         // StartCoroutine(WorldSpawner.Instance.PortalSpawn(bossInfo, false, bossPos, bossPrefab, true));

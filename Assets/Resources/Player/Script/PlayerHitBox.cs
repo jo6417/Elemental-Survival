@@ -15,6 +15,7 @@ public class PlayerHitBox : MonoBehaviour
     [SerializeField] GameObject hitEffect;
     [SerializeField] GameObject healEffect;
     [SerializeField] GameObject deathEffect;
+    [SerializeField] AudioSource deadAudio; // 사망시 사운드
 
     [Header("<State>")]
     float hitDelayTime = 0.2f; //피격 무적시간
@@ -675,7 +676,9 @@ public class PlayerHitBox : MonoBehaviour
         //todo 핸드폰 미니 폭파
         //todo 핸드폰 미니 폭파음
 
-        //todo 플레이어 사망 사운드
+        // 플레이어 사망 사운드 재생
+        deadAudio.Play();
+
         // 플레이어에서 하얀 빛 파티클 터짐
         deathEffect.SetActive(true);
 

@@ -204,8 +204,8 @@ public class Loading : MonoBehaviour
             });
         }
 
-        // 아무키나 누를때까지, 로딩 완료, 다음씬 초기화 완료까지 대기
-        yield return new WaitUntil(() => (loading_Input.UI.AnyKey.IsPressed())
+        // 클릭 혹은 아무키나 누를때까지, 로딩 완료, 다음씬 초기화 완료까지 대기
+        yield return new WaitUntil(() => (loading_Input.UI.Click.IsPressed() || loading_Input.UI.AnyKey.IsPressed())
         && loadingBar.value >= 1f && !SystemManager.Instance.sceneChanging);
 
         // 텍스트 색깔 초기화

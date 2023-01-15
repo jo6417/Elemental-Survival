@@ -516,19 +516,6 @@ public class SystemManager : MonoBehaviour
         StartCoroutine(LoadScene("MainMenuScene"));
     }
 
-    // IEnumerator QuitTransition()
-    // {
-    //     // 화면 마스크로 덮기
-    //     yield return StartCoroutine(Loading.Instance.SceneMask(true));
-
-    //     // 종료 전 초기화
-    //     GameQuit();
-
-    //     // 메인메뉴로 이동
-    //     StartCoroutine(Loading.Instance.LoadScene("MainMenuScene"));
-    //     // SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
-    // }
-
     public void GameOverPanelOpen(bool isClear)
     {
         UIManager.Instance.gameoverPanel.GetComponent<GameoverMenu>().GameOver(isClear);

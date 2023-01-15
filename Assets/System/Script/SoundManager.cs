@@ -489,8 +489,8 @@ public class SoundManager : MonoBehaviour
         yield return new WaitUntil(() => soundPool != null);
 
         // 글로벌 피치값 수정
-        DOTween.To(() => globalPitch, x => globalPitch = x, scale, fadeTime)
-        .SetUpdate(unscaledTime);
+        // DOTween.To(() => globalPitch, x => globalPitch = x, scale, fadeTime)
+        // .SetUpdate(unscaledTime);
 
         // 월드에서 재생중인 오디오들의 피치값 조정
         foreach (Sound sound in all_Sounds)

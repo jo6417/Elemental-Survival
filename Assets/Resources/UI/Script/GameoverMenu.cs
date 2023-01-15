@@ -16,11 +16,17 @@ public class GameoverMenu : MonoBehaviour
     [SerializeField] Transform gameLog;
     [SerializeField] Transform gameoverSlot;
     [SerializeField] GameObject layEffect; // 팡파레 이펙트
+    [SerializeField] AudioSource bzzSound;
 
     public void GameOver(bool isClear = false)
     {
         // 게임오버 패널 켜기
         gameObject.SetActive(true);
+
+        //todo 애니메이션에서 모니터 추락 사운드 재생
+
+        // 모든 사운드 끄기
+        SoundManager.Instance.SoundTimeScale(0, 0);
 
         // 클리어 여부에 따라 타이틀,배경색 바꾸기
         if (isClear)
@@ -85,21 +91,28 @@ public class GameoverMenu : MonoBehaviour
         // 맵 속성 초기화
         SystemManager.Instance.nowMapElement = 0;
 
-        //todo 화면 전환 트랜지션
-
         // 게임 다시 시작
         SystemManager.Instance.StartGame();
-
-        // 게임 오버 팝업 끄기
-        // UIManager.Instance.PopupUI(UIManager.Instance.gameoverPanel, false);
     }
 
     public void QuitMainMenu()
     {
         // 게임 종료시 초기화
         SystemManager.Instance.QuitMainMenu();
+    }
 
-        //todo 로딩 없이 바로 메인메뉴로 이동
-        // SceneManager.LoadSceneAsync("MainMenuScene", LoadSceneMode.Single);
+    void LandingSoundPlay(string soundName)
+    {
+        SoundManager.Instance.PlaySound(soundName);
+    }
+
+    void BzzSoundPlay()
+    {
+        bzzSound = SoundManager.Instance.PlaySound("Ascii_Screen_Bzz", 0, 0, -1);
+    }
+
+    void BzzSoundStop()
+    {
+        SoundManager.Instance.StopSound(bzzSound, 0.5f);
     }
 }

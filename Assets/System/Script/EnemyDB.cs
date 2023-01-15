@@ -11,6 +11,7 @@ public class EnemyInfo
     public int grade;
     public string name;
     public string enemyType;
+    public string elementType;
     public float spawnCool;
     public string description;
 
@@ -35,12 +36,13 @@ public class EnemyInfo
 
     public EnemyInfo() { }
 
-    public EnemyInfo(int id, int grade, string enemyName, string enemyType, float spawnCool, string description, float power, float speed, float range, float cooltime, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
+    public EnemyInfo(int id, int grade, string enemyName, string enemyType, string elementType, float spawnCool, string description, float power, float speed, float range, float cooltime, float dropRate, float hitDelay, float hpMax, float knockbackForce, float earth, float fire, float life, float lightning, float water, float wind)
     {
         this.id = id;
         this.grade = grade;
         this.name = enemyName;
         this.enemyType = enemyType;
+        this.elementType = elementType;
         this.spawnCool = spawnCool;
         this.description = description;
         this.power = power;
@@ -66,6 +68,7 @@ public class EnemyInfo
         this.grade = enemy.grade;
         this.name = enemy.name;
         this.enemyType = enemy.enemyType;
+        this.elementType = enemy.elementType;
         this.spawnCool = enemy.spawnCool;
         this.description = enemy.description;
         this.power = enemy.power;
@@ -202,7 +205,7 @@ public class EnemyDB : MonoBehaviour
 
                 //받아온 데이터를 List<EnemyInfo>에 넣기
                 enemyDB[enemy["id"]] = new EnemyInfo
-                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["spawnCool"], enemy["description"],
+                (enemy["id"], enemy["grade"], enemy["name"], enemy["enemyType"], enemy["elementType"], enemy["spawnCool"], enemy["description"],
                 enemy["power"], enemy["speed"], enemy["range"], enemy["cooltime"], enemy["dropRate"], enemy["hitDelay"], enemy["hpMax"], enemy["knockbackForce"],
                 enemy["earth"], enemy["fire"], enemy["life"], enemy["lightning"], enemy["water"], enemy["wind"]
                 );

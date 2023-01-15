@@ -728,8 +728,7 @@ MonoBehaviour:
   interactDelay: 0.1
   farDistance: 150
   bossCharacter: {fileID: 0}
-  fixedBoss: {fileID: 5018633298159146536, guid: 70850f017204cc44dabfc78b5050d500,
-    type: 3}
+  fixedBoss: {fileID: 0}
   showKeyUI: {fileID: 5833238108223010694}
   pressAction: {fileID: 2299684069359633172}
   gemNum: {fileID: 3279613933386149604}
