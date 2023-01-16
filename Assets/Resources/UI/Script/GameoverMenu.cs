@@ -16,14 +16,13 @@ public class GameoverMenu : MonoBehaviour
     [SerializeField] Transform gameLog;
     [SerializeField] Transform gameoverSlot;
     [SerializeField] GameObject layEffect; // 팡파레 이펙트
-    [SerializeField] AudioSource bzzSound;
+    [SerializeField] Button retryBtn;
+    AudioSource bzzSound;
 
     public void GameOver(bool isClear = false)
     {
         // 게임오버 패널 켜기
         gameObject.SetActive(true);
-
-        //todo 애니메이션에서 모니터 추락 사운드 재생
 
         // 모든 사운드 끄기
         SoundManager.Instance.SoundTimeScale(0, 0);
@@ -65,7 +64,7 @@ public class GameoverMenu : MonoBehaviour
 
         // 보유한 모든 마법을 리스트로 수집
         List<MagicInfo> haveMagics = CastMagic.Instance.hasAllMagic();
-        //TODO 마법을 id 순으로(등급순) 정렬하기
+        // 마법을 id 순으로(등급순) 정렬하기
         haveMagics = haveMagics.OrderBy(magic => magic.id).ToList();
 
         // 이번 게임에서 보유 했었던 마법 전부 표시
@@ -84,6 +83,9 @@ public class GameoverMenu : MonoBehaviour
             //레벨 넣기
             slot.Find("Level").GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
         }
+
+        // retry 버튼 선택
+        retryBtn.Select();
     }
 
     public void RetryGame()

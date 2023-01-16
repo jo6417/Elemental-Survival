@@ -47,12 +47,22 @@ MonoBehaviour:
       source: {fileID: 0}
     - name: SelectButton
       clip: {fileID: 8300000, guid: 8afd444c06f4f9346a6a35738d10823b, type: 3}
-      volume: 0.4
+      volume: 1
       pitch: 1
+      source: {fileID: 0}
+    - name: SelectButton_Big
+      clip: {fileID: 8300000, guid: 075c81159f9661b4cb2f675baa2e3cea, type: 3}
+      volume: 1
+      pitch: 1.5
       source: {fileID: 0}
     - name: SubmitButton
       clip: {fileID: 8300000, guid: d80f7c876c1febd4c9f6db6ff558180b, type: 3}
-      volume: 0.4
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: SubmitButton_Big
+      clip: {fileID: 8300000, guid: 075c81159f9661b4cb2f675baa2e3cea, type: 3}
+      volume: 1
       pitch: 1
       source: {fileID: 0}
     - name: MergeStart
@@ -90,7 +100,12 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       source: {fileID: 0}
-    - name: GameoverFall_Small
+    - name: GameoverLanding
+      clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: GameoverLanding_Small
       clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
       volume: 0.7
       pitch: 1.2

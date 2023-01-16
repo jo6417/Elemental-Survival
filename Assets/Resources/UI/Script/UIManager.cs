@@ -289,9 +289,9 @@ public class UIManager : MonoBehaviour
         print("submit");
 
         //todo 현재 선택된 버튼 누르기
-        // Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-        // if(btn != null)
-        //     btn.click;
+        Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        if (btn != null)
+            btn.onClick.Invoke();
     }
 
     // 취소 입력

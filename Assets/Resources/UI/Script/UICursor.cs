@@ -42,6 +42,7 @@ public class UICursor : MonoBehaviour
     [ReadOnly, SerializeField] bool isFlicking = false; //커서 깜빡임 여부
     [ReadOnly, SerializeField] bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
+    IEnumerator cursorAnim;
 
     private void Awake()
     {
@@ -108,8 +109,8 @@ public class UICursor : MonoBehaviour
                 // 기억하고 있는 버튼 있으면
                 if (lastSelected)
                 {
-                    // 색 복구하기
-                    lastSelected.targetGraphic.color = targetOriginColor;
+                    // 기존 트윈 종료
+                    lastSelected.targetGraphic.DOKill();
                 }
 
                 //커서 애니메이션 끝
@@ -135,8 +136,13 @@ public class UICursor : MonoBehaviour
                 isFlicking = true;
                 isMove = true;
 
+                // 기존 커서 애니메이션 끝내기
+                if (cursorAnim != null)
+                    StopCoroutine(cursorAnim);
+
                 //커서 애니메이션 시작
-                StartCoroutine(CursorAnim());
+                cursorAnim = CursorAnim();
+                StartCoroutine(cursorAnim);
             }
 
             // domove 끝났으면 타겟 위치 따라가기
@@ -221,9 +227,11 @@ public class UICursor : MonoBehaviour
         yield return null;
 
         // 선택된 타겟 이미지
-        Image image = lastSelected.targetGraphic.GetComponent<Image>();
+        // Image image = lastSelected.targetGraphic.GetComponent<Image>();
         // 선택된 이미지 Rect
         RectTransform lastRect = lastSelected.GetComponent<RectTransform>();
+
+        lastSelected.targetGraphic.DOKill();
 
         //깜빡일 시간
         float flickTime = 0.3f;
@@ -271,8 +279,7 @@ public class UICursor : MonoBehaviour
 
         RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
 
-        //원래 트윈 있으면 죽이기
-        image.DOKill();
+        //원래 트윈 있으면 죽이기        
         cursorRect.DOKill();
         UI_Cursor.transform.DOKill();
         UI_Cursor.DOKill();
@@ -286,15 +293,15 @@ public class UICursor : MonoBehaviour
         .SetUpdate(true);
 
         // 타겟과 사이즈 맞추기
-        cursorRect.DOSizeDelta(size, flickTime)
+        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
         .SetUpdate(true);
 
-        //이동 시간 대기
-        yield return new WaitUntil(() => cursorRect.sizeDelta == size);
+        // 이동 시간 대기
+        yield return new WaitUntil(() => UI_Cursor.transform.position == btnPos);
 
         //사이즈 초기화
         // 사이즈 커졌다 작아졌다 무한 반복
-        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
+        cursorRect.DOSizeDelta(size * 1.2f, flickTime)
         .SetLoops(-1, LoopType.Yoyo)
         .SetUpdate(true)
         .OnKill(() =>
@@ -304,15 +311,16 @@ public class UICursor : MonoBehaviour
         });
 
         // 컬러 초기화
-        image.color = targetOriginColor;
+        // image.color = targetOriginColor;
+        Color originColor = lastSelected.targetGraphic.color;
         // 컬러 깜빡이기 무한 반복
-        image.DOColor(flickColor, flickTime)
+        lastSelected.targetGraphic.DOColor(flickColor, flickTime)
         .SetLoops(-1, LoopType.Yoyo)
         .SetUpdate(true)
         .OnKill(() =>
         {
             // 컬러 초기화
-            image.color = targetOriginColor;
+            lastSelected.targetGraphic.color = originColor;
         });
     }
     #endregion

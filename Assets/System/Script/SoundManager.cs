@@ -58,8 +58,9 @@ public class SoundManager : MonoBehaviour
 
     [Header("State")]
     [ReadOnly] public float masterVolume = 1f; // 전체 음량
-    [ReadOnly] public float bgmVolume = 1f; // 배경음 음량
+    [ReadOnly] public float musicVolume = 1f; // 배경음 음량
     [ReadOnly] public float sfxVolume = 1f; // 효과음 음량
+    [ReadOnly] public float uiVolume = 1f; // UI 음량    
     [ReadOnly] public float globalPitch = 1f; // 전체 사운드 속도 계수
     [ReadOnly] public bool initFinish = false;
     [SerializeField] float bgmFadeTime = 1f; // 배경음 페이드인, 페이드아웃 시간
@@ -141,7 +142,7 @@ public class SoundManager : MonoBehaviour
 
             // 오디오 초기화
             nowBGM.clip = sound.clip;
-            nowBGM.volume = sound.volume * masterVolume * bgmVolume;
+            nowBGM.volume = sound.volume * masterVolume * musicVolume;
             nowBGM.pitch = sound.pitch * globalPitch;
             nowBGM.Play();
         }
@@ -177,6 +178,45 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    string FindVolumeType(Sound findSound)
+    {
+        string bundleType = "";
+
+        // 모든 번들 조회
+        foreach (SoundBundle soundBundle in soundBundleList)
+        {
+            // 번들의 모든 사운드 조회
+            foreach (Sound sound in soundBundle.sounds)
+            {
+                // 찾는 사운드와 같으면
+                if (sound == findSound)
+                {
+                    // 번들 이름 리턴
+                    bundleType = soundBundle.name;
+                    return bundleType;
+                }
+            }
+        }
+        return bundleType;
+    }
+
+    float FindTypeVolume(Sound findSound)
+    {
+        // 리턴될 타입의 볼륨 계수
+        float typeVolume = 0;
+
+        // UI, 음악, 효과음 중에 볼륨 계수 구분하기
+        if (FindVolumeType(findSound) == "UI_Sound")
+            typeVolume = uiVolume;
+        else if (FindVolumeType(findSound) == "Music_Sound")
+            typeVolume = musicVolume;
+        else
+            typeVolume = sfxVolume;
+
+        // 해당 타입의 볼륨 리턴
+        return typeVolume;
+    }
+
     public IEnumerator BGMPlayer()
     {
         // 시스템 매니저 초기화 대기
@@ -198,7 +238,7 @@ public class SoundManager : MonoBehaviour
             // 오디오 클립 넣기
             nowBGM.clip = sound.clip;
             // 볼륨 및 피치 초기화
-            nowBGM.volume = sound.volume * masterVolume * bgmVolume;
+            nowBGM.volume = sound.volume * masterVolume * musicVolume;
             nowBGM.pitch = sound.pitch * globalPitch;
 
             // 루프 없음
@@ -210,7 +250,7 @@ public class SoundManager : MonoBehaviour
             // 볼륨 0으로 초기화
             nowBGM.volume = 0;
             // 서서히 원래 볼륨까지 올리기
-            DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume * masterVolume * bgmVolume, bgmFadeTime)
+            DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume * masterVolume * musicVolume, bgmFadeTime)
             .SetUpdate(true);
 
             // 음악 끝날때까지 대기, 일시정지 아닐때
@@ -233,7 +273,7 @@ public class SoundManager : MonoBehaviour
         audio.clip = sound.clip;
 
         // 볼륨 및 피치 초기화
-        audio.volume = sound.volume * masterVolume * sfxVolume;
+        audio.volume = sound.volume * masterVolume * FindTypeVolume(sound);
         audio.pitch = sound.pitch * globalPitch;
 
         // 2D 로 초기화
@@ -313,7 +353,7 @@ public class SoundManager : MonoBehaviour
         {
             // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
             if (audioSource.clip == sound.clip
-            && audioSource.volume == sound.volume * masterVolume * sfxVolume
+            && audioSource.volume == sound.volume * masterVolume * FindTypeVolume(sound)
             && audioSource.pitch == sound.pitch * globalPitch)
             {
                 // 재생하고 끝나면 디스폰
@@ -350,7 +390,7 @@ public class SoundManager : MonoBehaviour
             audio.volume = 0;
 
             // 서서히 원래 볼륨까지 올리기
-            DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * sfxVolume, fadeinTime)
+            DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * FindTypeVolume(sound), fadeinTime)
             .SetUpdate(!scaledTime);
         }
 
@@ -532,24 +572,32 @@ public class SoundManager : MonoBehaviour
         // 재생중인 배경음 있을때
         // if (nowBGM != null && nowBGM_Sound != null)
         // 배경음 볼륨 갱신
-        nowBGM.volume = nowBGM_Sound.volume * masterVolume * bgmVolume;
+        nowBGM.volume = nowBGM_Sound.volume * masterVolume * musicVolume;
 
         StartCoroutine(SetAll_Volume());
     }
     public void Set_BGMVolume(float setVolume)
     {
         // 배경음 볼륨값 수정
-        bgmVolume = setVolume;
+        musicVolume = setVolume;
 
         // 재생중인 배경음 있을때
         // if (nowBGM != null && nowBGM_Sound != null)
         // 배경음 볼륨 갱신
-        nowBGM.volume = nowBGM_Sound.volume * masterVolume * bgmVolume;
+        nowBGM.volume = nowBGM_Sound.volume * masterVolume * musicVolume;
     }
     public void Set_SFXVolume(float setVolume)
     {
         // 효과음 볼륨값 수정
         sfxVolume = setVolume;
+
+        StartCoroutine(SetAll_Volume());
+    }
+
+    public void Set_UIVolume(float setVolume)
+    {
+        // UI 볼륨값 수정
+        uiVolume = setVolume;
 
         StartCoroutine(SetAll_Volume());
     }

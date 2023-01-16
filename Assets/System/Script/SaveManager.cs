@@ -82,7 +82,7 @@ public class SaveManager : MonoBehaviour
 
         // 오디오 옵션값 가져오기
         localSaveData.volumes[0] = SoundManager.Instance.masterVolume;
-        localSaveData.volumes[1] = SoundManager.Instance.bgmVolume;
+        localSaveData.volumes[1] = SoundManager.Instance.musicVolume;
         localSaveData.volumes[2] = SoundManager.Instance.sfxVolume;
 
         #endregion

@@ -244,6 +244,14 @@ public class SystemManager : MonoBehaviour
         return angle;
     }
 
+    public void TimeScaleToggle()
+    {
+        if (Time.timeScale > 0)
+            TimeScaleChange(0f);
+        else
+            TimeScaleChange(1f);
+    }
+
     public void TimeScaleChange(float timeScale, float fadeTime)
     {
         StartCoroutine(TimeScaleFadeChange(timeScale, fadeTime));
@@ -519,5 +527,11 @@ public class SystemManager : MonoBehaviour
     public void GameOverPanelOpen(bool isClear)
     {
         UIManager.Instance.gameoverPanel.GetComponent<GameoverMenu>().GameOver(isClear);
+    }
+
+    public void SoundPlay(string soundName)
+    {
+        // 버튼 선택 사운드 재생
+        SoundManager.Instance.PlaySound(soundName);
     }
 }

@@ -11,7 +11,8 @@ public class OptionMenu : MonoBehaviour
     [SerializeField] Slider materVolume; // 마스터 볼륨
     [SerializeField] Slider bgmVolume; // 배경음 볼륨
     [SerializeField] Slider sfxVolume; // 효과음 볼륨
-    public enum VolumeType { Master, BGM, SFX };
+    [SerializeField] Slider uiVolume; // UI 볼륨
+    public enum VolumeType { Master, BGM, SFX, UI };
 
     [Header("Refer")]
     private NewInput Option_Input;
@@ -102,6 +103,9 @@ public class OptionMenu : MonoBehaviour
             case (int)VolumeType.SFX:
                 SoundManager.Instance.Set_SFXVolume(sfxVolume.value);
                 break;
+            case (int)VolumeType.UI:
+                SoundManager.Instance.Set_UIVolume(uiVolume.value);
+                break;
         }
     }
 
@@ -127,8 +131,9 @@ public class OptionMenu : MonoBehaviour
 
             // 볼륨값 모두 불러와 표시
             materVolume.value = SoundManager.Instance.masterVolume;
-            bgmVolume.value = SoundManager.Instance.bgmVolume;
+            bgmVolume.value = SoundManager.Instance.musicVolume;
             sfxVolume.value = SoundManager.Instance.sfxVolume;
+            uiVolume.value = SoundManager.Instance.uiVolume;
         }
 
         // 그래픽 옵션 열었을때
