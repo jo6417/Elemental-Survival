@@ -75,7 +75,7 @@ public class UICursor : MonoBehaviour
         UI_Input.Enable();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (UI_Input != null)
         {

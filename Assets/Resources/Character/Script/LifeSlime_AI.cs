@@ -35,6 +35,8 @@ public class LifeSlime_AI : MonoBehaviour
 
     IEnumerator ThornAtk()
     {
+        //todo 찡그린 표정으로 변하기
+
         // 공격 콜라이더 끄기
         attack.atkColl.enabled = false;
 

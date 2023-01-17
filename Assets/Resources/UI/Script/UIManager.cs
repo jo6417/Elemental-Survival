@@ -200,7 +200,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(Init());
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (UI_Input != null)
         {

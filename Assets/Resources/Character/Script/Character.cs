@@ -150,6 +150,11 @@ public class Character : MonoBehaviour
 
     protected virtual void Awake()
     {
+        StartCoroutine(AwakeInit());
+    }
+
+    IEnumerator AwakeInit()
+    {
         enemyAI = enemyAI == null ? transform.GetComponent<EnemyAI>() : enemyAI;
 
         spriteObj = spriteObj == null ? transform : spriteObj;
@@ -173,6 +178,8 @@ public class Character : MonoBehaviour
         // 버프 아이콘 부모 찾기, 없으면 본인 오브젝트
         buffParent = buffParent == null ? transform : buffParent;
 
+        yield return new WaitUntil(() => PlayerManager.Instance != null);
+
         //초기 타겟은 플레이어
         TargetObj = PlayerManager.Instance.gameObject;
 
@@ -180,6 +187,8 @@ public class Character : MonoBehaviour
         // enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
         // 공격 콜라이더 찾기
         // enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
+
+        yield return new WaitUntil(() => WorldSpawner.Instance != null);
 
         // 히트 이펙트가 없으면 기본 이펙트 가져오기
         if (hitEffect == null)

@@ -72,7 +72,10 @@ public class SoundManager : MonoBehaviour
     [Header("Refer")]
     [SerializeField] string startBGM;
     [SerializeField] GameObject emptyAudio;
-    public Transform soundPool;
+    // public Transform soundPool_Global;
+    public Transform soundPool_Music;
+    public Transform soundPool_SFX;
+    public Transform soundPool_UI;
     [SerializeField] AnimationCurve curve_3D;
 
     [Header("Sounds")]
@@ -178,7 +181,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    string FindVolumeType(Sound findSound)
+    string GetSoundType(Sound findSound)
     {
         string bundleType = "";
 
@@ -200,21 +203,38 @@ public class SoundManager : MonoBehaviour
         return bundleType;
     }
 
-    float FindTypeVolume(Sound findSound)
+    float GetVolumeType(Sound findSound)
     {
         // 리턴될 타입의 볼륨 계수
         float typeVolume = 0;
 
         // UI, 음악, 효과음 중에 볼륨 계수 구분하기
-        if (FindVolumeType(findSound) == "UI_Sound")
+        if (GetSoundType(findSound) == "UI_Sounds")
             typeVolume = uiVolume;
-        else if (FindVolumeType(findSound) == "Music_Sound")
+        else if (GetSoundType(findSound) == "Music_Sounds")
             typeVolume = musicVolume;
         else
             typeVolume = sfxVolume;
 
         // 해당 타입의 볼륨 리턴
         return typeVolume;
+    }
+
+    Transform GetSoundPool(Sound findSound)
+    {
+        // 리턴될 타입의 사운드풀
+        Transform soundPool = null;
+
+        // UI, 음악, 효과음 중에 볼륨 계수 구분하기
+        if (GetSoundType(findSound) == "UI_Sounds")
+            soundPool = soundPool_UI;
+        else if (GetSoundType(findSound) == "Music_Sounds")
+            soundPool = soundPool_Music;
+        else
+            soundPool = soundPool_SFX;
+
+        // 해당 타입의 사운드풀 리턴
+        return soundPool;
     }
 
     public IEnumerator BGMPlayer()
@@ -273,7 +293,7 @@ public class SoundManager : MonoBehaviour
         audio.clip = sound.clip;
 
         // 볼륨 및 피치 초기화
-        audio.volume = sound.volume * masterVolume * FindTypeVolume(sound);
+        audio.volume = sound.volume * masterVolume * GetVolumeType(sound);
         audio.pitch = sound.pitch * globalPitch;
 
         // 2D 로 초기화
@@ -309,7 +329,7 @@ public class SoundManager : MonoBehaviour
         }
 
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, Vector2.zero, Quaternion.identity, soundPool);
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, Vector2.zero, Quaternion.identity, GetSoundPool(sound));
 
         // 오디오 초기화 후 플레이
         AudioSource audio = InitAudio(audioObj, sound, 0, fadeIn, delay, loopNum, scaledTime);
@@ -330,7 +350,7 @@ public class SoundManager : MonoBehaviour
         }
 
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, soundPool);
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, GetSoundPool(sound));
 
         // 오디오 초기화 후 플레이
         AudioSource audio = InitAudio(audioObj, sound, 1, fadeIn, delay, loopNum, scaledTime);
@@ -353,7 +373,7 @@ public class SoundManager : MonoBehaviour
         {
             // 해당 오브젝트에 이미 같은 오디오 소스가 있으면
             if (audioSource.clip == sound.clip
-            && audioSource.volume == sound.volume * masterVolume * FindTypeVolume(sound)
+            && audioSource.volume == sound.volume * masterVolume * GetVolumeType(sound)
             && audioSource.pitch == sound.pitch * globalPitch)
             {
                 // 재생하고 끝나면 디스폰
@@ -390,7 +410,7 @@ public class SoundManager : MonoBehaviour
             audio.volume = 0;
 
             // 서서히 원래 볼륨까지 올리기
-            DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * FindTypeVolume(sound), fadeinTime)
+            DOTween.To(() => audio.volume, x => audio.volume = x, sound.volume * masterVolume * GetVolumeType(sound), fadeinTime)
             .SetUpdate(!scaledTime);
         }
 
@@ -526,7 +546,7 @@ public class SoundManager : MonoBehaviour
         if (ObjectPool.Instance == null)
             yield break;
         // 사운드풀 불러올때까지 대기
-        yield return new WaitUntil(() => soundPool != null);
+        // yield return new WaitUntil(() => soundPool_Global != null);
 
         // 글로벌 피치값 수정
         // DOTween.To(() => globalPitch, x => globalPitch = x, scale, fadeTime)
@@ -550,10 +570,23 @@ public class SoundManager : MonoBehaviour
             }
 
         // 사운드풀 하위 오디오들의 피치값 조정
-        for (int i = 0; i < soundPool.childCount; i++)
+        for (int i = 0; i < soundPool_SFX.childCount; i++)
         {
             // 자식중에 오디오 찾기
-            AudioSource audio = soundPool.GetChild(i).GetComponent<AudioSource>();
+            AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
+
+            // 오브젝트 이름으로 사운드 찾기
+            Sound sound = all_Sounds.Find(x => x.name == audio.name);
+
+            // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
+            DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+            .SetUpdate(unscaledTime);
+        }
+        // 사운드풀 하위 오디오들의 피치값 조정
+        for (int i = 0; i < soundPool_UI.childCount; i++)
+        {
+            // 자식중에 오디오 찾기
+            AudioSource audio = soundPool_UI.GetChild(i).GetComponent<AudioSource>();
 
             // 오브젝트 이름으로 사운드 찾기
             Sound sound = all_Sounds.Find(x => x.name == audio.name);
@@ -610,12 +643,12 @@ public class SoundManager : MonoBehaviour
         if (ObjectPool.Instance == null)
             yield break;
         // 사운드풀 불러올때까지 대기
-        yield return new WaitUntil(() => soundPool != null);
+        // yield return new WaitUntil(() => soundPool_Global != null);
 
         // 모든 사운드의 디폴트 volume 값에 타임스케일 곱하기
         foreach (Sound sound in all_Sounds)
             if (sound.source != null)
-                sound.source.volume = sound.volume * masterVolume * sfxVolume;
+                sound.source.volume = sound.volume * masterVolume * GetVolumeType(sound);
 
         // 오브젝트에 붙인 사운드들 volume 값 조정
         foreach (AudioSource audio in attached_Sounds)
@@ -624,14 +657,26 @@ public class SoundManager : MonoBehaviour
                 // 오브젝트 이름으로 사운드 찾기
                 Sound sound = all_Sounds.Find(x => x.name == audio.name);
 
-                audio.volume = sound.volume * masterVolume * sfxVolume;
+                audio.volume = sound.volume * masterVolume * GetVolumeType(sound);
             }
 
         // 모든 자식 오디오소스 오브젝트의 volume에 타임스케일 곱하기
-        for (int i = 0; i < soundPool.childCount; i++)
+        for (int i = 0; i < soundPool_SFX.childCount; i++)
         {
             // 자식중에 오디오 찾기
-            AudioSource audio = soundPool.GetChild(i).GetComponent<AudioSource>();
+            AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
+
+            // 오브젝트 이름으로 사운드 찾기
+            Sound sound = all_Sounds.Find(x => x.name == audio.name);
+
+            // 해당 오디오 소스의 volume값을 원본 volume값 * 타임스케일 넣기
+            audio.volume = sound.volume * masterVolume * sfxVolume;
+        }
+        // 모든 자식 오디오소스 오브젝트의 volume에 타임스케일 곱하기
+        for (int i = 0; i < soundPool_UI.childCount; i++)
+        {
+            // 자식중에 오디오 찾기
+            AudioSource audio = soundPool_UI.GetChild(i).GetComponent<AudioSource>();
 
             // 오브젝트 이름으로 사운드 찾기
             Sound sound = all_Sounds.Find(x => x.name == audio.name);

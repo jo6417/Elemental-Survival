@@ -152,6 +152,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 978164795886ece4bb0f6f599a7e5bb1, type: 3}
   - {fileID: 21300000, guid: f2bfe0d9155f0ee42ba898da96ef7c44, type: 3}
   - {fileID: 21300000, guid: 3f2a191a466e17341b246f602aaee60b, type: 3}
+  - {fileID: 4302531587234278637, guid: 5deb39ca50ca5a7449004823a61349c5, type: 3}
+  - {fileID: -3775996312280495788, guid: 5deb39ca50ca5a7449004823a61349c5, type: 3}
+  - {fileID: 3738268445832872396, guid: 5deb39ca50ca5a7449004823a61349c5, type: 3}
   - {fileID: 6355973998906905200, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: -1650762901199698024, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
   - {fileID: 7872801947101234692, guid: 18ad9fabdf9015e41b8bc31cff448daa, type: 3}
@@ -336,6 +339,9 @@ SpriteAtlas:
   - KingSlime_Crown
   - Farmer_Dirt
   - Farmer_Front
+  - LightningSlime-Sheet_2
+  - LightningSlime-Sheet_0
+  - LightningSlime-Sheet_1
   - Ascii_Walk-Sheet_2
   - Ascii_Walk-Sheet_1
   - Ascii_Walk-Sheet_0

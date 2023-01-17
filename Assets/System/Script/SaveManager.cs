@@ -18,7 +18,7 @@ public class SaveData : System.IDisposable
     public string enemyDBJson; //몬스터 DB json
     public string itemDBJson; //아이템 DB json
 
-    public float[] volumes = { 0, 0, 0 }; // 전체볼륨, 배경음, 효과음
+    public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
 
     public SaveData()
     {
@@ -81,9 +81,13 @@ public class SaveManager : MonoBehaviour
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
 
         // 오디오 옵션값 가져오기
-        localSaveData.volumes[0] = SoundManager.Instance.masterVolume;
-        localSaveData.volumes[1] = SoundManager.Instance.musicVolume;
-        localSaveData.volumes[2] = SoundManager.Instance.sfxVolume;
+        float[] volumes = {
+            SoundManager.Instance.masterVolume,
+            SoundManager.Instance.musicVolume,
+            SoundManager.Instance.sfxVolume,
+            SoundManager.Instance.uiVolume
+        };
+        localSaveData.volumes = volumes;
 
         #endregion
 
@@ -137,6 +141,7 @@ public class SaveManager : MonoBehaviour
         SoundManager.Instance.Set_MasterVolume(localSaveData.volumes[0]);
         SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
         SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
+        SoundManager.Instance.Set_UIVolume(localSaveData.volumes[3]);
 
         yield return null;
     }

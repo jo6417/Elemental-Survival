@@ -21,6 +21,7 @@ public class DefaultMagic : MonoBehaviour
 
     IEnumerator Init()
     {
+        yield return new WaitUntil(() => SystemManager.Instance != null);
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
 
@@ -41,7 +42,7 @@ public class DefaultMagic : MonoBehaviour
         slots.alpha = 1f;
         panel.color = new Color32(0, 0, 0, 100);
 
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance != null && MagicDB.Instance.loadDone);
 
         // 해당 패널로 팝업 초기화
         UIManager.Instance.PopupSet(gameObject);
@@ -95,11 +96,11 @@ public class DefaultMagic : MonoBehaviour
 
         // 핸드폰 키입력 막기
         PhoneMenu.Instance.InteractBtnsToggle(false);
-        // 핸드폰 열기
-        StartCoroutine(PhoneMenu.Instance.OpenPhone());
-
+        PhoneMenu.Instance.Phone_Input.Disable();
         //플레이어 입력 끄기
         PlayerManager.Instance.player_Input.Disable();
+        // 핸드폰 열기
+        StartCoroutine(PhoneMenu.Instance.OpenPhone());
 
         //현재 열려있는 팝업 갱신
         UIManager.Instance.nowOpenPopup = UIManager.Instance.phonePanel;

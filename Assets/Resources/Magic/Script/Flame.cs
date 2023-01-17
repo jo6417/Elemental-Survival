@@ -56,7 +56,7 @@ public class Flame : MonoBehaviour
                 transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
         // 범위만큼 스케일 반영
-        transform.localScale = Vector2.one * range / 10f;
+        transform.localScale = Vector2.one * range / 3f;
 
         // 콜라이더 켜기
         magicHolder.atkColl.enabled = true;

@@ -36,6 +36,16 @@ public class PhoneMenu : MonoBehaviour
     }
     #endregion
 
+    [Header("State")]
+    public bool phoneOpen = false; // 현재 핸드폰 메뉴 켬 여부
+    private bool btnsInteractable = true; // 버튼 상호작용 가능 여부
+    float backBtnCount; //백버튼 더블클릭 카운트
+    bool isSkipped = false;// 스킵 버튼 누름 여부
+    public Vector3 phonePosition; //핸드폰일때 위치 기억
+    public Vector3 phoneRotation; //핸드폰일때 회전값 기억
+    public Vector3 phoneScale; //핸드폰일때 고정된 스케일
+    public Vector3 UIPosition; //팝업일때 위치
+
     [Header("Refer")]
     public NewInput Phone_Input; // 입력 받기
     public SimpleScrollSnap screenScroll; // 화면 스크롤
@@ -48,27 +58,18 @@ public class PhoneMenu : MonoBehaviour
     public SpriteRenderer lightScreen; // 폰 스크린 전체 빛내는 HDR 이미지
     public Image blackScreen; // 폰 작아질때 검은 이미지로 화면 가리기
     public GameObject loadingPanel; //로딩 패널, 로딩중 뒤의 버튼 상호작용 막기
-    private bool btnsInteractable = true; // 버튼 상호작용 가능 여부
-
-    [Header("Effect")]
-    public Vector3 phonePosition; //핸드폰일때 위치 기억
-    public Vector3 phoneRotation; //핸드폰일때 회전값 기억
-    public Vector3 phoneScale; //핸드폰일때 고정된 스케일
-    public Vector3 UIPosition; //팝업일때 위치
     public SlicedFilledImage backBtnFill; //뒤로가기 버튼
-    float backBtnCount; //백버튼 더블클릭 카운트
-    bool isSkipped = false;// 스킵 버튼 누름 여부
 
     [Header("Chat List")]
+    public float sumChatHeights; // 채팅 스크롤 content의 높이
     public GameObject chatPrefab; // 채팅 프리팹
     public ScrollRect chatScroll; // 채팅 스냅 스크롤
     [SerializeField] private RectTransform chatContentRect;
-    public float sumChatHeights; // 채팅 스크롤 content의 높이
 
     [Header("Inventory")]
+    int mergeAbleNum; // 현재 합성 가능한 마법 개수
     public Image invenBackground; // 인벤토리 뒷배경 이미지
     public Transform invenParent; // 인벤토리 슬롯들 부모 오브젝트
-    int mergeAbleNum; // 현재 합성 가능한 마법 개수
     public List<InventorySlot> invenSlots = new List<InventorySlot>(); //각각 슬롯 오브젝트
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public InventorySlot nowSelectSlot; // 현재 선택된 슬롯
@@ -86,13 +87,16 @@ public class PhoneMenu : MonoBehaviour
     public Image mergeAfterEffect; // 합성 완료 이펙트
 
     [Header("Recipe List")]
+    public bool recipeInit = false;
     public SimpleScrollSnap recipeScroll; // 레시피 슬롯 스크롤
     public GameObject recipePrefab; // 단일 레시피 프리팹
-    public bool recipeInit = false;
     [SerializeField] public Button recipeUpBtn; // 레시피 위로 스크롤
     [SerializeField] public Button recipeDownBtn; // 레시피 아래로 스크롤
 
     [Header("Random Panel")]
+    public float randomScroll_Speed = 15f; // 뽑기 스크롤 속도
+    public float minScrollTime = 3f; // 슬롯머신 최소 시간
+    public float maxScrollTime = 5f; // 슬롯머신 최대 시간
     public Transform animSlot; // 애니메이션용 슬롯
     public CanvasGroup randomScreen; // 뽑기 스크린
     public SimpleScrollSnap randomScroll; // 마법 뽑기 랜덤 스크롤
@@ -103,9 +107,6 @@ public class PhoneMenu : MonoBehaviour
     public GameObject particleAttractor; // getMagicEffect 파티클 빨아들이는 오브젝트
     public ParticleSystem rankUpSuccessEffect; // 랭크업 성공 이펙트
     public ParticleSystem rankUpFailEffect; // 랭크업 실패 이펙트
-    public float randomScroll_Speed = 15f; // 뽑기 스크롤 속도
-    public float minScrollTime = 3f; // 슬롯머신 최소 시간
-    public float maxScrollTime = 5f; // 슬롯머신 최대 시간
 
     private void Awake()
     {
@@ -163,7 +164,7 @@ public class PhoneMenu : MonoBehaviour
         {
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
-                StartCoroutine(CancelMoveItem());
+                StartCoroutine(PhoneMenu.Instance.CancelMoveItem());
         };
         // 마우스 휠 스크롤
         Phone_Input.UI.MouseWheel.performed += val =>
@@ -251,7 +252,7 @@ public class PhoneMenu : MonoBehaviour
         StartCoroutine(Init());
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (Phone_Input != null)
         {
@@ -297,6 +298,9 @@ public class PhoneMenu : MonoBehaviour
 
         // 뽑기 스크린 투명하게 숨기기
         randomScreen.alpha = 0f;
+
+        // 핸드폰 키입력 켜기
+        Phone_Input.Enable();
     }
 
     public IEnumerator OpenPhone(Vector3 modifyPos = default)

@@ -52,7 +52,7 @@ public class WorldSpawner : MonoBehaviour
     public List<Character> spawnEnemyList = new List<Character>(); //현재 스폰된 몬스터 리스트
     public List<GameObject> itemBoxList = new List<GameObject>(); // 현재 스폰된 아이템 박스 리스트
     public List<GameObject> lockerList = new List<GameObject>(); // 현재 스폰된 아이템 금고 리스트
-    List<float> eliteWeight = new List<float>(); // 엘리트 몬스터 가중치 리스트
+    [SerializeField] List<float> eliteWeight = new List<float>(); // 엘리트 몬스터 가중치 리스트
 
     [Header("Refer")]
     [SerializeField] GameObject itemBoxPrefab; // 파괴 가능한 아이템 박스
@@ -72,10 +72,10 @@ public class WorldSpawner : MonoBehaviour
         spawnEnemyList.Clear();
 
         // 엘리트 종류 가중치
-        eliteWeight.Add(0); // 엘리트 아닐 확률 가중치 = 0
-        eliteWeight.Add(20); // Power 엘리트 가중치
-        eliteWeight.Add(20); // Speed 엘리트 가중치
-        eliteWeight.Add(10); // Heal 엘리트 가중치
+        // eliteWeight.Add(0); // 엘리트 아닐 확률 가중치 = 0
+        // eliteWeight.Add(20); // Power 엘리트 가중치
+        // eliteWeight.Add(20); // Speed 엘리트 가중치
+        // eliteWeight.Add(10); // Heal 엘리트 가중치
     }
 
     void Start()
@@ -96,7 +96,7 @@ public class WorldSpawner : MonoBehaviour
         // 현재 맵속성으로 몬스터 풀 만들기
         foreach (KeyValuePair<int, EnemyInfo> enemy in EnemyDB.Instance.enemyDB)
         {
-            // 해당 몹의 원소 속성 반환
+            // 해당 몹의 원소 속성을 인덱스로 반환
             int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
 
             // 현재 맵의 속성과 같은 원소속성의 일반몹이면

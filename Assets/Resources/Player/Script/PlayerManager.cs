@@ -161,8 +161,6 @@ public class PlayerManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
-        print("Player Awake");
-
         // 위치 초기화
         transform.position = Vector3.zero;
 
@@ -313,7 +311,7 @@ public class PlayerManager : MonoBehaviour
         ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (player_Input != null)
         {

@@ -65,7 +65,7 @@ public class OptionMenu : MonoBehaviour
         StartCoroutine(Init());
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (Option_Input != null)
         {

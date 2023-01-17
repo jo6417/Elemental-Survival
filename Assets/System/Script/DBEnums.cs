@@ -7,5 +7,5 @@ public enum MagicDBEnum {ElectroBolt, Flame, LifeMushroom, SlingShot, BubblePop,
 
 public enum ItemDBEnum {EarthGem, FireGem, LifeGem, LightningGem, WaterGem, WindGem, LifeMushroom, Heart, MagicShard1, MagicShard2, MagicShard3, MagicShard4, MagicShard5, MagicShard6, GaiaBoots, SurtrLantern, FreyjaNecklace, Tinglebracelet, BlessingWater, BreezeNecklace, HealthPotion, ManaShard, SlotMachine, Magnet, TruckButton};
 
-public enum EnemyDBEnum {EarthSlime, FireSlime, LifeSlime, LightningSlime, WaterSlime, WindSlime, MiniDrone, A_800, BigDrone, StoneGolem, DroneSwarm, Dog_101, Vacuum, Roader, Dog_301, Bawi, HotDog, Farmer, Ascii, KingSlime, Quad};
+public enum EnemyDBEnum {EarthSlime, FireSlime, LifeSlime, LightningSlime, WaterSlime, WindSlime, MiniDrone, A_800, BigDrone, StoneGolem, DroneSwarm, Dog_101, ChainTree, Vacuum, Roader, Dog_301, Bawi, HotDog, Farmer, Ascii, KingSlime, Quad};
 }
