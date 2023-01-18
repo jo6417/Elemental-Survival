@@ -115,6 +115,11 @@ MonoBehaviour:
       volume: 0.5
       pitch: 1.2
       source: {fileID: 0}
+    - name: Gameover_Screen_Bzz
+      clip: {fileID: 8300000, guid: 99a93292b609a7948b294b37b214c7a9, type: 3}
+      volume: 1
+      pitch: 2
+      source: {fileID: 0}
   - name: Music_Sounds
     sounds:
     - name: InGameBGM_1
@@ -391,6 +396,16 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: d356723870019b241b9f95616ce428f1, type: 3}
       volume: 0.2
       pitch: 1
+      source: {fileID: 0}
+    - name: LightningSlime_AttackReady
+      clip: {fileID: 8300000, guid: 4144807ac08bfd545908311f792082de, type: 3}
+      volume: 0.3
+      pitch: 2
+      source: {fileID: 0}
+    - name: LightningSlime_Attack
+      clip: {fileID: 8300000, guid: 264e91933219acc43a2bb4218367814e, type: 3}
+      volume: 0.5
+      pitch: 3
       source: {fileID: 0}
   - name: Effect_Sounds
     sounds:

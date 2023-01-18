@@ -71,7 +71,6 @@ public class PhoneMenu : MonoBehaviour
     public Image invenBackground; // 인벤토리 뒷배경 이미지
     public Transform invenParent; // 인벤토리 슬롯들 부모 오브젝트
     public List<InventorySlot> invenSlots = new List<InventorySlot>(); //각각 슬롯 오브젝트
-    public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public InventorySlot nowSelectSlot; // 현재 선택된 슬롯
     public SlotInfo nowSelectSlotInfo; // 현재 선택된 슬롯 정보    
     RectTransform nowSelectIconRect;
@@ -442,8 +441,8 @@ public class PhoneMenu : MonoBehaviour
         List<MagicInfo> mergeAbleList = new List<MagicInfo>();
 
         // 가중치 배열 초기화
-        for (int i = 0; i < elementWeitght.Length; i++)
-            elementWeitght[i] = 1;
+        for (int i = 0; i < SystemManager.Instance.elementWeitght.Length; i++)
+            SystemManager.Instance.elementWeitght[i] = 1;
 
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
         for (int i = 0; i < invenSlots.Count; i++)
@@ -457,7 +456,7 @@ public class PhoneMenu : MonoBehaviour
                 magicList.Add(magic);
 
                 // 해당 마법 원소의 인덱스 가중치 증가
-                elementWeitght[MagicDB.Instance.ElementType(magic)]++;
+                SystemManager.Instance.elementWeitght[MagicDB.Instance.ElementType(magic)]++;
             }
         }
 

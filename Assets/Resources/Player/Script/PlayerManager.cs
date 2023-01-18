@@ -361,10 +361,6 @@ public class PlayerManager : MonoBehaviour
 
             return;
         }
-        else
-        {
-            anim.speed = 1 * SystemManager.Instance.playerTimeScale;
-        }
 
         // x축 이동에 따라 회전
         if (inputMoveDir.x != 0)
@@ -379,9 +375,17 @@ public class PlayerManager : MonoBehaviour
                 sprite.transform.rotation = Quaternion.Euler(0, 180, 0);
             }
 
-            //todo 그림자는 회전값 유지
+            // 그림자는 회전값 유지
             shadowSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
+
+        //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
+        dashSpeed = isDash ? defaultDashSpeed : 1f;
+
+        // 대쉬중 아닐때
+        if (!isDash)
+            // 이동 입력값을 실제 이동 벡터에 담기
+            nowMoveDir = inputMoveDir;
 
         // 방향키 입력에 따라 애니메이터 걷기 변수 입력
         if (inputMoveDir == Vector2.zero)
@@ -393,29 +397,28 @@ public class PlayerManager : MonoBehaviour
             anim.SetBool("isWalk", true);
         }
 
-        //대쉬 입력에 따라 애니메이터 대쉬 변수 입력
-        dashSpeed = isDash ? defaultDashSpeed : 1f;
-
-        // 대쉬중 아닐때
-        if (!isDash)
-        {
-            // 이동 입력값을 실제 이동 벡터에 담기
-            nowMoveDir = inputMoveDir;
-        }
-
         // 마지막 이동 방향 기억
         if (nowMoveDir != Vector2.zero)
             lastDir = nowMoveDir;
 
-        // 실제 오브젝트 이동해주기
-        rigid.velocity =
-        PlayerStat_Now.moveSpeed //플레이어 이동속도
+        Vector2 moveVector =
+        PlayerStat_Now.moveSpeed * 10f //플레이어 이동속도
         * nowMoveDir //움직일 방향
         * dashSpeed //대쉬할때 속도 증가
         * speedDeBuff // 속도 버프
         * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
-        + hitBox.knockbackDir //넉백 벡터 추가
-        ;
+        + hitBox.knockbackDir; //넉백 벡터 추가
+
+        // 실제 오브젝트 이동해주기
+        rigid.velocity = moveVector;
+
+        // 대쉬중 아닐때
+        if (!isDash)
+            // 이동 속도를 애니메이션 속도에 적용
+            anim.speed = 1 * SystemManager.Instance.playerTimeScale * moveVector.magnitude * 0.1f;
+        else
+            // 일반 속도로 적용
+            anim.speed = 1 * SystemManager.Instance.playerTimeScale;
     }
 
     public void DashToggle()

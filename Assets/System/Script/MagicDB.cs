@@ -452,8 +452,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 자체 파워 증가량 계산
-            power = power * PlayerManager.Instance.PlayerStat_Now.power;
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 파워 증가량 계산
+                power = power * PlayerManager.Instance.PlayerStat_Now.power;
 
         return power;
     }
@@ -471,10 +472,11 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 speed 스탯 곱하기
-            speed = bigNumFast
-            ? speed + speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1)
-            : speed - speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1);
+            if (PlayerManager.Instance != null)
+                //플레이어 speed 스탯 곱하기
+                speed = bigNumFast
+                ? speed + speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1)
+                : speed - speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1);
 
         //값 제한하기
         speed = Mathf.Clamp(speed, 0.01f, 100f);
@@ -493,8 +495,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 자체 마법 범위 증가량 계산
-            range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 마법 범위 증가량 계산
+                range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
 
         //값 제한하기
         range = Mathf.Clamp(range, 0.1f, 1000f);
@@ -513,8 +516,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 자체 마법 지속시간 증가량 계산
-            duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 마법 지속시간 증가량 계산
+                duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
 
         //값 제한하기
         duration = Mathf.Clamp(duration, 0.1f, 100f);
@@ -534,8 +538,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 자체 마법 크리티컬 확률 증가량 계산
-            critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 마법 크리티컬 확률 증가량 계산
+                critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
 
         //값 제한하기 0% ~ 100%
         critical = Mathf.Clamp(critical, 0f, 1f);
@@ -565,8 +570,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 자체 마법 크리티컬 데미지 증가량 계산
-            criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 마법 크리티컬 데미지 증가량 계산
+                criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
 
         return criticalPower;
     }
@@ -582,8 +588,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            // 플레이어 관통 횟수 추가 계산
-            pierce += PlayerManager.Instance.PlayerStat_Now.pierce;
+            if (PlayerManager.Instance != null)
+                // 플레이어 관통 횟수 추가 계산
+                pierce += PlayerManager.Instance.PlayerStat_Now.pierce;
 
 
         return pierce;
@@ -602,6 +609,7 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         // if (target == MagicHolder.Target.Enemy)
+        // if (PlayerManager.Instance != null)
         //     // 플레이어 투사체 개수 추가 계산
         //     atkNum += PlayerManager.Instance.PlayerStat_Now.atkNumNum;
 
@@ -622,8 +630,9 @@ public class MagicDB : MonoBehaviour
 
         // 플레이어가 쓰는 마법일때
         if (target == MagicHolder.TargetType.Enemy)
-            //플레이어 자체 쿨타임 증가량 계산
-            coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 쿨타임 증가량 계산
+                coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
 
         //값 제한하기
         coolTime = Mathf.Clamp(coolTime, 0.01f, 10f);

@@ -83,15 +83,9 @@ public class EnemyAI : MonoBehaviour
             // 추적 타이머 갱신
             searchCoolCount = searchCoolTime;
 
-            // 타겟이 null일때
-            if (character.TargetObj == null)
-                // 플레이어 주변 위치로 계산
-                character.targetPos = PlayerNearPos();
-            // 타겟이 있을때
-            else
-                // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
-                character.targetPos = character.TargetObj.transform.position
-                + (Vector3)Random.insideUnitCircle * targetRange;
+            // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
+            character.targetPos = character.TargetObj.transform.position
+            + (Vector3)Random.insideUnitCircle * targetRange;
         }
 
         // 목표 위치를 추적 위치로 서서히 바꾸기
@@ -99,6 +93,12 @@ public class EnemyAI : MonoBehaviour
 
         // 목표 방향 계산
         character.targetDir = character.movePos - transform.position;
+
+        //todo 타겟에서 일정거리 이상 벗어나면 쫓아가기
+        if (character.targetDir.magnitude > WorldSpawner.Instance.maxDistance)
+        {
+            character.transform.position = WorldSpawner.Instance.BorderRandPos();
+        }
 
         // 상태 이상 있으면 리턴
         if (!character.ManageState())
@@ -184,7 +184,6 @@ public class EnemyAI : MonoBehaviour
             else
                 character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
         }
-
 
         character.nowState = Character.State.Idle;
     }

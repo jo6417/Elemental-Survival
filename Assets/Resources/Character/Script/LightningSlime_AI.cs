@@ -11,6 +11,7 @@ public class LightningSlime_AI : MonoBehaviour
     [SerializeField] Animator bodyAnim; // 몸체 애니메이터
     [SerializeField] Animator eyeBlink; // 깜빡이는 눈
     [SerializeField] GameObject eyeFrown; // 찡그린 눈
+    AudioSource attackSound; // 공격 소리
 
     private void OnEnable()
     {
@@ -28,8 +29,8 @@ public class LightningSlime_AI : MonoBehaviour
 
     private void Update()
     {
-        // 공격 트리거 활성화 및 공격 꺼져있을때
-        if (meleeTrigger.atkTrigger && !attack.gameObject.activeInHierarchy)
+        // 공격 트리거 활성화 및 idle 상태일때
+        if (meleeTrigger.atkTrigger && character.nowState == Character.State.Idle)
         {
             // 가시공격 실행
             StartCoroutine(ElectroAtk());
@@ -40,6 +41,11 @@ public class LightningSlime_AI : MonoBehaviour
     {
         // 공격 상태로 변경
         character.nowState = Character.State.Attack;
+
+        // 물리 충돌 끄기
+        character.physicsColl.enabled = false;
+        // 속도 멈추기
+        character.rigid.velocity = Vector2.zero;
 
         // 몸체 애니메이터 끄기
         bodyAnim.enabled = false;
@@ -55,7 +61,8 @@ public class LightningSlime_AI : MonoBehaviour
         // 양쪽으로 진동
         transform.DOPunchPosition(Vector2.right * 0.1f, 1f);
 
-        //todo 공격 준비 사운드 재생
+        // 공격 준비 사운드 재생
+        attackSound = SoundManager.Instance.PlaySound("LightningSlime_AttackReady", transform.position);
 
         // 공격 딜레이 대기
         yield return new WaitForSeconds(1f);
@@ -75,7 +82,8 @@ public class LightningSlime_AI : MonoBehaviour
         // 공격 딜레이 대기
         yield return new WaitForSeconds(0.2f);
 
-        //todo 공격 사운드 재생
+        // 공격 사운드 반복 재생
+        attackSound = SoundManager.Instance.PlaySound("LightningSlime_Attack", transform, 0, 0, -1, true);
 
         // 공격 콜라이더 켜기
         attack.atkColl.enabled = true;
@@ -86,22 +94,39 @@ public class LightningSlime_AI : MonoBehaviour
         // 공격 중 대기
         yield return new WaitForSeconds(1f);
 
+        // 공격 사운드 정지
+        SoundManager.Instance.StopSound(attackSound, 0.2f);
+
+        // 공격 사운드 비우기
+        attackSound = null;
+
         // 공격 비활성화
         attack.gameObject.SetActive(false);
 
         // 찡그린 눈 끄기
         eyeFrown.SetActive(false);
 
-        // 일반 눈 애니메이션으로 복귀        
+        // 일반 눈 애니메이션으로 복귀
         eyeBlink.SetBool("Attack", false);
 
         // 몸체 애니메이터 끄기
         bodyAnim.enabled = true;
 
+        // 물리 충돌 켜기
+        character.physicsColl.enabled = true;
+
         // 공격 후딜레이 대기
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         // idle 상태로 변경
         character.nowState = Character.State.Idle;
+    }
+
+    private void OnDisable()
+    {
+        // 공격 사운드 재생중이면
+        if (attackSound != null)
+            // 공격 사운드 정지
+            SoundManager.Instance.StopSound(attackSound);
     }
 }

@@ -83,6 +83,7 @@ public class SystemManager : MonoBehaviour
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
     public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
+    public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
 
     [Header("Debug")]
     public TextMeshProUGUI nowSelectUI; //! 선택된 UI 이름

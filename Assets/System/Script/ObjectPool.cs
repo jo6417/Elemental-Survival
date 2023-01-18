@@ -12,17 +12,18 @@ public class ObjectPool : MonoBehaviour
         {
             if (instance == null)
             {
-                return null;
-                // var obj = FindObjectOfType<ObjectPool>();
-                // if (obj != null)
-                // {
-                //     instance = obj;
-                // }
-                // else
-                // {
-                //     var newObj = new GameObject().AddComponent<ObjectPool>();
-                //     instance = newObj;
-                // }
+                // return null;
+                var obj = FindObjectOfType<ObjectPool>();
+                if (obj != null)
+                {
+                    instance = obj;
+                }
+                else
+                {
+                    var newObj = new GameObject().AddComponent<ObjectPool>();
+                    newObj.name = "new ObjectPool";
+                    instance = newObj;
+                }
             }
             return instance;
         }

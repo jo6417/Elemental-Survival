@@ -402,7 +402,6 @@ public class MapManager : MonoBehaviour
         Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(rightX, downY));
         Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
     }
-
     private void OnDrawGizmosSelected()
     {
 

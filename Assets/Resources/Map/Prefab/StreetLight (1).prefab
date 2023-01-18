@@ -157,10 +157,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shuffle: 0
+  autoShuffle: 0
   flipRate: 0.5
   rotateMin: 0
   rotateMax: 360
-  pivotMove: {x: 0, y: 0, z: 0}
 --- !u!1 &4588782591246162998
 GameObject:
   m_ObjectHideFlags: 0

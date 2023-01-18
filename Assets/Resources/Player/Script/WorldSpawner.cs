@@ -13,19 +13,19 @@ public class WorldSpawner : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                var obj = FindObjectOfType<WorldSpawner>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
-                // else
-                // {
-                //     var newObj = new GameObject().AddComponent<WorldSpawner>();
-                //     instance = newObj;
-                // }
-            }
+            // if (instance == null)
+            // {
+            //     var obj = FindObjectOfType<WorldSpawner>();
+            //     if (obj != null)
+            //     {
+            //         instance = obj;
+            //     }
+            //     // else
+            //     // {
+            //     //     var newObj = new GameObject().AddComponent<WorldSpawner>();
+            //     //     instance = newObj;
+            //     // }
+            // }
             return instance;
         }
     }
@@ -36,16 +36,19 @@ public class WorldSpawner : MonoBehaviour
     public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
     public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
     public bool allEliteSwitch; // 모든 적이 엘리트
+    public bool spawnItem; // 아이템 스폰 여부
 
     [Header("State")]
     [SerializeField] int modifyEnemyPower; //! 전투력 임의 수정값
     public int nowDifficultGrade = 0; // 현재 난이도 등급
-    [SerializeField, ReadOnly] int MaxEnemyPower; //최대 몬스터 전투력
+    [SerializeField] int MaxEnemyPower; //최대 몬스터 전투력
     public int NowEnemyPower; //현재 몬스터 전투력
     [SerializeField] float enemySpawnCount; //몬스터 스폰 쿨타임 카운트
     [SerializeField] float itemboxSpawnCount; //아이템 박스 스폰 쿨타임 카운트
     [SerializeField] float lockerSpawnCount; //아이템 금고 스폰 쿨타임 카운트
     [SerializeField, ReadOnly] bool nowSpawning; //스폰중일때
+    [SerializeField] Transform targetObj;
+    public float maxDistance; // 타겟과 몬스터 사이 최대 거리
 
     [Header("Pool")]
     public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
@@ -68,6 +71,10 @@ public class WorldSpawner : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을때
+        if (instance == null)
+            instance = this;
+
         // 현재 스폰 몬스터 리스트 비우기
         spawnEnemyList.Clear();
 
@@ -76,6 +83,11 @@ public class WorldSpawner : MonoBehaviour
         // eliteWeight.Add(20); // Power 엘리트 가중치
         // eliteWeight.Add(20); // Speed 엘리트 가중치
         // eliteWeight.Add(10); // Heal 엘리트 가중치
+
+        // 플레이어 있으면
+        if (PlayerManager.Instance != null)
+            // 플레이어를 타겟으로 지정
+            targetObj = PlayerManager.Instance.transform;
     }
 
     void Start()
@@ -93,26 +105,28 @@ public class WorldSpawner : MonoBehaviour
         // 몬스터 DB 초기화 대기
         yield return new WaitUntil(() => EnemyDB.Instance != null && EnemyDB.Instance.loadDone);
 
-        // 현재 맵속성으로 몬스터 풀 만들기
-        foreach (KeyValuePair<int, EnemyInfo> enemy in EnemyDB.Instance.enemyDB)
-        {
-            // 해당 몹의 원소 속성을 인덱스로 반환
-            int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
-
-            // 현재 맵의 속성과 같은 원소속성의 일반몹이면
-            if (enemyElement == (int)SystemManager.Instance.nowMapElement && enemy.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
+        // 스폰 가능 몬스터 풀이 비었으면
+        if (spawnAbleList.Count == 0)
+            // 현재 맵속성으로 몬스터 풀 만들기
+            foreach (KeyValuePair<int, EnemyInfo> enemy in EnemyDB.Instance.enemyDB)
             {
-                GameObject enemyObj = EnemyDB.Instance.GetPrefab(enemy.Value.id);
-                Character character = null;
+                // 해당 몹의 원소 속성을 인덱스로 반환
+                int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
 
-                if (enemyObj != null)
-                    character = enemyObj.GetComponent<Character>();
+                // 현재 맵의 속성과 같은 원소속성의 일반몹이면
+                if (enemyElement == (int)SystemManager.Instance.nowMapElement && enemy.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
+                {
+                    GameObject enemyObj = EnemyDB.Instance.GetPrefab(enemy.Value.id);
+                    Character character = null;
 
-                if (character != null)
-                    // 스폰 가능리스트에 포함
-                    spawnAbleList.Add(character);
+                    if (enemyObj != null)
+                        character = enemyObj.GetComponent<Character>();
+
+                    if (character != null)
+                        // 스폰 가능리스트에 포함
+                        spawnAbleList.Add(character);
+                }
             }
-        }
 
         // 게임 시작할때까지 대기
         yield return new WaitUntil(() => Time.timeScale == 1f);
@@ -140,7 +154,9 @@ public class WorldSpawner : MonoBehaviour
             if (enemySpawnCount <= 0 && !nowSpawning)
             {
                 //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
-                float maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
+                float maxSpawnNum = 1;
+                if (PlayerManager.Instance != null)
+                    maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
 
                 // 스폰 횟수 범위 제한
                 maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);
@@ -159,46 +175,49 @@ public class WorldSpawner : MonoBehaviour
             else
                 enemySpawnCount -= Time.deltaTime;
 
-        // 쿨타임마다 아이템 박스 스폰
-        if (itemboxSpawnCount <= 0)
+        // 아이템 스폰일때
+        if (spawnItem)
         {
-            // 랜덤 스폰 확률
-            float spawnRate = Random.value;
-            // 아이템 박스 개수에 반비례해서 확률 스폰 (100% 확률에서 박스 1개당 확률 10% 차감)
-            if (spawnRate <= 1f - itemBoxList.Count * 1f / 10f)
+            // 쿨타임마다 아이템 박스 스폰
+            if (itemboxSpawnCount <= 0)
             {
-                // 아이템 박스 스폰, 최대 10개
-                GameObject itembox = SpawnItembox(itemBoxPrefab);
+                // 랜덤 스폰 확률
+                float spawnRate = Random.value;
+                // 아이템 박스 개수에 반비례해서 확률 스폰 (100% 확률에서 박스 1개당 확률 10% 차감)
+                if (spawnRate <= 1f - itemBoxList.Count * 1f / 10f)
+                {
+                    // 아이템 박스 스폰, 최대 10개
+                    GameObject itembox = SpawnItembox(itemBoxPrefab);
 
-                // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
-                float boxCoolTime = 3f + itemBoxList.Count * 5f;
-                // 쿨타임 갱신
-                itemboxSpawnCount = boxCoolTime;
+                    // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
+                    float boxCoolTime = 3f + itemBoxList.Count * 5f;
+                    // 쿨타임 갱신
+                    itemboxSpawnCount = boxCoolTime;
+                }
             }
-        }
-        else
-            itemboxSpawnCount -= Time.deltaTime;
+            else
+                itemboxSpawnCount -= Time.deltaTime;
 
-
-        // 쿨타임마다 아이템 금고 스폰
-        if (lockerSpawnCount <= 0)
-        {
-            // 랜덤 스폰 확률
-            float spawnRate = Random.value;
-            // 아이템 박스 개수에 반비례해서 확률 스폰 (100% 확률에서 박스 1개당 확률 10% 차감)
-            if (spawnRate <= 1f - lockerList.Count * 1f / 5f)
+            // 쿨타임마다 아이템 금고 스폰
+            if (lockerSpawnCount <= 0)
             {
-                // 아이템 금고 스폰, 최대 5개
-                GameObject itembox = SpawnItembox(lockerPrefab);
+                // 랜덤 스폰 확률
+                float spawnRate = Random.value;
+                // 아이템 박스 개수에 반비례해서 확률 스폰 (100% 확률에서 박스 1개당 확률 10% 차감)
+                if (spawnRate <= 1f - lockerList.Count * 1f / 5f)
+                {
+                    // 아이템 금고 스폰, 최대 5개
+                    GameObject itembox = SpawnItembox(lockerPrefab);
 
-                // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
-                float boxCoolTime = 10f + lockerList.Count * 10f;
-                // 쿨타임 갱신
-                lockerSpawnCount = boxCoolTime;
+                    // 쿨타임 계산 (기본 시간 + 개당 n초 추가)
+                    float boxCoolTime = 10f + lockerList.Count * 10f;
+                    // 쿨타임 갱신
+                    lockerSpawnCount = boxCoolTime;
+                }
             }
+            else
+                lockerSpawnCount -= Time.deltaTime;
         }
-        else
-            lockerSpawnCount -= Time.deltaTime;
     }
 
     IEnumerator SpawnEnemy(bool ForceSpawn = false)
@@ -426,8 +445,10 @@ public class WorldSpawner : MonoBehaviour
             // 소환된 몬스터 초기화 시작
             character.initialStart = true;
 
-            // 몬스터 위치 가리킬 화살표 UI 소환
-            StartCoroutine(PointEnemyDir(enemyObj));
+            // 인게임일때
+            if (PlayerManager.Instance != null)
+                // 몬스터 위치 가리킬 화살표 UI 소환
+                StartCoroutine(PointEnemyDir(enemyObj));
         })
         .Append(
             //포탈 사이즈 줄여 사라지기
@@ -500,19 +521,19 @@ public class WorldSpawner : MonoBehaviour
         if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
         && other.gameObject.activeSelf && dragSwitch && other.enabled)
         {
-            Character manager = other.GetComponent<Character>();
+            Character character = other.GetComponent<Character>();
             EnemyAI enemyAI = other.GetComponent<EnemyAI>();
 
             // 매니저가 없으면 몬스터 본체가 아니므로 리턴
-            if (manager == null)
+            if (character == null)
                 return;
 
             //죽은 몬스터는 미적용
-            if (manager.isDead)
+            if (character.isDead)
                 return;
 
             //이동 대기 카운트 초기화
-            manager.oppositeCount = 0.5f;
+            character.oppositeCount = 0.5f;
 
             //원래 부모 기억
             Transform originParent = other.transform.parent;
@@ -548,22 +569,22 @@ public class WorldSpawner : MonoBehaviour
         {
             // 위
             case 0:
-                spawnPosY = Random.Range(spawnColl.bounds.max.y, spawnColl.bounds.max.y + edgeRadius);
+                spawnPosY = spawnColl.bounds.max.y;
                 break;
 
             // 오른쪽
             case 1:
-                spawnPosX = Random.Range(spawnColl.bounds.max.x, spawnColl.bounds.max.x + edgeRadius);
+                spawnPosX = spawnColl.bounds.max.x;
                 break;
 
             // 아래
             case 2:
-                spawnPosY = Random.Range(spawnColl.bounds.min.y, spawnColl.bounds.min.y - edgeRadius);
+                spawnPosY = spawnColl.bounds.min.y;
                 break;
 
             // 왼쪽
             case 3:
-                spawnPosX = Random.Range(spawnColl.bounds.min.x, spawnColl.bounds.min.x - edgeRadius);
+                spawnPosX = spawnColl.bounds.min.x;
                 break;
         }
 
@@ -595,7 +616,7 @@ public class WorldSpawner : MonoBehaviour
                     arrowUI.transform.position = Camera.main.ViewportToWorldPoint(arrowPos);
 
                     // 몬스터 방향 가리키기
-                    Vector2 dir = enemyObj.transform.position - PlayerManager.Instance.transform.position;
+                    Vector2 dir = enemyObj.transform.position - targetObj.position;
                     float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                     arrowUI.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                 }

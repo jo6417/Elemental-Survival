@@ -19,14 +19,16 @@ public class AnimSelector : MonoBehaviour
         anim.enabled = false;
 
         // 1초 이내 랜덤 딜레이 대기
-        yield return new WaitForSeconds(Random.value);
+        yield return new WaitForSeconds(Random.value * 2f);
 
         // 패턴 고정
         int pattern = SystemManager.Instance.WeightRandom(patternWeight);
 
         // 고정 패턴 없으면 랜덤
-        pattern = Random.Range(0, patternWeight.Count);
+        if (pattern == -1)
+            pattern = Random.Range(0, patternWeight.Count);
 
+        // 애니메이터에 해당 패턴 적용
         anim.SetInteger("Pattern", pattern);
 
         // 애니메이터 켜기

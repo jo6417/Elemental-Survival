@@ -178,25 +178,12 @@ public class Character : MonoBehaviour
         // 버프 아이콘 부모 찾기, 없으면 본인 오브젝트
         buffParent = buffParent == null ? transform : buffParent;
 
-        yield return new WaitUntil(() => PlayerManager.Instance != null);
-
-        //초기 타겟은 플레이어
-        TargetObj = PlayerManager.Instance.gameObject;
-
         // 공격 트리거 찾기
         // enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
         // 공격 콜라이더 찾기
         // enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
 
-        yield return new WaitUntil(() => WorldSpawner.Instance != null);
-
-        // 히트 이펙트가 없으면 기본 이펙트 가져오기
-        if (hitEffect == null)
-            hitEffect = WorldSpawner.Instance.hitEffect;
-
-        // 초기화 시작 및 완료 변수 초기화
-        // initialStart = false;
-        initialFinish = false;
+        yield return null;
     }
 
     protected virtual void OnEnable()
@@ -306,6 +293,11 @@ public class Character : MonoBehaviour
                 break;
         }
 
+        yield return new WaitUntil(() => WorldSpawner.Instance != null);
+        // 히트 이펙트가 없으면 기본 이펙트 가져오기
+        if (hitEffect == null)
+            hitEffect = WorldSpawner.Instance.hitEffect;
+
         //ItemDB 로드 될때까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
@@ -324,7 +316,7 @@ public class Character : MonoBehaviour
                 List<ItemInfo> gems = ItemDB.Instance.GetItemsByType(ItemDB.ItemType.Gem);
 
                 // 가중치 확률로 원소젬 인덱스 뽑기
-                int gemIndex = SystemManager.Instance.WeightRandom(PhoneMenu.Instance.elementWeitght.ToList());
+                int gemIndex = SystemManager.Instance.WeightRandom(SystemManager.Instance.elementWeitght.ToList());
                 if (gemIndex == -1)
                     gemIndex = 0;
 
@@ -554,7 +546,7 @@ public class Character : MonoBehaviour
         // 고스트일때, 타겟이 비활성화되거나 리셋타임이 되면 타겟 재설정
         if (IsGhost && (targetResetCount <= 0 || TargetObj == null))
             // 타겟 리셋하기
-            TargetObj = null;
+            TargetObj = SearchTarget();
 
         // 타겟 리셋 카운트 차감
         if (targetResetCount > 0)
@@ -775,6 +767,16 @@ public class Character : MonoBehaviour
         // 가장 가까운 적과의 거리
         float closeRange = float.PositiveInfinity;
         GameObject closeEnemy = null;
+
+        // 고스트 아닐때
+        if (!IsGhost)
+            if (PlayerManager.Instance != null)
+                // 플레이어를 리턴
+                return PlayerManager.Instance.gameObject;
+            else
+                // 메인 카메라를 리턴
+                return Camera.main.gameObject;
+
 
         //캐릭터 주변의 적들
         List<Collider2D> enemyCollList = Physics2D.OverlapCircleAll(transform.position, 50f, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();

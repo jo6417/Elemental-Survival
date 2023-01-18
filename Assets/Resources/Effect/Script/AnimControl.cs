@@ -7,6 +7,8 @@ public class AnimControl : MonoBehaviour
 {
     public Animator anim;
     public float animSpeed = 1f;
+    [SerializeField] bool stopDespawn = false;
+    bool stopTrigger = false;
 
     private void OnEnable()
     {
@@ -16,7 +18,7 @@ public class AnimControl : MonoBehaviour
 
     public void Despawn()
     {
-        print(transform.name);
+        // print(transform.name);
         LeanPool.Despawn(transform);
     }
 }

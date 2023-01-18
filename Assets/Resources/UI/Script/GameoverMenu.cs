@@ -110,7 +110,7 @@ public class GameoverMenu : MonoBehaviour
 
     void BzzSoundPlay()
     {
-        bzzSound = SoundManager.Instance.PlaySound("Ascii_Screen_Bzz", 0, 0, -1);
+        bzzSound = SoundManager.Instance.PlaySound("Gameover_Screen_Bzz", 0, 0, -1);
     }
 
     void BzzSoundStop()
