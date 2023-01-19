@@ -88,8 +88,10 @@ public class GatePortal : MonoBehaviour
         // 보스 변수 초기화
         bossCharacter = null;
 
-        // 필요한 젬 타입 초기화
-        gemType = Random.Range(0, 6);
+        // 맵 속성 따라서 필요한 젬 타입 초기화
+        // gemType = Random.Range(0, 6);
+        gemType = (int)SystemManager.Instance.nowMapElement;
+
         // 필요한 젬 개수 초기화
         maxGem = Random.Range(30, 50);
         nowGem = 0;

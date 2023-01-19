@@ -458,6 +458,9 @@ public class SystemManager : MonoBehaviour
             PlayerManager.Instance.player_Input.Enable();
             UIManager.Instance.UI_Input.Disable();
         }
+
+        // 마우스 커서 전환
+        UICursor.Instance.CursorChange(UI_enable);
     }
 
     // 화면에 프레임 레이트를 표시해 주는 함수
@@ -503,6 +506,9 @@ public class SystemManager : MonoBehaviour
     {
         // 씬 변경 시작
         sceneChanging = true;
+
+        // 마우스 커서 전환
+        UICursor.Instance.CursorChange(true);
 
         // 화면 마스크로 덮기
         yield return StartCoroutine(Loading.Instance.SceneMask(true));

@@ -33,6 +33,9 @@ public class MainMenuBtn : MonoBehaviour
         // ui 커서 초기화까지 대기
         yield return new WaitUntil(() => UICursor.Instance != null);
 
+        // 마우스 커서 전환
+        UICursor.Instance.CursorChange(true);
+
         // 메인메뉴 패널 켜기        
         BackToMenu();
 

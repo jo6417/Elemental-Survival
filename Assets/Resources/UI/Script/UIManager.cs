@@ -231,6 +231,10 @@ public class UIManager : MonoBehaviour
 
         // 시간 멈춰있을때만
         if (Time.timeScale == 0)
+        {
+            // 마우스 커서 끄기
+            UICursor.Instance.arrowCursor.SetActive(false);
+
             //마우스 잠겨있지않을때
             if (Cursor.lockState == CursorLockMode.None)
             {
@@ -241,11 +245,7 @@ public class UIManager : MonoBehaviour
                 //마우스 숨기기
                 Cursor.lockState = CursorLockMode.Locked;
             }
-
-        // // UI 커서 컨트롤
-        // // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
-        // if (!UI_Cursor.activeSelf && lastSelected)
-        //     lastSelected.Select();
+        }
     }
 
     // 마우스 위치 입력되면 실행
@@ -262,11 +262,15 @@ public class UIManager : MonoBehaviour
             // 마우스 고정인데 툴팁 떠있으면 끄기
             HasStuffToolTip.Instance.QuitTooltip();
             ProductToolTip.Instance.QuitTooltip();
+
             //마우스 고정해제
             Cursor.lockState = CursorLockMode.None;
 
             // UI 커서 끄기
             UICursor.Instance.UICursorToggle(false);
+
+            // 마우스 커서 켜기
+            UICursor.Instance.arrowCursor.SetActive(true);
         }
     }
 
@@ -286,12 +290,15 @@ public class UIManager : MonoBehaviour
         //선택된 UI 따라다니기
         // FollowUICursor();
 
-        print("submit");
+        // print("submit");
 
-        //todo 현재 선택된 버튼 누르기
-        Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-        if (btn != null)
-            btn.onClick.Invoke();
+        // 현재 선택된 버튼 누르기
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+            if (btn != null)
+                btn.onClick.Invoke();
+        }
     }
 
     // 취소 입력
@@ -357,6 +364,11 @@ public class UIManager : MonoBehaviour
             ResumeTimer();
     }
 
+    public Vector2 GetMousePos()
+    {
+        return UI_Input.UI.MousePosition.ReadValue<Vector2>();
+    }
+
     #region Camera
 
     public void CameraShake(float duration, float strength = 1, int vibrato = 10,
@@ -395,6 +407,7 @@ public class UIManager : MonoBehaviour
     //게임 일시정지,재개
     public void Resume()
     {
+        // 일시정지 패널 꺼졌을때
         if (!pausePanel.activeSelf)
         {
             // 브금 일시정지 상태로 변경
@@ -403,6 +416,7 @@ public class UIManager : MonoBehaviour
             // 배경음 정지
             SoundManager.Instance.nowBGM.Pause();
         }
+        // 일시정지 패널 켜졌을때
         else
         {
             // 브금 재개 상태로 변경
@@ -410,7 +424,11 @@ public class UIManager : MonoBehaviour
 
             // 배경음 재개
             SoundManager.Instance.nowBGM.Play();
+
         }
+
+        // 마우스 커서 전환
+        UICursor.Instance.CursorChange(!pausePanel.activeSelf);
 
         //일시정지 메뉴 UI 토글
         PopupUI(pausePanel);
@@ -902,6 +920,9 @@ public class UIManager : MonoBehaviour
 
             //현재 열려있는 팝업 비우기
             nowOpenPopup = null;
+
+            //마우스 고정해제
+            Cursor.lockState = CursorLockMode.None;
         }
         //팝업 on
         else
@@ -912,6 +933,9 @@ public class UIManager : MonoBehaviour
             //현재 열려있는 팝업 갱신
             nowOpenPopup = popup;
         }
+
+        // 마우스 커서 전환
+        UICursor.Instance.CursorChange(popup.activeSelf);
     }
 
     public void SelectObject(GameObject gameObject)

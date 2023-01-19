@@ -249,23 +249,12 @@ public class Character : MonoBehaviour
         //엘리트 종류마다 색깔 및 능력치 적용
         switch ((int)eliteClass)
         {
-            case 1:
-                //체력 상승
-                hpMax = hpMax * 2f;
-
-                //힐 오브젝트 소환
-                healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
-                // 힐 오브젝트 크기 초기화
-                healRange.transform.localScale = Vector2.one * portalSize;
-                // 회복량 넣어주기
-                healRange.GetComponent<Attack>().fixedPower = -powerNow;
-
-                // 초록 아웃라인 머터리얼
-                spriteList[0].material = SystemManager.Instance.outLineMat;
-                spriteList[0].material.color = Color.green;
+            case 0:
+                // 일반 스프라이트 머터리얼
+                spriteList[0].material = SystemManager.Instance.spriteLitMat;
                 break;
 
-            case 2:
+            case 1:
                 //공격력 상승
                 powerNow = powerNow * 2f;
                 // 빨강 아웃라인 머터리얼
@@ -273,7 +262,7 @@ public class Character : MonoBehaviour
                 spriteList[0].material.color = Color.red;
                 break;
 
-            case 3:
+            case 2:
                 //속도 상승
                 speedNow = speedNow * 2f;
                 // 쿨타임 빠르게
@@ -282,6 +271,22 @@ public class Character : MonoBehaviour
                 // 하늘색 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
                 spriteList[0].material.color = Color.cyan;
+                break;
+
+            case 3:
+                //체력 상승
+                hpMax = hpMax * 2f;
+
+                //힐 오브젝트 소환
+                healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
+                // 힐 오브젝트 크기 초기화
+                healRange.transform.localScale = Vector2.one * portalSize * 0.5f;
+                // 회복량 넣어주기
+                healRange.GetComponent<Attack>().fixedPower = -powerNow;
+
+                // 초록 아웃라인 머터리얼
+                spriteList[0].material = SystemManager.Instance.outLineMat;
+                spriteList[0].material.color = Color.green;
                 break;
 
             case 4:
@@ -611,8 +616,8 @@ public class Character : MonoBehaviour
                     healEffect.gameObject.SetActive(false);
                 });
 
-                // 힐 쿨타임을 몬스터 쿨타임으로 갱신
-                healCount = cooltimeNow;
+                // 힐 쿨타임을 몬스터 쿨타임 2배로 갱신
+                healCount = cooltimeNow * 2f;
             }
         }
     }
@@ -832,8 +837,8 @@ public class Character : MonoBehaviour
                 //아이템 프리팹 찾기
                 GameObject prefab = ItemDB.Instance.GetItemPrefab(item.id);
 
-                // if (prefab == null)
-                //     print(item.name + " : not found");
+                if (prefab == null)
+                    print(item.name + " : not found");
 
                 //아이템 오브젝트 소환
                 GameObject itemObj = LeanPool.Spawn(prefab, transform.position, Quaternion.identity, ObjectPool.Instance.itemPool);

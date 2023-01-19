@@ -144,7 +144,7 @@ public class Loading : MonoBehaviour
             cutoutCover.SetActive(false);
 
             // 시간 속도 초기화
-            // SystemManager.Instance.TimeScaleChange(1f);
+            SystemManager.Instance.TimeScaleChange(1f);
         }
     }
 

@@ -24,9 +24,6 @@ public class ItemManager : MonoBehaviour
     [ReadOnly] public bool isBundle; //합쳐진 아이템인지
     [ReadOnly] public int gemTypeIndex = -1;
     [ReadOnly] private string itemName;
-    [ReadOnly] public float getRange = 0.5f; // 아이템 획득되는 거리
-    // private bool isGet = false; //플레이어가 획득했는지
-    public float moveSpeed = 1f; //아이템 획득시 날아갈 속도 계수
     public float autoDespawnTime = 0; //자동 디스폰 시간
 
     private void Awake()
@@ -48,6 +45,9 @@ public class ItemManager : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 초기화 전까지 콜라이더 끄기
+        coll.enabled = false;
+
         //아이템DB 로드 완료까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
@@ -91,6 +91,7 @@ public class ItemManager : MonoBehaviour
 
         // 콜라이더 초기화
         coll.enabled = true;
+        coll.isTrigger = false;
 
         // 자동 디스폰 실행
         if (autoDespawnTime > 0)
@@ -150,6 +151,9 @@ public class ItemManager : MonoBehaviour
 
     void PlayerCollision()
     {
+        // 이중 충돌 방지
+        coll.isTrigger = true;
+
         // 인벤토리에 들어가는 아이템일때 (마법이거나 샤드 아이템)
         if (magicInfo != null
         || (itemInfo != null && (itemInfo.itemType == ItemDB.ItemType.Shard.ToString())))
@@ -157,9 +161,6 @@ public class ItemManager : MonoBehaviour
             // 인벤토리 빈칸 있을때
             if (PhoneMenu.Instance.GetEmptySlot() != -1)
             {
-                //이중 충돌 방지
-                // coll.enabled = false;
-
                 // 자동 디스폰 중지
                 sprite.DOKill();
 
@@ -259,7 +260,7 @@ public class ItemManager : MonoBehaviour
         itemState = ItemState.Follow;
 
         // 플레이어 이동 속도 계수
-        float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed;
+        float playerSpeed = 10f;
         // 가속도값
         float accelSpeed = 1.5f;
 

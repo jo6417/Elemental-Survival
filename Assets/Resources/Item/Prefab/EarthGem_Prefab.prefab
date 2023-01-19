@@ -51,7 +51,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 768889a2aec4f2d489b8555031dfff7b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,7 +103,7 @@ TrailRenderer:
     colorGradient:
       serializedVersion: 2
       key0: {r: 1, g: 0.5316401, b: 0, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -190,10 +190,10 @@ MonoBehaviour:
     type: 3}
   coll: {fileID: 0}
   gadgetPrefab: {fileID: 0}
+  itemState: 0
   amount: 1
   isBundle: 0
   gemTypeIndex: -1
-  moveSpeed: 5
   autoDespawnTime: 0
 --- !u!212 &3694098022795033563
 SpriteRenderer:

@@ -1134,7 +1134,7 @@ public class Bawi_AI : EnemyAI
             playerDir = playerPos - drillRigid.transform.position;
 
             // 플레이어 이동속도 계산
-            float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.speedDeBuff;
+            float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.speedBuff;
 
             // 플레이어 방향으로 드릴 이동, 플레이어 걷기 속도보다 살짝 빠르게
             drillRigid.velocity = playerDir.normalized * playerSpeed * 1.7f;

@@ -45,7 +45,7 @@ public class LevelupMenu : MonoBehaviour
             // 인덱스 캐싱
             int index = i;
             // 얻을 아이템
-            SlotInfo getItem = new SlotInfo();
+            SlotInfo getItem = null;
 
             // 아이콘 찾기
             Image icon = slots.transform.GetChild(i).Find("Slot/Icon").GetComponent<Image>();
@@ -65,15 +65,20 @@ public class LevelupMenu : MonoBehaviour
             // 얻을 아이템 종류 가중치로 뽑기
             int randomType = SystemManager.Instance.WeightRandom(typeRate);
             // 얻을 아이템 등급 가중치로 뽑기
-            int randomGrade = SystemManager.Instance.WeightRandom(gradeRate);
+            int randomGrade = SystemManager.Instance.WeightRandom(gradeRate) + 1;
 
             // 언락 마법, 샤드, 원소젬 중에서 결정
             switch (randomType)
             {
                 case (int)GetSlotType.Magic:
+                    while (getItem == null)
+                    {
+                        // 언락 마법 중 하나 뽑기
+                        getItem = MagicDB.Instance.GetRandomMagic(randomGrade);
 
-                    // 언락 마법 중 하나 뽑기
-                    getItem = MagicDB.Instance.GetRandomMagic(randomGrade);
+                        // 실패하면 등급 다시 뽑기
+                        randomGrade = SystemManager.Instance.WeightRandom(gradeRate);
+                    }
 
                     break;
                 case (int)GetSlotType.Shard:
@@ -90,11 +95,11 @@ public class LevelupMenu : MonoBehaviour
                     // 원소젬 개수 랜덤
                     ItemInfo item = getItem as ItemInfo;
                     item.amount = Random.Range(1, 11) * 10;
-
+                    getItem = item;
                     break;
             }
 
-            // print(index + " : " + getItem.name);
+            // print(index + " : " + randomType + " : " + randomGrade + " : " + getItem.name);
 
             // 아이콘 찾기
             Sprite sprite = null;
@@ -156,6 +161,11 @@ public class LevelupMenu : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.5f);
 
+        // 모든 버튼 상호작용 켜기
+        Button[] btns = screen.GetComponentsInChildren<Button>();
+        for (int i = 0; i < btns.Length; i++)
+            btns[i].interactable = true;
+
         // 가운데 슬롯 선택하기
         UICursor.Instance.UpdateLastSelect(firstBtn);
     }
@@ -168,6 +178,11 @@ public class LevelupMenu : MonoBehaviour
 
     public IEnumerator ChooseSlot(int index, SlotInfo slotInfo)
     {
+        //todo 모든 버튼 상호작용 끄기 (UI커서 선택 방지)
+        Button[] btns = screen.GetComponentsInChildren<Button>();
+        for (int i = 0; i < btns.Length; i++)
+            btns[i].interactable = false;
+
         // 버튼 상호작용 막기 (중복 선택 방지)
         screen.interactable = false;
         // 레이캐스트 풀기
@@ -186,7 +201,7 @@ public class LevelupMenu : MonoBehaviour
         Vector2 dropPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * 2f;
 
         // 아이템 드랍 위치로 어트랙터 옮기기
-        attractor.position = Camera.main.WorldToScreenPoint(dropPos);
+        attractor.position = dropPos;
 
         // 선택된 슬롯 뒤에 슬롯모양 파티클 생성
         slotParticle.transform.position = slot.position;

@@ -106,12 +106,12 @@ public class PlayerManager : MonoBehaviour
     public bool isDash; //현재 대쉬중 여부
     public float defaultDashSpeed = 1.5f; // 대쉬 속도 기본값
     public float dashSpeed = 1; //대쉬 버프 속도
-    public float speedDeBuff = 1f; //이동속도 디버프
+    public float speedBuff = 1f; //이동속도 디버프
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
     // public Transform activeParent; // 액티브 슬롯들 부모 오브젝트
-    public GameObject marker; //! 테스트용 마커
+    // public GameObject aimCursor; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
@@ -340,7 +340,7 @@ public class PlayerManager : MonoBehaviour
         Move();
 
         //! 테스트용 마커 이동
-        marker.transform.position = GetMousePos();
+        // aimCursor.transform.position = GetMousePos();
     }
 
     public void Move()
@@ -405,7 +405,7 @@ public class PlayerManager : MonoBehaviour
         PlayerStat_Now.moveSpeed * 10f //플레이어 이동속도
         * nowMoveDir //움직일 방향
         * dashSpeed //대쉬할때 속도 증가
-        * speedDeBuff // 속도 버프
+        * speedBuff // 속도 버프
         * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
         + hitBox.knockbackDir; //넉백 벡터 추가
 

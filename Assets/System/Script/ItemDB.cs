@@ -374,6 +374,9 @@ public class ItemDB : MonoBehaviour
         // 아이템 정보 넣기
         if (dropObj.TryGetComponent(out ItemManager itemManager))
         {
+            if (itemManager == null)
+                yield break;
+
             itemManager.itemInfo = slotInfo as ItemInfo;
             itemManager.magicInfo = slotInfo as MagicInfo;
         }

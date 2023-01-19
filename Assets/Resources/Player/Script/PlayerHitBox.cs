@@ -568,7 +568,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.anim.speed = slowAmount;
 
         // 이동 속도 저하 디버프
-        playerManager.speedDeBuff = slowAmount;
+        playerManager.speedBuff = slowAmount;
 
         // 이미 슬로우 디버프 중 아닐때
         if (!buffParentObj.Find(SystemManager.Instance.slowDebuffUI.name))
@@ -582,7 +582,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.anim.speed = 1f;
 
         // 이동 속도 저하 디버프 초기화
-        playerManager.speedDeBuff = 1f;
+        playerManager.speedBuff = 1f;
 
         // 슬로우 아이콘 없에기
         slowIcon = buffParentObj.Find(SystemManager.Instance.slowDebuffUI.name).gameObject;
@@ -604,7 +604,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.anim.speed = slowAmount;
 
         // 이동 속도 저하 디버프
-        playerManager.speedDeBuff = slowAmount;
+        playerManager.speedBuff = slowAmount;
 
         // 이미 감전 디버프 중 아닐때
         if (!playerManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name))
@@ -618,7 +618,7 @@ public class PlayerHitBox : MonoBehaviour
         playerManager.anim.speed = 1f;
 
         // 이동 속도 저하 디버프 초기화
-        playerManager.speedDeBuff = 1f;
+        playerManager.speedBuff = 1f;
 
         // 자식중에 감전 이펙트 찾기
         shockEffect = playerManager.transform.Find(SystemManager.Instance.shockDebuffEffect.name).gameObject;
@@ -695,7 +695,7 @@ public class PlayerHitBox : MonoBehaviour
     public void DebuffRemove()
     {
         // 이동 속도 저하 디버프 초기화
-        playerManager.speedDeBuff = 1f;
+        playerManager.speedBuff = 1f;
 
         // 플랫 디버프 초기화
         flatCount = 0;

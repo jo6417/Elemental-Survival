@@ -291,6 +291,9 @@ public class PhoneMenu : MonoBehaviour
         // mergedSlot.gameObject.SetActive(false);
         mergedSlot.transform.localScale = Vector3.zero;
 
+        // 합성 준비 이펙트 끄기
+        mergeBeforeEffect.gameObject.SetActive(false);
+
         // 각각 스크린 켜기
         invenScreen.SetActive(true);
         recipeScreen.SetActive(true);
@@ -544,11 +547,10 @@ public class PhoneMenu : MonoBehaviour
             // 스킵 스위치 켜졌을때
             if (isSkipped)
             {
-                // 즉시 완료
-                L_MergeSlotRect.DOComplete();
-
                 // 합성 준비 이펙트 끄기
                 mergeBeforeEffect.gameObject.SetActive(false);
+                // 즉시 완료
+                L_MergeSlotRect.DOComplete();
             }
         })
         .OnComplete(() =>
@@ -568,11 +570,10 @@ public class PhoneMenu : MonoBehaviour
             // 스킵 스위치 켜졌을때
             if (isSkipped)
             {
-                // 즉시 완료
-                R_MergeSlotRect.DOComplete();
-
                 // 합성 준비 이펙트 끄기
                 mergeBeforeEffect.gameObject.SetActive(false);
+                // 즉시 완료
+                R_MergeSlotRect.DOComplete();
             }
         })
         .OnComplete(() =>

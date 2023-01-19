@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shuffle: 0
+  autoShuffle: 0
   flipRate: 0.5
   rotateMin: 0
   rotateMax: 360
@@ -177,6 +178,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PointLightInnerRadius
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6867748459790008583, guid: 2ae168d924d30974d891794b809f1358,
+        type: 3}
+      propertyPath: m_ApplyToSortingLayers.Array.size
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ae168d924d30974d891794b809f1358, type: 3}

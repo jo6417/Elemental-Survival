@@ -48,7 +48,8 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] float lockerSpawnCount; //아이템 금고 스폰 쿨타임 카운트
     [SerializeField, ReadOnly] bool nowSpawning; //스폰중일때
     [SerializeField] Transform targetObj;
-    public float maxDistance; // 타겟과 몬스터 사이 최대 거리
+    public float maxDistance = 80f; // 타겟과 몬스터 사이 최대 거리
+    [SerializeField] float eliteRate; // 엘리트 계수
 
     [Header("Pool")]
     public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
@@ -127,16 +128,6 @@ public class WorldSpawner : MonoBehaviour
                         spawnAbleList.Add(character);
                 }
             }
-
-        // 게임 시작할때까지 대기
-        yield return new WaitUntil(() => Time.timeScale == 1f);
-
-        // 배경음 재생
-        SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
-        StartCoroutine(SoundManager.Instance.BGMCoroutine);
-
-        // 글로벌 피치값 초기화
-        SoundManager.Instance.globalPitch = 1f;
     }
 
     void Update()
@@ -229,8 +220,8 @@ public class WorldSpawner : MonoBehaviour
         float time = SystemManager.Instance.time_current;
         // 30초 단위로 시간 계수 증가
         float timePower = time / 30f;
-        // 난이도 계수 반영
-        timePower = time * nowDifficultGrade * 0.2f;
+        // 난이도 계수 반영 (최대 1을 넘지않게 최대 6까지 나오는 등급에 0.166 곱함)
+        timePower = timePower * nowDifficultGrade * 0.166f;
 
         //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수
         MaxEnemyPower = Mathf.FloorToInt(timePower) + modifyEnemyPower;
@@ -291,13 +282,7 @@ public class WorldSpawner : MonoBehaviour
 
         //todo 난이도 계수 곱하기 난이도 높을수록 출현율 증가 (난이도 시스템 구현 후)
         // 엘리트 출현 유무 (시간 및 총 전투력에 따라 엘리트 출현율 상승)
-        bool isElite =
-        Random.value < timePower / 100f // 30초마다 1%씩 출현율 상승 (3000초=50분 이상이면 100% 엘리트)
-        + MaxEnemyPower / 10f / 100f; // 파워 10마다 1%씩 출현율 상승
-
-        //! 테스트, 무조건 엘리트 몬스터 스폰
-        if (allEliteSwitch)
-            isElite = allEliteSwitch;
+        eliteRate = timePower / 100f; // 30초마다 1%씩 출현율 상승 (3000초=50분 이상이면 100% 엘리트)
 
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;
@@ -305,7 +290,7 @@ public class WorldSpawner : MonoBehaviour
         // 스폰 스위치 켜졌을때
         if (spawnSwitch)
             //포탈에서 몬스터 소환
-            StartCoroutine(PortalSpawn(enemy, isElite));
+            StartCoroutine(PortalSpawn(enemy));
 
         // 해당 몬스터의 쿨타임 넣기
         float spawnCoolTime = enemy.spawnCool;
@@ -323,7 +308,7 @@ public class WorldSpawner : MonoBehaviour
         nowSpawning = false;
     }
 
-    public IEnumerator PortalSpawn(EnemyInfo enemy = null, bool isElite = false, Vector2 spawnEndPos = default, GameObject enemyPrefab = null, bool isBoss = false)
+    public IEnumerator PortalSpawn(EnemyInfo enemy = null, Vector2 spawnEndPos = default, GameObject enemyPrefab = null, bool isBoss = false)
     {
         // enemyPrefab 변수 안들어왔으면
         if (enemyPrefab == null)
@@ -366,17 +351,14 @@ public class WorldSpawner : MonoBehaviour
 
         // 엘리트 종류 기본값 None
         int eliteClass = 0;
-        // 몬스터 랜덤 스킬 뽑기
-        if (isElite)
-        {
-            // 엘리트 종류 가중치로 뽑기
-            eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
-        }
-        else
-        {
-            //일반 스프라이트 머터리얼
-            enemySprite.material = SystemManager.Instance.spriteLitMat;
-        }
+        // 엘리트 가중치 리스트 복사
+        List<float> weightList = new List<float>(eliteWeight);
+        // 일반몹 가중치는 시간에 따라 내리기
+        weightList[0] = weightList[0] * (1f - eliteRate);
+        print(weightList[0]);
+        // 엘리트 종류 가중치로 뽑기
+        eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
+
         // 엘리트 종류를 매니저에 전달
         character.eliteClass = (Character.EliteClass)eliteClass;
 

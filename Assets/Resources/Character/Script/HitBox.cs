@@ -481,13 +481,13 @@ public class HitBox : MonoBehaviour
             switch ((int)character.eliteClass)
             {
                 case 1:
-                    originMatColor = Color.green;
-                    break;
-                case 2:
                     originMatColor = Color.red;
                     break;
-                case 3:
+                case 2:
                     originMatColor = Color.cyan;
+                    break;
+                case 3:
+                    originMatColor = Color.green;
                     break;
                 case 4:
                     break;

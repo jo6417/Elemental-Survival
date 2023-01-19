@@ -32,10 +32,8 @@ public class UICursor : MonoBehaviour
     }
     #endregion
 
-    [Header("UI Cursor")]
+    [Header("State")]
     public NewInput UI_Input; // UI 인풋 받기
-    public Transform UI_Cursor; //선택된 UI 따라다니는 UI커서
-    public Canvas UI_CursorCanvas; //UI커서 전용 캔버스
     public Selectable lastSelected; //마지막 선택된 오브젝트
     public Color targetOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
     public float UI_CursorPadding; //UI 커서 여백
@@ -43,6 +41,13 @@ public class UICursor : MonoBehaviour
     [ReadOnly, SerializeField] bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
     IEnumerator cursorAnim;
+
+    [Header("Refer")]
+    public Transform mouseCursor; // 마우스 커서
+    public GameObject aimCursor; // 전투 에임용 마우스 커서
+    public GameObject arrowCursor; // UI 선택용 마우스 커서
+    public Canvas UI_CursorCanvas; // UI커서 전용 캔버스
+    public Transform UI_Cursor; // 선택된 UI 따라다니는 UI커서
 
     private void Awake()
     {
@@ -70,6 +75,17 @@ public class UICursor : MonoBehaviour
             if (!UICursor.Instance.UI_Cursor.gameObject.activeInHierarchy && lastSelected)
                 lastSelected.Select();
         };
+        // 마우스 위치 입력
+        UI_Input.UI.MousePosition.performed += val =>
+        {
+            MousePos(val.ReadValue<Vector2>());
+        };
+        // 마우스 클릭시
+        UI_Input.UI.Click.performed += val =>
+        {
+            // 윈도우 마우스 커서 숨기기
+            Cursor.visible = false;
+        };
 
         // UI 입력 켜기
         UI_Input.Enable();
@@ -90,7 +106,28 @@ public class UICursor : MonoBehaviour
         FollowUICursor();
     }
 
-    #region Cursor
+    #region MouseCursor
+
+    // 마우스 위치 입력되면 실행
+    void MousePos(Vector2 mousePos)
+    {
+        // print(mousePos);
+
+        // 마우스 따라서 에임 커서 이동
+        mouseCursor.position = mousePos;
+    }
+
+    public void CursorChange(bool isUICursor)
+    {
+        // 화살표 커서 토글
+        arrowCursor.SetActive(isUICursor);
+        // 조준 커서 토글
+        aimCursor.SetActive(!isUICursor);
+    }
+
+    #endregion
+
+    #region UICursor
 
     void FollowUICursor()
     {
@@ -293,17 +330,21 @@ public class UICursor : MonoBehaviour
         .SetUpdate(true);
 
         // 타겟과 사이즈 맞추기
-        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
+        cursorRect.DOSizeDelta(size * 1f, flickTime)
         .SetUpdate(true);
 
         // 이동 시간 대기
-        yield return new WaitUntil(() => UI_Cursor.transform.position == btnPos);
+        yield return new WaitForSecondsRealtime(flickTime);
 
-        //사이즈 초기화
         // 사이즈 커졌다 작아졌다 무한 반복
-        cursorRect.DOSizeDelta(size * 1.2f, flickTime)
+        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
         .SetLoops(-1, LoopType.Yoyo)
         .SetUpdate(true)
+        .OnStart(() =>
+        {
+            // 사이즈 초기화
+            cursorRect.sizeDelta = size;
+        })
         .OnKill(() =>
         {
             //사이즈 초기화
