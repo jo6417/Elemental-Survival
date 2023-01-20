@@ -8,6 +8,12 @@ public class AnimSelector : MonoBehaviour
 
     [SerializeField] List<float> patternWeight; // 패턴 가중치
 
+    private void Awake()
+    {
+        if (anim == null)
+            anim = GetComponent<Animator>();
+    }
+
     private void OnEnable()
     {
         StartCoroutine(Init());

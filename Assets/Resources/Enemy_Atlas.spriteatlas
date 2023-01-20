@@ -89,8 +89,12 @@ SpriteAtlas:
   - {fileID: -3773487525413083146, guid: 1d5b6fe2c07f87649990bf69bc6aed56, type: 3}
   - {fileID: -5624190396727887371, guid: 1d5b6fe2c07f87649990bf69bc6aed56, type: 3}
   - {fileID: -932273163796677084, guid: 1d5b6fe2c07f87649990bf69bc6aed56, type: 3}
-  - {fileID: 21300000, guid: a791bc0309b221a47ae343720193ef17, type: 3}
+  - {fileID: 938198284968186626, guid: a791bc0309b221a47ae343720193ef17, type: 3}
+  - {fileID: -8281246497301628322, guid: a791bc0309b221a47ae343720193ef17, type: 3}
   - {fileID: 21300000, guid: 0ac59e235c6df874c85721919f9da802, type: 3}
+  - {fileID: -4962056789769308676, guid: 29e1b7c360b024a4095eb7ba4636fea3, type: 3}
+  - {fileID: -2424133207651301037, guid: 29e1b7c360b024a4095eb7ba4636fea3, type: 3}
+  - {fileID: 1902750214470895789, guid: 29e1b7c360b024a4095eb7ba4636fea3, type: 3}
   - {fileID: 21300000, guid: 3aaebfc30687cb149b3f67d4038a558d, type: 3}
   - {fileID: 21300000, guid: 7e073dc4fc879d84e93b5c955aa1d2a2, type: 3}
   - {fileID: -8450179102024045516, guid: e7a00165aaffdcf43a1580aabd47c433, type: 3}
@@ -276,8 +280,12 @@ SpriteAtlas:
   - Farmer_Legs_2
   - Farmer_Legs_1
   - Farmer_Legs_0
-  - LifeSlime
+  - LifeSlime_0
+  - LifeSlime_1
   - Vacuum
+  - WindSlime_2
+  - WindSlime_0
+  - WindSlime_1
   - LifeSlime_Thorn
   - KingSlime_Inside
   - A-800_Attack_Sheet_3

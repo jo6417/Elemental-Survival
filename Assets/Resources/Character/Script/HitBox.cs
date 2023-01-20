@@ -578,7 +578,7 @@ public class HitBox : MonoBehaviour
         {
             // print("Dead Pos : " + transform.position);
             //죽음 시작
-            StartCoroutine(Dead());
+            StartCoroutine(Dead(character.deadDelay));
         }
     }
 
@@ -717,7 +717,7 @@ public class HitBox : MonoBehaviour
         character.transform.localScale = Vector2.one;
     }
 
-    public IEnumerator Dead()
+    public IEnumerator Dead(float deadDelay)
     {
         // if (character.enemy == null)
         //     yield break;
@@ -768,36 +768,36 @@ public class HitBox : MonoBehaviour
             sprite.color = SystemManager.Instance.hitColor;
 
             // 색깔 점점 흰색으로
-            sprite.DOColor(SystemManager.Instance.DeadColor, character.deadDelay)
+            sprite.DOColor(SystemManager.Instance.DeadColor, deadDelay)
             .SetEase(Ease.OutQuad);
         }
 
-        // 자폭 몬스터일때
-        if (character.selfExplosion)
-        {
-            // 자폭 경고 사운드 재생
-            SoundManager.Instance.PlaySound("MiniDrone_Warning", transform.position);
+        // // 자폭 몬스터일때
+        // if (character.selfExplosion)
+        // {
+        //     // 자폭 경고 사운드 재생
+        //     SoundManager.Instance.PlaySound("MiniDrone_Warning", transform.position);
 
-            if (character.enemyAtkTrigger.atkRangeFill)
-            {
-                // 폭발 반경 표시
-                character.enemyAtkTrigger.atkRangeBackground.enabled = true;
-                character.enemyAtkTrigger.atkRangeFill.enabled = true;
+        //     if (character.enemyAtkTrigger.atkRangeFill)
+        //     {
+        //         // 폭발 반경 표시
+        //         character.enemyAtkTrigger.atkRangeBackground.enabled = true;
+        //         character.enemyAtkTrigger.atkRangeFill.enabled = true;
 
-                // 폭발 반경 인디케이터 사이즈 초기화
-                character.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
-                // 폭발 반경 인디케이터 사이즈 키우기
-                character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, character.deadDelay)
-                .OnComplete(() =>
-                {
-                    character.enemyAtkTrigger.atkRangeBackground.enabled = false;
-                    character.enemyAtkTrigger.atkRangeFill.enabled = false;
-                });
-            }
-        }
+        //         // 폭발 반경 인디케이터 사이즈 초기화
+        //         character.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
+        //         // 폭발 반경 인디케이터 사이즈 키우기
+        //         character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, deadDelay)
+        //         .OnComplete(() =>
+        //         {
+        //             character.enemyAtkTrigger.atkRangeBackground.enabled = false;
+        //             character.enemyAtkTrigger.atkRangeFill.enabled = false;
+        //         });
+        //     }
+        // }
 
         // 죽음 딜레이 대기
-        yield return new WaitForSeconds(character.deadDelay);
+        yield return new WaitForSeconds(deadDelay);
 
         // 고스트가 아닐때
         if (!character.IsGhost)
@@ -823,30 +823,30 @@ public class HitBox : MonoBehaviour
             WorldSpawner.Instance.EnemyDespawn(character);
         }
 
-        //폭발 몬스터면 폭발 시키기
-        if (character.selfExplosion)
-        {
-            // 폭발 이펙트 스폰
-            GameObject effect = LeanPool.Spawn(character.enemyAtkTrigger.explosionPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+        // //폭발 몬스터면 폭발 시키기
+        // if (character.selfExplosion)
+        // {
+        //     // 폭발 이펙트 스폰
+        //     GameObject effect = LeanPool.Spawn(character.enemyAtkTrigger.explosionPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
-            // 일단 비활성화
-            effect.SetActive(false);
+        //     // 일단 비활성화
+        //     effect.SetActive(false);
 
-            // 폭발 데미지 넣기
-            Attack attack = effect.GetComponent<Attack>();
-            // 몬스터 정보가 있을때
-            if (character.enemy != null)
-                attack.fixedPower = character.enemy.power;
+        //     // 폭발 데미지 넣기
+        //     Attack attack = effect.GetComponent<Attack>();
+        //     // 몬스터 정보가 있을때
+        //     if (character.enemy != null)
+        //         attack.fixedPower = character.enemy.power;
 
-            // 고스트 여부에 따라 타겟 및 충돌 레이어 바꾸기
-            if (character.IsGhost)
-                attack.SetTarget(MagicHolder.TargetType.Player);
-            else
-                attack.SetTarget(MagicHolder.TargetType.Both);
+        //     // 고스트 여부에 따라 타겟 및 충돌 레이어 바꾸기
+        //     if (character.IsGhost)
+        //         attack.SetTarget(MagicHolder.TargetType.Player);
+        //     else
+        //         attack.SetTarget(MagicHolder.TargetType.Both);
 
-            // 폭발 활성화
-            effect.SetActive(true);
-        }
+        //     // 폭발 활성화
+        //     effect.SetActive(true);
+        // }
 
         // 모든 디버프 해제
         DebuffRemove();

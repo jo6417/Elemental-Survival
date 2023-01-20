@@ -5505,7 +5505,7 @@ MonoBehaviour:
   character: {fileID: 3723040182202891887}
   meleeTrigger: {fileID: 3723040181923417493}
   attack: {fileID: 877836808161492617}
-  bodyAnim: {fileID: 0}
+  bodyAnim: {fileID: 2218242691842209886}
   eyeBlink: {fileID: 3539232067209068915}
   eyeFrown: {fileID: 4390719472343315492}
 --- !u!70 &3723040182202891890

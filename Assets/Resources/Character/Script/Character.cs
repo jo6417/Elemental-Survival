@@ -188,14 +188,21 @@ public class Character : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        // 초기화 완료 취소
-        initialFinish = false;
-
         StartCoroutine(Init());
+    }
+
+    public void FindEnemyInfo()
+    {
+        // 몬스터 정보 찾기
+        enemy = EnemyDB.Instance.GetEnemyByName(gameObject.name.Split('_')[0]);
+        // print(gameObject.name.Split('_')[0]);
     }
 
     IEnumerator Init()
     {
+        // 초기화 완료 취소
+        initialFinish = false;
+
         // 히트박스 전부 끄기
         for (int i = 0; i < hitBoxList.Count; i++)
         {
@@ -212,8 +219,8 @@ public class Character : MonoBehaviour
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
 
-        // 몬스터 정보 찾기
-        enemy = EnemyDB.Instance.GetEnemyByName(gameObject.name.Replace("_Prefab", ""));
+        if (enemy == null)
+            FindEnemyInfo();
 
         if (enemy != null)
         {
@@ -252,19 +259,28 @@ public class Character : MonoBehaviour
             case 0:
                 // 일반 스프라이트 머터리얼
                 spriteList[0].material = SystemManager.Instance.spriteLitMat;
+
+                // 스케일 초기화
+                transform.localScale = Vector2.one;
+
                 break;
 
             case 1:
                 //공격력 상승
                 powerNow = powerNow * 2f;
+
                 // 빨강 아웃라인 머터리얼
                 spriteList[0].material = SystemManager.Instance.outLineMat;
                 spriteList[0].material.color = Color.red;
+
+                // 몬스터 스케일 상승
+                transform.localScale = Vector2.one * 1.5f;
+
                 break;
 
             case 2:
                 //속도 상승
-                speedNow = speedNow * 2f;
+                speedNow = speedNow * 2.5f;
                 // 쿨타임 빠르게
                 cooltimeNow = cooltimeNow / 2f;
 
@@ -274,7 +290,7 @@ public class Character : MonoBehaviour
                 break;
 
             case 3:
-                //체력 상승
+                // 최대 체력 상승
                 hpMax = hpMax * 2f;
 
                 //힐 오브젝트 소환
@@ -536,8 +552,16 @@ public class Character : MonoBehaviour
         // 초기화 완료
         initialFinish = true;
     }
+
     private void Update()
     {
+        // 몬스터 정보 없으면 리턴
+        if (enemy == null)
+        {
+            FindEnemyInfo();
+            return;
+        }
+
         // 초기화 안됬으면 리턴
         if (!initialFinish)
         {
@@ -603,21 +627,25 @@ public class Character : MonoBehaviour
                 // 힐 콜라이더 켜기
                 healRange.enabled = true;
 
+                // 힐 쿨타임을 몬스터 쿨타임 2배로 갱신
+                float healCooltime = cooltimeNow * 2f;
+
                 Transform healEffect = healRange.transform.GetChild(0);
                 // 이펙트 오브젝트 켜기
                 healEffect.gameObject.SetActive(true);
                 // 사이즈 제로로 초기화
                 healEffect.localScale = Vector2.zero;
                 // 힐 이펙트 사이즈 키우기
-                healEffect.DOScale(Vector2.one, cooltimeNow)
+                healEffect.DOScale(Vector2.one, healCooltime)
+                .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
                     // 이펙트 오브젝트 끄기
                     healEffect.gameObject.SetActive(false);
                 });
 
-                // 힐 쿨타임을 몬스터 쿨타임 2배로 갱신
-                healCount = cooltimeNow * 2f;
+                // 힐 쿨타임 갱신
+                healCount = healCooltime;
             }
         }
     }
@@ -633,7 +661,10 @@ public class Character : MonoBehaviour
 
         // 몬스터 정보 없으면 리턴
         if (enemy == null)
+        {
+            FindEnemyInfo();
             return false;
+        }
 
         // 비활성화 되었으면 리턴
         if (gameObject == null || !gameObject)

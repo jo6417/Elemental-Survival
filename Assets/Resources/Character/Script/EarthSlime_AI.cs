@@ -8,6 +8,7 @@ public class EarthSlime_AI : MonoBehaviour
     public Character character;
     public EnemyAtkTrigger smashTrigger;
     public Collider2D smashColl;
+    [SerializeField] GameObject attackEffect;
 
     private void OnEnable()
     {
@@ -86,7 +87,7 @@ public class EarthSlime_AI : MonoBehaviour
         smashColl.gameObject.SetActive(true);
 
         // 착지 이펙트 소환
-        LeanPool.Spawn(character.enemyAI.landEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+        LeanPool.Spawn(attackEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
     public void SmashColliderOff()

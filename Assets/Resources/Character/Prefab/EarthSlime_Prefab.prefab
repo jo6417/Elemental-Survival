@@ -223,7 +223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3190824627126303488
 Transform:
   m_ObjectHideFlags: 0
@@ -329,7 +329,7 @@ MonoBehaviour:
   directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
-  landEffect: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
+  landEffect: {fileID: 2946966929146372674, guid: deaf857f8c181ea4eabb1106e36389ab,
     type: 3}
 --- !u!114 &3380754318019016138
 MonoBehaviour:
@@ -346,6 +346,8 @@ MonoBehaviour:
   character: {fileID: 7247921042507206276}
   smashTrigger: {fileID: 8691543464488914749}
   smashColl: {fileID: 2771087719256695769}
+  attackEffect: {fileID: 8524414973376007453, guid: e14cb71711a4cb040bdbc33d28d1ee38,
+    type: 3}
 --- !u!95 &3190824627126303490
 Animator:
   serializedVersion: 3

@@ -280,7 +280,6 @@ public class WorldSpawner : MonoBehaviour
             enemyId = enemy.id;
         }
 
-        //todo 난이도 계수 곱하기 난이도 높을수록 출현율 증가 (난이도 시스템 구현 후)
         // 엘리트 출현 유무 (시간 및 총 전투력에 따라 엘리트 출현율 상승)
         eliteRate = timePower / 100f; // 30초마다 1%씩 출현율 상승 (3000초=50분 이상이면 100% 엘리트)
 
@@ -355,7 +354,7 @@ public class WorldSpawner : MonoBehaviour
         List<float> weightList = new List<float>(eliteWeight);
         // 일반몹 가중치는 시간에 따라 내리기
         weightList[0] = weightList[0] * (1f - eliteRate);
-        print(weightList[0]);
+        // print(weightList[0]);
         // 엘리트 종류 가중치로 뽑기
         eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
 

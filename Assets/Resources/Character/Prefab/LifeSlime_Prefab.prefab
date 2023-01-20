@@ -177,6 +177,10 @@ MonoBehaviour:
   meleeTrigger: {fileID: 968746833734090520}
   attack: {fileID: 968746834335785448}
   atkDelay: 1
+  sprite: {fileID: 2324816753750068382}
+  spriteList:
+  - {fileID: 938198284968186626, guid: a791bc0309b221a47ae343720193ef17, type: 3}
+  - {fileID: -8281246497301628322, guid: a791bc0309b221a47ae343720193ef17, type: 3}
 --- !u!70 &968746833477717247
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -394,7 +398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &968746834335785446
 Transform:
   m_ObjectHideFlags: 0
@@ -453,7 +457,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -5391,7 +5395,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 968746834335785443}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -5472,7 +5476,7 @@ SpriteRenderer:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a791bc0309b221a47ae343720193ef17, type: 3}
+  m_Sprite: {fileID: 938198284968186626, guid: a791bc0309b221a47ae343720193ef17, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

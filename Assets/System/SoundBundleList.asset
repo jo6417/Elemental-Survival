@@ -329,18 +329,18 @@ MonoBehaviour:
     sounds:
     - name: EarthSlime_Jump
       clip: {fileID: 8300000, guid: 4d4c6e93c6d653e4da39d1693ed4e8ca, type: 3}
-      volume: 0.5
-      pitch: 0.9
+      volume: 0.1
+      pitch: 1
       source: {fileID: 0}
     - name: EarthSlime_Landing
-      clip: {fileID: 8300000, guid: 5f3ad92b17c28fc41b8a51c7a9cf8952, type: 3}
-      volume: 0.5
+      clip: {fileID: 8300000, guid: acb845b761537014298e7a43d8c395d4, type: 3}
+      volume: 0.1
       pitch: 2
       source: {fileID: 0}
     - name: EarthSlime_Attack
-      clip: {fileID: 8300000, guid: acb845b761537014298e7a43d8c395d4, type: 3}
+      clip: {fileID: 8300000, guid: a74580fb35758da4c87b9b7d9a163d28, type: 3}
       volume: 0.3
-      pitch: 2
+      pitch: 1.5
       source: {fileID: 0}
     - name: A_800_Walk
       clip: {fileID: 8300000, guid: 8109725fdd0eb3244b87d0a935bd25f3, type: 3}
@@ -406,6 +406,16 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 264e91933219acc43a2bb4218367814e, type: 3}
       volume: 0.5
       pitch: 3
+      source: {fileID: 0}
+    - name: LifeSlime_AttackReady
+      clip: {fileID: 8300000, guid: 6e7c475d27f851b4782be31e6eff8a94, type: 3}
+      volume: 0.5
+      pitch: 1
+      source: {fileID: 0}
+    - name: LifeSlime_Attack
+      clip: {fileID: 8300000, guid: 971bcdbaadf68be4ba232cf1b0bddc99, type: 3}
+      volume: 0.3
+      pitch: 1
       source: {fileID: 0}
   - name: Effect_Sounds
     sounds:

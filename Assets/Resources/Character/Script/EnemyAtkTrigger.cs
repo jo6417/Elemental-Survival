@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyAtkTrigger : MonoBehaviour
 {
     public System.Action attackAction;
-
+    // public AttackCallback attackCallback; // 공격시 실행될 콜백
+    // public delegate void AttackCallback();
     public GameObject explosionPrefab;
     [SerializeField] bool showIndicator = true;
     [SerializeField] SpriteRenderer indicatorSprite;
@@ -87,12 +88,12 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
 
-            // 자폭형 몬스터일때
-            if (character && character.selfExplosion && !character.isDead)
-            {
-                // 자폭하기
-                StartCoroutine(character.hitBoxList[0].Dead());
-            }
+            // // 자폭형 몬스터일때
+            // if (character && character.selfExplosion && !character.isDead)
+            // {
+            //     // 자폭하기
+            //     StartCoroutine(character.hitBoxList[0].Dead());
+            // }
         }
 
         // 몬스터가 충돌하면
@@ -120,12 +121,12 @@ public class EnemyAtkTrigger : MonoBehaviour
             if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
 
-            // 자폭형 몬스터일때
-            if (character && character.selfExplosion && !character.isDead)
-            {
-                // 자폭하기
-                StartCoroutine(character.hitBoxList[0].Dead());
-            }
+            // // 자폭형 몬스터일때
+            // if (character && character.selfExplosion && !character.isDead)
+            // {
+            //     // 자폭하기
+            //     StartCoroutine(character.hitBoxList[0].Dead());
+            // }
         }
     }
 

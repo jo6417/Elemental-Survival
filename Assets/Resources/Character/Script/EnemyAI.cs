@@ -75,7 +75,10 @@ public class EnemyAI : MonoBehaviour
     {
         // 몬스터 정보 없으면 리턴
         if (character.enemy == null)
+        {
+            character.FindEnemyInfo();
             return;
+        }
 
         // 목표 위치 갱신 시간 됬을때, 추적 위치 계산
         if (searchCoolCount <= 0)

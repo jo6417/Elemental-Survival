@@ -35,6 +35,11 @@ public class LightningSlime_AI : MonoBehaviour
             // 가시공격 실행
             StartCoroutine(ElectroAtk());
         }
+
+        // 공격중일때
+        if (character.nowState == Character.State.Attack)
+            // 이동 멈추기
+            character.rigid.velocity = Vector3.zero;
     }
 
     IEnumerator ElectroAtk()
