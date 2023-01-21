@@ -82,6 +82,21 @@ public class PlayerHitBox : MonoBehaviour
         }
     }
 
+    private void OnParticleCollision(GameObject other)
+    {
+        print("OnParticleCollision : " + other.name);
+
+        if (hitCoolCount > 0 || playerManager.isDash)
+            return;
+
+        // 공격 오브젝트와 충돌 했을때
+        Attack attack = other.GetComponent<Attack>();
+        if (attack != null && attack.enabled)
+        {
+            StartCoroutine(Hit(attack));
+        }
+    }
+
     public IEnumerator Hit(Attack attacker)
     {
         // 피격 위치 산출

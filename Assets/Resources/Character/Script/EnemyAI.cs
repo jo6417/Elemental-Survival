@@ -6,7 +6,11 @@ using Lean.Pool;
 
 public class EnemyAI : MonoBehaviour
 {
-    // [Header("State")]    
+    [Header("Rotate")]
+    [SerializeField] bool flipAble = true; // 좌우반전 허용 여부
+    [SerializeField] bool tiltFlip = false; // 반대로 기울이기 여부
+    [SerializeField] float tiltAngle = 0; // 기울기 각도
+    [SerializeField] AnimationCurve tiltCurve = new AnimationCurve();
 
     [Header("Refer")]
     public Character character;
@@ -16,8 +20,6 @@ public class EnemyAI : MonoBehaviour
     public float targetRange = 1f; // 타겟 오차 범위
     public float searchCoolTime = 1f; // 타겟 위치 추적 시간
     public float searchCoolCount; // 타겟 위치 추적 시간 카운트
-    [SerializeField]
-    bool directionTilt = false; // 가는 방향으로 기울이기 여부
 
     [Header("Jump")]
     public float jumpCoolCount;
@@ -97,7 +99,7 @@ public class EnemyAI : MonoBehaviour
         // 목표 방향 계산
         character.targetDir = character.movePos - transform.position;
 
-        //todo 타겟에서 일정거리 이상 벗어나면 쫓아가기
+        // 타겟에서 일정거리 이상 벗어나면 쫓아가기
         if (character.targetDir.magnitude > WorldSpawner.Instance.maxDistance)
         {
             character.transform.position = WorldSpawner.Instance.BorderRandPos();
@@ -124,13 +126,17 @@ public class EnemyAI : MonoBehaviour
             return;
 
         // 방향따라 기울이기
-        if (directionTilt)
+        if (tiltAngle != 0)
         {
-            float angleZ = -Mathf.Abs(Mathf.Clamp(character.targetDir.x, -20f, 20f));
-            Quaternion rotation = Quaternion.Lerp(character.spriteObj.localRotation, Quaternion.Euler(0, 0, angleZ), 0.1f);
+            float angleZ = Mathf.Lerp(0, Mathf.Abs(tiltAngle), Mathf.Abs(character.targetDir.normalized.x));
+
+            // 오른쪽이면 반대로 기울기
+            if (character.targetDir.normalized.x > 0)
+                angleZ = -angleZ;
 
             // 스프라이트 몸체 기울이기
-            character.spriteObj.localRotation = rotation;
+            character.spriteObj.localRotation = Quaternion.Lerp(character.spriteObj.localRotation, Quaternion.Euler(0, 0, angleZ), 0.1f);
+            // character.spriteObj.localRotation = Quaternion.Euler(0, 0, angleZ);
         }
 
         // 걷기, 대쉬 타입일때
@@ -156,6 +162,21 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    void Flip()
+    {
+        // 반전 비허용이면 리턴
+        if (!flipAble)
+            return;
+
+        //움직일 방향에따라 회전
+        float leftAngle = character.lookLeft ? 180f : 0f;
+        float rightAngle = character.lookLeft ? 0f : 180f;
+        if (character.targetDir.x > 0)
+            character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
+        else
+            character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
+    }
+
     void Walk()
     {
         character.nowState = Character.State.Walk;
@@ -179,13 +200,8 @@ public class EnemyAI : MonoBehaviour
             //해당 방향으로 가속
             character.rigid.velocity = character.targetDir.normalized * character.speedNow * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
 
-            //움직일 방향에따라 회전
-            float leftAngle = character.lookLeft ? 180f : 0f;
-            float rightAngle = character.lookLeft ? 0f : 180f;
-            if (character.targetDir.x > 0)
-                character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
-            else
-                character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
+            // 방향따라 좌우반전
+            Flip();
         }
 
         character.nowState = Character.State.Idle;
@@ -225,13 +241,8 @@ public class EnemyAI : MonoBehaviour
 
     public void JumpMove()
     {
-        //움직일 방향에따라 회전
-        float leftAngle = character.lookLeft ? 180f : 0f;
-        float rightAngle = character.lookLeft ? 0f : 180f;
-        if (character.targetDir.x > 0)
-            character.transform.rotation = Quaternion.Euler(0, leftAngle, 0);
-        else
-            character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
+        // 방향따라 좌우반전
+        Flip();
 
         //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
         float distance = character.targetDir.magnitude > character.speedNow ? character.speedNow : character.targetDir.magnitude;

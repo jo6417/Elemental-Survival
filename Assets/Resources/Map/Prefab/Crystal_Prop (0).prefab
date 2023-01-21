@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6234127111596052426}
   - component: {fileID: 6498483497670603820}
-  - component: {fileID: 4667558922940487692}
   - component: {fileID: 7931587103533333040}
+  - component: {fileID: 3366502230933633595}
   m_Layer: 16
   m_Name: Crystal_Prop (0)
   m_TagString: Object
@@ -86,32 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!61 &4667558922940487692
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7409670585094552402}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 1, y: 0.50522804}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 2, y: 2.375}
-    newSize: {x: 2, y: 2.375}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.8723636, y: 0.75826836}
-  m_EdgeRadius: 0
 --- !u!114 &7931587103533333040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,9 +99,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shuffle: 0
+  autoShuffle: 0
   flipRate: 0.5
   rotateMin: 0
   rotateMax: 360
+--- !u!58 &3366502230933633595
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7409670585094552402}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: acd003595bc7f49499d9e8fb917024ec, type: 2}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 1, y: 0.8}
+  serializedVersion: 2
+  m_Radius: 0.8
 --- !u!1001 &6013861837898755142
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -208,10 +208,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -644,10 +644,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -773,9 +773,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -902,9 +902,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -1140,7 +1140,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2830118071119863380}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalPosition: {x: 0, y: 0.7375, z: 0}
   m_LocalScale: {x: 0.125, y: 0.125, z: 1}
   m_Children: []
   m_Father: {fileID: 2830118072728911525}
@@ -1468,10 +1468,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -1597,10 +1597,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -1726,9 +1726,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -1855,10 +1855,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -2067,10 +2067,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -2196,10 +2196,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -2325,9 +2325,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -2583,10 +2583,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -2795,10 +2795,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -3182,9 +3182,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -3311,10 +3311,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -3604,10 +3604,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -3733,10 +3733,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -3816,7 +3816,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d03aab0b507c1ee4180814293b73af6e, type: 2}
+  - {fileID: 2100000, guid: c06c141bb301f1d4d8ceb899368ff49e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3839,7 +3839,7 @@ SpriteRenderer:
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7,
     type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -4042,7 +4042,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d03aab0b507c1ee4180814293b73af6e, type: 2}
+  - {fileID: 2100000, guid: c06c141bb301f1d4d8ceb899368ff49e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4171,10 +4171,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -4300,10 +4300,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -4597,9 +4597,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
-  m_LinearDrag: 1
-  m_AngularDrag: 1
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -4726,10 +4726,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -4984,10 +4984,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 1
   m_LinearDrag: 1
-  m_AngularDrag: 1
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -5043,8 +5043,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2830118072712602146}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.7375, z: 0}
   m_LocalScale: {x: 0.125, y: 0.125, z: 1}
   m_Children: []
   m_Father: {fileID: 2830118071863054928}
@@ -5090,7 +5090,8 @@ SpriteRenderer:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: e9d2ac382aeadd04f8bf9f0d3ec094be, type: 3}
+  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5334,7 +5335,6 @@ GameObject:
   - component: {fileID: 7232587012674000458}
   - component: {fileID: 4450938709435339047}
   - component: {fileID: 4019147020180481447}
-  - component: {fileID: 636934802529186375}
   - component: {fileID: 1836845270475612050}
   - component: {fileID: 6294305239077155186}
   m_Layer: 7
@@ -5351,7 +5351,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4292492320982766429}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 18, y: -6.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5408,11 +5408,11 @@ MonoBehaviour:
   enemyAI: {fileID: 7232587012674000458}
   enemyAtkTrigger: {fileID: 2331478282047272114}
   enemyAtkList: []
-  spriteObj: {fileID: 0}
+  spriteObj: {fileID: 2830118072125934030}
   healRange: {fileID: 0}
   animList:
   - {fileID: 4019147020180481447}
-  physicsColl: {fileID: 636934802529186375}
+  physicsColl: {fileID: 0}
   rigid: {fileID: 1836845270475612050}
   buffParent: {fileID: 6912679628218280256}
   particleHitCount: 0
@@ -5446,11 +5446,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flipAble: 0
+  tiltFlip: 0
+  tiltAngle: 20
+  tiltCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   character: {fileID: 2938189514939662475}
   targetRange: 1
   searchCoolTime: 0.1
   searchCoolCount: 0
-  directionTilt: 1
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}
@@ -5482,8 +5508,8 @@ MonoBehaviour:
     type: 3}
   explosionRange: {fileID: 3729567797689538796}
   explosionRangeFill: {fileID: 851877994333991696}
-  redColorMin: {r: 1, g: 1, b: 1, a: 1}
-  redColorMax: {r: 0, g: 1, b: 1, a: 1}
+  lerpColorMin: {r: 0, g: 1, b: 1, a: 0}
+  lerpColorMax: {r: 0, g: 1, b: 1, a: 1}
   attackReadyTime: 2
 --- !u!95 &4019147020180481447
 Animator:
@@ -5493,7 +5519,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4292492320982766429}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 7dd650b19c6a046458cf5fc6f885d0cf, type: 2}
   m_CullingMode: 2
@@ -5504,22 +5530,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!70 &636934802529186375
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4292492320982766429}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 2, y: 1}
-  m_Direction: 1
 --- !u!50 &1836845270475612050
 Rigidbody2D:
   serializedVersion: 4
@@ -5624,7 +5634,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: 1
 --- !u!1 &9093729100392677905
 GameObject:
   m_ObjectHideFlags: 0
@@ -5787,6 +5797,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4292492320982766430}
     m_Modifications:
+    - target: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1861760285
+      objectReference: {fileID: 0}
     - target: {fileID: 4140196449616097455, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
       propertyPath: m_Name

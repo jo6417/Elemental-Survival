@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4773506583105102660}
   - component: {fileID: 6928316367041065457}
-  - component: {fileID: 1746705980073551445}
   - component: {fileID: 5205484049858863969}
   - component: {fileID: 4307422797644314062}
+  - component: {fileID: 7925104280409330266}
   m_Layer: 16
   m_Name: Crystal_Prop (2)
   m_TagString: Object
@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 804512800160052278}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.38, y: -3.98, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3107545652215977309}
@@ -87,32 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
---- !u!61 &1746705980073551445
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 804512800160052278}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.65, y: 0.35719073}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 1.375, y: 1.75}
-    newSize: {x: 2, y: 2.375}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.75362873, y: 0.71438146}
-  m_EdgeRadius: 0
 --- !u!114 &5205484049858863969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,6 +115,22 @@ SortingGroup:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
+--- !u!58 &7925104280409330266
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 804512800160052278}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: acd003595bc7f49499d9e8fb917024ec, type: 2}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.6, y: 0.5}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1001 &3563024247581210495
 PrefabInstance:
   m_ObjectHideFlags: 0

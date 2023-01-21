@@ -54,6 +54,7 @@ public class UIManager : MonoBehaviour
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
     public GameObject phonePanel;
+    public GameObject defaultPanel;
     public GameObject chestPanel;
     public GameObject vendMachinePanel;
     public GameObject magicMachinePanel;

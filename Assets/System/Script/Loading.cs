@@ -62,6 +62,14 @@ public class Loading : MonoBehaviour
         loadingGroup.alpha = 0f;
     }
 
+    private void OnEnable()
+    {
+        // 로딩 오브젝트들 초기화
+        cutoutMask.gameObject.SetActive(true);
+        cutoutCover.gameObject.SetActive(false);
+        loadingBar.gameObject.SetActive(true);
+    }
+
     public IEnumerator SceneMask(bool isFadeout)
     {
         // 트윈 시간
@@ -143,6 +151,10 @@ public class Loading : MonoBehaviour
             // 마스크 끄기
             cutoutCover.SetActive(false);
 
+            // UI매니저 있을때, 기본 마법 켜져있을때
+            if (UIManager.Instance != null && UIManager.Instance.defaultPanel.activeInHierarchy)
+                yield break;
+
             // 시간 속도 초기화
             SystemManager.Instance.TimeScaleChange(1f);
         }
@@ -202,6 +214,14 @@ public class Loading : MonoBehaviour
             {
                 loadingText.color = Color.white;
             });
+        }
+
+        // 인게임 진입시
+        if (sceneName == "InGameScene")
+        {
+            // 기본 마법 패널 켜기
+            yield return new WaitUntil(() => UIManager.Instance != null);
+            UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, true);
         }
 
         // 클릭 혹은 아무키나 누를때까지, 로딩 완료, 다음씬 초기화 완료까지 대기

@@ -75,7 +75,7 @@ CapsuleCollider2D:
   m_GameObject: {fileID: 5058018349320806374}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: acd003595bc7f49499d9e8fb917024ec, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -95,10 +95,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shuffle: 0
+  autoShuffle: 0
   flipRate: 0.5
   rotateMin: 0
   rotateMax: 360
-  pivotMove: {x: 0, y: 0, z: 0}
 --- !u!212 &6673437772163577426
 SpriteRenderer:
   m_ObjectHideFlags: 0

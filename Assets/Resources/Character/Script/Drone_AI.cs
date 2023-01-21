@@ -18,8 +18,8 @@ public class Drone_AI : MonoBehaviour
     [SerializeField] GameObject explosionAttack;
     [SerializeField] SpriteRenderer explosionRange;
     [SerializeField] SpriteRenderer explosionRangeFill;
-    [SerializeField] Color redColorMin;
-    [SerializeField] Color redColorMax;
+    [SerializeField] Color lerpColorMin;
+    [SerializeField] Color lerpColorMax;
 
     [Header("State")]
     [SerializeField] float attackReadyTime;
@@ -40,18 +40,34 @@ public class Drone_AI : MonoBehaviour
         if (atkTrigger.attackAction == null)
             atkTrigger.attackAction += Attack;
 
-        //todo 눈알 위치 초기화
+        // 눈알 위치 초기화
         eye.transform.localPosition = Vector2.zero;
 
-        //todo 눈알 색 초기화
+        // 눈알 색 초기화
         eye.color = new Color(1f, 10f / 255f, 10f / 255f, 1f);
-        //todo 플로터 색 초기화
+        // 플로터 색 초기화
         L_floater.color = Color.white;
         R_floater.color = Color.white;
-        //todo 케이블 불빛 색 초기화
+        // 케이블 불빛 색 초기화
         for (int i = 0; i < cableLights.Length; i++)
         {
+            // 흰색으로 초기화
             cableLights[i].color = Color.white;
+
+            // 랜덤 반복 시간
+            float randomTime = Random.Range(0.2f, 0.7f);
+
+            Color randomColor = default;
+            switch (Random.Range(0, 3))
+            {
+                case 0: randomColor = Color.red; break;
+                case 1: randomColor = Color.green; break;
+                case 2: randomColor = Color.blue; break;
+            }
+
+            // 지정색으로 반복 점멸
+            cableLights[i].DOColor(randomColor, randomTime)
+            .SetLoops(-1);
         }
 
         yield return null;
@@ -70,7 +86,7 @@ public class Drone_AI : MonoBehaviour
         character.nowState = Character.State.Attack;
 
         // 양쪽으로 각도 부르르 떨기
-        body.DOPunchRotation(Vector3.forward * 30f, attackReadyTime, 30, 1);
+        body.DOPunchRotation(Vector3.forward * 20f, attackReadyTime, 30, 1);
 
         // 눈알 및 플로터 빨갛게
         eye.DOColor(Color.red, attackReadyTime);
@@ -78,6 +94,9 @@ public class Drone_AI : MonoBehaviour
         // 케이블 아래 불빛 반짝이기
         for (int i = 0; i < cableLights.Length; i++)
         {
+            // 기존 트윈 종료
+            cableLights[i].DOKill();
+
             // 랜덤 반복 횟수
             int randomNum = Random.Range(1, 10);
 
@@ -114,21 +133,20 @@ public class Drone_AI : MonoBehaviour
 
     private void Update()
     {
-        //todo 이동 방향으로 눈알 돌리기
+        // 이동 방향으로 눈알 돌리기
         Vector3 eyeDir = character.rigid.velocity.normalized;
-        //todo 눈알 위치 제한
+        // 눈알 위치 제한
         eyeDir.x = Mathf.Lerp(-0.4f, 0.4f, eyeDir.x);
         eyeDir.y = Mathf.Lerp(-0.1f, 0.1f, eyeDir.y);
-
-        //todo 좌우 반전 적용
 
         // 눈알 위치 적용
         eye.transform.localPosition = eyeDir;
 
-        //todo 이동하려는 X 방향 플로터 불 밝히기
-        L_floater.color = Color.Lerp(redColorMax, redColorMin, character.rigid.velocity.normalized.magnitude);
-        R_floater.color = Color.Lerp(redColorMin, redColorMax, character.rigid.velocity.normalized.magnitude);
+        // 이동하려는 X 방향 플로터 불 밝히기
+        Color LColor = Color.Lerp(lerpColorMin, lerpColorMax, 1 - character.rigid.velocity.normalized.x);
+        Color RColor = Color.Lerp(lerpColorMin, lerpColorMax, character.rigid.velocity.normalized.x);
 
-        //todo 좌우 반전 적용
+        L_floater.color = LColor;
+        R_floater.color = RColor;
     }
 }

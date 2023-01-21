@@ -173,6 +173,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: d069c56cc663ccc4b9cb6192304165cb, type: 3}
   - {fileID: 21300000, guid: 235950cc9fb14a14cb5da9264b434e7b, type: 3}
   - {fileID: 21300000, guid: 5c3aac0d2222d6349938891de574401a, type: 3}
+  - {fileID: 8025862719659560087, guid: 69a0a71dfb2ee484a95a1dcd9bede043, type: 3}
+  - {fileID: -7369318122405476811, guid: 69a0a71dfb2ee484a95a1dcd9bede043, type: 3}
+  - {fileID: -4312466724755804279, guid: 69a0a71dfb2ee484a95a1dcd9bede043, type: 3}
+  - {fileID: 7542626992797479547, guid: 69a0a71dfb2ee484a95a1dcd9bede043, type: 3}
   - {fileID: -7541850853189336606, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: -3998438342723584634, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
   - {fileID: 8497403174052090491, guid: add5155d3cd8a8b4099d18ffa6e93405, type: 3}
@@ -364,6 +368,10 @@ SpriteAtlas:
   - Farmer_Vent
   - KingSlimeFill
   - Bawi_Head
+  - FireSlime-Sheet_2
+  - FireSlime-Sheet_3
+  - FireSlime-Sheet_0
+  - FireSlime-Sheet_1
   - BloodEffect_7
   - BloodEffect_6
   - BloodEffect_5
