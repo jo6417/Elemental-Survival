@@ -64,18 +64,18 @@ public class AstralForm : MonoBehaviour
         ToggleAstralForm(true);
 
         // 플레이어 머터리얼 바꾸기
-        PlayerManager.Instance.sprite.material = SystemManager.Instance.ghostHDRMat;
+        PlayerManager.Instance.playerSprite.material = SystemManager.Instance.ghostHDRMat;
 
         // 머터리얼 색깔 초기화
-        PlayerManager.Instance.sprite.material.color = Color.clear;
+        PlayerManager.Instance.playerSprite.material.color = Color.clear;
         // 머터리얼 색깔 변경
-        PlayerManager.Instance.sprite.material.DOColor(new Color(1, 0, 1, 0) * 5f, 1f);
+        PlayerManager.Instance.playerSprite.material.DOColor(new Color(1, 0, 1, 0) * 5f, 1f);
 
         // 지속시간 - 1초 만큼 대기
         yield return new WaitForSeconds(duration - 1f);
 
         // 머터리얼 색깔 초기화
-        PlayerManager.Instance.sprite.material.DOColor(Color.clear, 1f);
+        PlayerManager.Instance.playerSprite.material.DOColor(Color.clear, 1f);
 
         // 안개 사이즈 줄이기
         transform.DOScale(Vector2.zero, 1f);
@@ -94,7 +94,7 @@ public class AstralForm : MonoBehaviour
                 LeanPool.Despawn(ghosts[i]);
 
         // 플레이어 머터리얼 초기화
-        PlayerManager.Instance.sprite.material = SystemManager.Instance.spriteUnLitMat;
+        PlayerManager.Instance.playerSprite.material = SystemManager.Instance.spriteUnLitMat;
 
         // 영체로 변신 해제
         ToggleAstralForm(false);
@@ -164,12 +164,12 @@ public class AstralForm : MonoBehaviour
         ghosts.Add(ghostObj);
 
         //플레이어 현재 스프라이트 넣기
-        ghostSprite.sprite = PlayerManager.Instance.sprite.sprite;
+        ghostSprite.sprite = PlayerManager.Instance.playerSprite.sprite;
 
         // 플레이어 레이어 넣기
-        ghostSprite.sortingLayerID = PlayerManager.Instance.sprite.sortingLayerID;
+        ghostSprite.sortingLayerID = PlayerManager.Instance.playerSprite.sortingLayerID;
         // 플레이어보다 한단계 낮게
-        ghostSprite.sortingOrder = PlayerManager.Instance.sprite.sortingOrder - 1;
+        ghostSprite.sortingOrder = PlayerManager.Instance.playerSprite.sortingOrder - 1;
 
         //고스트 색 초기화
         ghostSprite.color = new Color(1, 1, 1, 150f / 255f);

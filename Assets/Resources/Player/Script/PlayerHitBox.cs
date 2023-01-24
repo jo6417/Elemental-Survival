@@ -446,26 +446,26 @@ public class PlayerHitBox : MonoBehaviour
         hitCoolCount = hitDelayTime;
 
         //머터리얼 변환
-        playerManager.sprite.material = SystemManager.Instance.hitMat;
+        playerManager.playerSprite.material = SystemManager.Instance.hitMat;
 
         //스프라이트 색 변환
         if (damage > 0)
             // 피격
-            playerManager.sprite.color = SystemManager.Instance.hitColor;
+            playerManager.playerSprite.color = SystemManager.Instance.hitColor;
         if (damage == 0)
             // 회피 또는 방어
-            playerManager.sprite.color = Color.blue;
+            playerManager.playerSprite.color = Color.blue;
         if (damage < 0)
             // 회복
-            playerManager.sprite.color = SystemManager.Instance.healColor;
+            playerManager.playerSprite.color = SystemManager.Instance.healColor;
 
         yield return new WaitUntil(() => hitCoolCount <= 0);
 
         //머터리얼 복구
-        playerManager.sprite.material = SystemManager.Instance.spriteUnLitMat;
+        playerManager.playerSprite.material = SystemManager.Instance.spriteUnLitMat;
 
         //원래 색으로 복구
-        playerManager.sprite.color = Color.white;
+        playerManager.playerSprite.color = Color.white;
 
         // 코루틴 변수 초기화
         hitDelayCoroutine = null;
@@ -670,10 +670,10 @@ public class PlayerHitBox : MonoBehaviour
         float stopTime = 3f;
 
         // 플레이어 머터리얼 변환
-        playerManager.sprite.material = SystemManager.Instance.hitMat;
+        playerManager.playerSprite.material = SystemManager.Instance.hitMat;
         // 플레이어 하얗게 변환
-        playerManager.sprite.color = SystemManager.Instance.hitColor;
-        playerManager.sprite.DOColor(SystemManager.Instance.DeadColor, stopTime / 2f)
+        playerManager.playerSprite.color = SystemManager.Instance.hitColor;
+        playerManager.playerSprite.DOColor(SystemManager.Instance.DeadColor, stopTime / 2f)
         .SetEase(Ease.OutQuad)
         .SetUpdate(true);
 
@@ -698,7 +698,7 @@ public class PlayerHitBox : MonoBehaviour
         deathEffect.SetActive(true);
 
         // 플레이어, 핸드폰 끄기
-        playerManager.sprite.enabled = false;
+        playerManager.playerSprite.enabled = false;
         CastMagic.Instance.gameObject.SetActive(false);
 
         yield return new WaitForSecondsRealtime(1f);

@@ -40,10 +40,14 @@ public class UIManager : MonoBehaviour
     public bool enemyPointSwitch = false; //화면 밖의 적 방향 표시 여부
 
     [Header("State")]
-    public float defaultCamSize = 16.875f; // 기본 캠 사이즈
-    private Tween zoomTween = null; // 현재 진행중인 줌인 및 줌아웃 트윈
     [SerializeField] float fill_Max = 600f; // 단일 난이도 최대치, 기본 10분
     public enum DamageType { Damaged, Heal, Miss, Block }
+
+    [Header("Camera")]
+    public Transform camFollowTarget;
+    public float camFollowSpeed = 10f; // 캠 따라오는 속도
+    public float defaultCamSize = 16.875f; // 기본 캠 사이즈
+    private Tween zoomTween = null; // 현재 진행중인 줌인 및 줌아웃 트윈
 
     [Header("Input")]
     public NewInput UI_Input; // UI 인풋 받기
@@ -64,6 +68,7 @@ public class UIManager : MonoBehaviour
     public GameObject gameoverPanel;
 
     [Header("Refer")]
+    [SerializeField] Transform camParent; // 카메라 이동 오브젝트
     [SerializeField] Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
@@ -194,9 +199,6 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // UI 인풋 켜기
-        // UI_Input.Enable();
-
         // 초기화
         StartCoroutine(Init());
     }
@@ -213,6 +215,8 @@ public class UIManager : MonoBehaviour
     IEnumerator Init()
     {
         yield return null;
+
+        camFollowTarget = playerManager.transform;
 
         // 난이도 등급 변수 초기화
         WorldSpawner.Instance.nowDifficultGrade = 1;
@@ -358,6 +362,14 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
+        if (camFollowTarget != null)
+        {
+            // 카메라 타겟 부드럽게 따라가기
+            Vector3 targetPos = camFollowTarget.position;
+            targetPos.z = -50f;
+            camParent.position = Vector3.Lerp(camParent.position, targetPos, Time.deltaTime * camFollowSpeed);
+        }
+
         //게임시간 타이머 업데이트
         if (SystemManager.Instance.playerTimeScale != 0)
             UpdateTimer();
@@ -395,6 +407,13 @@ public class UIManager : MonoBehaviour
 
         // 입력된 사이즈대로 줌인/줌아웃 트윈 실행
         zoomTween = DOTween.To(() => mainCamera.orthographicSize, x => mainCamera.orthographicSize = x, defaultCamSize + amount, zoomTime);
+    }
+
+    public void CameraMove(Vector2 targetPos, float time, bool isUnscaledTime)
+    {
+        // 카메라 이동
+        camParent.DOMove(new Vector3(targetPos.x, targetPos.y, -50f), time)
+        .SetUpdate(isUnscaledTime);
     }
 
     #endregion

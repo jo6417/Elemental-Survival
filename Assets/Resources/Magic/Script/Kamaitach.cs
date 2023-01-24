@@ -82,7 +82,7 @@ public class Kamaitach : MonoBehaviour
             // 플레이어 애니메이터 끄기
             PlayerManager.Instance.anim.enabled = false;
             // 플레이어 스프라이트 바꾸기
-            PlayerManager.Instance.sprite.sprite = dashSprite;
+            PlayerManager.Instance.playerSprite.sprite = dashSprite;
 
             // 시전여부 초기화
             magicHolder.isManualCast = false;

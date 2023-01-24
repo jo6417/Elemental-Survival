@@ -5,6 +5,7 @@ using TMPro;
 using Lean.Pool;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class GatePortal : MonoBehaviour
 {
@@ -53,9 +54,14 @@ public class GatePortal : MonoBehaviour
     [SerializeField] CanvasGroup gemNum; //젬 개수 표시 텍스트
     [SerializeField] Image GemIcon; // 젬 아이콘
     [SerializeField] TextMeshProUGUI pressKey; //상호작용 인디케이터
-    [SerializeField] Animator anim; //포탈 이펙트 애니메이션
+    [SerializeField] Transform portalPivot; // 게이트 피벗 오브젝트
+    [SerializeField] Animator portalAnim; //포탈 이펙트 애니메이션
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
-
+    [SerializeField] SpriteRenderer portalCover; // 포탈 빛날때 이미지
+    [SerializeField] SpriteRenderer beam; // 포탈 전송시 나타나는 빔
+    [SerializeField] GameObject beamParticle; // 빔 사라질때 남기는 파티클
+    [SerializeField] ParticleManager gatherParticle; // 에너지 충전시 시작되는 파티클
+    [SerializeField] ParticleManager teleportParticle; // 포탈 전송시 파티클
 
     private void Awake()
     {
@@ -88,6 +94,19 @@ public class GatePortal : MonoBehaviour
         // 보스 변수 초기화
         bossCharacter = null;
 
+        // 빔 및 이펙트 꺼서 초기화
+        beam.transform.localScale = new Vector2(0, 10f);
+        beamParticle.SetActive(false);
+
+        // 포탈 이펙트 초기화
+        gatherParticle.gameObject.SetActive(false);
+        teleportParticle.gameObject.SetActive(false);
+
+        // 젬 개수 UI 비활성화
+        gemNum.alpha = 0;
+
+        yield return new WaitUntil(() => SystemManager.Instance != null);
+
         // 맵 속성 따라서 필요한 젬 타입 초기화
         // gemType = Random.Range(0, 6);
         gemType = (int)SystemManager.Instance.nowMapElement;
@@ -108,7 +127,7 @@ public class GatePortal : MonoBehaviour
         showKeyUI.alpha = 0;
 
         //포탈 이펙트 오브젝트 비활성화
-        anim.gameObject.SetActive(false);
+        // portalAnim.gameObject.SetActive(false);
 
         // 상호작용 트리거 함수 콜백에 연결 시키기
         if (interacter.interactTriggerCallback == null)
@@ -159,6 +178,10 @@ public class GatePortal : MonoBehaviour
         // 젬이 부족할때
         if (nowGem < maxGem)
             pressAction.text = "Pay Gem";
+
+        // 젬이 최대치일때
+        if (nowGem == maxGem)
+            pressAction.text = "Boss Summon";
 
         // 맵 클리어시
         if (portalState == PortalState.Clear)
@@ -212,17 +235,36 @@ public class GatePortal : MonoBehaviour
         if (portalState == PortalState.Idle
         || portalState == PortalState.GemReceive)
         {
-            // 젬 넣기 시작
-            if (payCoroutine == null)
+            // 젬이 최대치일때
+            if (nowGem == maxGem)
             {
-                payCoroutine = PayGem();
-                StartCoroutine(payCoroutine);
+                // 키를 눌렀을때
+                if (isPress)
+                {
+                    // 상호작용 키 끄기
+                    showKeyUI.alpha = 0;
+                    // 젬 개수 UI 비활성화
+                    gemNum.alpha = 0;
+
+                    //보스 소환
+                    StartCoroutine(SummonBoss());
+                }
             }
-            // 젬 넣기 종료
+            // 젬이 최대치 이하로 들어있을때
             else
             {
-                StopCoroutine(payCoroutine);
-                payCoroutine = null;
+                // 젬 넣기 시작
+                if (payCoroutine == null)
+                {
+                    payCoroutine = PayGem();
+                    StartCoroutine(payCoroutine);
+                }
+                // 젬 넣기 종료
+                else
+                {
+                    StopCoroutine(payCoroutine);
+                    payCoroutine = null;
+                }
             }
         }
 
@@ -243,26 +285,29 @@ public class GatePortal : MonoBehaviour
         // 계속 지불 중이면 반복
         while (portalState == PortalState.GemReceive && nowGem < maxGem)
         {
+            //todo 플레이어 젬 부족시 정지
+            // if (PlayerManager.Instance.GetGem(gemType) <= 0
+            // || showKeyUI.alpha == 0)
+            // 상호작용 범위 벗어나면 정지
+            if (showKeyUI.alpha == 0)
+            {
+                // 코루틴 초기화
+                payCoroutine = null;
+                break;
+            }
+
             // 플레이어 젬 하나씩 소모
             PlayerManager.Instance.PayGem(gemType, 1);
 
             // 젬 하나씩 넣기
             nowGem++;
 
+            // 포탈 준비 파티클 시작
+            if (nowGem > 0)
+                gatherParticle.gameObject.SetActive(true);
+
             //젬 개수 UI 갱신
             UpdateGemNum();
-
-            // 최대치만큼 넣으면
-            if (nowGem == maxGem)
-            {
-                // 상호작용 키 끄기
-                showKeyUI.alpha = 0;
-                // 젬 개수 UI 비활성화
-                gemNum.alpha = 0;
-
-                //보스 소환
-                StartCoroutine(SummonBoss());
-            }
 
             // 페이 딜레이 감소 및 값제한
             payDelay -= 0.01f;
@@ -270,6 +315,11 @@ public class GatePortal : MonoBehaviour
 
             yield return new WaitForSeconds(payDelay);
         }
+
+        // 젬이 최대치일때
+        if (nowGem == maxGem)
+            // 보스 소환 메시지로 전환
+            pressAction.text = "Boss Summon";
     }
 
     void UpdateGemNum()
@@ -327,6 +377,9 @@ public class GatePortal : MonoBehaviour
         GameObject bossInstance = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
         bossCharacter = bossInstance.GetComponent<Character>();
 
+        // 보스 소환 상태로 전환
+        portalState = PortalState.BossAlive;
+
         // 보스 죽을때까지 대기
         yield return new WaitUntil(() => bossCharacter != null && bossCharacter.isDead);
 
@@ -341,13 +394,22 @@ public class GatePortal : MonoBehaviour
         // 남은 몬스터 화살표로 방향 표시해주기
         UIManager.Instance.enemyPointSwitch = true;
 
+        // 몬스터 생존 상태로 전환
+        portalState = PortalState.MobRemain;
+
         // 모든 몬스터 죽을때까지 대기
         yield return new WaitUntil(() => WorldSpawner.Instance.spawnEnemyList.Count == 0f);
 
-        print("all dead");
+        // 클리어 상태로 전환
+        portalState = PortalState.Clear;
+
+        // 포탈 준비 파티클 끄기
+        gatherParticle.SmoothDisable();
+
+        print("Map Clear");
 
         // PortalOpen 트리거 true / Open, Idle 애니메이션 순서대로 시작
-        anim.SetTrigger("PortalOpen");
+        portalAnim.SetTrigger("PortalOpen");
 
         // 클리어 보상 드랍
         StartCoroutine(ClearReward());
@@ -384,27 +446,85 @@ public class GatePortal : MonoBehaviour
     {
         yield return null;
 
+        // 상호작용 키 끄기
+        showKeyUI.alpha = 0;
+
         // 시간 멈추고
         SystemManager.Instance.TimeScaleChange(0f);
+        // 플레이어 컨트롤 끄기
+        PlayerManager.Instance.player_Input.Disable();
+        // UI 컨트롤 끄기
+        UIManager.Instance.UI_Input.Disable();
+
+        // 포탈 준비 파티클 시작
+        gatherParticle.gameObject.SetActive(true);
+
+        float tweenTime = 2f;
+
+        // 포탈로 카메라 이동
+        UIManager.Instance.CameraMove(transform.position, 0.5f, true);
+
+        // 천천히 줌인
+        UIManager.Instance.CameraZoom(tweenTime, 3f);
+
+        // 텔레포트 파티클 켜기
+        teleportParticle.gameObject.SetActive(true);
+
+        // 플레이어가 포탈 가운데로 들어가면서
+        PlayerManager.Instance.transform.DOMove(transform.position, tweenTime)
+        .SetUpdate(true);
+
+        // 플레이어 하얗게 변화
+        PlayerManager.Instance.playerCover.DOColor(Color.white, tweenTime)
+        .SetUpdate(true)
+        .SetEase(Ease.InCubic);
+        // 포탈 하얗게
+        portalCover.DOColor(Color.white, tweenTime)
+        .SetUpdate(true)
+        .SetEase(Ease.InCubic);
+
+        // 하얗게 변하는 시간
+        yield return new WaitForSecondsRealtime(tweenTime - 0.5f);
+
+        // 텔레포트 파티클 끄기
+        teleportParticle.SmoothDisable();
+
+        // 플레이어 얇고 길쭉해짐
+        PlayerManager.Instance.transform.DOScale(new Vector3(0f, 2f), 1f)
+        .SetUpdate(true)
+        .SetEase(Ease.InExpo);
+        // 포탈 얇고 길쭉해짐
+        portalPivot.DOScale(new Vector3(0f, 2f), 1f)
+        .SetUpdate(true)
+        .SetEase(Ease.InExpo);
+
+        // 포탈 중심으로 빛 기둥 넓어지며 등장
+        beam.transform.DOScale(new Vector2(2f, 10f), 1f)
+        .SetUpdate(true)
+        .SetEase(Ease.InExpo);
+
+        // 빛 기둥 넓어지는 시간
+        yield return new WaitForSecondsRealtime(1f);
+
+        // 빛 기둥 빠르게 얇아지면서 사라짐
+        beam.transform.DOScale(new Vector2(0f, 10f), 0.5f)
+        .SetUpdate(true)
+        .SetEase(Ease.OutExpo);
+
+        // 빛 기둥 모양으로 천천히 날리는 빛 파티클 조금 남김
+        beamParticle.SetActive(true);
+
+        // 카메라 줌 초기화
+        UIManager.Instance.CameraZoom(3f, 1f);
+
+        // 흩날리는 파티클 사라질때까지 대기
+        yield return new WaitUntil(() => !beamParticle.activeSelf);
 
         // 현재 맵 속성 조회해서 int로 변환
         int nowIndex = (int)SystemManager.Instance.nowMapElement;
-
         // 마지막 스테이지가 아닐때
         if (nowIndex < 5)
         {
-            //todo 포탈 가운데로 빛 모이는 파티클
-            //todo 플레이어가 포탈 가운데로 들어가면서 포탈로 카메라 고정
-            //todo 플레이어 및 포탈 하얗게 변하고
-            //todo 포탈 왜곡되면서 디스폰
-            //todo 플레이어 및 포탈 길쭉해지며 승천
-            //todo 천천히 날리는 빛 파티클 조금 남김
-            //todo 화면 암전 했다가 풀면서
-            //todo 왜곡되면서 플레이어 스폰
-            //todo 새로운 맵에 길쭉한 하얀 오브젝트 내려와서
-            //todo 하얀 플레이어로 변하고 플레이어 초기화
-            //todo 새 맵 초기화
-
             // 다음 맵 인덱스로 증가
             SystemManager.Instance.nowMapElement = (SystemManager.MapElement)(nowIndex + 1);
 
@@ -417,9 +537,6 @@ public class GatePortal : MonoBehaviour
         // 마지막 스테이지일때
         else
         {
-            // 플레이어 컨트롤 끄기
-            SystemManager.Instance.ToggleInput(true);
-
             // 게임 오버 UI 켜기
             SystemManager.Instance.GameOverPanelOpen(true);
 

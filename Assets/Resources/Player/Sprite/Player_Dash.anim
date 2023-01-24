@@ -55,7 +55,7 @@ AnimationClip:
       value: {fileID: 555406622013188121, guid: 85a55f7c82e3b1c458b5e396c2eeaf72,
         type: 3}
     attribute: m_Sprite
-    path: 
+    path: PlayerHitBox
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -66,7 +66,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 3228078271
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -111,8 +111,8 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.25
-    functionName: PlaySound
-    data: Dash
+    functionName: SoundPlayGlobal
+    data: PlayerDash
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

@@ -115,7 +115,8 @@ public class PlayerManager : MonoBehaviour
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
-    public SpriteRenderer sprite; // 몸체 스프라이트
+    public SpriteRenderer playerSprite; // 몸체 스프라이트
+    public SpriteRenderer playerCover; // 플레이어와 같은 이미지로 덮기
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Light2D playerLight;
     public Rigidbody2D rigid;
@@ -130,7 +131,6 @@ public class PlayerManager : MonoBehaviour
 
     [Header("<State>")]
     public bool initFinish = false;
-    public float camFollowSpeed = 10f; // 캠 따라오는 속도
     public float hpNow;
     public float hpMax;
     public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
@@ -166,7 +166,7 @@ public class PlayerManager : MonoBehaviour
 
         rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
         anim = anim == null ? GetComponent<Animator>() : anim;
-        sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
+        playerSprite = playerSprite == null ? GetComponent<SpriteRenderer>() : playerSprite;
 
         // 플레이어 초기 스탯 저장
         PlayerStat_Default = new PlayerStat(PlayerStat_Now);
@@ -282,6 +282,9 @@ public class PlayerManager : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 플레이어 커버 색 초기화
+        playerCover.color = new Color(1, 1, 1, 0);
+
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
         // 보유 아이템 리스트 초기화
@@ -325,8 +328,8 @@ public class PlayerManager : MonoBehaviour
         if (Time.timeScale == 0f)
             return;
 
-        // 카메라 플레이어 부드럽게 따라오기
-        Camera.main.transform.parent.position = Vector3.Lerp(Camera.main.transform.parent.position, transform.position, Time.deltaTime * camFollowSpeed);
+        // 스프라이트 복제
+        playerCover.sprite = playerSprite.sprite;
 
         //몬스터 스포너 따라오기
         if (mobSpawner.activeSelf)
@@ -368,11 +371,11 @@ public class PlayerManager : MonoBehaviour
             //방향 따라 캐릭터 회전
             if (inputMoveDir.x > 0)
             {
-                sprite.transform.rotation = Quaternion.Euler(0, 0, 0);
+                playerSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
             else
             {
-                sprite.transform.rotation = Quaternion.Euler(0, 180, 0);
+                playerSprite.transform.rotation = Quaternion.Euler(0, 180, 0);
             }
 
             // 그림자는 회전값 유지
@@ -589,6 +592,12 @@ public class PlayerManager : MonoBehaviour
 
         // 레벨업 메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel);
+    }
+
+    public int GetGem(int gemIndex)
+    {
+        // 해당 젬 개수를 리턴
+        return hasItems[gemIndex].amount;
     }
 
     public void PayGem(int gemIndex, int price)

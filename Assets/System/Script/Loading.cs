@@ -221,7 +221,16 @@ public class Loading : MonoBehaviour
         {
             // 기본 마법 패널 켜기
             yield return new WaitUntil(() => UIManager.Instance != null);
-            UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, true);
+
+            // 첫 맵일때
+            if (SystemManager.Instance.nowMapElement == 0)
+            {
+                // 기본 마법 패널 켜기
+                UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, true);
+            }
+            else
+                // 기본 마법 패널 끄기
+                UIManager.Instance.defaultPanel.SetActive(false);
         }
 
         // 클릭 혹은 아무키나 누를때까지, 로딩 완료, 다음씬 초기화 완료까지 대기

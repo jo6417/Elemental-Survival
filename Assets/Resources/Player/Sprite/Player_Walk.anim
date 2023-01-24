@@ -50,7 +50,7 @@ AnimationClip:
       value: {fileID: -4503884086743398294, guid: ff025f3d160d42a4aaeb2591f618b78b,
         type: 3}
     attribute: m_Sprite
-    path: 
+    path: PlayerHitBox
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -61,7 +61,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 3228078271
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -104,14 +104,14 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.25
-    functionName: StepSound
+    functionName: PlaySoundPool
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.6666667
-    functionName: StepSound
+    functionName: PlaySoundPool
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

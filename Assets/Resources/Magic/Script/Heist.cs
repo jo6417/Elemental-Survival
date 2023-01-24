@@ -78,7 +78,7 @@ public class Heist : MonoBehaviour
                 ShockTrail();
 
             // 플레이어 스프라이트 켜져있을때 1회
-            if (PlayerManager.Instance.sprite.color == Color.white)
+            if (PlayerManager.Instance.playerSprite.color == Color.white)
             {
                 // 헤이스트 스프라이트 끄기
                 ringSprite.enabled = false;
@@ -87,7 +87,7 @@ public class Heist : MonoBehaviour
                 LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 플레이어 스프라이트 끄기
-                PlayerManager.Instance.sprite.DOColor(new Color(1, 1, 1, 0), 0.2f);
+                PlayerManager.Instance.playerSprite.DOColor(new Color(1, 1, 1, 0), 0.2f);
                 // 플레이어 그림자 끄기
                 PlayerManager.Instance.shadowSprite.DOColor(new Color(0, 0, 0, 0f), 0.2f);
                 // 플레이어 라이트 끄기
@@ -100,7 +100,7 @@ public class Heist : MonoBehaviour
             GhostTrail();
 
             // 플레이어 스프라이트 꺼져있을때 1회
-            if (PlayerManager.Instance.sprite.color == new Color(1, 1, 1, 0))
+            if (PlayerManager.Instance.playerSprite.color == new Color(1, 1, 1, 0))
             {
                 // 헤이스트 스프라이트 켜기
                 ringSprite.enabled = true;
@@ -109,7 +109,7 @@ public class Heist : MonoBehaviour
                 // LeanPool.Spawn(dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
                 // 플레이어 스프라이트 켜기
-                PlayerManager.Instance.sprite.DOColor(new Color(1, 1, 1, 1), 0.2f);
+                PlayerManager.Instance.playerSprite.DOColor(new Color(1, 1, 1, 1), 0.2f);
                 // 플레이어 그림자 켜기
                 PlayerManager.Instance.shadowSprite.DOColor(new Color(0, 0, 0, 0.5f), 0.2f);
                 // 플레이어 라이트 켜기
@@ -149,12 +149,12 @@ public class Heist : MonoBehaviour
         SpriteRenderer ghostSprite = ghostObj.GetComponent<SpriteRenderer>();
 
         //플레이어 현재 스프라이트 넣기
-        ghostSprite.sprite = PlayerManager.Instance.sprite.sprite;
+        ghostSprite.sprite = PlayerManager.Instance.playerSprite.sprite;
 
         // 플레이어 레이어 넣기
-        ghostSprite.sortingLayerID = PlayerManager.Instance.sprite.sortingLayerID;
+        ghostSprite.sortingLayerID = PlayerManager.Instance.playerSprite.sortingLayerID;
         // 플레이어보다 한단계 낮게
-        ghostSprite.sortingOrder = PlayerManager.Instance.sprite.sortingOrder - 1;
+        ghostSprite.sortingOrder = PlayerManager.Instance.playerSprite.sortingOrder - 1;
 
         //고스트 색 초기화
         ghostSprite.color = new Color(1, 1, 1, 150f / 255f);
