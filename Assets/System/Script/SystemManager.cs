@@ -489,7 +489,7 @@ public class SystemManager : MonoBehaviour
         if (UIManager.Instance != null)
             Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
         if (PlayerManager.Instance != null)
-            Destroy(PlayerManager.Instance.gameObject); // 플레이어 초기화
+            Destroy(PlayerManager.Instance.gameObject); // 플레이어 파괴
         if (CastMagic.Instance != null)
             Destroy(CastMagic.Instance.gameObject); // 핸드폰 파괴
 

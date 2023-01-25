@@ -137,7 +137,7 @@ public class Slot_Machine : MonoBehaviour
         .SetEase(Ease.InOutBack);
 
         // 재화가 가격보다 많을때
-        if (PlayerManager.Instance.hasItems[priceType].amount > price)
+        if (PlayerManager.Instance.hasGem[priceType].amount > price)
         {
             // 플레이어 젬 소모 및 UI 갱신
             PlayerManager.Instance.PayGem(priceType, (int)price);

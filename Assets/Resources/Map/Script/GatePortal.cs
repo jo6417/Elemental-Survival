@@ -49,11 +49,12 @@ public class GatePortal : MonoBehaviour
 
     [Header("Refer")]
     Interacter interacter; //상호작용 콜백 함수 클래스
+    // [SerializeField] Canvas canvas; // UI 캔버스
     [SerializeField] CanvasGroup showKeyUI; //상호작용 키 표시 UI
     [SerializeField] TextMeshProUGUI pressAction; // 상호작용 기능 설명 텍스트
     [SerializeField] CanvasGroup gemNum; //젬 개수 표시 텍스트
     [SerializeField] Image GemIcon; // 젬 아이콘
-    [SerializeField] TextMeshProUGUI pressKey; //상호작용 인디케이터
+    [SerializeField] TextMeshProUGUI pressKey; // 바인딩 된 키 이름
     [SerializeField] Transform portalPivot; // 게이트 피벗 오브젝트
     [SerializeField] Animator portalAnim; //포탈 이펙트 애니메이션
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
@@ -62,6 +63,7 @@ public class GatePortal : MonoBehaviour
     [SerializeField] GameObject beamParticle; // 빔 사라질때 남기는 파티클
     [SerializeField] ParticleManager gatherParticle; // 에너지 충전시 시작되는 파티클
     [SerializeField] ParticleManager teleportParticle; // 포탈 전송시 파티클
+    [SerializeField] Animator bossBtnAnim; // 보스 버튼 이펙트 애니메이션
 
     private void Awake()
     {
@@ -78,7 +80,7 @@ public class GatePortal : MonoBehaviour
             instance = this;
 
             // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
         }
 
         interacter = GetComponent<Interacter>();
@@ -105,6 +107,11 @@ public class GatePortal : MonoBehaviour
         // 젬 개수 UI 비활성화
         gemNum.alpha = 0;
 
+        // 보스 버튼 이미지 끄기
+        showKeyUI.GetComponent<Image>().enabled = false;
+        // 버튼 테두리 이펙트 애니메이션 끄기
+        bossBtnAnim.gameObject.SetActive(false);
+
         yield return new WaitUntil(() => SystemManager.Instance != null);
 
         // 맵 속성 따라서 필요한 젬 타입 초기화
@@ -119,7 +126,7 @@ public class GatePortal : MonoBehaviour
         gaugeImg.material.SetFloat("_Angle", 302f); // 시작지점 각도 갱신
         gaugeImg.material.SetFloat("_Arc1", 64f); // 마지막 지점 각도 갱신
         // 상호작용 텍스트 초기화
-        pressAction.text = "Pay Gem";
+        ActionText("Pay Gem");
         // 젬 개수 UI 갱신
         UpdateGemNum();
 
@@ -170,25 +177,25 @@ public class GatePortal : MonoBehaviour
         }
     }
 
-    public void InteractTrigger(bool able)
+    public void InteractTrigger(bool isTrigger)
     {
         //todo 플레이어 상호작용 키가 어떤 키인지 표시
         // pressKey.text = 
 
         // 젬이 부족할때
         if (nowGem < maxGem)
-            pressAction.text = "Pay Gem";
+            ActionText("Pay Gem");
 
         // 젬이 최대치일때
         if (nowGem == maxGem)
-            pressAction.text = "Boss Summon";
+            ActionText("Boss Summon", isTrigger);
 
         // 맵 클리어시
         if (portalState == PortalState.Clear)
-            pressAction.text = "Enter Portal";
+            ActionText("Enter Portal");
 
         // 상호작용 키 표시 켜기
-        if (able)
+        if (isTrigger)
         {
             // 젬이 부족할때 
             if (portalState == PortalState.Idle
@@ -211,6 +218,27 @@ public class GatePortal : MonoBehaviour
             showKeyUI.alpha = 0;
             // 젬 개수 UI 비활성화
             gemNum.alpha = 0;
+        }
+    }
+
+    void ActionText(string description, bool isTrigger = true)
+    {
+        // 텍스트 입력
+        pressAction.text = description;
+
+        //todo 바인딩된 키 입력
+        // pressKey.text = "E";
+
+        // UI 사이즈 강제 초기화
+        Canvas.ForceUpdateCanvases();
+
+        // 원소젬 최대일때
+        if (portalState == PortalState.GemReceive && nowGem == maxGem)
+        {
+            // 보스 버튼 이미지 켜기
+            showKeyUI.GetComponent<Image>().enabled = isTrigger;
+            // 버튼 테두리 이펙트 애니메이션 켜기
+            bossBtnAnim.gameObject.SetActive(isTrigger);
         }
     }
 
@@ -241,11 +269,6 @@ public class GatePortal : MonoBehaviour
                 // 키를 눌렀을때
                 if (isPress)
                 {
-                    // 상호작용 키 끄기
-                    showKeyUI.alpha = 0;
-                    // 젬 개수 UI 비활성화
-                    gemNum.alpha = 0;
-
                     //보스 소환
                     StartCoroutine(SummonBoss());
                 }
@@ -318,8 +341,10 @@ public class GatePortal : MonoBehaviour
 
         // 젬이 최대치일때
         if (nowGem == maxGem)
+        {
             // 보스 소환 메시지로 전환
-            pressAction.text = "Boss Summon";
+            ActionText("Boss Summon");
+        }
     }
 
     void UpdateGemNum()
@@ -340,6 +365,14 @@ public class GatePortal : MonoBehaviour
 
     IEnumerator SummonBoss()
     {
+        // 상호작용 키 끄기
+        showKeyUI.alpha = 0;
+        // 젬 개수 UI 비활성화
+        gemNum.alpha = 0;
+
+        // 버튼 이펙트 끄기
+        ActionText("", false);
+
         //보스 리스트
         List<EnemyInfo> bosses = new List<EnemyInfo>();
 
@@ -499,7 +532,7 @@ public class GatePortal : MonoBehaviour
         .SetEase(Ease.InExpo);
 
         // 포탈 중심으로 빛 기둥 넓어지며 등장
-        beam.transform.DOScale(new Vector2(2f, 10f), 1f)
+        beam.transform.DOScale(new Vector2(2f, 1f), 1f)
         .SetUpdate(true)
         .SetEase(Ease.InExpo);
 
@@ -507,7 +540,7 @@ public class GatePortal : MonoBehaviour
         yield return new WaitForSecondsRealtime(1f);
 
         // 빛 기둥 빠르게 얇아지면서 사라짐
-        beam.transform.DOScale(new Vector2(0f, 10f), 0.5f)
+        beam.transform.DOScale(new Vector2(0f, 1f), 0.5f)
         .SetUpdate(true)
         .SetEase(Ease.OutExpo);
 

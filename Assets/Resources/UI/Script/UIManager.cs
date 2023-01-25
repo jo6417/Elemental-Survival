@@ -606,7 +606,7 @@ public class UIManager : MonoBehaviour
     public void UpdateGem(int gemTypeIndex)
     {
         // 해당 타입의 젬 UI 업데이트
-        gemAmountUIs[gemTypeIndex].text = playerManager.hasItems[gemTypeIndex].amount.ToString();
+        gemAmountUIs[gemTypeIndex].text = playerManager.hasGem[gemTypeIndex].amount.ToString();
     }
 
     public void UpdateGem()
@@ -614,7 +614,7 @@ public class UIManager : MonoBehaviour
         // 모든 젬 UI 업데이트
         for (int i = 0; i < 6; i++)
         {
-            gemAmountUIs[i].text = playerManager.hasItems[i].amount.ToString();
+            gemAmountUIs[i].text = playerManager.hasGem[i].amount.ToString();
         }
     }
 
@@ -650,7 +650,7 @@ public class UIManager : MonoBehaviour
                 LeanPool.Despawn(children[j].gameObject);
             }
 
-        foreach (var item in playerManager.hasItems)
+        foreach (var item in playerManager.hasGem)
         {
             // print(item.itemName + " x" + item.hasNum);
 

@@ -216,7 +216,7 @@ public class VendMachineUI : MonoBehaviour
             int price = slotInfo.price;
 
             // 구매 가능하면 초록, 아니면 빨강
-            amount.color = PlayerManager.Instance.hasItems[priceType].amount >= price ? Color.green : Color.red;
+            amount.color = PlayerManager.Instance.hasGem[priceType].amount >= price ? Color.green : Color.red;
         }
     }
 
@@ -235,7 +235,7 @@ public class VendMachineUI : MonoBehaviour
         TextMeshProUGUI priceTxt = product.transform.Find("Price/Amount").GetComponent<TextMeshProUGUI>();
         priceTxt.text = price.ToString();
         // 구매 가능하면 초록, 아니면 빨강
-        priceTxt.color = PlayerManager.Instance.hasItems[priceType].amount >= price ? Color.green : Color.red;
+        priceTxt.color = PlayerManager.Instance.hasGem[priceType].amount >= price ? Color.green : Color.red;
 
         // 할인 표시 오브젝트 찾기
         Transform discount = product.transform.Find("Discount");
@@ -330,7 +330,7 @@ public class VendMachineUI : MonoBehaviour
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
         // 충분한 화폐가 있을때
-        if (PlayerManager.Instance.hasItems[priceType].amount >= slotInfo.price)
+        if (PlayerManager.Instance.hasGem[priceType].amount >= slotInfo.price)
         {
             //todo 해당 상품 품절 처리
             soldOutList[productIndex] = true;

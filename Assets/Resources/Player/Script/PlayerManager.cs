@@ -122,6 +122,7 @@ public class PlayerManager : MonoBehaviour
     public Rigidbody2D rigid;
     public Collider2D coll;
     public Animator anim;
+    public Transform beamPrefab; // 텔레포트 빔 프리팹
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Now; // 현재 스탯
@@ -137,8 +138,9 @@ public class PlayerManager : MonoBehaviour
     public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
 
     [Header("<Pocket>")]
-    [SerializeField] List<int> hasGems = new List<int>(); // 테스트용 초기 원소젬 개수
-    public List<ItemInfo> hasItems = new List<ItemInfo>(); //플레이어가 가진 아이템
+    [SerializeField] int[] testGems = new int[6]; // 테스트용 초기 원소젬 개수
+    [SerializeField] public ItemInfo[] hasGem = new ItemInfo[6]; //플레이어가 가진 원소젬
+    public List<ItemInfo> hasArtifact = new List<ItemInfo>(); //플레이어가 가진 아티팩트
 
     [Header("Sound")]
     int lastStepSound = -1;
@@ -254,9 +256,6 @@ public class PlayerManager : MonoBehaviour
             StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_C, magic));
         };
 
-        // 플레이어 입력 켜기
-        player_Input.Enable();
-
         // 초기화 완료
         initFinish = true;
     }
@@ -282,21 +281,29 @@ public class PlayerManager : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 플레이어 커버 색 초기화
-        playerCover.color = new Color(1, 1, 1, 0);
+        // 플레이어 입력 끄기
+        player_Input.Disable();
+
+        // 플레이어 커버 하얗게
+        playerCover.color = new Color(1, 1, 1, 1);
+
+        // 플레이어 커버 숨기기
+        playerCover.enabled = false;
+        // 플레이어 스프라이트 숨기기
+        playerSprite.enabled = false;
+        // 그림자 스프라이트 숨기기
+        shadowSprite.enabled = false;
 
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
-        // 보유 아이템 리스트 초기화
-        hasItems.Clear();
         // 6종류 gem을 리스트에 넣기
-        for (int i = 0; i < hasGems.Count; i++)
+        for (int i = 0; i < testGems.Length; i++)
         {
             ItemInfo gem = new ItemInfo(ItemDB.Instance.GetItemByID(i));
             //! 테스트용 원소젬 개수 넣기
-            gem.amount = hasGems[i];
+            gem.amount = testGems[i];
 
-            hasItems.Add(gem);
+            hasGem[i] = gem;
         }
 
         // 플레이어 버프 업데이트
@@ -312,6 +319,42 @@ public class PlayerManager : MonoBehaviour
 
         // 1레벨 경험치 최대치 갱신
         ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
+
+        // 현재위치에 빔 생성
+        Transform beam = LeanPool.Spawn(beamPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+        // 빔 사이즈 초기화
+        beam.localScale = new Vector2(0f, 1f);
+
+        // 빔 확장
+        beam.DOScale(new Vector2(1f, 1f), 0.5f)
+        .SetEase(Ease.InQuart);
+        yield return new WaitForSeconds(0.5f);
+
+        // 플레이어 나타내기
+        playerCover.enabled = true;
+        playerSprite.enabled = true;
+        shadowSprite.enabled = true;
+
+        // 플레이어 입력 켜기
+        player_Input.Enable();
+
+        // 빔 파티클 켜기
+        ParticleSystem beamParticle = beam.GetComponentInChildren<ParticleSystem>(true);
+        beamParticle.gameObject.SetActive(true);
+
+        // 빔 축소
+        beam.DOScale(new Vector2(0f, 1f), 0.3f)
+        .SetEase(Ease.OutQuart);
+        yield return new WaitForSeconds(0.3f);
+
+        // 플레이어 커버 제거
+        playerCover.DOColor(new Color(1, 1, 1, 0), 0.5f)
+        .SetEase(Ease.OutQuad);
+
+        // 빔 파티클 꺼질때까지 대기
+        yield return new WaitUntil(() => !beamParticle.gameObject.activeSelf);
+        // 빔 디스폰
+        LeanPool.Despawn(beam);
     }
 
     private void OnDestroy()
@@ -483,7 +526,7 @@ public class PlayerManager : MonoBehaviour
         PlayerStat PlayerStat_Temp = new PlayerStat(PlayerStat_Default);
 
         //임시 스탯에 현재 아이템의 모든 버프 넣기
-        foreach (ItemInfo item in hasItems)
+        foreach (ItemInfo item in hasGem)
         {
             PlayerStat_Temp.atkNum += item.atkNum * item.amount; // 투사체 개수 버프
             PlayerStat_Temp.hpMax += item.hpMax * item.amount; // 최대체력 버프
@@ -541,7 +584,7 @@ public class PlayerManager : MonoBehaviour
         // 가격 타입으로 젬 타입 인덱스로 반환
         int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == item.priceType);
         // 보유 아이템 중 해당 젬 개수 올리기
-        hasItems[gemTypeIndex].amount += amount;
+        hasGem[gemTypeIndex].amount += amount;
 
         // 플레이어 버프 업데이트
         // BuffUpdate();
@@ -559,7 +602,7 @@ public class PlayerManager : MonoBehaviour
     public void GetArtifact(ItemInfo getItem)
     {
         //todo 해당 아티팩트가 이미 있으면 개수 올리기
-        ItemInfo alreadyHas = hasItems.Find(x => x.id == getItem.id);
+        ItemInfo alreadyHas = hasArtifact.Find(x => x.id == getItem.id);
         if (alreadyHas != null)
         {
             alreadyHas.amount++;
@@ -567,7 +610,7 @@ public class PlayerManager : MonoBehaviour
         //todo 해당 아티팩트가 없으면 추가
         else
         {
-            hasItems.Add(getItem);
+            hasArtifact.Add(getItem);
         }
 
         //todo 아티팩트 그리드 UI 갱신
@@ -597,13 +640,13 @@ public class PlayerManager : MonoBehaviour
     public int GetGem(int gemIndex)
     {
         // 해당 젬 개수를 리턴
-        return hasItems[gemIndex].amount;
+        return hasGem[gemIndex].amount;
     }
 
     public void PayGem(int gemIndex, int price)
     {
         //원소젬 지불하기
-        hasItems[gemIndex].amount -= price;
+        hasGem[gemIndex].amount -= price;
 
         //젬 UI 업데이트
         UIManager.Instance.UpdateGem(gemIndex);

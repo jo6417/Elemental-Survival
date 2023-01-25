@@ -156,7 +156,7 @@ public class Locker : MonoBehaviour
             return;
 
         // 재화가 충분할때
-        if (PlayerManager.Instance.hasItems[priceType].amount > price)
+        if (PlayerManager.Instance.hasGem[priceType].amount > price)
         {
             // 금고 오픈사운드 재생
             SoundManager.Instance.PlaySound("LockerOpen");
