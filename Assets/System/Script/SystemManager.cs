@@ -276,11 +276,11 @@ public class SystemManager : MonoBehaviour
 
     public void TimeScaleChange(float timeScale)
     {
-        Image timeImg = timeBtn.GetComponent<Image>();
-        TextMeshProUGUI timeTxt = timeBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-
         // 씬 타임스케일 변경
         Time.timeScale = timeScale;
+
+        Image timeImg = timeBtn.GetComponent<Image>();
+        TextMeshProUGUI timeTxt = timeBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
         // 모든 오디오 소스 피치에 반영
         SoundManager.Instance.SoundTimeScale(timeScale, 0);

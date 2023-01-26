@@ -37,7 +37,7 @@ public class PhoneMenu : MonoBehaviour
     #endregion
 
     [Header("State")]
-    public bool phoneOpen = false; // 현재 핸드폰 메뉴 켬 여부
+    public bool isOpen = false; // 현재 핸드폰 메뉴 켬 여부
     private bool btnsInteractable = true; // 버튼 상호작용 가능 여부
     float backBtnCount; //백버튼 더블클릭 카운트
     bool isSkipped = false;// 스킵 버튼 누름 여부
@@ -307,6 +307,9 @@ public class PhoneMenu : MonoBehaviour
 
     public IEnumerator OpenPhone(Vector3 modifyPos = default)
     {
+        // 핸드폰 켜짐
+        isOpen = true;
+
         //초기화
         StartCoroutine(Init());
 
@@ -1683,7 +1686,7 @@ public class PhoneMenu : MonoBehaviour
         CastMagic.Instance.phone.DOScale(phoneScale, moveTime)
         .SetUpdate(true);
         // 매직폰 상태일때 회전값으로 변경
-        CastMagic.Instance.phone.DORotate(new Vector3(0, 360f, 0), moveTime, RotateMode.WorldAxisAdd)
+        CastMagic.Instance.phone.DORotate(phoneRotation + Vector3.up * 360f, moveTime, RotateMode.WorldAxisAdd)
         .SetUpdate(true);
 
         // 절반쯤 이동했을때 화면 라이트 켜기
@@ -1703,5 +1706,8 @@ public class PhoneMenu : MonoBehaviour
 
         // 인벤토리에서 마법 찾아 자동 시전하기
         CastMagic.Instance.CastCheck();
+
+        // 핸드폰 꺼짐
+        isOpen = false;
     }
 }

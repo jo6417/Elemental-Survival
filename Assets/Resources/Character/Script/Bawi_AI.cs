@@ -10,8 +10,8 @@ using System.Text;
 public class Bawi_AI : EnemyAI
 {
     [Header("State")]
-    [SerializeField]
-    Patten patten = Patten.None;
+    [SerializeField, ReadOnly] bool startTransition = false;
+    [SerializeField] Patten patten = Patten.None;
     enum Patten { FistDrop, BigStoneThrow, SmallStoneThrow, DrillDash, DrillChase, None };
     float coolCount; //쿨타임 카운트
     public float fistDropCoolTime;
@@ -81,7 +81,11 @@ public class Bawi_AI : EnemyAI
 
     private void OnEnable()
     {
+        // 초기화
         StartCoroutine(Init());
+
+        // 등장 트랜지션 재생
+        StartCoroutine(Appear());
     }
 
     IEnumerator Init()
@@ -97,8 +101,8 @@ public class Bawi_AI : EnemyAI
         //부유 상태로 전환
         isFloating = true;
 
-        // 고스트 드릴 오브젝트 비활성화
-        drillGhost.gameObject.SetActive(true);
+        // // 고스트 드릴 오브젝트 비활성화
+        // drillGhost.gameObject.SetActive(true);
 
         //드릴 스케일 및 위치 초기화
         drillGhost.transform.localScale = Vector2.one;
@@ -108,22 +112,80 @@ public class Bawi_AI : EnemyAI
         drillSprite.color = Color.white;
         drillGhost.color = Color.clear;
 
-        // 차지 파티클 끄기
-        // chargeGathering.gameObject.SetActive(false);
-
-        //파티클 초기화
+        // 모든 파티클 초기화
         digDirtParticle.gameObject.SetActive(false);
         BurrowTrail.gameObject.SetActive(false);
         headDashDust.gameObject.SetActive(false);
         fistDashDust.gameObject.SetActive(false);
         fistChargeGathering.gameObject.SetActive(false);
 
-        //콜라이더 초기화
+        // 콜라이더 초기화
         character.physicsColl.enabled = false;
         drillGhostColl.enabled = false;
         fistCrushColl.enabled = false;
     }
 
+    IEnumerator Appear()
+    {
+        // 등장 트랜지션 시작
+        startTransition = false;
+
+        //todo 머리, 주먹 숨기기
+        headPart.gameObject.SetActive(false);
+        fistPart.gameObject.SetActive(false);
+
+        //todo 시간 멈추기
+        SystemManager.Instance.TimeScaleChange(0f);
+        // 플레이어 컨트롤 끄기
+        PlayerManager.Instance.player_Input.Disable();
+        // UI 컨트롤 끄기
+        UIManager.Instance.UI_Input.Disable();
+
+        float tweenTime = 2f;
+
+        //todo 보스 위치로 카메라 이동
+        UIManager.Instance.CameraMove(transform.position, 0.5f, true);
+        //todo 천천히 카메라 줌인
+        UIManager.Instance.CameraZoom(tweenTime, 3f);
+
+        //todo 딜레이
+        yield return new WaitForSecondsRealtime(1f);
+
+        //todo 카메라 흔들기
+        UIManager.Instance.mainCamera.transform.DOShakePosition(2f, 1, 10, 90, false, false)
+        .SetEase(Ease.InSine)
+        .OnComplete(() =>
+        {
+            // 메인 카메라 위치 초기화
+            UIManager.Instance.mainCamera.transform.localPosition = Vector3.zero;
+        });
+
+        //todo 땅의 균열이 점점 커짐
+
+        //todo 고스트 드릴 최대 크기로 켜기
+        //todo 고스트 드릴 unscaledTime 회전
+        //todo 땅속에서 거대 고스트 드릴이 튀어나와 화면 밖까지 올라감
+        // 흙 파티클 튀기기
+        // 카메라 짧고 크게 진동
+        //todo 고스트 주먹이 착지
+        // 흙 파티클 튀기기
+        // 빠르게 줌아웃
+        // 카메라 짧고 크게 진동
+        //todo 주먹 고스트 줄어들며 해제
+        //todo 주먹 뒤의 몸체 및 드릴 나와서 정위치
+
+        //todo 양손 바닥에 2회 내리치기
+        //todo 내리칠때마다 양손의 고스트 번쩍거리기
+        //todo 입을 벌리고 사자후 외치기
+        // 외치는동안 중간 강도로 길게 진동
+        // 입에서 사자후 원형 도넛 이펙트 퍼지기
+        // 외치는 동안 카메라 조금 줌인 했다가 끝날때쯤 복귀
+
+        //todo 보스 체력 표시 및 시간 정지 해제
+
+        // 등장 트랜지션 종료
+        startTransition = true;
+    }
     void Update()
     {
         // 이동 리셋 카운트 차감

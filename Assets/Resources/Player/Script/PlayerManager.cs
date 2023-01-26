@@ -123,6 +123,8 @@ public class PlayerManager : MonoBehaviour
     public Collider2D coll;
     public Animator anim;
     public Transform beamPrefab; // 텔레포트 빔 프리팹
+    public Transform knockbackColl; // 레벨업 시 넉백 콜라이더
+    public GameObject lvUpEffectPrefab; // 레벨업 이펙트
 
     [Header("<Stat>")] //플레이어 스탯
     public PlayerStat PlayerStat_Now; // 현재 스탯
@@ -207,7 +209,7 @@ public class PlayerManager : MonoBehaviour
         // 대쉬 버튼 매핑
         player_Input.Player.Dash.performed += val =>
         {
-            // 대쉬중 아닐때, 현재 이동 정지 아닐때
+            // 대쉬중 아닐때, 현재 이동 중일때
             if (!isDash && inputMoveDir != Vector2.zero)
                 DashToggle();
         };
@@ -391,6 +393,10 @@ public class PlayerManager : MonoBehaviour
 
     public void Move()
     {
+        // 시간 멈췄으면 리턴
+        if (Time.timeScale == 0)
+            return;
+
         // 깔렸을때 조작불가
         if (hitBox.isFlat)
         {
@@ -458,17 +464,23 @@ public class PlayerManager : MonoBehaviour
         // 실제 오브젝트 이동해주기
         rigid.velocity = moveVector;
 
-        // 대쉬중 아닐때
-        if (!isDash)
-            // 이동 속도를 애니메이션 속도에 적용
-            anim.speed = 1 * SystemManager.Instance.playerTimeScale * moveVector.magnitude * 0.1f;
-        else
-            // 일반 속도로 적용
-            anim.speed = 1 * SystemManager.Instance.playerTimeScale;
+        // 움직이고 있을때
+        if (moveVector.magnitude != 0)
+            // 대쉬중 아닐때
+            if (!isDash)
+                // 이동 속도를 애니메이션 속도에 적용
+                anim.speed = 1 * SystemManager.Instance.playerTimeScale * moveVector.magnitude * 0.1f;
+            else
+                // 일반 속도로 적용
+                anim.speed = 1 * SystemManager.Instance.playerTimeScale;
     }
 
     public void DashToggle()
     {
+        // 시간 멈췄으면 리턴
+        if (Time.timeScale == 0)
+            return;
+
         isDash = !isDash;
         anim.SetBool("isDash", isDash);
 
@@ -578,7 +590,7 @@ public class PlayerManager : MonoBehaviour
         if (ExpNow >= ExpMax)
         {
             //레벨업
-            Levelup();
+            StartCoroutine(Levelup());
         }
 
         // 가격 타입으로 젬 타입 인덱스로 반환
@@ -616,8 +628,11 @@ public class PlayerManager : MonoBehaviour
         //todo 아티팩트 그리드 UI 갱신
     }
 
-    void Levelup()
+    IEnumerator Levelup()
     {
+        // 시간 멈추기
+        SystemManager.Instance.TimeScaleChange(0f);
+
         //레벨업
         PlayerStat_Now.Level++;
 
@@ -631,7 +646,25 @@ public class PlayerManager : MonoBehaviour
 
         // 죽었으면 리턴
         if (PlayerStat_Now.hpNow <= 0)
-            return;
+            yield break;
+
+        // 레벨업 이펙트 생성
+        LeanPool.Spawn(lvUpEffectPrefab, transform.position, Quaternion.identity, transform);
+
+        // 제로 사이즈로 시작
+        knockbackColl.localScale = Vector2.zero;
+        // 넉백 범위 확장
+        knockbackColl.DOScale(Vector2.one, 0.5f)
+        .SetUpdate(true)
+        .SetEase(Ease.OutBack)
+        .OnComplete(() =>
+        {
+            // 다시 제로 사이즈로 초기화
+            knockbackColl.localScale = Vector2.zero;
+        });
+
+        // 이펙트 딜레이 대기
+        yield return new WaitForSecondsRealtime(1f);
 
         // 레벨업 메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel);

@@ -28,6 +28,8 @@ public class LevelupMenu : MonoBehaviour
         // 패널 숨기기
         screen.alpha = 0f;
 
+        //todo 카드 위치 및 사이즈 제로로 초기화
+
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
 
@@ -150,6 +152,10 @@ public class LevelupMenu : MonoBehaviour
                 ClickSlot(index, getItem);
             });
         }
+
+        //todo 카드 사이즈 확장
+        //todo 카드 이동
+        //todo 카드 샤이닝 이펙트
 
         // 패널 나타내기
         DOTween.To(() => screen.alpha, x => screen.alpha = x, 1f, 0.5f)

@@ -69,7 +69,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Refer")]
     [SerializeField] Transform camParent; // 카메라 이동 오브젝트
-    [SerializeField] Camera mainCamera; // 메인 카메라
+    public Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
     public Transform gameLog; // 게임 플레이 기록
@@ -388,14 +388,14 @@ public class UIManager : MonoBehaviour
     float randomness = 90, bool snapping = false, bool fadeOut = true)
     {
         // 메인 카메라 위치 초기화
-        mainCamera.transform.localPosition = Vector3.back * 50f;
+        mainCamera.transform.localPosition = Vector3.back;
 
         // 카메라 흔들기
         mainCamera.transform.DOShakePosition(duration, strength, vibrato, randomness, snapping, fadeOut)
         .OnComplete(() =>
         {
             // 메인 카메라 위치 초기화
-            mainCamera.transform.localPosition = Vector3.back * 50f;
+            mainCamera.transform.localPosition = Vector3.back;
         });
     }
 

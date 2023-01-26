@@ -79,14 +79,15 @@ public class CastMagic : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Time.timeScale == 0f)
-            return;
-
         SpinAndHovering();
     }
 
     void SpinAndHovering()
     {
+        // 폰메뉴 켜져있으면 리턴
+        if (PhoneMenu.Instance.isOpen)
+            return;
+
         //오브젝트 각도 초기화, 자전 각도 추가
         orbitAngle += spinSpeed;
         phone.rotation = Quaternion.Euler(new Vector3(0, orbitAngle, 0));
