@@ -4995,7 +4995,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5113,7 +5113,7 @@ GameObject:
   - component: {fileID: 6420595381662654825}
   - component: {fileID: 2218242691842209886}
   m_Layer: 7
-  m_Name: Sprite
+  m_Name: BodySprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5153,7 +5153,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5441,6 +5441,7 @@ MonoBehaviour:
   spriteList:
   - {fileID: 6420595381662654825}
   - {fileID: 6661510873517394946}
+  spriteCopyList: []
   enemyAI: {fileID: 3723040182202891884}
   enemyAtkTrigger: {fileID: 3723040181923417493}
   enemyAtkList: []
@@ -5482,11 +5483,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flipAble: 1
+  tiltFlip: 0
+  tiltAngle: 0
+  tiltCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   character: {fileID: 3723040182202891887}
   targetRange: 1
   searchCoolTime: 1
   searchCoolCount: 0
-  directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}

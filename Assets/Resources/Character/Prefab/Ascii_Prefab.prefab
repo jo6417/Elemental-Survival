@@ -87643,6 +87643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHasItem: ffffffff
+  usePortal: 1
   initialStart: 1
   initialFinish: 0
   eliteClass: 0
@@ -87650,6 +87651,7 @@ MonoBehaviour:
   hpNow: 0
   hpMax: 0
   isDead: 0
+  deadDelay: 1
   changeGhost: 0
   portalSize: 2
   afterEffect: 0
@@ -87658,7 +87660,7 @@ MonoBehaviour:
   attackRange: 0
   healCount: 0
   isGhost: 0
-  nowAction: 0
+  nowState: 0
   moveType: 0
   targetObj: {fileID: 0}
   targetResetTime: 3
@@ -87669,6 +87671,7 @@ MonoBehaviour:
   shadow: {fileID: 0}
   spriteList:
   - {fileID: 4947422215683903788}
+  spriteCopyList: []
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -87816,7 +87819,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -88094,6 +88097,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
+  showIndicator: 1
+  indicatorSprite: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
   character: {fileID: 6198355565525276696}
@@ -98867,6 +98872,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 0}
+  showIndicator: 1
+  indicatorSprite: {fileID: 0}
   atkRangeBackground: {fileID: 0}
   atkRangeFill: {fileID: 0}
   character: {fileID: 6198355565525276696}

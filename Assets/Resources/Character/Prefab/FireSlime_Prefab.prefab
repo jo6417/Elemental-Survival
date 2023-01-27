@@ -340,7 +340,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -429,7 +429,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -452,7 +452,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -4312466724755804279, guid: 69a0a71dfb2ee484a95a1dcd9bede043,
     type: 3}
-  m_Color: {r: 1, g: 0.4768409, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.8156863}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5541,7 +5541,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1848417264936061487}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.62, y: -5.15, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 485524543273560294}
@@ -5595,6 +5595,7 @@ MonoBehaviour:
   - {fileID: 485524543273560292}
   - {fileID: 485524541769589716}
   - {fileID: 485524542147514611}
+  spriteCopyList: []
   enemyAI: {fileID: 6256301030671552141}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -5638,7 +5639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flipAble: 1
   tiltFlip: 0
-  tiltLimit: 0
+  tiltAngle: 0
   tiltCurve:
     serializedVersion: 2
     m_Curve: []

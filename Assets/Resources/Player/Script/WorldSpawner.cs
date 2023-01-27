@@ -69,6 +69,7 @@ public class WorldSpawner : MonoBehaviour
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
     public BoxCollider2D spawnColl; // 스포너 테두리 콜라이더
+    public SpriteCopy spriteCopyPrefab; // 스프라이트 복제 오브젝트
 
     private void Awake()
     {

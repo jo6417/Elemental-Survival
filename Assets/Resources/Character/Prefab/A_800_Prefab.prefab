@@ -4955,7 +4955,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10131,6 +10131,7 @@ MonoBehaviour:
   shadow: {fileID: 8933786517452488958}
   spriteList:
   - {fileID: 3775307538943568029}
+  spriteCopyList: []
   enemyAI: {fileID: 8165655979838027246}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -10171,11 +10172,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e358c2739bb8649881d1715baa0353, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flipAble: 1
+  tiltFlip: 0
+  tiltAngle: 0
+  tiltCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   character: {fileID: 2609816229949297132}
   targetRange: 1
   searchCoolTime: 1
   searchCoolCount: 0
-  directionTilt: 0
   jumpCoolCount: 0
   jumpCooltime: 0.5
   landEffect: {fileID: 0}

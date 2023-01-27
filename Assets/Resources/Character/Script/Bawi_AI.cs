@@ -85,7 +85,7 @@ public class Bawi_AI : EnemyAI
         StartCoroutine(Init());
 
         // 등장 트랜지션 재생
-        StartCoroutine(Appear());
+        // StartCoroutine(Appear());
     }
 
     IEnumerator Init()

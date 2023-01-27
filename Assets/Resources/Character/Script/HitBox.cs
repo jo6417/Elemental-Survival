@@ -443,7 +443,7 @@ public class HitBox : MonoBehaviour
         // 히트 머터리얼 및 색으로 변경
         for (int i = 0; i < this.character.spriteList.Count; i++)
         {
-            this.character.spriteList[i].material = SystemManager.Instance.hitMat;
+            // this.character.spriteList[i].material = SystemManager.Instance.hitMat;
 
             if (damage > 0)
             {
@@ -451,16 +451,20 @@ public class HitBox : MonoBehaviour
                 Color hitColor = Color.Lerp(SystemManager.Instance.hitColor, SystemManager.Instance.DeadColor, this.character.hpNow / this.character.hpMax);
 
                 // 체력 비율에 따라 히트 컬러 넣기
-                this.character.spriteList[i].color = hitColor;
+                this.character.spriteList[i].material.SetColor("_Tint", hitColor);
+                // this.character.spriteList[i].color = hitColor;
             }
             if (damage == 0)
                 // 회피 또는 방어
-                this.character.spriteList[i].color = Color.blue;
+                this.character.spriteList[i].material.SetColor("_Tint", Color.blue);
+            // this.character.spriteList[i].color = Color.blue;
             if (damage < 0)
                 // 회복
-                this.character.spriteList[i].color = SystemManager.Instance.healColor;
+                this.character.spriteList[i].material.SetColor("_Tint", SystemManager.Instance.healColor);
+            // this.character.spriteList[i].color = SystemManager.Instance.healColor;
         }
 
+        // 히트 딜레이 대기
         yield return new WaitUntil(() => this.character.hitDelayCount <= 0);
 
         // 죽었으면 복구하지않고 리턴
@@ -468,50 +472,61 @@ public class HitBox : MonoBehaviour
             yield break;
 
         // 초기화할 컬러, 머터리얼, 머터리얼 컬러
-        Color originColor = default;
-        Material originMat = null;
-        Color originMatColor = default;
+        // Color originColor = default;
+        // Material originMat = null;
+        // Color originMatColor = default;
 
-        // 엘리트 몹일때
-        if (character.eliteClass != Character.EliteClass.None)
-        {
-            originMat = SystemManager.Instance.outLineMat;
+        // // 엘리트 몹일때
+        // if (character.eliteClass != Character.EliteClass.None)
+        // {
+        //     // originMat = SystemManager.Instance.outLineMat;
 
-            //엘리트 종류마다 다른 아웃라인 컬러 적용
-            switch ((int)character.eliteClass)
-            {
-                case 1:
-                    originMatColor = Color.red;
-                    break;
-                case 2:
-                    originMatColor = Color.cyan;
-                    break;
-                case 3:
-                    originMatColor = Color.green;
-                    break;
-                case 4:
-                    break;
-            }
-        }
-        // 고스트일때
-        if (this.character.IsGhost)
-        {
-            originMat = SystemManager.Instance.outLineMat;
-            originColor = new Color(0, 1, 1, 0.5f);
-        }
+        //     //엘리트 종류마다 다른 아웃라인 컬러 적용
+        //     switch ((int)character.eliteClass)
+        //     {
+        //         case 1:
+        //             originMatColor = Color.red;
+        //             break;
+        //         case 2:
+        //             originMatColor = Color.cyan;
+        //             break;
+        //         case 3:
+        //             originMatColor = Color.green;
+        //             break;
+        //         case 4:
+        //             break;
+        //     }
+        // }
 
-        // 머터리얼 및 색 초기화
         for (int i = 0; i < this.character.spriteList.Count; i++)
         {
-            this.character.spriteList[i].material = this.character.originMatList[i];
-            this.character.spriteList[i].color = this.character.originColorList[i];
-            this.character.spriteList[i].material.color = this.character.originMatColorList[i];
+            // 고스트일때
+            if (this.character.IsGhost)
+                // 고스트 틴트색으로 초기화
+                this.character.spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
+            else
+                // 원래 틴트색으로 초기화
+                this.character.spriteList[i].material.SetColor("_Tint", this.character.originColorList[i]);
         }
 
-        // 엘리트나 고스트 색 들어왔으면 넣기
-        this.character.spriteList[0].material = originMat != null ? originMat : this.character.originMatList[0];
-        this.character.spriteList[0].color = originColor != default ? originColor : this.character.originColorList[0];
-        this.character.spriteList[0].material.color = originMatColor != default ? originMatColor : this.character.originMatColorList[0];
+        // // 고스트일때
+        // if (this.character.IsGhost)
+        // {
+        //     originMat = SystemManager.Instance.outLineMat;
+        //     originColor = new Color(0, 1, 1, 0.5f);
+        // }
+
+        // // 머터리얼 및 색 초기화
+        // for (int i = 0; i < this.character.spriteList.Count; i++)
+        // {
+        //     this.character.spriteList[i].material = this.character.originMatList[i];
+        //     this.character.spriteList[i].color = this.character.originColorList[i];
+        //     this.character.spriteList[i].material.color = this.character.originMatColorList[i];
+        // }
+        // // 엘리트나 고스트 색 들어왔으면 넣기
+        // this.character.spriteList[0].material = originMat != null ? originMat : this.character.originMatList[0];
+        // this.character.spriteList[0].color = originColor != default ? originColor : this.character.originColorList[0];
+        // this.character.spriteList[0].material.color = originMatColor != default ? originMatColor : this.character.originMatColorList[0];
 
         // 코루틴 변수 초기화
         this.character.hitCoroutine = null;
@@ -763,13 +778,17 @@ public class HitBox : MonoBehaviour
 
         foreach (SpriteRenderer sprite in character.spriteList)
         {
-            // 머터리얼 및 색 변경
-            sprite.material = SystemManager.Instance.hitMat;
-            sprite.color = SystemManager.Instance.hitColor;
+            // 빨간색으로 변경
+            sprite.material.SetColor("_Tint", SystemManager.Instance.hitColor);
+
+            // sprite.material = SystemManager.Instance.hitMat;
+            // sprite.color = SystemManager.Instance.hitColor;
 
             // 색깔 점점 흰색으로
-            sprite.DOColor(SystemManager.Instance.DeadColor, deadDelay)
+            sprite.material.DOColor(SystemManager.Instance.DeadColor, "_Tint", deadDelay)
             .SetEase(Ease.OutQuad);
+            // sprite.DOColor(SystemManager.Instance.DeadColor, deadDelay)
+            // .SetEase(Ease.OutQuad);
         }
 
         // // 자폭 몬스터일때

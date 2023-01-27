@@ -18,7 +18,7 @@ public class Character : MonoBehaviour
     public DeadCallback deadCallback; // 캐릭터 사망시 실행될 콜백
     public delegate void DeadCallback(Character character);
 
-    [Header("Initial")]
+    [Header("Init")]
     public EnemyInfo enemy;
     public List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
@@ -107,12 +107,12 @@ public class Character : MonoBehaviour
     [Header("Refer")]
     public SpriteRenderer shadow; // 해당 몬스터 그림자
     public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
+    public List<SpriteCopy> spriteCopyList = new List<SpriteCopy>();
     public EnemyAI enemyAI;
     public EnemyAtkTrigger enemyAtkTrigger;
     public List<EnemyAttack> enemyAtkList = new List<EnemyAttack>(); // 공격 콜라이더 리스트
     public Transform spriteObj;
     public CircleCollider2D healRange; // Heal 엘리트 몬스터의 힐 범위
-
     public List<Animator> animList = new List<Animator>(); // 보유한 모든 애니메이터
     public Collider2D physicsColl; // 물리용 콜라이더
     public Rigidbody2D rigid;
@@ -164,15 +164,25 @@ public class Character : MonoBehaviour
         // 히트 박스 모두 찾기
         hitBoxList = hitBoxList.Count == 0 ? GetComponentsInChildren<HitBox>().ToList() : hitBoxList;
 
-        // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
-        spriteList = spriteList.Count == 0 ? GetComponentsInChildren<SpriteRenderer>().ToList() : spriteList;
+        // // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
+        // spriteList = spriteList.Count == 0 ? GetComponentsInChildren<SpriteRenderer>().ToList() : spriteList;
+        if (spriteList.Count == 0)
+            Debug.Log("SpriteList is null");
+        // 그림자는 빼기
+        if (shadow != null)
+            spriteList.Remove(shadow);
 
         // 초기 스프라이트 정보 수집
         foreach (SpriteRenderer sprite in spriteList)
         {
-            originColorList.Add(sprite.color);
-            originMatList.Add(sprite.material);
-            originMatColorList.Add(sprite.material.color);
+            // // 머터리얼 초기화
+            // if (sprite.material != SystemManager.Instance.characterMat)
+            //     sprite.material = SystemManager.Instance.characterMat;
+
+            // 틴트 컬러 수집
+            originColorList.Add(sprite.material.GetColor("_Tint"));
+            // originMatList.Add(sprite.material);
+            // originMatColorList.Add(sprite.material.color);
         }
 
         // 버프 아이콘 부모 찾기, 없으면 본인 오브젝트
@@ -253,12 +263,23 @@ public class Character : MonoBehaviour
             cooltimeNow = enemy.cooltime;
         }
 
+        //todo 스프라이트 머터리얼 고정
+        foreach (SpriteRenderer sprite in spriteList)
+        {
+            sprite.material = SystemManager.Instance.characterMat;
+
+            //todo 틴트 컬러 초기화
+            sprite.material.SetColor("_Tint", Color.clear);
+        }
+
         //엘리트 종류마다 색깔 및 능력치 적용
         switch ((int)eliteClass)
         {
             case 0:
-                // 일반 스프라이트 머터리얼
-                spriteList[0].material = SystemManager.Instance.spriteLitMat;
+                //todo 아웃라인 지우기
+                // spriteList[0].material = SystemManager.Instance.spriteLitMat;
+                foreach (SpriteRenderer sprite in spriteList)
+                    sprite.material.SetColor("_OutLineColor", Color.clear);
 
                 // 스케일 초기화
                 transform.localScale = Vector2.one;
@@ -269,9 +290,11 @@ public class Character : MonoBehaviour
                 //공격력 상승
                 powerNow = powerNow * 2f;
 
-                // 빨강 아웃라인 머터리얼
-                spriteList[0].material = SystemManager.Instance.outLineMat;
-                spriteList[0].material.color = Color.red;
+                // 빨강 아웃라인
+                foreach (SpriteRenderer sprite in spriteList)
+                    sprite.material.SetColor("_OutLineColor", Color.red);
+                // spriteList[0].material = SystemManager.Instance.outLineMat;
+                // spriteList[0].material.color = Color.red;
 
                 // 몬스터 스케일 상승
                 transform.localScale = Vector2.one * 1.5f;
@@ -284,9 +307,11 @@ public class Character : MonoBehaviour
                 // 쿨타임 빠르게
                 cooltimeNow = cooltimeNow / 2f;
 
-                // 하늘색 아웃라인 머터리얼
-                spriteList[0].material = SystemManager.Instance.outLineMat;
-                spriteList[0].material.color = Color.cyan;
+                // 하늘색 아웃라인
+                foreach (SpriteRenderer sprite in spriteList)
+                    sprite.material.SetColor("_OutLineColor", Color.cyan);
+                // spriteList[0].material = SystemManager.Instance.outLineMat;
+                // spriteList[0].material.color = Color.cyan;
                 break;
 
             case 3:
@@ -301,8 +326,10 @@ public class Character : MonoBehaviour
                 healRange.GetComponent<Attack>().fixedPower = -powerNow;
 
                 // 초록 아웃라인 머터리얼
-                spriteList[0].material = SystemManager.Instance.outLineMat;
-                spriteList[0].material.color = Color.green;
+                foreach (SpriteRenderer sprite in spriteList)
+                    sprite.material.SetColor("_OutLineColor", Color.green);
+                // spriteList[0].material = SystemManager.Instance.outLineMat;
+                // spriteList[0].material.color = Color.green;
                 break;
 
             case 4:
@@ -318,6 +345,21 @@ public class Character : MonoBehaviour
         // 히트 이펙트가 없으면 기본 이펙트 가져오기
         if (hitEffect == null)
             hitEffect = WorldSpawner.Instance.hitEffect;
+
+        // // 초기 스프라이트 정보 수집
+        // if (spriteCopyList.Count == 0)
+        //     foreach (SpriteRenderer sprite in spriteList)
+        //     {
+        //         // 스프라이트 모두 복사본 만들어 넣기
+        //         SpriteCopy spriteCopy = LeanPool.Spawn(WorldSpawner.Instance.spriteCopyPrefab, sprite.transform.position, Quaternion.identity, sprite.transform.parent);
+        //         // 복사할 스프라이트 참조 시키기
+        //         spriteCopy.originSprite = sprite;
+        //         // 이름 복사
+        //         spriteCopy.name = sprite.gameObject.name + "_Copy";
+
+        //         // 복사본은 리스트업
+        //         spriteCopyList.Add(spriteCopy);
+        //     }
 
         //ItemDB 로드 될때까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
@@ -485,8 +527,8 @@ public class Character : MonoBehaviour
                 for (int i = 0; i < spriteList.Count; i++)
                 {
                     // 고스트 여부에 따라 색깔 초기화
-                    spriteList[i].color = originColorList[i];
-                    spriteList[i].material = originMatList[i];
+                    // spriteList[i].color = originColorList[i];
+                    // spriteList[i].material = originMatList[i];
                 }
 
             // 그림자 색 초기화

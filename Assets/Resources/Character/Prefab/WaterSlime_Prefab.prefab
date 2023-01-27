@@ -54,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 8ec92f299ad601640a0404d0e416ba80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -381,6 +381,7 @@ MonoBehaviour:
   shadow: {fileID: 6263737295829454142}
   spriteList:
   - {fileID: 2106653043044473815}
+  spriteCopyList: []
   enemyAI: {fileID: 240281183651144037}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []

@@ -12,6 +12,8 @@ MonoImporter:
   - healRange: {instanceID: 0}
   - physicsColl: {instanceID: 0}
   - rigid: {instanceID: 0}
+  - spriteCopyPrefab: {fileID: 1097691000214657039, guid: 89f678d0ab81ff149a5aa2bff8eff408,
+      type: 3}
   - buffParent: {instanceID: 0}
   - hitEffect: {fileID: 1620636520166436, guid: ae8e77315cbed89469e78278295e5844,
       type: 3}
