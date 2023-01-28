@@ -62,14 +62,14 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] GameObject itemBoxPrefab; // 파괴 가능한 아이템 박스
     [SerializeField] GameObject lockerPrefab; // 구매 가능한 아이템 금고
     public GameObject slotMachinePrefab; // 슬롯머신 프리팹
-    [SerializeField] GameObject mobPortal; //몬스터 등장할 포탈 프리팹
+    // [SerializeField] GameObject spawnPortal; // 포탈 프리팹
+    public GameObject spawnerPrefab; // 빔 프리팹
     public GameObject healRange; // Heal 엘리트 몬스터의 힐 범위
     public GameObject hitEffect; // 몬스터 피격 이펙트
     public GameObject blockEffect; // 몬스터 무적시 피격 이펙트
     public GameObject dustPrefab; //먼지 이펙트 프리팹
     public GameObject bloodPrefab; //혈흔 프리팹
     public BoxCollider2D spawnColl; // 스포너 테두리 콜라이더
-    public SpriteCopy spriteCopyPrefab; // 스프라이트 복제 오브젝트
 
     private void Awake()
     {
@@ -161,7 +161,7 @@ public class WorldSpawner : MonoBehaviour
                 for (int i = 0; i < spawnNum; i++)
                 {
                     //랜덤 몬스터 스폰
-                    StartCoroutine(SpawnEnemy());
+                    StartCoroutine(RandomSpawn());
                 }
             }
             else
@@ -212,7 +212,7 @@ public class WorldSpawner : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnEnemy(bool ForceSpawn = false)
+    IEnumerator RandomSpawn(bool ForceSpawn = false)
     {
         //스폰 스위치 꺼졌으면 스폰 멈추기
         if (!spawnSwitch)
@@ -290,7 +290,7 @@ public class WorldSpawner : MonoBehaviour
         // 스폰 스위치 켜졌을때
         if (spawnSwitch)
             //포탈에서 몬스터 소환
-            StartCoroutine(PortalSpawn(enemy));
+            EnemySpawn(enemy);
 
         // 해당 몬스터의 쿨타임 넣기
         float spawnCoolTime = enemy.spawnCool;
@@ -308,7 +308,7 @@ public class WorldSpawner : MonoBehaviour
         nowSpawning = false;
     }
 
-    public IEnumerator PortalSpawn(EnemyInfo enemy = null, Vector2 spawnEndPos = default, GameObject enemyPrefab = null, bool isBoss = false)
+    public GameObject EnemySpawn(EnemyInfo enemy = null, Vector2 spawnEndPos = default, GameObject enemyPrefab = null, float spawnTime = 1f)
     {
         // enemyPrefab 변수 안들어왔으면
         if (enemyPrefab == null)
@@ -322,128 +322,99 @@ public class WorldSpawner : MonoBehaviour
 
         // 몬스터 프리팹 소환
         GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
-        // 소환된 몬스터 위치 이동
-        enemyObj.transform.position = spawnEndPos;
+        // 몬스터 끄기
+        enemyObj.gameObject.SetActive(false);
 
+        // 스폰 트랜지션 재생
+        StartCoroutine(SpawnTransition(enemyObj, enemy, spawnEndPos, spawnTime));
+
+        // 해당 몹 오브젝트 리턴
+        return enemyObj;
+    }
+
+    public IEnumerator SpawnTransition(GameObject enemyObj, EnemyInfo enemy = null, Vector2 spawnEndPos = default, float spawnTime = 1f)
+    {
         // 캐릭터 찾기
         Character character = enemyObj.GetComponentInChildren<Character>();
 
-        // 포탈 사용 안하는 몬스터
-        if (!character.usePortal)
+        // 소환 위치에 포탈 소환
+        GameObject spawnBeam = LeanPool.Spawn(spawnerPrefab, spawnEndPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
+        Transform beam = spawnBeam.transform.Find("Beam");
+        Transform portal = spawnBeam.transform.Find("Portal");
+
+        // 포탈 및 빔 사이즈 초기화
+        portal.localScale = Vector2.zero;
+        beam.localScale = new Vector2(0, 1);
+
+        // 포탈 확장
+        portal.DOScale(Vector2.one * character.portalSize, 0.5f * spawnTime)
+        .SetEase(Ease.InQuart);
+
+        // 동시에 빔 확장
+        beam.DOScale(new Vector2(character.portalSize * 0.5f, 1f), 0.5f * spawnTime)
+        .SetEase(Ease.InQuart);
+
+        // 확장 대기
+        yield return new WaitForSeconds(0.5f * spawnTime);
+
+        #region Enemy Init
+
+        // 몬스터 리스트에 넣어서 기억하기
+        spawnEnemyList.Add(character);
+
+        // 일반 몹 일때
+        if (enemy.enemyType == EnemyDB.EnemyType.Normal.ToString())
         {
-            // 소환된 몬스터 초기화 시작
-            character.initialStart = true;
+            // 엘리트 종류 기본값 None
+            int eliteClass = 0;
+            // 엘리트 가중치 리스트 복사
+            List<float> weightList = new List<float>(eliteWeight);
+            // 일반몹 가중치는 시간에 따라 내리기
+            weightList[0] = weightList[0] * (1f - eliteRate);
+            // print(weightList[0]);
+            // 엘리트 종류 가중치로 뽑기
+            eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
 
-            yield break;
+            // 엘리트 종류를 매니저에 전달
+            character.eliteClass = (Character.EliteClass)eliteClass;
         }
-        else
-            // 몬스터 비활성화
-            enemyObj.SetActive(false);
-
-        //프리팹에서 스프라이트 컴포넌트 찾기
-        SpriteRenderer enemySprite = enemyObj.GetComponentInChildren<SpriteRenderer>();
 
         //EnemyInfo 인스턴스 생성
         EnemyInfo enemyInfo = new EnemyInfo(enemy);
-
-        //몬스터 리스트에 넣기
-        spawnEnemyList.Add(character);
-
-        // 엘리트 종류 기본값 None
-        int eliteClass = 0;
-        // 엘리트 가중치 리스트 복사
-        List<float> weightList = new List<float>(eliteWeight);
-        // 일반몹 가중치는 시간에 따라 내리기
-        weightList[0] = weightList[0] * (1f - eliteRate);
-        // print(weightList[0]);
-        // 엘리트 종류 가중치로 뽑기
-        eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
-
-        // 엘리트 종류를 매니저에 전달
-        character.eliteClass = (Character.EliteClass)eliteClass;
-
         //EnemyInfo 정보 넣기
         character.enemy = enemyInfo;
 
-        //포탈 소환 위치
-        Vector2 portalPos = spawnEndPos + Vector2.down * character.portalSize / 2;
-        //몬스터 소환 시작 위치
-        Vector2 spawnStartPos = spawnEndPos + Vector2.down * enemySprite.bounds.size.y * 1.5f;
+        // 몬스터 켜기
+        enemyObj.gameObject.SetActive(true);
 
-        // print(transform.name + ":" + spawnStartPos + ":" + spawnEndPos);
-
-        // 몬스터 발밑에서 포탈생성
-        GameObject portal = LeanPool.Spawn(mobPortal, portalPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
-
-        // 포탈 스프라이트 켜기
-        portal.GetComponent<SpriteRenderer>().enabled = true;
-
-        // 포탈에서 몬스터 올라오는 속도
-        float portalUpSpeed = 1f;
-
-        //아이콘 찾기
-        GameObject iconObj = portal.transform.Find("PortalMask").Find("EnemyIcon").gameObject;
-
-        //아이콘 시작위치로 이동 및 활성화
-        iconObj.transform.position = spawnStartPos;
-
-        // 아이콘 스프라이트 찾기
-        SpriteRenderer iconSprite = iconObj.GetComponent<SpriteRenderer>();
-
-        // 떠오를 스프라이트에 몬스터 아이콘 넣기
-        iconSprite.sprite = EnemyDB.Instance.GetIcon(enemy.id);
-
-        //아이콘 비활성화
-        iconObj.SetActive(false);
-
-        //포탈 사이즈 줄이기
-        portal.transform.localScale = Vector3.zero;
-
-        //포탈 스폰 시퀀스
-        Sequence portalSeq = DOTween.Sequence();
-        portalSeq
-        .Append(
-            // 포탈을 몬스터 사이즈 맞게 키우기
-            portal.transform.DOScale(new Vector2(character.portalSize, character.portalSize), 0.5f)
-            .OnComplete(() =>
-            {
-                //아이콘 활성화
-                iconObj.SetActive(true);
-                //아이콘은 줄이기
-                iconObj.transform.localScale = Vector2.one * 0.1f / character.portalSize;
-            })
-        )
-        .Append(
-            // 소환 완료 위치로 domove
-            iconObj.transform.DOMove(spawnEndPos, portalUpSpeed)
-        )
-        .AppendCallback(() =>
+        // 몬스터 하얗게 덮었다가 초기화
+        foreach (SpriteRenderer sprite in character.spriteList)
         {
-            // 아이콘 사라지기
-            iconObj.SetActive(false);
-            // 몬스터 프리팹 활성화
-            enemyObj.SetActive(true);
+            // 하얗게 덮기
+            sprite.material.SetColor("_Tint", Color.white);
 
-            // 소환된 몬스터 초기화 시작
-            character.initialStart = true;
+            // 색깔 서서히 초기화
+            sprite.material.DOColor(new Color(1, 1, 1, 0), "_Tint", 1f)
+            .SetEase(Ease.OutQuad);
+        }
 
-            // 인게임일때
-            if (PlayerManager.Instance != null)
-                // 몬스터 위치 가리킬 화살표 UI 소환
-                StartCoroutine(PointEnemyDir(enemyObj));
-        })
-        .Append(
-            //포탈 사이즈 줄여 사라지기
-            portal.transform.DOScale(Vector3.zero, 0.5f)
-            .SetAutoKill()
-            .OnComplete(() =>
-            {
-                //포탈 디스폰
-                LeanPool.Despawn(portal);
-            })
-        );
+        #endregion
 
-        yield return null;
+        // 빔 축소
+        beam.DOScale(new Vector2(0, 1), 0.3f * spawnTime)
+        .SetEase(Ease.OutQuart);
+
+        // 포탈 축소
+        portal.DOScale(Vector2.zero, 0.3f * spawnTime)
+        .SetEase(Ease.OutQuart);
+
+        yield return new WaitForSeconds(0.3f * spawnTime);
+
+        // 소환된 몬스터 초기화 시작
+        character.initialStart = true;
+
+        // 포탈 디스폰
+        LeanPool.Despawn(spawnBeam);
     }
 
     public void EnemyDespawn(Character character)
@@ -573,7 +544,7 @@ public class WorldSpawner : MonoBehaviour
         return new Vector2(spawnPosX, spawnPosY);
     }
 
-    IEnumerator PointEnemyDir(GameObject enemyObj)
+    public IEnumerator PointEnemyDir(GameObject enemyObj)
     {
         // 오버레이 풀에서 화살표 UI 생성
         GameObject arrowUI = LeanPool.Spawn(UIManager.Instance.arrowPrefab, enemyObj.transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);

@@ -378,18 +378,13 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 6263737295829454142}
-  spriteList:
-  - {fileID: 2106653043044473815}
-  spriteCopyList: []
   enemyAI: {fileID: 240281183651144037}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
-  spriteObj: {fileID: 6956078262379011496}
   healRange: {fileID: 0}
   animList:
   - {fileID: 5485836661786715589}
-  physicsColl: {fileID: 5485836661786715578}
+  physicsColl: {fileID: 5468954844548084704}
   rigid: {fileID: 5485836661786715579}
   buffParent: {fileID: 1233264783342617931}
   particleHitCount: 0
@@ -399,12 +394,16 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList:
-  - {fileID: 2044665212814803894}
+  spriteObj: {fileID: 6956078262379011496}
+  spriteList:
+  - {fileID: 2106653043044473815}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList:
+  - {fileID: 2044665212814803894}
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 6263737295829454142}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -464,7 +463,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5485836661786715591}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -683,6 +682,12 @@ Transform:
 --- !u!212 &6263737295829454142 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 6330362824975770673}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &5468954844548084704 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 2034595722077427665, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
   m_PrefabInstance: {fileID: 6330362824975770673}
   m_PrefabAsset: {fileID: 0}

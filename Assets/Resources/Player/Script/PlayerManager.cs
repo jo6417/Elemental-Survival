@@ -122,7 +122,6 @@ public class PlayerManager : MonoBehaviour
     public Rigidbody2D rigid;
     public Collider2D coll;
     public Animator anim;
-    public Transform beamPrefab; // 텔레포트 빔 프리팹
     public Transform knockbackColl; // 레벨업 시 넉백 콜라이더
     public GameObject lvUpEffectPrefab; // 레벨업 이펙트
 
@@ -322,14 +321,24 @@ public class PlayerManager : MonoBehaviour
         // 1레벨 경험치 최대치 갱신
         ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
 
-        // 현재위치에 빔 생성
-        Transform beam = LeanPool.Spawn(beamPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
-        // 빔 사이즈 초기화
-        beam.localScale = new Vector2(0f, 1f);
+        // 소환 위치에 포탈 소환
+        GameObject spawner = LeanPool.Spawn(WorldSpawner.Instance.spawnerPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+        Transform beam = spawner.transform.Find("Beam");
+        Transform portal = spawner.transform.Find("Portal");
+        ParticleSystem beamParticle = spawner.transform.Find("BeamParticle").GetComponent<ParticleSystem>();
 
-        // 빔 확장
-        beam.DOScale(new Vector2(1f, 1f), 0.5f)
+        // 포탈 및 빔 사이즈 초기화
+        portal.localScale = Vector2.zero;
+        beam.localScale = new Vector2(0, 1);
+
+        // 포탈 확장
+        portal.DOScale(Vector2.one, 0.5f)
+        .SetEase(Ease.OutBack);
+
+        // 동시에 빔 확장
+        beam.DOScale(new Vector2(0.5f, 1f), 0.5f)
         .SetEase(Ease.InQuart);
+
         yield return new WaitForSeconds(0.5f);
 
         // 플레이어 나타내기
@@ -341,12 +350,15 @@ public class PlayerManager : MonoBehaviour
         player_Input.Enable();
 
         // 빔 파티클 켜기
-        ParticleSystem beamParticle = beam.GetComponentInChildren<ParticleSystem>(true);
         beamParticle.gameObject.SetActive(true);
 
         // 빔 축소
-        beam.DOScale(new Vector2(0f, 1f), 0.3f)
+        beam.DOScale(new Vector2(0, 1), 0.3f)
         .SetEase(Ease.OutQuart);
+        // 포탈 축소
+        portal.DOScale(Vector2.zero, 0.3f)
+        .SetEase(Ease.InBack);
+
         yield return new WaitForSeconds(0.3f);
 
         // 플레이어 커버 제거
@@ -356,7 +368,7 @@ public class PlayerManager : MonoBehaviour
         // 빔 파티클 꺼질때까지 대기
         yield return new WaitUntil(() => !beamParticle.gameObject.activeSelf);
         // 빔 디스폰
-        LeanPool.Despawn(beam);
+        LeanPool.Despawn(spawner);
     }
 
     private void OnDestroy()

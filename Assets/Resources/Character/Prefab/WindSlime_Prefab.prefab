@@ -5400,15 +5400,9 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 3736739542789151232}
-  spriteList:
-  - {fileID: 2830118072125934024}
-  - {fileID: 2830118071384021131}
-  spriteCopyList: []
   enemyAI: {fileID: 7232587012674000458}
   enemyAtkTrigger: {fileID: 2331478282047272114}
   enemyAtkList: []
-  spriteObj: {fileID: 2830118072125934030}
   healRange: {fileID: 0}
   animList:
   - {fileID: 4019147020180481447}
@@ -5422,12 +5416,17 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList:
-  - {fileID: 2830118072125934026}
+  spriteObj: {fileID: 2830118072125934030}
+  spriteList:
+  - {fileID: 2830118072125934024}
+  - {fileID: 2830118071384021131}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList:
+  - {fileID: 2830118072125934026}
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 3736739542789151232}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -5811,6 +5810,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SortingLayerID
       value: -1861760285
+      objectReference: {fileID: 0}
+    - target: {fileID: 2034595722077427665, guid: b8e275b3d1cec7444b70a83ff748d47d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4140196449616097455, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}

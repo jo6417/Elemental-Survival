@@ -280,18 +280,13 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 3277673327859450767}
-  spriteList:
-  - {fileID: 3190824626787221341}
-  spriteCopyList: []
   enemyAI: {fileID: 3190824627126303519}
   enemyAtkTrigger: {fileID: 8691543464488914749}
   enemyAtkList: []
-  spriteObj: {fileID: 3190824626787221340}
   healRange: {fileID: 0}
   animList:
   - {fileID: 3190824627126303490}
-  physicsColl: {fileID: 8756922079018869723}
+  physicsColl: {fileID: 3491486049813839185}
   rigid: {fileID: 3190824627126303489}
   buffParent: {fileID: 8077464919487973476}
   particleHitCount: 0
@@ -301,11 +296,15 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList: []
+  spriteObj: {fileID: 3190824626787221340}
+  spriteList:
+  - {fileID: 3190824626787221341}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList: []
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 3277673327859450767}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -384,7 +383,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3190824627126303493}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -801,15 +800,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8e275b3d1cec7444b70a83ff748d47d, type: 3}
---- !u!4 &5820905895455245808 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
-    type: 3}
-  m_PrefabInstance: {fileID: 3190824627296725632}
-  m_PrefabAsset: {fileID: 0}
 --- !u!212 &3277673327859450767 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 3190824627296725632}
+  m_PrefabAsset: {fileID: 0}
+--- !u!70 &3491486049813839185 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 2034595722077427665, guid: b8e275b3d1cec7444b70a83ff748d47d,
+    type: 3}
+  m_PrefabInstance: {fileID: 3190824627296725632}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5820905895455245808 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
   m_PrefabInstance: {fileID: 3190824627296725632}
   m_PrefabAsset: {fileID: 0}

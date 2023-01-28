@@ -105,13 +105,9 @@ public class Character : MonoBehaviour
     public Vector3 targetDir; // 타겟 방향
 
     [Header("Refer")]
-    public SpriteRenderer shadow; // 해당 몬스터 그림자
-    public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
-    public List<SpriteCopy> spriteCopyList = new List<SpriteCopy>();
     public EnemyAI enemyAI;
     public EnemyAtkTrigger enemyAtkTrigger;
     public List<EnemyAttack> enemyAtkList = new List<EnemyAttack>(); // 공격 콜라이더 리스트
-    public Transform spriteObj;
     public CircleCollider2D healRange; // Heal 엘리트 몬스터의 힐 범위
     public List<Animator> animList = new List<Animator>(); // 보유한 모든 애니메이터
     public Collider2D physicsColl; // 물리용 콜라이더
@@ -131,12 +127,15 @@ public class Character : MonoBehaviour
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
     public float moveSpeedDebuff = 1f; // 속도 디버프
 
-    [Header("Hit")]
-    public GameObject hitEffect; // 피격시 피격지점에서 발생할 이펙트
-    public List<HitBox> hitBoxList; // 보유한 모든 히트박스 리스트
+    [Header("Sprite")]
+    public Transform spriteObj;
+    public List<SpriteRenderer> spriteList = new List<SpriteRenderer>();
     public List<Material> originMatList = new List<Material>(); // 초기 머터리얼
     public List<Color> originMatColorList = new List<Color>(); // 초기 머터리얼 색
     public List<Color> originColorList = new List<Color>(); // 초기 스프라이트 색
+    public List<HitBox> hitBoxList; // 보유한 모든 히트박스 리스트
+    public GameObject hitEffect; // 피격시 피격지점에서 발생할 이펙트
+    public SpriteRenderer shadow; // 해당 몬스터 그림자
 
     [Header("Stat")]
     public float powerNow;
@@ -164,34 +163,16 @@ public class Character : MonoBehaviour
         // 히트 박스 모두 찾기
         hitBoxList = hitBoxList.Count == 0 ? GetComponentsInChildren<HitBox>().ToList() : hitBoxList;
 
-        // // 스프라이트 리스트에 아무것도 없으면 찾아 넣기
-        // spriteList = spriteList.Count == 0 ? GetComponentsInChildren<SpriteRenderer>().ToList() : spriteList;
+        // 스프라이트 설정 안했으면 디버그 메시지
         if (spriteList.Count == 0)
             Debug.Log("SpriteList is null");
+
         // 그림자는 빼기
         if (shadow != null)
             spriteList.Remove(shadow);
 
-        // 초기 스프라이트 정보 수집
-        foreach (SpriteRenderer sprite in spriteList)
-        {
-            // // 머터리얼 초기화
-            // if (sprite.material != SystemManager.Instance.characterMat)
-            //     sprite.material = SystemManager.Instance.characterMat;
-
-            // 틴트 컬러 수집
-            originColorList.Add(sprite.material.GetColor("_Tint"));
-            // originMatList.Add(sprite.material);
-            // originMatColorList.Add(sprite.material.color);
-        }
-
         // 버프 아이콘 부모 찾기, 없으면 본인 오브젝트
         buffParent = buffParent == null ? transform : buffParent;
-
-        // 공격 트리거 찾기
-        // enemyAtkTrigger = enemyAtkTrigger == null ? GetComponentInChildren<EnemyAtkTrigger>() : enemyAtkTrigger;
-        // 공격 콜라이더 찾기
-        // enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
 
         yield return null;
     }
@@ -263,21 +244,19 @@ public class Character : MonoBehaviour
             cooltimeNow = enemy.cooltime;
         }
 
-        //todo 스프라이트 머터리얼 고정
+        // 스프라이트 머터리얼 고정
         foreach (SpriteRenderer sprite in spriteList)
         {
-            sprite.material = SystemManager.Instance.characterMat;
-
-            //todo 틴트 컬러 초기화
-            sprite.material.SetColor("_Tint", Color.clear);
+            // 캐릭터 머터리얼로 바꾸기
+            // if (sprite.material != SystemManager.Instance.characterMat)
+            //     sprite.material = SystemManager.Instance.characterMat;
         }
 
         //엘리트 종류마다 색깔 및 능력치 적용
         switch ((int)eliteClass)
         {
             case 0:
-                //todo 아웃라인 지우기
-                // spriteList[0].material = SystemManager.Instance.spriteLitMat;
+                // 아웃라인 지우기
                 foreach (SpriteRenderer sprite in spriteList)
                     sprite.material.SetColor("_OutLineColor", Color.clear);
 
@@ -293,8 +272,6 @@ public class Character : MonoBehaviour
                 // 빨강 아웃라인
                 foreach (SpriteRenderer sprite in spriteList)
                     sprite.material.SetColor("_OutLineColor", Color.red);
-                // spriteList[0].material = SystemManager.Instance.outLineMat;
-                // spriteList[0].material.color = Color.red;
 
                 // 몬스터 스케일 상승
                 transform.localScale = Vector2.one * 1.5f;
@@ -310,8 +287,6 @@ public class Character : MonoBehaviour
                 // 하늘색 아웃라인
                 foreach (SpriteRenderer sprite in spriteList)
                     sprite.material.SetColor("_OutLineColor", Color.cyan);
-                // spriteList[0].material = SystemManager.Instance.outLineMat;
-                // spriteList[0].material.color = Color.cyan;
                 break;
 
             case 3:
@@ -328,8 +303,6 @@ public class Character : MonoBehaviour
                 // 초록 아웃라인 머터리얼
                 foreach (SpriteRenderer sprite in spriteList)
                     sprite.material.SetColor("_OutLineColor", Color.green);
-                // spriteList[0].material = SystemManager.Instance.outLineMat;
-                // spriteList[0].material.color = Color.green;
                 break;
 
             case 4:
@@ -345,21 +318,6 @@ public class Character : MonoBehaviour
         // 히트 이펙트가 없으면 기본 이펙트 가져오기
         if (hitEffect == null)
             hitEffect = WorldSpawner.Instance.hitEffect;
-
-        // // 초기 스프라이트 정보 수집
-        // if (spriteCopyList.Count == 0)
-        //     foreach (SpriteRenderer sprite in spriteList)
-        //     {
-        //         // 스프라이트 모두 복사본 만들어 넣기
-        //         SpriteCopy spriteCopy = LeanPool.Spawn(WorldSpawner.Instance.spriteCopyPrefab, sprite.transform.position, Quaternion.identity, sprite.transform.parent);
-        //         // 복사할 스프라이트 참조 시키기
-        //         spriteCopy.originSprite = sprite;
-        //         // 이름 복사
-        //         spriteCopy.name = sprite.gameObject.name + "_Copy";
-
-        //         // 복사본은 리스트업
-        //         spriteCopyList.Add(spriteCopy);
-        //     }
 
         //ItemDB 로드 될때까지 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);

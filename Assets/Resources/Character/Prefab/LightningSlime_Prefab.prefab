@@ -5131,6 +5131,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8562128693382905408}
+  - {fileID: 5704636121778793423}
   m_Father: {fileID: 3723040182202891886}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5233,7 +5234,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3723040182202891886}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3723040181923417497
 GameObject:
@@ -5267,7 +5268,7 @@ Transform:
   m_Children:
   - {fileID: 6132673476968885429}
   m_Father: {fileID: 3723040182202891886}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3723040181923417493
 MonoBehaviour:
@@ -5393,7 +5394,6 @@ Transform:
   - {fileID: 4113117987112160761}
   - {fileID: 5957373440975444446}
   - {fileID: 7344644473102207076}
-  - {fileID: 5704636121778793423}
   - {fileID: 3723040180652650906}
   - {fileID: 3723040181923417496}
   m_Father: {fileID: 0}
@@ -5437,15 +5437,9 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 3647442637020933552}
-  spriteList:
-  - {fileID: 6420595381662654825}
-  - {fileID: 6661510873517394946}
-  spriteCopyList: []
   enemyAI: {fileID: 3723040182202891884}
   enemyAtkTrigger: {fileID: 3723040181923417493}
   enemyAtkList: []
-  spriteObj: {fileID: 3723040182202891886}
   healRange: {fileID: 0}
   animList:
   - {fileID: 2218242691842209886}
@@ -5459,12 +5453,17 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList:
-  - {fileID: 2222520115608675615}
+  spriteObj: {fileID: 3723040182202891886}
+  spriteList:
+  - {fileID: 6420595381662654825}
+  - {fileID: 6661510873517394946}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList:
+  - {fileID: 2222520115608675615}
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 3647442637020933552}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -5524,7 +5523,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3723040182202891889}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -5829,7 +5828,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 3723040182202891886}
+    m_TransformParent: {fileID: 5957373440975444446}
     m_Modifications:
     - target: {fileID: 4140196449616097455, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
@@ -5844,7 +5843,7 @@ PrefabInstance:
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8971193571273125744, guid: b8e275b3d1cec7444b70a83ff748d47d,
         type: 3}

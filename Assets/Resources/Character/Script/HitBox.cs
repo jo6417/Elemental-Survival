@@ -443,8 +443,6 @@ public class HitBox : MonoBehaviour
         // 히트 머터리얼 및 색으로 변경
         for (int i = 0; i < this.character.spriteList.Count; i++)
         {
-            // this.character.spriteList[i].material = SystemManager.Instance.hitMat;
-
             if (damage > 0)
             {
                 // 현재 체력이 max에 가까울수록 빨간색, 0에 가까울수록 흰색
@@ -452,16 +450,13 @@ public class HitBox : MonoBehaviour
 
                 // 체력 비율에 따라 히트 컬러 넣기
                 this.character.spriteList[i].material.SetColor("_Tint", hitColor);
-                // this.character.spriteList[i].color = hitColor;
             }
             if (damage == 0)
                 // 회피 또는 방어
                 this.character.spriteList[i].material.SetColor("_Tint", Color.blue);
-            // this.character.spriteList[i].color = Color.blue;
             if (damage < 0)
                 // 회복
                 this.character.spriteList[i].material.SetColor("_Tint", SystemManager.Instance.healColor);
-            // this.character.spriteList[i].color = SystemManager.Instance.healColor;
         }
 
         // 히트 딜레이 대기
@@ -471,33 +466,6 @@ public class HitBox : MonoBehaviour
         if (this.character.isDead)
             yield break;
 
-        // 초기화할 컬러, 머터리얼, 머터리얼 컬러
-        // Color originColor = default;
-        // Material originMat = null;
-        // Color originMatColor = default;
-
-        // // 엘리트 몹일때
-        // if (character.eliteClass != Character.EliteClass.None)
-        // {
-        //     // originMat = SystemManager.Instance.outLineMat;
-
-        //     //엘리트 종류마다 다른 아웃라인 컬러 적용
-        //     switch ((int)character.eliteClass)
-        //     {
-        //         case 1:
-        //             originMatColor = Color.red;
-        //             break;
-        //         case 2:
-        //             originMatColor = Color.cyan;
-        //             break;
-        //         case 3:
-        //             originMatColor = Color.green;
-        //             break;
-        //         case 4:
-        //             break;
-        //     }
-        // }
-
         for (int i = 0; i < this.character.spriteList.Count; i++)
         {
             // 고스트일때
@@ -505,28 +473,9 @@ public class HitBox : MonoBehaviour
                 // 고스트 틴트색으로 초기화
                 this.character.spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
             else
-                // 원래 틴트색으로 초기화
-                this.character.spriteList[i].material.SetColor("_Tint", this.character.originColorList[i]);
+                // 투명하게 초기화
+                this.character.spriteList[i].material.SetColor("_Tint", Color.clear);
         }
-
-        // // 고스트일때
-        // if (this.character.IsGhost)
-        // {
-        //     originMat = SystemManager.Instance.outLineMat;
-        //     originColor = new Color(0, 1, 1, 0.5f);
-        // }
-
-        // // 머터리얼 및 색 초기화
-        // for (int i = 0; i < this.character.spriteList.Count; i++)
-        // {
-        //     this.character.spriteList[i].material = this.character.originMatList[i];
-        //     this.character.spriteList[i].color = this.character.originColorList[i];
-        //     this.character.spriteList[i].material.color = this.character.originMatColorList[i];
-        // }
-        // // 엘리트나 고스트 색 들어왔으면 넣기
-        // this.character.spriteList[0].material = originMat != null ? originMat : this.character.originMatList[0];
-        // this.character.spriteList[0].color = originColor != default ? originColor : this.character.originColorList[0];
-        // this.character.spriteList[0].material.color = originMatColor != default ? originMatColor : this.character.originMatColorList[0];
 
         // 코루틴 변수 초기화
         this.character.hitCoroutine = null;
@@ -781,39 +730,10 @@ public class HitBox : MonoBehaviour
             // 빨간색으로 변경
             sprite.material.SetColor("_Tint", SystemManager.Instance.hitColor);
 
-            // sprite.material = SystemManager.Instance.hitMat;
-            // sprite.color = SystemManager.Instance.hitColor;
-
             // 색깔 점점 흰색으로
             sprite.material.DOColor(SystemManager.Instance.DeadColor, "_Tint", deadDelay)
             .SetEase(Ease.OutQuad);
-            // sprite.DOColor(SystemManager.Instance.DeadColor, deadDelay)
-            // .SetEase(Ease.OutQuad);
         }
-
-        // // 자폭 몬스터일때
-        // if (character.selfExplosion)
-        // {
-        //     // 자폭 경고 사운드 재생
-        //     SoundManager.Instance.PlaySound("MiniDrone_Warning", transform.position);
-
-        //     if (character.enemyAtkTrigger.atkRangeFill)
-        //     {
-        //         // 폭발 반경 표시
-        //         character.enemyAtkTrigger.atkRangeBackground.enabled = true;
-        //         character.enemyAtkTrigger.atkRangeFill.enabled = true;
-
-        //         // 폭발 반경 인디케이터 사이즈 초기화
-        //         character.enemyAtkTrigger.atkRangeFill.transform.localScale = Vector3.zero;
-        //         // 폭발 반경 인디케이터 사이즈 키우기
-        //         character.enemyAtkTrigger.atkRangeFill.transform.DOScale(Vector3.one, deadDelay)
-        //         .OnComplete(() =>
-        //         {
-        //             character.enemyAtkTrigger.atkRangeBackground.enabled = false;
-        //             character.enemyAtkTrigger.atkRangeFill.enabled = false;
-        //         });
-        //     }
-        // }
 
         // 죽음 딜레이 대기
         yield return new WaitForSeconds(deadDelay);
@@ -841,31 +761,6 @@ public class HitBox : MonoBehaviour
             // 몬스터 리스트에서 몬스터 본인 빼기
             WorldSpawner.Instance.EnemyDespawn(character);
         }
-
-        // //폭발 몬스터면 폭발 시키기
-        // if (character.selfExplosion)
-        // {
-        //     // 폭발 이펙트 스폰
-        //     GameObject effect = LeanPool.Spawn(character.enemyAtkTrigger.explosionPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
-
-        //     // 일단 비활성화
-        //     effect.SetActive(false);
-
-        //     // 폭발 데미지 넣기
-        //     Attack attack = effect.GetComponent<Attack>();
-        //     // 몬스터 정보가 있을때
-        //     if (character.enemy != null)
-        //         attack.fixedPower = character.enemy.power;
-
-        //     // 고스트 여부에 따라 타겟 및 충돌 레이어 바꾸기
-        //     if (character.IsGhost)
-        //         attack.SetTarget(MagicHolder.TargetType.Player);
-        //     else
-        //         attack.SetTarget(MagicHolder.TargetType.Both);
-
-        //     // 폭발 활성화
-        //     effect.SetActive(true);
-        // }
 
         // 모든 디버프 해제
         DebuffRemove();

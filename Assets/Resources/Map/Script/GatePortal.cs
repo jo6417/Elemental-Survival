@@ -406,9 +406,7 @@ public class GatePortal : MonoBehaviour
         GameObject bossPrefab = EnemyDB.Instance.GetPrefab(bossInfo.id);
 
         // 보스 소환
-        // StartCoroutine(WorldSpawner.Instance.PortalSpawn(bossInfo, false, bossPos, bossPrefab, true));
-        GameObject bossInstance = LeanPool.Spawn(bossPrefab, bossPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
-        bossCharacter = bossInstance.GetComponent<Character>();
+        Character bossCharacter = WorldSpawner.Instance.EnemySpawn(bossInfo, bossPos, bossPrefab, 2f).GetComponent<Character>();
 
         // 보스 소환 상태로 전환
         portalState = PortalState.BossAlive;
@@ -429,6 +427,10 @@ public class GatePortal : MonoBehaviour
 
         // 몬스터 생존 상태로 전환
         portalState = PortalState.MobRemain;
+
+        //todo 모든 몬스터 방향 UI 표시
+        foreach (Character character in WorldSpawner.Instance.spawnEnemyList)
+            StartCoroutine(WorldSpawner.Instance.PointEnemyDir(character.gameObject));
 
         // 모든 몬스터 죽을때까지 대기
         yield return new WaitUntil(() => WorldSpawner.Instance.spawnEnemyList.Count == 0f);
