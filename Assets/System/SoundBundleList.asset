@@ -120,6 +120,26 @@ MonoBehaviour:
       volume: 1
       pitch: 2
       source: {fileID: 0}
+    - name: Gate_InsertGem
+      clip: {fileID: 8300000, guid: 7c182946528a08745a6fce149fe4c628, type: 3}
+      volume: 1
+      pitch: 1.5
+      source: {fileID: 0}
+    - name: Gate_GemMax
+      clip: {fileID: 8300000, guid: f60d396623a89e444a07f510b883355e, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Gate_Open
+      clip: {fileID: 8300000, guid: b4ba490fb9588f94285c6a03d227d6d3, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Gate_Teleport
+      clip: {fileID: 8300000, guid: eec3bf121b316d64ca1c8aac7573a2f4, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
   - name: Music_Sounds
     sounds:
     - name: InGameBGM_1

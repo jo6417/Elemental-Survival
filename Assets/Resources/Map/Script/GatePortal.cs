@@ -48,9 +48,8 @@ public class GatePortal : MonoBehaviour
     [SerializeField] Character fixedBoss; // 고정된 보스 소환
 
     [Header("Refer")]
-    Interacter interacter; //상호작용 콜백 함수 클래스
-    // [SerializeField] Canvas canvas; // UI 캔버스
     [SerializeField] CanvasGroup showKeyUI; //상호작용 키 표시 UI
+    Interacter interacter; //상호작용 콜백 함수 클래스
     [SerializeField] TextMeshProUGUI pressAction; // 상호작용 기능 설명 텍스트
     [SerializeField] CanvasGroup gemNum; //젬 개수 표시 텍스트
     [SerializeField] Image GemIcon; // 젬 아이콘
@@ -62,8 +61,11 @@ public class GatePortal : MonoBehaviour
     [SerializeField] SpriteRenderer beam; // 포탈 전송시 나타나는 빔
     [SerializeField] GameObject beamParticle; // 빔 사라질때 남기는 파티클
     [SerializeField] ParticleManager gatherParticle; // 에너지 충전시 시작되는 파티클
-    [SerializeField] ParticleManager teleportParticle; // 포탈 전송시 파티클
+    [SerializeField] ParticleManager teleportParticle; // 포탈 전송시 빔이 남기는 파티클
     [SerializeField] Animator bossBtnAnim; // 보스 버튼 이펙트 애니메이션
+    [SerializeField] ParticleManager insertGemEffect; // 젬 넣을때 이펙트
+    [SerializeField] GameObject gemMaxEffect; // 젬 max일때 이펙트
+    [SerializeField] GameObject portalOpenEffect; // 포탈 오픈시 이펙트
 
     private void Awake()
     {
@@ -279,7 +281,7 @@ public class GatePortal : MonoBehaviour
                 // 젬 넣기 시작
                 if (payCoroutine == null)
                 {
-                    payCoroutine = PayGem();
+                    payCoroutine = InsertGem();
                     StartCoroutine(payCoroutine);
                 }
                 // 젬 넣기 종료
@@ -302,7 +304,7 @@ public class GatePortal : MonoBehaviour
         }
     }
 
-    IEnumerator PayGem()
+    IEnumerator InsertGem()
     {
         float payDelay = 0.1f;
         // 계속 지불 중이면 반복
@@ -325,6 +327,11 @@ public class GatePortal : MonoBehaviour
             // 젬 하나씩 넣기
             nowGem++;
 
+            // 원소젬 넣을때 이펙트 생성
+            LeanPool.Spawn(insertGemEffect, portalAnim.transform.position, Quaternion.identity, portalAnim.transform);
+            //todo 젬 넣기 사운드 재생
+            SoundManager.Instance.PlaySound("Gate_InsertGem", transform.position);
+
             // 포탈 준비 파티클 시작
             if (nowGem > 0)
                 gatherParticle.gameObject.SetActive(true);
@@ -342,6 +349,11 @@ public class GatePortal : MonoBehaviour
         // 젬이 최대치일때
         if (nowGem == maxGem)
         {
+            // 원소젬 max 이펙트 재생
+            gemMaxEffect.SetActive(true);
+            //todo 젬 max 사운드 재생
+            SoundManager.Instance.PlaySound("Gate_GemMax", transform.position);
+
             // 보스 소환 메시지로 전환
             ActionText("Boss Summon");
         }
@@ -441,6 +453,11 @@ public class GatePortal : MonoBehaviour
         // 포탈 준비 파티클 끄기
         gatherParticle.SmoothDisable();
 
+        //todo 포탈 오픈 이펙트 재생
+        portalOpenEffect.SetActive(true);
+        //todo 포탈 오픈 사운드 재생
+        SoundManager.Instance.PlaySound("Gate_Open", transform.position);
+
         print("Map Clear");
 
         // PortalOpen 트리거 true / Open, Idle 애니메이션 순서대로 시작
@@ -480,6 +497,8 @@ public class GatePortal : MonoBehaviour
     IEnumerator ClearTeleport()
     {
         yield return null;
+        //todo 텔레포트 사운드 재생
+        SoundManager.Instance.PlaySound("Gate_Teleport", transform.position);
 
         // 상호작용 키 끄기
         showKeyUI.alpha = 0;

@@ -46,8 +46,11 @@ public class ElectroBolt : MonoBehaviour
                 // 범위 내 랜덤 위치로 이동
                 transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
+        // 레벨만큼 구체 사이즈 확대
+        transform.localScale = Vector2.one * magicHolder.magic.magicLevel * 0.3f;
+
         // 그림자 사이즈 초기화
-        shadow.localScale = new Vector3(1, 0.4f, 1);
+        shadow.localScale = new Vector3(1, 0.4f, 1) * magicHolder.magic.magicLevel * 0.3f;
 
         // 공격 시작
         StartCoroutine(StartAtk());
