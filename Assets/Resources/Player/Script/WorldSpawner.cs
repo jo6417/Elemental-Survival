@@ -50,6 +50,8 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] Transform targetObj;
     public float maxDistance = 80f; // 타겟과 몬스터 사이 최대 거리
     [SerializeField] float eliteRate; // 엘리트 계수
+    public int[] outGemNum = new int[6]; //카메라 밖으로 나간 원소젬 개수
+    public List<GameObject> outGem = new List<GameObject>(); //카메라 밖으로 나간 원소젬 리스트
 
     [Header("Pool")]
     public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트

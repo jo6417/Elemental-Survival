@@ -52,7 +52,7 @@ Material:
     - _Color: {r: 8, g: 8, b: 8, a: 0}
     - _CoverColor: {r: 0.30039763, g: 1, b: 0, a: 0}
     - _LineColor: {r: 0, g: 0.9414091, b: 1, a: 0.5294118}
-    - _OutLineColor: {r: 0, g: 10.065512, b: 10.680627, a: 0}
+    - _OutLineColor: {r: 14.259475, g: 14.259475, b: 14.259475, a: 1}
     - _TexColor: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 0, g: 0, b: 1, a: 0}
     - _TintColor: {r: 1, g: 1, b: 1, a: 0}

@@ -50,6 +50,8 @@ Material:
     - Vector2_92c51439d90c4c68a162777e3c51c07f: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1024, g: 1024, b: 1024, a: 0}
     - _LineColor: {r: 0, g: 0.9414091, b: 1, a: 0.5294118}
+    - _OutLineColor: {r: 10.680627, g: 10.680627, b: 10.680627, a: 1}
     - _TexColor: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 1, g: 0.4745098, b: 0, a: 0}
+    - _TintColor: {r: 1, g: 0.4745098, b: 0, a: 0}
   m_BuildTextureStacks: []

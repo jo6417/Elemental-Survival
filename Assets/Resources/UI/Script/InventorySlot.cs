@@ -267,6 +267,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 머지 슬롯 단축키 누른채로 클릭했을때
             if (secondInput == 1)
             {
+                // 합성슬롯 켜져있으면 리턴
+                if (PhoneMenu.Instance.mergedSlot.transform.localScale.x > 0)
+                    return;
+
                 // 현재 슬롯이 액티브나 머지 슬롯일때
                 if (slotType == SlotType.Active
                 || slotType == SlotType.Merge)

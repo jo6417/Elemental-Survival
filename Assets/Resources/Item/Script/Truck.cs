@@ -8,8 +8,11 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class Truck : MonoBehaviour
 {
+    [Header("State")]
     [SerializeField] int duration = 10; // 트럭 판매 시간
     [SerializeField, ReadOnly] float timeCount; // 현재 남은 시간
+    Sound engineSound;
+    AudioSource engineAudio; // 재생중인 엔진소리
 
     [Header("Refer")]
     [SerializeField] Collider2D stopColl; // 정차시 물리 콜라이더
@@ -77,6 +80,12 @@ public class Truck : MonoBehaviour
         // 전조등 켜기
         center_Light.color = new Color(1, 1, 100f / 255f, 50f / 255f);
 
+        // 주행 소리 켜기
+        SoundManager.Instance.PlaySound("Truck_Boost", transform);
+        // 엔진 소리 켜기
+        engineSound = SoundManager.Instance.GetSound("Truck_Engine");
+        engineAudio = SoundManager.Instance.PlaySound("Truck_Engine", transform, 0.5f, 0, -1, true);
+
         yield return new WaitUntil(() => WorldSpawner.Instance != null);
 
         // 플레이어가 오른쪽 보고있을때
@@ -141,6 +150,9 @@ public class Truck : MonoBehaviour
         center_Light.DOColor(new Color(1, 1, 100f / 255f, 0), 0.5f)
         .SetEase(Ease.OutQuart);
 
+        // 브레이크 소리 재생
+        SoundManager.Instance.PlaySound("Truck_Break", transform);
+
         // 앞으로 기울어지는 애니메이션
         truckBody.transform.DOLocalRotate(new Vector3(0f, 0f, -20f), 0.2f)
         .OnStart(() =>
@@ -162,9 +174,15 @@ public class Truck : MonoBehaviour
 
             // 공격 콜라이더 끄기
             attackColl.enabled = false;
+
+            // 뒷바퀴 착지 소리 재생
+            SoundManager.Instance.PlaySound("Truck_Landing", transform.position);
         });
 
         yield return new WaitForSeconds(0.2f);
+
+        // 볼륨 작게 초기화
+        engineAudio.volume = 0.3f;
 
         // 백라이트 끄기
         backLight.DOColor(new Color(1, 0, 0, 0), 0.5f)
@@ -190,6 +208,9 @@ public class Truck : MonoBehaviour
         });
 
         yield return new WaitForSeconds(0.3f);
+
+        // 가판대 여는 소리
+        SoundManager.Instance.PlaySound("Truck_Open", transform.position);
 
         // 가판대 열린 스프라이트로 교체
         truckSprite.sprite = truckSpriteList[1];
@@ -293,6 +314,9 @@ public class Truck : MonoBehaviour
         L_sideLight.DOKill();
         R_sideLight.DOKill();
 
+        // 가판대 닫는 소리
+        SoundManager.Instance.PlaySound("Truck_Close", transform.position);
+
         // 가판대 문 닫기
         truckSprite.sprite = truckSpriteList[0];
 
@@ -346,9 +370,12 @@ public class Truck : MonoBehaviour
         timeCount = -2;
 
         // 플레이어 이동 속도 계수
-        float playerSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed;
+        float playerSpeed = 10f;
         // 가속도 기본값
         float accelSpeed = 1f;
+
+        // 주행 소리 켜기
+        SoundManager.Instance.PlaySound("Truck_Boost", transform);
 
         // 디스폰 할때까지 반복
         while (truckBody.gameObject.activeSelf)
@@ -361,6 +388,9 @@ public class Truck : MonoBehaviour
 
             // 해당 방향으로 주행
             rigid.velocity = Vector2.Lerp(rigid.velocity, -backPos, Time.deltaTime);
+
+            // 엔진 사운드 속도만큼 올리기, 최대값 제한
+            engineAudio.volume = engineSound.volume * rigid.velocity.magnitude * 0.1f;
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
@@ -394,6 +424,11 @@ public class Truck : MonoBehaviour
 
         // 바퀴 파티클 및 주행 매연이 꺼질때까지 대기
         yield return new WaitUntil(() => !goEffect.gameObject.activeSelf && !wheelDust.gameObject.activeSelf);
+
+        // 엔진 소리 끄기
+        SoundManager.Instance.StopSound(engineAudio, 1f);
+
+        yield return new WaitForSeconds(1f);
 
         // 디스폰
         LeanPool.Despawn(transform);

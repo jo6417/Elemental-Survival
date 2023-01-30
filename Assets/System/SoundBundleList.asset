@@ -328,6 +328,46 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       source: {fileID: 0}
+    - name: MagnetBeam
+      clip: {fileID: 8300000, guid: 66fd6408d1cf66b4fbb225d41cc4b443, type: 3}
+      volume: 0.3
+      pitch: 2
+      source: {fileID: 0}
+    - name: Truck_Engine
+      clip: {fileID: 8300000, guid: 2cf4615e5c1b4284084e259d5888892f, type: 3}
+      volume: 0.5
+      pitch: 1
+      source: {fileID: 0}
+    - name: Truck_Boost
+      clip: {fileID: 8300000, guid: 37104ab817023e948a0b0437b4e2b42d, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Truck_Break
+      clip: {fileID: 8300000, guid: 714ed798c8c4be0459d7c6455af857a0, type: 3}
+      volume: 0.3
+      pitch: 1.5
+      source: {fileID: 0}
+    - name: Truck_Landing
+      clip: {fileID: 8300000, guid: c1f03917bca50584d8ecc1d970b43431, type: 3}
+      volume: 0.3
+      pitch: 2
+      source: {fileID: 0}
+    - name: Truck_Open
+      clip: {fileID: 8300000, guid: fca4bb7c22a7c7c40b47fcde7f849f14, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Truck_Close
+      clip: {fileID: 8300000, guid: 4a080a72950c0634282d375b5a7e4c82, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Truck_Honk
+      clip: {fileID: 8300000, guid: a465254e6a70a5c43915986bd04e020e, type: 3}
+      volume: 0.3
+      pitch: 1
+      source: {fileID: 0}
   - name: Map_Sounds
     sounds:
     - name: Bush_0

@@ -28,6 +28,7 @@ public class PlayerStat
     public float coolTime = 1; //마법 쿨타임
     public float duration = 1; //마법 지속시간
     public float range = 1; //마법 범위
+    public float scale = 1; //마법 사이즈
     public float luck = 1; //행운
     public float expGain = 1; //경험치 획득량
     public float getRage = 1; // 아이템 획득 범위

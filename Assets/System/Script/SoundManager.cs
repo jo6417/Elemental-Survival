@@ -315,6 +315,12 @@ public class SoundManager : MonoBehaviour
         return audio;
     }
 
+    public Sound GetSound(string soundName)
+    {
+        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        return sound;
+    }
+
     // 사운드 매니저에서 전역 사운드 재생
     public AudioSource PlaySound(string soundName, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
     {

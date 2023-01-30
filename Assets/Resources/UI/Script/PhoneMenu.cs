@@ -79,7 +79,7 @@ public class PhoneMenu : MonoBehaviour
     public Transform mergePanel;
     public InventorySlot L_MergeSlot; // 왼쪽 재료 슬롯
     public InventorySlot R_MergeSlot; // 오른쪽 재료 슬롯
-    public InventorySlot mergedSlot; // 합성된 마법 슬롯
+    public InventorySlot mergedSlot; // 합성 완료된 마법 슬롯
     public GameObject plusIcon; // 가운데 플러스 아이콘
     public ParticleManager mergeBeforeEffect; // 합성 준비 이펙트
     public ParticleSystem mergeFailEffect; // 합성 실패 이펙트

@@ -105,7 +105,7 @@ public class LifeMushroomSpawner : MonoBehaviour
             SpriteRenderer mushroomSprite = mushroom.GetComponent<SpriteRenderer>();
 
             // 아이템에 체력 회복량 넣기
-            mushroom.GetComponent<ItemManager>().amount = healAmount;
+            mushroom.GetComponent<ItemManager>().itemInfo.amount = healAmount;
 
             //아이템 리지드 찾기
             Rigidbody2D itemRigid = mushroom.GetComponent<Rigidbody2D>();

@@ -472,6 +472,10 @@ public class HitBox : MonoBehaviour
             if (this.character.IsGhost)
                 // 고스트 틴트색으로 초기화
                 this.character.spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
+            // 멈춤 디버프 중일때
+            else if (this.character.stopCount > 0)
+                // 회색으로 초기화
+                this.character.spriteList[i].material.SetColor("_Tint", SystemManager.Instance.stopColor);
             else
                 // 투명하게 초기화
                 this.character.spriteList[i].material.SetColor("_Tint", Color.clear);
@@ -545,8 +549,6 @@ public class HitBox : MonoBehaviour
             StartCoroutine(Dead(character.deadDelay));
         }
     }
-
-
 
     public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Character.Debuff debuffType)
     {
@@ -679,6 +681,28 @@ public class HitBox : MonoBehaviour
 
         //스케일 복구
         character.transform.localScale = Vector2.one;
+    }
+
+    public IEnumerator TimeStop(float stopTime)
+    {
+        // 정지 시간 초기화
+        character.stopCount = stopTime;
+
+        // 모든 스프라이트 회색으로
+        for (int i = 0; i < character.spriteList.Count; i++)
+            character.spriteList[i].material.SetColor("_Tint", SystemManager.Instance.stopColor);
+
+        // stopCount 풀릴때까지 대기
+        yield return new WaitUntil(() => character.stopCount <= 0);
+
+        // 틴트 없에기
+        for (int i = 0; i < character.spriteList.Count; i++)
+        {
+            // 아직 회색이면
+            if (character.spriteList[i].material.GetColor("_Tint") == SystemManager.Instance.stopColor)
+                // 틴트색 초기화
+                character.spriteList[i].material.SetColor("_Tint", Color.clear);
+        }
     }
 
     public IEnumerator Dead(float deadDelay)

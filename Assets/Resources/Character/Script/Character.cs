@@ -452,7 +452,7 @@ public class Character : MonoBehaviour
             for (int i = 0; i < spriteList.Count; i++)
             {
                 // 고스트 여부에 따라 색깔 초기화
-                spriteList[i].color = new Color(0, 1, 1, 0.5f);
+                spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
 
                 // 고스트 여부에 따라 복구 머터리얼 바꾸기
                 spriteList[i].material = SystemManager.Instance.outLineMat;
@@ -479,15 +479,11 @@ public class Character : MonoBehaviour
             // 맥스 체력으로 초기화
             hpNow = hpMax;
 
-            // 엘리트 몬스터 아닐때
-            if (eliteClass == EliteClass.None)
-                // rigid, sprite, 트윈, 애니메이션 상태 초기화
-                for (int i = 0; i < spriteList.Count; i++)
-                {
-                    // 고스트 여부에 따라 색깔 초기화
-                    // spriteList[i].color = originColorList[i];
-                    // spriteList[i].material = originMatList[i];
-                }
+            for (int i = 0; i < spriteList.Count; i++)
+            {
+                // 고스트 여부에 따라 틴트 컬러 초기화
+                spriteList[i].material.SetColor("_Tint", Color.clear);
+            }
 
             // 그림자 색 초기화
             if (shadow)
@@ -716,14 +712,13 @@ public class Character : MonoBehaviour
                 }
             }
 
-            // 히트 딜레이중 아닐때
-            if (hitDelayCount <= 0)
-                //시간 멈춤 머터리얼 및 색으로 바꾸기
-                for (int i = 0; i < spriteList.Count; i++)
-                {
-                    // spriteList[i].material = originMatList[i];
-                    spriteList[i].color = SystemManager.Instance.stopColor;
-                }
+            // // 히트 딜레이중 아닐때
+            // if (hitDelayCount <= 0)
+            //     //시간 멈춤 머터리얼 및 색으로 바꾸기
+            //     for (int i = 0; i < spriteList.Count; i++)
+            //     {
+            //         spriteList[i].material.SetColor("_Tint", SystemManager.Instance.hitColor);
+            //     }
 
             // 행동불능이므로 false 리턴
             return false;
@@ -751,33 +746,6 @@ public class Character : MonoBehaviour
             // 행동불능이므로 false 리턴
             return false;
 
-        // 모든 문제 없으면 idle 상태로 전환
-        // state = State.Idle;
-
-        // // 고스트일때
-        // if (IsGhost)
-        //     // rigid, sprite, 트윈, 애니메이션 상태 초기화
-        //     for (int i = 0; i < spriteList.Count; i++)
-        //     {
-        //         // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
-        //         spriteList[i].material = SystemManager.Instance.outLineMat;
-        //         spriteList[i].color = new Color(0, 1, 1, 0.5f);
-        //     }
-        // // 고스트 아닐때
-        // else
-        //     // rigid, sprite, 트윈, 애니메이션 상태 초기화
-        //     for (int i = 0; i < spriteList.Count; i++)
-        //     {
-        //         // 고스트 여부에 따라 복구 색깔 및 머터리얼 바꾸기
-        //         spriteList[i].color = originColorList[i];
-
-        //         // 엘리트 아닐때
-        //         if (eliteClass == EliteClass.None)
-        //             spriteList[i].material = originMatList[i];
-        //     }
-
-        // transform.DOPlay();
-
         // 애니메이션 속도 초기화
         if (animList.Count > 0)
         {
@@ -786,10 +754,6 @@ public class Character : MonoBehaviour
                 anim.speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
             }
         }
-
-        // rigid 초기화
-        // rigid.velocity = Vector3.zero;
-        // rigid.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         // 상태 이상 없음
         afterEffect = true;

@@ -15159,7 +15159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d41f9b2f9c57ad84a81f5e9d8e462c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 10
+  duration: 3
   timeCount: 0
   stopColl: {fileID: 1359786981987588359}
   attackColl: {fileID: 1359786982314616118}

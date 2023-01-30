@@ -184,7 +184,7 @@ public class LevelupMenu : MonoBehaviour
 
     public IEnumerator ChooseSlot(int index, SlotInfo slotInfo)
     {
-        //todo 모든 버튼 상호작용 끄기 (UI커서 선택 방지)
+        // 모든 버튼 상호작용 끄기 (UI커서 선택 방지)
         Button[] btns = screen.GetComponentsInChildren<Button>();
         for (int i = 0; i < btns.Length; i++)
             btns[i].interactable = false;

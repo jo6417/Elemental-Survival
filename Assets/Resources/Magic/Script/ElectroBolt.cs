@@ -11,14 +11,17 @@ public class ElectroBolt : MonoBehaviour
     [SerializeField] MagicHolder magicHolder;
     [SerializeField] Collider2D atkColl; // 공격용 콜라이더
     [SerializeField] ParticleManager energyBall; // 에너지볼 이펙트 파티클
-    [SerializeField] Transform shadow; // 그림자
 
     [Header("Stat")]
     float range;
     float duration;
+    float scale;
 
     private void OnEnable()
     {
+        // 구체 사이즈 초기화
+        transform.localScale = Vector2.zero;
+
         //초기화
         StartCoroutine(Init());
     }
@@ -29,12 +32,10 @@ public class ElectroBolt : MonoBehaviour
         // 스탯 초기화
         range = MagicDB.Instance.MagicRange(magicHolder.magic);
         duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
+        scale = MagicDB.Instance.MagicScale(magicHolder.magic);
 
         // 디버프 초기화
         magicHolder.shockTime = 1f;
-
-        //콜라이더 끄기
-        atkColl.enabled = false;
 
         // 플레이어가 쓴 마법일때
         if (magicHolder.GetTarget() == Attack.TargetType.Enemy)
@@ -47,10 +48,7 @@ public class ElectroBolt : MonoBehaviour
                 transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
 
         // 레벨만큼 구체 사이즈 확대
-        transform.localScale = Vector2.one * magicHolder.magic.magicLevel * 0.3f;
-
-        // 그림자 사이즈 초기화
-        shadow.localScale = new Vector3(1, 0.4f, 1) * magicHolder.magic.magicLevel * 0.3f;
+        transform.DOScale(Vector2.one * scale, 0.2f);
 
         // 공격 시작
         StartCoroutine(StartAtk());
@@ -71,14 +69,12 @@ public class ElectroBolt : MonoBehaviour
         // duartion 동안 콜라이더 점멸 반복
         yield return StartCoroutine(FlickerColl());
 
-        //콜라이더 끄기
-        atkColl.enabled = false;
+        // 사이즈 줄이기
+        transform.DOScale(Vector2.zero, 0.2f);
+        yield return new WaitForSeconds(0.2f);
 
-        // 그림자 사이즈 줄이기
-        shadow.DOScale(Vector3.zero, 0.05f);
-
-        // 파티클 끄고 디스폰
-        energyBall.SmoothDespawn();
+        // 디스폰
+        LeanPool.Despawn(transform);
     }
 
     IEnumerator FlickerColl()
@@ -94,5 +90,8 @@ public class ElectroBolt : MonoBehaviour
             flickCount -= Time.deltaTime;
             yield return new WaitForSeconds(Time.deltaTime);
         }
+
+        // 콜라이더 끄기
+        atkColl.enabled = false;
     }
 }

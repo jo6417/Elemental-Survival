@@ -37,7 +37,8 @@ public class MagicInfo : SlotInfo
     [Header("Spec")]
     public float power = 1; //데미지
     public float speed = 1; //투사체 속도 및 쿨타임
-    public float range = 1; //범위
+    public float range = 1; //시전 범위
+    public float scale = 1; //마법 스케일
     public float duration = 1; //지속시간
     public float critical = 1f; //크리티컬 확률
     public float criticalPower = 1f; //크리티컬 데미지 증가율
@@ -49,6 +50,7 @@ public class MagicInfo : SlotInfo
     public float powerPerLev;
     public float speedPerLev;
     public float rangePerLev;
+    public float scalePerLev;
     public float durationPerLev;
     public float criticalPerLev;
     public float criticalPowerPerLev;
@@ -72,6 +74,7 @@ public class MagicInfo : SlotInfo
         this.power = magic.power;
         this.speed = magic.speed;
         this.range = magic.range;
+        this.scale = magic.scale;
         this.duration = magic.duration;
         this.critical = magic.critical;
         this.criticalPower = magic.criticalPower;
@@ -81,6 +84,7 @@ public class MagicInfo : SlotInfo
         this.powerPerLev = magic.powerPerLev;
         this.speedPerLev = magic.speedPerLev;
         this.rangePerLev = magic.rangePerLev;
+        this.scalePerLev = magic.scalePerLev;
         this.durationPerLev = magic.durationPerLev;
         this.criticalPerLev = magic.criticalPerLev;
         this.criticalPowerPerLev = magic.criticalPowerPerLev;
@@ -90,8 +94,8 @@ public class MagicInfo : SlotInfo
     }
 
     public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price, bool multiHit,
-    float power, float speed, float range, float duration, float critical, float criticalPower, int pierce, int atkNum, float coolTime,
-    float powerPerLev, float speedPerLev, float rangePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float atkNumPerLev, float coolTimePerLev)
+    float power, float speed, float range, float scale, float duration, float critical, float criticalPower, int pierce, int atkNum, float coolTime,
+    float powerPerLev, float speedPerLev, float rangePerLev, float scalePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float atkNumPerLev, float coolTimePerLev)
     {
         this.id = id;
         this.grade = grade;
@@ -107,6 +111,7 @@ public class MagicInfo : SlotInfo
         this.power = power;
         this.speed = speed;
         this.range = range;
+        this.scale = scale;
         this.duration = duration;
         this.critical = critical;
         this.criticalPower = criticalPower;
@@ -117,6 +122,7 @@ public class MagicInfo : SlotInfo
         this.powerPerLev = powerPerLev;
         this.speedPerLev = speedPerLev;
         this.rangePerLev = rangePerLev;
+        this.scalePerLev = scalePerLev;
         this.durationPerLev = durationPerLev;
         this.criticalPerLev = criticalPerLev;
         this.criticalPowerPerLev = criticalPowerPerLev;

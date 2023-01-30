@@ -24,6 +24,7 @@ public class Meteor : MonoBehaviour
     [Header("Magic Stat")]
     float speed;
     float range;
+    float scale;
 
     private void Awake()
     {
@@ -45,9 +46,21 @@ public class Meteor : MonoBehaviour
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
+        // 마법 오브젝트 속도, 숫자가 작을수록 빠름
+        speed = MagicDB.Instance.MagicSpeed(magic, false);
+        // 해당 마법 범위 불러오기
+        range = MagicDB.Instance.MagicRange(magic);
+        // 해당 마법 스케일 불러오기
+        scale = MagicDB.Instance.MagicScale(magic);
 
         // 콜라이더 끄기
         coll.enabled = false;
+
+        // 메테오 크기 초기화
+        transform.localScale = Vector2.zero;
+        // 메테오 크기 키우기
+        transform.DOScale(Vector2.one * scale, 0.5f)
+        .SetEase(Ease.OutExpo);
 
         //마법 떨어뜨리기
         StartCoroutine(FallMagic());
@@ -55,26 +68,21 @@ public class Meteor : MonoBehaviour
 
     IEnumerator FallMagic()
     {
-        // 마법 오브젝트 속도, 숫자가 작을수록 빠름
-        speed = MagicDB.Instance.MagicSpeed(magic, false);
-        // 해당 마법 범위 불러오기
-        range = MagicDB.Instance.MagicRange(magic);
-
         //시작 위치
         Vector2 startPos = startOffset + (Vector2)magicHolder.targetPos;
 
         //떨어질 자리에 인디케이터 표시
-        GameObject shadow = LeanPool.Spawn(indicator, magicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
+        GameObject shadow = LeanPool.Spawn(indicator, magicHolder.targetPos, Quaternion.Euler(Vector3.left * 60f), ObjectPool.Instance.effectPool);
 
-        // 인디케이터 색깔 초기화
-        SpriteRenderer shadowSprite = shadow.GetComponent<SpriteRenderer>();
+        // 인디케이터 바닥 색깔 초기화
+        SpriteRenderer shadowSprite = shadow.GetComponentInChildren<SpriteRenderer>();
         if (magicHolder.targetType == MagicHolder.TargetType.Player)
             // 플레이어가 타겟이면 빨간색
             shadowSprite.color = new Color(1, 0, 0, 100f / 255f);
 
         if (magicHolder.targetType == MagicHolder.TargetType.Enemy)
-            // 몬스터가 타겟이면 흰색
-            shadowSprite.color = new Color(1, 1, 1, 100f / 255f);
+            // 몬스터가 타겟이면 검은색
+            shadowSprite.color = new Color(0, 0, 0, 100f / 255f);
 
         //인디케이터 사이즈 0,0으로 초기화
         shadow.transform.localScale = Vector3.zero;
@@ -99,8 +107,9 @@ public class Meteor : MonoBehaviour
         //위치 올라갈때까지 대기
         yield return new WaitUntil(() => (Vector2)transform.position == startPos);
 
-        //인디케이터 사이즈 점점 키우기
-        shadow.transform.DOScale(new Vector2(5, 2), speed);
+        // 마법 스케일 만큼 인디케이터 사이즈 키우기
+        shadow.transform.DOScale(Vector2.one * scale, speed)
+        .SetEase(Ease.OutQuart);
 
         //목표 위치로 떨어뜨리기
         Tween fallTween = transform.DOMove(endPos, speed)

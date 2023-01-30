@@ -68,7 +68,7 @@ public class Kamaitach : MonoBehaviour
 
         // 두 지점 거리만큼 공격 범위 늘리기
         distance = Vector2.Distance(nowPlayerPos, movePos);
-        transform.localScale = new Vector3(distance, distance / 2f, 1);
+        transform.localScale = new Vector3(distance, distance / 3f, 1);
 
         // 수동 시전 했을때
         if (magicHolder.isManualCast)

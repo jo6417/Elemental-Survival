@@ -38,9 +38,7 @@ public class ItemDB : MonoBehaviour
     public Dictionary<int, ItemInfo> itemDB = new Dictionary<int, ItemInfo>(); //아이템 정보 DB
     // public List<ItemInfo> itemDB = new List<ItemInfo>(); //아이템 정보 DB
     public List<Sprite> itemIcon = null; //아이템 아이콘 리스트
-    public List<GameObject> itemPrefab = null; //아이템 프리팹 리스트
-    public int[] outGemNum = new int[6]; //카메라 밖으로 나간 원소젬 개수
-    public List<GameObject> outGem = new List<GameObject>(); //카메라 밖으로 나간 원소젬 리스트
+    public List<GameObject> itemPrefab = null; //아이템 프리팹 리스트    
     public GameObject magicItemPrefab; // 마법 슬롯 아이템 프리팹
 
     void Awake()

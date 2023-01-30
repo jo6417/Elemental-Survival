@@ -20,7 +20,7 @@ public class ItemManager : MonoBehaviour
     [Header("State")]
     [SerializeField] ItemState itemState = 0;
     [SerializeField] enum ItemState { Idle, Ready, Follow, Get };
-    [ReadOnly] public int amount = 1; //아이템 개수
+    // [ReadOnly] public int amount = 1; //아이템 개수
     [ReadOnly] public bool isBundle; //합쳐진 아이템인지
     [ReadOnly] public int gemTypeIndex = -1;
     [ReadOnly] private string itemName;
@@ -71,10 +71,8 @@ public class ItemManager : MonoBehaviour
         // 아이템 획득여부 초기화
         // isGet = false;
 
-        // 사이즈 초기화
-        transform.localScale = Vector2.one;
-        //아이템 개수 초기화
-        amount = 1;
+        // 아이템 개수에 따라 사이즈 초기화 (개당 10프로)
+        transform.localScale = Vector2.one * (1 + (itemInfo.amount - 1) * 0.1f);
         //아이템 번들 여부 초기화
         isBundle = false;
 
@@ -100,15 +98,31 @@ public class ItemManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 원소젬이고 리스폰 콜라이더 안에 들어왔을때
-        if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString() && other.gameObject.CompareTag("Respawn") && !isBundle)
-        {
-            //해당 타입 원소젬 개수 -1
-            if (ItemDB.Instance.outGemNum[gemTypeIndex] > 0)
-                ItemDB.Instance.outGemNum[gemTypeIndex]--;
+        // 아이템 정보 없으면 리턴
+        if (itemInfo == null)
+            return;
 
-            //원소젬 리스트에서 빼기
-            ItemDB.Instance.outGem.Remove(gameObject);
+        // 원소젬일때
+        if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
+        {
+            // 자석 레이저와 충돌 했을때
+            if (other.gameObject.CompareTag(SystemManager.TagNameList.Item.ToString()))
+            {
+                // idle 상태일때
+                if (itemState == ItemState.Idle)
+                    PlayerCollision();
+            }
+
+            // 리스폰 콜라이더 안에 들어왔을때
+            if (other.gameObject.CompareTag("Respawn") && !isBundle)
+            {
+                //해당 타입 원소젬 개수 -1
+                if (WorldSpawner.Instance.outGemNum[gemTypeIndex] > 0)
+                    WorldSpawner.Instance.outGemNum[gemTypeIndex]--;
+
+                //원소젬 리스트에서 빼기
+                WorldSpawner.Instance.outGem.Remove(gameObject);
+            }
         }
 
         // 플레이어와 충돌 했을때
@@ -121,16 +135,6 @@ public class ItemManager : MonoBehaviour
             // 플레이어 쫓아가는 상태일때
             if (itemState == ItemState.Follow)
                 GetItem();
-        }
-
-        // 자석 레이저와 충돌 했을때
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Item.ToString()))
-        {
-            // idle 상태일때
-            if (itemState == ItemState.Idle)
-                // 원소젬일때만 획득
-                if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
-                    PlayerCollision();
         }
     }
 
@@ -208,36 +212,36 @@ public class ItemManager : MonoBehaviour
         if (other.CompareTag("Respawn"))
         {
             // 원소젬이고, 합쳐지지 않았을때
-            if (itemInfo != null && itemInfo.itemType == "Gem" && !isBundle)
+            if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString() && !isBundle)
             {
                 // 같은 타입 원소젬 개수가 본인포함 10개 이상일때
-                if (ItemDB.Instance.outGemNum[gemTypeIndex] >= 9)
+                if (WorldSpawner.Instance.outGemNum[gemTypeIndex] >= 9)
                 {
-                    print(itemInfo.name + " : " + ItemDB.Instance.outGemNum[gemTypeIndex]);
+                    print(itemInfo.name + " : " + WorldSpawner.Instance.outGemNum[gemTypeIndex]);
 
                     // 해당 원소젬 사이즈 키우고 개수 늘리기
                     transform.localScale = Vector2.one * 2;
-                    amount = 5;
+                    itemInfo.amount = 5;
                     isBundle = true;
 
                     //해당 타입 원소젬 개수 초기화
-                    ItemDB.Instance.outGemNum[gemTypeIndex] = 0;
+                    WorldSpawner.Instance.outGemNum[gemTypeIndex] = 0;
 
                     // 이름 같은 원소젬 찾아서 다 디스폰 시키기
-                    List<GameObject> despawnList = ItemDB.Instance.outGem.FindAll(x => x.name == transform.name);
+                    List<GameObject> despawnList = WorldSpawner.Instance.outGem.FindAll(x => x.name == transform.name);
                     print(despawnList.Count);
                     foreach (var gem in despawnList)
                     {
-                        ItemDB.Instance.outGem.Remove(gem);
+                        WorldSpawner.Instance.outGem.Remove(gem);
                         LeanPool.Despawn(gem);
                     }
                 }
                 else
                 {
                     //해당 타입 원소젬 개수 +1
-                    ItemDB.Instance.outGemNum[gemTypeIndex]++;
+                    WorldSpawner.Instance.outGemNum[gemTypeIndex]++;
                     //카메라 밖으로 나간 원소젬 리스트에 넣기
-                    ItemDB.Instance.outGem.Add(gameObject);
+                    WorldSpawner.Instance.outGem.Add(gameObject);
                 }
             }
         }
@@ -325,7 +329,7 @@ public class ItemManager : MonoBehaviour
             if (itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
             {
                 //플레이어 소지 젬 갯수 올리기
-                PlayerManager.Instance.AddGem(itemInfo, amount);
+                PlayerManager.Instance.AddGem(itemInfo, itemInfo.amount);
                 // print(item.itemName + amount);
 
                 // 젬 획득 사운드 재생
@@ -334,7 +338,7 @@ public class ItemManager : MonoBehaviour
             // 아이템이 힐 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Heal.ToString())
             {
-                PlayerManager.Instance.hitBox.Damage(-amount, false);
+                PlayerManager.Instance.hitBox.Damage(-itemInfo.amount, false);
             }
             // 아이템이 아티팩트 타입일때
             else if (itemInfo.itemType == ItemDB.ItemType.Artifact.ToString())

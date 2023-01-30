@@ -190,8 +190,8 @@ public class MagicDB : MonoBehaviour
                 //받아온 데이터를 id를 키값으로 MagicInfo 딕셔너리에 넣기
                 magicDB[magic["id"]] = (new MagicInfo(
                 magic["id"], magic["grade"], magic["magicName"], magic["element_A"], magic["element_B"], magic["castType"], magic["description"], magic["priceType"], magic["price"], magic["multiHit"],
-                magic["power"], magic["speed"], magic["range"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["atkNum"], magic["coolTime"],
-                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["atkNumPerLev"], magic["coolTimePerLev"]
+                magic["power"], magic["speed"], magic["range"], magic["scale"], magic["duration"], magic["critical"], magic["criticalPower"], magic["pierce"], magic["atkNum"], magic["coolTime"],
+                magic["powerPerLev"], magic["speedPerLev"], magic["rangePerLev"], magic["scalePerLev"], magic["durationPerLev"], magic["criticalPerLev"], magic["criticalPowerPerLev"], magic["piercePerLev"], magic["atkNumPerLev"], magic["coolTimePerLev"]
                 ));
                 yield return null;
             }
@@ -497,12 +497,33 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 마법 범위 증가량 계산
-                range = range + range * (PlayerManager.Instance.PlayerStat_Now.range - 1);
+                range = range * PlayerManager.Instance.PlayerStat_Now.range;
 
         //값 제한하기
         range = Mathf.Clamp(range, 0.1f, 1000f);
 
         return range;
+    }
+
+    public float MagicScale(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)
+    {
+        // 마법 레벨 제한
+        int level = Mathf.Clamp(magic.magicLevel, 1, magic.magicLevel);
+        float scale = 0;
+
+        //마법 스케일 및 레벨당 증가량 계산
+        scale = magic.scale + magic.scalePerLev * (level - 1);
+
+        // 플레이어가 쓰는 마법일때
+        if (target == MagicHolder.TargetType.Enemy)
+            if (PlayerManager.Instance != null)
+                //플레이어 자체 마법 스케일 증가량 계산
+                scale = scale * PlayerManager.Instance.PlayerStat_Now.scale;
+
+        //값 제한하기
+        scale = Mathf.Clamp(scale, 0.1f, 1000f);
+
+        return scale;
     }
 
     public float MagicDuration(MagicInfo magic, MagicHolder.TargetType target = MagicHolder.TargetType.Enemy)

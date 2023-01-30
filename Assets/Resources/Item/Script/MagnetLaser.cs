@@ -38,6 +38,9 @@ public class MagnetLaser : MonoBehaviour
         laser.endWidth = 0;
         laser.gameObject.SetActive(true);
 
+        // 레이저 사운드 켜기
+        AudioSource laserSound = SoundManager.Instance.PlaySound("MagnetBeam", expandTime, 0, -1, true);
+
         // 초반 레이저 얇은 굵기로
         DOTween.To(() => laser.startWidth, x => laser.startWidth = x, 0.1f, startTime);
         DOTween.To(() => laser.endWidth, x => laser.endWidth = x, 0.1f, startTime);
@@ -65,6 +68,9 @@ public class MagnetLaser : MonoBehaviour
             yield return new WaitForSeconds(pulseDelay);
             durationCount -= pulseDelay;
         }
+
+        // 레이저 사운드 끝내기
+        SoundManager.Instance.StopSound(laserSound, expandTime);
 
         // 자석 스프라이트 줄어들기
         magnet.transform.DOScale(Vector3.zero, expandTime)
