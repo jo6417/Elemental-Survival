@@ -427,7 +427,7 @@ MonoBehaviour:
   healRange: {fileID: 0}
   animList:
   - {fileID: 9015841515065183018}
-  physicsColl: {fileID: 6593889911958128668}
+  physicsColl: {fileID: 0}
   rigid: {fileID: 4498973164959321897}
   buffParent: {fileID: 1561226330233454867}
   particleHitCount: 0
@@ -508,14 +508,14 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5563108377816857757}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 5, y: 1.5}
+  m_Size: {x: 4, y: 1.2}
   m_Direction: 1
 --- !u!23 &984350542188438258
 MeshRenderer:
@@ -852,12 +852,6 @@ Transform:
 --- !u!212 &5083105368544687810 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,
-    type: 3}
-  m_PrefabInstance: {fileID: 5169681537720885197}
-  m_PrefabAsset: {fileID: 0}
---- !u!70 &6593889911958128668 stripped
-CapsuleCollider2D:
-  m_CorrespondingSourceObject: {fileID: 2034595722077427665, guid: b8e275b3d1cec7444b70a83ff748d47d,
     type: 3}
   m_PrefabInstance: {fileID: 5169681537720885197}
   m_PrefabAsset: {fileID: 0}

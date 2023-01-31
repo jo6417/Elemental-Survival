@@ -20,10 +20,9 @@ public class ItemManager : MonoBehaviour
     [Header("State")]
     [SerializeField] ItemState itemState = 0;
     [SerializeField] enum ItemState { Idle, Ready, Follow, Get };
-    // [ReadOnly] public int amount = 1; //아이템 개수
-    [ReadOnly] public bool isBundle; //합쳐진 아이템인지
-    [ReadOnly] public int gemTypeIndex = -1;
-    [ReadOnly] private string itemName;
+    [SerializeField, ReadOnly] public bool isBundle; //합쳐진 아이템인지
+    [SerializeField, ReadOnly] public int gemTypeIndex = -1;
+    [SerializeField, ReadOnly] private string itemName;
     public float autoDespawnTime = 0; //자동 디스폰 시간
 
     private void Awake()
@@ -68,21 +67,22 @@ public class ItemManager : MonoBehaviour
             gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == itemInfo.priceType);
         }
 
-        // 아이템 획득여부 초기화
-        // isGet = false;
-
-        // 아이템 개수에 따라 사이즈 초기화 (개당 10프로)
-        transform.localScale = Vector2.one * (1 + (itemInfo.amount - 1) * 0.1f);
-        //아이템 번들 여부 초기화
-        isBundle = false;
-
         // 아이템, 마법 정보 들어올때까지 대기
         yield return new WaitUntil(() => itemInfo != null || magicInfo != null);
 
         if (itemInfo != null)
+        {
             itemName = itemInfo.name;
+
+            // 아이템 개수에 따라 사이즈 초기화 (개당 10프로)
+            transform.localScale = Vector2.one * (1 + (itemInfo.amount - 1) * 0.1f);
+        }
+
         if (magicInfo != null)
             itemName = magicInfo.name;
+
+        //아이템 번들 여부 초기화
+        isBundle = false;
 
         // 아이템 상태 초기화
         itemState = ItemState.Idle;
@@ -98,8 +98,8 @@ public class ItemManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 아이템 정보 없으면 리턴
-        if (itemInfo == null)
+        // 정보 없으면 리턴
+        if (itemInfo == null && magicInfo == null)
             return;
 
         // 원소젬일때

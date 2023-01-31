@@ -65,6 +65,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultHasItem: 
+  usePortal: 1
   initialStart: 0
   initialFinish: 0
   eliteClass: 0
@@ -72,6 +73,7 @@ MonoBehaviour:
   hpNow: 0
   hpMax: 0
   isDead: 0
+  deadDelay: 1
   changeGhost: 0
   portalSize: 1
   afterEffect: 0
@@ -80,7 +82,7 @@ MonoBehaviour:
   attackRange: 0
   healCount: 0
   isGhost: 0
-  nowAction: 0
+  nowState: 0
   moveType: 0
   targetObj: {fileID: 0}
   targetResetTime: 3
@@ -88,13 +90,9 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 0}
-  spriteList:
-  - {fileID: 5681405427148299961}
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
-  spriteObj: {fileID: 0}
   healRange: {fileID: 0}
   animList: []
   physicsColl: {fileID: 0}
@@ -107,11 +105,15 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList: []
+  spriteObj: {fileID: 0}
+  spriteList:
+  - {fileID: 5681405427148299961}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList: []
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 0}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -145,7 +147,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 40506420e55a4a34f8d4928dfd7d2778, type: 2}
+  - {fileID: 2100000, guid: ba9e10348e0ba8345956a31e15e0d180, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

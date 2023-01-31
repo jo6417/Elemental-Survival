@@ -442,7 +442,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3858499176081455285}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.68, y: -7.65, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8073000826628630729}
@@ -471,6 +471,8 @@ MonoBehaviour:
   - {fileID: -4426449297620713785, guid: d102372ece972734ebd5f11cff5718ea, type: 3}
   backLightEffect: {fileID: 2523480974914710526}
   truckPrefab: {fileID: 1359786981987588475, guid: 9dead82037c60f447a77a86faa0cc7b2,
+    type: 3}
+  dustEffect: {fileID: 1994870664517383061, guid: bc54517fb2df17248b06dc8e1e51333c,
     type: 3}
 --- !u!58 &6239104519420113511
 CircleCollider2D:

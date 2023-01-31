@@ -17,6 +17,7 @@ public class TruckButton : MonoBehaviour
     [SerializeField] Sprite[] btnSpriteList = new Sprite[2];
     [SerializeField] ParticleManager backLightEffect;
     [SerializeField] GameObject truckPrefab; // 소환할 트럭 프리팹
+    [SerializeField] GameObject dustEffect; // 먼지 파티클
 
     private void Awake()
     {
@@ -107,16 +108,19 @@ public class TruckButton : MonoBehaviour
         // 후면 파티클 끄기
         backLightEffect.SmoothDisable();
 
-        // 버튼 누른 스프라이트로 변경
-        btnSprite.sprite = btnSpriteList[1];
-
         // 트럭 소환
         LeanPool.Spawn(truckPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.itemPool);
 
-        // 버튼 사라지기
-        btnSprite.DOColor(Color.clear, 1f);
+        // 버튼 눌림 사운드 재생
+        SoundManager.Instance.PlaySound("Truck_Button", transform.position);
+
+        // 버튼 누른 스프라이트로 변경
+        btnSprite.sprite = btnSpriteList[1];
 
         yield return new WaitForSeconds(1f);
+
+        // 먼지 파티클 생성
+        LeanPool.Spawn(dustEffect, interacter.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 버튼 증발
         LeanPool.Despawn(transform);

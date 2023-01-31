@@ -153,8 +153,15 @@ public class LevelupMenu : MonoBehaviour
             });
         }
 
+        // 카드 왼쪽부터 순서대로 진행
+
         //todo 카드 사이즈 확장
         //todo 카드 이동
+        //todo 카드 회전
+
+        //todo 카드 inBack으로 살짝 커졌다가 원래 사이즈
+        //todo 카드 inBack으로 살짝 올렸다가 원위치
+        //todo 카드 진동
         //todo 카드 샤이닝 이펙트
 
         // 패널 나타내기

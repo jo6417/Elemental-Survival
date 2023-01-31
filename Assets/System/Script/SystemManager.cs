@@ -97,7 +97,7 @@ public class SystemManager : MonoBehaviour
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
-    public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn };
+    public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
 
     [Header("Refer")]
     public GameObject saveIcon; //저장 아이콘

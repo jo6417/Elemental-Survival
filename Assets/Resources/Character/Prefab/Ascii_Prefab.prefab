@@ -87668,14 +87668,9 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 0}
-  spriteList:
-  - {fileID: 4947422215683903788}
-  spriteCopyList: []
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
-  spriteObj: {fileID: 3634838079005204305}
   healRange: {fileID: 0}
   animList: []
   physicsColl: {fileID: 0}
@@ -87688,11 +87683,15 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList: []
+  spriteObj: {fileID: 3634838079005204305}
+  spriteList:
+  - {fileID: 4947422215683903788}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList: []
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 0}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -87905,8 +87904,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.3, y: 0}
-  m_Size: {x: 17, y: 3}
+  m_Offset: {x: 0.3, y: 1}
+  m_Size: {x: 17, y: 1}
   m_Direction: 1
 --- !u!210 &1928261976592963331
 SortingGroup:

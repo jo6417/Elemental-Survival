@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5641713656633969156}
   m_Layer: 16
   m_Name: Stone3
-  m_TagString: Object
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

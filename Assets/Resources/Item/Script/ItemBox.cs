@@ -41,6 +41,9 @@ public class ItemBox : Character
         // 닫힌 상자 스프라이트로 초기화
         boxSprite.sprite = boxSpriteList[0];
 
+        // 외곽선 색 초기화
+        boxSprite.material.SetColor("_OutLineColor", Color.white);
+
         // 마법,아이템 DB 모두 로딩 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone && ItemDB.Instance.loadDone);
 

@@ -34,17 +34,20 @@ public class Truck : MonoBehaviour
     [SerializeField] Transform shield; // 몬스터 접근금지 쉴드
     [SerializeField] TextMeshProUGUI timerText; // 트럭 판매 시간 표시 UI
     [SerializeField] Rigidbody2D rigid;
+    [SerializeField] List<string> impactSoundPool = new List<string>();
+    [SerializeField] GameObject obstacleDust; // 장애물 사라질때 발생하는 먼지
+    [SerializeField] GameObject stopPos; // 바닥 정차 위치 표시
 
     private void Awake()
     {
         // 쉴드 끄기
         shield.gameObject.SetActive(false);
-        // 충돌 콜라이더 끄기
-        stopColl.enabled = false;
+        // // 충돌 콜라이더 충돌 켜기
+        // stopColl.enabled = true;
+        // stopColl.isTrigger = false;
+
         // 스프라이트 끄기
         truckBody.gameObject.SetActive(false);
-        // 정차 충돌용 콜라이더 충돌 끄기
-        stopColl.isTrigger = true;
         // 그림자 끄기
         shadow.gameObject.SetActive(false);
         // 바퀴 파티클 대기 후 끄기
@@ -108,10 +111,11 @@ public class Truck : MonoBehaviour
 
         // 충돌 콜라이더 켜기
         stopColl.enabled = true;
+        // 충돌 콜라이더 물리충돌 끄기
+        stopColl.isTrigger = true;
+
         // 스프라이트 켜기
         truckBody.gameObject.SetActive(true);
-        // 정차 충돌용 콜라이더 충돌 켜기
-        stopColl.isTrigger = false;
         // 그림자 켜기
         shadow.gameObject.SetActive(true);
         // 바퀴 파티클 대기 후 켜기
@@ -133,12 +137,17 @@ public class Truck : MonoBehaviour
         // 주행 매연 이펙트 켜기
         goEffect.gameObject.SetActive(true);
 
-        // 화면 가운데 혹은 입력된 위치로 이동
+        // 정차할 위치 계산
         Vector2 targetPos = new Vector2(PlayerManager.Instance.transform.position.x, transform.position.y);
+
+        // 정차할 위치 바닥에 표시
+        GameObject stopIndicator = LeanPool.Spawn(stopPos, targetPos, PlayerManager.Instance.lastDir.x > 0 ? Quaternion.identity : Quaternion.Euler(Vector3.up * 180f), ObjectPool.Instance.effectPool);
+
+        // 목표 위치로 이동
         transform.DOMove(targetPos, 1f)
         .OnComplete(() =>
         {
-            // 정차 충돌용 콜라이더 충돌 켜기
+            // 충돌 콜라이더 물리충돌 켜기
             stopColl.isTrigger = false;
         });
         yield return new WaitForSeconds(0.5f);
@@ -180,6 +189,15 @@ public class Truck : MonoBehaviour
         });
 
         yield return new WaitForSeconds(0.2f);
+
+        // 정차 위치 애니메이터 끄기
+        stopIndicator.GetComponentInChildren<Animator>().enabled = false;
+        // 정차 위치 인디케이터 투명하게
+        foreach (SpriteRenderer sprite in stopIndicator.GetComponentsInChildren<SpriteRenderer>())
+            sprite.DOColor(new Color(1, 1, 1, 0), 0.5f);
+
+        // 정차 위치 없에기
+        LeanPool.Despawn(stopIndicator);
 
         // 볼륨 작게 초기화
         engineAudio.volume = 0.3f;
@@ -336,6 +354,9 @@ public class Truck : MonoBehaviour
         // 잠시 대기
         yield return new WaitForSeconds(1f);
 
+        // 경적 소리 2회
+        SoundManager.Instance.PlaySound("Truck_Honk", transform.position, 0, 0.2f, 2, true);
+
         // 정차 충돌용 콜라이더 충돌 끄기
         stopColl.isTrigger = true;
 
@@ -350,6 +371,9 @@ public class Truck : MonoBehaviour
         // 전조등 켜기
         center_Light.DOColor(new Color(1, 1, 100f / 255f, 50f / 255f), 0.5f)
         .SetEase(Ease.OutQuart);
+
+        // 라이트 켜는 소리 재생
+        SoundManager.Instance.PlaySound("Truck_Light", transform.position);
 
         yield return new WaitForSeconds(0.5f);
 
@@ -393,6 +417,32 @@ public class Truck : MonoBehaviour
             engineAudio.volume = engineSound.volume * rigid.velocity.magnitude * 0.1f;
 
             yield return new WaitForSeconds(Time.deltaTime);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // 장애물이 닿으면
+        if (other.CompareTag(SystemManager.TagNameList.Obstacle.ToString()))
+        {
+            // 충돌 사운드 재생
+            SoundManager.Instance.PlaySoundPool(impactSoundPool, other.transform.position);
+
+            // 장애물 스프라이트 가운데 위치
+            Vector3 targetPos = other.GetComponentInChildren<SpriteRenderer>().bounds.center;
+
+            // 장애물 위치에 먼지 생성
+            LeanPool.Spawn(obstacleDust, targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
+
+            //!
+            if (Vector3.Distance(other.transform.position, transform.position) > 13f)
+            {
+                print(other.name);
+                LeanPool.Spawn(SystemManager.Instance.targetPos_Red, targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
+            }
+
+            // 장애물 파괴
+            LeanPool.Despawn(other.gameObject);
         }
     }
 

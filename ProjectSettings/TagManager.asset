@@ -9,6 +9,7 @@ TagManager:
   - Item
   - Object
   - EnemyAttack
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -66,7 +67,4 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 1995009413
-    locked: 0
-  - name: Distortion
-    uniqueID: 2489875225
     locked: 0

@@ -5590,16 +5590,9 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 542782087486385708}
-  spriteList:
-  - {fileID: 485524543273560292}
-  - {fileID: 485524541769589716}
-  - {fileID: 485524542147514611}
-  spriteCopyList: []
   enemyAI: {fileID: 6256301030671552141}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
-  spriteObj: {fileID: 485524543273560294}
   healRange: {fileID: 0}
   animList:
   - {fileID: 1848417264936061485}
@@ -5613,12 +5606,18 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList:
-  - {fileID: 485524541495992787}
+  spriteObj: {fileID: 485524543273560294}
+  spriteList:
+  - {fileID: 485524543273560292}
+  - {fileID: 485524541769589716}
+  - {fileID: 485524542147514611}
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList:
+  - {fileID: 485524541495992787}
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 542782087486385708}
   powerNow: 0
   speedNow: 0
   rangeNow: 0

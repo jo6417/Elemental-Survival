@@ -252,67 +252,69 @@ public class Character : MonoBehaviour
             //     sprite.material = SystemManager.Instance.characterMat;
         }
 
-        //엘리트 종류마다 색깔 및 능력치 적용
-        switch ((int)eliteClass)
-        {
-            case 0:
-                // 아웃라인 지우기
-                foreach (SpriteRenderer sprite in spriteList)
-                    sprite.material.SetColor("_OutLineColor", Color.clear);
+        // 몬스터 정보 있을때
+        if (enemy != null)
+            //엘리트 종류마다 색깔 및 능력치 적용
+            switch ((int)eliteClass)
+            {
+                case 0:
+                    // 아웃라인 지우기
+                    foreach (SpriteRenderer sprite in spriteList)
+                        sprite.material.SetColor("_OutLineColor", Color.clear);
 
-                // 스케일 초기화
-                transform.localScale = Vector2.one;
+                    // 스케일 초기화
+                    transform.localScale = Vector2.one;
 
-                break;
+                    break;
 
-            case 1:
-                //공격력 상승
-                powerNow = powerNow * 2f;
+                case 1:
+                    //공격력 상승
+                    powerNow = powerNow * 2f;
 
-                // 빨강 아웃라인
-                foreach (SpriteRenderer sprite in spriteList)
-                    sprite.material.SetColor("_OutLineColor", Color.red);
+                    // 빨강 아웃라인
+                    foreach (SpriteRenderer sprite in spriteList)
+                        sprite.material.SetColor("_OutLineColor", Color.red);
 
-                // 몬스터 스케일 상승
-                transform.localScale = Vector2.one * 1.5f;
+                    // 몬스터 스케일 상승
+                    transform.localScale = Vector2.one * 1.5f;
 
-                break;
+                    break;
 
-            case 2:
-                //속도 상승
-                speedNow = speedNow * 2.5f;
-                // 쿨타임 빠르게
-                cooltimeNow = cooltimeNow / 2f;
+                case 2:
+                    //속도 상승
+                    speedNow = speedNow * 2.5f;
+                    // 쿨타임 빠르게
+                    cooltimeNow = cooltimeNow / 2f;
 
-                // 하늘색 아웃라인
-                foreach (SpriteRenderer sprite in spriteList)
-                    sprite.material.SetColor("_OutLineColor", Color.cyan);
-                break;
+                    // 하늘색 아웃라인
+                    foreach (SpriteRenderer sprite in spriteList)
+                        sprite.material.SetColor("_OutLineColor", Color.cyan);
+                    break;
 
-            case 3:
-                // 최대 체력 상승
-                hpMax = hpMax * 2f;
+                case 3:
+                    // 최대 체력 상승
+                    hpMax = hpMax * 2f;
 
-                //힐 오브젝트 소환
-                healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
-                // 힐 오브젝트 크기 초기화
-                healRange.transform.localScale = Vector2.one * portalSize * 0.5f;
-                // 회복량 넣어주기
-                healRange.GetComponent<Attack>().fixedPower = -powerNow;
+                    //힐 오브젝트 소환
+                    healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
+                    // 힐 오브젝트 크기 초기화
+                    healRange.transform.localScale = Vector2.one * portalSize * 0.5f;
+                    // 회복량 넣어주기
+                    healRange.GetComponent<Attack>().fixedPower = -powerNow;
 
-                // 초록 아웃라인 머터리얼
-                foreach (SpriteRenderer sprite in spriteList)
-                    sprite.material.SetColor("_OutLineColor", Color.green);
-                break;
+                    // 초록 아웃라인 머터리얼
+                    foreach (SpriteRenderer sprite in spriteList)
+                        sprite.material.SetColor("_OutLineColor", Color.green);
+                    break;
 
-            case 4:
-                // 일정 범위 만큼 마법 차단하는 파란색 쉴드 생성
-                // 해당 범위내 몬스터들은 무적(맞으면 Miss) 스위치 켜기, 범위 나가면 무적 끄기
-                // 이 엘리트 몹을 잡으면 쉴드 사라짐
-                // 콜라이더 stay 함수로 구현, 무적쉴드 충돌이면 무적 설정, 없으면 무적 해제
-                //TODO 포스쉴드 프리팹 생성
-                break;
-        }
+                case 4:
+                    // 일정 범위 만큼 마법 차단하는 파란색 쉴드 생성
+                    // 해당 범위내 몬스터들은 무적(맞으면 Miss) 스위치 켜기, 범위 나가면 무적 끄기
+                    // 이 엘리트 몹을 잡으면 쉴드 사라짐
+                    // 콜라이더 stay 함수로 구현, 무적쉴드 충돌이면 무적 설정, 없으면 무적 해제
+                    //TODO 포스쉴드 프리팹 생성
+                    break;
+            }
 
         yield return new WaitUntil(() => WorldSpawner.Instance != null);
         // 히트 이펙트가 없으면 기본 이펙트 가져오기

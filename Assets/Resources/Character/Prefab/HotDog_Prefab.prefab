@@ -30155,8 +30155,8 @@ GameObject:
   - component: {fileID: 5442773849880543436}
   - component: {fileID: 6804233837202691747}
   - component: {fileID: 4886919684135123319}
-  - component: {fileID: 9149305439653616523}
   - component: {fileID: 694151884535631908}
+  - component: {fileID: 9149305439653616523}
   m_Layer: 7
   m_Name: HotDog_Prefab
   m_TagString: Enemy
@@ -30227,12 +30227,9 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 3017367640031589145}
-  spriteList: []
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
-  spriteObj: {fileID: 1050721965792201694}
   healRange: {fileID: 0}
   animList: []
   physicsColl: {fileID: 694151884535631908}
@@ -30245,11 +30242,14 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList: []
+  spriteObj: {fileID: 1050721965792201694}
+  spriteList: []
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList: []
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 3017367640031589145}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -30371,6 +30371,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!70 &694151884535631908
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3746880840705113283}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 10, y: 1.5}
+  m_Direction: 1
 --- !u!50 &9149305439653616523
 Rigidbody2D:
   serializedVersion: 4
@@ -30392,22 +30408,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!70 &694151884535631908
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3746880840705113283}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 12, y: 2}
-  m_Direction: 1
 --- !u!1 &3905654790857552179
 GameObject:
   m_ObjectHideFlags: 0

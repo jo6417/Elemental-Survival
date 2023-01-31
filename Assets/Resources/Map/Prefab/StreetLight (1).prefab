@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1867438963839449660}
   m_Layer: 16
   m_Name: StreetLight (1)
-  m_TagString: Object
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -432,7 +432,6 @@ public class SoundManager : MonoBehaviour
                 // 처음부터 재생
                 audio.time = 0;
                 audio.Play();
-
             }
         }
         // 무한 반복 아닐때
@@ -575,32 +574,33 @@ public class SoundManager : MonoBehaviour
                 .SetUpdate(unscaledTime);
             }
 
-        // 사운드풀 하위 오디오들의 피치값 조정
-        for (int i = 0; i < soundPool_SFX.childCount; i++)
-        {
-            // 자식중에 오디오 찾기
-            AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
+        // // 효과음 사운드풀 하위 오디오들의 피치값 조정
+        // for (int i = 0; i < soundPool_SFX.childCount; i++)
+        // {
+        //     // 자식중에 오디오 찾기
+        //     AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
 
-            // 오브젝트 이름으로 사운드 찾기
-            Sound sound = all_Sounds.Find(x => x.name == audio.name);
+        //     // 오브젝트 이름으로 사운드 찾기
+        //     Sound sound = all_Sounds.Find(x => x.name == audio.name);
 
-            // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
-            DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-            .SetUpdate(unscaledTime);
-        }
-        // 사운드풀 하위 오디오들의 피치값 조정
-        for (int i = 0; i < soundPool_UI.childCount; i++)
-        {
-            // 자식중에 오디오 찾기
-            AudioSource audio = soundPool_UI.GetChild(i).GetComponent<AudioSource>();
+        //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
+        //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+        //     .SetUpdate(unscaledTime);
+        // }
 
-            // 오브젝트 이름으로 사운드 찾기
-            Sound sound = all_Sounds.Find(x => x.name == audio.name);
+        // // UI 사운드풀 하위 오디오들의 피치값 조정
+        // for (int i = 0; i < soundPool_UI.childCount; i++)
+        // {
+        //     // 자식중에 오디오 찾기
+        //     AudioSource audio = soundPool_UI.GetChild(i).GetComponent<AudioSource>();
 
-            // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
-            DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-            .SetUpdate(unscaledTime);
-        }
+        //     // 오브젝트 이름으로 사운드 찾기
+        //     Sound sound = all_Sounds.Find(x => x.name == audio.name);
+
+        //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
+        //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+        //     .SetUpdate(unscaledTime);
+        // }
     }
 
     public void Set_MasterVolume(float setVolume)

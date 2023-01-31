@@ -5393,7 +5393,7 @@ MonoBehaviour:
   animList:
   - {fileID: 1169140569}
   - {fileID: 1117852761}
-  physicsColl: {fileID: 2363480549930364923}
+  physicsColl: {fileID: 0}
   rigid: {fileID: 5731709546891530442}
   buffParent: {fileID: 8901141728354415194}
   particleHitCount: 0
@@ -5474,14 +5474,14 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4382194502455059326}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 6200000, guid: 7ed4cb80a6124944aacc00e610714c2b, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 3.5, y: 1.7}
+  m_Size: {x: 3, y: 1.5}
   m_Direction: 1
 --- !u!23 &371819896501623634
 MeshRenderer:
@@ -5872,7 +5872,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 3.5, y: 1.7}
+  m_Size: {x: 3.5, y: 2.5}
   m_Direction: 1
 --- !u!50 &8292847548044970567
 Rigidbody2D:
@@ -6252,12 +6252,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b8e275b3d1cec7444b70a83ff748d47d, type: 3}
---- !u!70 &2363480549930364923 stripped
-CapsuleCollider2D:
-  m_CorrespondingSourceObject: {fileID: 2034595722077427665, guid: b8e275b3d1cec7444b70a83ff748d47d,
-    type: 3}
-  m_PrefabInstance: {fileID: 4391171326095702058}
-  m_PrefabAsset: {fileID: 0}
 --- !u!212 &4450725897239236901 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 86892829271599375, guid: b8e275b3d1cec7444b70a83ff748d47d,

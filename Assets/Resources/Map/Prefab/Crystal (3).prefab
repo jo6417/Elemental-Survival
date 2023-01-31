@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2584924517612904175}
   m_Layer: 16
   m_Name: Crystal (3)
-  m_TagString: Object
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shuffle: 0
+  autoShuffle: 0
   flipRate: 0.5
   rotateMin: 0
   rotateMax: 360

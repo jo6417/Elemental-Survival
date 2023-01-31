@@ -664,6 +664,9 @@ public class PlayerManager : MonoBehaviour
         // 레벨업 이펙트 생성
         LeanPool.Spawn(lvUpEffectPrefab, transform.position, Quaternion.identity, transform);
 
+        // 레벨업 효과음 재생
+        SoundManager.Instance.PlaySound("Player_Levelup", 0, 0, 1, false);
+
         // 제로 사이즈로 시작
         knockbackColl.localScale = Vector2.zero;
         // 넉백 범위 확장
