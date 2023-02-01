@@ -680,7 +680,7 @@ public class PlayerManager : MonoBehaviour
         });
 
         // 이펙트 딜레이 대기
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         // 레벨업 메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel);

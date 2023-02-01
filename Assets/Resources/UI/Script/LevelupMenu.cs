@@ -8,9 +8,11 @@ using UnityEngine.UI;
 public class LevelupMenu : MonoBehaviour
 {
     [SerializeField] Selectable firstBtn;
-    [SerializeField] Image panel;
-    [SerializeField] CanvasGroup screen;
-    [SerializeField] Transform slots;
+    [SerializeField] CanvasGroup allGroup; // 전체 캔버스 그룹
+    [SerializeField] CanvasGroup background; // 반투명 검은 배경
+    [SerializeField] Transform[] cards = new Transform[3]; // 카드 위치를 위한 오브젝트
+    [SerializeField] GameObject[] dustEffects = new GameObject[3]; // 카드 먼지 이펙트
+    [SerializeField] Transform[] slots = new Transform[3]; // 카드에 들어갈 정보들
     [SerializeField] ParticleSystem slotParticle;
     [SerializeField] Transform attractor;
     private enum GetSlotType { Magic, Shard, Gem };
@@ -25,16 +27,33 @@ public class LevelupMenu : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 패널 숨기기
-        screen.alpha = 0f;
+        // 배경 색 투명하게
+        background.alpha = 0f;
 
-        //todo 카드 위치 및 사이즈 제로로 초기화
+        // 전체 상호작용 막기
+        allGroup.interactable = false;
 
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
 
         // 파티클 끄기
         slotParticle.gameObject.SetActive(false);
+
+        // UI 중심 위치
+        Vector3 panelPos = Camera.main.transform.position; panelPos.z = -10f;
+        // 카드 초기화
+        for (int i = 0; i < cards.Length; i++)
+        {
+            // 알파값 초기화
+            cards[i].GetComponent<CanvasGroup>().alpha = 1;
+
+            // 위치 초기화
+            cards[i].position = panelPos;
+            // 사이즈 초기화
+            cards[i].localScale = Vector3.zero;
+            // 먼지 파티클 끄기
+            dustEffects[i].SetActive(false);
+        }
 
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
@@ -50,19 +69,23 @@ public class LevelupMenu : MonoBehaviour
             SlotInfo getItem = null;
 
             // 아이콘 찾기
-            Image icon = slots.transform.GetChild(i).Find("Slot/Icon").GetComponent<Image>();
+            Image icon = slots[index].Find("Slot/Icon").GetComponent<Image>();
             // 프레임 찾기
-            Image frame = slots.transform.GetChild(i).Find("Slot/Frame").GetComponent<Image>();
+            Image frame = slots[index].Find("Slot/Frame").GetComponent<Image>();
             // 개수 찾기
-            TextMeshProUGUI amount = slots.transform.GetChild(i).Find("Slot/Amount").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI amount = slots[index].Find("Slot/Amount").GetComponent<TextMeshProUGUI>();
             // 이름 찾기
-            TextMeshProUGUI name = slots.transform.GetChild(i).Find("Spec/Name").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI name = slots[index].Find("Spec/Name").GetComponent<TextMeshProUGUI>();
             // 설명 찾기
-            TextMeshProUGUI description = slots.transform.GetChild(i).Find("Spec/Description").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI description = slots[index].Find("Spec/Description").GetComponent<TextMeshProUGUI>();
             // 툴팁 찾기
-            ToolTipTrigger toolTip = slots.transform.GetChild(i).GetComponent<ToolTipTrigger>();
+            ToolTipTrigger toolTip = slots[index].GetComponent<ToolTipTrigger>();
             // 버튼 찾기
-            Button button = slots.transform.GetChild(i).GetComponent<Button>();
+            Button button = slots[index].GetComponent<Button>();
+
+            //todo 뒷면 배경 찾기
+            //todo 뒷면 프레임 찾기
+            //todo 뒷면 아이콘 찾기
 
             // 얻을 아이템 종류 가중치로 뽑기
             int randomType = SystemManager.Instance.WeightRandom(typeRate);
@@ -153,34 +176,79 @@ public class LevelupMenu : MonoBehaviour
             });
         }
 
-        // 카드 왼쪽부터 순서대로 진행
+        // 카드 각각 이동할 위치
+        Vector3[] movePos = {
+            panelPos + Vector3.left * 17f,
+            panelPos,
+            panelPos + Vector3.right * 17f
+        };
 
-        //todo 카드 사이즈 확장
-        //todo 카드 이동
-        //todo 카드 회전
+        // 카드 왼쪽부터 순서대로 각각 코루틴으로 진행
+        for (int i = 0; i < cards.Length; i++)
+        {
+            // 각 카드 트랜지션 시작
+            StartCoroutine(CardTransition(i, 0.5f, movePos[i]));
 
-        //todo 카드 inBack으로 살짝 커졌다가 원래 사이즈
-        //todo 카드 inBack으로 살짝 올렸다가 원위치
-        //todo 카드 진동
-        //todo 카드 샤이닝 이펙트
+            yield return new WaitForSecondsRealtime(0.2f);
+        }
 
-        // 패널 나타내기
-        DOTween.To(() => screen.alpha, x => screen.alpha = x, 1f, 0.5f)
+        // 배경 보이게
+        DOTween.To(() => background.alpha, x => background.alpha = x, 1f, 0.5f)
         .SetUpdate(true);
-        // 버튼 상호작용 풀기
-        screen.interactable = true;
-        // 레이캐스트 막기
-        screen.blocksRaycasts = true;
 
         yield return new WaitForSecondsRealtime(0.5f);
 
-        // 모든 버튼 상호작용 켜기
-        Button[] btns = screen.GetComponentsInChildren<Button>();
-        for (int i = 0; i < btns.Length; i++)
-            btns[i].interactable = true;
+        // 전체 상호작용 풀기
+        allGroup.interactable = true;
 
         // 가운데 슬롯 선택하기
         UICursor.Instance.UpdateLastSelect(firstBtn);
+    }
+
+    IEnumerator CardTransition(int index, float moveTime, Vector3 movePos)
+    {
+        Transform card = cards[index];
+
+        // 카드 사이즈 확장
+        card.DOScale(Vector3.one, moveTime - 0.2f)
+        .SetEase(Ease.OutSine)
+        .SetUpdate(true);
+
+        // 카드 회전
+        card.DORotate(Vector3.zero + Vector3.up * 360f, moveTime, RotateMode.WorldAxisAdd)
+        .SetUpdate(true);
+
+        // 카드 이동
+        card.DOMove(movePos, moveTime).SetUpdate(true)
+        .SetEase(Ease.OutExpo);
+
+        // 트랜지션 대기
+        yield return new WaitForSecondsRealtime(moveTime - 0.2f);
+
+        // 카드 사이즈 다시 확장
+        card.DOScale(Vector3.one * 1.05f, 0.4f)
+        .SetUpdate(true);
+
+        // 확장 시간 대기
+        yield return new WaitForSecondsRealtime(0.4f);
+
+        // 카드 원본 사이즈로 초기화
+        card.DOScale(Vector3.one, 0.2f)
+        .SetEase(Ease.InBack)
+        .SetUpdate(true);
+        // 축소 시간 대기
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        // 카드 진동
+        card.DOShakePosition(0.2f, 0.5f, 30, 90, false, false)
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            card.position = movePos;
+        });
+
+        // 카드 테두리 모양 먼지 파티클 재생
+        dustEffects[index].SetActive(true);
     }
 
     void ClickSlot(int index, SlotInfo slotInfo)
@@ -191,20 +259,13 @@ public class LevelupMenu : MonoBehaviour
 
     public IEnumerator ChooseSlot(int index, SlotInfo slotInfo)
     {
-        // 모든 버튼 상호작용 끄기 (UI커서 선택 방지)
-        Button[] btns = screen.GetComponentsInChildren<Button>();
-        for (int i = 0; i < btns.Length; i++)
-            btns[i].interactable = false;
+        Transform slot = slots[index];
 
-        // 버튼 상호작용 막기 (중복 선택 방지)
-        screen.interactable = false;
-        // 레이캐스트 풀기
-        screen.blocksRaycasts = false;
+        // 전체 상호작용 막기
+        allGroup.interactable = false;
 
-        Transform slot = slots.transform.GetChild(index);
-
-        // 패널 투명해지며 숨기기
-        DOTween.To(() => screen.alpha, x => screen.alpha = x, 0f, 0.2f)
+        // 배경 투명해지며 숨기기
+        DOTween.To(() => background.alpha, x => background.alpha = x, 0f, 0.2f)
         .SetUpdate(true);
 
         // UI 커서 끄기
@@ -220,13 +281,31 @@ public class LevelupMenu : MonoBehaviour
         slotParticle.transform.position = slot.position;
         slotParticle.gameObject.SetActive(true);
 
+        for (int i = 0; i < cards.Length; i++)
+        {
+            // 선택된 인덱스는 투명하게
+            if (index == i)
+            {
+                CanvasGroup selectedCard = cards[index].GetComponent<CanvasGroup>();
+                DOTween.To(() => selectedCard.alpha, x => selectedCard.alpha = x, 0f, 0.5f)
+                .SetUpdate(true);
+            }
+            // 선택되지 않은 카드는 아래로 내리기
+            else
+            {
+                cards[i].DOMove(cards[i].position + Vector3.down * 30f, 0.5f)
+                .SetEase(Ease.InBack)
+                .SetUpdate(true);
+            }
+        }
+
         yield return new WaitForSecondsRealtime(0.5f);
 
         // 드랍 위치 해당 아이템 드랍
         // print("drop : " + slotInfo.name);
         StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, dropPos));
 
-        // 패널 닫고 시간정지 해제        
+        // 패널 닫고 시간정지 해제
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel, false);
     }
 }
