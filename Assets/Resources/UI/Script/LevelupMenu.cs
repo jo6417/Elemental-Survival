@@ -15,7 +15,7 @@ public class LevelupMenu : MonoBehaviour
     [SerializeField] Transform[] slots = new Transform[3]; // 카드에 들어갈 정보들
     [SerializeField] ParticleSystem slotParticle;
     [SerializeField] Transform attractor;
-    private enum GetSlotType { Magic, Shard, Gem };
+    private enum GetSlotType { Magic, Shard, Gaget, Heal };
     [SerializeField] List<float> typeRate = new List<float>();
     [SerializeField] List<float> gradeRate = new List<float>();
 
@@ -30,8 +30,11 @@ public class LevelupMenu : MonoBehaviour
         // 배경 색 투명하게
         background.alpha = 0f;
 
-        // 전체 상호작용 막기
-        allGroup.interactable = false;
+        // 전체 상호작용 풀기
+        allGroup.interactable = true;
+        // 모든 버튼 상호작용 막기
+        for (int i = 0; i < cards.Length; i++)
+            cards[i].GetComponent<CanvasGroup>().interactable = false;
 
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
@@ -83,9 +86,12 @@ public class LevelupMenu : MonoBehaviour
             // 버튼 찾기
             Button button = slots[index].GetComponent<Button>();
 
-            //todo 뒷면 배경 찾기
-            //todo 뒷면 프레임 찾기
-            //todo 뒷면 아이콘 찾기
+            // 뒷면 배경 찾기
+            Image background = cards[index].Find("CardBack/Background").GetComponent<Image>();
+            // 뒷면 프레임 찾기
+            Image backFrame = background.transform.Find("Frame").GetComponent<Image>();
+            // 뒷면 아이콘 찾기
+            Image backIcon = background.transform.Find("Icon").GetComponent<Image>();
 
             // 얻을 아이템 종류 가중치로 뽑기
             int randomType = SystemManager.Instance.WeightRandom(typeRate);
@@ -112,19 +118,30 @@ public class LevelupMenu : MonoBehaviour
                     getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, randomGrade);
 
                     break;
-                case (int)GetSlotType.Gem:
+                case (int)GetSlotType.Gaget:
 
-                    // 원소젬 중에 하나 뽑기
-                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
+                    // 가젯 중에 하나 뽑기
+                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget);
 
-                    // 원소젬 개수 랜덤
-                    ItemInfo item = getItem as ItemInfo;
-                    item.amount = Random.Range(1, 11) * 10;
-                    getItem = item;
+                    break;
+                case (int)GetSlotType.Heal:
+
+                    // 회복템 중에 하나 뽑기
+                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal);
+
                     break;
             }
 
             // print(index + " : " + randomType + " : " + randomGrade + " : " + getItem.name);
+
+            // 뒷면 배경 초기화
+            background.color = MagicDB.Instance.GradeColor[getItem.grade];
+            // 뒷면 프레임 초기화
+            backFrame.color = MagicDB.Instance.GradeColor[getItem.grade];
+            // 해당 등급 샤드 찾기
+            ItemInfo shardInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, getItem.grade);
+            // 뒷면 아이콘 초기화
+            backIcon.sprite = ItemDB.Instance.GetIcon(shardInfo.id);
 
             // 아이콘 찾기
             Sprite sprite = null;
@@ -198,9 +215,6 @@ public class LevelupMenu : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.5f);
 
-        // 전체 상호작용 풀기
-        allGroup.interactable = true;
-
         // 가운데 슬롯 선택하기
         UICursor.Instance.UpdateLastSelect(firstBtn);
     }
@@ -249,6 +263,9 @@ public class LevelupMenu : MonoBehaviour
 
         // 카드 테두리 모양 먼지 파티클 재생
         dustEffects[index].SetActive(true);
+
+        // 해당 카드 상호작용 풀기
+        card.GetComponent<CanvasGroup>().interactable = true;
     }
 
     void ClickSlot(int index, SlotInfo slotInfo)
@@ -283,10 +300,16 @@ public class LevelupMenu : MonoBehaviour
 
         for (int i = 0; i < cards.Length; i++)
         {
+            // 먼지 파티클 끄기
+            dustEffects[i].SetActive(false);
+
+            // 모든 카드 트윈 끝내기
+            cards[i].DOComplete();
+
             // 선택된 인덱스는 투명하게
             if (index == i)
             {
-                CanvasGroup selectedCard = cards[index].GetComponent<CanvasGroup>();
+                CanvasGroup selectedCard = cards[i].GetComponent<CanvasGroup>();
                 DOTween.To(() => selectedCard.alpha, x => selectedCard.alpha = x, 0f, 0.5f)
                 .SetUpdate(true);
             }

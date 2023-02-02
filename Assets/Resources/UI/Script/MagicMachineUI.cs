@@ -35,6 +35,7 @@ public class MagicMachineUI : MonoBehaviour
 
     [Header("Refer")]
     public InventorySlot paySlot; // 마법or샤드를 지불할 슬롯
+    [SerializeField] CanvasGroup allGroup; // 전체 그룹
     [SerializeField] List<Button> spinBtns; // 스핀 버튼들
     [SerializeField] Transform slotParent; // 상품 슬롯들 부모
     [SerializeField] Button exitBtn; // 종료 버튼
@@ -64,6 +65,9 @@ public class MagicMachineUI : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 전체 상호작용 끄기
+        allGroup.interactable = false;
+
         // 모든 불 끄기
         for (int i = 0; i < leds.Count; i++)
             leds[i].material = null;
@@ -94,7 +98,12 @@ public class MagicMachineUI : MonoBehaviour
         // 팝업 스케일 키우기
         transform.DOScale(Vector3.one, 0.5f)
         .SetUpdate(true)
-        .SetEase(Ease.OutBack);
+        .SetEase(Ease.OutBack)
+        .OnComplete(() =>
+        {
+            // 전체 상호작용 켜기
+            allGroup.interactable = true;
+        });
 
         // 슬롯 가림막 가리기
         slotCover.color = Color.black;
@@ -576,6 +585,9 @@ public class MagicMachineUI : MonoBehaviour
 
     IEnumerator Exit()
     {
+        // 전체 상호작용 끄기
+        allGroup.interactable = false;
+
         // 팝업 줄어들기
         transform.DOScale(Vector3.zero, 0.5f)
         .SetUpdate(true)

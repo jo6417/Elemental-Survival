@@ -138,6 +138,9 @@ public class PlayerManager : MonoBehaviour
     public float hpMax;
     public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
     public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
+    IEnumerator expGainCoroutine; // 경험치 획득 코루틴
+    // public int remainExp; // 획득 대기중인 경험치
+    public List<ItemInfo> remainExpList = new List<ItemInfo>(); // 획득 대기중인 경험치
 
     [Header("<Pocket>")]
     [SerializeField] int[] testGems = new int[6]; // 테스트용 초기 원소젬 개수
@@ -596,32 +599,64 @@ public class PlayerManager : MonoBehaviour
 
     public void AddGem(ItemInfo item, int amount)
     {
-        // 어떤 원소든지 젬 개수만큼 경험치 증가
-        ExpNow += amount;
+        // 해당 원소젬 정보 넣기
+        remainExpList.Add(item);
 
-        //경험치 다 찼을때
-        if (ExpNow >= ExpMax)
+        // 경험치 획득 코루틴이 null 이면
+        if (expGainCoroutine == null)
         {
-            //레벨업
-            StartCoroutine(Levelup());
+            // 경험치 획득 코루틴 진행
+            expGainCoroutine = GetExp();
+            StartCoroutine(expGainCoroutine);
         }
-
-        // 가격 타입으로 젬 타입 인덱스로 반환
-        int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == item.priceType);
-        // 보유 아이템 중 해당 젬 개수 올리기
-        hasGem[gemTypeIndex].amount += amount;
 
         // 플레이어 버프 업데이트
         // BuffUpdate();
+    }
 
-        //해당 젬 UI 인디케이터
-        UIManager.Instance.GemIndicator(gemTypeIndex, Color.green);
+    IEnumerator GetExp()
+    {
+        // 획득 대기 원소젬이 리스트에 남아있으면 반복
+        while (remainExpList.Count > 0)
+        {
+            // 첫번째 원소젬 정보 캐싱
+            ItemInfo expGem = remainExpList[0];
 
-        // UI 업데이트
-        UIManager.Instance.UpdateGem(gemTypeIndex);
+            // 개수가 없을때
+            if (expGem.amount == 0)
+                // 해당 원소젬 리스트에서 제거
+                remainExpList.RemoveAt(0);
+            // 첫번째 원소젬의 개수가 남아있을때
+            else
+            {
+                // 경험치 1씩 증가
+                ExpNow += 1;
 
-        //경험치 및 레벨 갱신
-        UIManager.Instance.UpdateExp();
+                //경험치 다 찼을때 레벨업
+                if (ExpNow == ExpMax)
+                    yield return StartCoroutine(Levelup());
+
+                // 잔여량 차감
+                expGem.amount--;
+
+                // 가격 타입으로 젬 타입 인덱스로 반환
+                int gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == expGem.priceType);
+                // 보유 아이템 중 해당 젬 개수 올리기
+                hasGem[gemTypeIndex].amount += 1;
+
+                // 해당 젬 UI 인디케이터 밝히기
+                UIManager.Instance.GemIndicator(gemTypeIndex, Color.green);
+                // 해당 젬 UI 업데이트
+                UIManager.Instance.UpdateGem(gemTypeIndex);
+                // 경험치, 레벨 UI 갱신
+                UIManager.Instance.UpdateExp();
+            }
+
+            // yield return null;
+        }
+
+        // 모든 경험치 획득 했으면 코루틴 삭제
+        expGainCoroutine = null;
     }
 
     public void GetArtifact(ItemInfo getItem)
@@ -684,6 +719,9 @@ public class PlayerManager : MonoBehaviour
 
         // 레벨업 메뉴 띄우기
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel);
+
+        // 시간 흐를때까지 대기
+        yield return new WaitUntil(() => Time.timeScale > 0);
     }
 
     public int GetGem(int gemIndex)

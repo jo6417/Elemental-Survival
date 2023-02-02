@@ -184,8 +184,13 @@ public class Character : MonoBehaviour
 
     public void FindEnemyInfo()
     {
-        // 몬스터 정보 찾기
-        enemy = EnemyDB.Instance.GetEnemyByName(gameObject.name.Split('_')[0]);
+        // 오브젝트 이름에서 _Prefab 앞쪽의 몬스터 이름 구하기
+        int index = gameObject.name.IndexOf("_Prefab");
+
+        // 이름 찾았으면 진행
+        if (index != -1)
+            // 몬스터 정보 찾기
+            enemy = EnemyDB.Instance.GetEnemyByName(gameObject.name.Substring(0, index));
         // print(gameObject.name.Split('_')[0]);
     }
 
@@ -556,7 +561,7 @@ public class Character : MonoBehaviour
         // 몬스터 정보 없으면 리턴
         if (enemy == null)
         {
-            FindEnemyInfo();
+            // FindEnemyInfo();
             return;
         }
 

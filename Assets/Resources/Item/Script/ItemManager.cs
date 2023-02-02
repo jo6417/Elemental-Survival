@@ -56,7 +56,12 @@ public class ItemManager : MonoBehaviour
         // item 정보 없으면 프리팹 이름으로 아이템 정보 찾아 넣기
         if (itemInfo == null)
         {
+            // 아이템 정보 찾기
             itemInfo = ItemDB.Instance.GetItemByName(transform.name.Split('_')[0]);
+
+            // 정보 찾았으면 새 인스턴스 만들어서 갱신
+            if (itemInfo != null)
+                itemInfo = new ItemInfo(itemInfo);
         }
 
         if (itemInfo != null)
@@ -73,6 +78,9 @@ public class ItemManager : MonoBehaviour
         if (itemInfo != null)
         {
             itemName = itemInfo.name;
+
+            //!
+            itemInfo.amount = 5;
 
             // 아이템 개수에 따라 사이즈 초기화 (개당 10프로)
             transform.localScale = Vector2.one * (1 + (itemInfo.amount - 1) * 0.1f);
@@ -96,7 +104,7 @@ public class ItemManager : MonoBehaviour
             AutoDespawn();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         // 정보 없으면 리턴
         if (itemInfo == null && magicInfo == null)
@@ -219,8 +227,9 @@ public class ItemManager : MonoBehaviour
                 {
                     print(itemInfo.name + " : " + WorldSpawner.Instance.outGemNum[gemTypeIndex]);
 
-                    // 해당 원소젬 사이즈 키우고 개수 늘리기
-                    transform.localScale = Vector2.one * 2;
+                    // 해당 원소젬 사이즈 키우고
+                    // transform.localScale = Vector2.one * 2;
+                    // 개수 늘리기
                     itemInfo.amount = 5;
                     isBundle = true;
 

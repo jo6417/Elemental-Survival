@@ -427,7 +427,7 @@ MonoBehaviour:
   healRange: {fileID: 0}
   animList:
   - {fileID: 9015841515065183018}
-  physicsColl: {fileID: 0}
+  physicsColl: {fileID: 400382383}
   rigid: {fileID: 4498973164959321897}
   buffParent: {fileID: 1561226330233454867}
   particleHitCount: 0
@@ -514,8 +514,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 4, y: 1.2}
+  m_Offset: {x: 0, y: 0.4}
+  m_Size: {x: 4, y: 0.85}
   m_Direction: 1
 --- !u!23 &984350542188438258
 MeshRenderer:

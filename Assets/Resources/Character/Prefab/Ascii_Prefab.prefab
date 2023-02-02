@@ -87673,7 +87673,7 @@ MonoBehaviour:
   enemyAtkList: []
   healRange: {fileID: 0}
   animList: []
-  physicsColl: {fileID: 0}
+  physicsColl: {fileID: 2380262803175011489}
   rigid: {fileID: 6014433321399679245}
   buffParent: {fileID: 0}
   particleHitCount: 0
@@ -87691,7 +87691,7 @@ MonoBehaviour:
   originColorList: []
   hitBoxList: []
   hitEffect: {fileID: 0}
-  shadow: {fileID: 0}
+  shadow: {fileID: 7337437395626564121}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
@@ -87904,7 +87904,7 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.3, y: 1}
+  m_Offset: {x: 0.3, y: 0.5}
   m_Size: {x: 17, y: 1}
   m_Direction: 1
 --- !u!210 &1928261976592963331
