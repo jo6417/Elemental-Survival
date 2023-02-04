@@ -1585,7 +1585,7 @@ public class PhoneMenu : MonoBehaviour
                 BackToInven(MagicMachineUI.Instance.paySlot);
 
                 // spin 버튼 불 끄기
-                MagicMachineUI.Instance.ClickPaySlot();
+                MagicMachineUI.Instance.SetPaySlot();
             }
         }
         // 백버튼 한번 더 누르면

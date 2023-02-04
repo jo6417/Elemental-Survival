@@ -34,14 +34,15 @@ public class VendMachineUI : MonoBehaviour
     }
     #endregion
 
+    [Header("State")]
     Sequence outputSeq;
-    public List<SlotInfo> productList = null; // 판매 상품 리스트
+    public List<SlotInfo> productList = null; // 판매 상품 정보 리스트
     public bool[] soldOutList = null; // 상품 판매 여부
     [SerializeField, ReadOnly] bool fieldDrop; // 아이템 필드드랍 할지 여부
 
     [Header("Refer")]
     [SerializeField] private RectTransform vendMachineObj;
-    [SerializeField] private Transform productsParent; //상품 부모 오브젝트
+    [SerializeField] private Transform productsParent; // 상품들 부모 오브젝트
     [SerializeField] public Transform itemDropper; //상품 토출구 오브젝트
     [SerializeField] private GameObject productPrefab; //상품 소개 프리팹
     [SerializeField] private GameObject outputObj; // 토출구에서 나올 상품 프리팹
@@ -49,8 +50,29 @@ public class VendMachineUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI productPriceType; // 현재 선택 상품 지불 수단 텍스트
     [SerializeField] private TextMeshProUGUI productPrice; // 현재 선택 상품 가격 텍스트
     [SerializeField] private Transform outputHole; // 아이템 나올 토출구
+    [SerializeField] Button exitBtn; // 종료 버튼
+    NewInput input;
+
+    private void Awake()
+    {
+        input = new NewInput();
+        // 취소 입력
+        input.UI.Cancel.performed += val =>
+        {
+            // 종료버튼 상호작용 켜져있으면
+            if (exitBtn.interactable)
+                // 자판기 종료
+                StartCoroutine(ExitTransition());
+        };
+        input.Enable();
+    }
 
     private void OnEnable()
+    {
+        StartCoroutine(Init());
+    }
+
+    IEnumerator Init()
     {
         // 필드드랍 여부 초기화
         fieldDrop = false;
@@ -64,16 +86,16 @@ public class VendMachineUI : MonoBehaviour
         // 원래 위치로 떨어지기
         vendMachineObj.DOAnchorPos(new Vector2(0, 20f), 0.5f)
         .SetEase(Ease.OutBounce)
-        .SetUpdate(true);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        .SetUpdate(true)
+        .OnComplete(() =>
         {
-            //ESC 누르면 자판기 종료
-            Exit();
-        }
+            // 종료 버튼 상호작용 켜기
+            exitBtn.interactable = true;
+        });
+
+        yield return new WaitForSecondsRealtime(0.1f);
+        // 쾅하고 떨어지는 소리 재생
+        SoundManager.Instance.PlaySound("Vend_Fall", 0, 0, 1, false);
     }
 
     IEnumerator SetProducts()
@@ -81,26 +103,26 @@ public class VendMachineUI : MonoBehaviour
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         //상품 모두 지우기
-        SystemManager.Instance.DestroyAllChild(productsParent);
+        // SystemManager.Instance.DestroyAllChild(productsParent);
 
         for (int i = 0; i < productList.Count; i++)
         {
             // 인덱스 인스턴싱
             int index = i;
-            // 상품 인스턴스 생성
-            GameObject productObj = LeanPool.Spawn(productPrefab, transform.position, Quaternion.identity, productsParent);
+            // 상품 오브젝트 참조
+            Transform productObj = productsParent.GetChild(i);
 
             // 아이콘 버튼 찾기
-            Button iconBtn = productObj.transform.Find("Button").GetComponent<Button>();
+            Button iconBtn = productObj.Find("Button").GetComponent<Button>();
             // 가격 버튼
-            Button priceBtn = productObj.transform.Find("Price").GetComponent<Button>();
+            Button priceBtn = productObj.Find("Price").GetComponent<Button>();
             // 품절 표시 빨간줄
             Transform soldOutSlash = priceBtn.transform.Find("Slash");
             soldOutSlash.gameObject.SetActive(false);
             // 아이템,마법 각각 프레임
-            Image frame = productObj.transform.Find("Frame").GetComponent<Image>();
+            Image frame = productObj.Find("Frame").GetComponent<Image>();
             // 신규 표시
-            Transform newTxt = productObj.transform.Find("New");
+            Transform newTxt = productObj.Find("New");
 
             // 상품 정보 캐싱
             SlotInfo slotInfo = productList[i];
@@ -178,7 +200,7 @@ public class VendMachineUI : MonoBehaviour
             iconBtn.onClick.AddListener(delegate
             {
                 // 상품 획득 시도하기
-                GetProduct(productObj, priceType, index);
+                StartCoroutine(GetProduct(productObj, priceType, index));
             });
 
             // 툴팁에 상품 정보 넣기
@@ -220,11 +242,11 @@ public class VendMachineUI : MonoBehaviour
         }
     }
 
-    int SetPrice(GameObject product, SlotInfo slotInfo, int priceType)
+    int SetPrice(Transform product, SlotInfo slotInfo, int priceType)
     {
         // 화폐에 따라 색 바꾸기
         Color color = MagicDB.Instance.GetElementColor(priceType);
-        Image gem = product.transform.Find("Price/Gem").GetComponent<Image>();
+        Image gem = product.Find("Price/Gem").GetComponent<Image>();
         gem.color = color;
 
         // 고정된 가격에서 +- 범위내 랜덤 조정해서 가격 넣기, 10 단위로 반올림
@@ -232,13 +254,13 @@ public class VendMachineUI : MonoBehaviour
         float price = Mathf.Round(originPrice * Random.Range(0.51f, 1.5f) / 10f) * 10f;
 
         //아이템 가격 텍스트
-        TextMeshProUGUI priceTxt = product.transform.Find("Price/Amount").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI priceTxt = product.Find("Price/Amount").GetComponent<TextMeshProUGUI>();
         priceTxt.text = price.ToString();
         // 구매 가능하면 초록, 아니면 빨강
         priceTxt.color = PlayerManager.Instance.hasGem[priceType].amount >= price ? Color.green : Color.red;
 
         // 할인 표시 오브젝트 찾기
-        Transform discount = product.transform.Find("Discount");
+        Transform discount = product.Find("Discount");
         Transform discountRaise = discount.Find("Raise");
         Transform discountAmount = discount.Find("Amount");
 
@@ -312,31 +334,39 @@ public class VendMachineUI : MonoBehaviour
     }
 
     //상품 획득
-    void GetProduct(GameObject productObj, int priceType, int productIndex)
+    IEnumerator GetProduct(Transform productObj, int priceType, int productIndex)
     {
         // 상품 정보 캐싱
         SlotInfo slotInfo = productList[productIndex];
 
-        Image frame = productObj.transform.Find("Frame").GetComponent<Image>();
+        Image frame = productObj.Find("Frame").GetComponent<Image>();
         // 아이콘 버튼
-        Button iconBtn = productObj.transform.Find("Button").GetComponent<Button>();
+        Button iconBtn = productObj.Find("Button").GetComponent<Button>();
         // 가격 버튼
-        Button priceBtn = productObj.transform.Find("Price").GetComponent<Button>();
+        Button priceBtn = productObj.Find("Price").GetComponent<Button>();
         // 품절 표시
-        Transform soldOutSlash = productObj.transform.Find("Price/Slash");
+        Transform soldOutSlash = productObj.Find("Price/Slash");
         // 신규 표시
-        Transform newTxt = productObj.transform.Find("New");
+        Transform newTxt = productObj.Find("New");
 
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
         // 충분한 화폐가 있을때
         if (PlayerManager.Instance.hasGem[priceType].amount >= slotInfo.price)
         {
-            //todo 해당 상품 품절 처리
+            // 해당 상품 품절 처리
             soldOutList[productIndex] = true;
 
             // 가격 지불하기
             PlayerManager.Instance.PayGem(priceType, slotInfo.price);
+
+            // 돈 나가는 소리 재생
+            SoundManager.Instance.PlaySound("Vend_Pay", 0, 0, 1, false);
+            // yield return new WaitForSecondsRealtime(0.1f);
+
+            // 자판기 상품 투하 소리 재생
+            SoundManager.Instance.PlaySound("Vend_Purchase", 0, 0, 1, false);
+            yield return new WaitForSecondsRealtime(0.2f);
 
             // 모든 상품 가격 색깔 업데이트하여 구매가능 여부 표시
             UpdatePrice();
@@ -372,7 +402,14 @@ public class VendMachineUI : MonoBehaviour
             outputSeq = DOTween.Sequence();
             outputSeq
             .SetUpdate(true)
-            .Append(
+            .AppendCallback(() =>
+            {
+                // 상품 착지 소리 재생, 덜컹덜컹
+                SoundManager.Instance.PlaySound("Vend_Product_Land_0", 0, 0.3f, 1, false);
+                SoundManager.Instance.PlaySound("Vend_Product_Land_1", 0, 0.7f, 1, false);
+                SoundManager.Instance.PlaySound("Vend_Product_Land_2", 0, 0.9f, 1, false);
+            })
+            .Join(
                 // 토출구 가운데까지 DoMove 하기
                 outputObj.transform.DOMove(outputHole.position, 1f)
                 .SetEase(Ease.OutBounce)
@@ -390,7 +427,12 @@ public class VendMachineUI : MonoBehaviour
                     vendMachineObj.position = vendOriginPos;
                 })
             )
-            .Append(
+            .AppendCallback(() =>
+            {
+                // 상품 획득 소리 재생
+                SoundManager.Instance.PlaySound("Vend_Product_Get", 0, 0, 1, false);
+            })
+            .Join(
                 // 점점 줄어들어 사라지기
                 outputObj.transform.DOScale(Vector2.zero, 0.5f)
                 .SetEase(Ease.InBack)
@@ -465,6 +507,14 @@ public class VendMachineUI : MonoBehaviour
 
     public void Exit()
     {
+        StartCoroutine(ExitTransition());
+    }
+
+    public IEnumerator ExitTransition()
+    {
+        // 종료 버튼 상호작용 끄기
+        exitBtn.interactable = false;
+
         //아이템 받는 시퀀스 강제 완료시키기
         outputSeq.Complete();
 
@@ -478,7 +528,16 @@ public class VendMachineUI : MonoBehaviour
         // 드롭퍼 변수 초기화
         itemDropper = null;
 
+        //todo 종료 트랜지션
+
+        //todo 종료 사운드 재생
+
+        // 트랜지션 대기
+        // yield return new WaitForSecondsRealtime(1f);
+
         //팝업 메뉴 닫기
         UIManager.Instance.PopupUI(UIManager.Instance.vendMachinePanel);
+
+        yield return null;
     }
 }

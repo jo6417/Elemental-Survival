@@ -140,6 +140,41 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       source: {fileID: 0}
+    - name: Vend_Fall
+      clip: {fileID: 8300000, guid: 958408b32ccf3714ea02821877b0870c, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Vend_Pay
+      clip: {fileID: 8300000, guid: a3336dac740f24646b3cfe8734596089, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Vend_Purchase
+      clip: {fileID: 8300000, guid: d61993954e0a96745a1cd1f6e7b85415, type: 3}
+      volume: 3
+      pitch: 1
+      source: {fileID: 0}
+    - name: Vend_Product_Get
+      clip: {fileID: 8300000, guid: 3c575f329958cbe4f8d861e7730da952, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Vend_Product_Land_0
+      clip: {fileID: 8300000, guid: 098a9ed40bb8b1241a63b7037de802fe, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
+    - name: Vend_Product_Land_1
+      clip: {fileID: 8300000, guid: 098a9ed40bb8b1241a63b7037de802fe, type: 3}
+      volume: 0.5
+      pitch: 1
+      source: {fileID: 0}
+    - name: Vend_Product_Land_2
+      clip: {fileID: 8300000, guid: 098a9ed40bb8b1241a63b7037de802fe, type: 3}
+      volume: 0.2
+      pitch: 1
+      source: {fileID: 0}
   - name: Music_Sounds
     sounds:
     - name: InGameBGM_1

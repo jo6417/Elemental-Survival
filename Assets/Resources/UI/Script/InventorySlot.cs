@@ -11,13 +11,13 @@ public class InventorySlot : MonoBehaviour,
 ISelectHandler, IDeselectHandler, ISubmitHandler,
 IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    [Header("State")]
     // [SerializeField, ReadOnly] private int slotIndex = -1; //해당 슬롯의 인덱스
     public SlotInfo slotInfo = null;
-
     [SerializeField] bool allowInit = true;
-
     public SlotType slotType;
     public enum SlotType { inventory, Merge, Active };
+    public System.Action setAction; // 해당 슬롯을 갱신 했을때 액션
 
     [Header("Refer")]
     [SerializeField] Transform shakeParent;
@@ -85,6 +85,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     public void Set_Slot(bool shiny = false)
     {
+        // 갱신 액션 실행
+        if (setAction != null)
+            setAction.Invoke();
+
         // 마법 정보가 없거나 슬롯 비우기 활성화 되면 슬롯 초기화 후 넘기기
         if (slotInfo == null)
         {

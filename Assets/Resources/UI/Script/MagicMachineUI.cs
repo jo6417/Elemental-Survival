@@ -57,6 +57,11 @@ public class MagicMachineUI : MonoBehaviour
     [SerializeField] float maxSpinSpeed = 1500f; // 슬롯머신 스핀 속도 최대
     [SerializeField] bool[] nowSlotSpin = new bool[3];
 
+    private void Awake()
+    {
+        // 지불 슬롯에 함수 넣기
+        paySlot.setAction += SetPaySlot;
+    }
 
     private void OnEnable()
     {
@@ -103,6 +108,8 @@ public class MagicMachineUI : MonoBehaviour
         {
             // 전체 상호작용 켜기
             allGroup.interactable = true;
+
+            //todo 등장 효과음 재생
         });
 
         // 슬롯 가림막 가리기
@@ -141,7 +148,7 @@ public class MagicMachineUI : MonoBehaviour
         paySlot.BlinkSlot(-1, 0.5f, new Color(1, 1, 1, 0.2f));
     }
 
-    public void ClickPaySlot()
+    public void SetPaySlot()
     {
         // 슬롯에 아이템 넣을때
         if (paySlot.slotInfo != null)
@@ -487,6 +494,8 @@ public class MagicMachineUI : MonoBehaviour
         yield return new WaitUntil(() => scroll.Velocity.magnitude <= 100f
         || isSkipped);
 
+        //todo 슬롯 회전 사운드 재생
+
         // 스크롤이 일정 속도 이상이면 반복
         while (scroll.Velocity.magnitude > 100f)
         {
@@ -576,7 +585,7 @@ public class MagicMachineUI : MonoBehaviour
             PhoneMenu.Instance.BackToInven(paySlot);
 
             // spin 버튼 불 끄기
-            ClickPaySlot();
+            SetPaySlot();
         }
 
         // 매직머신 팝업 종료
