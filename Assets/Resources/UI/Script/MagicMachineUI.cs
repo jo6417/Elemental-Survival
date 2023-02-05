@@ -56,6 +56,9 @@ public class MagicMachineUI : MonoBehaviour
     [SerializeField] float minSpinSpeed = 1000f; // 슬롯머신 스핀 속도 최소
     [SerializeField] float maxSpinSpeed = 1500f; // 슬롯머신 스핀 속도 최대
     [SerializeField] bool[] nowSlotSpin = new bool[3];
+    [SerializeField] float getSoundSpeed = 0.03f;
+    [SerializeField] int getParticleNum = 20;
+    IEnumerator[] spinCoroutines = new IEnumerator[3]; // 회전 코루틴 리스트
 
     private void Awake()
     {
@@ -109,7 +112,8 @@ public class MagicMachineUI : MonoBehaviour
             // 전체 상호작용 켜기
             allGroup.interactable = true;
 
-            //todo 등장 효과음 재생
+            // 등장 효과음 재생
+            SoundManager.Instance.PlaySound("MagicMachine_Popup", 0, 0, 1, false);
         });
 
         // 슬롯 가림막 가리기
@@ -146,6 +150,9 @@ public class MagicMachineUI : MonoBehaviour
 
         // 지불 슬롯 반복해서 깜빡이기
         paySlot.BlinkSlot(-1, 0.5f, new Color(1, 1, 1, 0.2f));
+
+        // 지불 슬롯 상호작용 풀기
+        paySlot.slotButton.interactable = true;
     }
 
     public void SetPaySlot()
@@ -164,6 +171,7 @@ public class MagicMachineUI : MonoBehaviour
                 // 어두운색으로 초기화
                 img.color = new Color32(0, 100, 0, 255);
                 // 초록색으로 깜빡임 반복
+                img.DOKill();
                 img.DOColor(Color.green, 0.5f)
                 .SetUpdate(true)
                 .SetLoops(-1, LoopType.Yoyo);
@@ -190,7 +198,6 @@ public class MagicMachineUI : MonoBehaviour
                 Image img = btn.GetComponent<Image>();
 
                 img.DOKill();
-
                 // 버튼 꺼서 초기화
                 img.DOColor(btnOffColor, 0.5f)
                 .SetUpdate(true);
@@ -209,10 +216,15 @@ public class MagicMachineUI : MonoBehaviour
 
     public void SpinClick(int slotIndex)
     {
-        StartCoroutine(TrySpin(slotIndex));
+        // 현재 도는 슬롯이 있으면 리턴
+        for (int i = 0; i < spinCoroutines.Length; i++)
+            if (spinCoroutines[i] != null)
+                return;
+
+        StartCoroutine(GoSpin(slotIndex));
     }
 
-    IEnumerator TrySpin(int slotIndex)
+    IEnumerator GoSpin(int slotIndex)
     {
         // 슬롯이 비었을때
         if (paySlot.slotInfo == null)
@@ -240,6 +252,15 @@ public class MagicMachineUI : MonoBehaviour
             yield break;
         }
 
+        // 슬롯 회전 여부 전부 끄기
+        for (int i = 0; i < 3; i++)
+            nowSlotSpin[i] = false;
+
+        //todo 슬롯 회전 이펙트 시작
+
+        // 지불 슬롯 상호작용 막기
+        paySlot.slotButton.interactable = false;
+
         // Exit 버튼 막기
         exitBtn.interactable = false;
         // 핸드폰 종료 막기
@@ -251,9 +272,6 @@ public class MagicMachineUI : MonoBehaviour
         // 재화 슬롯의 아이템 삭제
         paySlot.slotInfo = null;
         paySlot.Set_Slot();
-
-        // 해당 슬롯 스핀 여부 true
-        nowSlotSpin[slotIndex] = true;
 
         // LED 점멸 반복
         StartCoroutine(LEDFlash());
@@ -273,115 +291,50 @@ public class MagicMachineUI : MonoBehaviour
             .SetUpdate(true);
         }
 
-        // 회전 코루틴 리스트
-        IEnumerator[] spinCoroutines = new IEnumerator[3];
         // 해당 슬롯 회전 코루틴 생성해서 저장
         spinCoroutines[slotIndex] = SpinScroll(slotIndex);
-
         // 해당 인덱스 슬롯 velocity로 돌리기
         StartCoroutine(spinCoroutines[slotIndex]);
 
+        // 슬롯 회전 여부 켜기
+        nowSlotSpin[slotIndex] = true;
+
         // 1차 피버 확률 추첨
         float feverRate = Random.value;
-        // print("1차 피버 : " + feverRate + "/" + payGrade / 12f);
-
         yield return new WaitForSecondsRealtime(1f);
 
         // 1차 피버일때 (6등급 기준 50% 확률)
         if (feverRate < payGrade / 12f)
         {
             //todo 피버 게이지 반짝이기
+            print("fever_1");
 
-            // 현재 스핀중인 슬롯 아닌 슬롯 뽑기
-            List<int> indexes = new List<int>();
-            for (int i = 0; i < 3; i++)
-            {
-                // 현재 멈춰있는 슬롯일때
-                if (!nowSlotSpin[i])
-                    // 해당 인덱스 모두 수집
-                    indexes.Add(i);
-            }
-            // 멈춰있는 슬롯 중에 하나 뽑기
-            int feverIndex = indexes[Random.Range(0, indexes.Count)];
-
-            // 해당 슬롯 스핀 여부 true
-            nowSlotSpin[feverIndex] = true;
-
-            // 회전 켜진 슬롯은 모두 회전
-            for (int i = 0; i < 3; i++)
-            {
-                // 스핀 중인 슬롯 인덱스라면
-                if (nowSlotSpin[i])
-                {
-                    // 회전 코루틴 종료
-                    if (spinCoroutines[i] != null)
-                        StopCoroutine(spinCoroutines[i]);
-
-                    // 해당 슬롯 회전 코루틴 생성해서 저장
-                    spinCoroutines[i] = SpinScroll(i);
-
-                    // 해당 슬롯 velocity로 돌리기
-                    StartCoroutine(spinCoroutines[i]);
-                }
-            }
+            // 멈춘 슬롯 하나 뽑아 돌리기
+            NextSpin();
 
             // 2차 피버 확률 추첨 (6등급 기준 50% 확률)
             feverRate = Random.value;
-            // print("2차 피버 : " + feverRate + "/" + payGrade / 12f);
-
             yield return new WaitForSecondsRealtime(1f);
 
             // 2차 피버일때 (6등급 기준 50% 확률)
             if (feverRate < payGrade / 12f)
             {
                 //todo 피버 게이지 반짝이기
+                print("fever_2");
 
-                // 마지막 멈춰있는 슬롯 찾기
-                feverIndex = nowSlotSpin.ToList().FindIndex(x => x == false);
-
-                // 해당 슬롯 스핀 여부 true
-                nowSlotSpin[feverIndex] = true;
-
-                // 회전 켜진 슬롯은 모두 회전
-                for (int i = 0; i < 3; i++)
-                {
-                    // 스핀 중인 슬롯 인덱스라면
-                    if (nowSlotSpin[i])
-                    {
-                        // 회전 코루틴 종료
-                        if (spinCoroutines[i] != null)
-                            StopCoroutine(spinCoroutines[i]);
-
-                        // 해당 슬롯 회전 코루틴 생성해서 저장
-                        spinCoroutines[i] = SpinScroll(i);
-
-                        // 해당 슬롯 velocity로 돌리기
-                        StartCoroutine(spinCoroutines[i]);
-                    }
-                }
+                // 멈춘 슬롯 하나 뽑아 돌리기
+                NextSpin();
             }
         }
-        else
-        {
-            // 스크롤이 일정 속도 이상이면 반복
-            while (slotScrolls[slotIndex].Velocity.magnitude > 100f)
-            {
-                // 속도 부드럽게 낮추기
-                slotScrolls[slotIndex].Velocity = Vector2.Lerp(slotScrolls[slotIndex].Velocity, Vector2.zero, 0.01f);
-
-                yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
-            }
-        }
-
-        //todo 슬롯 회전 이펙트 시작
 
         // 모든 슬롯이 멈출때까지 대기
-        yield return new WaitUntil(() => !nowSlotSpin[0] && !nowSlotSpin[1] && !nowSlotSpin[2]);
+        yield return new WaitUntil(() => spinCoroutines[0] == null && spinCoroutines[1] == null && spinCoroutines[2] == null);
 
         //todo 슬롯 회전 이펙트 끄기
 
-        // 확인, 클릭할때까지 대기
-        yield return new WaitUntil(() => UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.Accept.IsPressed());
+        // 마우스에 아이콘 없을때 클릭이나 아무 키 누를때까지 대기
+        yield return new WaitUntil(() => !UIManager.Instance.nowSelectIcon.enabled
+        && (UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.AnyKey.IsPressed()));
 
         // 피버 게이지 초기화
         DOTween.To(() => feverGauge.fillAmount, x => feverGauge.fillAmount = x, 0, 0.5f)
@@ -416,8 +369,42 @@ public class MagicMachineUI : MonoBehaviour
 
         // Exit 버튼 풀기
         exitBtn.interactable = true;
+        // 지불 슬롯 상호작용 풀기
+        paySlot.slotButton.interactable = true;
         // 핸드폰 종료 풀기
         PhoneMenu.Instance.InteractBtnsToggle(true);
+    }
+
+    void NextSpin()
+    {
+        // 현재 회전하지 않는 슬롯 뽑기
+        List<int> indexes = new List<int>();
+        for (int i = 0; i < 3; i++)
+            // 현재 멈춰있는 슬롯일때
+            if (!nowSlotSpin[i])
+                // 해당 인덱스 수집
+                indexes.Add(i);
+
+        // 멈춰있는 슬롯 중에 하나 뽑기
+        int feverIndex = indexes[Random.Range(0, indexes.Count)];
+        // 슬롯 회전 여부 켜기
+        nowSlotSpin[feverIndex] = true;
+
+        // 회전 켜진 슬롯은 모두 회전
+        for (int i = 0; i < 3; i++)
+            // 회전 허용 슬롯 이면
+            if (nowSlotSpin[i])
+            {
+                // 이미 회전 코루틴 중이면 종료
+                if (spinCoroutines[i] != null)
+                    StopCoroutine(spinCoroutines[i]);
+
+                // 해당 슬롯 회전 코루틴 생성해서 저장
+                spinCoroutines[i] = SpinScroll(i);
+
+                // 해당 슬롯 velocity로 돌리기
+                StartCoroutine(spinCoroutines[i]);
+            }
     }
 
     IEnumerator PutMagicInven(int index)
@@ -452,7 +439,13 @@ public class MagicMachineUI : MonoBehaviour
                 // 획득 상품 파티클 재생
                 getMagicEffect.gameObject.SetActive(false);
                 getMagicEffect.gameObject.SetActive(true);
-                yield return new WaitForSecondsRealtime(1f);
+
+                yield return new WaitForSecondsRealtime(0.2f);
+
+                // 파티클 생성 사운드 재생
+                SoundManager.Instance.PlaySound("MergeParticleGet", 0, getSoundSpeed, getParticleNum, false);
+
+                yield return new WaitForSecondsRealtime(0.6f);
 
                 // 획득한 인벤토리 이미지 갱신
                 PhoneMenu.Instance.invenSlots[emptyInvenIndex].Set_Slot(true);
@@ -470,16 +463,19 @@ public class MagicMachineUI : MonoBehaviour
                 getMagicEffect.gameObject.SetActive(false);
                 getMagicEffect.gameObject.SetActive(true);
 
+                // 파티클 생성 사운드 재생
+                SoundManager.Instance.PlaySound("MergeParticleGet", 0, getSoundSpeed, getParticleNum, false);
+
                 // 아이템 드롭
                 StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position));
             }
         }
     }
 
-    IEnumerator SpinScroll(int scrollIndex)
+    IEnumerator SpinScroll(int slotIndex)
     {
         // 회전시킬 스크롤
-        SimpleScrollSnap scroll = slotScrolls[scrollIndex];
+        SimpleScrollSnap scroll = slotScrolls[slotIndex];
 
         // 각 스크롤 배경
         Image scrollBack = scroll.GetComponent<Image>();
@@ -493,8 +489,6 @@ public class MagicMachineUI : MonoBehaviour
         // 스크롤 일정 속도 이하거나 스킵할때까지 대기
         yield return new WaitUntil(() => scroll.Velocity.magnitude <= 100f
         || isSkipped);
-
-        //todo 슬롯 회전 사운드 재생
 
         // 스크롤이 일정 속도 이상이면 반복
         while (scroll.Velocity.magnitude > 100f)
@@ -512,20 +506,26 @@ public class MagicMachineUI : MonoBehaviour
         scrollBack.DOColor(Color.black, 1f)
         .SetUpdate(true);
 
-        // 해당 슬롯 현재 회전 여부 초기화
-        nowSlotSpin[scrollIndex] = false;
+        // 해당 슬롯 코루틴 초기화
+        spinCoroutines[slotIndex] = null;
     }
 
-    public void GetSlot(int scrollIndex)
+    public void SpinSound()
+    {
+        // 스핀 할때마다 사운드 재생
+        SoundManager.Instance.PlaySound("SlotSpin_Once", 0, 0, 1, false);
+    }
+
+    public void GetSlot(int slotIndex)
     {
         // 회전시킬 스크롤
-        SimpleScrollSnap scroll = slotScrolls[scrollIndex];
+        SimpleScrollSnap scroll = slotScrolls[slotIndex];
 
         // 멈췄을때 아이템 반환
-        int index = scrollIndex * 5 + scroll.CenteredPanel;
-        // print(scrollIndex + ":" + scroll.CenteredPanel + ":" + scroll.Content.GetChild(scroll.CenteredPanel).name + ":" + productList[index].name);
+        int index = slotIndex * 5 + scroll.CenteredPanel;
+        print(slotIndex + ":" + scroll.CenteredPanel + ":" + scroll.Content.GetChild(scroll.CenteredPanel).name + ":" + productList[index].name);
 
-        InventorySlot effectSlot = effectSlotParent.GetChild(scrollIndex).GetComponent<InventorySlot>();
+        InventorySlot effectSlot = effectSlotParent.GetChild(slotIndex).GetComponent<InventorySlot>();
 
         // 아이템 정보 전달, 갱신
         effectSlot.slotInfo = productList[index];
@@ -549,7 +549,9 @@ public class MagicMachineUI : MonoBehaviour
         int lightIndex = 0;
 
         // 모든 슬롯 멈출때까지 진행
-        while (nowSlotSpin[0] || nowSlotSpin[1] || nowSlotSpin[2])
+        while (spinCoroutines[0] != null
+        || spinCoroutines[1] != null
+        || spinCoroutines[2] != null)
         {
             for (int i = 0; i < leds.Count; i++)
             {
@@ -610,7 +612,8 @@ public class MagicMachineUI : MonoBehaviour
         if (fieldDrop)
         {
             // 트럭 전조등 이펙트 켜기
-            itemDropper.GetComponent<ParticleSystem>().Play();
+            ParticleSystem particle = itemDropper.GetComponent<ParticleSystem>();
+            if (particle != null) particle.Play();
         }
 
         // 드롭퍼 변수 초기화

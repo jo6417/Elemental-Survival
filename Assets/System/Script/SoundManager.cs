@@ -79,7 +79,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AnimationCurve curve_3D;
 
     [Header("Sounds")]
-    private List<AudioSource> attached_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드
+    private List<AudioSource> playing_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드
     private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
     [SerializeField] List<SoundBundle> soundBundleList = new List<SoundBundle>();
     [SerializeField] SoundBundleList soundBundleDB; // 사운드 리스트 DB
@@ -312,6 +312,9 @@ public class SoundManager : MonoBehaviour
         // 재생하고 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
 
+        // 재생중인 오디오를 기억
+        playing_Sounds.Add(audio);
+
         return audio;
     }
 
@@ -395,9 +398,6 @@ public class SoundManager : MonoBehaviour
         // 오디오 초기화 후 플레이
         AudioSource audio = InitAudio(audioObj, sound, 1, fadeIn, delay, loopNum, scaledTime);
 
-        // 붙은 오디오를 기억
-        attached_Sounds.Add(audio);
-
         return audio;
     }
 
@@ -469,7 +469,7 @@ public class SoundManager : MonoBehaviour
             if (audio != null)
             {
                 // 오디오 리스트에서삭제
-                attached_Sounds.Remove(audio);
+                playing_Sounds.Remove(audio);
 
                 // 오디오 클립 비우기
                 audio.clip = null;
@@ -564,7 +564,7 @@ public class SoundManager : MonoBehaviour
                 .SetUpdate(unscaledTime);
 
         // 오브젝트에 붙인 오디오들의 피치값 조정
-        foreach (AudioSource audio in attached_Sounds)
+        foreach (AudioSource audio in playing_Sounds)
             if (audio != null)
             {
                 // 오브젝트 이름으로 사운드 찾기
@@ -657,7 +657,7 @@ public class SoundManager : MonoBehaviour
                 sound.source.volume = sound.volume * masterVolume * GetVolumeType(sound);
 
         // 오브젝트에 붙인 사운드들 volume 값 조정
-        foreach (AudioSource audio in attached_Sounds)
+        foreach (AudioSource audio in playing_Sounds)
             if (audio != null)
             {
                 // 오브젝트 이름으로 사운드 찾기

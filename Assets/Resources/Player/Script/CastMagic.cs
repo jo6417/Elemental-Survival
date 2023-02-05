@@ -564,7 +564,8 @@ public class CastMagic : MonoBehaviour
             if (attackPos[i] != null)
                 magicHolder.targetPos = attackPos[i];
 
-            yield return new WaitForSeconds(0.1f);
+            // 고정 시간을 시전 개수만큼 나누기
+            yield return new WaitForSeconds(0.5f / attackPos.Count);
         }
     }
 

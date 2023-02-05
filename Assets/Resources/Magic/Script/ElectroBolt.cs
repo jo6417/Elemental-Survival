@@ -45,7 +45,7 @@ public class ElectroBolt : MonoBehaviour
                 transform.position = magicHolder.targetPos;
             else
                 // 범위 내 랜덤 위치로 이동
-                transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * range;
+                transform.position = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * range;
 
         // 레벨만큼 구체 사이즈 확대
         transform.DOScale(Vector2.one * scale, 0.2f);

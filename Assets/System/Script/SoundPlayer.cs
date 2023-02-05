@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class SoundPlayer : MonoBehaviour
 {
-    [SerializeField] bool noDuplicate = true; // 중복 방지
+    // [SerializeField] bool noDuplicate = true; // 중복 방지
     int lastIndex = -1;
     [SerializeField] List<string> soundPool = new List<string>();
+
+    void SoundPlayGlobal_Unscaled(string soundName)
+    {
+        // 언스케일드 타임으로 1회 글로벌 재생
+        SoundManager.Instance.PlaySound(soundName, 0, 0, 1, false);
+    }
 
     void SoundPlayGlobal(string soundName)
     {

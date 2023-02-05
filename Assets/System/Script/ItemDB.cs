@@ -416,6 +416,9 @@ public class ItemDB : MonoBehaviour
         // 아이템 랜덤 속도로 회전 시키기
         itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
 
+        //todo 아이템 드롭 사운드 재생
+        SoundManager.Instance.PlaySound("ItemDrop");
+
         yield return new WaitForSeconds(1f);
 
         // 콜라이더 켜기

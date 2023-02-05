@@ -12,7 +12,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
     {
         #region Fields
         private bool showMovementAndLayoutSettings = true, showNavigationSettings = true, showSnapSettings = true, showTransitionEffects = true, showEvents = false;
-        private SerializedProperty movementType, movementAxis, useAutomaticLayout, sizeControl, size, automaticLayoutSpacing, automaticLayoutMargins, reverseSort, useInfiniteScrolling, infiniteScrollingSpacing, useOcclusionCulling, startingPanel, clampRange, useSwipeGestures, minimumSwipeSpeed, previousButton, nextButton, pagination, useToggleNavigation, snapTarget, snapSpeed, thresholdSpeedToSnap, useHardSnapping, useUnscaledTime, onTransitionEffects, onPanelSelecting, onPanelSelected, onPanelCentering, onPanelCentered;
+        private SerializedProperty movementType, movementAxis, useAutomaticLayout, sizeControl, size, automaticLayoutSpacing, automaticLayoutMargins, reverseSort, useInfiniteScrolling, infiniteScrollingSpacing, useOcclusionCulling, startingPanel, clampRange, useSwipeGestures, minimumSwipeSpeed, previousButton, nextButton, pagination, useToggleNavigation, snapTarget, snapSpeed, thresholdSpeedToSnap, useHardSnapping, useUnscaledTime, onTransitionEffects, onPanelMoved, onPanelSelecting, onPanelSelected, onPanelCentering, onPanelCentered;
         private SimpleScrollSnap scrollSnap;
         #endregion
 
@@ -54,6 +54,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
 
             // ShowEvents
             onTransitionEffects = serializedObject.FindProperty("onTransitionEffects");
+            onPanelMoved = serializedObject.FindProperty("onPanelMoved");
             onPanelSelecting = serializedObject.FindProperty("onPanelSelecting");
             onPanelSelected = serializedObject.FindProperty("onPanelSelected");
             onPanelCentering = serializedObject.FindProperty("onPanelCentering");
@@ -245,6 +246,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             if (showEvents)
             {
                 EditorGUILayout.PropertyField(onTransitionEffects);
+                EditorGUILayout.PropertyField(onPanelMoved);
                 EditorGUILayout.PropertyField(onPanelSelecting);
                 EditorGUILayout.PropertyField(onPanelSelected);
                 EditorGUILayout.PropertyField(onPanelCentering);

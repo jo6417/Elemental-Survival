@@ -47,6 +47,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
 
         // Events
         [SerializeField] private UnityEvent<GameObject, float> onTransitionEffects = new UnityEvent<GameObject, float>();
+        [SerializeField] private UnityEvent onPanelMoved = new UnityEvent();
         [SerializeField] private UnityEvent<int> onPanelSelecting = new UnityEvent<int>();
         [SerializeField] private UnityEvent<int> onPanelSelected = new UnityEvent<int>();
         [SerializeField] private UnityEvent<int, int> onPanelCentering = new UnityEvent<int, int>();
@@ -183,6 +184,10 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         public UnityEvent<GameObject, float> OnTransitionEffects
         {
             get => onTransitionEffects;
+        }
+        public UnityEvent OnPanelMoved
+        {
+            get => onPanelMoved;
         }
         public UnityEvent<int> OnPanelSelecting
         {
@@ -522,11 +527,15 @@ namespace DanielLochner.Assets.SimpleScrollSnap
                             if (GetDisplacementFromCenter(i).x > Content.rect.width / 2f)
                             {
                                 Panels[i].anchoredPosition -= offset;
+
+                                MoveOffsetEvent();
                             }
                             else
                             if (GetDisplacementFromCenter(i).x < Content.rect.width / -2f)
                             {
                                 Panels[i].anchoredPosition += offset;
+
+                                MoveOffsetEvent();
                             }
                         }
                         break;
@@ -537,17 +546,29 @@ namespace DanielLochner.Assets.SimpleScrollSnap
                             if (GetDisplacementFromCenter(i).y > Content.rect.height / 2f)
                             {
                                 Panels[i].anchoredPosition -= offset;
+
+                                MoveOffsetEvent();
                             }
                             else
                             if (GetDisplacementFromCenter(i).y < Content.rect.height / -2f)
                             {
                                 Panels[i].anchoredPosition += offset;
+
+                                MoveOffsetEvent();
                             }
                         }
                         break;
                 }
             }
         }
+
+        private void MoveOffsetEvent()
+        {
+            // 슬롯 반대편으로 이동시 이벤트 플레이
+            if (onPanelMoved.GetPersistentEventCount() > 0)
+                onPanelMoved.Invoke();
+        }
+
         private void HandleSwipeGestures()
         {
             if (useSwipeGestures)
@@ -721,6 +742,9 @@ namespace DanielLochner.Assets.SimpleScrollSnap
 
             panel = Instantiate(panel, Content, false);
             panel.transform.SetSiblingIndex(index);
+
+            //!
+            print("Sibling Changed");
 
             if (ValidConfig)
             {

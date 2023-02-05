@@ -1181,7 +1181,7 @@ public class PhoneMenu : MonoBehaviour
                 nowHeight = randomScroll.Content.anchoredPosition.y - 90f;
 
                 // 랜덤 스핀 1회 할때마다 사운드 재생
-                SoundManager.Instance.PlaySound("SlotSpin_Once");
+                SoundManager.Instance.PlaySound("SlotSpin_Once", 0, 0, 1, false);
             }
 
             yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);

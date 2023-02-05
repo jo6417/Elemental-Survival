@@ -17,7 +17,7 @@ MonoBehaviour:
     sounds:
     - name: SlotSpin_Once
       clip: {fileID: 8300000, guid: 17d084a37f121d94681bce7bba452e45, type: 3}
-      volume: 0.5
+      volume: 1
       pitch: 1
       source: {fileID: 0}
     - name: SlotSpin_Short
@@ -175,6 +175,11 @@ MonoBehaviour:
       volume: 0.2
       pitch: 1
       source: {fileID: 0}
+    - name: MagicMachine_Popup
+      clip: {fileID: 8300000, guid: 556af312efbe7994e9135d3cf5b76e43, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
   - name: Music_Sounds
     sounds:
     - name: InGameBGM_1
@@ -263,7 +268,7 @@ MonoBehaviour:
       source: {fileID: 0}
     - name: ElectroBolt
       clip: {fileID: 8300000, guid: 4144807ac08bfd545908311f792082de, type: 3}
-      volume: 0.2
+      volume: 0.03
       pitch: 1.5
       source: {fileID: 0}
     - name: Flame_Start

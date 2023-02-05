@@ -361,7 +361,7 @@ public class VendMachineUI : MonoBehaviour
             PlayerManager.Instance.PayGem(priceType, slotInfo.price);
 
             // 돈 나가는 소리 재생
-            SoundManager.Instance.PlaySound("Vend_Pay", 0, 0, 1, false);
+            // SoundManager.Instance.PlaySound("Vend_Pay", 0, 0, 1, false);
             // yield return new WaitForSecondsRealtime(0.1f);
 
             // 자판기 상품 투하 소리 재생
@@ -531,6 +531,7 @@ public class VendMachineUI : MonoBehaviour
         //todo 종료 트랜지션
 
         //todo 종료 사운드 재생
+        SoundManager.Instance.PlaySound("Vend_Exit", 0, 0, 1, false);
 
         // 트랜지션 대기
         // yield return new WaitForSecondsRealtime(1f);

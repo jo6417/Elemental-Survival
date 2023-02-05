@@ -115,7 +115,7 @@ public class Magic_Machine : MonoBehaviour
             return;
 
         // 드롭퍼 오브젝트 넣어주기
-        MagicMachineUI.Instance.itemDropper = itemDropper;
+        MagicMachineUI.Instance.itemDropper = itemDropper != null ? itemDropper : transform;
 
         // 상품 리스트 참조 전달
         MagicMachineUI.Instance.productList = productList;
