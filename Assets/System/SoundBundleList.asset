@@ -438,6 +438,11 @@ MonoBehaviour:
       volume: 1
       pitch: 1
       source: {fileID: 0}
+    - name: SlotMachine_Explosion
+      clip: {fileID: 8300000, guid: 9039131abf976aa44b63aa8f1f499aac, type: 3}
+      volume: 1
+      pitch: 1
+      source: {fileID: 0}
   - name: Map_Sounds
     sounds:
     - name: Bush_0

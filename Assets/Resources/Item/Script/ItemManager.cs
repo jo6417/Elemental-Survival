@@ -79,9 +79,6 @@ public class ItemManager : MonoBehaviour
         {
             itemName = itemInfo.name;
 
-            //!
-            itemInfo.amount = 5;
-
             // 아이템 개수에 따라 사이즈 초기화 (개당 10프로)
             transform.localScale = Vector2.one * (1 + (itemInfo.amount - 1) * 0.1f);
         }

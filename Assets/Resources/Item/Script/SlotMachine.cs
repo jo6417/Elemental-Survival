@@ -22,6 +22,9 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] Transform gemLED;
     [SerializeField] Image blackScreen;
     [SerializeField] Transform itemDropper;
+    [SerializeField] GameObject explosionEffect; // 폭파 이펙트
+    [SerializeField] GameObject smokeEffect; // 파괴시 연기 이펙트
+    [SerializeField] SpriteRenderer sprite; // 슬롯머신 스프라이트
 
     [Header("State")]
     [SerializeField] bool isDespawnAble = true; // 디스폰 허용 여부
@@ -36,6 +39,9 @@ public class SlotMachine : MonoBehaviour
     public int priceType;
     [SerializeField, ReadOnly] string productName;
     [SerializeField] bool test = false;
+    enum MachineState { Hold, Raise, Destroy };
+    [SerializeField] MachineState machineState = MachineState.Hold;
+    [SerializeField] List<float> stateChangeWeight = new List<float>(); // 상태변화 가중치
 
     private void Awake()
     {
@@ -59,11 +65,19 @@ public class SlotMachine : MonoBehaviour
             // 해당 순서 led 켜기
             led.color = Color.clear;
 
+        // 스프라이트 컬러 초기화
+        sprite.color = new Color(1, 100f / 255f, 100f / 255f, 1);
+
         // 캔버스 끄기
         uiCanvas.gameObject.SetActive(false);
 
         // 상호작용 키 UI 끄기
         showKey.SetActive(false);
+
+        // 폭파 이펙트 끄기
+        explosionEffect.SetActive(false);
+        // 연기 이펙트 끄기
+        smokeEffect.SetActive(false);
 
         //애니메이션 멈추기
         leverAnim.enabled = false;
@@ -232,31 +246,61 @@ public class SlotMachine : MonoBehaviour
         // 아이템 드롭
         StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));
 
+        // 슬롯머신 스케일 바운스
+        transform.DOKill();
+        transform.localScale = Vector3.one;
+        transform.DOPunchScale(new Vector3(0.2f, -0.2f, 1), 0.3f)
+        .SetEase(Ease.InOutBack);
+
         // 가격 타입 랜덤 초기화
         priceType = Random.Range(0, 6);
-        // 가격 배수로 올리기
-        price = price * 2;
-
         // 해당 아이템에 필요한 재화 종류, 가격 초기화
         priceUI.GetComponentInChildren<Image>().color = MagicDB.Instance.GetElementColor(priceType);
         priceUI.GetComponentInChildren<TextMeshProUGUI>().text = price.ToString();
 
-        // 랜덤하게 슬롯머신 정지
-        if (Random.value <= 0.3f)
+        // 랜덤 상태 변화
+        machineState = (MachineState)SystemManager.Instance.WeightRandom(stateChangeWeight);
+        switch ((int)machineState)
         {
-            // led 끄기
-            List<SpriteRenderer> gemLEDs = gemLED.GetComponentsInChildren<SpriteRenderer>().ToList();
-            foreach (SpriteRenderer led in gemLEDs)
-                // 해당 순서 led 끄기
-                led.DOColor(Color.clear, 1f);
+            // 가격 유지
+            case 0:
+                // 캔버스 켜기, 다시 작동
+                uiCanvas.gameObject.SetActive(true);
+                break;
+            // 가격 상승
+            case 1:
+                // 가격 범위 랜덤
+                price = (int)Random.Range(price * 1.5f, price * 2f);
 
-            // blackScreen으로 가리기
-            blackScreen.DOColor(Color.black, 1f);
+                // 캔버스 켜기, 다시 작동
+                uiCanvas.gameObject.SetActive(true);
+                break;
+            // 머신 파괴
+            case 2:
+                // led 끄기
+                List<SpriteRenderer> gemLEDs = gemLED.GetComponentsInChildren<SpriteRenderer>().ToList();
+                foreach (SpriteRenderer led in gemLEDs)
+                    // 해당 순서 led 끄기
+                    led.DOColor(Color.clear, 1f);
+
+                // blackScreen으로 가리기
+                blackScreen.DOColor(Color.black, 1f);
+
+                // 폭파 이펙트 재생
+                explosionEffect.SetActive(true);
+                // 폭파음 재생
+                SoundManager.Instance.PlaySound("SlotMachine_Explosion", transform.position);
+
+                // 스프라이트 검게
+                sprite.color = new Color(100f / 255f, 30f / 255f, 30f / 255f, 1);
+
+                // 폭발 이펙트 대기
+                yield return new WaitForSeconds(0.5f);
+                // 연기 이펙트 켜기
+                smokeEffect.SetActive(true);
+
+                break;
         }
-        // 정지 아닐때
-        else
-            // 캔버스 켜기, 다시 작동
-            uiCanvas.gameObject.SetActive(true);
     }
 
     public void SpinSound()
