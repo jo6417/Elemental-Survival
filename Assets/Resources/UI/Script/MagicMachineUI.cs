@@ -45,7 +45,8 @@ public class MagicMachineUI : MonoBehaviour
     public Transform itemDropper; // 아이템 드랍 시킬 오브젝트
     Color btnOffColor = new Color32(150, 0, 0, 255);
     [SerializeField] Image slotCover; // 슬롯 어둡게 가림막
-    [SerializeField] List<Image> leds = new List<Image>(); // 매직 머신 이미지
+    [SerializeField] List<Image> leds = new List<Image>(); // led 이미지
+    [SerializeField] List<ParticleSystem> failEffect = new List<ParticleSystem>(); // 실패 이펙트
     [SerializeField] SlicedFilledImage feverGauge; // 피버 게이지
 
     [Header("State")]
@@ -132,6 +133,14 @@ public class MagicMachineUI : MonoBehaviour
             slots[i].slotInfo = slotInfo;
             // 슬롯 아이콘, 프레임세팅
             slots[i].Set_Slot();
+
+            // 개수 0개일때 품절 처리
+            if (slots[i].slotInfo.amount == 0)
+            {
+                // 슬롯 어둡게 덮기
+                slots[i].indicator.color = new Color(0, 0, 0, 0.5f);
+                //todo 품절 이미지 켜기
+            }
         }
 
         // 슬롯 가림막 천천히 제거
@@ -160,7 +169,7 @@ public class MagicMachineUI : MonoBehaviour
         // 슬롯에 아이템 넣을때
         if (paySlot.slotInfo != null)
         {
-            // 슬롯 깜빡임 끄기
+            // 지불 슬롯 깜빡임 끄기
             paySlot.indicator.DOKill();
             paySlot.indicator.color = Color.clear;
 
@@ -341,24 +350,37 @@ public class MagicMachineUI : MonoBehaviour
         .SetUpdate(true)
         .SetEase(Ease.OutExpo);
 
-        for (int i = 0; i < 3; i++)
-        {
-            // 인벤토리에 해당 아이템 넣기
-            StartCoroutine(PutMagicInven(i));
-        }
-
         // 상품 획득 슬롯 모두 끄기
         for (int i = 0; i < effectSlotParent.childCount; i++)
         {
             // 결과 슬롯 찾기
             InventorySlot effectSlot = effectSlotParent.GetChild(i).GetComponent<InventorySlot>();
 
-            // 아이템 정보 초기화
-            effectSlot.slotInfo = null;
-            effectSlot.Set_Slot();
+            // 스크롤 참조
+            SimpleScrollSnap scroll = slotScrolls[i];
+            // 상품 정보 캐싱
+            SlotInfo slotInfo = productList[i * 5 + scroll.CenteredPanel];
 
-            // 결과 슬롯 끄기
-            effectSlot.gameObject.SetActive(false);
+            // 회전했던 슬롯일때
+            if (nowSlotSpin[i])
+            {
+                // 당첨된 슬롯 상품 개수 0개로 품절처리
+                slotInfo.amount = 0;
+
+                // 당첨된 슬롯 찾기
+                InventorySlot getSlot = scroll.Content.GetChild(scroll.CenteredPanel).GetComponent<InventorySlot>();
+                // 슬롯 어둡게 덮기
+                getSlot.indicator.color = new Color(0, 0, 0, 0.5f);
+
+                // 인벤토리에 해당 아이템 넣기
+                StartCoroutine(PutMagicInven(i));
+
+                // 아이템 정보 초기화
+                effectSlot.slotInfo = null;
+                effectSlot.Set_Slot();
+                // 결과 슬롯 끄기
+                effectSlot.gameObject.SetActive(false);
+            }
         }
 
         // 모든 버튼 상호작용 켜기
@@ -520,28 +542,40 @@ public class MagicMachineUI : MonoBehaviour
     {
         // 회전시킬 스크롤
         SimpleScrollSnap scroll = slotScrolls[slotIndex];
-
         // 멈췄을때 아이템 반환
         int index = slotIndex * 5 + scroll.CenteredPanel;
-        print(slotIndex + ":" + scroll.CenteredPanel + ":" + scroll.Content.GetChild(scroll.CenteredPanel).name + ":" + productList[index].name);
+        // 상품 정보 캐싱
+        SlotInfo slotInfo = productList[index];
+        // print(slotIndex + ":" + scroll.CenteredPanel + ":" + scroll.Content.GetChild(scroll.CenteredPanel).name + ":" + productList[index].name);
 
-        InventorySlot effectSlot = effectSlotParent.GetChild(slotIndex).GetComponent<InventorySlot>();
+        // 품절일때
+        if (slotInfo.amount == 0)
+        {
+            // 실패 이펙트 재생
+            failEffect[slotIndex].gameObject.SetActive(true);
+        }
+        // 품절 아닐때
+        if (slotInfo.amount > 0)
+        {
+            // 강조 슬롯 찾기
+            InventorySlot effectSlot = effectSlotParent.GetChild(slotIndex).GetComponent<InventorySlot>();
 
-        // 아이템 정보 전달, 갱신
-        effectSlot.slotInfo = productList[index];
-        effectSlot.Set_Slot();
+            // 아이템 정보 전달, 갱신
+            effectSlot.slotInfo = slotInfo;
+            effectSlot.Set_Slot();
 
-        // 획득 슬롯 켜기
-        effectSlot.gameObject.SetActive(true);
+            // 획득 슬롯 켜기
+            effectSlot.gameObject.SetActive(true);
 
-        // 슬롯 후광 이펙트 색 변경 및 켜기
-        effectSlot.slotBackEffect.GetComponent<Image>().color = MagicDB.Instance.GradeColor[productList[index].grade];
-        effectSlot.slotBackEffect.gameObject.SetActive(true);
+            // 슬롯 후광 이펙트 색 변경 및 켜기
+            effectSlot.slotBackEffect.GetComponent<Image>().color = MagicDB.Instance.GradeColor[slotInfo.grade];
+            effectSlot.slotBackEffect.gameObject.SetActive(true);
 
-        effectSlot.transform.localScale = Vector3.zero;
-        effectSlot.transform.DOScale(Vector3.one, 0.5f)
-        .SetEase(Ease.OutBack)
-        .SetUpdate(true);
+            effectSlot.transform.localScale = Vector3.zero;
+            effectSlot.transform.DOScale(Vector3.one, 0.5f)
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true);
+        }
     }
 
     IEnumerator LEDFlash()

@@ -10,6 +10,7 @@ public class SlotInfo
     public string description; //아이템 설명
     public string priceType; //지불 원소 종류
     public int price; // 가격
+    public int amount = 1; // 보유 개수
 }
 
 [SerializeField]
@@ -18,7 +19,7 @@ public class MagicInfo : SlotInfo
     //수정 가능한 변수들
     [Header("Configurable")]
     public int magicLevel = 1; //현재 마법 레벨
-    public int amount = 0; // 해당 마법 개수 (스택 슬롯에서 사용)
+    // public int amount = 0; // 해당 마법 개수 (스택 슬롯에서 사용)
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
@@ -134,7 +135,7 @@ public class MagicInfo : SlotInfo
 
 public class ItemInfo : SlotInfo
 {
-    public int amount = 1; //몇개 갖고 있는지
+    // public int amount = 1; // 보유 개수
 
     [Header("Info")]
     // public int id; //고유 아이디

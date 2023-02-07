@@ -68,14 +68,17 @@ public class Magic_Machine : MonoBehaviour
                 {
                     // 마법 샤드일때
                     case 0:
-                        slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, targetGrade);
+                        slotInfo = new ItemInfo(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, targetGrade));
                         break;
                     // 마법일때
                     case 1:
-                        slotInfo = MagicDB.Instance.GetRandomMagic(targetGrade);
+                        slotInfo = new MagicInfo(MagicDB.Instance.GetRandomMagic(targetGrade));
                         break;
                 }
             }
+
+            // 개수는 1개로 초기화
+            slotInfo.amount = 1;
 
             // 리스트에 정보 저장
             productList.Add(slotInfo);
