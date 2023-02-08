@@ -55,6 +55,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 39b6fa9065575534b9b072664f0ec446, type: 3}
   - {fileID: 21300000, guid: 3a1e33b07139fc94baa47b37b4402524, type: 3}
   - {fileID: 21300000, guid: 2d1dd5c080e064c46beac822c0d0bcd3, type: 3}
+  - {fileID: 21300000, guid: 96fa780132d41df4caf553e8e4aceb37, type: 3}
   - {fileID: 21300000, guid: 456ea6119be099f449e99d9e6b5aada8, type: 3}
   - {fileID: 21300000, guid: ce24672168a17a741a211a373544c5a5, type: 3}
   - {fileID: -9164616227387703759, guid: 1003ec31f5de91641936c27bd61683fc, type: 3}
@@ -92,6 +93,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f1ec966a398d8424497fd9ec3d859591, type: 3}
   - {fileID: 21300000, guid: 4a50919a4a68baf48b7ac037e9b36a9e, type: 3}
   - {fileID: 21300000, guid: 8d21bbea9ef384445a20348a7a119c97, type: 3}
+  - {fileID: 21300000, guid: a6e488cbd079c9646ac4160f95a644b6, type: 3}
   - {fileID: 21300000, guid: 2299700c3d3fabd44bb8c0e8e8e42f22, type: 3}
   - {fileID: 21300000, guid: e8e8838caaefac449a5086e015d4e1b1, type: 3}
   - {fileID: 21300000, guid: 005095ec08d80a249b6f7b7aafab8bc8, type: 3}
@@ -112,6 +114,7 @@ SpriteAtlas:
   - HealthPotion_Icon
   - MagicUSB6_Icon
   - SlotReplace_Icon
+  - Empty_Icon
   - Heart_Heal
   - MagicUSB2_Icon
   - Box_Sheet_1
@@ -149,6 +152,7 @@ SpriteAtlas:
   - SlotLevelup_Icon
   - MagicShard
   - SlotDelete_Icon
+  - SlotMachine_Glass
   - MagicUSB4_Icon
   - FireGem_Icon
   - LightningGem_Icon

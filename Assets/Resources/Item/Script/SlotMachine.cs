@@ -24,6 +24,7 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] Transform itemDropper;
     [SerializeField] GameObject explosionEffect; // 폭파 이펙트
     [SerializeField] GameObject smokeEffect; // 파괴시 연기 이펙트
+    [SerializeField] ParticleSystem failDustEffect; // 꽝일때 연기 이펙트
     [SerializeField] SpriteRenderer sprite; // 슬롯머신 스프라이트
 
     [Header("State")]
@@ -34,6 +35,7 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] float spinSpeed = 10f; // 슬롯머신 스핀 속도
     int slotStopNum;
     int randomType; // 아이템 종류 (마법,샤드,아티팩트)
+    [SerializeField] List<float> itemWeight = new List<float>(); // 랜덤 아이템 가중치
     public ItemInfo itemInfo;
     public float price;
     public int priceType;
@@ -192,26 +194,29 @@ public class SlotMachine : MonoBehaviour
         // 레버 내리는 애니메이션 1회 재생
         leverAnim.enabled = true;
 
-        // // 슬롯 스핀 사운드 재생
-        // SoundManager.Instance.PlaySound("SlotSpin_Short");
-
         // 완료 슬롯 개수 초기화
         slotStopNum = 0;
 
-        // 드랍 아이템 결정 (샤드, 하트, 원소젬)
-        randomType = Random.Range(0, 3);
+        // 아이템 뽑기
+        randomType = SystemManager.Instance.WeightRandom(itemWeight);
+
+        // 드랍 아이템 결정
         switch (randomType)
         {
-            // 샤드일때
+            // 꽝
             case 0:
+                itemInfo = null;
+                break;
+            // 샤드
+            case 1:
                 itemInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard);
                 break;
-            // 하트일때
-            case 1:
+            // 하트
+            case 2:
                 itemInfo = ItemDB.Instance.GetItemByName("Heart");
                 break;
-            // 원소젬일때
-            case 2:
+            // 원소젬
+            case 3:
                 itemInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
                 break;
         }
@@ -243,8 +248,16 @@ public class SlotMachine : MonoBehaviour
         else
             dropPos = transform.position + (transform.position - PlayerManager.Instance.transform.position).normalized * 3f;
 
-        // 아이템 드롭
-        StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));
+        // 꽝 아닐때
+        if (itemInfo != null)
+            // 아이템 드롭
+            StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));
+        // 꽝일때
+        else
+        {
+            // 실패 이펙트 재생
+            failDustEffect.Play();
+        }
 
         // 슬롯머신 스케일 바운스
         transform.DOKill();

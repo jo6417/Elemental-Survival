@@ -45,11 +45,6 @@ public class Magic_Machine : MonoBehaviour
         randomWeight.Add(2); // 마법샤드 가중치
         randomWeight.Add(1); // 마법 가중치
 
-        // 등급 가중치 리스트
-        List<float> gradeWeight = new List<float>();
-        for (int i = 6; i > 0; i--)
-            gradeWeight.Add(i);
-
         // 상품 목록 뽑기
         for (int i = 0; i < 15; i++)
         {
@@ -58,21 +53,24 @@ public class Magic_Machine : MonoBehaviour
             // 나올때까지 뽑기 (단일 등급에 한해 unlockMagic에 없는 경우 다시 뽑기)
             while (slotInfo == null)
             {
+                // 등급 뽑기 (가중치 반영)
+                int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeRate);
                 // 상품 종류 뽑기
                 int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
-
-                // 등급 뽑기 (가중치 반영)
-                int targetGrade = SystemManager.Instance.WeightRandom(gradeWeight);
 
                 switch (randomPick)
                 {
                     // 마법 샤드일때
                     case 0:
-                        slotInfo = new ItemInfo(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, targetGrade));
+                        ItemInfo itemInfo = new ItemInfo(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, targetGrade));
+                        if (itemInfo != null)
+                            slotInfo = new ItemInfo(itemInfo);
                         break;
                     // 마법일때
                     case 1:
-                        slotInfo = new MagicInfo(MagicDB.Instance.GetRandomMagic(targetGrade));
+                        MagicInfo magicInfo = MagicDB.Instance.GetRandomMagic(targetGrade);
+                        if (magicInfo != null)
+                            slotInfo = new MagicInfo(magicInfo);
                         break;
                 }
             }

@@ -84,6 +84,7 @@ public class SystemManager : MonoBehaviour
     public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
+    public List<float> gradeRate = new List<float>(); // 랜덤 등급 가중치
 
     [Header("Debug")]
     public TextMeshProUGUI nowSelectUI; //! 선택된 UI 이름

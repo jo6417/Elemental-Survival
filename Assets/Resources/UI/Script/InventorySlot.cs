@@ -30,6 +30,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     public Button slotButton;
     public ToolTipTrigger slotTooltip;
     public Image indicator;
+    public GameObject soldOut; // 품절 표시
     public ShowMagicCooltime coolTimeIndicator;
 
     private void Awake()
@@ -89,7 +90,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         if (setAction != null)
             setAction.Invoke();
 
-        // 마법 정보가 없거나 슬롯 비우기 활성화 되면 슬롯 초기화 후 넘기기
+        // 마법 정보가 없을때
         if (slotInfo == null)
         {
             //프레임 색 초기화

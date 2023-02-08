@@ -134,13 +134,19 @@ public class MagicMachineUI : MonoBehaviour
             // 슬롯 아이콘, 프레임세팅
             slots[i].Set_Slot();
 
-            // 개수 0개일때 품절 처리
-            if (slots[i].slotInfo.amount == 0)
-            {
-                // 슬롯 어둡게 덮기
-                slots[i].indicator.color = new Color(0, 0, 0, 0.5f);
-                //todo 품절 이미지 켜기
-            }
+            // 슬롯 정보 있을때
+            if (slotInfo != null)
+                // 개수 0개일때 품절 처리
+                if (slots[i].slotInfo.amount == 0)
+                {
+                    // 슬롯 어둡게 덮기
+                    slots[i].indicator.color = new Color(0, 0, 0, 0.5f);
+                    // 품절 이미지 켜기
+                    slots[i].soldOut.SetActive(true);
+                }
+                else
+                    // 품절 이미지 끄기
+                    slots[i].soldOut.SetActive(false);
         }
 
         // 슬롯 가림막 천천히 제거
@@ -371,6 +377,8 @@ public class MagicMachineUI : MonoBehaviour
                 InventorySlot getSlot = scroll.Content.GetChild(scroll.CenteredPanel).GetComponent<InventorySlot>();
                 // 슬롯 어둡게 덮기
                 getSlot.indicator.color = new Color(0, 0, 0, 0.5f);
+                //todo 품절 이미지 켜기
+                getSlot.soldOut.SetActive(true);
 
                 // 인벤토리에 해당 아이템 넣기
                 StartCoroutine(PutMagicInven(i));
