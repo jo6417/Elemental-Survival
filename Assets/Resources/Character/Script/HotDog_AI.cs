@@ -25,8 +25,9 @@ public class HotDog_AI : EnemyAI
     float speedMultiple = 1; // 페이즈에 따른 속도 배율
     float projectileMultiple = 1; // 페이즈에 따른 투사체 배율
 
-    [Header("Effect Control")]
-    public ParticleManager chargeEffect;
+    [Header("Effect")]
+    public GameObject barkEffect; // 짖기 이펙트
+    public ParticleManager chargeEffect; // 차지 이펙트
     public ParticleManager tailEffect; //꼬리 화염 파티클
     public SpriteRenderer eyeGlow; // 빛나는 눈 오브젝트
     public List<SpriteRenderer> glowObj = new List<SpriteRenderer>(); // 빛나는 오브젝트들
@@ -229,14 +230,14 @@ public class HotDog_AI : EnemyAI
         // 밀어내는 콜라이더 끄기
         pushColl.enabled = false;
 
-        pushRange.transform.localScale = Vector2.zero; // 범위 크기 제로로 초기화
+        pushRange.transform.localScale = Vector3.zero; // 범위 크기 제로로 초기화
         pushRangeFill.localScale = Vector2.zero; // 채우기 범위 크기 제로로 초기화
 
         pushSprite.color = _nowColor; // 범위 컬러를 현재 페이즈 컬러로
         pushFillSprite.color = _nextColor; // 채우기 컬러를 다음 페이즈 컬러로
 
         // 푸쉬 범위 스케일 키우기
-        pushRange.transform.DOScale(Vector2.one * 5.5f, 1f)
+        pushRange.transform.DOScale(Vector3.one * 5.5f, 1f)
         .SetEase(Ease.Linear);
 
         // 짖기 애니메이션 재생
@@ -340,8 +341,8 @@ public class HotDog_AI : EnemyAI
             ParticleSystem.MainModule particleMain = shieldParticles[i].main;
             particleMain.startColor = phaseColor[nextPhase] / 2f;
         }
-        shield.particle.Stop();
-        shield.particle.Play();
+        // 쉴드 이펙트 켜기
+        shield.gameObject.SetActive(true);
 
         // 한번에 소환할 개수
         int summonNum = 20;
@@ -416,6 +417,12 @@ public class HotDog_AI : EnemyAI
         nowPhase = nextPhase;
     }
 
+    void BarkEffect()
+    {
+        // 짖기 이펙트 소환
+        LeanPool.Spawn(barkEffect, mouthSparkEffect.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+    }
+
     void SwitchInvinsible(bool state)
     {
         // 무적 상태 갱신
@@ -432,10 +439,12 @@ public class HotDog_AI : EnemyAI
                 particleMain.startColor = phaseColor[nowPhase] / 2f;
             }
 
-            shield.particle.Play();
+            // 쉴드 이펙트 켜기
+            shield.gameObject.SetActive(true);
         }
         else
-            shield.particle.Stop();
+            // 쉴드 이펙트 끄기
+            shield.SmoothDisable();
     }
 
     void Update()
@@ -831,11 +840,11 @@ public class HotDog_AI : EnemyAI
         {
             case 0:
                 // 직선 연속 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 6, 10));
+                StartCoroutine(CastHellfire(jumpCount, 4, 10));
                 break;
             case 1:
                 // 원형 연속 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 10, 10));
+                StartCoroutine(CastHellfire(jumpCount, 6, 10));
                 break;
             case 2:
                 // 직선 및 유도 헬파이어 전개
@@ -850,39 +859,40 @@ public class HotDog_AI : EnemyAI
         summonNum = (int)(summonNum * projectileMultiple);
         loopNum = (int)(loopNum * projectileMultiple);
 
-        // 각 헬파이어 위치 저장할 배열
-        Vector3[] lastPos = new Vector3[summonNum];
-
-        // 각도 기준으로 소환할때 랜덤 각도 추가
-        float randomAngle = Random.Range(0, 360f);
-
         // 헬파이어 소환 횟수만큼 반복
         for (int j = 0; j < loopNum; j++)
         {
+            int circleNum = 1;
+
+            // 3번째 공격일때
+            if (_jumpCount == 2)
+                circleNum = summonNum;
+            else
+                circleNum = (int)(summonNum + (j * 2f));
+
             // 한번에 소환할 헬파이어 개수만큼 반복
-            for (int i = 0; i < summonNum; i++)
+            for (int i = 0; i < circleNum; i++)
             {
+                Vector3 targetPos = default;
+
                 // 3번째 공격일때
                 if (_jumpCount == 2)
                 {
                     // 헬파이어 소환 위치, 플레이어 주변 범위내 랜덤
-                    Vector3 targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(1f, 30f);
-
-                    // 각 헬파이어의 소환 위치 저장
-                    lastPos[i] = targetPos;
+                    targetPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(1f, 30f);
                 }
                 else
                 {
+                    // 개수만큼 나눈 각도 계산
+                    float angle = 360f / circleNum;
+                    // 각도의 절반만큼 더 돌리기
+                    angle = angle * i + angle / 2f;
                     // 소환할 각도를 벡터로 바꾸기
-                    float angle = 360f * i / summonNum + randomAngle;
                     Vector3 summonDir = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle), Mathf.Cos(Mathf.Deg2Rad * angle), 0);
                     // print(angle + " : " + summonDir);
 
                     // 헬파이어 소환 위치, 현재 보스 위치에서 summonDir 각도로 범위만큼 곱하기 
-                    Vector3 targetPos = transform.position + summonDir * (5f + 3f * j);
-
-                    // 각 헬파이어의 소환 위치 저장
-                    lastPos[i] = targetPos;
+                    targetPos = transform.position + summonDir * (5f + 3f * j);
                 }
 
                 // 헬파이어 생성
@@ -897,7 +907,7 @@ public class HotDog_AI : EnemyAI
                 magicHolder.SetTarget(MagicHolder.TargetType.Player);
 
                 // 헬파이어 목표지점 넣기
-                magicHolder.targetPos = lastPos[i];
+                magicHolder.targetPos = targetPos;
 
                 // 타겟 오브젝트 넣기
                 magicHolder.targetObj = PlayerManager.Instance.gameObject;

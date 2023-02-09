@@ -50,7 +50,7 @@ public class HellFire : MonoBehaviour
         anim.speed = 1f;
 
         // 화염 기둥 솟을때 효과음 예약
-        SoundManager.Instance.PlaySound("HellFire_Pop", 1f, 1f);
+        SoundManager.Instance.PlaySound("HellFire_Pop", transform.position, 1f, 1f);
     }
 
     void SkullPopup()

@@ -76,7 +76,7 @@ public class SoundManager : MonoBehaviour
     public Transform soundPool_Music;
     public Transform soundPool_SFX;
     public Transform soundPool_UI;
-    [SerializeField] AnimationCurve curve_3D;
+    [SerializeField] AnimationCurve curve_3D; // 3D 볼륨 커브
 
     [Header("Sounds")]
     private List<AudioSource> playing_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드
