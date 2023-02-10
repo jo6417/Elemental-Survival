@@ -1057,7 +1057,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 5
+        scalar: 2
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -1107,7 +1107,7 @@ ParticleSystem:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-      cycleCount: 20
+      cycleCount: 10
       repeatInterval: 0.03
       probability: 1
   SizeModule:
@@ -5928,7 +5928,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 5
+        scalar: 3
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -5978,7 +5978,7 @@ ParticleSystem:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-      cycleCount: 10
+      cycleCount: 5
       repeatInterval: 0.03
       probability: 1
   SizeModule:
@@ -15420,7 +15420,7 @@ PrefabInstance:
     - target: {fileID: 355133372026791628, guid: d9de1b6b57ddf424f9164127d9476914,
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.data[0].cycleCount
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 355133372026791628, guid: d9de1b6b57ddf424f9164127d9476914,
         type: 3}

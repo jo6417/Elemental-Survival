@@ -13,7 +13,7 @@ public class HotDog_AI : EnemyAI
     enum Patten { None, Hellfire, Meteor, Stealth };
     bool initDone = false;
     AnimState animState;
-    enum AnimState { isWalk, isRun, isBark, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
+    enum AnimState { isWalk, isRun, isBark, Grawl, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
     [SerializeField] EnemyAtkTrigger biteTrigger;
 
     [Header("Phase")]
@@ -68,6 +68,8 @@ public class HotDog_AI : EnemyAI
     [SerializeField] float flameInverval = 1f;
 
     [Header("HellFire")]
+    [SerializeField] SpriteRenderer hellfireRange; // 헬파이어 범위 배경
+    [SerializeField] SpriteRenderer hellfireRangeFill; // 헬파이어 범위 채우기
     [SerializeField] Transform jawUp; // 윗턱 오브젝트
     public ParticleSystem mouthSparkEffect; // 에너지볼 먹을때 입에서 스파크 튀는 이펙트
     public ParticleSystem leakFireEffect; //차지 후 불꽃 새는 이펙트
@@ -121,6 +123,10 @@ public class HotDog_AI : EnemyAI
         groundSmoke.gameObject.SetActive(false);
         // 눈 번쩍하는 이펙트 끄기
         eyeFlash.gameObject.SetActive(false);
+
+        // 인디케이터 범위 초기화
+        hellfireRange.transform.localScale = Vector3.zero;
+        hellfireRangeFill.transform.localScale = Vector3.zero;
 
         // 페이즈0 색으로 흰색 HDR 넣기
         hdrMat.color = phaseHDRColor[0];
@@ -453,6 +459,10 @@ public class HotDog_AI : EnemyAI
         if (searchCoolCount > 0)
             searchCoolCount -= Time.deltaTime;
 
+        // 공격 쿨타임 차감
+        if (coolCount >= 0)
+            coolCount -= Time.deltaTime;
+
         if (character.enemy == null)
             return;
 
@@ -527,7 +537,7 @@ public class HotDog_AI : EnemyAI
             Bite();
 
             // 쿨타임 갱신
-            coolCount = biteCooltime;
+            // coolCount = biteCooltime;
 
             return;
         }
@@ -560,10 +570,6 @@ public class HotDog_AI : EnemyAI
     void Move()
     {
         character.nowState = Character.State.Walk;
-
-        // 움직이는 동안 공격 쿨타임 차감
-        if (coolCount >= 0)
-            coolCount -= Time.deltaTime;
 
         // 호흡 이펙트 꺼져있으면
         if (!breathEffect.gameObject.activeSelf)
@@ -804,16 +810,64 @@ public class HotDog_AI : EnemyAI
 
             // 점프 애니메이션 재생
             character.animList[0].SetTrigger(AnimState.Jump.ToString());
-
             // 점프 애니메이션 끝날때까지 대기
             yield return new WaitUntil(() => jumpCount == -1);
 
-            // 점프 후딜레이 대기
-            yield return new WaitForSeconds(0.5f);
+            // 으르렁거리기 애니메이션 재생
+            character.animList[0].SetTrigger(AnimState.Grawl.ToString());
+            // 으르렁 딜레이 대기
+            yield return new WaitForSeconds(1f);
         }
 
         // Idle 액션으로 전환
         StartCoroutine(SetIdle(1f));
+    }
+
+    void HellfireRange()
+    {
+        Color rangeColor = hellfireRange.color;
+        Color fillColor = hellfireRangeFill.color;
+        rangeColor.a = 100f / 255f;
+        fillColor.a = 100f / 255f;
+
+        // 인디케이터 범위 초기화
+        hellfireRange.transform.localScale = Vector3.zero;
+        hellfireRangeFill.transform.localScale = Vector3.zero;
+        // 인디케이터 색깔 초기화
+        hellfireRange.color = rangeColor;
+        hellfireRangeFill.color = fillColor;
+
+        Vector3 range = Vector3.one;
+        switch (jumpCount)
+        {
+            case 0:
+                range = Vector3.one * 0.1f * (5f + 3f * 10f);
+                break;
+            case 1:
+                range = Vector3.one * 0.1f * (5f + 3f * 10f);
+                break;
+            case 2:
+                range = Vector3.one * 30f;
+                break;
+        }
+
+        // 인디케이터 범위 확장
+        hellfireRange.transform.DOScale(range, 0.2f)
+        .SetEase(Ease.Linear)
+        .OnComplete(() =>
+        {
+            // 인디케이터 범위 채우기
+            hellfireRangeFill.transform.DOScale(Vector3.one, 0.7f)
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                // 범위 투명하게 사라지기
+                rangeColor.a = 0;
+                fillColor.a = 0;
+                hellfireRange.DOColor(rangeColor, 0.2f);
+                hellfireRangeFill.DOColor(fillColor, 0.2f);
+            });
+        });
     }
 
     void LeakFire()
@@ -848,7 +902,7 @@ public class HotDog_AI : EnemyAI
                 break;
             case 2:
                 // 직선 및 유도 헬파이어 전개
-                StartCoroutine(CastHellfire(jumpCount, 1, 50));
+                StartCoroutine(CastHellfire(jumpCount, 1, 100));
                 break;
         }
     }
@@ -913,8 +967,10 @@ public class HotDog_AI : EnemyAI
                 magicHolder.targetObj = PlayerManager.Instance.gameObject;
             }
 
+            // 대기 시간 뽑기
+            float delay = 0.1f - nowPhase * 0.03f;
             // 다음 사이즈 전개까지 대기
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(delay);
         }
 
         // 점프 카운트 초기화, 다음 점프 진행

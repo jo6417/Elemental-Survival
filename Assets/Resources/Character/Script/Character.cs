@@ -163,6 +163,9 @@ public class Character : MonoBehaviour
         // 히트 박스 모두 찾기
         hitBoxList = hitBoxList.Count == 0 ? GetComponentsInChildren<HitBox>().ToList() : hitBoxList;
 
+        // 공격 오브젝트 모두 찾기
+        enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
+
         // 스프라이트 설정 안했으면 디버그 메시지
         if (spriteList.Count == 0)
             Debug.Log("SpriteList is null");
@@ -462,7 +465,7 @@ public class Character : MonoBehaviour
                 spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
 
                 // 고스트 여부에 따라 복구 머터리얼 바꾸기
-                spriteList[i].material = SystemManager.Instance.outLineMat;
+                // spriteList[i].material = SystemManager.Instance.outLineMat;
             }
 
             // 그림자 더 투명하게

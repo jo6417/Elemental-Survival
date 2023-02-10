@@ -337,7 +337,7 @@ MonoBehaviour:
       pitch: 1
       source: {fileID: 0}
     - name: HellFire_Pop
-      clip: {fileID: 8300000, guid: 630c91d6ef3027446bbc0b1a0a8a28db, type: 3}
+      clip: {fileID: 8300000, guid: 0005c78bc21ab8c4b938c6717f1c79a1, type: 3}
       volume: 0.3
       pitch: 1
       source: {fileID: 0}

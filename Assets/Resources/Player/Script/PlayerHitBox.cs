@@ -84,7 +84,7 @@ public class PlayerHitBox : MonoBehaviour
 
     private void OnParticleCollision(GameObject other)
     {
-        print("OnParticleCollision : " + other.name);
+        // print("OnParticleCollision : " + other.name);
 
         if (hitCoolCount > 0 || playerManager.isDash)
             return;

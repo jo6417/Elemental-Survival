@@ -8,6 +8,7 @@ public class Ghosting : MonoBehaviour
 {
     MagicHolder magicHolder;
     MagicInfo magic;
+    [SerializeField] Transform wifiEffect; // 와이파이 모양 버프 이펙트
 
     private void Awake()
     {
@@ -60,37 +61,48 @@ public class Ghosting : MonoBehaviour
             GameObject ghostObj = LeanPool.Spawn(ghostPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
             // 몬스터 매니저 찾기
-            Character ghostManager = ghostObj.GetComponent<Character>();
+            Character ghostCharacter = ghostObj.GetComponent<Character>();
 
             // 해당 유령은 고스트로 바꾸기 예약
-            ghostManager.changeGhost = true;
+            ghostCharacter.changeGhost = true;
 
-            for (int i = 0; i < ghostManager.spriteList.Count; i++)
-            {
-                // 스프라이트 투명하게
-                ghostManager.spriteList[i].color = Color.clear;
-                // 머터리얼 초기화
-                ghostManager.spriteList[i].material = SystemManager.Instance.outLineMat;
-            }
+            // for (int i = 0; i < ghostManager.spriteList.Count; i++)
+            // {
+            //     // 스프라이트 투명하게
+            //     ghostManager.spriteList[i].color = Color.clear;
+            //     // 머터리얼 초기화
+            //     ghostManager.spriteList[i].material = SystemManager.Instance.outLineMat;
+            // }
 
-            // 타겟 null로 초기화
-            ghostManager.TargetObj = null;
+            // // 타겟 null로 초기화
+            // ghostManager.TargetObj = null;
 
-            for (int i = 0; i < ghostManager.spriteList.Count; i++)
-            {
-                // 스프라이트 유령색으로 바꾸기
-                // ghostManager.spriteList[i].
-                ghostManager.spriteList[i].DOColor(new Color(0, 1, 1, 0.5f), 2f)
-                .OnComplete(() =>
-                {
-                    // 마지막 스프라이트일때
-                    if (i == ghostManager.spriteList.Count)
-                    {
-                        // 소환된 몬스터 초기화 시작
-                        ghostManager.initialStart = true;
-                    }
-                });
-            }
+            // for (int i = 0; i < ghostManager.spriteList.Count; i++)
+            // {
+            //     // 스프라이트 유령색으로 바꾸기
+            //     // ghostManager.spriteList[i].
+            //     ghostManager.spriteList[i].DOColor(new Color(0, 1, 1, 0.5f), 2f)
+            //     .OnComplete(() =>
+            //     {
+            //         // 마지막 스프라이트일때
+            //         if (i == ghostManager.spriteList.Count)
+            //         {
+            //             // 소환된 몬스터 초기화 시작
+            //             ghostManager.initialStart = true;
+            //         }
+            //     });
+            // }
+
+            //todo 버프 이펙트 붙이기
+            LeanPool.Spawn(wifiEffect, ghostCharacter.buffParent.position, Quaternion.identity, ghostCharacter.buffParent);
+        }
+        // 이미 유령일때
+        else
+        {
+            // 버프 이펙트 없에기
+            wifiEffect = character.buffParent.Find(wifiEffect.name);
+            if (wifiEffect != null)
+                LeanPool.Despawn(wifiEffect);
         }
     }
 }

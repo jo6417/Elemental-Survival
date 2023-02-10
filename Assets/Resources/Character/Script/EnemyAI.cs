@@ -85,12 +85,15 @@ public class EnemyAI : MonoBehaviour
         // 목표 위치 갱신 시간 됬을때, 추적 위치 계산
         if (searchCoolCount <= 0)
         {
-            // 추적 타이머 갱신
-            searchCoolCount = searchCoolTime;
+            // 타겟이 있을때
+            if (character.TargetObj != null)
+            {
+                // 추적 타이머 갱신
+                searchCoolCount = searchCoolTime;
 
-            // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
-            character.targetPos = character.TargetObj.transform.position
-            + (Vector3)Random.insideUnitCircle * targetRange;
+                // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
+                character.targetPos = character.TargetObj.transform.position + (Vector3)Random.insideUnitCircle * targetRange;
+            }
         }
 
         // 목표 위치를 추적 위치로 서서히 바꾸기
