@@ -539,8 +539,11 @@ public class CastMagic : MonoBehaviour
         // 공격지점 개수만큼 마법 시전
         for (int i = 0; i < attackPos.Count; i++)
         {
+            // 생성위치 구분
+            Vector2 spawnPos = isManual ? PlayerManager.Instance.transform.position : phone.transform.position;
+
             // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
+            GameObject magicObj = LeanPool.Spawn(magicPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             // 레이어 바꾸기
             magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;

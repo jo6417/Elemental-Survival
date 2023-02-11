@@ -6,21 +6,27 @@ using Lean.Pool;
 
 public class LaserBeam : MonoBehaviour
 {
-    public float laserExpandSpeed = 0.2f;
+
+    [Header("Refer")]
     public MagicHolder magicHolder;
     public MagicHolder subMagicHolder;
     MagicInfo magic;
     public Transform startObj;
-    Vector2 targetPos;
-    Color aimColor;
-    Color laserColor;
-    float aimTime = 1f; // 조준 소요 시간
     public Collider2D effectColl; //폭발 콜라이더
     public LineRenderer laserLine; //레이저 이펙트
     public GameObject explosion; //레이저 타격 지점에 폭발 이펙트
     public GameObject scorchEffect; // 그을음 이펙트
     EdgeCollider2D coll;
     List<Vector2> collPoints = new List<Vector2>();
+    [SerializeField] Transform laserParticle;
+
+    [Header("State")]
+    public float laserExpandSpeed = 0.2f;
+    [SerializeField] Color aimColor;
+    [SerializeField] Color laserColor;
+    float aimTime = 1f; // 조준 소요 시간
+    float range;
+    Vector3 shotPos; // 착탄 지점
 
     private void Awake()
     {
@@ -44,18 +50,19 @@ public class LaserBeam : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
 
+        // 스탯 초기화
+        range = MagicDB.Instance.MagicRange(magic);
+
         // 폭발 이펙트도 마법 정보 및 타겟 넣기        
         subMagicHolder.magic = magic;
         subMagicHolder.targetType = magicHolder.targetType;
 
-        // 목표위치 초기화
+        // 목표위치 들어올때까지 대기
         yield return new WaitUntil(() => magicHolder.targetPos != default(Vector3));
-        targetPos = magicHolder.targetPos;
-
         // 발사 주체 입력 될때까지 대기
         yield return new WaitUntil(() => magicHolder.GetTarget() != MagicHolder.TargetType.None);
 
-        // 시작 오브젝트 초기화
+        // 플레이어가 쓸때
         if (magicHolder.GetTarget() == MagicHolder.TargetType.Enemy)
         {
             // 플레이어가 발사 주체면 스마트폰에서 시작
@@ -66,8 +73,9 @@ public class LaserBeam : MonoBehaviour
             //조준선 색깔 초기화
             aimColor = Color.red;
             //레이저 색깔 초기화
-            laserColor = SystemManager.Instance.HexToRGBA("FF7B3B");
+            laserColor = SystemManager.Instance.HexToRGBA("2DFFFF");
         }
+        // 몬스터가 쓸때
         else if (magicHolder.GetTarget() == MagicHolder.TargetType.Player)
         {
             //적이 쏠때는 더 빠르게 조준
@@ -75,7 +83,7 @@ public class LaserBeam : MonoBehaviour
             //조준선 색깔 변경
             aimColor = Color.red;
             //레이저 색깔 변경
-            laserColor = SystemManager.Instance.HexToRGBA("2DFFFF");
+            laserColor = SystemManager.Instance.HexToRGBA("FF1919");
         }
 
         //레이저 발사
@@ -104,14 +112,14 @@ public class LaserBeam : MonoBehaviour
         laserLine.SetPosition(1, laserLine.GetPosition(0));
 
         //폭발 이펙트 목표지점으로 이동
-        explosion.transform.position = targetPos;
+        explosion.transform.position = magicHolder.targetPos;
 
         // 이펙트 콜라이더 크기에 range 반영
         explosion.transform.localScale = Vector2.one * 0.2f * MagicDB.Instance.MagicRange(magic);
 
         // 레이저 조준선 굵기로 초기화
         laserLine.startWidth = 0.1f;
-        laserLine.endWidth = 0.2f;
+        laserLine.endWidth = 0.1f;
 
         // 라인 렌더러 켜기
         laserLine.enabled = true;
@@ -131,12 +139,15 @@ public class LaserBeam : MonoBehaviour
         DOTween.To(() => coll.edgeRadius, x => coll.edgeRadius = x, 0.5f, laserExpandSpeed);
 
         //레이저 굵기로 빠르게 키우기
-        DOTween.To(() => laserLine.startWidth, x => laserLine.startWidth = x, 0.6f, laserExpandSpeed);
+        DOTween.To(() => laserLine.startWidth, x => laserLine.startWidth = x, 1f, laserExpandSpeed);
         DOTween.To(() => laserLine.endWidth, x => laserLine.endWidth = x, 1f, laserExpandSpeed);
         yield return new WaitUntil(() => laserLine.endWidth == 1f);
 
         //폭발 오브젝트 켜기
         StartCoroutine(Explode());
+
+        // 레이저 뒤에 파티클 생성
+        LaserParticle();
 
         // 레이저 콜라이더 굵기 줄이기
         DOTween.To(() => coll.edgeRadius, x => coll.edgeRadius = x, 0f, laserExpandSpeed);
@@ -164,13 +175,13 @@ public class LaserBeam : MonoBehaviour
 
         while (laserLine.endWidth > 0f)
         {
-            Vector2 pos = Vector2.Lerp(laserLine.GetPosition(1), targetPos, 0.5f);
+            shotPos = Vector2.Lerp(laserLine.GetPosition(1), magicHolder.targetPos, 0.5f);
 
             //레이저 시작점 스마트폰 따라다니기
             laserLine.SetPosition(0, startObj.position);
 
             //레이저 목표지점으로 뻗어나가기
-            laserLine.SetPosition(1, pos);
+            laserLine.SetPosition(1, shotPos);
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
@@ -193,7 +204,7 @@ public class LaserBeam : MonoBehaviour
 
         while (laserLine.endWidth < 1f)
         {
-            Vector2 pos = Vector2.Lerp(laserLine.GetPosition(1), targetPos, 0.3f);
+            Vector2 pos = Vector2.Lerp(laserLine.GetPosition(1), magicHolder.targetPos, 0.3f);
 
             //레이저 목표지점으로 뻗어나가기
             laserLine.SetPosition(1, pos);
@@ -221,6 +232,21 @@ public class LaserBeam : MonoBehaviour
 
         // 폭발 콜라이더 끄기
         effectColl.enabled = false;
+    }
+
+    void LaserParticle()
+    {
+        // 레이저 벡터 계산
+        Vector3 dir = shotPos - startObj.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        // 레이저 방향 계산
+        Quaternion particleRotation = Quaternion.Euler(Vector3.forward * (angle + 90f));
+
+        // 목표 위치에 레이저 파티클 생성
+        Transform particle = LeanPool.Spawn(laserParticle, shotPos, particleRotation, ObjectPool.Instance.effectPool);
+
+        // 사이즈 수정
+        particle.localScale = Vector2.up * dir.magnitude;
     }
 
     void Despawn()

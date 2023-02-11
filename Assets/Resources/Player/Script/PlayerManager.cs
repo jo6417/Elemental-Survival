@@ -265,14 +265,18 @@ public class PlayerManager : MonoBehaviour
         initFinish = true;
     }
 
-    public Vector2 GetMousePos()
+    public Vector3 GetMousePos()
     {
-        return Camera.main.ScreenToWorldPoint(PlayerManager.Instance.player_Input.Player.MousePosition.ReadValue<Vector2>());
+        return Camera.main.ScreenToWorldPoint(SystemManager.Instance.System_Input.Player.MousePosition.ReadValue<Vector2>());
     }
 
-    public Vector2 GetMouseDir()
+    public Quaternion GetMouseDir()
     {
-        return GetMousePos() - (Vector2)transform.position;
+        Vector2 dir = GetMousePos() - transform.position;
+        float rotation = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        Quaternion mouseDir = Quaternion.Euler(Vector3.forward * rotation);
+
+        return mouseDir;
     }
 
     private void OnEnable()

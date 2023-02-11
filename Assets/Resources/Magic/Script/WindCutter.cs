@@ -6,8 +6,15 @@ public class WindCutter : MonoBehaviour
 {
     [Header("Refer")]
     [SerializeField] MagicHolder magicHolder;
+    [SerializeField] MagicProjectile magicProjectile;
 
+    [Header("State")]
     float duration;
+
+    private void Awake()
+    {
+        if (magicProjectile == null) magicProjectile = GetComponent<MagicProjectile>();
+    }
 
     private void OnEnable()
     {
@@ -41,6 +48,9 @@ public class WindCutter : MonoBehaviour
         // 적 충돌시 사운드 - 콜백으로 처리
         if (magicHolder.hitAction == null)
             magicHolder.hitAction += SliceSound;
+
+        // 발사
+        StartCoroutine(magicProjectile.ShotMagic());
     }
 
     void SliceSound()

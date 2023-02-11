@@ -101,11 +101,12 @@ public class SystemManager : MonoBehaviour
     public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
 
     [Header("Refer")]
+    public NewInput System_Input; // 인풋 받기
     public GameObject saveIcon; //저장 아이콘
     public Sprite gateIcon; //포탈게이트 아이콘
     public Sprite questionMark; //물음표 스프라이트
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
-    public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시   
+    public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
 
     [Header("DataBase")]
     public DBType dBType;
@@ -140,6 +141,10 @@ public class SystemManager : MonoBehaviour
 
     private void Awake()
     {
+        // 시스템 인풋 초기화
+        System_Input = new NewInput();
+        System_Input.Enable();
+
         // 다른 오브젝트가 이미 있을때
         if (instance != null)
         {

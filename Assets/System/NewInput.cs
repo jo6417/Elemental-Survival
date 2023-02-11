@@ -98,6 +98,15 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""Button"",
+                    ""id"": ""9447d98d-602f-40a6-9cda-839d832dc7eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -285,6 +294,17 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard"",
                     ""action"": ""ActiveMagic_B"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3e59dc9c-2685-4b06-990e-cc31110d84a0"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -653,6 +673,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         m_Player_ActiveMagic_C = m_Player.FindAction("ActiveMagic_C", throwIfNotFound: true);
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
         m_Player_MouseMove = m_Player.FindAction("MouseMove", throwIfNotFound: true);
+        m_Player_Click = m_Player.FindAction("Click", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_MouseMove = m_UI.FindAction("MouseMove", throwIfNotFound: true);
@@ -733,6 +754,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ActiveMagic_C;
     private readonly InputAction m_Player_MousePosition;
     private readonly InputAction m_Player_MouseMove;
+    private readonly InputAction m_Player_Click;
     public struct PlayerActions
     {
         private @NewInput m_Wrapper;
@@ -745,6 +767,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         public InputAction @ActiveMagic_C => m_Wrapper.m_Player_ActiveMagic_C;
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputAction @MouseMove => m_Wrapper.m_Player_MouseMove;
+        public InputAction @Click => m_Wrapper.m_Player_Click;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -778,6 +801,9 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @MouseMove.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseMove;
                 @MouseMove.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseMove;
                 @MouseMove.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseMove;
+                @Click.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClick;
+                @Click.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClick;
+                @Click.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClick;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -806,6 +832,9 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
                 @MouseMove.started += instance.OnMouseMove;
                 @MouseMove.performed += instance.OnMouseMove;
                 @MouseMove.canceled += instance.OnMouseMove;
+                @Click.started += instance.OnClick;
+                @Click.performed += instance.OnClick;
+                @Click.canceled += instance.OnClick;
             }
         }
     }
@@ -942,6 +971,7 @@ public partial class @NewInput : IInputActionCollection2, IDisposable
         void OnActiveMagic_C(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
         void OnMouseMove(InputAction.CallbackContext context);
+        void OnClick(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

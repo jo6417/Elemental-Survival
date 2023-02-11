@@ -32,7 +32,7 @@ public class BuckShot : MonoBehaviour
         if (magicHolder.isManualCast)
         {
             // 마우스 방향
-            Vector2 mouseDir = PlayerManager.Instance.GetMousePos() - (Vector2)PlayerManager.Instance.transform.position;
+            Vector2 mouseDir = PlayerManager.Instance.GetMousePos() - PlayerManager.Instance.transform.position;
 
             // 마우스 각도
             rotation = Mathf.Atan2(mouseDir.y, mouseDir.x) * Mathf.Rad2Deg;

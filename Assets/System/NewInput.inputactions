@@ -76,6 +76,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "9447d98d-602f-40a6-9cda-839d832dc7eb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -263,6 +272,17 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "ActiveMagic_B",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3e59dc9c-2685-4b06-990e-cc31110d84a0",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

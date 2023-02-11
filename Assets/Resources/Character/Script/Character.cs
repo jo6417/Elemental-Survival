@@ -103,6 +103,7 @@ public class Character : MonoBehaviour
     public Vector3 movePos; // 이동하려는 위치
     public Vector3 targetPos; // 추적한 타겟 위치
     public Vector3 targetDir; // 타겟 방향
+    public float targetFindRange = 10f; // 타겟 추적 범위
 
     [Header("Refer")]
     public EnemyAI enemyAI;
@@ -208,7 +209,7 @@ public class Character : MonoBehaviour
             // 모든 히트박스에 캐릭터 전달
             hitBoxList[i].character = this;
             // 히트박스 끄기
-            hitBoxList[i].enabled = false;
+            hitBoxList[i].gameObject.SetActive(false);
         }
 
         // rigid 초기화
@@ -461,11 +462,11 @@ public class Character : MonoBehaviour
             // rigid, sprite, 트윈, 애니메이션 상태 초기화
             for (int i = 0; i < spriteList.Count; i++)
             {
-                // 고스트 여부에 따라 색깔 초기화
+                // 고스트 색깔로 초기화
                 spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
 
-                // 고스트 여부에 따라 복구 머터리얼 바꾸기
-                // spriteList[i].material = SystemManager.Instance.outLineMat;
+                //todo 고스트색 아웃라인 넣기
+                spriteList[i].material.SetColor("_OutLineColor", Color.cyan);
             }
 
             // 그림자 더 투명하게
@@ -549,9 +550,7 @@ public class Character : MonoBehaviour
 
         // 히트박스 전부 켜기
         for (int i = 0; i < hitBoxList.Count; i++)
-        {
-            hitBoxList[i].enabled = true;
-        }
+            hitBoxList[i].gameObject.SetActive(true);
 
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;

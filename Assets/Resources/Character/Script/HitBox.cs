@@ -151,9 +151,8 @@ public class HitBox : MonoBehaviour
             if (atkCharacter == this)
                 yield break;
 
-            // 타격한 적이 비활성화 되었으면 리턴
-            // if (!hitCharacter.enabled)
-            //     return;
+            //todo 공격자를 타겟으로 변경
+            character.TargetObj = atkCharacter.gameObject;
 
             // 고정 데미지가 있으면 아군 피격이라도 적용
             if (enemyAtk.fixedPower > 0)

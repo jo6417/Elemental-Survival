@@ -78,7 +78,7 @@ public class LifeMushroom : MonoBehaviour
                 transform.SetParent(ObjectPool.Instance.magicPool);
 
                 // 마우스 근처 위치
-                Vector2 targetPos = PlayerManager.Instance.GetMousePos() + Random.insideUnitCircle * 2f;
+                Vector2 targetPos = PlayerManager.Instance.GetMousePos() + (Vector3)Random.insideUnitCircle * 2f;
 
                 // 마우스 위치로 이동
                 transform.DOMove(targetPos, speed);

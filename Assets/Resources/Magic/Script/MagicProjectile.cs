@@ -102,15 +102,22 @@ public class MagicProjectile : MonoBehaviour
         coll.enabled = true;
 
         //마법 날리기
-        StartCoroutine(ShotMagic());
+        // StartCoroutine(ShotMagic());
     }
 
-    IEnumerator ShotMagic()
+    public IEnumerator ShotMagic()
     {
         yield return new WaitUntil(() => magic != null);
 
         // 목표 위치 캐싱
-        Vector2 targetPos = magicHolder.targetPos;
+        Vector2 targetPos = default;
+        // 수동 시전시
+        if (magicHolder.isManualCast)
+            // 마우스 위치를 타겟으로
+            targetPos = PlayerManager.Instance.GetMousePos();
+        // 자동 시전시
+        else
+            targetPos = magicHolder.targetPos;
 
         // 벡터값이 입력되지 않았으면 랜덤 방향 설정
         if (targetPos == Vector2.zero)

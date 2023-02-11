@@ -154,7 +154,7 @@ public class MagnetLaser : MonoBehaviour
     private void Update()
     {
         // 마우스 방향 계산
-        Vector2 mouseDir = PlayerManager.Instance.GetMousePos() - (Vector2)transform.position;
+        Vector2 mouseDir = PlayerManager.Instance.GetMousePos() - transform.position;
         float angle = Mathf.Atan2(mouseDir.y, mouseDir.x) * Mathf.Rad2Deg;
 
         // 마우스 위치로 회전

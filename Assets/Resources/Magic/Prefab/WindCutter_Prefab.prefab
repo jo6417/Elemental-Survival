@@ -5068,6 +5068,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 5647361904488413128}
+  magicProjectile: {fileID: 5516981779341346625}
 --- !u!50 &3992797407984048518
 Rigidbody2D:
   serializedVersion: 4

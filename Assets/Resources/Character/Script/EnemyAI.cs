@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Lean.Pool;
+using System.Linq;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -82,18 +83,17 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        // 목표 위치 갱신 시간 됬을때, 추적 위치 계산
+        // 타겟 위치 갱신
         if (searchCoolCount <= 0)
         {
-            // 타겟이 있을때
-            if (character.TargetObj != null)
-            {
-                // 추적 타이머 갱신
-                searchCoolCount = searchCoolTime;
+            // 추적 타이머 갱신
+            searchCoolCount = searchCoolTime;
 
-                // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
-                character.targetPos = character.TargetObj.transform.position + (Vector3)Random.insideUnitCircle * targetRange;
-            }
+            //todo 타겟 갱신
+            character.TargetObj = FindTarget_Obj();
+
+            // 타겟 위치 갱신
+            character.targetPos = FindTarget_Pos();
         }
 
         // 목표 위치를 추적 위치로 서서히 바꾸기
@@ -116,6 +116,53 @@ public class EnemyAI : MonoBehaviour
         if (character.moveType != Character.MoveType.Custom)
             //행동 관리
             ManageAction();
+    }
+
+    GameObject FindTarget_Obj()
+    {
+        // 리턴할 오브젝트
+        GameObject targetObj = null;
+
+        // 현재 타겟이 범위 밖에 있으면
+        if (character.targetDir.magnitude > character.targetFindRange)
+        {
+            // 추적할 타겟 레이어
+            int targetLayer = -1;
+
+            // 고스트일때
+            if (character.IsGhost)
+                targetLayer = SystemManager.Instance.layerList.EnemyHit_Layer;
+            // 고스트 아닐때
+            else
+                targetLayer = SystemManager.Instance.layerList.PlayerHit_Layer;
+
+            // 새로운 타겟 찾기
+            List<Collider2D> targetCollList = Physics2D.OverlapCircleAll(transform.position, character.targetFindRange, 1 << targetLayer).ToList();
+
+            // 찾은 타겟이 있으면
+            if (targetCollList.Count > 0)
+                // 타겟중에 랜덤으로 리턴
+                targetObj = targetCollList[Random.Range(0, targetCollList.Count)].gameObject;
+        }
+
+        // 타겟 리턴
+        return targetObj;
+    }
+
+    Vector3 FindTarget_Pos()
+    {
+        // 리턴할 추적 위치, 기본으로 본인 위치
+        Vector3 pos = transform.position;
+
+        // 타겟이 있을때 타겟 위치
+        if (character.TargetObj != null)
+            pos = character.TargetObj.transform.position;
+
+        // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
+        pos = pos + (Vector3)Random.insideUnitCircle * targetRange;
+
+        // 추적 위치 리턴
+        return pos;
     }
 
     void ManageAction()
