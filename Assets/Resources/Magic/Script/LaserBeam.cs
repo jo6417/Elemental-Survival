@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using Lean.Pool;
+using System.Linq;
 
 public class LaserBeam : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class LaserBeam : MonoBehaviour
     public GameObject explosion; //레이저 타격 지점에 폭발 이펙트
     public GameObject scorchEffect; // 그을음 이펙트
     EdgeCollider2D coll;
-    List<Vector2> collPoints = new List<Vector2>();
+    Vector2[] collPoints = new Vector2[2];
     [SerializeField] Transform laserParticle;
 
     [Header("State")]
@@ -41,6 +42,13 @@ public class LaserBeam : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 레이저 콜라이더 비활성화
+        coll.enabled = false;
+        // 레이저 콜라이더 위치 초기화
+        coll.offset = -transform.position;
+        // 레이저 콜라이더 굵기 초기화
+        coll.edgeRadius = 0f;
+
         //레이저 라인 렌더러 끄기
         laserLine.enabled = false;
         // 폭발 이펙트 끄기
@@ -92,19 +100,6 @@ public class LaserBeam : MonoBehaviour
 
     IEnumerator LaserSeqence()
     {
-        // 레이저 콜라이더 비활성화
-        coll.enabled = false;
-        // 레이저 콜라이더 위치 초기화
-        coll.offset = -transform.position;
-        // 레이저 콜라이더 굵기 초기화
-        coll.edgeRadius = 0f;
-        // 레이저 콜라이더 포인트 2개 생성
-        if (collPoints.Count == 0)
-        {
-            collPoints.Add(startObj.position);
-            collPoints.Add(startObj.position);
-        }
-
         // 라인 첫번째 포인트 = 스마트폰 위치
         laserLine.SetPosition(0, startObj.position);
 
@@ -146,16 +141,13 @@ public class LaserBeam : MonoBehaviour
         //폭발 오브젝트 켜기
         StartCoroutine(Explode());
 
-        // 레이저 뒤에 파티클 생성
-        LaserParticle();
-
         // 레이저 콜라이더 굵기 줄이기
         DOTween.To(() => coll.edgeRadius, x => coll.edgeRadius = x, 0f, laserExpandSpeed);
 
         //레이저 굵기 줄어들어 0에 수렴
         DOTween.To(() => laserLine.startWidth, x => laserLine.startWidth = x, 0f, laserExpandSpeed);
         DOTween.To(() => laserLine.endWidth, x => laserLine.endWidth = x, 0f, laserExpandSpeed);
-        yield return new WaitUntil(() => laserLine.endWidth == 0f);
+        yield return new WaitUntil(() => laserLine.endWidth <= 0.01f);
 
         // 레이저 콜라이더 비활성화
         coll.enabled = false;
@@ -185,6 +177,9 @@ public class LaserBeam : MonoBehaviour
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
+
+        // 레이저 뒤에 파티클 생성
+        LaserParticle();
     }
 
     IEnumerator ShotLaser()
@@ -211,7 +206,7 @@ public class LaserBeam : MonoBehaviour
 
             // 콜라이더 2번째 포인트 갱신 및 콜라이더에 반영
             collPoints[1] = pos;
-            coll.SetPoints(collPoints);
+            coll.SetPoints(collPoints.ToList());
 
             yield return new WaitForSeconds(Time.deltaTime);
         }
@@ -219,11 +214,11 @@ public class LaserBeam : MonoBehaviour
 
     IEnumerator Explode()
     {
-        // 폭발 이펙트 켜기
-        explosion.SetActive(true);
+        // // 폭발 이펙트 켜기
+        // explosion.SetActive(true);
 
-        // 폭발 콜라이더 켜기
-        effectColl.enabled = true;
+        // // 폭발 콜라이더 켜기
+        // effectColl.enabled = true;
 
         // 그을음 이펙트 남기기
         LeanPool.Spawn(scorchEffect, explosion.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);

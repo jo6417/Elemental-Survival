@@ -91,10 +91,8 @@ public class EggBomb : MonoBehaviour
                 // 모든 달걀 던지기
                 StartCoroutine(AllShot());
 
-                // 쿨다운 코루틴 변수에 넣기
-                cooldownCoroutine = CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), coolTime);
                 // 글로벌 쿨다운 시작
-                StartCoroutine(cooldownCoroutine);
+                CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), coolTime);
 
                 // 쿨타임 카운트 갱신
                 respawnRecord = Time.time + respawnTime;
@@ -131,14 +129,8 @@ public class EggBomb : MonoBehaviour
             // 글로벌로 표시할 쿨타임 = 알 하나당 리스폰 타임 * (공격횟수 - 현재 남은 알 개수)
             float globalCooltime = respawnTime * (atkNum - eggList.Count);
 
-            // 이미 쿨다운 중이면 코루틴 중단
-            if (cooldownCoroutine != null)
-                StopCoroutine(cooldownCoroutine);
-
-            // 쿨다운 코루틴 변수에 넣기
-            cooldownCoroutine = CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), globalCooltime);
             // 글로벌 쿨다운 시작
-            StartCoroutine(cooldownCoroutine);
+            CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), globalCooltime);
 
             // 쿨타임 카운트 갱신
             respawnRecord = Time.time + respawnTime;

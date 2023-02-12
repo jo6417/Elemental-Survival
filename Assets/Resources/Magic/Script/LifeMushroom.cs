@@ -16,7 +16,6 @@ public class LifeMushroom : MonoBehaviour
     int atkNum;
     float coolTime;
     float respawnRecord = 0;
-    IEnumerator cooldownCoroutine;
 
     private void OnEnable()
     {
@@ -87,10 +86,8 @@ public class LifeMushroom : MonoBehaviour
         // 효과음 재생
         SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0, 0.05f, atkNum, true);
 
-        // 쿨다운 코루틴 변수에 넣기
-        cooldownCoroutine = CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), coolTime);
         // 글로벌 쿨다운 시작
-        StartCoroutine(cooldownCoroutine);
+        CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), coolTime);
     }
 
     private void Update()

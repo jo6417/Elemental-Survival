@@ -434,20 +434,26 @@ public class CastMagic : MonoBehaviour
         // }
         // // 쿨타임 자동 제어일때
         // else
+
+        // 해당 마법 쿨타임 계산
         fixCoolTime = MagicDB.Instance.MagicCoolTime(activeMagic);
+        // 쿨타입 입력
+        activeMagic.coolCount = fixCoolTime;
+        // 쿨타임 0 이하가 될때까지 대기
+        yield return new WaitUntil(() => activeMagic.coolCount <= 0);
 
-        // 액티브 쿨타임 차감
-        yield return StartCoroutine(Cooldown(activeMagic, fixCoolTime));
+        // // 액티브 쿨타임 차감
+        // yield return StartCoroutine(Cooldown(activeMagic, fixCoolTime));
 
-        // 패시브일때
-        if (magic.castType == MagicDB.CastType.passive.ToString())
-        {
-            // 쿨타임 체크를 위한 전역 마법 정보 불러오기
-            MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
+        // // 패시브일때
+        // if (magic.castType == MagicDB.CastType.passive.ToString())
+        // {
+        //     // 쿨타임 체크를 위한 전역 마법 정보 불러오기
+        //     MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
 
-            // 글로벌 쿨타임 차감
-            yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
-        }
+        //     // 글로벌 쿨타임 차감
+        //     yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
+        // }
     }
 
     public IEnumerator AutoCast(MagicInfo magic)
@@ -489,7 +495,7 @@ public class CastMagic : MonoBehaviour
             // 공격 지점 찾기
             List<Vector2> attackPos = MarkEnemyPos(magic);
 
-            // 공격 횟수만큼 시전
+            // 마법 시전
             StartCoroutine(Cast(false, attackPos, magic, magicPrefab, magicHolder));
         }
 
@@ -497,20 +503,17 @@ public class CastMagic : MonoBehaviour
         MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
         float fixCoolTime = -1;
 
-        // // 쿨타임 수동 제어일때
-        // if (!magicHolder.autoCoolDown)
-        // {
-        //     // 쿨타임 스위치 켜질때까지 대기
-        //     yield return new WaitUntil(() => magicHolder.fixCoolTime != -1);
-
-        //     fixCoolTime = magicHolder.fixCoolTime;
-        // }
-        // //tod 쿨타임 자동 제어일때
-        // else
         fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
 
-        // 쿨타임 차감
-        yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
+        // // 쿨타임 차감
+        // yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
+
+        // 해당 마법 쿨타임 계산
+        fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
+        // 쿨타입 입력
+        globalMagic.coolCount = fixCoolTime;
+        // 쿨타임 0 이하가 될때까지 대기
+        yield return new WaitUntil(() => globalMagic.coolCount <= 0);
 
         int slotIndex = -1;
         // 인벤토리에서 해당 마법이 있는 인덱스 찾기
@@ -536,57 +539,66 @@ public class CastMagic : MonoBehaviour
 
     IEnumerator Cast(bool isManual, List<Vector2> attackPos, MagicInfo magic, GameObject magicPrefab, MagicHolder magicHolder)
     {
-        // 공격지점 개수만큼 마법 시전
-        for (int i = 0; i < attackPos.Count; i++)
-        {
-            // 생성위치 구분
-            Vector2 spawnPos = isManual ? PlayerManager.Instance.transform.position : phone.transform.position;
+        // // 공격지점 개수만큼 마법 시전
+        // for (int i = 0; i < attackPos.Count; i++)
+        // {           
+        // }
 
-            // 마법 오브젝트 생성
-            GameObject magicObj = LeanPool.Spawn(magicPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.magicPool);
+        // 생성위치 구분
+        Vector2 spawnPos = isManual ? PlayerManager.Instance.transform.position : phone.transform.position;
 
-            // 레이어 바꾸기
-            magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
+        // 마법 오브젝트 생성
+        GameObject magicObj = LeanPool.Spawn(magicPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.magicPool);
 
-            //매직 홀더 찾기
-            magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+        // 레이어 바꾸기
+        magicObj.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
 
-            // 수동 시전 여부 넣기
-            magicHolder.isManualCast = isManual;
+        //매직 홀더 찾기
+        magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
 
-            //타겟 정보 넣기
-            magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
+        // 수동 시전 여부 넣기
+        magicHolder.isManualCast = isManual;
 
-            //마법 정보 넣기
-            magicHolder.magic = magic;
+        //타겟 정보 넣기
+        magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
-            //적 오브젝트 넣기, (유도 기능 등에 사용)
-            // magicHolder.targetObj = attackPos[i];
+        //마법 정보 넣기
+        magicHolder.magic = magic;
 
-            //적 위치 넣기
-            if (attackPos[i] != null)
-                magicHolder.targetPos = attackPos[i];
+        //적 오브젝트 넣기, (유도 기능 등에 사용)
+        // magicHolder.targetObj = attackPos[i];
 
-            // 고정 시간을 시전 개수만큼 나누기
-            yield return new WaitForSeconds(0.5f / attackPos.Count);
-        }
+        //적 위치 넣기
+        if (attackPos[0] != null)
+            magicHolder.targetPos = attackPos[0];
+
+        // 고정 시간을 시전 개수만큼 나누기
+        yield return new WaitForSeconds(0.5f / attackPos.Count);
     }
 
-    public IEnumerator Cooldown(MagicInfo globalMagic, float fixCoolTime = -1)
+    public void Cooldown(MagicInfo magic, float fixCoolTime = -1)
+    {
+        // 코루틴 대리 실행
+        StartCoroutine(CooldownCoroutine(magic, fixCoolTime));
+    }
+
+    IEnumerator CooldownCoroutine(MagicInfo magic, float fixCoolTime = -1)
     {
         // 고정 쿨타임 들어오면 넣기
-        float cooltime = fixCoolTime != -1 ? fixCoolTime : MagicDB.Instance.MagicCoolTime(globalMagic);
-        globalMagic.coolCount = cooltime;
+        float cooltime = fixCoolTime != -1 ? fixCoolTime : MagicDB.Instance.MagicCoolTime(magic);
+        magic.coolCount = cooltime;
 
+        // 프레임 끝나는 시간
         WaitForEndOfFrame delay = new WaitForEndOfFrame();
 
         // 쿨타임중이면 반복
-        while (globalMagic.coolCount > 0)
+        while (magic.coolCount > 0)
         {
-            // 전역 쿨타임 차감
-            globalMagic.coolCount -= Time.deltaTime;
-
+            // yield return new WaitForSeconds(Time.deltaTime);
             yield return delay;
+
+            // 전역 쿨타임 차감
+            magic.coolCount -= Time.deltaTime;
         }
     }
 

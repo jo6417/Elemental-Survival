@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class PlayerStat
+public class CharacterStat
 {
     public int playerPower; //플레이어 전투력
     public float hpMax = 100; // 최대 체력
@@ -41,8 +41,8 @@ public class PlayerStat
     public float water_atk = 1;
     public float wind_atk = 1;
 
-    public PlayerStat() { }
-    public PlayerStat(PlayerStat playerStat)
+    public CharacterStat() { }
+    public CharacterStat(CharacterStat playerStat)
     {
         this.playerPower = playerStat.playerPower; //플레이어 전투력
         this.hpMax = playerStat.hpMax; // 최대 체력
@@ -127,8 +127,8 @@ public class PlayerManager : MonoBehaviour
     public GameObject lvUpEffectPrefab; // 레벨업 이펙트
 
     [Header("<Stat>")] //플레이어 스탯
-    public PlayerStat PlayerStat_Now; // 현재 스탯
-    private PlayerStat PlayerStat_Default; // 초기 스탯
+    public CharacterStat PlayerStat_Now; // 현재 스탯
+    private CharacterStat PlayerStat_Default; // 초기 스탯
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
 
@@ -176,7 +176,7 @@ public class PlayerManager : MonoBehaviour
         playerSprite = playerSprite == null ? GetComponent<SpriteRenderer>() : playerSprite;
 
         // 플레이어 초기 스탯 저장
-        PlayerStat_Default = new PlayerStat(PlayerStat_Now);
+        PlayerStat_Default = new CharacterStat(PlayerStat_Now);
 
         // 입력값 초기화
         StartCoroutine(InputInit());
@@ -555,7 +555,7 @@ public class PlayerManager : MonoBehaviour
     void BuffUpdate()
     {
         //초기 스탯을 임시 스탯으로 복사
-        PlayerStat PlayerStat_Temp = new PlayerStat(PlayerStat_Default);
+        CharacterStat PlayerStat_Temp = new CharacterStat(PlayerStat_Default);
 
         //임시 스탯에 현재 아이템의 모든 버프 넣기
         foreach (ItemInfo item in hasGem)
