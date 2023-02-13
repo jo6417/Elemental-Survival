@@ -51,6 +51,8 @@ public class EnemyAtkTrigger : MonoBehaviour
     {
         yield return new WaitUntil(() => character.enemy != null);
 
+        // 고스트 여부따라 트리거 레이어 바꾸기
+
         // 고스트일때
         if (character.IsGhost)
         {
@@ -78,11 +80,8 @@ public class EnemyAtkTrigger : MonoBehaviour
         // 플레이어가 충돌하면
         if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
         {
-            // 액션 실행
-            if (attackAction != null)
-                attackAction.Invoke();
-
-            atkTrigger = true;
+            // 공격 실행
+            AttackAction();
 
             // 인디케이터 활성화
             if (showIndicator && indicatorSprite != null)
@@ -106,16 +105,16 @@ public class EnemyAtkTrigger : MonoBehaviour
                 if (hitBox.character == character)
                     return;
 
-                // 충돌 몬스터도 고스트일때 리턴
-                if (hitBox.character.IsGhost)
+                // 고스트 여부가 서로 같을때 리턴
+                if (character.isGhost == hitBox.character.IsGhost)
                     return;
             }
             // 콜라이더가 히트박스를 갖고 있지 않을때 리턴
             else
                 return;
 
-            // 트리거 활성화
-            atkTrigger = true;
+            // 공격 실행
+            AttackAction();
 
             // 인디케이터 활성화
             if (showIndicator && indicatorSprite != null)
@@ -128,6 +127,15 @@ public class EnemyAtkTrigger : MonoBehaviour
             //     StartCoroutine(character.hitBoxList[0].Dead());
             // }
         }
+    }
+
+    void AttackAction()
+    {
+        // 액션 실행
+        if (attackAction != null)
+            attackAction.Invoke();
+        // 트리거 활성화
+        atkTrigger = true;
     }
 
     private void OnTriggerExit2D(Collider2D other)

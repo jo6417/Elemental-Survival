@@ -10211,9 +10211,11 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
+  searchRange: 100
   enemyAI: {fileID: 8165655979838027246}
-  enemyAtkTrigger: {fileID: 0}
-  enemyAtkList: []
+  enemyAtkTrigger: {fileID: 9046826874127638235}
+  enemyAtkList:
+  - {fileID: 9114469379581199812}
   healRange: {fileID: 0}
   animList:
   - {fileID: 8703031671437433962}

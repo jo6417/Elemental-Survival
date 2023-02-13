@@ -11,7 +11,7 @@ public class MagicProjectile : MonoBehaviour
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
     public bool isSpin; // 투사체 회전 여부
-    public float spreadForce = 10f; // 파편 날아가는 강도
+    public float spreadForce = 0f; // 파편 날아가는 강도 (0이면 비활성화)
 
     [Header("Refer")]
     public MagicInfo magic;
@@ -263,44 +263,44 @@ public class MagicProjectile : MonoBehaviour
         }
 
         //파편 있으면 비산 시키기
-        // if (shatters.Length > 0)
-        // {
-        //     foreach (GameObject shatter in shatters)
-        //     {
-        //         //파편 활성화
-        //         shatter.SetActive(true);
+        if (shatters.Length > 0 && spreadForce > 0)
+        {
+            foreach (GameObject shatter in shatters)
+            {
+                //파편 활성화
+                shatter.SetActive(true);
 
-        //         //날아갈 방향
-        //         Vector2 dir = Random.insideUnitCircle;
+                //날아갈 방향
+                Vector2 dir = Random.insideUnitCircle;
 
-        //         Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
-        //         //속도 지정
-        //         rigid.velocity = dir.normalized * spreadForce;
-        //         //각속도 지정
-        //         rigid.angularVelocity = dir.x * 20f * spreadForce;
-        //     }
+                Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
+                //속도 지정
+                rigid.velocity = dir.normalized * spreadForce;
+                //각속도 지정
+                rigid.angularVelocity = dir.x * 20f * spreadForce;
+            }
 
-        //     //파편 비산되는동안 대기
-        //     yield return new WaitForSeconds(1f);
+            //파편 비산되는동안 대기
+            yield return new WaitForSeconds(1f);
 
-        //     //파편 초기화
-        //     foreach (GameObject shatter in shatters)
-        //     {
-        //         //파편 비활성화
-        //         shatter.SetActive(false);
+            //파편 초기화
+            foreach (GameObject shatter in shatters)
+            {
+                //파편 비활성화
+                shatter.SetActive(false);
 
-        //         Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
-        //         //속도 초기화
-        //         rigid.velocity = Vector3.zero;
-        //         //각속도 초기화
-        //         rigid.angularVelocity = 0f;
+                Rigidbody2D rigid = shatter.GetComponent<Rigidbody2D>();
+                //속도 초기화
+                rigid.velocity = Vector3.zero;
+                //각속도 초기화
+                rigid.angularVelocity = 0f;
 
-        //         //위치 초기화
-        //         shatter.transform.localPosition = Vector3.zero;
-        //         //각도 초기화
-        //         shatter.transform.rotation = Quaternion.identity;
-        //     }
-        // }
+                //위치 초기화
+                shatter.transform.localPosition = Vector3.zero;
+                //각도 초기화
+                shatter.transform.rotation = Quaternion.identity;
+            }
+        }
 
         // 마법 추가 스탯 초기화
         magicHolder.AddDuration = 0f;

@@ -576,8 +576,15 @@ public class CastMagic : MonoBehaviour
         yield return new WaitForSeconds(0.5f / attackPos.Count);
     }
 
-    public void Cooldown(MagicInfo magic, float fixCoolTime = -1)
+    public void Cooldown(MagicHolder magicHolder, float fixCoolTime = -1)
     {
+        // 시전 방식에 따라 다른 마법 정보 찾기
+        MagicInfo magic = null;
+        if (magicHolder.isManualCast)
+            magic = MagicDB.Instance.GetActiveMagicByID(magicHolder.magic.id);
+        else
+            magic = MagicDB.Instance.GetMagicByID(magicHolder.magic.id);
+
         // 코루틴 대리 실행
         StartCoroutine(CooldownCoroutine(magic, fixCoolTime));
     }

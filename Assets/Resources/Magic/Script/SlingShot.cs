@@ -11,11 +11,13 @@ public class SlingShot : MonoBehaviour
     [SerializeField] MagicHolder magicHolder;
     [SerializeField] Transform stonePrefab; // 바위 발사체 프리팹
     Transform mergeStone = null; // 합쳐진 돌 투사체
+    [SerializeField] GameObject[] shatters; //파편들
 
     [Header("State")]
     List<StoneState> shotAble = new List<StoneState>(); // 모든 투사체들의 상태값
     enum StoneState { Charging, Shotable, Shot, Dead };
     List<Transform> stoneList = new List<Transform>(); // 모든 투사체 오브젝트
+    [SerializeField] float shatterSpeed = 0f; // 파편 날아가는 강도 (0이면 비활성화)
     int mergeNum; // 바위 합쳐진 개수
     float damage; // 합쳐진 데미지
     float durationCount; // 남은 시간
@@ -81,15 +83,8 @@ public class SlingShot : MonoBehaviour
         // 모든 투사체 발사할때까지 대기
         yield return new WaitUntil(() => shotNum == atkNum);
 
-        // 시전 방식에 따라 다른 마법 정보 찾기
-        MagicInfo magic = null;
-        if (magicHolder.isManualCast)
-            magic = MagicDB.Instance.GetActiveMagicByID(magicHolder.magic.id);
-        else
-            magic = MagicDB.Instance.GetMagicByID(magicHolder.magic.id);
-
         // 쿨다운 시작
-        CastMagic.Instance.Cooldown(magic, coolTime);
+        CastMagic.Instance.Cooldown(magicHolder, coolTime);
 
         // 모든 투사체 디스폰 될때까지 대기
         for (int i = 0; i < shotAble.Count; i++)
@@ -118,7 +113,7 @@ public class SlingShot : MonoBehaviour
         // 바위 부모 찾기
         Transform scaler = stone.Find("Scaler");
         // 바위 스프라이트 찾기
-        Transform stoneSprite = scaler.Find("Stone");
+        Transform stoneSprite = scaler.Find("StoneSpin");
         // 후방 먼지 이펙트 찾기
         Transform backDust = stone.Find("DirtTrail");
         // 모래 모으기 이펙트 찾기
@@ -142,10 +137,6 @@ public class SlingShot : MonoBehaviour
         if (magicHolder.isManualCast)
             // 공격 허용 판단
             StartCoroutine(AllowAttack(index, tweenStartTime));
-        // 자동 시전시
-        else
-            // 무조건 사격 가능
-            shotAble[index] = StoneState.Shotable;
 
         // 모래 모으기 이펙트 시작
         dirtCharge.particle.Play();
@@ -160,7 +151,14 @@ public class SlingShot : MonoBehaviour
         // 먼지 스케일 초기화
         backDust.localScale = Vector2.zero;
         // 스케일만큼 커지기
-        backDust.DOScale(Vector2.one * scale, duration);
+        backDust.DOScale(Vector2.one * scale, duration)
+        .OnComplete(() =>
+        {
+            // 자동 시전시
+            if (!magicHolder.isManualCast)
+                //  사격 가능
+                shotAble[index] = StoneState.Shotable;
+        });
 
         // 회전 방향 랜덤
         Vector3 rotation = Random.value > 0.5f ? Vector3.forward : Vector3.back;
@@ -177,12 +175,10 @@ public class SlingShot : MonoBehaviour
             .SetLoops(-1)
             .OnUpdate(() =>
             {
-                // 수동 시전시 공격 가능해지면
-                if (magicHolder.isManualCast && shotAble[index] != StoneState.Charging)
-                {
+                // 차징 끝나면
+                if (shotAble[index] != StoneState.Charging)
                     // 회전 정지
                     stoneSprite.DOKill();
-                }
             });
 
         // duration 만큼 모으기
@@ -201,12 +197,6 @@ public class SlingShot : MonoBehaviour
             shotAble[index] = StoneState.Shot;
             // 발사된 개수 증가
             shotNum++;
-
-            string test = "";
-            for (int i = 0; i < atkNum; i++)
-                if (stoneList[i].gameObject.activeInHierarchy)
-                    test += i + " : ";
-            print(test);
 
             // 콜라이더 켜기
             coll.enabled = true;

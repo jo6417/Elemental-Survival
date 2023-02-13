@@ -12,6 +12,8 @@ public class HitBox : MonoBehaviour
     public Character character;
     public List<Collider2D> hitColls;
 
+    [Header("State")]
+    List<Buff> buffList = new List<Buff>();
 
     private void Awake()
     {
@@ -308,29 +310,59 @@ public class HitBox : MonoBehaviour
         LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
-    public void AfterEffect(Attack attacker, bool isCritical, float damage = 0)
+    public Buff AddBuff(string statName, bool isMultiple, float amount)
+    {
+        //todo 스탯이름으로 해당 스탯 값 불러오기
+        // var stat = PlayerManager.Instance.PlayerStat_Now.GetType().GetField(buff.statName).GetValue(PlayerManager.Instance.PlayerStat_Now);
+
+        // 버프 인스턴스 생성
+        Buff buff = new Buff();
+        // 스탯 이름 전달
+        buff.statName = statName;
+        // 연산 종류 전달
+        buff.isMultiple = isMultiple;
+        // 버프량 전달
+        buff.amount = amount;
+
+        // 해당 버프 리스트에 넣기
+        buffList.Add(buff);
+
+        print(buffList.Count);
+
+        return buff;
+    }
+
+    public void RemoveBuff(Buff buff)
+    {
+        // 해당 리스트에서 버프 없에기
+        buffList.Remove(buff);
+
+        print(buffList.Count);
+    }
+
+    public void AfterEffect(Attack attack, bool isCritical, float damage = 0)
     {
         //넉백
-        if (attacker.knockbackForce > 0)
+        if (attack.knockbackForce > 0)
         {
             // 보스가 아닌 몬스터일때
             if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString()
             // 몬스터가 아닐때 (오브젝트일때)
             || character.enemy == null)
-                StartCoroutine(Knockback(attacker, attacker.knockbackForce));
+                StartCoroutine(Knockback(attack, attack.knockbackForce));
         }
 
         //시간 정지
-        if (attacker.stopTime > 0)
+        if (attack.stopTime > 0)
         {
             // 보스가 아닌 몬스터일때
             if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
                 //몬스터 경직 카운터에 stopTime 만큼 추가
-                character.stopCount = attacker.stopTime;
+                character.stopCount = attack.stopTime;
         }
 
         // 슬로우 디버프, 크리티컬 성공일때
-        if (attacker.slowTime > 0 && isCritical)
+        if (attack.slowTime > 0 && isCritical)
         {
             // 보스가 아닌 몬스터일때
             if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
@@ -344,7 +376,7 @@ public class HitBox : MonoBehaviour
                 if (debuffCoroutine != null)
                     StopCoroutine(debuffCoroutine);
 
-                debuffCoroutine = SlowDebuff(0.2f, attacker.slowTime, character.buffParent,
+                debuffCoroutine = SlowDebuff(0.2f, attack.slowTime, character.buffParent,
                 debuffEffect, debuffCoroutine);
 
                 StartCoroutine(debuffCoroutine);
@@ -352,7 +384,7 @@ public class HitBox : MonoBehaviour
         }
 
         // 스턴
-        if (attacker.stunTime > 0)
+        if (attack.stunTime > 0)
         {
             // 보스가 아닌 몬스터일때
             if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
@@ -366,7 +398,7 @@ public class HitBox : MonoBehaviour
                 if (debuffCoroutine != null)
                     StopCoroutine(debuffCoroutine);
 
-                debuffCoroutine = SlowDebuff(0f, attacker.stunTime, character.buffParent,
+                debuffCoroutine = SlowDebuff(0f, attack.stunTime, character.buffParent,
                 debuffEffect, debuffCoroutine);
 
                 StartCoroutine(debuffCoroutine);
@@ -374,7 +406,7 @@ public class HitBox : MonoBehaviour
         }
 
         // 감전 디버프 && 크리티컬일때
-        if (attacker.shockTime > 0 && isCritical)
+        if (attack.shockTime > 0 && isCritical)
         {
             // 보스가 아닌 몬스터일때
             if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
@@ -388,7 +420,7 @@ public class HitBox : MonoBehaviour
                 if (debuffCoroutine != null)
                     StopCoroutine(debuffCoroutine);
 
-                debuffCoroutine = SlowDebuff(0f, attacker.shockTime, character.transform,
+                debuffCoroutine = SlowDebuff(0f, attack.shockTime, character.transform,
                 debuffEffect, debuffCoroutine);
 
                 StartCoroutine(debuffCoroutine);
@@ -396,35 +428,35 @@ public class HitBox : MonoBehaviour
         }
 
         // flat 디버프 있을때, flat 상태 아닐때
-        if (attacker.flatTime > 0 && character.flatCount <= 0)
+        if (attack.flatTime > 0 && character.flatCount <= 0)
         {
             // 보스가 아닌 몬스터일때
             if (character.enemy != null && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())
                 // 납작해지고 행동불능
-                StartCoroutine(FlatDebuff(attacker.flatTime));
+                StartCoroutine(FlatDebuff(attack.flatTime));
         }
 
         // 화상 피해 시간 있을때
-        if (attacker.burnTime > 0)
+        if (attack.burnTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, isCritical, attacker.burnTime, character.transform,
+            DotHit(damage, isCritical, attack.burnTime, character.transform,
             SystemManager.Instance.burnDebuffEffect, Character.Debuff.Burn);
         }
 
         // 포이즌 피해 시간 있으면 도트 피해
-        if (attacker.poisonTime > 0)
+        if (attack.poisonTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, isCritical, attacker.poisonTime, character.transform,
+            DotHit(damage, isCritical, attack.poisonTime, character.transform,
             SystemManager.Instance.poisonDebuffEffect, Character.Debuff.Poison);
         }
 
         // 출혈 지속시간 있으면 도트 피해
-        if (attacker.bleedTime > 0)
+        if (attack.bleedTime > 0)
         {
             // 도트 데미지 실행
-            DotHit(damage, isCritical, attacker.bleedTime, character.buffParent,
+            DotHit(damage, isCritical, attack.bleedTime, character.buffParent,
             SystemManager.Instance.bleedDebuffUI, Character.Debuff.Bleed);
         }
     }
@@ -865,4 +897,12 @@ public class HitBox : MonoBehaviour
 
         #endregion
     }
+}
+
+[System.Serializable]
+public class Buff
+{
+    public string statName; // 버프 스탯 종류
+    public float amount; // 버프량
+    public bool isMultiple; // true 일때 곱연산, false 일때 합연산
 }

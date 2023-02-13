@@ -87,7 +87,7 @@ public class LifeMushroom : MonoBehaviour
         SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0, 0.05f, atkNum, true);
 
         // 글로벌 쿨다운 시작
-        CastMagic.Instance.Cooldown(MagicDB.Instance.GetMagicByID(magicHolder.magic.id), coolTime);
+        CastMagic.Instance.Cooldown(magicHolder, coolTime);
     }
 
     private void Update()

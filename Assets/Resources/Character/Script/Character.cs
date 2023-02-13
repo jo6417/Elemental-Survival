@@ -103,7 +103,7 @@ public class Character : MonoBehaviour
     public Vector3 movePos; // 이동하려는 위치
     public Vector3 targetPos; // 추적한 타겟 위치
     public Vector3 targetDir; // 타겟 방향
-    public float targetFindRange = 10f; // 타겟 추적 범위
+    public float searchRange = 100f; // 타겟 추적 범위
 
     [Header("Refer")]
     public EnemyAI enemyAI;
@@ -162,21 +162,22 @@ public class Character : MonoBehaviour
         animList = animList.Count == 0 ? GetComponentsInChildren<Animator>().ToList() : animList;
 
         // 히트 박스 모두 찾기
-        hitBoxList = hitBoxList.Count == 0 ? GetComponentsInChildren<HitBox>().ToList() : hitBoxList;
-
+        if (hitBoxList.Count == 0) hitBoxList = GetComponentsInChildren<HitBox>().ToList();
+        // 공격 트리거 찾기
+        if (enemyAtkTrigger == null) enemyAtkTrigger = GetComponentInChildren<EnemyAtkTrigger>();
         // 공격 오브젝트 모두 찾기
-        enemyAtkList = enemyAtkList.Count == 0 ? GetComponentsInChildren<EnemyAttack>().ToList() : enemyAtkList;
+        if (enemyAtkList.Count == 0) enemyAtkList = GetComponentsInChildren<EnemyAttack>().ToList();
 
         // 스프라이트 설정 안했으면 디버그 메시지
         if (spriteList.Count == 0)
             Debug.Log("SpriteList is null");
 
-        // 그림자는 빼기
+        // 스프라이트에서 그림자는 빼기
         if (shadow != null)
             spriteList.Remove(shadow);
 
-        // 버프 아이콘 부모 찾기, 없으면 본인 오브젝트
-        buffParent = buffParent == null ? transform : buffParent;
+        // 버프 아이콘 부모 없으면 본인 오브젝트
+        if (buffParent == null) buffParent = transform;
 
         yield return null;
     }
@@ -453,6 +454,16 @@ public class Character : MonoBehaviour
         stopCount = 0; //시간 정지 카운트 초기화
         oppositeCount = 0; //반대편 전송 카운트 초기화
 
+        // 고스트 여부에 따라 타겟의 물리 레이어 산출
+        int physicsLayer = IsGhost ? SystemManager.Instance.layerList.PlayerAttack_Layer : SystemManager.Instance.layerList.EnemyAttack_Layer;
+
+        // 공격 트리거 레이어 바꾸기
+        if (enemyAtkTrigger != null)
+            enemyAtkTrigger.gameObject.layer = physicsLayer;
+        // 공격 레이어 바꾸기
+        for (int i = 0; i < enemyAtkList.Count; i++)
+            enemyAtkList[i].gameObject.layer = physicsLayer;
+
         // 고스트일때
         if (IsGhost)
         {
@@ -465,25 +476,12 @@ public class Character : MonoBehaviour
                 // 고스트 색깔로 초기화
                 spriteList[i].material.SetColor("_Tint", new Color(0, 1, 1, 0.5f));
 
-                //todo 고스트색 아웃라인 넣기
+                // 고스트색 아웃라인 넣기
                 spriteList[i].material.SetColor("_OutLineColor", Color.cyan);
             }
 
             // 그림자 더 투명하게
             shadow.color = new Color(0, 0, 0, 0.25f);
-
-            // 자폭형 몬스터 아닐때
-            if (!selfExplosion)
-            {
-                // 공격 트리거 레이어를 플레이어 공격으로 바꾸기
-                if (enemyAtkTrigger)
-                    enemyAtkTrigger.gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
-                // 공격 레이어를 플레이어 공격으로 바꾸기
-                for (int i = 0; i < enemyAtkList.Count; i++)
-                {
-                    enemyAtkList[i].gameObject.layer = SystemManager.Instance.layerList.PlayerAttack_Layer;
-                }
-            }
         }
         else
         {
@@ -577,13 +575,14 @@ public class Character : MonoBehaviour
             return;
         }
 
-        // 고스트일때, 타겟이 비활성화되거나 리셋타임이 되면 타겟 재설정
-        if (IsGhost && (targetResetCount <= 0 || TargetObj == null))
-            // 타겟 리셋하기
+        // 타겟 추적 카운트가 0이 되면 타겟 재설정
+        if (targetResetCount <= 0)
+        {
+            // 타겟 재설정
             TargetObj = SearchTarget();
-
-        // 타겟 리셋 카운트 차감
-        if (targetResetCount > 0)
+        }
+        else
+            // 타겟 재설정 카운트 차감
             targetResetCount -= Time.deltaTime;
 
         // 파티클 히트 딜레이 차감
@@ -771,42 +770,30 @@ public class Character : MonoBehaviour
         return true;
     }
 
-    GameObject SearchTarget()
+    public GameObject SearchTarget()
     {
+        // 리턴할 타겟
+        GameObject target = null;
         // 가장 가까운 적과의 거리
         float closeRange = float.PositiveInfinity;
-        GameObject closeEnemy = null;
 
-        // 고스트 아닐때
-        if (!IsGhost)
-            if (PlayerManager.Instance != null)
-                // 플레이어를 리턴
-                return PlayerManager.Instance.gameObject;
-            else
-                // 메인 카메라를 리턴
-                return Camera.main.gameObject;
+        // 고스트 여부에 따라 타겟의 물리 레이어 산출
+        int physicsLayer = IsGhost ? SystemManager.Instance.layerList.EnemyHit_Layer : SystemManager.Instance.layerList.PlayerHit_Layer;
 
-
-        //캐릭터 주변의 적들
-        List<Collider2D> enemyCollList = Physics2D.OverlapCircleAll(transform.position, 50f, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
+        // 캐릭터 주변의 타겟 콜라이더 찾기
+        List<Collider2D> targetCollList = Physics2D.OverlapCircleAll(transform.position, searchRange, 1 << physicsLayer).ToList();
 
         // 몬스터 본인 콜라이더는 전부 빼기
         for (int i = 0; i < hitBoxList.Count; i++)
-        {
-            enemyCollList.Remove(hitBoxList[i].GetComponent<Collider2D>());
-        }
+            targetCollList.Remove(hitBoxList[i].GetComponent<Collider2D>());
 
-        // 주변에 아무도 없으면 리턴 
-        if (enemyCollList.Count == 0)
-            return null;
-
-        for (int i = 0; i < enemyCollList.Count; i++)
+        for (int i = 0; i < targetCollList.Count; i++)
         {
             // 히트박스 컴포넌트가 있을때
-            if (enemyCollList[i].TryGetComponent(out HitBox hitBox))
+            if (targetCollList[i].TryGetComponent(out HitBox hitBox))
             {
-                // 찾은 몬스터도 고스트일때
-                if (hitBox.character.IsGhost)
+                // 고스트 여부가 서로 같을때
+                if (isGhost == hitBox.character.IsGhost)
                     // 다음으로 넘기기
                     continue;
             }
@@ -815,18 +802,24 @@ public class Character : MonoBehaviour
                 continue;
 
             // 해당 적이 이전 거리보다 짧으면
-            if (Vector2.Distance(transform.position, enemyCollList[i].transform.position) < closeRange)
-            {
+            if (Vector2.Distance(transform.position, targetCollList[i].transform.position) < closeRange)
                 // 해당 적을 타겟으로 바꾸기
-                closeEnemy = enemyCollList[i].gameObject;
-            }
+                target = targetCollList[i].gameObject;
         }
 
-        //리턴 직전에 고스트인지 재검사, 고스트면 리턴
-        if (closeEnemy != null && closeEnemy.GetComponent<HitBox>().character.isGhost)
-            return null;
+        // 아무것도 못찾으면
+        if (target == null)
+        {
+            if (PlayerManager.Instance != null)
+                // 플레이어를 리턴
+                target = PlayerManager.Instance.gameObject;
+            else
+                // 메인 카메라를 리턴
+                target = Camera.main.gameObject;
+        }
 
-        return closeEnemy;
+        // 찾은 타겟 리턴
+        return target;
     }
 
     // 갖고있는 아이템 드랍

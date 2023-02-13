@@ -77,6 +77,10 @@ public class MagicHolder : Attack
         //! 마법 이름 확인
         magicName = magic.name;
 
+        // 자동 쿨타임일때
+        if (autoCoolDown)
+            CastMagic.Instance.Cooldown(this);
+
         // 초기화 완료
         initDone = true;
     }

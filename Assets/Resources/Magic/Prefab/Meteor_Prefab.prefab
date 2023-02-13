@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3659908719226869021
 Transform:
   m_ObjectHideFlags: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
     type: 3}
   scorchPrefab: {fileID: 6890974854605210956, guid: 175cdfcb0ef79984d80313aadbb750f7,
     type: 3}
-  indicator: {fileID: 7215461912596669078, guid: 9110ec88f9a253a4bacb74c4b32b87b6,
+  indicatorPrefab: {fileID: 7215461912596669078, guid: 9110ec88f9a253a4bacb74c4b32b87b6,
     type: 3}
   coll: {fileID: 6814348584050193642}
 --- !u!58 &6814348584050193642

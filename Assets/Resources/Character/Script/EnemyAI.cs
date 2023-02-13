@@ -69,8 +69,17 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        // 이동 리셋 카운트 차감
-        if (searchCoolCount > 0)
+        // 타겟위치 카운트 다되면
+        if (searchCoolCount <= 0)
+        {
+            // 추적 타이머 갱신
+            searchCoolCount = searchCoolTime;
+
+            // 타겟위치 갱신
+            character.targetPos = FindTarget_Pos();
+        }
+        // 타겟위치 카운트 차감
+        else
             searchCoolCount -= Time.deltaTime;
     }
 
@@ -81,19 +90,6 @@ public class EnemyAI : MonoBehaviour
         {
             character.FindEnemyInfo();
             return;
-        }
-
-        // 타겟 위치 갱신
-        if (searchCoolCount <= 0)
-        {
-            // 추적 타이머 갱신
-            searchCoolCount = searchCoolTime;
-
-            //todo 타겟 갱신
-            character.TargetObj = FindTarget_Obj();
-
-            // 타겟 위치 갱신
-            character.targetPos = FindTarget_Pos();
         }
 
         // 목표 위치를 추적 위치로 서서히 바꾸기
@@ -118,36 +114,36 @@ public class EnemyAI : MonoBehaviour
             ManageAction();
     }
 
-    GameObject FindTarget_Obj()
-    {
-        // 리턴할 오브젝트
-        GameObject targetObj = null;
+    // GameObject FindTarget_Obj()
+    // {
+    //     // 리턴할 오브젝트
+    //     GameObject targetObj = null;
 
-        // 현재 타겟이 범위 밖에 있으면
-        if (character.targetDir.magnitude > character.targetFindRange)
-        {
-            // 추적할 타겟 레이어
-            int targetLayer = -1;
+    //     // 현재 타겟이 범위 밖에 있으면
+    //     if (character.targetDir.magnitude > character.targetFindRange)
+    //     {
+    //         // 추적할 타겟 레이어
+    //         int targetLayer = -1;
 
-            // 고스트일때
-            if (character.IsGhost)
-                targetLayer = SystemManager.Instance.layerList.EnemyHit_Layer;
-            // 고스트 아닐때
-            else
-                targetLayer = SystemManager.Instance.layerList.PlayerHit_Layer;
+    //         // 고스트일때
+    //         if (character.IsGhost)
+    //             targetLayer = SystemManager.Instance.layerList.EnemyHit_Layer;
+    //         // 고스트 아닐때
+    //         else
+    //             targetLayer = SystemManager.Instance.layerList.PlayerHit_Layer;
 
-            // 새로운 타겟 찾기
-            List<Collider2D> targetCollList = Physics2D.OverlapCircleAll(transform.position, character.targetFindRange, 1 << targetLayer).ToList();
+    //         // 새로운 타겟 찾기
+    //         List<Collider2D> targetCollList = Physics2D.OverlapCircleAll(transform.position, character.targetFindRange, 1 << targetLayer).ToList();
 
-            // 찾은 타겟이 있으면
-            if (targetCollList.Count > 0)
-                // 타겟중에 랜덤으로 리턴
-                targetObj = targetCollList[Random.Range(0, targetCollList.Count)].gameObject;
-        }
+    //         // 찾은 타겟이 있으면
+    //         if (targetCollList.Count > 0)
+    //             // 타겟중에 랜덤으로 리턴
+    //             targetObj = targetCollList[Random.Range(0, targetCollList.Count)].gameObject;
+    //     }
 
-        // 타겟 리턴
-        return targetObj;
-    }
+    //     // 타겟 리턴
+    //     return targetObj;
+    // }
 
     Vector3 FindTarget_Pos()
     {

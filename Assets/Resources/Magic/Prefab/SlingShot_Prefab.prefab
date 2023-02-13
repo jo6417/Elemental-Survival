@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &622668428461241063
 Transform:
   m_ObjectHideFlags: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
   flatTime: 0
   stopTime: 0
   stunTime: 0
-  autoCoolDown: 1
+  autoCoolDown: 0
   fixCoolTime: 0
   isManualCast: 0
   targetObj: {fileID: 0}
@@ -82,6 +82,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 4806162036374247006}
   stonePrefab: {fileID: 3291601134861510656}
+  shatters: []
+  shatterSpeed: 0
 --- !u!1001 &6499341543959755201
 PrefabInstance:
   m_ObjectHideFlags: 0
