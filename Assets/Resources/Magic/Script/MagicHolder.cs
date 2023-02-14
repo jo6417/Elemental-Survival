@@ -90,7 +90,7 @@ public class MagicHolder : Attack
         //변수 초기화
         addDuration = 0;
         multipleSpeed = 1;
-        fixedPower = 0f;
+        power = 0f;
 
         // 마법정보 초기화
         // magic = null;

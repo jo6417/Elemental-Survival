@@ -84,7 +84,7 @@ public class Seed_AI : MonoBehaviour
         if (turning)
             return;
         // 죽었으면 리턴
-        if (seedCharacter.hpNow <= 0)
+        if (seedCharacter.characterStat.hpNow <= 0)
             return;
 
         // 독구름 충돌 감지
@@ -134,7 +134,7 @@ public class Seed_AI : MonoBehaviour
         if (turning)
             return;
         // 죽었으면 리턴
-        if (seedCharacter.hpNow <= 0)
+        if (seedCharacter.characterStat.hpNow <= 0)
             return;
 
         // 물 꺼져있으면

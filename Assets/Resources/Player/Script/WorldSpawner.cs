@@ -150,7 +150,7 @@ public class WorldSpawner : MonoBehaviour
                 //몬스터 스폰 랜덤 횟수,  최대치는 플레이어 전투력마다 0.05씩 증가
                 float maxSpawnNum = 1;
                 if (PlayerManager.Instance != null)
-                    maxSpawnNum = 5 + PlayerManager.Instance.PlayerStat_Now.playerPower * 0.05f;
+                    maxSpawnNum = 5 + PlayerManager.Instance.characterStat.powerSum * 0.05f;
 
                 // 스폰 횟수 범위 제한
                 maxSpawnNum = Mathf.Clamp(maxSpawnNum, maxSpawnNum, 10);

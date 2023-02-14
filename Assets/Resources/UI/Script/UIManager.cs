@@ -563,7 +563,7 @@ public class UIManager : MonoBehaviour
         playerExp.fillAmount = playerManager.ExpNow / playerManager.ExpMax;
 
         // 레벨 갱신
-        playerLev.text = "Lev. " + playerManager.PlayerStat_Now.Level.ToString();
+        playerLev.text = "Lev. " + playerManager.characterStat.Level.ToString();
     }
 
     public IEnumerator UpdateBossHp(Character bossManager)
@@ -571,8 +571,8 @@ public class UIManager : MonoBehaviour
         //보스 몬스터 정보 들어올때까지 대기
         yield return new WaitUntil(() => bossManager.enemy != null);
 
-        float bossHpNow = bossManager.hpNow;
-        float bossHpMax = bossManager.hpMax;
+        float bossHpNow = bossManager.characterStat.hpNow;
+        float bossHpMax = bossManager.characterStat.hpMax;
 
         //보스 체력 UI 활성화
         bossHp.SetActive(true);
@@ -599,8 +599,8 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHp()
     {
-        playerHp.fillAmount = playerManager.PlayerStat_Now.hpNow / playerManager.PlayerStat_Now.hpMax;
-        playerHpText.text = (int)playerManager.PlayerStat_Now.hpNow + " / " + (int)playerManager.PlayerStat_Now.hpMax;
+        playerHp.fillAmount = playerManager.characterStat.hpNow / playerManager.characterStat.hpMax;
+        playerHpText.text = (int)playerManager.characterStat.hpNow + " / " + (int)playerManager.characterStat.hpMax;
     }
 
     public void UpdateGem(int gemTypeIndex)
@@ -796,25 +796,25 @@ public class UIManager : MonoBehaviour
         // 스탯 입력값
         List<float> statAmount = new List<float>();
 
-        stats[0].text = playerManager.PlayerStat_Now.hpMax.ToString();
-        stats[1].text = Mathf.Round(playerManager.PlayerStat_Now.power * 100).ToString() + " %";
-        stats[2].text = Mathf.Round(playerManager.PlayerStat_Now.armor * 100).ToString() + " %";
-        stats[3].text = Mathf.Round(playerManager.PlayerStat_Now.moveSpeed * 100).ToString() + " %";
-        stats[4].text = Mathf.Round(playerManager.PlayerStat_Now.atkNum * 100).ToString() + " %";
-        stats[5].text = Mathf.Round(playerManager.PlayerStat_Now.speed * 100).ToString() + " %";
-        stats[6].text = Mathf.Round(playerManager.PlayerStat_Now.coolTime * 100).ToString() + " %";
-        stats[7].text = Mathf.Round(playerManager.PlayerStat_Now.duration * 100).ToString() + " %";
-        stats[8].text = Mathf.Round(playerManager.PlayerStat_Now.range * 100).ToString() + " %";
-        stats[9].text = Mathf.Round(playerManager.PlayerStat_Now.luck * 100).ToString() + " %";
-        stats[10].text = Mathf.Round(playerManager.PlayerStat_Now.expGain * 100).ToString() + " %";
-        stats[11].text = Mathf.Round(playerManager.PlayerStat_Now.getRage * 100).ToString() + " %";
+        stats[0].text = playerManager.characterStat.hpMax.ToString();
+        stats[1].text = Mathf.Round(playerManager.characterStat.power * 100).ToString() + " %";
+        stats[2].text = Mathf.Round(playerManager.characterStat.armor * 100).ToString() + " %";
+        stats[3].text = Mathf.Round(playerManager.characterStat.moveSpeed * 100).ToString() + " %";
+        stats[4].text = Mathf.Round(playerManager.characterStat.atkNum * 100).ToString() + " %";
+        stats[5].text = Mathf.Round(playerManager.characterStat.speed * 100).ToString() + " %";
+        stats[6].text = Mathf.Round(playerManager.characterStat.coolTime * 100).ToString() + " %";
+        stats[7].text = Mathf.Round(playerManager.characterStat.duration * 100).ToString() + " %";
+        stats[8].text = Mathf.Round(playerManager.characterStat.range * 100).ToString() + " %";
+        stats[9].text = Mathf.Round(playerManager.characterStat.luck * 100).ToString() + " %";
+        stats[10].text = Mathf.Round(playerManager.characterStat.expGain * 100).ToString() + " %";
+        stats[11].text = Mathf.Round(playerManager.characterStat.getRage * 100).ToString() + " %";
 
-        stats[12].text = Mathf.Round(playerManager.PlayerStat_Now.earth_atk * 100).ToString() + " %";
-        stats[13].text = Mathf.Round(playerManager.PlayerStat_Now.fire_atk * 100).ToString() + " %";
-        stats[14].text = Mathf.Round(playerManager.PlayerStat_Now.life_atk * 100).ToString() + " %";
-        stats[15].text = Mathf.Round(playerManager.PlayerStat_Now.lightning_atk * 100).ToString() + " %";
-        stats[16].text = Mathf.Round(playerManager.PlayerStat_Now.water_atk * 100).ToString() + " %";
-        stats[17].text = Mathf.Round(playerManager.PlayerStat_Now.wind_atk * 100).ToString() + " %";
+        stats[12].text = Mathf.Round(playerManager.characterStat.earth_atk * 100).ToString() + " %";
+        stats[13].text = Mathf.Round(playerManager.characterStat.fire_atk * 100).ToString() + " %";
+        stats[14].text = Mathf.Round(playerManager.characterStat.life_atk * 100).ToString() + " %";
+        stats[15].text = Mathf.Round(playerManager.characterStat.lightning_atk * 100).ToString() + " %";
+        stats[16].text = Mathf.Round(playerManager.characterStat.water_atk * 100).ToString() + " %";
+        stats[17].text = Mathf.Round(playerManager.characterStat.wind_atk * 100).ToString() + " %";
     }
 
     public void PhoneNotice(int fixNum = -1)
@@ -1021,13 +1021,13 @@ public class UIManager : MonoBehaviour
         LeanPool.Despawn(arrowUI);
     }
 
-    public void DamageUI(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
+    public void DamageUI(DamageType damageType, float damage, bool isCritical, Vector2 hitPos, bool isPlayer = false)
     {
         // 데미지 UI 재생
         StartCoroutine(DamageText(damageType, damage, isCritical, hitPos));
     }
 
-    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos)
+    IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos, bool isPlayer = false)
     {
         // 데미지 UI 띄우기
         GameObject damageUI = LeanPool.Spawn(UIManager.Instance.dmgTxtPrefab, hitPos, Quaternion.identity, ObjectPool.Instance.overlayPool);
@@ -1037,14 +1037,28 @@ public class UIManager : MonoBehaviour
         {
             // 데미지 있을때
             case DamageType.Damaged:
-                // 크리티컬 떴을때 추가 강조효과 UI
-                if (isCritical)
+
+                // 플레이어일때
+                if (isPlayer)
                 {
-                    dmgTxt.color = Color.yellow;
+                    // 크리티컬 떴을때
+                    if (isCritical)
+                        // 보라색
+                        dmgTxt.color = new Color(200f / 255f, 30f / 255f, 200f / 255f);
+                    else
+                        // 빨간색
+                        dmgTxt.color = new Color(200f / 255f, 30f / 255f, 30f / 255f);
                 }
+                // 몬스터일때
                 else
                 {
-                    dmgTxt.color = Color.white;
+                    // 크리티컬 떴을때
+                    if (isCritical)
+                        // 노란색
+                        dmgTxt.color = Color.yellow;
+                    else
+                        // 흰색
+                        dmgTxt.color = Color.white;
                 }
 
                 dmgTxt.text = damage.ToString();

@@ -142,7 +142,7 @@ public class AstralForm : MonoBehaviour
         if (ghostCount <= 0 && ghostSwitch)
         {
             //쿨타임 갱신
-            ghostCount = ghostFrequency * PlayerManager.Instance.PlayerStat_Now.moveSpeed;
+            ghostCount = ghostFrequency * PlayerManager.Instance.characterStat.moveSpeed;
 
             StartCoroutine(MakeGhost());
         }

@@ -22,7 +22,7 @@ public class LifeSlime_AI : MonoBehaviour
         yield return new WaitUntil(() => character.initialFinish);
 
         // 공격 콜라이더에 공격력 반영
-        attack.fixedPower = character.powerNow;
+        attack.power = character.powerNow;
 
         // 공격 콜라이더 끄기
         attack.atkColl.enabled = false;

@@ -9,71 +9,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class CharacterStat
-{
-    public int playerPower; //플레이어 전투력
-    public float hpMax = 100; // 최대 체력
-    public float hpNow = 100; // 체력
-    public float Level = 1; //레벨
-    public float moveSpeed = 10; //이동속도
-
-    public int atkNum = 0; // 공격 횟수
-    public int pierce = 0; // 관통 횟수
-    public float power = 1; //마법 공격력
-    public float armor = 1; //방어력
-    public float speed = 1; //마법 공격속도
-    public float evade = 0f; // 회피율
-    public float knockbackForce = 1; //넉백 파워
-    public float coolTime = 1; //마법 쿨타임
-    public float duration = 1; //마법 지속시간
-    public float range = 1; //마법 범위
-    public float scale = 1; //마법 사이즈
-    public float luck = 1; //행운
-    public float expGain = 1; //경험치 획득량
-    public float getRage = 1; // 아이템 획득 범위
-
-    //원소 공격력
-    public float earth_atk = 1;
-    public float fire_atk = 1;
-    public float life_atk = 1;
-    public float lightning_atk = 1;
-    public float water_atk = 1;
-    public float wind_atk = 1;
-
-    public CharacterStat() { }
-    public CharacterStat(CharacterStat playerStat)
-    {
-        this.playerPower = playerStat.playerPower; //플레이어 전투력
-        this.hpMax = playerStat.hpMax; // 최대 체력
-        this.hpNow = playerStat.hpNow; // 체력
-        this.Level = playerStat.Level; //레벨
-        this.moveSpeed = playerStat.moveSpeed; //이동속도
-        this.atkNum = playerStat.atkNum; // 공격 횟수
-        this.pierce = playerStat.pierce; // 관통 횟수
-        this.power = playerStat.power; //마법 공격력
-        this.armor = playerStat.armor; //방어력
-        this.speed = playerStat.speed; //마법 공격속도
-        this.evade = playerStat.evade; // 회피율
-        this.knockbackForce = playerStat.knockbackForce; //넉백 파워
-        this.coolTime = playerStat.coolTime; //마법 쿨타임
-        this.duration = playerStat.duration; //마법 지속시간
-        this.range = playerStat.range; //마법 범위
-        this.luck = playerStat.luck; //행운
-        this.expGain = playerStat.expGain; //경험치 획득량
-        this.getRage = playerStat.getRage; // 아이템 획득 범위
-
-        // 원소 공격력
-        this.earth_atk = playerStat.earth_atk;
-        this.fire_atk = playerStat.fire_atk;
-        this.life_atk = playerStat.life_atk;
-        this.lightning_atk = playerStat.lightning_atk;
-        this.water_atk = playerStat.water_atk;
-        this.wind_atk = playerStat.wind_atk;
-    }
-}
-
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Character
 {
     #region Singleton
     private static PlayerManager instance;
@@ -120,24 +56,24 @@ public class PlayerManager : MonoBehaviour
     public SpriteRenderer playerCover; // 플레이어와 같은 이미지로 덮기
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Light2D playerLight;
-    public Rigidbody2D rigid;
+    // public Rigidbody2D rigid;
     public Collider2D coll;
     public Animator anim;
     public Transform knockbackColl; // 레벨업 시 넉백 콜라이더
     public GameObject lvUpEffectPrefab; // 레벨업 이펙트
 
     [Header("<Stat>")] //플레이어 스탯
-    public CharacterStat PlayerStat_Now; // 현재 스탯
-    private CharacterStat PlayerStat_Default; // 초기 스탯
+    // public CharacterStat characterStat; // 현재 스탯
+    // private CharacterStat PlayerStat_Default; // 초기 스탯
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
 
     [Header("<State>")]
     public bool initFinish = false;
-    public float hpNow;
-    public float hpMax;
-    public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
-    public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
+    // public float hpNow;
+    // public float hpMax;
+    // public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
+    // public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
     IEnumerator expGainCoroutine; // 경험치 획득 코루틴
     // public int remainExp; // 획득 대기중인 경험치
     public List<ItemInfo> remainExpList = new List<ItemInfo>(); // 획득 대기중인 경험치
@@ -150,8 +86,11 @@ public class PlayerManager : MonoBehaviour
     [Header("Sound")]
     int lastStepSound = -1;
 
-    private void Awake()
+    protected override void Awake()
     {
+        // Character 의 Awake 코드 실행
+        // base.Awake();
+
         // 다른 오브젝트가 이미 있을때
         if (instance != null)
         {
@@ -175,8 +114,8 @@ public class PlayerManager : MonoBehaviour
         anim = anim == null ? GetComponent<Animator>() : anim;
         playerSprite = playerSprite == null ? GetComponent<SpriteRenderer>() : playerSprite;
 
-        // 플레이어 초기 스탯 저장
-        PlayerStat_Default = new CharacterStat(PlayerStat_Now);
+        // // 플레이어 초기 스탯 저장
+        // PlayerStat_Default = new CharacterStat(PlayerStat_Now);
 
         // 입력값 초기화
         StartCoroutine(InputInit());
@@ -279,8 +218,11 @@ public class PlayerManager : MonoBehaviour
         return mouseDir;
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        // Character 의 OnEnable 코드 실행
+        // base.OnEnable();
+
         // 초기화
         StartCoroutine(Init());
 
@@ -316,7 +258,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         // 플레이어 버프 업데이트
-        BuffUpdate();
+        // BuffUpdate();
 
         yield return new WaitUntil(() => UIManager.Instance != null);
 
@@ -327,7 +269,7 @@ public class PlayerManager : MonoBehaviour
         UIManager.Instance.InitialStat();
 
         // 1레벨 경험치 최대치 갱신
-        ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
+        ExpMax = characterStat.Level * characterStat.Level + 5;
 
         // 소환 위치에 포탈 소환
         GameObject spawner = LeanPool.Spawn(WorldSpawner.Instance.spawnerPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
@@ -401,8 +343,8 @@ public class PlayerManager : MonoBehaviour
             mobSpawner.transform.position = transform.position;
 
         //히트 카운트 감소
-        if (hitBox.hitCoolCount > 0)
-            hitBox.hitCoolCount -= Time.deltaTime;
+        if (hitDelayCount > 0)
+            hitDelayCount -= Time.deltaTime;
 
         // 플레이어 이동
         Move();
@@ -418,7 +360,7 @@ public class PlayerManager : MonoBehaviour
             return;
 
         // 깔렸을때 조작불가
-        if (hitBox.isFlat)
+        if (flatCount > 0)
         {
             //대쉬 중이었으면 취소
             isDash = false;
@@ -473,11 +415,16 @@ public class PlayerManager : MonoBehaviour
         if (nowMoveDir != Vector2.zero)
             lastDir = nowMoveDir;
 
+        // 버프 적용된 스피드 스탯 계산
+        float speedStat = base.characterStat.GetBuffedStat(nameof(characterStat.speed));
+        // print("speedStat : " + speedStat);
+
         Vector2 moveVector =
-        PlayerStat_Now.moveSpeed * 10f //플레이어 이동속도
+        characterStat.moveSpeed * 10f //플레이어 이동속도
         * nowMoveDir //움직일 방향
         * dashSpeed //대쉬할때 속도 증가
-        * speedBuff // 속도 버프
+        // * speedBuff // 속도 버프
+        * speedStat //todo 버프 적용된 스피드 스탯
         * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
         + hitBox.knockbackDir; //넉백 벡터 추가
 
@@ -549,57 +496,57 @@ public class PlayerManager : MonoBehaviour
         CastMagic.Instance.CastCheck();
 
         //플레이어 총 전투력 업데이트
-        PlayerStat_Now.playerPower = GetPlayerPower();
+        characterStat.powerSum = GetPlayerPower();
     }
 
-    void BuffUpdate()
-    {
-        //초기 스탯을 임시 스탯으로 복사
-        CharacterStat PlayerStat_Temp = new CharacterStat(PlayerStat_Default);
+    // void BuffUpdate()
+    // {
+    //     //초기 스탯을 임시 스탯으로 복사
+    //     CharacterStat PlayerStat_Temp = new CharacterStat(PlayerStat_Default);
 
-        //임시 스탯에 현재 아이템의 모든 버프 넣기
-        foreach (ItemInfo item in hasGem)
-        {
-            PlayerStat_Temp.atkNum += item.atkNum * item.amount; // 투사체 개수 버프
-            PlayerStat_Temp.hpMax += item.hpMax * item.amount; // 최대체력 버프
-            PlayerStat_Temp.power += item.power * item.amount; // 마법 공격력 버프
-            PlayerStat_Temp.armor += item.armor * item.amount; // 방어력 버프
-            PlayerStat_Temp.speed += item.speed * item.amount; // 마법 속도 버프
-            PlayerStat_Temp.evade += item.evade * item.amount; // 회피율 버프
-            PlayerStat_Temp.coolTime += item.coolTime * item.amount; // 마법 쿨타임 버프
-            PlayerStat_Temp.duration += item.duration * item.amount; // 마법 지속시간 버프
-            PlayerStat_Temp.range += item.range * item.amount; // 마법 범위 버프
-            PlayerStat_Temp.luck += item.luck * item.amount; // 행운 버프
-            PlayerStat_Temp.expGain += item.expRate * item.amount; // 경험치 획득량 버프
-            PlayerStat_Temp.getRage += item.getRage * item.amount; // 아이템 획득거리 버프
-            PlayerStat_Temp.moveSpeed += item.moveSpeed * item.amount; //이동속도 버프
+    //     //임시 스탯에 현재 아이템의 모든 버프 넣기
+    //     foreach (ItemInfo item in hasGem)
+    //     {
+    //         PlayerStat_Temp.atkNum += item.atkNum * item.amount; // 투사체 개수 버프
+    //         PlayerStat_Temp.hpMax += item.hpMax * item.amount; // 최대체력 버프
+    //         PlayerStat_Temp.power += item.power * item.amount; // 마법 공격력 버프
+    //         PlayerStat_Temp.armor += item.armor * item.amount; // 방어력 버프
+    //         PlayerStat_Temp.speed += item.speed * item.amount; // 마법 속도 버프
+    //         PlayerStat_Temp.evade += item.evade * item.amount; // 회피율 버프
+    //         PlayerStat_Temp.coolTime += item.coolTime * item.amount; // 마법 쿨타임 버프
+    //         PlayerStat_Temp.duration += item.duration * item.amount; // 마법 지속시간 버프
+    //         PlayerStat_Temp.range += item.range * item.amount; // 마법 범위 버프
+    //         PlayerStat_Temp.luck += item.luck * item.amount; // 행운 버프
+    //         PlayerStat_Temp.expGain += item.expRate * item.amount; // 경험치 획득량 버프
+    //         PlayerStat_Temp.getRage += item.getRage * item.amount; // 아이템 획득거리 버프
+    //         PlayerStat_Temp.moveSpeed += item.moveSpeed * item.amount; //이동속도 버프
 
-            // PlayerStat_Temp.earth_atk += item.earth * item.amount;
-            // PlayerStat_Temp.fire_atk += item.fire * item.amount;
-            // PlayerStat_Temp.life_atk += item.life * item.amount;
-            // PlayerStat_Temp.lightning_atk += item.lightning * item.amount;
-            // PlayerStat_Temp.water_atk += item.water * item.amount;
-            // PlayerStat_Temp.wind_atk += item.wind * item.amount;
-        }
+    //         // PlayerStat_Temp.earth_atk += item.earth * item.amount;
+    //         // PlayerStat_Temp.fire_atk += item.fire * item.amount;
+    //         // PlayerStat_Temp.life_atk += item.life * item.amount;
+    //         // PlayerStat_Temp.lightning_atk += item.lightning * item.amount;
+    //         // PlayerStat_Temp.water_atk += item.water * item.amount;
+    //         // PlayerStat_Temp.wind_atk += item.wind * item.amount;
+    //     }
 
-        //현재 스탯에 임시 스탯을 넣기
-        PlayerStat_Now = PlayerStat_Temp;
+    //     //현재 스탯에 임시 스탯을 넣기
+    //     PlayerStat_Now = PlayerStat_Temp;
 
-        // string allBuff = " atkNum : " + PlayerStat_Temp.atkNum + ", " +
-        //     "\n hpMax : " + PlayerStat_Temp.hpMax + ", " +
-        //     "\n power : " + PlayerStat_Temp.power + ", " +
-        //     "\n armor : " + PlayerStat_Temp.armor + ", " +
-        //     "\n speed : " + PlayerStat_Temp.speed + ", " +
-        //     "\n evade : " + PlayerStat_Temp.evade + ", " +
-        //     "\n coolTime : " + PlayerStat_Temp.coolTime + ", " +
-        //     "\n duration : " + PlayerStat_Temp.duration + ", " +
-        //     "\n range : " + PlayerStat_Temp.range + ", " +
-        //     "\n luck : " + PlayerStat_Temp.luck + ", " +
-        //     "\n expGain : " + PlayerStat_Temp.expGain + ", " +
-        //     "\n moneyGain : " + PlayerStat_Temp.getRage + ", " +
-        //     "\n moveSpeed : " + PlayerStat_Temp.moveSpeed;
-        // print(allBuff);
-    }
+    //     // string allBuff = " atkNum : " + PlayerStat_Temp.atkNum + ", " +
+    //     //     "\n hpMax : " + PlayerStat_Temp.hpMax + ", " +
+    //     //     "\n power : " + PlayerStat_Temp.power + ", " +
+    //     //     "\n armor : " + PlayerStat_Temp.armor + ", " +
+    //     //     "\n speed : " + PlayerStat_Temp.speed + ", " +
+    //     //     "\n evade : " + PlayerStat_Temp.evade + ", " +
+    //     //     "\n coolTime : " + PlayerStat_Temp.coolTime + ", " +
+    //     //     "\n duration : " + PlayerStat_Temp.duration + ", " +
+    //     //     "\n range : " + PlayerStat_Temp.range + ", " +
+    //     //     "\n luck : " + PlayerStat_Temp.luck + ", " +
+    //     //     "\n expGain : " + PlayerStat_Temp.expGain + ", " +
+    //     //     "\n moneyGain : " + PlayerStat_Temp.getRage + ", " +
+    //     //     "\n moveSpeed : " + PlayerStat_Temp.moveSpeed;
+    //     // print(allBuff);
+    // }
 
     public void AddGem(ItemInfo item, int amount)
     {
@@ -686,18 +633,18 @@ public class PlayerManager : MonoBehaviour
         SystemManager.Instance.TimeScaleChange(0f);
 
         //레벨업
-        PlayerStat_Now.Level++;
+        characterStat.Level++;
 
         //경험치 초기화
         ExpNow = 0;
 
         //경험치 최대치 갱신
-        ExpMax = PlayerStat_Now.Level * PlayerStat_Now.Level + 5;
+        ExpMax = characterStat.Level * characterStat.Level + 5;
         //! 테스트용 맥스 경험치
         // ExpMax = 3;
 
         // 죽었으면 리턴
-        if (PlayerStat_Now.hpNow <= 0)
+        if (characterStat.hpNow <= 0)
             yield break;
 
         // 레벨업 이펙트 생성

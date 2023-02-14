@@ -553,7 +553,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // 현재 1페이즈일때, 체력이 2/3 이하일때
-        if (nowPhase == 1 && character.hpNow / character.hpMax <= 2f / 3f)
+        if (nowPhase == 1 && character.characterStat.hpNow / character.characterStat.hpMax <= 2f / 3f)
         {
             // 페이즈업 함수 실행 안됬을때
             if (nowPhase == nextPhase)
@@ -567,7 +567,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
-        if (nowPhase == 2 && character.hpNow / character.hpMax <= 1f / 3f)
+        if (nowPhase == 2 && character.characterStat.hpNow / character.characterStat.hpMax <= 1f / 3f)
         {
             // 페이즈업 함수 실행 안됬을때
             if (nowPhase == nextPhase)
@@ -581,7 +581,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // 체력이 0 이하일때, 죽었을때
-        if (character.hpNow <= 0)
+        if (character.characterStat.hpNow <= 0)
         {
             //todo 당황하는 표정
 
@@ -1636,7 +1636,7 @@ public class Ascii_AI : MonoBehaviour
             attack.SetTarget(MagicHolder.TargetType.Player);
 
             // 페이즈에 따른 데미지 지정
-            attack.fixedPower = 3 * nowPhase * 2f + 1f;
+            attack.power = 3 * nowPhase * 2f + 1f;
         }
 
         // 전기 방출 사운드 재생

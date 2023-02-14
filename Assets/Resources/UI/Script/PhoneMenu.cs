@@ -1287,7 +1287,7 @@ public class PhoneMenu : MonoBehaviour
         }
 
         //플레이어 총 전투력 업데이트
-        PlayerManager.Instance.PlayerStat_Now.playerPower = PlayerManager.Instance.GetPlayerPower();
+        PlayerManager.Instance.characterStat.powerSum = PlayerManager.Instance.GetPlayerPower();
 
         // 마법 획득 시 바로 해당 마법 자동 시전일때
         if (castCheck)

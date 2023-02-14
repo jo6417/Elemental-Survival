@@ -20,6 +20,7 @@ public class ItemBox : Character
 
     protected override void Awake()
     {
+        // Character 의 Awake 코드 실행
         base.Awake();
 
         // 콜라이더 찾기
@@ -96,8 +97,8 @@ public class ItemBox : Character
         yield return new WaitUntil(() => slotInfo != null);
 
         // 박스 체력 초기화
-        hpMax = boxHp;
-        hpNow = hpMax;
+        characterStat.hpMax = boxHp;
+        characterStat.hpNow = characterStat.hpMax;
 
         // 드랍 아이템 넣기
         nowHasItem.Clear();
@@ -132,7 +133,7 @@ public class ItemBox : Character
     void RemoveList()
     {
         // 죽을때
-        if (hpNow <= 0)
+        if (characterStat.hpNow <= 0)
         {
             // 스폰 리스트에서 해당 아이템 삭제
             WorldSpawner.Instance.itemBoxList.Remove(gameObject);

@@ -236,7 +236,7 @@ public class SlingShot : MonoBehaviour
                 mergeStone = stoneList[index];
 
                 // 고정 데미지 넣기
-                magicHolder.fixedPower = power;
+                magicHolder.power = power;
             }
             // 이미 합칠 바위가 있으면 디스폰
             else
@@ -252,7 +252,7 @@ public class SlingShot : MonoBehaviour
                 // 사이즈업
                 Vector2 mergeScale = Vector2.one * scale * (1 + magicHolder.magic.scalePerLev * (mergeNum - 1));
                 // 합쳐진 개수만큼 데미지 배수
-                magicHolder.fixedPower = power * (mergeNum - 1);
+                magicHolder.power = power * (mergeNum - 1);
 
                 // // 남은 duration 계산
                 // float remainTime = duration - (Time.time - tweenStartTime);

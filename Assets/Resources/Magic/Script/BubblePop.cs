@@ -83,7 +83,7 @@ public class BubblePop : MonoBehaviour
         for (int i = 0; i < collisionEvents.Count; i++)
         {
             // 플레이어에 충돌하면 데미지 주기
-            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
+            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitDelayCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder));
             }

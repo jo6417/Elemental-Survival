@@ -76,7 +76,7 @@ public class ParticleTrigger : MonoBehaviour
         for (int i = 0; i < collisionEvents.Count; i++)
         {
             // 플레이어에 충돌하면 데미지 주기
-            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitBox.hitCoolCount <= 0 && !PlayerManager.Instance.isDash)
+            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitDelayCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 print($"Player : {other.name} : {other.tag} : {other.layer}");
                 StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder));
@@ -123,7 +123,7 @@ public class ParticleTrigger : MonoBehaviour
     void DamageTrigger()
     {
         // 플레이어와 충돌한 파티클이 있을때, 플레이어 대쉬중 아닐때, 히트 쿨타임중 아닐때
-        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitBox.hitCoolCount <= 0)
+        if (numInside > 0 && !PlayerManager.Instance.isDash && PlayerManager.Instance.hitDelayCount <= 0)
         {
             print("particle damage");
 

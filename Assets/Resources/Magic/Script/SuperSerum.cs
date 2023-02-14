@@ -82,7 +82,7 @@ public class SuperSerum : MonoBehaviour
             dir = Getter.position - transform.position;
 
             //플레이어 속도 반영
-            dir = dir.normalized * PlayerManager.Instance.PlayerStat_Now.moveSpeed * PlayerManager.Instance.dashSpeed * accelSpeed;
+            dir = dir.normalized * PlayerManager.Instance.characterStat.moveSpeed * PlayerManager.Instance.dashSpeed * accelSpeed;
 
             //해당 방향으로 날아가기
             rigid.velocity = dir;
@@ -113,7 +113,7 @@ public class SuperSerum : MonoBehaviour
         LeanPool.Spawn(getEffect.gameObject, PlayerManager.Instance.transform.position, Quaternion.identity, PlayerManager.Instance.transform);
 
         // 플레이어 최대체력 상승
-        PlayerManager.Instance.PlayerStat_Now.hpMax += hpAddAmount;
+        PlayerManager.Instance.characterStat.hpMax += hpAddAmount;
 
         // 체력바 UI 갱신
         UIManager.Instance.UpdateHp();

@@ -14,20 +14,21 @@ public class Attack : MonoBehaviour
     public int pierceCount = 0; // 남은 관통 횟수
     public enum TargetType { None, Enemy, Player, Both };
     public TargetType targetType; //마법의 목표 타겟
+    public float power = 0f; // 공격 데미지
 
     [Header("After Effect")]
-    public float fixedPower = 0f; // 고정된 데미지
-    public float knockbackForce = 0; //넉백 파워
+    public string buffStatName = ""; // 버프 주는 스탯 이름
+    public bool buffMultiple = true; // 곱연산인지 여부 (아니면 합연산)
+    public float buffDuration = 0; // 버프 지속시간
 
+    public float knockbackForce = 0; //넉백 파워
     // 도트 데미지
     public float burnTime = 0; // 화상 지속시간
     public float poisonTime = 0; // 독 지속시간
     public float bleedTime = 0; // 출혈 지속시간
-
     // 슬로우
     public float slowTime = 0; // 슬로우 지속시간
     public float wetTime = 0; // 젖음 지속시간
-
     // 행동 불능
     public float shockTime = 0; // 감전 지속시간
     public float freezeTime = 0; // 빙결 지속시간

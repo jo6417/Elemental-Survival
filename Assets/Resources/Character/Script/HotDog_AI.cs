@@ -1335,7 +1335,7 @@ public class HotDog_AI : EnemyAI
     {
         // 체력이 2/3 ~ 3/3 사이일때 1페이즈
         // 현재 1페이즈,체력이 2/3 이하일때, 2페이즈
-        if (nowPhase == 1 && character.hpNow / character.hpMax <= 2f / 3f)
+        if (nowPhase == 1 && character.characterStat.hpNow / character.characterStat.hpMax <= 2f / 3f)
         {
             // 페이즈업 함수 실행 안됬을때
             if (nowPhase == nextPhase)
@@ -1349,7 +1349,7 @@ public class HotDog_AI : EnemyAI
         }
 
         // 현재 2페이즈, 체력이 1/3 이하일때, 3페이즈
-        if (nowPhase == 2 && character.hpNow / character.hpMax <= 1f / 3f)
+        if (nowPhase == 2 && character.characterStat.hpNow / character.characterStat.hpMax <= 1f / 3f)
         {
             // 페이즈업 함수 실행 안됬을때
             if (nowPhase == nextPhase)
@@ -1363,7 +1363,7 @@ public class HotDog_AI : EnemyAI
         }
 
         // 체력이 0 이하일때, 죽었을때
-        if (character.hpNow <= 0)
+        if (character.characterStat.hpNow <= 0)
         {
             // 글로벌 라이트 초기화
             MapManager.Instance.globalLight.intensity = MapManager.Instance.globalLight.intensity;

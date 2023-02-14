@@ -189,7 +189,7 @@ public class Farmer_AI : MonoBehaviour
         // }
 
         // 체력이 0 이하일때, 죽었을때
-        if (character.hpNow <= 0)
+        if (character.characterStat.hpNow <= 0)
         {
             // 태양광 모두 없에기
             for (int i = 0; i < sunList.Count; i++)
@@ -328,7 +328,7 @@ public class Farmer_AI : MonoBehaviour
         if (seed_AI.turning)
             return;
         // 죽었으면 리턴
-        if (seed_AI.seedCharacter.hpNow <= 0)
+        if (seed_AI.seedCharacter.characterStat.hpNow <= 0)
         {
             // 물 끄기
             seed_AI.StopWater();

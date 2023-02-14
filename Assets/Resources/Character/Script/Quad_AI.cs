@@ -873,7 +873,7 @@ public class Quad_AI : MonoBehaviour
                 Attack windAtk = windCutterObj.GetComponent<Attack>();
 
                 //todo 페이즈에 따라 공격력 수정
-                windAtk.fixedPower = 3f;
+                windAtk.power = 3f;
 
                 // 날아가는 방향으로 회전시키기
                 float rotation = Mathf.Atan2(fanDir.y, fanDir.x) * Mathf.Rad2Deg;

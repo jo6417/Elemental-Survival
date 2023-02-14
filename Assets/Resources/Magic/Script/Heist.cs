@@ -44,7 +44,7 @@ public class Heist : MonoBehaviour
         speed = MagicDB.Instance.MagicSpeed(magic, true, magicHolder.targetType);
 
         // 플레이어 이동속도 버프하기
-        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed * speed;
+        PlayerManager.Instance.characterStat.moveSpeed = PlayerManager.Instance.characterStat.moveSpeed * speed;
 
         //플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
@@ -57,7 +57,7 @@ public class Heist : MonoBehaviour
     private void OnDisable()
     {
         // 기존 스피드 버프 계수 빼기
-        PlayerManager.Instance.PlayerStat_Now.moveSpeed = PlayerManager.Instance.PlayerStat_Now.moveSpeed / speed;
+        PlayerManager.Instance.characterStat.moveSpeed = PlayerManager.Instance.characterStat.moveSpeed / speed;
 
         // 소환된 잔상 모두 삭제
         foreach (GameObject ghost in ghostList)
@@ -127,7 +127,7 @@ public class Heist : MonoBehaviour
         if (ghostCount <= 0)
         {
             //쿨타임 갱신
-            ghostCount = ghostFrequency * PlayerManager.Instance.PlayerStat_Now.moveSpeed;
+            ghostCount = ghostFrequency * PlayerManager.Instance.characterStat.moveSpeed;
 
             StartCoroutine(GhostTransition());
         }

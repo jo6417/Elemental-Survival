@@ -454,7 +454,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 파워 증가량 계산
-                power = power * PlayerManager.Instance.PlayerStat_Now.power;
+                power = power * PlayerManager.Instance.characterStat.power;
 
         return power;
     }
@@ -475,8 +475,8 @@ public class MagicDB : MonoBehaviour
             if (PlayerManager.Instance != null)
                 //플레이어 speed 스탯 곱하기
                 speed = bigNumFast
-                ? speed + speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1)
-                : speed - speed * (PlayerManager.Instance.PlayerStat_Now.speed - 1);
+                ? speed + speed * (PlayerManager.Instance.characterStat.speed - 1)
+                : speed - speed * (PlayerManager.Instance.characterStat.speed - 1);
 
         //값 제한하기
         speed = Mathf.Clamp(speed, 0.01f, 100f);
@@ -497,7 +497,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 마법 범위 증가량 계산
-                range = range * PlayerManager.Instance.PlayerStat_Now.range;
+                range = range * PlayerManager.Instance.characterStat.range;
 
         //값 제한하기
         range = Mathf.Clamp(range, 0.1f, 1000f);
@@ -518,7 +518,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 마법 스케일 증가량 계산
-                scale = scale * PlayerManager.Instance.PlayerStat_Now.scale;
+                scale = scale * PlayerManager.Instance.characterStat.scale;
 
         //값 제한하기
         scale = Mathf.Clamp(scale, 0.1f, 1000f);
@@ -539,7 +539,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 마법 지속시간 증가량 계산
-                duration = duration * PlayerManager.Instance.PlayerStat_Now.duration;
+                duration = duration * PlayerManager.Instance.characterStat.duration;
 
         //값 제한하기
         duration = Mathf.Clamp(duration, 0.1f, 100f);
@@ -561,7 +561,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 마법 크리티컬 확률 증가량 계산
-                critical = critical * PlayerManager.Instance.PlayerStat_Now.luck;
+                critical = critical * PlayerManager.Instance.characterStat.luck;
 
         //값 제한하기 0% ~ 100%
         critical = Mathf.Clamp(critical, 0f, 1f);
@@ -593,7 +593,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 마법 크리티컬 데미지 증가량 계산
-                criticalPower = criticalPower * PlayerManager.Instance.PlayerStat_Now.luck;
+                criticalPower = criticalPower * PlayerManager.Instance.characterStat.luck;
 
         return criticalPower;
     }
@@ -611,7 +611,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 // 플레이어 관통 횟수 추가 계산
-                pierce += PlayerManager.Instance.PlayerStat_Now.pierce;
+                pierce += PlayerManager.Instance.characterStat.pierce;
 
 
         return pierce;
@@ -653,7 +653,7 @@ public class MagicDB : MonoBehaviour
         if (target == MagicHolder.TargetType.Enemy)
             if (PlayerManager.Instance != null)
                 //플레이어 자체 쿨타임 증가량 계산
-                coolTime = coolTime - coolTime * (PlayerManager.Instance.PlayerStat_Now.coolTime - 1);
+                coolTime = coolTime - coolTime * (PlayerManager.Instance.characterStat.coolTime - 1);
 
         //값 제한하기
         coolTime = Mathf.Clamp(coolTime, 0.01f, 10f);
