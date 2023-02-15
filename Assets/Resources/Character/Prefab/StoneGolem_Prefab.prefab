@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 4959071736242128182}
-  smashTrigger: {fileID: 3793035154778761762}
+  atkTrigger: {fileID: 3793035154778761762}
   smashColl: {fileID: 7798079106442996327}
 --- !u!210 &7946120940358626118
 SortingGroup:
@@ -214,7 +214,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcb4afaab731154ca7d9b2aa74bbaee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noDuplicate: 1
   soundPool: []
 --- !u!1 &3972964081822253895
 GameObject:
@@ -366,7 +365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7947103767001998687
 Transform:
   m_ObjectHideFlags: 0
@@ -401,17 +400,42 @@ MonoBehaviour:
   initialFinish: 0
   eliteClass: 0
   lookLeft: 0
-  hpNow: 0
-  hpMax: 0
+  characterStat:
+    powerSum: 0
+    hpMax: 100
+    hpNow: 100
+    Level: 1
+    moveSpeed: 1
+    atkNum: 0
+    pierce: 0
+    power: 1
+    armor: 1
+    speed: 1
+    evade: 0
+    knockbackForce: 1
+    coolTime: 1
+    duration: 1
+    range: 1
+    scale: 1
+    luck: 1
+    expGain: 1
+    getRage: 1
+    earth_atk: 1
+    fire_atk: 1
+    life_atk: 1
+    lightning_atk: 1
+    water_atk: 1
+    wind_atk: 1
+  buffList: []
   isDead: 0
   deadDelay: 1
   changeGhost: 0
   portalSize: 2
   afterEffect: 0
   invinsible: 0
-  selfExplosion: 0
   attackRange: 0
   healCount: 0
+  atkCoolCount: 0
   isGhost: 0
   nowState: 0
   moveType: 0
@@ -421,6 +445,7 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
+  searchRange: 100
   enemyAI: {fileID: 5097144648422318720}
   enemyAtkTrigger: {fileID: 3793035154778761762}
   enemyAtkList: []
@@ -607,7 +632,10 @@ MonoBehaviour:
   atkColl: {fileID: 7798079106442996327}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 0
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0

@@ -6,12 +6,11 @@ using DG.Tweening;
 
 public class WaterSlimeAtk : MonoBehaviour
 {
-    public float attackRange;
-    Vector3 targetDir;
-    public float activeAngleOffset; // 액티브 공격 오브젝트 방향 오프셋
+    [Header("State")]
     bool attackReady; //공격 준비중
 
     [Header("Refer")]
+    [SerializeField] EnemyAtkTrigger atkTrigger; // 공격 트리거
     public Character character;
     public string enemyName;
     public GameObject bubblePrefab; //거품 프리팹
@@ -31,8 +30,8 @@ public class WaterSlimeAtk : MonoBehaviour
     {
         yield return new WaitUntil(() => character.enemy != null);
 
-        // 대쉬 범위 초기화
-        attackRange = character.enemy.range;
+        // 공격 범위 초기화
+        atkTrigger.GetComponent<CircleCollider2D>().radius = character.enemy.range;
 
         // 적 정보 들어오면 이름 표시
         enemyName = character.enemy.name;
@@ -40,6 +39,10 @@ public class WaterSlimeAtk : MonoBehaviour
         // 공격 오브젝트 있으면 끄기
         if (bubblePrefab != null)
             bubblePrefab.SetActive(false);
+
+        // 콜백에 공격 함수 넣기
+        if (atkTrigger.attackAction == null)
+            atkTrigger.attackAction += Attack;
     }
 
     private void Update()
@@ -74,17 +77,22 @@ public class WaterSlimeAtk : MonoBehaviour
 
         // 타겟 방향 계산
         if (character.TargetObj != null)
-            targetDir = character.TargetObj.transform.position - transform.position;
-
-        // 공격 범위 안에 들어오면 공격 시작
-        if (targetDir.magnitude <= attackRange && attackRange > 0)
-            StartCoroutine(ChooseAttack());
+            character.targetDir = character.TargetObj.transform.position - transform.position;
     }
 
-    IEnumerator ChooseAttack()
+    void Attack()
     {
+        StartCoroutine(ReserveAttack());
+    }
+
+    IEnumerator ReserveAttack()
+    {
+        // 이미 공격 예약 상태면 리턴 (중복 예약 방지)
+        if (attackReady)
+            yield break;
+
         //움직일 방향에따라 회전
-        if (targetDir.x > 0)
+        if (character.targetDir.x > 0)
             transform.rotation = Quaternion.Euler(0, 0, 0);
         else
             transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -95,14 +103,11 @@ public class WaterSlimeAtk : MonoBehaviour
         // 점프중이라면
         if (character.enemyAI.jumpCoolCount > 0)
         {
-            //공격 준비로 전환
+            // 공격 예약
             attackReady = true;
 
             // Idle 상태 될때까지 대기
             yield return new WaitUntil(() => character.nowState == Character.State.Idle);
-
-            //공격 준비 끝
-            attackReady = false;
         }
 
         // 거품 공격 실행
@@ -112,10 +117,10 @@ public class WaterSlimeAtk : MonoBehaviour
 
     public IEnumerator BubbleAttack()
     {
-        // print("Active Attack");
-
         // 공격 액션으로 전환
         character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
 
         //애니메이터 끄기
         character.animList[0].enabled = false;
@@ -138,11 +143,6 @@ public class WaterSlimeAtk : MonoBehaviour
             transform.DOScale(Vector3.one, 0.5f);
         });
 
-        // // 플레이어 방향 계산
-        // targetDir = character.targetObj.transform.position - transform.position;
-        // // 공격 오브젝트 각도 계산
-        // float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-
         // 공격 오브젝트 생성
         GameObject bubbleAtk = LeanPool.Spawn(bubblePrefab, transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
@@ -162,8 +162,8 @@ public class WaterSlimeAtk : MonoBehaviour
         else
             bubbleMagic.SetTarget(MagicHolder.TargetType.Player);
 
-        // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
+        // 공격 시간 대기
+        yield return new WaitForSeconds(1.5f);
 
         //애니메이터 켜기
         character.animList[0].enabled = true;
@@ -172,5 +172,8 @@ public class WaterSlimeAtk : MonoBehaviour
 
         // 코루틴 비우기
         atkCoroutine = null;
+
+        //공격 준비 끝
+        attackReady = false;
     }
 }

@@ -6,53 +6,35 @@ using UnityEngine;
 public class EarthSlime_AI : MonoBehaviour
 {
     public Character character;
-    public EnemyAtkTrigger smashTrigger;
+    public EnemyAtkTrigger atkTrigger;
     public Collider2D smashColl;
     [SerializeField] GameObject attackEffect;
 
     private void OnEnable()
     {
         // 공격 트리거 비활성화
-        smashTrigger.atkTrigger = false;
+        atkTrigger.atkTrigger = false;
 
         // 스매쉬 콜라이더 비활성화
         smashColl.gameObject.SetActive(false);
         // smashColl.enabled = false;
+
+        // 콜백에 공격 함수 넣기
+        if (atkTrigger.attackAction == null)
+            atkTrigger.attackAction += Attack;
     }
 
-    private void Update()
+    void Attack()
     {
-        // 몬스터 매니저 비활성화 되었으면 리턴
-        if (!character)
-            return;
+        // 공격 액션으로 전환
+        character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
 
-        // 상태 이상 있으면 리턴
-        if (!character.ManageState())
-            return;
-
-        // 타겟 없거나 비활성화면 리턴
-        if (!character.TargetObj || !character.TargetObj.activeSelf)
-            return;
-
-        // 이미 공격중이면 리턴
-        if (character.nowState == Character.State.Attack)
-        {
-            // 이동 멈추기
-            character.rigid.velocity = Vector3.zero;
-            return;
-        }
-
-        // 공격 트리거 콜라이더에 닿으면 공격
-        if (smashTrigger.atkTrigger)
-        {
-            // 공격 액션으로 전환
-            character.nowState = Character.State.Attack;
-
-            StartCoroutine(SmashAttack());
-        }
+        StartCoroutine(StompAttack());
     }
 
-    public IEnumerator SmashAttack()
+    public IEnumerator StompAttack()
     {
         // print("SmashAttack");
 
@@ -68,16 +50,7 @@ public class EarthSlime_AI : MonoBehaviour
         // 공격 애니메이션 재생
         character.animList[0].SetTrigger("Attack");
 
-        // 스매쉬 콜라이더 비활성화까지 대기
-        yield return new WaitUntil(() => !smashColl.gameObject.activeSelf);
-
-        // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
-        // Idle로 전환
-        character.nowState = Character.State.Idle;
-
-        // 공격 트리거 끄기
-        // smashTrigger.atkTrigger = false;
+        yield return null;
     }
 
     public void SmashColliderOn()
@@ -93,7 +66,9 @@ public class EarthSlime_AI : MonoBehaviour
     public void SmashColliderOff()
     {
         // 스매쉬 콜라이더 비활성화
-        // smashColl.enabled = false;
         smashColl.gameObject.SetActive(false);
+
+        // Idle로 전환
+        character.nowState = Character.State.Idle;
     }
 }

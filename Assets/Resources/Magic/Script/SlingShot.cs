@@ -11,13 +11,11 @@ public class SlingShot : MonoBehaviour
     [SerializeField] MagicHolder magicHolder;
     [SerializeField] Transform stonePrefab; // 바위 발사체 프리팹
     Transform mergeStone = null; // 합쳐진 돌 투사체
-    [SerializeField] GameObject[] shatters; //파편들
 
     [Header("State")]
     List<StoneState> shotAble = new List<StoneState>(); // 모든 투사체들의 상태값
     enum StoneState { Charging, Shotable, Shot, Dead };
     List<Transform> stoneList = new List<Transform>(); // 모든 투사체 오브젝트
-    [SerializeField] float shatterSpeed = 0f; // 파편 날아가는 강도 (0이면 비활성화)
     int mergeNum; // 바위 합쳐진 개수
     float damage; // 합쳐진 데미지
     float durationCount; // 남은 시간
@@ -113,9 +111,9 @@ public class SlingShot : MonoBehaviour
         // 바위 부모 찾기
         Transform scaler = stone.Find("Scaler");
         // 바위 스프라이트 찾기
-        Transform stoneSprite = scaler.Find("StoneSpin");
+        SpriteRenderer stoneSprite = scaler.Find("StoneSpin").GetComponent<SpriteRenderer>(); ;
         // 후방 먼지 이펙트 찾기
-        Transform backDust = stone.Find("DirtTrail");
+        ParticleManager backDust = stone.Find("DirtTrail").GetComponent<ParticleManager>();
         // 모래 모으기 이펙트 찾기
         ParticleManager dirtCharge = stone.Find("DirtCharge").GetComponent<ParticleManager>();
         // 콜라이더 찾기
@@ -149,9 +147,9 @@ public class SlingShot : MonoBehaviour
         scaler.DOScale(Vector2.one * scale, duration);
 
         // 먼지 스케일 초기화
-        backDust.localScale = Vector2.zero;
+        backDust.transform.localScale = Vector2.zero;
         // 스케일만큼 커지기
-        backDust.DOScale(Vector2.one * scale, duration)
+        backDust.transform.DOScale(Vector2.one * scale, duration)
         .OnComplete(() =>
         {
             // 자동 시전시
@@ -170,7 +168,7 @@ public class SlingShot : MonoBehaviour
         if (!magicHolder.isManualCast
         || (magicHolder.isManualCast && shotAble[index] == StoneState.Charging))
             // 바위 회전
-            stoneSprite.DOLocalRotate(rotation * 360f, spinTime, RotateMode.WorldAxisAdd)
+            stoneSprite.transform.DOLocalRotate(rotation * 360f, spinTime, RotateMode.WorldAxisAdd)
             .SetEase(Ease.Linear)
             .SetLoops(-1)
             .OnUpdate(() =>
@@ -208,6 +206,12 @@ public class SlingShot : MonoBehaviour
             SoundManager.Instance.PlaySound("SlingShot_Throw", transform.position);
         }
 
+        // 바위 스프라이트 꺼질때까지 대기
+        yield return new WaitUntil(() => !stoneSprite.enabled);
+
+        // 먼지 꼬리 이펙트 끄기
+        backDust.SmoothDisable();
+
         // 디스폰 될때까지 대기
         yield return new WaitUntil(() => !stone.gameObject.activeSelf);
 
@@ -217,7 +221,10 @@ public class SlingShot : MonoBehaviour
 
     IEnumerator AllowAttack(int index, float tweenStartTime)
     {
-        //todo 플레이어 속도 느려짐
+        // 플레이어 속도 느려짐
+        Buff buff = PlayerManager.Instance.SetBuff("SlingShot_Slow", nameof(PlayerManager.Instance.characterStat.moveSpeed), true, 0.5f, -1, false);
+        // 플레이어 속도 업데이트
+        PlayerManager.Instance.Move();
 
         // 가운데 지점으로 이동
         stoneList[index].DOMove(transform.position, duration)
@@ -270,7 +277,8 @@ public class SlingShot : MonoBehaviour
         //todo 마우스 누르지 않을때 혹은 모두 합체할때까지 대기
         yield return new WaitUntil(() => !PlayerManager.Instance.player_Input.Player.Click.inProgress);
 
-        //todo 플레이어 속도 디버프 빼기
+        // 플레이어 속도 디버프 빼기
+        StartCoroutine(PlayerManager.Instance.StopBuff(buff, 0));
 
         // 바위 디스폰 안됬으면
         if (stoneList[index].gameObject.activeSelf)

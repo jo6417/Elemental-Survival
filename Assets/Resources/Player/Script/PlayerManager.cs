@@ -43,7 +43,6 @@ public class PlayerManager : Character
     public bool isDash; //현재 대쉬중 여부
     public float defaultDashSpeed = 1.5f; // 대쉬 속도 기본값
     public float dashSpeed = 1; //대쉬 버프 속도
-    public float speedBuff = 1f; //이동속도 디버프
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("<Refer>")]
@@ -415,16 +414,14 @@ public class PlayerManager : Character
         if (nowMoveDir != Vector2.zero)
             lastDir = nowMoveDir;
 
-        // 버프 적용된 스피드 스탯 계산
-        float speedStat = base.characterStat.GetBuffedStat(nameof(characterStat.speed));
-        // print("speedStat : " + speedStat);
+        // 버프 적용된 이동속도 스탯 계산
+        float speedStat = GetBuffedStat(nameof(characterStat.moveSpeed));
 
         Vector2 moveVector =
         characterStat.moveSpeed * 10f //플레이어 이동속도
         * nowMoveDir //움직일 방향
         * dashSpeed //대쉬할때 속도 증가
-        // * speedBuff // 속도 버프
-        * speedStat //todo 버프 적용된 스피드 스탯
+        * speedStat // 버프 적용된 이동속도 스탯
         * SystemManager.Instance.playerTimeScale //플레이어 개인 타임스케일
         + hitBox.knockbackDir; //넉백 벡터 추가
 

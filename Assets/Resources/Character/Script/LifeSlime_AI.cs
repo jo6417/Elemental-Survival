@@ -5,7 +5,7 @@ using UnityEngine;
 public class LifeSlime_AI : MonoBehaviour
 {
     [SerializeField] Character character;
-    [SerializeField] EnemyAtkTrigger meleeTrigger;
+    [SerializeField] EnemyAtkTrigger atkTrigger;
     [SerializeField] Attack attack;
     [SerializeField] float atkDelay = 0.5f; // 공격 딜레이
     [SerializeField] SpriteRenderer sprite;
@@ -26,27 +26,43 @@ public class LifeSlime_AI : MonoBehaviour
 
         // 공격 콜라이더 끄기
         attack.atkColl.enabled = false;
+        // 공격 비활성화
+        attack.gameObject.SetActive(false);
+
+        // 콜백에 공격 함수 넣기
+        if (atkTrigger.attackAction == null)
+            atkTrigger.attackAction += Attack;
     }
 
     private void Update()
     {
-        // 공격 트리거 활성화 및 idle 상태일때
-        if (meleeTrigger.atkTrigger && character.nowState == Character.State.Idle)
-        {
-            // 가시공격 실행
-            StartCoroutine(ThornAtk());
-        }
+        // // 공격 트리거 활성화 및 idle 상태일때
+        // if (atkTrigger.atkTrigger && character.nowState == Character.State.Idle)
+        // {
+        //     // 가시공격 실행
+        //     StartCoroutine(ThornAttack());
+        // }
 
-        // 공격중일때
-        if (character.nowState == Character.State.Attack)
-            // 이동 멈추기
-            character.rigid.velocity = Vector3.zero;
+        // // 공격중일때
+        // if (character.nowState == Character.State.Attack)
+        //     // 이동 멈추기
+        //     character.rigid.velocity = Vector3.zero;
     }
 
-    IEnumerator ThornAtk()
+    void Attack()
     {
-        // 공격 상태로 변경
+        // 공격 액션으로 전환
         character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
+
+        StartCoroutine(ThornAttack());
+    }
+
+    IEnumerator ThornAttack()
+    {
+        // 이동 멈추기
+        character.rigid.velocity = Vector3.zero;
 
         // 찡그린 표정으로 변하기
         sprite.sprite = spriteList[1];

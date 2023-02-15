@@ -73,8 +73,8 @@ public class EnemyAtkTrigger : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        // 공격 트리거 켜진 상태면 리턴
-        if (atkTrigger)
+        // 공격 쿨타임 중일때 리턴
+        if (character.atkCoolCount > 0)
             return;
 
         // 플레이어가 충돌하면
@@ -86,13 +86,6 @@ public class EnemyAtkTrigger : MonoBehaviour
             // 인디케이터 활성화
             if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
-
-            // // 자폭형 몬스터일때
-            // if (character && character.selfExplosion && !character.isDead)
-            // {
-            //     // 자폭하기
-            //     StartCoroutine(character.hitBoxList[0].Dead());
-            // }
         }
 
         // 몬스터가 충돌하면
@@ -119,13 +112,6 @@ public class EnemyAtkTrigger : MonoBehaviour
             // 인디케이터 활성화
             if (showIndicator && indicatorSprite != null)
                 indicatorSprite.enabled = true;
-
-            // // 자폭형 몬스터일때
-            // if (character && character.selfExplosion && !character.isDead)
-            // {
-            //     // 자폭하기
-            //     StartCoroutine(character.hitBoxList[0].Dead());
-            // }
         }
     }
 

@@ -82,7 +82,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 0
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -260,7 +263,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 0
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -5323,7 +5329,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2282559697499699900
 Transform:
   m_ObjectHideFlags: 0
@@ -5366,17 +5372,42 @@ MonoBehaviour:
   initialFinish: 0
   eliteClass: 0
   lookLeft: 0
-  hpNow: 0
-  hpMax: 0
+  characterStat:
+    powerSum: 0
+    hpMax: 100
+    hpNow: 100
+    Level: 1
+    moveSpeed: 1
+    atkNum: 0
+    pierce: 0
+    power: 1
+    armor: 1
+    speed: 1
+    evade: 0
+    knockbackForce: 1
+    coolTime: 1
+    duration: 1
+    range: 1
+    scale: 1
+    luck: 1
+    expGain: 1
+    getRage: 1
+    earth_atk: 1
+    fire_atk: 1
+    life_atk: 1
+    lightning_atk: 1
+    water_atk: 1
+    wind_atk: 1
+  buffList: []
   isDead: 0
   deadDelay: 1
   changeGhost: 0
   portalSize: 1.2
   afterEffect: 0
   invinsible: 0
-  selfExplosion: 0
   attackRange: 0
   healCount: 0
+  atkCoolCount: 0
   isGhost: 0
   nowState: 0
   moveType: 0
@@ -5386,6 +5417,7 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
+  searchRange: 100
   enemyAI: {fileID: 3988004795875851619}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -5838,7 +5870,10 @@ MonoBehaviour:
   atkColl: {fileID: 7146421470627484963}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 0
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -5922,7 +5957,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8494887417607790290}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 0.2, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2282559697499699900}
@@ -5944,7 +5979,10 @@ MonoBehaviour:
   enemyAtkTrigger: {fileID: 1805912072}
   atkColl: {fileID: 7146421470627484963}
   dashEffect: {fileID: 2245917149986370186}
+  ghostTrail: {fileID: 4134380908122092985}
   absorbSpeed: 1
+  dashReadyTime: 0.5
+  dashTime: 0.3
   getRange: 0.5
   nowGem: 0
   maxGem: 10
@@ -5966,7 +6004,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 2
+  m_Radius: 4
 --- !u!114 &1805912072
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6420,6 +6458,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4e91ebdbc1aa0045b484267392b6c33, type: 3}
+--- !u!1 &4134380908122092985 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6817217322139260917, guid: c4e91ebdbc1aa0045b484267392b6c33,
+    type: 3}
+  m_PrefabInstance: {fileID: 7492822712642314828}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8378340659760800743 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1422577823990088107, guid: c4e91ebdbc1aa0045b484267392b6c33,

@@ -4878,11 +4878,11 @@ GameObject:
   - component: {fileID: 1266943733944034169}
   m_Layer: 10
   m_Name: Explosion_Small
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1266943733944034173
 Transform:
   m_ObjectHideFlags: 0
@@ -4930,10 +4930,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playSoundName: Explosion_Middle
-  atkColl: {fileID: 0}
+  atkColl: {fileID: 1266943733944034174}
   pierceCount: 0
   targetType: 2
-  fixedPower: 10
+  power: 0
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0

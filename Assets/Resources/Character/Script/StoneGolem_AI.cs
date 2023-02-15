@@ -5,16 +5,20 @@ using UnityEngine;
 public class StoneGolem_AI : MonoBehaviour
 {
     public Character character;
-    public EnemyAtkTrigger smashTrigger;
+    public EnemyAtkTrigger atkTrigger;
     public Collider2D smashColl;
 
     private void OnEnable()
     {
         // 공격 트리거 비활성화
-        smashTrigger.atkTrigger = false;
+        atkTrigger.atkTrigger = false;
 
         // 스매쉬 콜라이더 비활성화
         smashColl.enabled = false;
+
+        // 콜백에 공격 함수 넣기
+        if (atkTrigger.attackAction == null)
+            atkTrigger.attackAction += Attack;
     }
 
     private void Update()
@@ -39,14 +43,19 @@ public class StoneGolem_AI : MonoBehaviour
             return;
         }
 
-        // 공격 트리거 콜라이더에 닿으면 공격
-        if (smashTrigger.atkTrigger)
-        {
-            // 공격 액션으로 전환
-            character.nowState = Character.State.Attack;
+        // // 공격 쿨타임됬을때, 공격 트리거 켜졌을때, idle 상태일때
+        // if (character.atkCoolCount <= 0 && atkTrigger.atkTrigger && character.nowState == Character.State.Idle)
+        //     StartCoroutine(SmashAttack());
+    }
 
-            StartCoroutine(SmashAttack());
-        }
+    void Attack()
+    {
+        // 공격 액션으로 전환
+        character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
+
+        StartCoroutine(SmashAttack());
     }
 
     public IEnumerator SmashAttack()
@@ -68,13 +77,8 @@ public class StoneGolem_AI : MonoBehaviour
         // 스매쉬 콜라이더 비활성화까지 대기
         yield return new WaitUntil(() => !smashColl.enabled);
 
-        // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
         // Idle로 전환
         character.nowState = Character.State.Idle;
-
-        // 공격 트리거 끄기
-        // smashTrigger.atkTrigger = false;
     }
 
     public void SmashColliderOn()

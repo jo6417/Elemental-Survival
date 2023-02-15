@@ -31,17 +31,16 @@ public class Character : MonoBehaviour
     public CharacterStat characterStat = new CharacterStat(); // 해당 캐릭터 스탯
 
     [Header("State")]
-    // public float hpNow;
-    // public float hpMax;
+    public List<Buff> buffList = new List<Buff>(); // 버프 리스트
     public bool isDead; //죽음 코루틴 진행중 여부
     public float deadDelay = 1f; // 죽는 트랜지션 진행 시간
     public bool changeGhost = false;
     public float portalSize = 1f; //포탈 사이즈 지정값
     public bool afterEffect = false; // 상태이상 여부
     public bool invinsible = false; //현재 무적 여부
-    public bool selfExplosion = false; //죽을때 자폭 여부
     public float attackRange; // 공격범위
     public float healCount; // Heal 엘리트몹 아군 힐 카운트
+    public float atkCoolCount = 0; // 공격 쿨타임 잔여시간
 
     public bool isGhost = false; // 마법으로 소환된 고스트 몬스터인지 여부
     public bool IsGhost
@@ -118,7 +117,7 @@ public class Character : MonoBehaviour
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
     public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
-    public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
+    // public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
 
     public float particleHitCount = 0; // 파티클 피격 카운트
     public float hitDelayCount = 0; // 피격 딜레이 카운트
@@ -558,6 +557,10 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+        // 공격중 아닐때 공격 쿨타임 차감
+        if (nowState != State.Attack && atkCoolCount > 0)
+            atkCoolCount -= Time.deltaTime;
+
         // 몬스터 정보 없으면 리턴
         if (enemy == null)
         {
@@ -746,13 +749,13 @@ public class Character : MonoBehaviour
         if (hitDelayCount > 0)
             return false;
 
-        // 감전 디버프일때
-        if (DebuffList[(int)Debuff.Shock] != null
-        // 스턴 디버프일때
-        || DebuffList[(int)Debuff.Stun] != null
-        )
-            // 행동불능이므로 false 리턴
-            return false;
+        // // 감전 디버프일때
+        // if (DebuffList[(int)Debuff.Shock] != null
+        // // 스턴 디버프일때
+        // || DebuffList[(int)Debuff.Stun] != null
+        // )
+        //     // 행동불능이므로 false 리턴
+        //     return false;
 
         // 애니메이션 속도 초기화
         if (animList.Count > 0)
@@ -870,13 +873,177 @@ public class Character : MonoBehaviour
     // {
     //     SoundManager.Instance.StopSound(soundName, 0.5f);
     // }
+
+    public float GetBuffedStat(string statName)
+    {
+        // 스탯이름으로 해당 스탯 값 불러오기
+        var statField = characterStat.GetType().GetField(statName);
+        var stat = statField.GetValue(characterStat);
+
+        // 스탯이름 없으면 에러
+        if (statField == null || stat == null)
+        {
+            Debug.Log(statName + " : 는 존재하지 않는 스탯");
+            return -1;
+        }
+
+        // 명시적 변환하기
+        float retrunStat = (float)stat;
+
+        // 스탯에 해당하는 버프 모두 찾기
+        List<Buff> _buffList = buffList.FindAll(x => x.statName == statField.Name);
+
+        // 곱연산만 전부 연산
+        for (int i = 0; i < _buffList.Count; i++)
+            if (_buffList[i].isMultiple)
+                retrunStat *= _buffList[i].amount;
+        // 합연산만 전부 연산
+        for (int i = 0; i < _buffList.Count; i++)
+            if (!_buffList[i].isMultiple)
+                retrunStat += _buffList[i].amount;
+
+        return retrunStat;
+    }
+
+    public Buff SetBuff(string buffName, string statName, bool isMultiple, float amount, float duration,
+                     bool dotHit, Transform buffParent = null, GameObject buffEffect = null)
+    {
+        // 버프 아이콘
+        Transform buffUI = null;
+
+        // 스탯 이름이 있을때
+        if (statName != "")
+        {
+            // 스탯이름으로 해당 스탯 값 불러오기
+            var statField = characterStat.GetType().GetField(statName);
+            var stat = statField.GetValue(characterStat);
+            // 스탯이름 없으면 에러
+            if (statField == null || stat == null)
+            {
+                Debug.Log(statName + " : 는 존재하지 않는 스탯");
+                return null;
+            }
+        }
+
+        // 버프 리스트에서 이름이 같은 버프 찾기
+        Buff buff = buffList.Find(x => x.buffName == buffName);
+
+        // 이미 같은 버프가 있으면
+        if (buff != null)
+        {
+            // 잔여 버프시간 계산 (기존 duration에서 버프 시작시간과 현재 시간의 차이만큼 빼기)
+            float remainTime = buff.duration - (Time.time - buff.startTime);
+            // 더 큰 지속시간으로 교체
+            buff.duration = Mathf.Max(remainTime, buff.duration);
+        }
+        // 없으면 버프 새로 생성
+        else
+        {
+            // 버프 인스턴스 생성
+            buff = new Buff();
+
+            // 버프 이름 전달
+            buff.buffName = buffName;
+            // 스탯 이름 전달
+            buff.statName = statName;
+            // 버프 시작 시간 전달
+            buff.startTime = Time.time;
+            // 버프량 전달
+            buff.amount = amount;
+            // 연산 종류 전달
+            buff.isMultiple = isMultiple;
+            // 버프 코루틴 전달
+            // buff.buffCoroutine = coroutine;
+            // 버프 아이콘/이펙트
+            buff.buffEffect = buffEffect;
+            // 버프 아이콘/이펙트 부모
+            buff.buffParent = buffParent;
+            // 버프 지속 시간 전달
+            buff.duration = duration;
+
+            // 이미 버프 중 아닐때
+            if (buffEffect != null && !buffParent.Find(buffEffect.name))
+                // 아이콘/이펙트 붙이기
+                buffUI = LeanPool.Spawn(buffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
+
+            // 해당 버프 리스트에 넣기
+            buffList.Add(buff);
+        }
+
+        // 도트 데미지일때
+        if (dotHit)
+        {
+            // 이미 진행중인 도트뎀 코루틴 있으면 정지
+            if (buff.buffCoroutine != null)
+                StopCoroutine(buff.buffCoroutine);
+
+            // 도트뎀 코루틴 실행
+            buff.buffCoroutine = DotHit(buff, buffParent, buffEffect);
+            StartCoroutine(buff.buffCoroutine);
+        }
+        // 일반 버프일때
+        else
+            // 버프 없에고 아이콘,이펙트 제거
+            StartCoroutine(StopBuff(buff, buff.duration, buffParent, buffEffect));
+
+        return buff;
+    }
+
+    public IEnumerator StopBuff(Buff buff, float duration, Transform buffParent = null, GameObject buffEffect = null)
+    {
+        // -1이면 자동 버프제거 중단
+        if (duration == -1)
+            yield break;
+
+        Transform buffUI = null;
+
+        // 수정된 duration 동안 대기
+        yield return new WaitForSeconds(duration);
+
+        // 이름으로 버프 찾기
+        Buff findBuff = buffList.Find(x => x.buffName == buff.buffName);
+        // 버프 찾았으면
+        if (findBuff != null)
+            // 해당 리스트에서 버프 없에기
+            buffList.Remove(findBuff);
+
+        // 아이콘/이펙트 찾기
+        if (buffEffect != null && buffUI == null)
+            buffUI = buffParent.Find(buffEffect.name);
+        // 아이콘/이펙트 없에기
+        if (buffUI != null)
+            LeanPool.Despawn(buffUI);
+    }
+
+    public IEnumerator DotHit(Buff buff, Transform buffParent = null, GameObject buffEffect = null)
+    {
+        Transform buffUI = null;
+        // 이미 버프 중 아닐때
+        if (buffEffect != null && !buffParent.Find(buffEffect.name))
+            // 아이콘/이펙트 붙이기
+            buffUI = LeanPool.Spawn(buffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
+
+        // 도트 지속시간을 횟수로 환산
+        int hitNum = (int)buff.duration;
+        for (int i = 0; i < hitNum; i++)
+            // 캐릭터 살아있을때
+            if (!isDead)
+            {
+                // 도트 데미지 입히기
+                hitBoxList[0].Damage(Mathf.Clamp(buff.amount, 1, float.PositiveInfinity), false);
+
+                // 도트 딜레이 대기
+                yield return new WaitForSeconds(1f);
+            }
+
+        // 버프 없에고 아이콘,이펙트 제거
+        StartCoroutine(StopBuff(buff, buff.duration, buffParent, buffEffect));
+    }
 }
 
 [System.Serializable]
 public class CharacterStat
 {
-    public List<Buff> buffList = new List<Buff>(); // 버프 리스트
-
     public int powerSum; // 캐릭터 총 전투력
     public float hpMax = 100; // 최대 체력
     public float hpNow = 100; // 체력
@@ -938,109 +1105,7 @@ public class CharacterStat
 
     // SetStat 없이 원본 스탯 변수 값 유지
     // GetStat 에서 buffList 참조해서 스탯 리턴
-    public float GetBuffedStat(string statName)
-    {
-        // 스탯이름으로 해당 스탯 값 불러오기
-        var statField = this.GetType().GetField(statName);
-        var stat = statField.GetValue(this);
 
-        // 스탯이름 없으면 에러
-        if (statField == null || stat == null)
-        {
-            Debug.Log(statName + " : 는 존재하지 않는 스탯");
-            return -1;
-        }
-
-        // 명시적 변환하기
-        float retrunStat = (float)stat;
-
-        // 스탯에 해당하는 버프 모두 찾기
-        List<Buff> _buffList = buffList.FindAll(x => x.statName == statField.Name);
-
-        // 곱연산만 전부 연산
-        for (int i = 0; i < _buffList.Count; i++)
-            if (_buffList[i].isMultiple)
-                retrunStat *= _buffList[i].amount;
-        // 합연산만 전부 연산
-        for (int i = 0; i < _buffList.Count; i++)
-            if (!_buffList[i].isMultiple)
-                retrunStat += _buffList[i].amount;
-
-        return retrunStat;
-    }
-
-    public IEnumerator BuffCoroutine(string buffName, string statName, bool isMultiple, float amount, float duration,
-    Transform buffParent, GameObject buffEffect, IEnumerator coroutine)
-    {
-        // 버프 아이콘
-        Transform buffUI = null;
-
-        // 스탯이름으로 해당 스탯 값 불러오기
-        var statField = PlayerManager.Instance.characterStat.GetType().GetField(statName);
-        var stat = statField.GetValue(PlayerManager.Instance.characterStat);
-        // 스탯이름 없으면 에러
-        if (statField == null || stat == null)
-        {
-            Debug.Log(statName + " : 는 존재하지 않는 스탯");
-            yield break;
-        }
-
-        // 버프 리스트에서 이름이 같은 버프 찾기
-        Buff buff = buffList.Find(x => x.buffName == buffName);
-
-        // 이미 같은 버프가 있으면
-        if (buff != null)
-        {
-            // 잔여 버프시간 계산 (기존 duration에서 버프 시작시간과 현재 시간의 차이만큼 빼기)
-            float remainTime = buff.duration - (Time.time - buff.startTime);
-            // 더 큰 지속시간으로 교체
-            buff.duration = Mathf.Max(remainTime + duration, buff.duration);
-        }
-        // 없으면 버프 새로 생성
-        else
-        {
-            // 버프 인스턴스 생성
-            buff = new Buff();
-
-            // 버프 이름 전달
-            buff.buffName = buffName;
-            // 스탯 이름 전달
-            buff.statName = statName;
-            // 버프 시작 시간 전달
-            buff.startTime = Time.time;
-            // 버프량 전달
-            buff.amount = amount;
-            // 연산 종류 전달
-            buff.isMultiple = isMultiple;
-            // 버프 코루틴 전달
-            buff.buffCoroutine = coroutine;
-            // 버프 아이콘/이펙트
-            buff.buffEffect = buffEffect;
-            // 버프 아이콘/이펙트 부모
-            buff.buffParent = buffParent;
-            // 버프 지속 시간 전달
-            buff.duration = duration;
-
-            // 이미 버프 중 아닐때
-            if (!buffParent.Find(buffEffect.name))
-                // 아이콘/이펙트 붙이기
-                buffUI = LeanPool.Spawn(buffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
-
-            // 해당 버프 리스트에 넣기
-            buffList.Add(buff);
-        }
-
-        // 수정된 duration 동안 대기
-        yield return new WaitForSeconds(buff.duration);
-
-        // 해당 리스트에서 버프 없에기
-        buffList.Remove(buff);
-
-        // 아이콘/이펙트 없에기
-        buffUI = buffParent.Find(buffEffect.name);
-        if (buffUI != null)
-            LeanPool.Despawn(buffUI);
-    }
 }
 
 [System.Serializable]

@@ -10,6 +10,7 @@ public class LifeMushroomSpawner : MonoBehaviour
     MagicInfo magic;
     public GameObject lifeMushroom; // 회복 버섯
     public GameObject poisonSmokeEffect; //독 연기 이펙트
+    public GameObject mushroomIcon; // 버섯독 디버프 아이콘
     float duration;
 
     ParticleSystem particle;
@@ -71,8 +72,9 @@ public class LifeMushroomSpawner : MonoBehaviour
 
                 if (other.TryGetComponent(out HitBox enemyHitBox))
                 {
-                    // 독 도트 데미지 주기
-                    StartCoroutine(enemyHitBox.Hit(magicHolder));
+                    // 도트 데미지 실행
+                    enemyHitBox.character.SetBuff("LifeMushroom_Poison", "", true, 1, duration,
+                      true, enemyHitBox.character.buffParent, mushroomIcon);
                 }
             }
         }
@@ -83,8 +85,8 @@ public class LifeMushroomSpawner : MonoBehaviour
     {
         // print(MagicDB.Instance.MagicCritical(magic));
 
-        // 독 데미지 받는중에만 진행
-        if (character.DebuffList[(int)Character.Debuff.Poison] != null)
+        //todo 버섯 디버프 없으면 리턴
+        if (!character.buffList.Exists(x => x.buffName == "LifeMushroom_Poison"))
             return;
 
         // 크리티컬 확률 = 드랍 확률

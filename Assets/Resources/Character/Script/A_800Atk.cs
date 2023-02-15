@@ -38,6 +38,10 @@ public class A_800Atk : MonoBehaviour
 
         //공격 콜라이더 끄기
         meleeColl.gameObject.SetActive(false);
+
+        // 콜백에 공격 함수 넣기
+        if (atkTrigger.attackAction == null)
+            atkTrigger.attackAction += Attack;
     }
 
     private void Update()
@@ -58,10 +62,6 @@ public class A_800Atk : MonoBehaviour
         if (character.TargetObj != null)
             targetDir = character.TargetObj.transform.position - transform.position;
 
-        // 콜백에 공격 함수 넣기
-        if (atkTrigger.attackAction == null)
-            atkTrigger.attackAction += Attack;
-
         // // 공격 트리거 켜지면 공격 시작
         // if (meleeAtkTrigger.atkTrigger)
         //     StartCoroutine(MeleeAttack());
@@ -78,6 +78,8 @@ public class A_800Atk : MonoBehaviour
 
         // 공격 액션으로 전환
         character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
 
         //움직일 방향에따라 회전
         if (targetDir.x > 0)
@@ -89,16 +91,12 @@ public class A_800Atk : MonoBehaviour
         character.rigid.velocity = Vector3.zero;
 
         // 공격 애니메이션 실행
-        character.animList[0].SetBool("isAttack", true);
+        character.animList[0].SetTrigger("isAttack");
 
-        // 쿨타임만큼 대기
-        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
-
-        // Idle 애니메이션으로 초기화
-        character.animList[0].SetBool("isAttack", false);
-
-        // 공격 트리거 끄기
-        atkTrigger.atkTrigger = false;
+        // 공격 켤때까지 대기
+        yield return new WaitUntil(() => meleeColl.gameObject.activeSelf);
+        // 후딜레이 대기
+        yield return new WaitForSeconds(1f);
 
         // Idle 상태로 초기화
         character.nowState = Character.State.Idle;
@@ -106,13 +104,7 @@ public class A_800Atk : MonoBehaviour
 
     public void OnMeleeEffect()
     {
-        //공격 이펙트 켜기
+        // 공격 이펙트 켜기
         meleeColl.gameObject.SetActive(true);
-
-        //플레이어 방향 계산
-        // targetDir = character.TargetObj.transform.position - character.transform.position;
-        //플레이어 방향으로 회전
-        // float rotation = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-        // meleeColl.transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
     }
 }

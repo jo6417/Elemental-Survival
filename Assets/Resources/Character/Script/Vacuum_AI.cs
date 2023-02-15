@@ -11,10 +11,12 @@ public class Vacuum_AI : MonoBehaviour
     [SerializeField] EnemyAtkTrigger enemyAtkTrigger;
     [SerializeField] Collider2D atkColl;
     [SerializeField] GameObject dashEffect;
-    // [SerializeField] Collider2D absorbColl;
+    [SerializeField] GameObject ghostTrail;
 
     [Header("State")]
     public float absorbSpeed = 1f; //흡수 속도
+    public float dashReadyTime = 0.5f; // 돌진 준비 시간
+    public float dashTime = 0.3f; // 돌진 시간
     public float getRange; //아이템 획득 범위
     [SerializeField] float nowGem; // 현재 젬 획득량
     [SerializeField] float maxGem; // 젬 획득량 최대치
@@ -30,10 +32,10 @@ public class Vacuum_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance.initFinish);
+        yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);
 
-        //todo 청소기 사운드 무한 반복 재생
-        // SoundManager.Instance.PlaySound("Vacuum_Suck", character.transform, 0.1f, 0, -1, true);
+        //todo 사운드 무한 반복 재생 (작은 바퀴 달달거리는 소리)
+        // SoundManager.Instance.PlaySound("Vacuum_Wheel", character.transform, 0.1f, 0, -1, true);
 
         // 젬 보유량 표시 컬러 갱신
         fillAmount.material.SetColor("Tint", fillColor);
@@ -49,7 +51,10 @@ public class Vacuum_AI : MonoBehaviour
         pulseLight.DOColor(lightColor, 1f)
         .SetLoops(-1, LoopType.Yoyo);
 
-        //todo 공격 함수 초기화
+        // 잔상 끄기
+        ghostTrail.SetActive(false);
+
+        // 공격 함수 초기화
         if (enemyAtkTrigger.attackAction == null)
             enemyAtkTrigger.attackAction += Dash;
     }
@@ -136,15 +141,18 @@ public class Vacuum_AI : MonoBehaviour
 
     void Dash()
     {
-        // 현재 공격중 아니면
-        if (character.nowState != Character.State.Attack)
-            StartCoroutine(DashAttack());
+        // 공격 액션으로 전환
+        character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
+
+        StartCoroutine(DashAttack());
     }
 
     public IEnumerator DashAttack()
     {
-        // 공격 액션으로 전환
-        character.nowState = Character.State.Attack;
+        // 잔상 켜기
+        ghostTrail.SetActive(true);
 
         // 밀리지 않게 kinematic으로 전환
         // character.rigid.bodyType = RigidbodyType2D.Kinematic;
@@ -165,8 +173,8 @@ public class Vacuum_AI : MonoBehaviour
 
         WaitForSeconds delta = new WaitForSeconds(Time.deltaTime);
 
-        // 해당 시간동안 속도 유지
-        float atkCount = 1f;
+        // 돌진 준비, 백스텝
+        float atkCount = dashReadyTime;
         while (atkCount > 0)
         {
             // 타겟 방향 반대로 살짝 이동
@@ -186,8 +194,8 @@ public class Vacuum_AI : MonoBehaviour
         //공격 콜라이더 켜기
         atkColl.enabled = true;
 
-        // 해당 시간동안 속도 유지
-        atkCount = 0.5f;
+        // 해당 시간동안 돌진
+        atkCount = dashTime;
         while (atkCount > 0)
         {
             // 타겟 방향으로 돌진
@@ -198,8 +206,8 @@ public class Vacuum_AI : MonoBehaviour
             yield return delta;
         }
 
-        // character.transform.DOMove(transform.position + targetDir.normalized * 5f, 0.5f);        
-        // yield return new WaitForSeconds(0.5f);
+        // 잔상 끄기
+        ghostTrail.SetActive(false);
 
         // 속도 멈추기
         character.rigid.velocity = Vector3.zero;
@@ -210,8 +218,9 @@ public class Vacuum_AI : MonoBehaviour
         // 타겟 위치 추적 시간 초기화
         character.targetResetCount = 0f;
 
-        // 쿨타임만큼 대기후 초기화
-        yield return new WaitForSeconds(character.cooltimeNow / character.enemy.cooltime);
+        // 후딜레이 대기
+        yield return new WaitForSeconds(0.5f);
+
         // Idle로 전환
         character.nowState = Character.State.Idle;
     }

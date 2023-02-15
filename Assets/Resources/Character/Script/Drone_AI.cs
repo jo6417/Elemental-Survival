@@ -36,10 +36,6 @@ public class Drone_AI : MonoBehaviour
         // // 시작하면 사운드 재생
         // SoundManager.Instance.PlaySound("MiniDrone_Fly", transform, 0, 0, -1, true);
 
-        // 공격 트리거 발동시 액션 없으면 넣기
-        if (atkTrigger.attackAction == null)
-            atkTrigger.attackAction += Attack;
-
         // 눈알 위치 초기화
         eye.transform.localPosition = Vector2.zero;
 
@@ -70,21 +66,26 @@ public class Drone_AI : MonoBehaviour
             .SetLoops(-1);
         }
 
+        // 공격 트리거 발동시 액션 없으면 넣기
+        if (atkTrigger.attackAction == null)
+            atkTrigger.attackAction += Attack;
+
         yield return null;
     }
 
     void Attack()
     {
-        if (character.nowState == Character.State.Idle)
-            // 공격 코루틴 실행
-            StartCoroutine(SelfExplosion());
+        // 공격 상태로 전환
+        character.nowState = Character.State.Attack;
+        // 공격 쿨타임 갱신
+        character.atkCoolCount = character.cooltimeNow;
+
+        // 공격 코루틴 실행
+        StartCoroutine(SelfExplosion());
     }
 
     IEnumerator SelfExplosion()
     {
-        // 공격 상태로 전환
-        character.nowState = Character.State.Attack;
-
         // 양쪽으로 각도 부르르 떨기
         body.DOPunchRotation(Vector3.forward * 20f, attackReadyTime, 30, 1);
 
@@ -125,7 +126,13 @@ public class Drone_AI : MonoBehaviour
         yield return new WaitForSeconds(attackReadyTime);
 
         // 폭발 스폰
-        LeanPool.Spawn(explosionAttack, transform.position, Quaternion.identity, ObjectPool.Instance.enemyAtkPool);
+        GameObject explosion = LeanPool.Spawn(explosionAttack, transform.position, Quaternion.identity, ObjectPool.Instance.enemyAtkPool);
+        // 몬스터 태그로 변경
+        explosion.tag = "Enemy";
+        // 몬스터 공격 레이어로 변경
+        explosion.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
+        // 몬스터 공격력 넣기
+        explosion.GetComponent<Attack>().power = character.powerNow;
 
         // 딜레이 없이 즉시 사망
         StartCoroutine(character.hitBoxList[0].Dead(0));
