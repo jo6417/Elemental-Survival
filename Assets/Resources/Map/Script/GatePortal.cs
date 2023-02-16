@@ -37,8 +37,10 @@ public class GatePortal : MonoBehaviour
     public PortalState portalState; // 현재 포탈상태
     public enum PortalState { Idle, GemReceive, BossAlive, MobRemain, Clear };
     int gemType; // 필요 젬 타입
-    [SerializeField] float maxGem; //필요 젬 개수
-    [SerializeField] float nowGem; //현재 젬 개수
+    [SerializeField] float minGem = 0f; // 필요 젬 최소량
+    [SerializeField] float maxGem = 100f; // 필요 젬 최대량
+    [SerializeField] int needGem; //필요 젬 개수
+    [SerializeField] int nowGem; //현재 젬 개수
     float refundRate = 0.2f; // 클리어시 원소젬 환불 계수
     float delayCount; //상호작용 딜레이 카운트
     [SerializeField] float interactDelay = 0.1f; //상호작용 딜레이
@@ -121,7 +123,7 @@ public class GatePortal : MonoBehaviour
         gemType = (int)SystemManager.Instance.nowMapElement;
 
         // 필요한 젬 개수 초기화
-        maxGem = Random.Range(30, 50);
+        needGem = (int)(Random.Range(minGem, maxGem) / 10f) * 10;
         nowGem = 0;
 
         // 젬 게이지 머터리얼 초기화
@@ -185,11 +187,11 @@ public class GatePortal : MonoBehaviour
         // pressKey.text = 
 
         // 젬이 부족할때
-        if (nowGem < maxGem)
+        if (nowGem < needGem)
             ActionText("Pay Gem");
 
         // 젬이 최대치일때
-        if (nowGem == maxGem)
+        if (nowGem == needGem)
             ActionText("Boss Summon", isTrigger);
 
         // 맵 클리어시
@@ -235,7 +237,7 @@ public class GatePortal : MonoBehaviour
         Canvas.ForceUpdateCanvases();
 
         // 원소젬 최대일때
-        if (portalState == PortalState.GemReceive && nowGem == maxGem)
+        if (portalState == PortalState.GemReceive && nowGem == needGem)
         {
             // 보스 버튼 이미지 켜기
             showKeyUI.GetComponent<Image>().enabled = isTrigger;
@@ -266,7 +268,7 @@ public class GatePortal : MonoBehaviour
         || portalState == PortalState.GemReceive)
         {
             // 젬이 최대치일때
-            if (nowGem == maxGem)
+            if (nowGem == needGem)
             {
                 // 키를 눌렀을때
                 if (isPress)
@@ -308,7 +310,7 @@ public class GatePortal : MonoBehaviour
     {
         float payDelay = 0.1f;
         // 계속 지불 중이면 반복
-        while (portalState == PortalState.GemReceive && nowGem < maxGem)
+        while (portalState == PortalState.GemReceive && nowGem < needGem)
         {
             //todo 플레이어 젬 부족시 정지
             // if (PlayerManager.Instance.GetGem(gemType) <= 0
@@ -347,7 +349,7 @@ public class GatePortal : MonoBehaviour
         }
 
         // 젬이 최대치일때
-        if (nowGem == maxGem)
+        if (nowGem == needGem)
         {
             // 원소젬 max 이펙트 재생
             gemMaxEffect.SetActive(true);
@@ -362,13 +364,13 @@ public class GatePortal : MonoBehaviour
     void UpdateGemNum()
     {
         //젬 개수 UI 갱신
-        gemNum.GetComponent<TextMeshProUGUI>().text = nowGem.ToString() + " / " + maxGem.ToString();
+        gemNum.GetComponent<TextMeshProUGUI>().text = nowGem.ToString() + " / " + needGem.ToString();
 
         // 시작 지점 각도 수집
         float startAngle = gaugeImg.material.GetFloat("_Arc1");
 
         //젬 개수만큼 테두리 도넛 게이지 갱신
-        float gaugeFill = ((maxGem - nowGem) / maxGem) * (360f - startAngle);
+        float gaugeFill = ((needGem - nowGem) / needGem) * (360f - startAngle);
         gaugeFill = Mathf.Clamp(gaugeFill, 0, (360f - startAngle));
 
         // 시작부터 마지막 지점까지 채우는 양 갱신
@@ -472,7 +474,7 @@ public class GatePortal : MonoBehaviour
         // 드랍 시킬 원소젬 뽑기
         ItemInfo gemInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
         // 게이트에 투입된 원소젬 개수에 환불 계수 곱하기
-        int dropNum = Mathf.RoundToInt(Random.Range(maxGem * (1 - refundRate), maxGem * (1 + refundRate)));
+        int dropNum = Mathf.RoundToInt(Random.Range(needGem * (1 - refundRate), needGem * (1 + refundRate)));
 
         // 트럭 버튼 드랍
         ItemInfo truckBtnInfo = new ItemInfo(ItemDB.Instance.GetItemByName("TruckButton"));
@@ -580,7 +582,7 @@ public class GatePortal : MonoBehaviour
         if (nowIndex < 5)
         {
             // 다음 맵 인덱스로 증가
-            SystemManager.Instance.nowMapElement = (SystemManager.MapElement)(nowIndex + 1);
+            SystemManager.Instance.nowMapElement = (MapElement)(nowIndex + 1);
 
             // 트랜지션 이후 새로운 인게임 씬 켜기
             SystemManager.Instance.StartGame();

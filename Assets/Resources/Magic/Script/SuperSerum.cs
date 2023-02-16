@@ -94,7 +94,7 @@ public class SuperSerum : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         // 초기화 완료 후 플레이어에 충돌하면
-        if (!isGet && initialFinish && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (!isGet && initialFinish && other.CompareTag(TagNameList.Player.ToString()))
         {
             // 획득함, 중복 획득 방지
             isGet = true;

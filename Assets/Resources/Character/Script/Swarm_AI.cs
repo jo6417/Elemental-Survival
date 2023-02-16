@@ -91,7 +91,7 @@ public class Swarm_AI : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 스포너 밖에 나갔을때
-        if (other.CompareTag(SystemManager.TagNameList.Respawn.ToString()))
+        if (other.CompareTag(TagNameList.Respawn.ToString()))
         {
             // 플레이어 위치로 이동
             transform.position = PlayerManager.Instance.transform.position;

@@ -49,7 +49,7 @@ public class LightningSlime_AI : MonoBehaviour
     void Attack()
     {
         // 공격 액션으로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
         // 공격 쿨타임 갱신
         character.atkCoolCount = character.cooltimeNow;
 
@@ -59,7 +59,7 @@ public class LightningSlime_AI : MonoBehaviour
     IEnumerator ElectroAttack()
     {
         // 공격 상태로 변경
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
 
         // 물리 충돌 끄기
         character.physicsColl.enabled = false;
@@ -138,7 +138,7 @@ public class LightningSlime_AI : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // idle 상태로 변경
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     private void OnDisable()

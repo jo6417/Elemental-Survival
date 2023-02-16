@@ -9,7 +9,7 @@ public class MonsterBound : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기, 콜라이더 꺼진 경우 아닐때만
-        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+        if (other.CompareTag(TagNameList.Enemy.ToString())
         && other.gameObject.activeSelf && dragSwitch && other.enabled)
         {
             // print(other.gameObject.name);

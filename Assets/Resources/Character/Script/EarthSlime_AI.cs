@@ -27,7 +27,7 @@ public class EarthSlime_AI : MonoBehaviour
     void Attack()
     {
         // 공격 액션으로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
         // 공격 쿨타임 갱신
         character.atkCoolCount = character.cooltimeNow;
 
@@ -69,6 +69,6 @@ public class EarthSlime_AI : MonoBehaviour
         smashColl.gameObject.SetActive(false);
 
         // Idle로 전환
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 }

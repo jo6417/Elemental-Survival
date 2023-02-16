@@ -171,7 +171,7 @@ public class MagicProjectile : MonoBehaviour
     {
         //적에게 충돌
         if (magicHolder.targetType == MagicHolder.TargetType.Enemy
-        && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+        && other.CompareTag(TagNameList.Enemy.ToString()))
         {
             // 히트박스 없으면 리턴
             if (!other.TryGetComponent(out HitBox enemyHitBox))
@@ -194,7 +194,7 @@ public class MagicProjectile : MonoBehaviour
         }
 
         // 플레이어에게 충돌, 대쉬중이면 무시
-        if (magicHolder.targetType == MagicHolder.TargetType.Player && other.CompareTag(SystemManager.TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
+        if (magicHolder.targetType == MagicHolder.TargetType.Player && other.CompareTag(TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
         {
             // print(gameObject.name + " : " + magicHolder.pierceCount);
 

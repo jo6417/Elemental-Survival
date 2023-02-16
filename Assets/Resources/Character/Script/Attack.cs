@@ -50,8 +50,8 @@ public class Attack : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 목표한 타겟에 충돌했을때
-        if (targetType == TargetType.Player && other.CompareTag(SystemManager.TagNameList.Player.ToString())
-        || targetType == TargetType.Enemy && other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+        if (targetType == TargetType.Player && other.CompareTag(TagNameList.Player.ToString())
+        || targetType == TargetType.Enemy && other.CompareTag(TagNameList.Enemy.ToString()))
             // 공격 콜백 함수가 있으면 실행
             if (attackCallback != null)
                 attackCallback.Invoke();

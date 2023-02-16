@@ -378,7 +378,7 @@ public class WorldSpawner : MonoBehaviour
             eliteClass = SystemManager.Instance.WeightRandom(eliteWeight);
 
             // 엘리트 종류를 매니저에 전달
-            character.eliteClass = (Character.EliteClass)eliteClass;
+            character.eliteClass = (EliteClass)eliteClass;
         }
 
         //EnemyInfo 인스턴스 생성
@@ -473,7 +473,7 @@ public class WorldSpawner : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 스폰 콜라이더 밖으로 나가면 콜라이더 내부 반대편으로 보내기, 콜라이더 꺼진 경우 아닐때만
-        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString())
+        if (other.CompareTag(TagNameList.Enemy.ToString())
         && other.gameObject.activeSelf && dragSwitch && other.enabled)
         {
             Character character = other.GetComponent<Character>();

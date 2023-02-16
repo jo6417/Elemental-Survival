@@ -163,7 +163,7 @@ public class EnemyDB : MonoBehaviour
         // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
         yield return StartCoroutine(
             SaveManager.Instance.WebDataLoad(
-                SystemManager.DBType.Enemy,
+                DBType.Enemy,
                 "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
         ));
 
@@ -182,7 +182,7 @@ public class EnemyDB : MonoBehaviour
         // 동기화 여부 다시 검사
         yield return StartCoroutine(
             SaveManager.Instance.DBSyncCheck(
-                SystemManager.DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn,
+                DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn,
                 "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp")
         );
 

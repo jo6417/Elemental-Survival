@@ -378,19 +378,19 @@ public class HitBox : MonoBehaviour
             // 슬로우 디버프, 크리티컬 성공일때
             if (attack.slowTime > 0)
                 // 버프 적용
-                character.SetBuff(Character.Debuff.Slow.ToString(), nameof(character.characterStat.moveSpeed), true, 0.5f, attack.slowTime,
+                character.SetBuff(Debuff.Slow.ToString(), nameof(character.characterStat.moveSpeed), true, 0.5f, attack.slowTime,
                    false, character.buffParent, SystemManager.Instance.slowDebuffUI);
 
             // 스턴
             if (attack.stunTime > 0)
                 // 버프 적용
-                character.SetBuff(Character.Debuff.Stun.ToString(), nameof(character.characterStat.moveSpeed), true, 0, attack.stunTime,
+                character.SetBuff(Debuff.Stun.ToString(), nameof(character.characterStat.moveSpeed), true, 0, attack.stunTime,
                   false, character.buffParent, SystemManager.Instance.stunDebuffEffect);
 
             // 감전 디버프 && 크리티컬일때
             if (attack.shockTime > 0)
                 // 버프 적용
-                character.SetBuff(Character.Debuff.Shock.ToString(), nameof(character.characterStat.moveSpeed), true, 0, attack.shockTime,
+                character.SetBuff(Debuff.Shock.ToString(), nameof(character.characterStat.moveSpeed), true, 0, attack.shockTime,
                   false, character.transform, SystemManager.Instance.shockDebuffEffect);
 
             // flat 디버프 있을때, flat 상태 아닐때
@@ -404,19 +404,19 @@ public class HitBox : MonoBehaviour
         // 화상 피해 시간 있을때
         if (attack.burnTime > 0)
             // 도트 데미지 실행
-            character.SetBuff(Character.Debuff.Burn.ToString(), "", true, attack.power, attack.burnTime,
+            character.SetBuff(Debuff.Burn.ToString(), "", true, attack.power, attack.burnTime,
              true, character.transform, SystemManager.Instance.burnDebuffEffect);
 
         // 포이즌 피해 시간 있으면 도트 피해
         if (attack.poisonTime > 0)
             // 도트 데미지 실행
-            character.SetBuff(Character.Debuff.Poison.ToString(), "", true, attack.power, attack.poisonTime,
+            character.SetBuff(Debuff.Poison.ToString(), "", true, attack.power, attack.poisonTime,
              true, character.buffParent, SystemManager.Instance.poisonDebuffEffect);
 
         // 출혈 지속시간 있으면 도트 피해
         if (attack.bleedTime > 0)
             // 도트 데미지 실행
-            character.SetBuff(Character.Debuff.Bleed.ToString(), "", true, attack.power, attack.bleedTime,
+            character.SetBuff(Debuff.Bleed.ToString(), "", true, attack.power, attack.bleedTime,
              true, character.buffParent, SystemManager.Instance.bleedDebuffUI);
 
         #endregion
@@ -556,7 +556,7 @@ public class HitBox : MonoBehaviour
     //         }
     // }
 
-    // public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Character.Debuff debuffType)
+    // public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Debuff debuffType)
     // {
     //     //이미 코루틴 실행중이면 기존 코루틴 취소
     //     if (character.DebuffList[(int)debuffType] != null)
@@ -568,7 +568,7 @@ public class HitBox : MonoBehaviour
     //     StartCoroutine(character.DebuffList[(int)debuffType]);
     // }
 
-    // public IEnumerator DotHitCoroutine(float tickDamage, bool isCritical, float duration, GameObject debuffEffect, Transform buffParent, Character.Debuff debuffType)
+    // public IEnumerator DotHitCoroutine(float tickDamage, bool isCritical, float duration, GameObject debuffEffect, Transform buffParent, Debuff debuffType)
     // {
     //     // 디버프 이펙트
     //     Transform effect = null;

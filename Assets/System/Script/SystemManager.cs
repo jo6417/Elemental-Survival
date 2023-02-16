@@ -15,6 +15,10 @@ using System;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
+public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
+public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
+public enum DBType { Magic, Enemy, Item };
+
 [Serializable]
 public class PhysicsLayerList
 {
@@ -81,7 +85,7 @@ public class SystemManager : MonoBehaviour
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
-    public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
+
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public List<float> gradeRate = new List<float>(); // 랜덤 등급 가중치
@@ -98,7 +102,6 @@ public class SystemManager : MonoBehaviour
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
-    public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
 
     [Header("Refer")]
     public NewInput System_Input; // 인풋 받기
@@ -110,7 +113,6 @@ public class SystemManager : MonoBehaviour
 
     [Header("DataBase")]
     public DBType dBType;
-    public enum DBType { Magic, Enemy, Item };
 
     [Header("Prefab")]
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘

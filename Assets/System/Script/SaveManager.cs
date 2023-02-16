@@ -152,7 +152,7 @@ public class SaveManager : MonoBehaviour
         //TODO 소지금 불러오기
     }
 
-    public IEnumerator DBSyncCheck(SystemManager.DBType dbType, Button syncBtn, string uri)
+    public IEnumerator DBSyncCheck(DBType dbType, Button syncBtn, string uri)
     {
         // 동기화 버튼 노랑불
         if (syncBtn != null)
@@ -168,15 +168,15 @@ public class SaveManager : MonoBehaviour
         // DB 종류에 따라 다른 DB json 불러오기
         switch (dbType)
         {
-            case SystemManager.DBType.Magic:
+            case DBType.Magic:
                 localDBJson = localSaveData.magicDBJson;
                 webDBJson = webSaveData.magicDBJson;
                 break;
-            case SystemManager.DBType.Enemy:
+            case DBType.Enemy:
                 localDBJson = localSaveData.enemyDBJson;
                 webDBJson = webSaveData.enemyDBJson;
                 break;
-            case SystemManager.DBType.Item:
+            case DBType.Item:
                 localDBJson = localSaveData.itemDBJson;
                 webDBJson = webSaveData.itemDBJson;
                 break;
@@ -210,7 +210,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public IEnumerator WebDataLoad(SystemManager.DBType dbType, string uri)
+    public IEnumerator WebDataLoad(DBType dbType, string uri)
     {
         //Apps Script에서 가공된 json 데이터 문서 주소
         UnityWebRequest www = UnityWebRequest.Get(uri);
@@ -227,13 +227,13 @@ public class SaveManager : MonoBehaviour
             // DB 종류에 따라 받아온 json string값 넣어주기
             switch (dbType)
             {
-                case SystemManager.DBType.Magic:
+                case DBType.Magic:
                     webSaveData.magicDBJson = www.downloadHandler.text;
                     break;
-                case SystemManager.DBType.Enemy:
+                case DBType.Enemy:
                     webSaveData.enemyDBJson = www.downloadHandler.text;
                     break;
-                case SystemManager.DBType.Item:
+                case DBType.Item:
                     webSaveData.itemDBJson = www.downloadHandler.text;
                     break;
             }
@@ -321,13 +321,13 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(filePath, DBEnumScript.ToString());
     }
 
-    // public void DBSynchronize(SystemManager.DBType dbType)
+    // public void DBSynchronize(DBType dbType)
     // {
     //     // 데이터 동기화 코루틴 실행
     //     StartCoroutine(DBSync(dbType));
     // }
 
-    // IEnumerator DBSync(SystemManager.DBType dbType)
+    // IEnumerator DBSync(DBType dbType)
     // {
     //     // SaveData 형태로 로컬 데이터 로드하기
     //     SaveData saveData = LoadData();
@@ -338,12 +338,12 @@ public class SaveManager : MonoBehaviour
     //     // DB 타입에따라 데이터 넣어주기
     //     switch (dbType)
     //     {
-    //         case SystemManager.DBType.Magic:
+    //         case DBType.Magic:
     //             StartCoroutine(MagicDB.Instance.GetMagicDB());
     //             break;
-    //         case SystemManager.DBType.Enemy:
+    //         case DBType.Enemy:
     //             break;
-    //         case SystemManager.DBType.Item:
+    //         case DBType.Item:
     //             break;
     //     }
 

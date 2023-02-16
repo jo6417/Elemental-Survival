@@ -66,7 +66,7 @@ public class LifeMushroomSpawner : MonoBehaviour
         for (int i = 0; i < collisionEvents.Count; i++)
         {
             // 몬스터에 충돌하면
-            if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+            if (other.CompareTag(TagNameList.Enemy.ToString()))
             {
                 // print($"Enemy : {other.name} : {other.tag} : {other.layer}");
 

@@ -423,7 +423,7 @@ public class Truck : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 장애물이 닿으면
-        if (other.CompareTag(SystemManager.TagNameList.Obstacle.ToString()))
+        if (other.CompareTag(TagNameList.Obstacle.ToString()))
         {
             // 충돌 사운드 재생
             SoundManager.Instance.PlaySoundPool(impactSoundPool, other.transform.position);

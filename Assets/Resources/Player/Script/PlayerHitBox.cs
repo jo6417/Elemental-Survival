@@ -246,7 +246,7 @@ public class PlayerHitBox : HitBox
 
     //         // slowCoroutine = SlowDebuff(attack.slowTime);
     //         slowCoroutine = character.characterStat.BuffCoroutine(
-    //                Character.Debuff.Slow.ToString(), nameof(character.characterStat.speed), true, 0.2f, attack.slowTime,
+    //                Debuff.Slow.ToString(), nameof(character.characterStat.speed), true, 0.2f, attack.slowTime,
     //                character.buffParent, SystemManager.Instance.slowDebuffUI, slowCoroutine);
 
     //         StartCoroutine(slowCoroutine);
@@ -261,7 +261,7 @@ public class PlayerHitBox : HitBox
 
     //         // shockCoroutine = ShockDebuff(attack.shockTime);
     //         shockCoroutine = character.characterStat.BuffCoroutine(
-    //              Character.Debuff.Slow.ToString(), nameof(character.characterStat.speed), true, 0.2f, attack.slowTime,
+    //              Debuff.Slow.ToString(), nameof(character.characterStat.speed), true, 0.2f, attack.slowTime,
     //              character.buffParent, SystemManager.Instance.slowDebuffUI, shockCoroutine);
 
     //         StartCoroutine(shockCoroutine);
@@ -281,7 +281,7 @@ public class PlayerHitBox : HitBox
     //     {
     //         // 도트 데미지 실행
     //         DotHit(damage, isCritical, attack.burnTime, transform,
-    //         SystemManager.Instance.burnDebuffEffect, Character.Debuff.Burn);
+    //         SystemManager.Instance.burnDebuffEffect, Debuff.Burn);
     //     }
 
     //     // 포이즌 피해 시간 있으면 도트 피해
@@ -289,7 +289,7 @@ public class PlayerHitBox : HitBox
     //     {
     //         // 도트 데미지 실행
     //         DotHit(damage, isCritical, attack.poisonTime, transform,
-    //         SystemManager.Instance.poisonDebuffEffect, Character.Debuff.Poison);
+    //         SystemManager.Instance.poisonDebuffEffect, Debuff.Poison);
     //     }
 
     //     // 출혈 지속시간 있으면 도트 피해
@@ -297,7 +297,7 @@ public class PlayerHitBox : HitBox
     //     {
     //         // 도트 데미지 실행
     //         DotHit(damage, isCritical, attack.bleedTime, buffParentObj,
-    //         SystemManager.Instance.bleedDebuffUI, Character.Debuff.Bleed);
+    //         SystemManager.Instance.bleedDebuffUI, Debuff.Bleed);
     //     }
     // }
 

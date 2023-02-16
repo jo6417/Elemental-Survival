@@ -36,7 +36,7 @@ public class StoneGolem_AI : MonoBehaviour
             return;
 
         // 이미 공격중이면 리턴
-        if (character.nowState == Character.State.Attack)
+        if (character.nowState == CharacterState.Attack)
         {
             // 이동 멈추기
             character.rigid.velocity = Vector3.zero;
@@ -51,7 +51,7 @@ public class StoneGolem_AI : MonoBehaviour
     void Attack()
     {
         // 공격 액션으로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
         // 공격 쿨타임 갱신
         character.atkCoolCount = character.cooltimeNow;
 
@@ -78,7 +78,7 @@ public class StoneGolem_AI : MonoBehaviour
         yield return new WaitUntil(() => !smashColl.enabled);
 
         // Idle로 전환
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     public void SmashColliderOn()

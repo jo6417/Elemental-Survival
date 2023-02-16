@@ -24388,7 +24388,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4287958261527431661}
-  - component: {fileID: 2887598557138355753}
   - component: {fileID: 1731180605835969882}
   - component: {fileID: 195347135884871070}
   m_Layer: 0
@@ -24421,23 +24420,6 @@ Transform:
   m_Father: {fileID: 1754454283734634590}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -30, y: 0, z: 0}
---- !u!114 &2887598557138355753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3746069565182940126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  particle: {fileID: 0}
-  autoDespawn: 1
-  despawnDelay: 0
-  collOverTime: 0
-  modify_startLife: 0
 --- !u!198 &1731180605835969882
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -87823,6 +87805,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1754454283734634590}
+  - component: {fileID: 735446494328997545}
   m_Layer: 0
   m_Name: LevelupEffect
   m_TagString: Untagged
@@ -87845,3 +87828,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &735446494328997545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9062257037759034201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 1731180605835969882}
+  autoDespawn: 1
+  despawnDelay: 0
+  collOverTime: 0
+  modify_startLife: 0

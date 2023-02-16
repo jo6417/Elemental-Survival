@@ -78,7 +78,7 @@ public class KingSlime_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 휴식으로 초기화
-        character.nowState = Character.State.Rest;
+        character.nowState = CharacterState.Rest;
 
         // 독 채우기 이미지 끄기
         spriteFill.gameObject.SetActive(false);
@@ -113,7 +113,7 @@ public class KingSlime_AI : MonoBehaviour
         character.spriteList[0].material.SetColor("_Color", outLineColor);
 
         // 초기화 끝 행동 시작
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     private void Update()
@@ -126,7 +126,7 @@ public class KingSlime_AI : MonoBehaviour
             absorbCoolCount -= Time.deltaTime;
 
         // 공격중 아닐때
-        if (character.nowState != Character.State.Attack)
+        if (character.nowState != CharacterState.Attack)
         {
             // 쿨타임 카운트 차감
             if (coolCount > 0)
@@ -140,7 +140,7 @@ public class KingSlime_AI : MonoBehaviour
         stateText.text = $"Distance : {string.Format("{0:0.00}", playerDir.magnitude)} \n CoolCount : {string.Format("{0:0.00}", coolCount)}";
 
         // Idle 아니면 리턴
-        if (character.nowState != Character.State.Idle)
+        if (character.nowState != CharacterState.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -206,7 +206,7 @@ public class KingSlime_AI : MonoBehaviour
         if (coolCount <= 0 && playerDir.magnitude <= attackDistance)
         {
             // 현재 행동 공격으로 전환
-            character.nowState = Character.State.Attack;
+            character.nowState = CharacterState.Attack;
 
             //공격 패턴 선택
             ChooseAttack();
@@ -216,7 +216,7 @@ public class KingSlime_AI : MonoBehaviour
         else
         {
             // 현재 행동 점프로 전환
-            character.nowState = Character.State.Jump;
+            character.nowState = CharacterState.Jump;
 
             // 점프 실행
             JumpStart();
@@ -321,7 +321,7 @@ public class KingSlime_AI : MonoBehaviour
         anim.SetBool("Jump", false);
 
         // 현재 행동 끝내기
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator WaterFill(Color fillColor, float fillTime)
@@ -391,7 +391,7 @@ public class KingSlime_AI : MonoBehaviour
 
     void SetIdle()
     {
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator BabySlimeSummon()
@@ -467,7 +467,7 @@ public class KingSlime_AI : MonoBehaviour
             .OnComplete(() =>
             {
                 // 현재 행동 초기화
-                character.nowState = Character.State.Idle;
+                character.nowState = CharacterState.Idle;
             });
         });
 
@@ -554,7 +554,7 @@ public class KingSlime_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // 현재 행동 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator IceDrill()

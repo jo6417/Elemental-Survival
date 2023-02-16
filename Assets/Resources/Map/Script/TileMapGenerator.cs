@@ -215,25 +215,25 @@ public class TileMapGenerator : MonoBehaviour
         // }
     }
 
-    public void SaveMapPrefab()
-    {
-        string saveName = "tmapXY_" + count;
+    // public void SaveMapPrefab()
+    // {
+    //     string saveName = "tmapXY_" + count;
 
-        if (grid)
-        {
-            var savePath = "Assets/" + saveName + ".prefab";
-            if (PrefabUtility.CreatePrefab(savePath, grid))
-            {
-                EditorUtility.DisplayDialog("Tilemap saved", "Your Tilemap was saved under" + savePath, "Continue");
-            }
-            else
-            {
-                EditorUtility.DisplayDialog("Tilemap NOT saved", "An ERROR occured while trying to saveTilemap under" + savePath, "Continue");
-            }
-        }
+    //     if (grid)
+    //     {
+    //         var savePath = "Assets/" + saveName + ".prefab";
+    //         if (PrefabUtility.CreatePrefab(savePath, grid))
+    //         {
+    //             EditorUtility.DisplayDialog("Tilemap saved", "Your Tilemap was saved under" + savePath, "Continue");
+    //         }
+    //         else
+    //         {
+    //             EditorUtility.DisplayDialog("Tilemap NOT saved", "An ERROR occured while trying to saveTilemap under" + savePath, "Continue");
+    //         }
+    //     }
 
-        count++;
-    }
+    //     count++;
+    // }
 
     public void ClearMap(bool complete = true)
     {

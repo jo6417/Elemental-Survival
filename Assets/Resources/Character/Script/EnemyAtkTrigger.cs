@@ -78,7 +78,7 @@ public class EnemyAtkTrigger : MonoBehaviour
             return;
 
         // 플레이어가 충돌하면
-        if (other.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (other.CompareTag(TagNameList.Player.ToString()))
         {
             // 공격 실행
             AttackAction();
@@ -89,7 +89,7 @@ public class EnemyAtkTrigger : MonoBehaviour
         }
 
         // 몬스터가 충돌하면
-        if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+        if (other.CompareTag(TagNameList.Enemy.ToString()))
         {
             // 몬스터가 충돌했을때 히트박스 있을때
             if (other.TryGetComponent(out HitBox hitBox))
@@ -132,8 +132,8 @@ public class EnemyAtkTrigger : MonoBehaviour
 
         // 고스트 아닐때, 플레이어가 나가면
         // 고스트일때, 몬스터가 나가면
-        if ((!character.IsGhost && other.CompareTag(SystemManager.TagNameList.Player.ToString()))
-        || (character.IsGhost && other.CompareTag(SystemManager.TagNameList.Enemy.ToString())))
+        if ((!character.IsGhost && other.CompareTag(TagNameList.Player.ToString()))
+        || (character.IsGhost && other.CompareTag(TagNameList.Enemy.ToString())))
         {
             // 트리거 비활성화
             atkTrigger = false;

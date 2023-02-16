@@ -248,7 +248,7 @@ public class Farmer_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (character.nowState != Character.State.Idle)
+        if (character.nowState != CharacterState.Idle)
             return;
 
         // 찌르기 트리거에 플레이어 닿으면 Stab 패턴
@@ -369,7 +369,7 @@ public class Farmer_AI : MonoBehaviour
     IEnumerator ChooseAttack()
     {
         // 공격 상태로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
 
         // 가능한 공격 중에서 랜덤 뽑기
         int atkType = Random.Range(0, 3);
@@ -403,7 +403,7 @@ public class Farmer_AI : MonoBehaviour
 
     void Move()
     {
-        character.nowState = Character.State.Walk;
+        character.nowState = CharacterState.Walk;
 
         // 플레이어까지 거리
         float distance = Vector3.Distance(character.movePos, bodyTransform.position);
@@ -432,7 +432,7 @@ public class Farmer_AI : MonoBehaviour
         // 해당 방향으로 가속
         character.rigid.velocity = Vector3.Lerp(character.rigid.velocity, targetVelocity, Time.deltaTime * targetFollowSpeed);
 
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
 
         // 다리 움직이기
         FootCheck(character.rigid.velocity);
@@ -564,7 +564,7 @@ public class Farmer_AI : MonoBehaviour
     IEnumerator StabLeg()
     {
         // 공격 상태로 변경
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
 
         // 걷기 멈추기
         yield return StartCoroutine(StopMove());
@@ -764,7 +764,7 @@ public class Farmer_AI : MonoBehaviour
         // atkCoolCount = StabCooltime;
 
         // 상태 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator LegCable(LineRenderer cable, Transform bone)
@@ -806,7 +806,7 @@ public class Farmer_AI : MonoBehaviour
         atkCoolCount = PlantSeedCooltime;
 
         // 상태 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator SeedShot(Vector2 spawnPos)
@@ -917,7 +917,7 @@ public class Farmer_AI : MonoBehaviour
         atkCoolCount = BioGasCooltime;
 
         // 상태 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator SunHeal()
@@ -992,7 +992,7 @@ public class Farmer_AI : MonoBehaviour
         atkCoolCount = SunHealCooltime;
 
         // 상태 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator CameraZoomOut(int loopNum)

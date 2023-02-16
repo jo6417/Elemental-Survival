@@ -111,7 +111,7 @@ public class ItemManager : MonoBehaviour
         if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
         {
             // 자석 레이저와 충돌 했을때
-            if (other.gameObject.CompareTag(SystemManager.TagNameList.Item.ToString()))
+            if (other.gameObject.CompareTag(TagNameList.Item.ToString()))
             {
                 // idle 상태일때
                 if (itemState == ItemState.Idle)
@@ -131,7 +131,7 @@ public class ItemManager : MonoBehaviour
         }
 
         // 플레이어와 충돌 했을때
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (other.gameObject.CompareTag(TagNameList.Player.ToString()))
         {
             // idle 상태일때
             if (itemState == ItemState.Idle)
@@ -146,7 +146,7 @@ public class ItemManager : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         // 플레이어와 충돌 했을때
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (other.gameObject.CompareTag(TagNameList.Player.ToString()))
         {
             // idle 상태일때
             if (itemState == ItemState.Idle)

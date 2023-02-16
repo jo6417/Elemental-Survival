@@ -76,14 +76,14 @@ public class ParticleTrigger : MonoBehaviour
         for (int i = 0; i < collisionEvents.Count; i++)
         {
             // 플레이어에 충돌하면 데미지 주기
-            if (other.CompareTag(SystemManager.TagNameList.Player.ToString()) && PlayerManager.Instance.hitDelayCount <= 0 && !PlayerManager.Instance.isDash)
+            if (other.CompareTag(TagNameList.Player.ToString()) && PlayerManager.Instance.hitDelayCount <= 0 && !PlayerManager.Instance.isDash)
             {
                 print($"Player : {other.name} : {other.tag} : {other.layer}");
                 StartCoroutine(PlayerManager.Instance.hitBox.Hit(magicHolder));
             }
 
             // 몬스터에 충돌하면 데미지 주기
-            if (other.CompareTag(SystemManager.TagNameList.Enemy.ToString()))
+            if (other.CompareTag(TagNameList.Enemy.ToString()))
             {
                 print($"Enemy : {other.name} : {other.tag} : {other.layer}");
 

@@ -8,6 +8,10 @@ using TMPro;
 using System.Linq;
 using System.Text;
 
+public enum CharacterState { Idle, Rest, Walk, Jump, Attack, Dead } // 캐릭터 상태 종류
+public enum EliteClass { None, Power, Speed, Heal }; // 엘리트 몬스터 종류
+public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze }; // 공격에 들어갈 디버프 종류
+
 public class Character : MonoBehaviour
 {
     [Header("CallBack")]
@@ -25,8 +29,7 @@ public class Character : MonoBehaviour
     public bool usePortal = true; // 등장시 포탈 사용 여부
     public bool initialStart = false;
     public bool initialFinish = false;
-    public EliteClass eliteClass = EliteClass.None; // 엘리트 여부
-    public enum EliteClass { None, Power, Speed, Heal };
+    public EliteClass eliteClass = EliteClass.None; // 엘리트 여부    
     public bool lookLeft = false; //기본 스프라이트가 왼쪽을 바라보는지
     public CharacterStat characterStat = new CharacterStat(); // 해당 캐릭터 스탯
 
@@ -51,8 +54,8 @@ public class Character : MonoBehaviour
         }
     }
 
-    public State nowState = State.Idle; //현재 행동
-    public enum State { Idle, Rest, Walk, Jump, Attack, Dead }
+    public CharacterState nowState = CharacterState.Idle; //현재 행동
+
     public MoveType moveType;
     public enum MoveType
     {
@@ -116,8 +119,6 @@ public class Character : MonoBehaviour
     [Header("Buff")]
     public Transform buffParent; //버프 아이콘 들어가는 부모 오브젝트
     public IEnumerator hitCoroutine;
-    public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
-    // public IEnumerator[] DebuffList = new IEnumerator[System.Enum.GetValues(typeof(Debuff)).Length];
 
     public float particleHitCount = 0; // 파티클 피격 카운트
     public float hitDelayCount = 0; // 피격 딜레이 카운트
@@ -521,7 +522,7 @@ public class Character : MonoBehaviour
             isDead = false;
 
             // idle 상태로 전환
-            nowState = State.Idle;
+            nowState = CharacterState.Idle;
 
             for (int i = 0; i < animList.Count; i++)
             {
@@ -558,7 +559,7 @@ public class Character : MonoBehaviour
     private void Update()
     {
         // 공격중 아닐때 공격 쿨타임 차감
-        if (nowState != State.Attack && atkCoolCount > 0)
+        if (nowState != CharacterState.Attack && atkCoolCount > 0)
             atkCoolCount -= Time.deltaTime;
 
         // 몬스터 정보 없으면 리턴

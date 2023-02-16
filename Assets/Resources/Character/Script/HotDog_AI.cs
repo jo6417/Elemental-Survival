@@ -154,7 +154,7 @@ public class HotDog_AI : EnemyAI
         character.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
         // 상태값 Idle로 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
 
         //EnemyDB 로드 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -216,7 +216,7 @@ public class HotDog_AI : EnemyAI
     IEnumerator PhaseChange()
     {
         // Idle 상태가 될때까지 대기
-        yield return new WaitUntil(() => character.nowState == Character.State.Idle);
+        yield return new WaitUntil(() => character.nowState == CharacterState.Idle);
 
         // 현재 페이즈 컬러
         Color _nowColor = phaseColor[nowPhase];
@@ -467,7 +467,7 @@ public class HotDog_AI : EnemyAI
             return;
 
         // Idle 아니면 리턴
-        if (character.nowState != Character.State.Idle)
+        if (character.nowState != CharacterState.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -496,7 +496,7 @@ public class HotDog_AI : EnemyAI
         if (nextPhase > nowPhase)
         {
             // 상태값 Idle로 초기화
-            character.nowState = Character.State.Idle;
+            character.nowState = CharacterState.Idle;
 
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
@@ -524,7 +524,7 @@ public class HotDog_AI : EnemyAI
             character.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            character.nowState = Character.State.Attack;
+            character.nowState = CharacterState.Attack;
 
             // 이동 애니메이션 종료
             character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
@@ -552,7 +552,7 @@ public class HotDog_AI : EnemyAI
             character.rigid.velocity = Vector3.zero;
 
             // 현재 액션 변경
-            character.nowState = Character.State.Attack;
+            character.nowState = CharacterState.Attack;
 
             //공격 패턴 결정하기
             StartCoroutine(ChooseAttack());
@@ -569,7 +569,7 @@ public class HotDog_AI : EnemyAI
 
     void Move()
     {
-        character.nowState = Character.State.Walk;
+        character.nowState = CharacterState.Walk;
 
         // 호흡 이펙트 꺼져있으면
         if (!breathEffect.gameObject.activeSelf)
@@ -660,7 +660,7 @@ public class HotDog_AI : EnemyAI
         }
 
         // 상태값 Idle로 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     public void RunSound()
@@ -678,7 +678,7 @@ public class HotDog_AI : EnemyAI
     IEnumerator ChooseAttack()
     {
         // 현재 액션 변경
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
 
         // 이동 애니메이션 종료
         character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
@@ -746,7 +746,7 @@ public class HotDog_AI : EnemyAI
         yield return new WaitForSeconds(endDelay);
 
         // 상태값 Idle로 초기화
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
 
         // 애니메이션 속도 초기화
         character.animList[0].speed = 1f;
@@ -1310,7 +1310,7 @@ public class HotDog_AI : EnemyAI
     #region FootDust
     void HandDustPlay()
     {
-        if (character.nowState == Character.State.Walk)
+        if (character.nowState == CharacterState.Walk)
             handDust.Play();
     }
 
@@ -1321,7 +1321,7 @@ public class HotDog_AI : EnemyAI
 
     void FootDustPlay()
     {
-        if (character.nowState == Character.State.Walk)
+        if (character.nowState == CharacterState.Walk)
             footDust.Play();
     }
 

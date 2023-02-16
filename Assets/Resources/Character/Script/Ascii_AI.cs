@@ -128,7 +128,7 @@ public class Ascii_AI : MonoBehaviour
     IEnumerator Init()
     {
         // 휴식 상태로 초기화
-        character.nowState = Character.State.Rest;
+        character.nowState = CharacterState.Rest;
 
         // 무적 상태로 변경
         character.invinsible = true;
@@ -334,7 +334,7 @@ public class Ascii_AI : MonoBehaviour
         monitorSprite.material = SystemManager.Instance.spriteLitMat;
 
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     string FaceReturn(Face face)
@@ -423,14 +423,14 @@ public class Ascii_AI : MonoBehaviour
         });
 
         // Idle 상태가 될때까지 대기
-        yield return new WaitUntil(() => character.nowState == Character.State.Idle);
+        yield return new WaitUntil(() => character.nowState == CharacterState.Idle);
 
         // 무적 상태로 전환
         character.invinsible = true;
         monitorSprite.material = SystemManager.Instance.outLineMat;
 
         // 휴식 상태로 변경
-        character.nowState = Character.State.Rest;
+        character.nowState = CharacterState.Rest;
 
         // 속도 초기화
         character.rigid.velocity = Vector3.zero;
@@ -586,7 +586,7 @@ public class Ascii_AI : MonoBehaviour
             //todo 당황하는 표정
 
             // 죽음 상태로 전환
-            character.nowState = Character.State.Dead;
+            character.nowState = CharacterState.Dead;
 
             //todo 진행 중이던 동작 모두 취소
             // 애니메이션 idle로 전환
@@ -630,7 +630,7 @@ public class Ascii_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (character.nowState != Character.State.Idle)
+        if (character.nowState != CharacterState.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -693,7 +693,7 @@ public class Ascii_AI : MonoBehaviour
     void Move()
     {
         // 걷기 상태로 전환
-        character.nowState = Character.State.Walk;
+        character.nowState = CharacterState.Walk;
 
         //걸을때 표정
         faceText.text = FaceReturn(Face.Idle);
@@ -734,7 +734,7 @@ public class Ascii_AI : MonoBehaviour
         }
 
         // idle 상태로 전환
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     public void WalkSound()
@@ -750,7 +750,7 @@ public class Ascii_AI : MonoBehaviour
             return;
 
         // 공격 상태로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
 
         // 걷기 애니메이션 끝내기
         anim.SetBool("isWalk", false);
@@ -1105,7 +1105,7 @@ public class Ascii_AI : MonoBehaviour
         anim.SetBool("isRest", true);
 
         // 휴식 상태로 변경
-        character.nowState = Character.State.Rest;
+        character.nowState = CharacterState.Rest;
 
         //휴식할때 표정
         faceText.text = FaceReturn(Face.Rest);
@@ -1138,7 +1138,7 @@ public class Ascii_AI : MonoBehaviour
         monitorSprite.material = SystemManager.Instance.spriteLitMat;
 
         // 쿨타임 끝나면 idle로 전환, 쿨타임 차감 시작
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     #region PunchAtk

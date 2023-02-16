@@ -70,7 +70,7 @@ public class Vacuum_AI : MonoBehaviour
             return;
 
         //아이템과 충돌 했을때
-        if (other.CompareTag(SystemManager.TagNameList.Item.ToString()))
+        if (other.CompareTag(TagNameList.Item.ToString()))
         {
             ItemManager itemManager = other.GetComponent<ItemManager>();
             ItemInfo item = itemManager.itemInfo;
@@ -142,7 +142,7 @@ public class Vacuum_AI : MonoBehaviour
     void Dash()
     {
         // 공격 액션으로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
         // 공격 쿨타임 갱신
         character.atkCoolCount = character.cooltimeNow;
 
@@ -222,6 +222,6 @@ public class Vacuum_AI : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Idle로 전환
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 }

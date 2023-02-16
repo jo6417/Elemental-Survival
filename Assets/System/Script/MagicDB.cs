@@ -143,7 +143,7 @@ public class MagicDB : MonoBehaviour
         // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
         yield return StartCoroutine(
             SaveManager.Instance.WebDataLoad(
-                SystemManager.DBType.Magic,
+                DBType.Magic,
                 "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
         ));
 
@@ -165,7 +165,7 @@ public class MagicDB : MonoBehaviour
         // 동기화 여부 다시 검사
         yield return StartCoroutine(
             SaveManager.Instance.DBSyncCheck(
-                SystemManager.DBType.Magic,
+                DBType.Magic,
                 SystemManager.Instance.magicDBSyncBtn,
                 "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
             ));

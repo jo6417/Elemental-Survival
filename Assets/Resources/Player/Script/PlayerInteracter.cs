@@ -11,7 +11,7 @@ public class PlayerInteracter : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 상호작용 오브젝트 충돌시
-        if (other.CompareTag(SystemManager.TagNameList.Object.ToString()) && other.TryGetComponent(out Interacter interacter))
+        if (other.CompareTag(TagNameList.Object.ToString()) && other.TryGetComponent(out Interacter interacter))
         {
             //리스트에 넣기
             interacters.Add(interacter);
@@ -24,7 +24,7 @@ public class PlayerInteracter : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         // 상호작용 오브젝트 나가면
-        if (other.CompareTag(SystemManager.TagNameList.Object.ToString()) && other.TryGetComponent(out Interacter interacter))
+        if (other.CompareTag(TagNameList.Object.ToString()) && other.TryGetComponent(out Interacter interacter))
         {
             // 나간 오브젝트의 상호작용 트리거 취소 함수 콜백 실행하기
             if (interacter.interactTriggerCallback != null)

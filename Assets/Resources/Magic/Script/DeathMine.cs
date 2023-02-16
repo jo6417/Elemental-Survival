@@ -92,7 +92,7 @@ public class DeathMine : MonoBehaviour
     // private void OnCollisionEnter2D(Collision2D other)
     // {
     //     // 플레이어가 발로 차면
-    //     if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
+    //     if (other.gameObject.CompareTag(TagNameList.Player.ToString()))
     //     {
     //         // 콜라이더 끄기, 중복 충돌 방지
     //         coll.enabled = false;

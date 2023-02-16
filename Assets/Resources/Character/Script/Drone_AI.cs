@@ -76,7 +76,7 @@ public class Drone_AI : MonoBehaviour
     void Attack()
     {
         // 공격 상태로 전환
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
         // 공격 쿨타임 갱신
         character.atkCoolCount = character.cooltimeNow;
 

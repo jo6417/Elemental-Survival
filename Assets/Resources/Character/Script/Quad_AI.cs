@@ -231,7 +231,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         // 휴식 아닐때만
-        if (character.nowState != Character.State.Rest)
+        if (character.nowState != CharacterState.Rest)
         {
             // 눈동자 플레이어 방향으로 이동
             eye.position = head.position + character.targetDir.normalized * 1f;
@@ -249,7 +249,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         // Idle 상태 아니면 리턴
-        if (character.nowState != Character.State.Idle)
+        if (character.nowState != CharacterState.Idle)
             return;
 
         // 상태 이상 있으면 리턴
@@ -267,7 +267,7 @@ public class Quad_AI : MonoBehaviour
             return;
 
         // Idle 아니면 리턴
-        if (character.nowState != Character.State.Idle)
+        if (character.nowState != CharacterState.Idle)
             return;
 
         // 공격 쿨타임 차감
@@ -310,7 +310,7 @@ public class Quad_AI : MonoBehaviour
             return;
 
         // 현재 액션 변경
-        character.nowState = Character.State.Attack;
+        character.nowState = CharacterState.Attack;
 
         // 애니메이터 끄기
         character.animList[0].enabled = false;
@@ -358,7 +358,7 @@ public class Quad_AI : MonoBehaviour
 
     void Walk()
     {
-        character.nowState = Character.State.Walk;
+        character.nowState = CharacterState.Walk;
 
         //애니메이터 켜기
         character.animList[0].enabled = true;
@@ -393,7 +393,7 @@ public class Quad_AI : MonoBehaviour
         * character.speedNow
         * nearSpeed;
 
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     private void OnDrawGizmosSelected()
@@ -1177,7 +1177,7 @@ public class Quad_AI : MonoBehaviour
         });
 
         // Idle 상태로 전환
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 
     IEnumerator FanSmash()
@@ -1310,7 +1310,7 @@ public class Quad_AI : MonoBehaviour
     IEnumerator Rest()
     {
         // Rest 상태로 전환
-        character.nowState = Character.State.Rest;
+        character.nowState = CharacterState.Rest;
 
         // 파지직 소리 재생
         AudioSource sparkSound = SoundManager.Instance.PlaySound("Quad_Rest_Spark", 0, 0, -1);
@@ -1472,6 +1472,6 @@ public class Quad_AI : MonoBehaviour
         character.animList[0].enabled = false;
 
         // Idle 상태로 전환
-        character.nowState = Character.State.Idle;
+        character.nowState = CharacterState.Idle;
     }
 }

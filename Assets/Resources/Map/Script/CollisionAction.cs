@@ -11,7 +11,7 @@ public class CollisionAction : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 플레이어와 충돌 했을때
-        if (other.gameObject.CompareTag(SystemManager.TagNameList.Player.ToString()))
+        if (other.gameObject.CompareTag(TagNameList.Player.ToString()))
         {
             // 충돌시 바운스 모션
             if (collisionBounce)
