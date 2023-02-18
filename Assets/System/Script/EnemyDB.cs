@@ -148,43 +148,39 @@ public class EnemyDB : MonoBehaviour
         }
     }
 
-    public void EnemyDBSynchronize()
+    public void EnemyDBSynchronize(bool autoSave = true)
     {
         // 몬스터 DB 동기화 (웹 데이터 로컬에 저장 및 불러와서 DB에 넣기)
-        StartCoroutine(EnemyDBSync());
+        StartCoroutine(EnemyDBSync(autoSave));
     }
 
-    IEnumerator EnemyDBSync()
+    IEnumerator EnemyDBSync(bool autoSave = true)
     {
         // 버튼 동기화 아이콘 애니메이션 켜기
         Animator btnAnim = SystemManager.Instance.enemyDBSyncBtn.GetComponentInChildren<Animator>();
         btnAnim.enabled = true;
 
         // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
-        yield return StartCoroutine(
-            SaveManager.Instance.WebDataLoad(
-                DBType.Enemy,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
-        ));
+        yield return StartCoroutine(SaveManager.Instance.WebDataLoad(DBType.Enemy));
 
         // 로컬 세이브데이터에 웹에서 가져온 세이브데이터를 덮어쓰기
         SaveManager.Instance.localSaveData.enemyDBJson = SaveManager.Instance.webSaveData.enemyDBJson;
 
-        // 수정된 로컬 세이브데이터를 저장, 완료시까지 대기
-        yield return StartCoroutine(SaveManager.Instance.Save());
-
         // 로컬 세이브데이터에서 불러와 enemyDB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetEnemyDB());
 
-        // DB 전부 Enum으로 바꿔서 저장
-        yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+        // 자동 저장일때
+        if (autoSave)
+        {
+            // 수정된 로컬 세이브데이터를 저장, 완료시까지 대기
+            yield return StartCoroutine(SaveManager.Instance.Save());
 
-        // 동기화 여부 다시 검사
-        yield return StartCoroutine(
-            SaveManager.Instance.DBSyncCheck(
-                DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp")
-        );
+            // DB 전부 Enum으로 바꿔서 저장
+            yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+
+            // 동기화 여부 다시 검사
+            yield return StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn));
+        }
 
         // 아이콘 애니메이션 끄기
         btnAnim.enabled = false;

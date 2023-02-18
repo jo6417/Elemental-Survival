@@ -516,6 +516,15 @@ public class UIManager : MonoBehaviour
             // print(nowTime + " : " + difficult_Amount + "% : Grade " + difficult_Grade);
         }
 
+        //todo 스테이지 시작시간부터 gateSpawnTime 시간 이후일때
+        if (SystemManager.Instance.time_current - WorldSpawner.Instance.stageStartTime > WorldSpawner.Instance.gateSpawnTime)
+        {
+            // 포탈게이트 근처에서 스폰
+            WorldSpawner.Instance.gateSpawn = true;
+            // 몬스터 반대편으로 옮기기 정지
+            WorldSpawner.Instance.dragSwitch = false;
+        }
+
         return hour + minute + second;
     }
 

@@ -128,47 +128,43 @@ public class MagicDB : MonoBehaviour
         }
     }
 
-    public void MagicDBSynchronize()
+    public void MagicDBSynchronize(bool autoSave = true)
     {
         // 마법 DB 동기화 (웹 데이터 로컬에 저장 및 불러와서 magicDB에 넣기)
-        StartCoroutine(MagicDBSync());
+        StartCoroutine(MagicDBSync(autoSave));
     }
 
-    IEnumerator MagicDBSync()
+    IEnumerator MagicDBSync(bool autoSave = true)
     {
         // 버튼 동기화 아이콘 애니메이션 켜기
         Animator btnAnim = SystemManager.Instance.magicDBSyncBtn.GetComponentInChildren<Animator>();
         btnAnim.enabled = true;
 
         // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
-        yield return StartCoroutine(
-            SaveManager.Instance.WebDataLoad(
-                DBType.Magic,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
-        ));
+        yield return StartCoroutine(SaveManager.Instance.WebDataLoad(DBType.Magic));
 
         // 웹에서 가져온 마법DB 데이터를 로컬 마법DB 데이터에 덮어쓰기
         SaveManager.Instance.localSaveData.magicDBJson = SaveManager.Instance.webSaveData.magicDBJson;
 
-        // 마법DB 수정된 로컬 데이터를 저장, 완료시까지 대기
-        yield return StartCoroutine(SaveManager.Instance.Save());
-
         // 로컬 데이터에서 파싱해서 마법DB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetMagicDB());
 
-        // DB 전부 Enum으로 바꿔서 저장
-        yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+        // 자동 저장일때
+        if (autoSave)
+        {
+            // 마법DB 수정된 로컬 데이터를 저장, 완료시까지 대기
+            yield return StartCoroutine(SaveManager.Instance.Save());
 
-        // 로컬 세이브에서 언락된 마법들 불러오기
-        LoadUnlockMagics();
+            // DB 전부 Enum으로 바꿔서 저장
+            yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
 
-        // 동기화 여부 다시 검사
-        yield return StartCoroutine(
-            SaveManager.Instance.DBSyncCheck(
-                DBType.Magic,
-                SystemManager.Instance.magicDBSyncBtn,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
-            ));
+            // 로컬 세이브에서 언락된 마법들 불러오기
+            LoadUnlockMagics();
+
+            // 동기화 여부 다시 검사
+            yield return StartCoroutine(
+                SaveManager.Instance.DBSyncCheck(DBType.Magic, SystemManager.Instance.magicDBSyncBtn));
+        }
 
         // 아이콘 애니메이션 끄기
         btnAnim.enabled = false;

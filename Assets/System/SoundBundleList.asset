@@ -508,7 +508,7 @@ MonoBehaviour:
       pitch: 0.4
       source: {fileID: 0}
     - name: StoneGolem_Jump
-      clip: {fileID: 8300000, guid: b270deecbd4b5d6498316c0cc2b3ee77, type: 3}
+      clip: {fileID: 8300000, guid: 051fef9500625c147bd9a87f06bb9095, type: 3}
       volume: 0.1
       pitch: 0.1
       source: {fileID: 0}

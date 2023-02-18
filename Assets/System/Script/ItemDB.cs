@@ -54,44 +54,39 @@ public class ItemDB : MonoBehaviour
         itemPrefab = Resources.LoadAll<GameObject>("Item/Prefab").ToList();
     }
 
-    public void ItemDBSynchronize()
+    public void ItemDBSynchronize(bool autoSave = true)
     {
         // 몬스터 DB 동기화 (웹 데이터 로컬에 저장 및 불러와서 DB에 넣기)
-        StartCoroutine(ItemDBSync());
+        StartCoroutine(ItemDBSync(autoSave));
     }
 
-    IEnumerator ItemDBSync()
+    IEnumerator ItemDBSync(bool autoSave = true)
     {
         // 버튼 동기화 아이콘 애니메이션 켜기
         Animator btnAnim = SystemManager.Instance.itemDBSyncBtn.GetComponentInChildren<Animator>();
         btnAnim.enabled = true;
 
         // 웹에서 새로 데이터 받아서 웹 세이브데이터의 json 최신화
-        yield return StartCoroutine(
-            SaveManager.Instance.WebDataLoad(
-                DBType.Item,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
-        ));
+        yield return StartCoroutine(SaveManager.Instance.WebDataLoad(DBType.Item));
 
         // 로컬 DB 데이터에 웹에서 가져온 DB 데이터를 덮어쓰기
         SaveManager.Instance.localSaveData.itemDBJson = SaveManager.Instance.webSaveData.itemDBJson;
 
-        // DB 수정된 로컬 데이터를 저장, 완료시까지 대기
-        yield return StartCoroutine(SaveManager.Instance.Save());
-
         // 로컬 데이터에서 파싱해서 DB에 넣기, 완료시까지 대기
         yield return StartCoroutine(GetItemDB());
 
-        // DB 전부 Enum으로 바꿔서 저장
-        yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+        // 자동 저장일때
+        if (autoSave)
+        {
+            // DB 수정된 로컬 데이터를 저장, 완료시까지 대기
+            yield return StartCoroutine(SaveManager.Instance.Save());
 
-        // 동기화 여부 다시 검사
-        yield return StartCoroutine(
-            SaveManager.Instance.DBSyncCheck(
-                DBType.Item,
-                SystemManager.Instance.itemDBSyncBtn,
-                "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"
-            ));
+            // DB 전부 Enum으로 바꿔서 저장
+            yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+
+            // 동기화 여부 다시 검사
+            yield return StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, SystemManager.Instance.itemDBSyncBtn));
+        }
 
         // 아이콘 애니메이션 끄기
         btnAnim.enabled = false;
@@ -118,7 +113,6 @@ public class ItemDB : MonoBehaviour
                 item["earth"], item["fire"], item["life"], item["lightning"], item["water"], item["wind"]
                 ));
             }
-
         }
 
         //모든 아이템 초기화

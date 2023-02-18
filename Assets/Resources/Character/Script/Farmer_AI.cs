@@ -125,7 +125,7 @@ public class Farmer_AI : MonoBehaviour
                 legBones[i].GetChild(3).GetComponent<SpriteRenderer>()
             };
             for (int j = 0; j < legSprites.Length; j++)
-                legSprites[j].material = SystemManager.Instance.spriteLitMat;
+                legSprites[j].material = SystemManager.Instance.characterMat;
 
             // 해당 다리 HDR 불빛 초기화
             SpriteRenderer[] legLights = legBones[i].GetChild(0).GetComponentsInChildren<SpriteRenderer>();
@@ -755,7 +755,7 @@ public class Farmer_AI : MonoBehaviour
 
         // 공격할 다리의 머터리얼 모두 초기화
         for (int i = 0; i < legSprites.Length; i++)
-            legSprites[i].material = SystemManager.Instance.spriteLitMat;
+            legSprites[i].material = SystemManager.Instance.characterMat;
 
         // 몸체 및 다리 초기화 대기
         yield return new WaitForSeconds(1f);

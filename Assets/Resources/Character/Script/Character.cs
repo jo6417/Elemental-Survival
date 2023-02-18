@@ -27,7 +27,7 @@ public class Character : MonoBehaviour
     public List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
     public List<ItemInfo> nowHasItem = new List<ItemInfo>(); // 현재 가진 아이템
     public bool usePortal = true; // 등장시 포탈 사용 여부
-    public bool initialStart = false;
+    public bool initialStart = true;
     public bool initialFinish = false;
     public EliteClass eliteClass = EliteClass.None; // 엘리트 여부    
     public bool lookLeft = false; //기본 스프라이트가 왼쪽을 바라보는지
@@ -232,8 +232,8 @@ public class Character : MonoBehaviour
             //스케일 초기화
             transform.localScale = Vector3.one;
 
-            // 초기화 스위치 켜질때까지 대기
-            yield return new WaitUntil(() => initialStart);
+            // // 초기화 스위치 켜질때까지 대기
+            // yield return new WaitUntil(() => initialStart);
 
             // 고스트 여부 초기화
             isGhost = changeGhost;

@@ -98,11 +98,11 @@ public class EnemyAI : MonoBehaviour
         // 목표 방향 계산
         character.targetDir = character.movePos - transform.position;
 
-        // 타겟에서 일정거리 이상 벗어나면 쫓아가기
-        if (character.targetDir.magnitude > WorldSpawner.Instance.maxDistance)
-        {
-            character.transform.position = WorldSpawner.Instance.BorderRandPos();
-        }
+        // // 타겟에서 일정거리 이상 벗어나면 쫓아가기
+        // if (character.targetDir.magnitude > WorldSpawner.Instance.maxDistance)
+        // {
+        //     character.transform.position = WorldSpawner.Instance.BorderRandPos();
+        // }
 
         // 상태 이상 있으면 리턴
         if (!character.ManageState())

@@ -34,7 +34,6 @@ public class WorldSpawner : MonoBehaviour
     [Header("Debug")]
     public bool spawnSwitch; //몬스터 스폰 ON/OFF
     public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
-    public bool dragSwitch; //몬스터 반대편 이동 ON/OFF
     public bool allEliteSwitch; // 모든 적이 엘리트
     public bool spawnItem; // 아이템 스폰 여부
 
@@ -52,6 +51,12 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] float eliteRate; // 엘리트 계수
     public int[] outGemNum = new int[6]; //카메라 밖으로 나간 원소젬 개수
     public List<GameObject> outGem = new List<GameObject>(); //카메라 밖으로 나간 원소젬 리스트
+
+    [Header("Gate")]
+    public bool dragSwitch = true; // 몬스터 반대편 이동 여부
+    public bool gateSpawn = false; // 게이트 주변에서 몬스터 생성 여부
+    public float stageStartTime = 0f; // 스테이지 시작시간
+    public float gateSpawnTime = 10f; // 스테이지 시작시 해당 시간 지나면 게이트포탈 근처에서 스폰
 
     [Header("Pool")]
     public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
@@ -108,6 +113,11 @@ public class WorldSpawner : MonoBehaviour
     {
         // 몬스터 DB 초기화 대기
         yield return new WaitUntil(() => EnemyDB.Instance != null && EnemyDB.Instance.loadDone);
+
+        // 게이트 주변 스폰 끄기 (카메라 영역 바깥에서 스폰)
+        gateSpawn = false;
+        // 스테이지 시작시간 기록
+        stageStartTime = Time.time;
 
         // 스폰 가능 몬스터 풀이 비었으면
         if (spawnAbleList.Count == 0)
@@ -310,7 +320,7 @@ public class WorldSpawner : MonoBehaviour
         nowSpawning = false;
     }
 
-    public GameObject EnemySpawn(EnemyInfo enemy = null, Vector2 spawnEndPos = default, GameObject enemyPrefab = null, float spawnTime = 1f)
+    public GameObject EnemySpawn(EnemyInfo enemy = null, Vector2 spawnPos = default, GameObject enemyPrefab = null, float spawnTime = 1f)
     {
         // enemyPrefab 변수 안들어왔으면
         if (enemyPrefab == null)
@@ -318,29 +328,36 @@ public class WorldSpawner : MonoBehaviour
             enemyPrefab = EnemyDB.Instance.GetPrefab(enemy.id);
 
         // spawnEndPos 소환 위치 변수 없으면 지정
-        if (spawnEndPos == default)
-            // 몬스터 소환 완료 위치
-            spawnEndPos = BorderRandPos();
+        if (spawnPos == default)
+        {
+            if (gateSpawn)
+                // 포탈 게이트 근처에서 스폰
+                spawnPos = (Vector2)GatePortal.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(5f, 20f);
+            else
+                // 화면 테두리 밖에서 스폰
+                spawnPos = BorderRandPos();
+        }
+
 
         // 몬스터 프리팹 소환
-        GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnEndPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
+        GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
         // 몬스터 끄기
         enemyObj.gameObject.SetActive(false);
 
         // 스폰 트랜지션 재생
-        StartCoroutine(SpawnTransition(enemyObj, enemy, spawnEndPos, spawnTime));
+        StartCoroutine(SpawnTransition(enemyObj, enemy, spawnPos, spawnTime));
 
         // 해당 몹 오브젝트 리턴
         return enemyObj;
     }
 
-    public IEnumerator SpawnTransition(GameObject enemyObj, EnemyInfo enemy = null, Vector2 spawnEndPos = default, float spawnTime = 1f)
+    public IEnumerator SpawnTransition(GameObject enemyObj, EnemyInfo enemy = null, Vector2 spawnPos = default, float spawnTime = 1f)
     {
         // 캐릭터 찾기
         Character character = enemyObj.GetComponentInChildren<Character>();
 
         // 소환 위치에 포탈 소환
-        GameObject spawnBeam = LeanPool.Spawn(spawnerPrefab, spawnEndPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
+        GameObject spawnBeam = LeanPool.Spawn(spawnerPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.enemyPool);
         Transform beam = spawnBeam.transform.Find("Beam");
         Transform portal = spawnBeam.transform.Find("Portal");
 

@@ -68,6 +68,10 @@ public class SaveManager : MonoBehaviour
     public SaveData webSaveData; // 웹에서 불러온 세이브 데이터
     public SaveData localSaveData; // 로컬에서 불러온 세이브 데이터
 
+    string magicURI = "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
+    string enemyURI = "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
+    string itemURI = "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
+
     public IEnumerator Save()
     {
         //저장 시작
@@ -80,7 +84,7 @@ public class SaveManager : MonoBehaviour
         // 해금 마법 목록 가져오기
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
 
-        // 오디오 옵션값 가져오기
+        // 오디오 볼륨 옵션값 모두 가져오기
         float[] volumes = {
             SoundManager.Instance.masterVolume,
             SoundManager.Instance.musicVolume,
@@ -152,8 +156,23 @@ public class SaveManager : MonoBehaviour
         //TODO 소지금 불러오기
     }
 
-    public IEnumerator DBSyncCheck(DBType dbType, Button syncBtn, string uri)
+    public IEnumerator DBSyncCheck(DBType dbType, Button syncBtn)
     {
+        // DB 종류에 따라 다른 uri 사용
+        string uri = "";
+        switch (dbType)
+        {
+            case DBType.Magic:
+                uri = magicURI;
+                break;
+            case DBType.Enemy:
+                uri = enemyURI;
+                break;
+            case DBType.Item:
+                uri = itemURI;
+                break;
+        }
+
         // 동기화 버튼 노랑불
         if (syncBtn != null)
             syncBtn.targetGraphic.color = Color.yellow;
@@ -161,7 +180,7 @@ public class SaveManager : MonoBehaviour
         // 로컬에 저장된 세이브 불러와 변수에 넣기
         yield return StartCoroutine(LoadData());
         // 웹에서 세이브 불러와 변수에 넣기
-        yield return StartCoroutine(WebDataLoad(dbType, uri));
+        yield return StartCoroutine(WebDataLoad(dbType));
 
         string localDBJson = "";
         string webDBJson = "";
@@ -210,8 +229,23 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    public IEnumerator WebDataLoad(DBType dbType, string uri)
+    public IEnumerator WebDataLoad(DBType dbType)
     {
+        // DB 종류에 따라 다른 uri 사용
+        string uri = "";
+        switch (dbType)
+        {
+            case DBType.Magic:
+                uri = magicURI;
+                break;
+            case DBType.Enemy:
+                uri = enemyURI;
+                break;
+            case DBType.Item:
+                uri = itemURI;
+                break;
+        }
+
         //Apps Script에서 가공된 json 데이터 문서 주소
         UnityWebRequest www = UnityWebRequest.Get(uri);
         // 해당 주소에 요청

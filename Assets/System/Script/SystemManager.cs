@@ -177,15 +177,10 @@ public class SystemManager : MonoBehaviour
         // 로컬 세이브 불러오기
         yield return StartCoroutine(SaveManager.Instance.LoadData());
 
-        // 마법, 몬스터, 아이템 로컬DB 모두 불러오기
-        StartCoroutine(MagicDB.Instance.GetMagicDB());
-        StartCoroutine(ItemDB.Instance.GetItemDB());
-        StartCoroutine(EnemyDB.Instance.GetEnemyDB());
-
-        // 모든 DB 동기화 여부 확인
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Magic, magicDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, itemDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, enemyDBSyncBtn, "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp"));
+        // 모든 DB 웹에서 불러와 로컬에 넣기
+        MagicDB.Instance.MagicDBSynchronize(false);
+        ItemDB.Instance.ItemDBSynchronize(false);
+        EnemyDB.Instance.EnemyDBSynchronize(false);
 
         // 갓모드 false 초기화
         // GodModeToggle();
@@ -196,6 +191,18 @@ public class SystemManager : MonoBehaviour
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
         // 몬스터 DB 로딩 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+
+        // 수정된 로컬 세이브데이터를 저장, 완료시까지 대기
+        yield return StartCoroutine(SaveManager.Instance.Save());
+
+        // DB 전부 Enum으로 바꿔서 저장
+        yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
+
+        // 동기화 여부 다시 검사
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Magic, SystemManager.Instance.enemyDBSyncBtn));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, SystemManager.Instance.enemyDBSyncBtn));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn));
+
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance.initFinish);
         // 플레이어 초기화 대기

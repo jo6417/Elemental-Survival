@@ -306,7 +306,7 @@ public class SoundManager : MonoBehaviour
             audio.spatialBlend = 1f;
             audio.rolloffMode = AudioRolloffMode.Custom;
             audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
-            audio.maxDistance = 50f;
+            audio.maxDistance = 30f;
         }
 
         // 재생하고 끝나면 디스폰
