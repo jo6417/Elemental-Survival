@@ -261,10 +261,9 @@ public class ItemManager : MonoBehaviour
         // 아이템 위치부터 플레이어 쪽으로 방향 벡터
         Vector2 dir = Getter.position - transform.position;
 
-        // 플레이어 반대 방향으로 날아가기
-        rigid.DOMove((Vector2)transform.position - dir.normalized * 3f, 0.2f);
-
-        yield return new WaitForSeconds(0.2f);
+        // // 플레이어 반대 방향으로 날아가기
+        // rigid.DOMove((Vector2)transform.position - dir.normalized * 3f, 0.2f);
+        // yield return new WaitForSeconds(0.2f);
 
         // 따라가기 상태로 변경
         itemState = ItemState.Follow;

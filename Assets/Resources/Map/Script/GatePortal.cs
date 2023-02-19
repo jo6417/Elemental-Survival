@@ -58,6 +58,7 @@ public class GatePortal : MonoBehaviour
     [SerializeField] TextMeshProUGUI pressKey; // 바인딩 된 키 이름
     [SerializeField] Transform portalPivot; // 게이트 피벗 오브젝트
     [SerializeField] Animator portalAnim; //포탈 이펙트 애니메이션
+    [SerializeField] SpriteRenderer gateFrame; // 포탈 테두리
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
     [SerializeField] SpriteRenderer portalCover; // 포탈 빛날때 이미지
     [SerializeField] SpriteRenderer beam; // 포탈 전송시 나타나는 빔
@@ -155,6 +156,48 @@ public class GatePortal : MonoBehaviour
 
         // 젬 타입 UI 색깔 갱신
         GemIcon.color = MagicDB.Instance.GetElementColor(gemType);
+    }
+
+    private Vector3 lastCameraPosition;
+    private Vector3 lastSpritePosition;
+
+    void Start()
+    {
+        // 초기 위치 저장
+        lastCameraPosition = UIManager.Instance.camParent.position;
+        lastSpritePosition = transform.position;
+    }
+
+    void LateUpdate()
+    {
+        Camera cam = UIManager.Instance.mainCamera;
+
+        // // 카메라나 Sprite 오브젝트가 이동했을 때에만 실행
+        // if (lastCameraPosition != cam.transform.position
+        //     || lastSpritePosition != transform.position)
+        // {
+        //     // Sprite 오브젝트의 Collider2D 영역
+        //     Bounds spriteBounds = gateFrame.bounds;
+
+        //     // 카메라 시야 영역
+        //     Bounds cameraBounds = new Bounds(cam.transform.position,
+        //         new Vector3(cam.orthographicSize * 2 * cam.aspect,
+        //         cam.orthographicSize * 2, 0));
+
+        //     // 두 영역이 겹치는지 확인
+        //     if (Physics2D.OverlapArea(spriteBounds.min, spriteBounds.max, cameraBounds.min, cameraBounds.max))
+        //     {
+        //         Debug.Log("Sprite is in camera view.");
+        //     }
+        //     else
+        //     {
+        //         Debug.Log("Sprite is not in camera view.");
+        //     }
+
+        //     // 현재 위치 저장
+        //     lastCameraPosition = cam.transform.position;
+        //     lastSpritePosition = transform.position;
+        // }
     }
 
     private void Update()
@@ -259,7 +302,8 @@ public class GatePortal : MonoBehaviour
             // 젬 받기 이후 상태로 전환
             portalState = PortalState.GemReceive;
 
-            //생성된 포탈 게이트 위치 보여주는 아이콘 화살표 UI 켜기
+            //todo 포탈을 발견하기만 해도 가리키도록 변경
+            // 아이콘 화살표가 게이트 위치 계속 가리키기
             StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
         }
 
@@ -442,7 +486,7 @@ public class GatePortal : MonoBehaviour
         // 몬스터 생존 상태로 전환
         portalState = PortalState.MobRemain;
 
-        //todo 모든 몬스터 방향 UI 표시
+        // 모든 몬스터 방향 UI 표시
         foreach (Character character in WorldSpawner.Instance.spawnEnemyList)
             StartCoroutine(WorldSpawner.Instance.PointEnemyDir(character.gameObject));
 
@@ -455,9 +499,9 @@ public class GatePortal : MonoBehaviour
         // 포탈 준비 파티클 끄기
         gatherParticle.SmoothDisable();
 
-        //todo 포탈 오픈 이펙트 재생
+        // 포탈 오픈 이펙트 재생
         portalOpenEffect.SetActive(true);
-        //todo 포탈 오픈 사운드 재생
+        // 포탈 오픈 사운드 재생
         SoundManager.Instance.PlaySound("Gate_Open", transform.position);
 
         print("Map Clear");

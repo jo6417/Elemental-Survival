@@ -16,6 +16,7 @@ public class OptionMenu : MonoBehaviour
 
     [Header("Refer")]
     private NewInput Option_Input;
+    [SerializeField] private PauseMenu pausePanel; // 일시정지 메뉴 컴포넌트
     [SerializeField] private MainMenuBtn mainMenu; // 메인메뉴 컴포넌트
     [SerializeField] private GameObject optionSelectPanel; // 옵션 버튼 패널
     [SerializeField] private GameObject audioOptionPanel; // 오디오 설정 패널
@@ -65,6 +66,25 @@ public class OptionMenu : MonoBehaviour
         StartCoroutine(Init());
     }
 
+    IEnumerator Init()
+    {
+        // 현재 열려있는 팝업 갱신
+        UIManager.Instance.nowOpenPopup = gameObject;
+
+        // 옵션 버튼 패널 열기
+        optionSelectPanel.SetActive(true);
+
+        // 마지막 선택 UI 갱신
+        UICursor.Instance.UpdateLastSelect(optionSelect_FirstSelect);
+
+        // 나머지 옵션 패널 모두 닫기
+        audioOptionPanel.SetActive(false);
+        graphicOptionPanel.SetActive(false);
+        // keyBindOptionPanel.SetActive(false);
+
+        yield return null;
+    }
+
     private void OnDestroy()
     {
         if (Option_Input != null)
@@ -72,22 +92,6 @@ public class OptionMenu : MonoBehaviour
             Option_Input.Disable();
             Option_Input.Dispose();
         }
-    }
-
-    IEnumerator Init()
-    {
-        // 옵션 버튼 패널 열기
-        optionSelectPanel.SetActive(true);
-
-        // 마지막 선택 UI 갱신
-        UICursor.Instance.UpdateLastSelect(optionSelect_FirstSelect);
-
-        // 나머지 패널 모두 닫기
-        audioOptionPanel.SetActive(false);
-        graphicOptionPanel.SetActive(false);
-        // keyBindOptionPanel.SetActive(false);
-
-        yield return null;
     }
 
     public void VolumeChage(int type)
@@ -134,6 +138,8 @@ public class OptionMenu : MonoBehaviour
             bgmVolume.value = SoundManager.Instance.musicVolume;
             sfxVolume.value = SoundManager.Instance.sfxVolume;
             uiVolume.value = SoundManager.Instance.uiVolume;
+
+            //todo 배경음 재생
         }
 
         // 그래픽 옵션 열었을때
@@ -167,8 +173,12 @@ public class OptionMenu : MonoBehaviour
         // UI 매니저 있을때
         if (UIManager.Instance)
         {
+            // 현재 열려있는 팝업 갱신
+            UIManager.Instance.nowOpenPopup = UIManager.Instance.pausePanel;
+
             // 일시정지 메뉴 켜기
-            UIManager.Instance.pausePanel.SetActive(true);
+            // UIManager.Instance.pausePanel.SetActive(true);
+            pausePanel.pauseGroup.alpha = 1f;
 
             // 옵션 메뉴 끄기
             UIManager.Instance.optionPanel.SetActive(false);

@@ -99,6 +99,8 @@ public class SystemManager : MonoBehaviour
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
     public Button itemDBSyncBtn;
+    // IEnumerator FrameRateCoroutine = null;
+    float frameRateCount = 0;
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
@@ -483,18 +485,25 @@ public class SystemManager : MonoBehaviour
     float fps;
     private void OnGUI()
     {
-        int w = Screen.width, h = Screen.height;
+        // 1초마다 실행
+        if (frameRateCount - Time.time > 1f)
+        {
+            // 프레임 갱신 시간 업데이트
+            frameRateCount = Time.time;
 
-        GUIStyle style = new GUIStyle();
+            int w = Screen.width, h = Screen.height;
 
-        Rect rect = new Rect(0, 0, w, h * 2 / 100);
-        style.alignment = TextAnchor.UpperLeft;
-        style.fontSize = h * 2 / 100;
-        style.normal.textColor = new Color(0.0f, 0.0f, 0.5f, 1.0f);
-        float msec = Time.deltaTime * 1000.0f;
-        fps = 1.0f / Time.deltaTime;
-        string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
-        GUI.Label(rect, text, style);
+            GUIStyle style = new GUIStyle();
+
+            Rect rect = new Rect(0, 0, w, h * 2 / 100);
+            style.alignment = TextAnchor.UpperLeft;
+            style.fontSize = h * 2 / 100;
+            style.normal.textColor = new Color(0.0f, 0.0f, 0.5f, 1.0f);
+            float msec = Time.deltaTime * 1000.0f;
+            fps = 1.0f / Time.deltaTime;
+            string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+            GUI.Label(rect, text, style);
+        }
     }
 
     public void GameQuit()

@@ -68,7 +68,7 @@ public class UIManager : MonoBehaviour
     public GameObject gameoverPanel;
 
     [Header("Refer")]
-    [SerializeField] Transform camParent; // 카메라 이동 오브젝트
+    public Transform camParent; // 카메라 이동 오브젝트
     public Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
@@ -227,6 +227,9 @@ public class UIManager : MonoBehaviour
         Color InsideColor = MagicDB.Instance.GradeColor[WorldSpawner.Instance.nowDifficultGrade];
         InsideColor.a = 200f / 255f;
         timerInside.color = InsideColor;
+
+        // 기본 마법 패널 열기
+        // PopupUI(defaultPanel);
     }
 
     // 방향키 입력되면 실행
@@ -427,31 +430,29 @@ public class UIManager : MonoBehaviour
     //게임 일시정지,재개
     public void Resume()
     {
-        // 일시정지 패널 꺼졌을때
-        if (!pausePanel.activeSelf)
-        {
-            // 브금 일시정지 상태로 변경
-            SoundManager.Instance.bgmPause = true;
-
-            // 배경음 정지
-            SoundManager.Instance.nowBGM.Pause();
-        }
-        // 일시정지 패널 켜졌을때
+        // 핸드폰 패널 켜져있을때
+        if (nowOpenPopup == phonePanel
+        || nowOpenPopup == magicMachinePanel)
+            // 핸드폰 닫기
+            PhoneMenu.Instance.BackBtn();
+        // 기본 마법 패널일때
+        else if (nowOpenPopup == defaultPanel)
+            return;
         else
         {
-            // 브금 재개 상태로 변경
-            SoundManager.Instance.bgmPause = true;
-
-            // 배경음 재개
-            SoundManager.Instance.nowBGM.Play();
-
+            // 현재 팝업 패널 없을때
+            if (nowOpenPopup == null)
+                //일시정지 메뉴 켜기
+                PopupUI(pausePanel, true);
+            // 현재 팝업 패널 있을때
+            else
+            {
+                // 옵션 패널이 아닐때
+                if (nowOpenPopup != optionPanel)
+                    // 켜져있는 패널 끄기
+                    PopupUI(nowOpenPopup, false);
+            }
         }
-
-        // 마우스 커서 전환
-        UICursor.Instance.CursorChange(!pausePanel.activeSelf);
-
-        //일시정지 메뉴 UI 토글
-        PopupUI(pausePanel);
     }
 
     public void InitialStat()
@@ -918,9 +919,7 @@ public class UIManager : MonoBehaviour
     {
         // 이미 다른 팝업 열려있는데 팝업 키려고하면 리턴
         if (!popup.activeSelf && nowOpenPopup != null)
-        {
             return;
-        }
 
         // 팝업 UI 토글
         popup.SetActive(forceSwitch);

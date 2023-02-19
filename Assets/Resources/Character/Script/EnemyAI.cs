@@ -290,7 +290,7 @@ public class EnemyAI : MonoBehaviour
         // 방향따라 좌우반전
         Flip();
 
-        //움직일 거리, 플레이어 위치까지 갈수 있으면 플레이어 위치, 못가면 적 스피드
+        //움직일 거리, 목표 위치까지 갈수 있으면 목표 위치, 스피드보다 낮으면 캐릭터 스피드
         float distance = character.targetDir.magnitude > character.speedNow ? character.speedNow : character.targetDir.magnitude;
 
         // print(character.targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);

@@ -16411,6 +16411,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
+  gradeRate: []
   nowSelectUI: {fileID: 1086472508}
   timeBtn: {fileID: 1226070799}
   godModBtn: {fileID: 1439707012}
@@ -16467,6 +16468,7 @@ MonoBehaviour:
   spriteLitMat: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   spriteUnLitMat: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   outLineMat: {fileID: 2100000, guid: 40506420e55a4a34f8d4928dfd7d2778, type: 2}
+  characterMat: {fileID: 0}
   hitMat: {fileID: 2100000, guid: 78d6ca38b5e8fb348ba206d913ebda1e, type: 2}
   HDR3_Mat: {fileID: 2100000, guid: 4123f4f2defbd154f90f87957c345dd3, type: 2}
   HDR5_Mat: {fileID: 2100000, guid: 75d3068f22622a44c96497fa89a3157d, type: 2}
@@ -16537,8 +16539,6 @@ MonoBehaviour:
   loadDone: 0
   itemIcon: []
   itemPrefab: []
-  outGemNum: 000000000000000000000000000000000000000000000000
-  outGem: []
   magicItemPrefab: {fileID: 3716985150437804629, guid: 109a187e88fb2bc4f90512b14fd7f95c,
     type: 3}
 --- !u!114 &1366223429
@@ -18311,7 +18311,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnSwitch: 1
   randomSpawn: 0
-  dragSwitch: 1
   allEliteSwitch: 0
   spawnItem: 0
   modifyEnemyPower: 6
@@ -18325,6 +18324,12 @@ MonoBehaviour:
   targetObj: {fileID: 1502201865}
   maxDistance: 80
   eliteRate: 0
+  outGemNum: 000000000000000000000000000000000000000000000000
+  outGem: []
+  dragSwitch: 1
+  gateSpawn: 0
+  stageStartTime: 0
+  gateSpawnTime: 10
   spawnAbleList:
   - {fileID: 7247921042507206276, guid: 39e67bda2267faa4eac5c954dc17c582, type: 3}
   - {fileID: 968746833477717218, guid: 433c50e6391424944b9797db264dd471, type: 3}
@@ -18343,7 +18348,7 @@ MonoBehaviour:
   itemBoxPrefab: {fileID: 0}
   lockerPrefab: {fileID: 0}
   slotMachinePrefab: {fileID: 0}
-  mobPortal: {fileID: 1190318300783163360, guid: 0884984e12e4e4746aa3b02b8c1d7fa9,
+  spawnerPrefab: {fileID: 1317055855790755743, guid: 1a0dabcc8493b45478c0fa8504f63786,
     type: 3}
   healRange: {fileID: 0}
   hitEffect: {fileID: 0}

@@ -42,14 +42,14 @@ public class MapManager : MonoBehaviour
     [SerializeField] Vector3Int tilemapSize; // 설치할 사이즈
     [SerializeField] float boundRate = 0.5f; // 맵 생성 경계 비율
     float rightX, leftX, upY, downY; // 4방향 경계 좌표
-    [SerializeField] List<Vector2> genPosList = new List<Vector2>();
+    [SerializeField] List<Transform> genTilemapList = new List<Transform>();
 
     [Header("Tile")]
     [SerializeField] GameObject tileSetPrefab; // 속성별 타일셋 리스트
     [SerializeField] List<TileLayer> tileBundle_Bottom = new List<TileLayer>(); // 속성별 타일 번들 리스트, 가장 아래층
     [SerializeField] List<TileLayer> tileBundle_Middle = new List<TileLayer>(); // 속성별 타일 번들 리스트, 중간층
     [SerializeField] List<TileLayer> tileBundle_Deco = new List<TileLayer>(); // 속성별 타일 번들 리스트, 장식 타일
-    [SerializeField] List<GameObject> tilemapList = new List<GameObject>(); //todo 타일맵 생성기 리스트
+    [SerializeField] Transform[] nearTilemaps = new Transform[9]; // 주변의 타일맵 리스트
 
     [Header("Refer")]
     public Light2D globalLight;
@@ -99,7 +99,7 @@ public class MapManager : MonoBehaviour
         SystemManager.Instance.sceneChanging = false;
 
         // 게임 시작할때까지 대기
-        yield return new WaitUntil(() => Time.timeScale == 1f);
+        // yield return new WaitUntil(() => Time.timeScale == 1f);
 
         // 배경음 재생
         SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
@@ -163,12 +163,16 @@ public class MapManager : MonoBehaviour
     void GenerateMap(Vector3 movePos = default)
     {
         // 플레이어 서있는 타일셋 중심 위치 계산
-        Vector2 setPos = new Vector2((leftX + rightX) / 2f, (upY + downY) / 2f);
+        Vector2 setPos = new Vector2((leftX + rightX) / 4f, (upY + downY) / 4f);
 
         // 초기 설치 위치
-        Vector2 defaultPos = setPos - new Vector2(tilemapSize.x, tilemapSize.y);
+        Vector2 defaultPos = setPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f;
 
-        TileMapGenerator[] lastTileGens = new TileMapGenerator[3]; // 현재 사용중인 타일맵 생성기
+        // 현재 사용중인 타일맵 생성기
+        TileMapGenerator[] nowTileGens = new TileMapGenerator[3];
+
+        // 새로운 주변 타일맵들
+        Transform[] new_NearTilemaps = new Transform[9];
 
         // 총 9번 설치
         for (int y = 0; y < 3; y++)
@@ -176,35 +180,64 @@ public class MapManager : MonoBehaviour
             for (int x = 0; x < 3; x++)
             {
                 // 타일셋 사이즈만큼 중심위치 이동
-                Vector2 genPos = defaultPos + new Vector2(tilemapSize.x * x, tilemapSize.y * y);
+                Vector3 genPos = defaultPos + new Vector2(tilemapSize.x * x, tilemapSize.y * y) / 2f;
 
-                //todo 마지막 타일 생성기와 겹치지 않는 위치만 스폰 및 타일생성
+                Transform tilemap = null;
+                GameObject newTilemap = null;
 
-                // 타일맵 생성
-                GameObject tileMap = LeanPool.Spawn(tileSetPrefab, genPos, Quaternion.identity, transform);
+                // 직전 타일맵에서 해당 위치의 타일맵 찾기
+                tilemap = nearTilemaps.ToList().Find(x => x != null && x.position == genPos);
 
-                // 타일맵 위치 리스트에 해당 위치가 있으면 다음 위치로 넘기기
-                if (tilemapList.Exists(x => x == tileMap))
+                // 직전 타일맵에 해당 위치가 있으면
+                if (tilemap != null)
+                {
+                    // 새로운 주변 타일맵 등록
+                    new_NearTilemaps[y * 3 + x] = tilemap;
+
+                    // 기존 주변 타일맵에서 인덱스 찾기
+                    int index = System.Array.FindIndex(nearTilemaps, x => x == tilemap);
+                    // 직전 타일맵 리스트에서 빼기
+                    nearTilemaps[index] = null;
+
+                    // 넘기기
                     continue;
+                }
+                // 직전 타일맵에 없으면
                 else
-                    //todo 타일맵 위치 리스트에 위치 저장
-                    tilemapList.Add(tileMap);
+                {
+                    // 이미 생성된 타일맵 중에 해당 위치의 타일맵 찾기
+                    Transform oldTilemap = genTilemapList.Find(x => x.position == genPos);
+                    // 새로운 주변 타일맵 등록
+                    new_NearTilemaps[y * 3 + x] = oldTilemap;
 
-                //todo 마지막 사용한 타일 생성기들 갱신
-                TileMapGenerator[] tileGens = tileMap.GetComponentsInChildren<TileMapGenerator>();
+                    // 이미 생성된 타일맵 중에 해당 위치가 있으면
+                    if (oldTilemap != null)
+                    {
+                        // 이미 생성된것 켜기
+                        oldTilemap.gameObject.SetActive(true);
+                        // 넘기기
+                        continue;
+                    }
+                    // 리스트에 없으면
+                    else
+                    {
+                        // 새로운 타일맵 생성
+                        newTilemap = LeanPool.Spawn(tileSetPrefab, genPos, Quaternion.identity, transform);
+                        // 새로운 주변 타일맵 등록
+                        new_NearTilemaps[y * 3 + x] = newTilemap.transform;
+
+                        // 생성 타일맵 리스트에 저장
+                        genTilemapList.Add(newTilemap.transform);
+                    }
+                }
+
+                // 새로운 타일 생성기들 갱신
+                TileMapGenerator[] tileGens = newTilemap.GetComponentsInChildren<TileMapGenerator>();
                 for (int i = 0; i < tileGens.Length; i++)
-                    lastTileGens[i] = tileGens[i];
-
-                // // 이미 소환된 위치일때 넘기기
-                // if (genPosList.Exists(x => x == genPos))
-                //     continue;
-                // // 리스트에 없으면
-                // else
-                //     // 리스트에 저장
-                //     genPosList.Add(genPos);
+                    nowTileGens[i] = tileGens[i];
 
                 // 타일셋 사이즈 
-                Vector3Int genSize = new Vector3Int(Mathf.FloorToInt(tilemapSize.x), Mathf.FloorToInt(tilemapSize.y), 0);
+                Vector3Int genSize = new Vector3Int(Mathf.FloorToInt(tilemapSize.x / 2f), Mathf.FloorToInt(tilemapSize.y / 2f), 0);
                 // 타일맵 위치로 전환
                 Vector3Int nowMapPos = new Vector3Int(Mathf.FloorToInt(genPos.x / 2f), Mathf.FloorToInt(genPos.y / 2f), 0);
 
@@ -221,41 +254,49 @@ public class MapManager : MonoBehaviour
                 List<Vector2> tileMapPosList = new List<Vector2>();
 
                 // 하단 레이어 타일 설치
-                tileMapPosList = lastTileGens[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileMapPosList = nowTileGens[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.nowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
-                if (lastTileGens[0].includePropTile)
+                if (nowTileGens[0].includePropTile)
                     emptyTileList = tileMapPosList.ToList();
                 // 빈타일에서 설치된 좌표 빼기
-                if (lastTileGens[0].excludePropTile)
+                if (nowTileGens[0].excludePropTile)
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
                 // 중간 레이어 타일 설치
-                tileMapPosList = lastTileGens[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileMapPosList = nowTileGens[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.nowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
-                if (lastTileGens[1].includePropTile)
+                if (nowTileGens[1].includePropTile)
                     for (int i = 0; i < tileMapPosList.Count; i++)
                         emptyTileList.Add(tileMapPosList[i]);
                 // 빈타일에서 설치된 좌표 빼기
-                if (lastTileGens[1].excludePropTile)
+                if (nowTileGens[1].excludePropTile)
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
                 // 상단 레이어 타일 설치
-                tileMapPosList = lastTileGens[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileMapPosList = nowTileGens[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.nowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
-                if (lastTileGens[2].includePropTile)
+                if (nowTileGens[2].includePropTile)
                     for (int i = 0; i < tileMapPosList.Count; i++)
                         emptyTileList.Add(tileMapPosList[i]);
                 // 빈타일에서 설치된 좌표 빼기
-                if (lastTileGens[2].excludePropTile)
+                if (nowTileGens[2].excludePropTile)
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
                 // 장애물 설치하기
                 StartCoroutine(SpawnProp(genPos, emptyTileList));
             }
         }
+
+        //todo 새로운 주변 위치에 포함 되지 않은 타일은 끄기
+        for (int i = 0; i < nearTilemaps.Length; i++)
+            if (nearTilemaps[i] != null)
+                nearTilemaps[i].gameObject.SetActive(false);
+
+        // 새로운 주변 타일맵 배열로 갱신
+        nearTilemaps = new_NearTilemaps;
     }
 
     List<Vector2> EvadeTile(List<Vector2> emptyTileList, List<Vector2> setList, Vector2 genPos)
