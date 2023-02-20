@@ -332,19 +332,26 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    //오브젝트의 모든 자식을 제거
+    //오브젝트의 모든 자식을 파괴
     public void DestroyAllChild(Transform obj)
     {
         Transform[] children = obj.GetComponentsInChildren<Transform>(true);
-        //모든 자식 오브젝트 제거
+        //모든 자식 오브젝트 파괴
         if (children != null)
             for (int j = 1; j < children.Length; j++)
-            {
                 if (children[j] != transform)
-                {
                     Destroy(children[j].gameObject);
-                }
-            }
+    }
+
+    //오브젝트의 모든 자식을 디스폰
+    public void DespawnAllChild(Transform obj)
+    {
+        Transform[] children = obj.GetComponentsInChildren<Transform>(true);
+        //모든 자식 오브젝트 디스폰
+        if (children != null)
+            for (int j = 1; j < children.Length; j++)
+                if (children[j] != transform)
+                    LeanPool.Despawn(children[j]);
     }
 
     public SlotInfo SortInfo(SlotInfo slotInfo)

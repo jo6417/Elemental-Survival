@@ -90,6 +90,10 @@ public class UIManager : MonoBehaviour
     public InventorySlot activeSlot_A;
     public InventorySlot activeSlot_B;
     public InventorySlot activeSlot_C;
+    public GameObject inGameBindKeyList; // 인게임 사용 키 리스트
+    public GameObject tabletBindKeyList; // 태블릿 사용 키 리스트
+    [SerializeField] Transform bindKeyList; // 현재 사용 가능한 키 안내 리스트
+    [SerializeField] Transform bindKeyPrefab; // 현재 사용 가능한 키 액션 프리팹
 
     [Header("PlayerUI")]
     [SerializeField] PlayerManager playerManager;
@@ -230,6 +234,25 @@ public class UIManager : MonoBehaviour
 
         // 기본 마법 패널 열기
         // PopupUI(defaultPanel);
+
+        // 인게임 바인딩 리스트 켜기
+        inGameBindKeyList.SetActive(true);
+        tabletBindKeyList.SetActive(false);
+
+        //todo 키설정으로 바뀐 바인딩 키 불러와서 목록 직접 만들기
+        // // 모든 자식 디스폰
+        // SystemManager.Instance.DespawnAllChild(bindKeyList);
+        // // 화면 구석에 바인딩된 키 역할 표시
+        // ShowBindKey("Tab", "인벤토리");
+        // ShowBindKey("ESC", "일시정지");
+
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     bindKeyList.gameObject.SetActive(false);
+        //     yield return new WaitForSeconds(Time.deltaTime);
+        //     bindKeyList.gameObject.SetActive(true);
+        //     Canvas.ForceUpdateCanvases();
+        // }
     }
 
     // 방향키 입력되면 실행
@@ -517,10 +540,10 @@ public class UIManager : MonoBehaviour
             // print(nowTime + " : " + difficult_Amount + "% : Grade " + difficult_Grade);
         }
 
-        //todo 스테이지 시작시간부터 gateSpawnTime 시간 이후일때
+        // 스테이지 시작시간부터 gateSpawnTime 시간 이후일때
         if (SystemManager.Instance.time_current - WorldSpawner.Instance.stageStartTime > WorldSpawner.Instance.gateSpawnTime)
         {
-            // 포탈게이트 근처에서 스폰
+            // 이제부터 포탈게이트 근처에서 몬스터 스폰
             WorldSpawner.Instance.gateSpawn = true;
             // 몬스터 반대편으로 옮기기 정지
             WorldSpawner.Instance.dragSwitch = false;
@@ -972,11 +995,11 @@ public class UIManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(gameObject);
     }
 
-    // 화면 밖 오브젝트 방향 표시 Nav UI
-    public IEnumerator PointObject(GameObject targetObj, Sprite icon)
+    // 화면 밖 오브젝트 방향 표시 UI
+    public IEnumerator PointObject(Renderer targetRenderer, Sprite icon)
     {
         // 오버레이 풀에서 화살표 UI 생성
-        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetObj.transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);
+        GameObject arrowUI = LeanPool.Spawn(iconArrowPrefab, targetRenderer.transform.position, Quaternion.identity, ObjectPool.Instance.overlayPool);
 
         //rect 찾기
         RectTransform rect = arrowUI.GetComponent<RectTransform>();
@@ -987,16 +1010,21 @@ public class UIManager : MonoBehaviour
         // 방향 가리킬 화살표
         Transform arrow = arrowUI.transform.Find("Arrow");
 
+        // 화살표 이동 딜레이
+        float followDelay = 0.001f;
+
         //오브젝트 활성화 되어있으면
-        while (targetObj.activeSelf)
+        while (targetRenderer.gameObject.activeSelf)
         {
-            // 오브젝트가 화면 안에 있으면 화살표 비활성화, 밖에 있으면 활성화
-            Vector3 arrowPos = Camera.main.WorldToViewportPoint(targetObj.transform.position);
-            if (arrowPos.x < 0f
-            || arrowPos.x > 1f
-            || arrowPos.y < 0f
-            || arrowPos.y > 1f)
+            // 화살표의 카메라 내부 위치 산출 (좌하단에서 우상단까지 0 ~ 1)
+            Vector3 arrowPos = Camera.main.WorldToViewportPoint(targetRenderer.transform.position);
+            // if (arrowPos.x < 0f || arrowPos.x > 1f
+            // || arrowPos.y < 0f || arrowPos.y > 1f)
+
+            // 해당 렌더러가 화면 밖으로 나갔을때
+            if (!targetRenderer.isVisible)
             {
+                // 화살표 켜기
                 arrowUI.SetActive(true);
 
                 // 화살표 위치가 화면 밖으로 벗어나지않게 제한
@@ -1007,23 +1035,20 @@ public class UIManager : MonoBehaviour
                 rect.pivot = arrowPos;
 
                 // 아이콘 화살표 위치 이동
-                arrowUI.transform.position = Camera.main.ViewportToWorldPoint(arrowPos);
+                arrowUI.transform.DOMove(Camera.main.ViewportToWorldPoint(arrowPos), followDelay);
 
                 // 오브젝트 방향 가리키기
-                Vector2 dir = targetObj.transform.position - playerManager.transform.position;
+                Vector2 dir = targetRenderer.transform.position - playerManager.transform.position;
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 225f;
                 arrow.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             }
+            // 해당 렌더러가 화면 안에 보일때
             else
-            {
+                // 화살표 끄기
                 arrowUI.SetActive(false);
-            }
 
-            yield return new WaitForSeconds(Time.deltaTime);
+            yield return new WaitForSeconds(followDelay);
         }
-
-        //오브젝트 비활성화되면
-        yield return new WaitUntil(() => !targetObj.activeSelf);
 
         //화살표 디스폰
         LeanPool.Despawn(arrowUI);
@@ -1115,5 +1140,27 @@ public class UIManager : MonoBehaviour
 
         // 데미지 텍스트 디스폰
         LeanPool.Despawn(damageUI);
+    }
+
+    Transform ShowBindKey(string keyName, string actionName)
+    {
+        // 키 액션 프리팹 생성
+        Transform bindKey = LeanPool.Spawn(bindKeyPrefab, bindKeyList);
+
+        //todo 키 이름 텍스트 찾기
+        TextMeshProUGUI keyText = bindKey.Find("KeyImage/KeyName").GetComponent<TextMeshProUGUI>();
+        //todo 액션 텍스트 찾기
+        TextMeshProUGUI actionText = bindKey.Find("Action").GetComponent<TextMeshProUGUI>();
+
+        // 키 이름 넣기
+        keyText.text = keyName;
+        // 액션 이름 넣기
+        actionText.text = actionName;
+
+        // UI 강제 갱신
+        Canvas.ForceUpdateCanvases();
+
+        // 생성된 UI 리턴
+        return bindKey;
     }
 }

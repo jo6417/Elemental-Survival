@@ -48,6 +48,7 @@ public class GatePortal : MonoBehaviour
     IEnumerator payCoroutine;
     [SerializeField] Character bossCharacter;
     [SerializeField] Character fixedBoss; // 고정된 보스 소환
+    IEnumerator closeMoveCoroutine; // 플레이어와 거리 멀면 재이동 코루틴
 
     [Header("Refer")]
     [SerializeField] CanvasGroup showKeyUI; //상호작용 키 표시 UI
@@ -58,7 +59,7 @@ public class GatePortal : MonoBehaviour
     [SerializeField] TextMeshProUGUI pressKey; // 바인딩 된 키 이름
     [SerializeField] Transform portalPivot; // 게이트 피벗 오브젝트
     [SerializeField] Animator portalAnim; //포탈 이펙트 애니메이션
-    [SerializeField] SpriteRenderer gateFrame; // 포탈 테두리
+    // [SerializeField] SpriteRenderer gateFrame; // 포탈 테두리
     [SerializeField] SpriteRenderer gaugeImg; //포탈 테두리 원형 게이지 이미지
     [SerializeField] SpriteRenderer portalCover; // 포탈 빛날때 이미지
     [SerializeField] SpriteRenderer beam; // 포탈 전송시 나타나는 빔
@@ -156,72 +157,44 @@ public class GatePortal : MonoBehaviour
 
         // 젬 타입 UI 색깔 갱신
         GemIcon.color = MagicDB.Instance.GetElementColor(gemType);
+
+        // 카메라에 포탈이 보이면 아이콘 화살표 띄워서 가리키기
+        StartCoroutine(VisibleAction());
+
+        // 플레이어와 멀어지면 위치 재이동
+        closeMoveCoroutine = MoveClose();
+        StartCoroutine(closeMoveCoroutine);
     }
 
-    private Vector3 lastCameraPosition;
-    private Vector3 lastSpritePosition;
-
-    void Start()
+    IEnumerator VisibleAction()
     {
-        // 초기 위치 저장
-        lastCameraPosition = UIManager.Instance.camParent.position;
-        lastSpritePosition = transform.position;
+        // 포탈 내부 스프라이트
+        SpriteRenderer portalSprite = portalAnim.GetComponent<SpriteRenderer>();
+
+        // 해당 스프라이트가 카메라에 보일때까지 대기
+        yield return new WaitUntil(() => portalSprite.isVisible);
+
+        // 아이콘 화살표가 게이트 위치 계속 가리키기
+        StartCoroutine(UIManager.Instance.PointObject(portalSprite, SystemManager.Instance.gateIcon));
+
+        // 멀어지면 위치 이동하는 코루틴 정지
+        StopCoroutine(closeMoveCoroutine);
     }
 
-    void LateUpdate()
+    IEnumerator MoveClose()
     {
-        Camera cam = UIManager.Instance.mainCamera;
+        // 플레이어까지 거리가 farDistance 보다 멀어지면
+        yield return new WaitUntil(() => Vector2.Distance(transform.position, PlayerManager.Instance.transform.position) >= farDistance);
 
-        // // 카메라나 Sprite 오브젝트가 이동했을 때에만 실행
-        // if (lastCameraPosition != cam.transform.position
-        //     || lastSpritePosition != transform.position)
-        // {
-        //     // Sprite 오브젝트의 Collider2D 영역
-        //     Bounds spriteBounds = gateFrame.bounds;
+        //포탈이 생성될 위치
+        Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * MapManager.Instance.portalRange;
 
-        //     // 카메라 시야 영역
-        //     Bounds cameraBounds = new Bounds(cam.transform.position,
-        //         new Vector3(cam.orthographicSize * 2 * cam.aspect,
-        //         cam.orthographicSize * 2, 0));
+        // 플레이어 주변으로 재이동
+        transform.position = pos;
 
-        //     // 두 영역이 겹치는지 확인
-        //     if (Physics2D.OverlapArea(spriteBounds.min, spriteBounds.max, cameraBounds.min, cameraBounds.max))
-        //     {
-        //         Debug.Log("Sprite is in camera view.");
-        //     }
-        //     else
-        //     {
-        //         Debug.Log("Sprite is not in camera view.");
-        //     }
-
-        //     // 현재 위치 저장
-        //     lastCameraPosition = cam.transform.position;
-        //     lastSpritePosition = transform.position;
-        // }
-    }
-
-    private void Update()
-    {
-        if (!SystemManager.Instance.loadDone)
-            return;
-
-        // 플레이어와 거리 너무 멀어지면 위치 이동
-        if (PlayerManager.Instance != null)
-            MoveClose();
-    }
-
-    void MoveClose()
-    {
-        // farDistance 보다 멀어지면
-        float distance = Vector2.Distance(transform.position, PlayerManager.Instance.transform.position);
-        if (distance >= farDistance)
-        {
-            //포탈이 생성될 위치
-            Vector2 pos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * MapManager.Instance.portalRange;
-
-            // 플레이어 주변으로 재이동
-            transform.position = pos;
-        }
+        // 코루틴 재실행
+        closeMoveCoroutine = MoveClose();
+        StartCoroutine(closeMoveCoroutine);
     }
 
     public void InteractTrigger(bool isTrigger)
@@ -302,9 +275,10 @@ public class GatePortal : MonoBehaviour
             // 젬 받기 이후 상태로 전환
             portalState = PortalState.GemReceive;
 
-            //todo 포탈을 발견하기만 해도 가리키도록 변경
-            // 아이콘 화살표가 게이트 위치 계속 가리키기
-            StartCoroutine(UIManager.Instance.PointObject(gameObject, SystemManager.Instance.gateIcon));
+            // 이제부터 포탈게이트 근처에서 몬스터 스폰
+            WorldSpawner.Instance.gateSpawn = true;
+            // 몬스터 반대편으로 옮기기 정지
+            WorldSpawner.Instance.dragSwitch = false;
         }
 
         // 젬 넣는 상태일때
@@ -375,7 +349,7 @@ public class GatePortal : MonoBehaviour
 
             // 원소젬 넣을때 이펙트 생성
             LeanPool.Spawn(insertGemEffect, portalAnim.transform.position, Quaternion.identity, portalAnim.transform);
-            //todo 젬 넣기 사운드 재생
+            // 젬 넣기 사운드 재생
             SoundManager.Instance.PlaySound("Gate_InsertGem", transform.position);
 
             // 포탈 준비 파티클 시작
@@ -397,7 +371,7 @@ public class GatePortal : MonoBehaviour
         {
             // 원소젬 max 이펙트 재생
             gemMaxEffect.SetActive(true);
-            //todo 젬 max 사운드 재생
+            // 젬 max 사운드 재생
             SoundManager.Instance.PlaySound("Gate_GemMax", transform.position);
 
             // 보스 소환 메시지로 전환
@@ -414,7 +388,7 @@ public class GatePortal : MonoBehaviour
         float startAngle = gaugeImg.material.GetFloat("_Arc1");
 
         //젬 개수만큼 테두리 도넛 게이지 갱신
-        float gaugeFill = ((needGem - nowGem) / needGem) * (360f - startAngle);
+        float gaugeFill = (((float)needGem - (float)nowGem) / (float)needGem) * (360f - startAngle);
         gaugeFill = Mathf.Clamp(gaugeFill, 0, (360f - startAngle));
 
         // 시작부터 마지막 지점까지 채우는 양 갱신

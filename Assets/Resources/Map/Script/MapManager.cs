@@ -183,7 +183,6 @@ public class MapManager : MonoBehaviour
                 Vector3 genPos = defaultPos + new Vector2(tilemapSize.x * x, tilemapSize.y * y) / 2f;
 
                 Transform tilemap = null;
-                GameObject newTilemap = null;
 
                 // 직전 타일맵에서 해당 위치의 타일맵 찾기
                 tilemap = nearTilemaps.ToList().Find(x => x != null && x.position == genPos);
@@ -206,15 +205,15 @@ public class MapManager : MonoBehaviour
                 else
                 {
                     // 이미 생성된 타일맵 중에 해당 위치의 타일맵 찾기
-                    Transform oldTilemap = genTilemapList.Find(x => x.position == genPos);
+                    tilemap = genTilemapList.Find(x => x.position == genPos);
                     // 새로운 주변 타일맵 등록
-                    new_NearTilemaps[y * 3 + x] = oldTilemap;
+                    new_NearTilemaps[y * 3 + x] = tilemap;
 
                     // 이미 생성된 타일맵 중에 해당 위치가 있으면
-                    if (oldTilemap != null)
+                    if (tilemap != null)
                     {
                         // 이미 생성된것 켜기
-                        oldTilemap.gameObject.SetActive(true);
+                        tilemap.gameObject.SetActive(true);
                         // 넘기기
                         continue;
                     }
@@ -222,17 +221,17 @@ public class MapManager : MonoBehaviour
                     else
                     {
                         // 새로운 타일맵 생성
-                        newTilemap = LeanPool.Spawn(tileSetPrefab, genPos, Quaternion.identity, transform);
+                        tilemap = LeanPool.Spawn(tileSetPrefab, genPos, Quaternion.identity, transform).transform;
                         // 새로운 주변 타일맵 등록
-                        new_NearTilemaps[y * 3 + x] = newTilemap.transform;
+                        new_NearTilemaps[y * 3 + x] = tilemap;
 
                         // 생성 타일맵 리스트에 저장
-                        genTilemapList.Add(newTilemap.transform);
+                        genTilemapList.Add(tilemap);
                     }
                 }
 
                 // 새로운 타일 생성기들 갱신
-                TileMapGenerator[] tileGens = newTilemap.GetComponentsInChildren<TileMapGenerator>();
+                TileMapGenerator[] tileGens = tilemap.GetComponentsInChildren<TileMapGenerator>();
                 for (int i = 0; i < tileGens.Length; i++)
                     nowTileGens[i] = tileGens[i];
 
@@ -286,11 +285,11 @@ public class MapManager : MonoBehaviour
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
                 // 장애물 설치하기
-                StartCoroutine(SpawnProp(genPos, emptyTileList));
+                StartCoroutine(SpawnProp(genPos * 2f, emptyTileList, tilemap));
             }
         }
 
-        //todo 새로운 주변 위치에 포함 되지 않은 타일은 끄기
+        // 새로운 주변 위치에 포함 되지 않은 타일은 끄기
         for (int i = 0; i < nearTilemaps.Length; i++)
             if (nearTilemaps[i] != null)
                 nearTilemaps[i].gameObject.SetActive(false);
@@ -315,10 +314,8 @@ public class MapManager : MonoBehaviour
         return emptyTileList;
     }
 
-    IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> emptyTileList)
+    IEnumerator SpawnProp(Vector2 groundPos, List<Vector2> emptyTileList, Transform parentTilemap)
     {
-        //todo 매개변수로 받은 타일맵에 타일 설치
-
         //! 시간 측정
         // Stopwatch debugTime = new Stopwatch();
         // debugTime.Start();
@@ -398,8 +395,8 @@ public class MapManager : MonoBehaviour
                     // 설치 좌표 계산
                     Vector2 spawnPos = randomPos + new Vector2(groundPos.x - tilemapSize.x / 2f, groundPos.y - tilemapSize.y / 2f);
 
-                    // 해당 타일에 장애물 설치하고 끝내기
-                    GameObject propObj = LeanPool.Spawn(prop.propPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.objectPool);
+                    // 해당 타일에 장애물 설치, 포함된 타일맵의 자식으로 넣기
+                    GameObject propObj = LeanPool.Spawn(prop.propPrefab, spawnPos, Quaternion.identity, parentTilemap);
 
                     // 해당하는 모든 타일 리스트에서 빼기
                     for (int x = 0; x < propSize.x; x++)

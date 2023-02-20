@@ -397,6 +397,10 @@ public class PhoneMenu : MonoBehaviour
         // 핸드폰 알림 개수 초기화
         UIManager.Instance.PhoneNotice(0);
 
+        // 핸드폰 키 바인딩 보여주기
+        UIManager.Instance.inGameBindKeyList.SetActive(false);
+        UIManager.Instance.tabletBindKeyList.SetActive(true);
+
         #endregion
     }
 
@@ -1709,5 +1713,9 @@ public class PhoneMenu : MonoBehaviour
 
         // 핸드폰 꺼짐
         isOpen = false;
+
+        // 인게임 키 바인딩 보여주기
+        UIManager.Instance.inGameBindKeyList.SetActive(true);
+        UIManager.Instance.tabletBindKeyList.SetActive(false);
     }
 }
