@@ -21,6 +21,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     [Header("Refer")]
     [SerializeField] Transform shakeParent;
+    public RectTransform rect;
     public Image slotBackEffect; // 슬롯 강조 배경 이펙트
     public Image slotFrame; // 아이템 등급 표시 슬롯 프레임
     public Image slotIcon; // 아이템 아이콘
@@ -43,9 +44,11 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // level = transform.Find("Level").GetComponent<Image>();
 
         // 툴팁 트리거 찾기
-        slotTooltip = slotTooltip == null ? transform.GetComponent<ToolTipTrigger>() : slotTooltip;
+        slotTooltip = slotTooltip == null ? GetComponent<ToolTipTrigger>() : slotTooltip;
         // 버튼 컴포넌트 찾기
-        slotButton = slotButton == null ? transform.GetComponent<Button>() : slotButton;
+        slotButton = slotButton == null ? GetComponent<Button>() : slotButton;
+        // Rect 찾기
+        if (rect == null) rect = GetComponent<RectTransform>();
 
         // New 표시 끄기
         newSign.SetActive(false);
@@ -206,6 +209,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         {
             // 버튼 선택 사운드 재생
             SoundManager.Instance.PlaySound("SelectButton");
+
+            //todo 선택 슬롯 변수에 해당 슬롯 넣기
+            PhoneMenu.Instance.nowSelectSlot = this;
         }
     }
 
@@ -224,16 +230,23 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
             // 쉬프트 누른채로 클릭했을때
             if (UIManager.Instance.UI_Input.UI.Shift.IsPressed())
+            {
                 // 머지 슬롯으로 변수 넣기
                 secondInput = (int)SlotType.Active;
 
+                // 마법 넣기
+                ClickSlot(secondInput);
+            }
+
             // 컨트롤 누른채로 클릭했을때
             if (UIManager.Instance.UI_Input.UI.Ctrl.IsPressed())
+            {
                 // 액티브 슬롯으로 변수 넣기
                 secondInput = (int)SlotType.Merge;
 
-            // 마법 넣기
-            ClickSlot(secondInput);
+                // 마법 넣기
+                ClickSlot(secondInput);
+            }
         }
     }
 
@@ -248,13 +261,13 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
     public void OnSubmit(BaseEventData eventData)
     {
-        // 버튼이 상호작용 가능할때만
-        if (slotButton.interactable)
-            // 슬롯 클릭하기
-            ClickSlot();
+        // // 버튼이 상호작용 가능할때만
+        // if (slotButton.interactable)
+        //     // 슬롯 클릭하기
+        //     ClickSlot();
     }
 
-    void ClickSlot(int secondInput = -1)
+    public void ClickSlot(int secondInput = -1)
     {
         // 버튼 클릭 사운드 재생
         SoundManager.Instance.PlaySound("SubmitButton");
@@ -263,7 +276,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         newSign.SetActive(false);
 
         // 선택된 슬롯 없을때
-        if (PhoneMenu.Instance.nowSelectSlot == null)
+        if (PhoneMenu.Instance.nowHoldSlot == null)
         {
             // 해당 슬롯에 아이템 없으면 리턴
             if (slotInfo == null)
@@ -427,16 +440,24 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (secondInput == -1)
             {
                 // 마우스 아이콘에 해당 슬롯 아이콘 넣기
-                UIManager.Instance.nowSelectIcon.enabled = true;
-                UIManager.Instance.nowSelectIcon.sprite = slotIcon.sprite;
+                UIManager.Instance.ToggleHoldSlot(true, slotIcon.sprite);
 
-                // 아이콘 마우스 위치로 이동
-                PhoneMenu.Instance.MousePos();
+                // 마우스로 클릭했을때
+                if (!UICursor.Instance.UI_Cursor.gameObject.activeSelf)
+                    // 아이콘 마우스 위치로 이동
+                    PhoneMenu.Instance.MousePos();
+                // 키보드로 선택했을때
+                else
+                {
+                    // UI 커서 자식으로 넣고 위치 초기화
+                    UIManager.Instance.nowHoldSlot.transform.SetParent(UICursor.Instance.UI_Cursor);
+                    UIManager.Instance.nowHoldSlot.transform.localPosition = Vector2.zero;
+                }
 
                 // 현재 슬롯 기억하기
-                PhoneMenu.Instance.nowSelectSlot = this;
+                PhoneMenu.Instance.nowHoldSlot = this;
                 // 선택된 슬롯 정보 갱신
-                PhoneMenu.Instance.nowSelectSlotInfo = slotInfo;
+                PhoneMenu.Instance.nowHoldSlotInfo = slotInfo;
 
                 // 해당 슬롯 아이템 삭제
                 slotInfo = null;
@@ -453,7 +474,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         else
         {
             // 선택된 슬롯 정보 인스턴싱
-            SlotInfo selectSlotInfo = PhoneMenu.Instance.nowSelectSlotInfo;
+            SlotInfo selectSlotInfo = PhoneMenu.Instance.nowHoldSlotInfo;
 
             // 액티브 슬롯일때
             if (slotType == SlotType.Active)
@@ -480,13 +501,13 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (slotInfo != null)
             {
                 // 마우스 아이콘에 현재 슬롯 아이콘 넣기
-                UIManager.Instance.nowSelectIcon.sprite
+                UIManager.Instance.nowHoldSlot.sprite
                 = slotInfo as MagicInfo != null
                 ? MagicDB.Instance.GetIcon(slotInfo.id)
                 : ItemDB.Instance.GetIcon(slotInfo.id);
 
                 // 마우스의 슬롯 정보에 현재 슬롯 정보 넣기
-                PhoneMenu.Instance.nowSelectSlotInfo = slotInfo;
+                PhoneMenu.Instance.nowHoldSlotInfo = slotInfo;
 
                 // 선택된 슬롯 정보를 현재 슬롯에 넣기
                 slotInfo = selectSlotInfo;
@@ -495,13 +516,13 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             else
             {
                 // 마우스 아이콘 끄기
-                UIManager.Instance.nowSelectIcon.enabled = false;
+                UIManager.Instance.ToggleHoldSlot(false);
 
                 // 현재 슬롯에 선택된 슬롯 아이템 넣기
                 slotInfo = selectSlotInfo;
 
                 // 선택된 슬롯 초기화
-                PhoneMenu.Instance.nowSelectSlot = null;
+                PhoneMenu.Instance.nowHoldSlot = null;
             }
 
             // 현재 슬롯 shiny 이펙트 켜기

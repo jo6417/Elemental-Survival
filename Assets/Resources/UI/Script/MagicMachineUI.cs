@@ -348,7 +348,7 @@ public class MagicMachineUI : MonoBehaviour
         //todo 슬롯 회전 이펙트 끄기
 
         // 마우스에 아이콘 없을때 클릭이나 아무 키 누를때까지 대기
-        yield return new WaitUntil(() => !UIManager.Instance.nowSelectIcon.enabled
+        yield return new WaitUntil(() => !UIManager.Instance.nowHoldSlot.enabled
         && (UIManager.Instance.UI_Input.UI.Click.IsPressed() || UIManager.Instance.UI_Input.UI.AnyKey.IsPressed()));
 
         // 피버 게이지 초기화

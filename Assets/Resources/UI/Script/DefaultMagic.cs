@@ -12,6 +12,7 @@ public class DefaultMagic : MonoBehaviour
     [SerializeField] Image blockScreen; // 화면 가림막
     [SerializeField] ParticleSystem slotParticle;
     [SerializeField] Transform attractor;
+    [SerializeField] Button firstSelect; // 초기 선택된 버튼
 
     private void OnEnable()
     {
@@ -78,6 +79,9 @@ public class DefaultMagic : MonoBehaviour
         {
             blockScreen.enabled = false;
         });
+
+        // 초기 버튼 선택
+        firstSelect.Select();
     }
 
     void ClickSlot(int index)

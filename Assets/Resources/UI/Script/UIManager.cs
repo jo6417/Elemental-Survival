@@ -86,7 +86,7 @@ public class UIManager : MonoBehaviour
     int noticeNum; // 현재 스마트폰 알림 개수
     Sequence iconJumpSeq;
     public bool phoneLoading; //스마트폰 로딩중 여부
-    public Image nowSelectIcon; // 마우스로 집은 아이콘
+    public Image nowHoldSlot; // 현재 선택중인 슬롯 아이콘
     public InventorySlot activeSlot_A;
     public InventorySlot activeSlot_B;
     public InventorySlot activeSlot_C;
@@ -140,6 +140,12 @@ public class UIManager : MonoBehaviour
 
         // 새 아이템 개수 알림 갱신
         PhoneNotice(0);
+
+        // 선택중인 아이콘 끄기
+        nowHoldSlot.enabled = false;
+        // 선택중인 슬롯 머터리얼 인스턴싱
+        Material holdMat = new Material(nowHoldSlot.material);
+        nowHoldSlot.material = holdMat;
     }
 
     IEnumerator InputInit()
@@ -233,7 +239,7 @@ public class UIManager : MonoBehaviour
         timerInside.color = InsideColor;
 
         // 기본 마법 패널 열기
-        // PopupUI(defaultPanel);
+        PopupUI(defaultPanel);
 
         // 인게임 바인딩 리스트 켜기
         inGameBindKeyList.SetActive(true);
@@ -1142,25 +1148,60 @@ public class UIManager : MonoBehaviour
         LeanPool.Despawn(damageUI);
     }
 
-    Transform ShowBindKey(string keyName, string actionName)
+    public void ToggleHoldSlot(bool toggle, Sprite changeSprite = null)
     {
-        // 키 액션 프리팹 생성
-        Transform bindKey = LeanPool.Spawn(bindKeyPrefab, bindKeyList);
+        // 스프라이트 들어오면 교체
+        if (changeSprite != null)
+            nowHoldSlot.sprite = changeSprite;
 
-        //todo 키 이름 텍스트 찾기
-        TextMeshProUGUI keyText = bindKey.Find("KeyImage/KeyName").GetComponent<TextMeshProUGUI>();
-        //todo 액션 텍스트 찾기
-        TextMeshProUGUI actionText = bindKey.Find("Action").GetComponent<TextMeshProUGUI>();
+        // 선택중인 슬롯 켜고끄기
+        nowHoldSlot.enabled = toggle;
 
-        // 키 이름 넣기
-        keyText.text = keyName;
-        // 액션 이름 넣기
-        actionText.text = actionName;
+        // 켜질때는
+        if (toggle)
+        {
+            // 기존 트윈 종료
+            nowHoldSlot.material.DOKill();
 
-        // UI 강제 갱신
-        Canvas.ForceUpdateCanvases();
-
-        // 생성된 UI 리턴
-        return bindKey;
+            // 색깔 흰색으로 깜빡이기
+            nowHoldSlot.material.DOColor(Color.white, "_Tint", 0.5f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetUpdate(true)
+            .OnStart(() =>
+            {
+                // 투명하게 초기화
+                nowHoldSlot.material.SetColor("_Tint", new Color(1, 1, 1, 0));
+            })
+            .OnKill(() =>
+            {
+                // 투명하게 초기화
+                nowHoldSlot.material.SetColor("_Tint", new Color(1, 1, 1, 0));
+            });
+        }
+        else
+            // 깜빡임 트윈 종료
+            nowHoldSlot.material.DOKill();
     }
+
+    // Transform ShowBindKey(string keyName, string actionName)
+    // {
+    //     // 키 액션 프리팹 생성
+    //     Transform bindKey = LeanPool.Spawn(bindKeyPrefab, bindKeyList);
+
+    //     // 키 이름 텍스트 찾기
+    //     TextMeshProUGUI keyText = bindKey.Find("KeyImage/KeyName").GetComponent<TextMeshProUGUI>();
+    //     // 액션 텍스트 찾기
+    //     TextMeshProUGUI actionText = bindKey.Find("Action").GetComponent<TextMeshProUGUI>();
+
+    //     // 키 이름 넣기
+    //     keyText.text = keyName;
+    //     // 액션 이름 넣기
+    //     actionText.text = actionName;
+
+    //     // UI 강제 갱신
+    //     Canvas.ForceUpdateCanvases();
+
+    //     // 생성된 UI 리턴
+    //     return bindKey;
+    // }
 }

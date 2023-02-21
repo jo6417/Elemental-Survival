@@ -35,7 +35,7 @@ public class PlayerManager : Character
     }
     #endregion
 
-    [Header("<Input>")]
+    [Header("Input")]
     public NewInput player_Input;
     Vector2 inputMoveDir; // 현재 이동 입력 벡터
     Vector2 nowMoveDir; // 현재 이동 벡터
@@ -45,7 +45,7 @@ public class PlayerManager : Character
     public float dashSpeed = 1; //대쉬 버프 속도
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
-    [Header("<Refer>")]
+    [Header("Refer")]
     // public Transform activeParent; // 액티브 슬롯들 부모 오브젝트
     // public GameObject aimCursor; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
@@ -54,6 +54,7 @@ public class PlayerManager : Character
     public SpriteRenderer playerSprite; // 몸체 스프라이트
     public SpriteRenderer playerCover; // 플레이어와 같은 이미지로 덮기
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
+    public Transform magicParent; // 해당 오브젝트 밑에 마법 붙이기
     public Light2D playerLight;
     // public Rigidbody2D rigid;
     public Collider2D coll;
@@ -61,13 +62,13 @@ public class PlayerManager : Character
     public Transform knockbackColl; // 레벨업 시 넉백 콜라이더
     public GameObject lvUpEffectPrefab; // 레벨업 이펙트
 
-    [Header("<Stat>")] //플레이어 스탯
+    [Header("Stat")] //플레이어 스탯
     // public CharacterStat characterStat; // 현재 스탯
     // private CharacterStat PlayerStat_Default; // 초기 스탯
     public float ExpMax = 5; // 경험치 최대치
     public float ExpNow = 0; // 현재 경험치
 
-    [Header("<State>")]
+    [Header("State")]
     public bool initFinish = false;
     // public float hpNow;
     // public float hpMax;
@@ -77,7 +78,7 @@ public class PlayerManager : Character
     // public int remainExp; // 획득 대기중인 경험치
     public List<ItemInfo> remainExpList = new List<ItemInfo>(); // 획득 대기중인 경험치
 
-    [Header("<Pocket>")]
+    [Header("Pocket")]
     [SerializeField] int[] testGems = new int[6]; // 테스트용 초기 원소젬 개수
     [SerializeField] public ItemInfo[] hasGem = new ItemInfo[6]; //플레이어가 가진 원소젬
     public List<ItemInfo> hasArtifact = new List<ItemInfo>(); //플레이어가 가진 아티팩트

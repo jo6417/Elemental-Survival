@@ -40,7 +40,7 @@ public class UICursor : MonoBehaviour
     [ReadOnly, SerializeField] bool isFlicking = false; //커서 깜빡임 여부
     [ReadOnly, SerializeField] bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
-    IEnumerator cursorAnim;
+    IEnumerator cursorAnimCoroutine;
 
     [Header("Refer")]
     public Transform mouseCursor; // 마우스 커서
@@ -73,7 +73,12 @@ public class UICursor : MonoBehaviour
         {
             // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
             if (!UICursor.Instance.UI_Cursor.gameObject.activeInHierarchy && lastSelected)
+            {
+                // UI 커서 켜기
+                UICursorToggle(true);
+
                 lastSelected.Select();
+            }
         };
         // 마우스 위치 입력
         UI_Input.UI.MousePosition.performed += val =>
@@ -174,12 +179,12 @@ public class UICursor : MonoBehaviour
                 isMove = true;
 
                 // 기존 커서 애니메이션 끝내기
-                if (cursorAnim != null)
-                    StopCoroutine(cursorAnim);
+                if (cursorAnimCoroutine != null)
+                    StopCoroutine(cursorAnimCoroutine);
 
                 //커서 애니메이션 시작
-                cursorAnim = CursorAnim();
-                StartCoroutine(cursorAnim);
+                cursorAnimCoroutine = CursorAnim();
+                StartCoroutine(cursorAnimCoroutine);
             }
 
             // domove 끝났으면 타겟 위치 따라가기
@@ -220,8 +225,18 @@ public class UICursor : MonoBehaviour
             lastSelected.targetGraphic.GetComponent<Image>().DOKill();
 
             // UI 커서 투명하게
-            UI_Cursor.GetComponent<Image>().DOColor(SystemManager.Instance.HexToRGBA("59AFFF", 0), 0.3f)
-            .SetUpdate(true);
+            Image cursorImage = UI_Cursor.GetComponent<Image>();
+            cursorImage.DOKill();
+            cursorImage.DOColor(SystemManager.Instance.HexToRGBA("59AFFF", 0), 0.3f)
+            .SetUpdate(true)
+            .OnStart(() =>
+            {
+                cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF");
+            })
+            .OnKill(() =>
+            {
+                cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF", 0);
+            });
 
             //UI커서 크기 및 위치 초기화
             RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
@@ -242,7 +257,7 @@ public class UICursor : MonoBehaviour
         }
 
         // 커서 꺼져있을때 켜기
-        if (setToggle && !UI_Cursor.gameObject.activeSelf)
+        if (setToggle)
         {
             //UI커서 크기 및 위치 초기화
             // RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
@@ -251,17 +266,24 @@ public class UICursor : MonoBehaviour
 
             // UI_Cursor.position = Vector2.zero;
 
-            cursorRect.DOPause();
-            cursorRect.DOKill();
+            // cursorRect.DOPause();
+            // cursorRect.DOKill();
 
             //UI커서 활성화
             UI_Cursor.gameObject.SetActive(true);
+
+            //선택된 UI 따라다니기
+            FollowUICursor();
         }
     }
 
     IEnumerator CursorAnim()
     {
-        yield return null;
+        RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
+        //원래 트윈 있으면 죽이기        
+        cursorRect.DOKill();
+        UI_Cursor.transform.DOComplete();
+        UI_Cursor.DOComplete();
 
         // 선택된 타겟 이미지
         // Image image = lastSelected.targetGraphic.GetComponent<Image>();
@@ -314,20 +336,23 @@ public class UICursor : MonoBehaviour
         //UI커서 활성화
         UI_Cursor.gameObject.SetActive(true);
 
-        RectTransform cursorRect = UI_Cursor.GetComponent<RectTransform>();
-
-        //원래 트윈 있으면 죽이기        
-        cursorRect.DOKill();
-        UI_Cursor.transform.DOKill();
-        UI_Cursor.DOKill();
-
         // 타겟 위치로 이동
         UI_Cursor.transform.DOMove(btnPos, flickTime)
         .SetUpdate(true);
 
         // UI 커서 색깔 초기화
-        UI_Cursor.GetComponent<Image>().DOColor(SystemManager.Instance.HexToRGBA("59AFFF"), flickTime)
-        .SetUpdate(true);
+        Image cursorImage = UI_Cursor.GetComponent<Image>();
+        cursorImage.DOKill();
+        cursorImage.DOColor(SystemManager.Instance.HexToRGBA("59AFFF"), flickTime)
+        .SetUpdate(true)
+        .OnStart(() =>
+        {
+            cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF", 0);
+        })
+        .OnKill(() =>
+        {
+            cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF");
+        });
 
         // 타겟과 사이즈 맞추기
         cursorRect.DOSizeDelta(size * 1f, flickTime)
@@ -363,6 +388,9 @@ public class UICursor : MonoBehaviour
             // 컬러 초기화
             lastSelected.targetGraphic.color = originColor;
         });
+
+        // 커서 코루틴 초기화
+        cursorAnimCoroutine = null;
     }
     #endregion
 }
