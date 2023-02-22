@@ -184,9 +184,6 @@ public class SystemManager : MonoBehaviour
         ItemDB.Instance.ItemDBSynchronize(false);
         EnemyDB.Instance.EnemyDBSynchronize(false);
 
-        // 갓모드 false 초기화
-        // GodModeToggle();
-
         // 마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
         // 아이템 DB 로딩 대기
@@ -292,7 +289,7 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public void TimeScaleChange(float timeScale)
+    public void TimeScaleChange(float timeScale, bool soundScaling = true)
     {
         // 씬 타임스케일 변경
         Time.timeScale = timeScale;
@@ -300,8 +297,10 @@ public class SystemManager : MonoBehaviour
         Image timeImg = timeBtn.GetComponent<Image>();
         TextMeshProUGUI timeTxt = timeBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-        // 모든 오디오 소스 피치에 반영
-        SoundManager.Instance.SoundTimeScale(timeScale, 0);
+        // 재생중인 사운드도 끌때
+        if (soundScaling)
+            // 모든 오디오 소스 피치에 반영
+            SoundManager.Instance.SoundTimeScale(timeScale, 0);
 
         // 멈추면 빨강 아니면 초록색으로 버튼에 표시
         if (timeScale > 0f)

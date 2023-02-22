@@ -628,7 +628,9 @@ public class PlayerManager : Character
     IEnumerator Levelup()
     {
         // 시간 멈추기
-        SystemManager.Instance.TimeScaleChange(0f);
+        SystemManager.Instance.TimeScaleChange(0f, false);
+
+        yield return StartCoroutine(SoundManager.Instance.ChangeAll_Pitch(0, 0, false));
 
         //레벨업
         characterStat.Level++;

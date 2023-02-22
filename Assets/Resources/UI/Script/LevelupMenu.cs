@@ -11,8 +11,9 @@ public class LevelupMenu : MonoBehaviour
     [SerializeField] CanvasGroup allGroup; // 전체 캔버스 그룹
     [SerializeField] CanvasGroup background; // 반투명 검은 배경
     [SerializeField] Transform[] cards = new Transform[3]; // 카드 위치를 위한 오브젝트
-    [SerializeField] GameObject[] dustEffects = new GameObject[3]; // 카드 먼지 이펙트
-    [SerializeField] Transform[] slots = new Transform[3]; // 카드에 들어갈 정보들
+    GameObject[] dustEffects = new GameObject[3]; // 카드 먼지 이펙트
+    Transform[] slots = new Transform[3]; // 카드에 들어갈 정보들
+    // Vector3[] cardPos = new Vector3[3]; // 카드 초기 위치
     [SerializeField] ParticleSystem slotParticle;
     [SerializeField] Transform attractor;
     private enum GetSlotType { Magic, Shard, Gaget, Heal };
@@ -31,9 +32,6 @@ public class LevelupMenu : MonoBehaviour
 
         // 전체 상호작용 풀기
         allGroup.interactable = true;
-        // 모든 버튼 상호작용 막기
-        for (int i = 0; i < cards.Length; i++)
-            cards[i].GetComponent<CanvasGroup>().interactable = false;
 
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
@@ -46,15 +44,28 @@ public class LevelupMenu : MonoBehaviour
         // 카드 초기화
         for (int i = 0; i < cards.Length; i++)
         {
+            // 카드 초기 로컬 위치 저장
+            // cardPos[i] = cards[i].localPosition;
+
+            // 모든 버튼 상호작용 막기
+            cards[i].GetComponent<CanvasGroup>().interactable = false;
+
             // 알파값 초기화
             cards[i].GetComponent<CanvasGroup>().alpha = 1;
 
             // 위치 초기화
             cards[i].position = panelPos;
+
             // 사이즈 초기화
             cards[i].localScale = Vector3.zero;
+
+            // 먼지 파티클 찾기
+            dustEffects[i] = cards[i].Find("CardBack/CardDustEffect").gameObject;
             // 먼지 파티클 끄기
             dustEffects[i].SetActive(false);
+
+            // 슬롯 찾기
+            slots[i] = cards[i].Find("CardFront/Button");
         }
 
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
@@ -192,18 +203,11 @@ public class LevelupMenu : MonoBehaviour
             });
         }
 
-        // 카드 각각 이동할 위치
-        Vector3[] movePos = {
-            panelPos + Vector3.left * 17f,
-            panelPos,
-            panelPos + Vector3.right * 17f
-        };
-
         // 카드 왼쪽부터 순서대로 각각 코루틴으로 진행
         for (int i = 0; i < cards.Length; i++)
         {
             // 각 카드 트랜지션 시작
-            StartCoroutine(CardTransition(i, 0.5f, movePos[i]));
+            StartCoroutine(CardTransition(i, 0.5f));
 
             yield return new WaitForSecondsRealtime(0.2f);
         }
@@ -218,7 +222,7 @@ public class LevelupMenu : MonoBehaviour
         UICursor.Instance.UpdateLastSelect(firstBtn);
     }
 
-    IEnumerator CardTransition(int index, float moveTime, Vector3 movePos)
+    IEnumerator CardTransition(int index, float moveTime)
     {
         Transform card = cards[index];
 
@@ -232,7 +236,7 @@ public class LevelupMenu : MonoBehaviour
         .SetUpdate(true);
 
         // 카드 이동
-        card.DOMove(movePos, moveTime).SetUpdate(true)
+        card.DOLocalMove(Vector3.zero, moveTime).SetUpdate(true)
         .SetEase(Ease.OutExpo);
 
         // 트랜지션 대기
@@ -257,7 +261,7 @@ public class LevelupMenu : MonoBehaviour
         .SetUpdate(true)
         .OnComplete(() =>
         {
-            card.position = movePos;
+            card.localPosition = Vector3.zero;
         });
 
         // 카드 테두리 모양 먼지 파티클 재생
@@ -315,7 +319,7 @@ public class LevelupMenu : MonoBehaviour
             // 선택되지 않은 카드는 아래로 내리기
             else
             {
-                cards[i].DOMove(cards[i].position + Vector3.down * 30f, 0.5f)
+                cards[i].DOLocalMove(Vector3.down * 1000f, 0.5f)
                 .SetEase(Ease.InBack)
                 .SetUpdate(true);
             }

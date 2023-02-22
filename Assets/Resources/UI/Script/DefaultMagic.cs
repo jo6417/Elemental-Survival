@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DefaultMagic : MonoBehaviour
@@ -103,6 +104,10 @@ public class DefaultMagic : MonoBehaviour
         PhoneMenu.Instance.Phone_Input.Disable();
         //플레이어 입력 끄기
         PlayerManager.Instance.player_Input.Disable();
+
+        //todo UI 커서 끄기
+        UICursor.Instance.UICursorToggle(false);
+
         // 핸드폰 열기
         StartCoroutine(PhoneMenu.Instance.OpenPhone());
 
@@ -140,6 +145,6 @@ public class DefaultMagic : MonoBehaviour
         PhoneMenu.Instance.ClosePhone();
 
         // 패널 닫기
-        gameObject.SetActive(false);
+        UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, false);
     }
 }

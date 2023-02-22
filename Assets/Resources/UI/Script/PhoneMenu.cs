@@ -74,7 +74,6 @@ public class PhoneMenu : MonoBehaviour
     public InventorySlot nowSelectSlot; // 현재 커서 올라간 슬롯
     public InventorySlot nowHoldSlot; // 현재 선택중인 슬롯
     public SlotInfo nowHoldSlotInfo; // 현재 선택중인 슬롯 정보    
-    RectTransform nowSelectIconRect;
 
     [Header("Merge Panel")]
     public Transform mergePanel;
@@ -127,9 +126,6 @@ public class PhoneMenu : MonoBehaviour
         }
 
         yield return new WaitUntil(() => UIManager.Instance != null);
-
-        // 선택된 마법 rect 찾기
-        nowSelectIconRect = UIManager.Instance.nowHoldSlot.transform.parent.GetComponent<RectTransform>();
     }
 
     private void Start()
@@ -251,19 +247,10 @@ public class PhoneMenu : MonoBehaviour
 
         if (UIManager.Instance.nowHoldSlot.enabled)
         {
-            // 선택된 아이콘 부모 및 위치 초기화
-            UIManager.Instance.nowHoldSlot.transform.SetParent(nowSelectIconRect);
+            // 홀드 중인 아이콘을 마우스 커서의 첫번째 자식으로 넣기 및 위치 초기화
+            UIManager.Instance.nowHoldSlot.transform.SetParent(UICursor.Instance.mouseCursor);
+            UIManager.Instance.nowHoldSlot.transform.SetSiblingIndex(0);
             UIManager.Instance.nowHoldSlot.transform.localPosition = Vector2.zero;
-
-            // 캔버스 스케일을 해상도로 나눈 비율을 곱해서 마우스 위치값 보정
-            Vector3 mousePos = UIManager.Instance.nowMousePos * (GetComponent<CanvasScaler>().referenceResolution.x / Screen.width);
-            mousePos.z = 0;
-
-            // 선택된 마법 아이콘 마우스 따라다니기
-            nowSelectIconRect.anchoredPosition = mousePos;
-
-            //todo 선택 슬롯 변수 비우기
-            nowSelectSlot = null;
         }
     }
 
@@ -422,6 +409,9 @@ public class PhoneMenu : MonoBehaviour
         // 핸드폰 키 바인딩 보여주기
         UIManager.Instance.inGameBindKeyList.SetActive(false);
         UIManager.Instance.tabletBindKeyList.SetActive(true);
+
+        // 첫번째 슬롯 선택하기
+        invenSlots[0].slotButton.Select();
 
         #endregion
     }

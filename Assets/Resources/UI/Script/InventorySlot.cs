@@ -196,6 +196,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         }
     }
 
+    // 슬롯에 마우스 오버시
     public void OnPointerEnter(PointerEventData eventData)
     {
         //해당 버튼 선택
@@ -210,7 +211,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 버튼 선택 사운드 재생
             SoundManager.Instance.PlaySound("SelectButton");
 
-            //todo 선택 슬롯 변수에 해당 슬롯 넣기
+            // 선택 슬롯 변수에 해당 슬롯 넣기
             PhoneMenu.Instance.nowSelectSlot = this;
         }
     }

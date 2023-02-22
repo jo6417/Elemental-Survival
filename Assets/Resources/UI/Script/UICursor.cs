@@ -36,7 +36,7 @@ public class UICursor : MonoBehaviour
     public NewInput UI_Input; // UI 인풋 받기
     public Selectable lastSelected; //마지막 선택된 오브젝트
     public Color targetOriginColor; //마지막 선택된 오브젝트 원래 selected 색깔
-    public float UI_CursorPadding; //UI 커서 여백
+    public float UI_CursorPadding; //UI 커서 여백 
     [ReadOnly, SerializeField] bool isFlicking = false; //커서 깜빡임 여부
     [ReadOnly, SerializeField] bool isMove = false; //커서 이동중 여부
     Sequence cursorSeq; //깜빡임 시퀀스
@@ -72,7 +72,7 @@ public class UICursor : MonoBehaviour
         UI_Input.UI.NavControl.performed += val =>
         {
             // UI커서가 꺼져있고 lastSelected가 있으면 lastSelected 선택
-            if (!UICursor.Instance.UI_Cursor.gameObject.activeInHierarchy && lastSelected)
+            if (!UICursor.Instance.UI_Cursor.gameObject.activeInHierarchy && lastSelected != null)
             {
                 // UI 커서 켜기
                 UICursorToggle(true);
@@ -222,7 +222,7 @@ public class UICursor : MonoBehaviour
             // 기존 트윈 죽이기
             cursorRect.DOPause();
             cursorRect.DOKill();
-            lastSelected.targetGraphic.GetComponent<Image>().DOKill();
+            // lastSelected.targetGraphic.GetComponent<Image>().DOKill();
 
             // UI 커서 투명하게
             Image cursorImage = UI_Cursor.GetComponent<Image>();
@@ -302,36 +302,39 @@ public class UICursor : MonoBehaviour
         Vector3 btnPos = EventSystem.current.currentSelectedGameObject.transform.position;
 
         //커서 사이즈 + 여백 추가
-        Vector2 size = lastRect.sizeDelta * 1.1f;
+        Vector2 scale = lastRect.sizeDelta * 1.1f;
 
         //마지막 선택된 버튼의 캔버스
         Canvas selectedCanvas = lastRect.GetComponentInParent<Canvas>();
 
-        // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
-        if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
-        {
-            //렌더 모드 일치 시키기
-            UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
+        //todo 선택된 캔버스의 렌더 모드에 따라 UI커서의 스케일 계산하기
+        // scale = selectedCanvas.renderMode == RenderMode.WorldSpace ? (Vector2)Camera.main.ScreenToWorldPoint(scale) : scale;
 
-            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-            RectTransform selectedCanvasRect = selectedCanvas.GetComponent<RectTransform>();
+        // // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
+        // if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
+        // {
+        //     //렌더 모드 일치 시키기
+        //     UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
 
-            // 스케일 일치
-            cursorCanvasRect.localScale = selectedCanvasRect.localScale;
+        //     RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+        //     RectTransform selectedCanvasRect = selectedCanvas.GetComponent<RectTransform>();
 
-            // 바뀐 렌더모드에 따라 커서 스케일 정의
-            if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                // cursorCanvasRect.localScale = Vector2.one;
-            }
-            else
-            {
-                //캔버스 z축을 선택된 캔버스에 맞추기
-                Vector3 canvasPos = cursorCanvasRect.position;
-                canvasPos.z = selectedCanvas.transform.position.z;
-                cursorCanvasRect.position = canvasPos;
-            }
-        }
+        //     // 스케일 일치
+        //     cursorCanvasRect.localScale = selectedCanvasRect.localScale;
+
+        //     // 바뀐 렌더모드에 따라 커서 스케일 정의
+        //     if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+        //     {
+        //         // cursorCanvasRect.localScale = Vector2.one;
+        //     }
+        //     else
+        //     {
+        //         //캔버스 z축을 선택된 캔버스에 맞추기
+        //         Vector3 canvasPos = cursorCanvasRect.position;
+        //         canvasPos.z = selectedCanvas.transform.position.z;
+        //         cursorCanvasRect.position = canvasPos;
+        //     }
+        // }
 
         //UI커서 활성화
         UI_Cursor.gameObject.SetActive(true);
@@ -355,25 +358,25 @@ public class UICursor : MonoBehaviour
         });
 
         // 타겟과 사이즈 맞추기
-        cursorRect.DOSizeDelta(size * 1f, flickTime)
+        cursorRect.DOSizeDelta(scale, flickTime)
         .SetUpdate(true);
 
         // 이동 시간 대기
         yield return new WaitForSecondsRealtime(flickTime);
 
         // 사이즈 커졌다 작아졌다 무한 반복
-        cursorRect.DOSizeDelta(size * 1.1f, flickTime)
+        cursorRect.DOSizeDelta(scale * 1.1f, flickTime)
         .SetLoops(-1, LoopType.Yoyo)
         .SetUpdate(true)
         .OnStart(() =>
         {
             // 사이즈 초기화
-            cursorRect.sizeDelta = size;
+            cursorRect.sizeDelta = scale;
         })
         .OnKill(() =>
         {
             //사이즈 초기화
-            cursorRect.sizeDelta = size;
+            cursorRect.sizeDelta = scale;
         });
 
         // 컬러 초기화

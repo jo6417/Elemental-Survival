@@ -466,7 +466,7 @@ public class PlayerHitBox : HitBox
         // SystemManager.Instance.TimeScaleChange(0, stopTime);
 
         // 사운드 느려지다가 정지
-        SoundManager.Instance.SoundTimeScale(0, stopTime, true);
+        SoundManager.Instance.SoundTimeScale(0, stopTime, false);
 
         yield return new WaitForSecondsRealtime(stopTime / 2f);
 

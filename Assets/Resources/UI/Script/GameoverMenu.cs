@@ -25,7 +25,7 @@ public class GameoverMenu : MonoBehaviour
         gameObject.SetActive(true);
 
         // 모든 사운드 끄기
-        SoundManager.Instance.SoundTimeScale(0, 0);
+        SoundManager.Instance.SoundTimeScale(0, 0, false);
 
         // 클리어 여부에 따라 타이틀,배경색 바꾸기
         if (isClear)

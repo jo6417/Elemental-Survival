@@ -146,8 +146,6 @@ public class SaveManager : MonoBehaviour
         SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
         SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
         SoundManager.Instance.Set_UIVolume(localSaveData.volumes[3]);
-
-        yield return null;
     }
 
     public void LoadSet()

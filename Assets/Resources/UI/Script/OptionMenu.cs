@@ -68,8 +68,10 @@ public class OptionMenu : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 현재 열려있는 팝업 갱신
-        UIManager.Instance.nowOpenPopup = gameObject;
+        // UI 매니저 있을때
+        if (UIManager.Instance)
+            // 현재 열려있는 팝업 갱신
+            UIManager.Instance.nowOpenPopup = gameObject;
 
         // 옵션 버튼 패널 열기
         optionSelectPanel.SetActive(true);

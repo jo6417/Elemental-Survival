@@ -538,12 +538,12 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void SoundTimeScale(float scale, float fadeTime, bool unscaledTime = true)
+    public void SoundTimeScale(float scale, float fadeTime, bool scaledTime = false)
     {
-        StartCoroutine(ChangeAll_Pitch(scale, fadeTime, unscaledTime));
+        StartCoroutine(ChangeAll_Pitch(scale, fadeTime, scaledTime));
     }
 
-    IEnumerator ChangeAll_Pitch(float scale, float fadeTime, bool unscaledTime)
+    public IEnumerator ChangeAll_Pitch(float scale, float fadeTime, bool scaledTime)
     {
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => initFinish);
@@ -561,7 +561,7 @@ public class SoundManager : MonoBehaviour
         foreach (Sound sound in all_Sounds)
             if (sound.source != null)
                 DOTween.To(() => sound.source.pitch, x => sound.source.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-                .SetUpdate(unscaledTime);
+                .SetUpdate(!scaledTime);
 
         // 오브젝트에 붙인 오디오들의 피치값 조정
         foreach (AudioSource audio in playing_Sounds)
@@ -571,7 +571,7 @@ public class SoundManager : MonoBehaviour
                 Sound sound = all_Sounds.Find(x => x.name == audio.name);
 
                 DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-                .SetUpdate(unscaledTime);
+                .SetUpdate(!scaledTime);
             }
 
         // // 효과음 사운드풀 하위 오디오들의 피치값 조정
@@ -585,7 +585,7 @@ public class SoundManager : MonoBehaviour
 
         //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
         //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-        //     .SetUpdate(unscaledTime);
+        //     .SetUpdate(!scaledTime);
         // }
 
         // // UI 사운드풀 하위 오디오들의 피치값 조정
@@ -599,7 +599,7 @@ public class SoundManager : MonoBehaviour
 
         //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
         //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-        //     .SetUpdate(unscaledTime);
+        //     .SetUpdate(!scaledTime);
         // }
     }
 

@@ -980,6 +980,9 @@ public class UIManager : MonoBehaviour
 
             //마우스 고정해제
             Cursor.lockState = CursorLockMode.None;
+
+            // 버튼 Select 해제
+            UICursor.Instance.UpdateLastSelect(null);
         }
         //팝업 on
         else
