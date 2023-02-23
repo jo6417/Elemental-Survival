@@ -1207,4 +1207,17 @@ public class UIManager : MonoBehaviour
     //     // 생성된 UI 리턴
     //     return bindKey;
     // }
+
+    public void HoldIcon(Transform parent)
+    {
+        // 홀드 중인 아이콘을 마우스 커서의 자식으로 넣기 및 위치 초기화
+        nowHoldSlot.transform.SetParent(parent);
+        // 첫번째 자식으로 넣기
+        nowHoldSlot.transform.SetSiblingIndex(0);
+
+        // 사이즈 초기화
+        nowHoldSlot.transform.localScale = Vector2.one;
+        // 로컬 위치 초기화
+        nowHoldSlot.transform.localPosition = Vector2.zero;
+    }
 }

@@ -33,6 +33,7 @@ public class Loading : MonoBehaviour
     }
     #endregion
 
+    [SerializeField] Canvas loadingCanvas; // 로딩 캔버스
     [SerializeField] Animator cutoutMask;
     [SerializeField] GameObject cutoutCover;
     [SerializeField] CanvasGroup loadingGroup; // 로딩 그룹
@@ -68,6 +69,10 @@ public class Loading : MonoBehaviour
         cutoutMask.gameObject.SetActive(true);
         cutoutCover.gameObject.SetActive(false);
         loadingBar.gameObject.SetActive(true);
+
+        if (loadingCanvas == null) loadingCanvas = transform.parent.GetComponent<Canvas>();
+        // 캔버스에 카메라 입력
+        if (loadingCanvas.worldCamera == null) loadingCanvas.worldCamera = Camera.main;
     }
 
     public IEnumerator SceneMask(bool isFadeout)
@@ -210,6 +215,11 @@ public class Loading : MonoBehaviour
             loadingText.DOColor(Color.gray, 0.5f)
             .SetUpdate(true)
             .SetLoops(-1, LoopType.Yoyo)
+            .OnUpdate(() =>
+            {
+                // 캔버스에 카메라 입력
+                if (loadingCanvas.worldCamera == null) loadingCanvas.worldCamera = Camera.main;
+            })
             .OnKill(() =>
             {
                 loadingText.color = Color.white;
@@ -247,7 +257,6 @@ public class Loading : MonoBehaviour
         debugTime.Stop();
         print($"Loading Duration : {debugTime.ElapsedMilliseconds / 1000f}s");
     }
-
     IEnumerator LoadText()
     {
         string text = "Now Laoding";

@@ -648,10 +648,17 @@ public class PlayerManager : Character
             yield break;
 
         // 레벨업 이펙트 생성
-        LeanPool.Spawn(lvUpEffectPrefab, transform.position, Quaternion.identity, transform);
+        GameObject levelupEffect = LeanPool.Spawn(lvUpEffectPrefab, transform.position, Quaternion.identity, transform);
+
+        // 효과음 찾기
+        AudioSource levelupAudio = levelupEffect.transform.Find("LevelupAudio").GetComponent<AudioSource>();
+        // 효과음 볼륨과 동기화
+        levelupAudio.volume = SoundManager.Instance.sfxVolume;
+        // 수동 켜기
+        levelupAudio.Play();
 
         // 레벨업 효과음 재생
-        SoundManager.Instance.PlaySound("Player_Levelup", 0, 0, 1, false);
+        // SoundManager.Instance.PlaySound("Player_Levelup", 0, 0, 1, false);
 
         // 제로 사이즈로 시작
         knockbackColl.localScale = Vector2.zero;

@@ -25,7 +25,8 @@ public class PauseMenu : MonoBehaviour
     private void OnDisable()
     {
         // 켤때 초기화
-        PauseToggle(false);
+        if (SoundManager.Instance)
+            PauseToggle(false);
     }
 
     public void PauseToggle(bool pauseToggle)

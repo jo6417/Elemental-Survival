@@ -85,6 +85,8 @@ public class SystemManager : MonoBehaviour
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
+    public bool isFullscreen = false;
+    public Vector2 lastResolution = new Vector2(1920f, 1080f); // 해상도 저장
 
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
@@ -112,6 +114,7 @@ public class SystemManager : MonoBehaviour
     public Sprite questionMark; //물음표 스프라이트
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
     public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
+    public FixResolution fixResolution;
 
     [Header("DataBase")]
     public DBType dBType;
@@ -571,5 +574,25 @@ public class SystemManager : MonoBehaviour
     {
         // 버튼 선택 사운드 재생
         SoundManager.Instance.PlaySound(soundName);
+    }
+
+    public void ToggleFullScreen(bool forceChange)
+    {
+        // 전체화면 여부 값 저장
+        isFullscreen = forceChange;
+
+        // 전체화면 토글
+        Screen.fullScreen = forceChange;
+
+        // // 전체화면일때
+        // if (isFullscreen)
+        //     // 전체화면 해상도로 변경
+        //     Screen.SetResolution((int)Screen.currentResolution.width, (int)Screen.currentResolution.height, isFullscreen);
+        // else
+        //     // 저장된 창모드 해상도로 변경
+        //     Screen.SetResolution((int)lastResolution.x, (int)lastResolution.y, isFullscreen);
+
+        // 해상도 및 레터박스 갱신
+        fixResolution.ChangeResolution(true);
     }
 }

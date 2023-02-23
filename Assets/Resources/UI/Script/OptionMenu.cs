@@ -18,15 +18,20 @@ public class OptionMenu : MonoBehaviour
     private NewInput Option_Input;
     [SerializeField] private PauseMenu pausePanel; // 일시정지 메뉴 컴포넌트
     [SerializeField] private MainMenuBtn mainMenu; // 메인메뉴 컴포넌트
+
+    [Header("Option Menu")]
     [SerializeField] private GameObject optionSelectPanel; // 옵션 버튼 패널
     [SerializeField] private GameObject audioOptionPanel; // 오디오 설정 패널
     [SerializeField] private GameObject graphicOptionPanel; // 그래픽 설정 패널
-    // [SerializeField] private GameObject keyBindOptionPanel; // 키설정 설정 패널
+    [SerializeField] private GameObject keyBindOptionPanel; // 키설정 설정 패널
 
+    [Header("Audio Option")]
     [SerializeField] private Selectable optionSelect_FirstSelect; // 옵션 첫번째 Selectable
     [SerializeField] private Selectable audio_FirstSelect; // 오디오 첫번째 Selectable
     [SerializeField] private Selectable graphic_FirstSelect; // 그래픽 첫번째 Selectable
-    // [SerializeField] private Selectable keyBind_FirstSelect; // 키설정 첫번째 Selectable
+
+    [Header("Graphic Option")]
+    public Toggle fullscreenToggle; // 전체화면 토글
 
     private void Awake()
     {
@@ -149,6 +154,9 @@ public class OptionMenu : MonoBehaviour
         {
             // 마지막 선택 UI 갱신
             UICursor.Instance.UpdateLastSelect(graphic_FirstSelect);
+
+            // 전체화면 여부 갱신
+            fullscreenToggle.isOn = SystemManager.Instance.isFullscreen;
         }
     }
 
@@ -194,5 +202,10 @@ public class OptionMenu : MonoBehaviour
             // 옵션 메뉴 끄기
             gameObject.SetActive(false);
         }
+    }
+
+    public void ToggleFullScreen()
+    {
+        SystemManager.Instance.ToggleFullScreen(fullscreenToggle.isOn);
     }
 }

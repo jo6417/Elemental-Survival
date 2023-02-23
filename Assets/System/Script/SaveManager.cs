@@ -13,12 +13,18 @@ using System.Text;
 [System.Serializable]
 public class SaveData : System.IDisposable
 {
+    #region DB        
     public int[] unlockMagics; //해금된 마법 리스트
     public string magicDBJson; //마법 DB json
     public string enemyDBJson; //몬스터 DB json
     public string itemDBJson; //아이템 DB json
+    #endregion
 
+    #region Option
     public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
+    public bool isFullscreen = false;
+    public Vector2 resolution;
+    #endregion
 
     public SaveData()
     {
@@ -93,6 +99,11 @@ public class SaveManager : MonoBehaviour
         };
         localSaveData.volumes = volumes;
 
+        // 전체화면 여부 저장
+        localSaveData.isFullscreen = SystemManager.Instance.isFullscreen;
+        // 해상도 저장
+        localSaveData.resolution = SystemManager.Instance.lastResolution;
+
         #endregion
 
         #region Saving
@@ -146,6 +157,14 @@ public class SaveManager : MonoBehaviour
         SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
         SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
         SoundManager.Instance.Set_UIVolume(localSaveData.volumes[3]);
+
+        // 전체화면 여부 불러오기
+        SystemManager.Instance.isFullscreen = localSaveData.isFullscreen;
+        // 해상도 불러오기
+        SystemManager.Instance.lastResolution = localSaveData.resolution;
+        // 전체화면 여부 적용
+        SystemManager.Instance.ToggleFullScreen(SystemManager.Instance.isFullscreen);
+        // Screen.fullScreen = SystemManager.Instance.isFullscreen;
     }
 
     public void LoadSet()

@@ -310,31 +310,31 @@ public class UICursor : MonoBehaviour
         //todo 선택된 캔버스의 렌더 모드에 따라 UI커서의 스케일 계산하기
         // scale = selectedCanvas.renderMode == RenderMode.WorldSpace ? (Vector2)Camera.main.ScreenToWorldPoint(scale) : scale;
 
-        // // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
-        // if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
-        // {
-        //     //렌더 모드 일치 시키기
-        //     UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
+        // UI커서 부모 캔버스와 선택된 버튼 부모 캔버스의 렌더모드가 다를때
+        if (UI_CursorCanvas.renderMode != selectedCanvas.renderMode)
+        {
+            //렌더 모드 일치 시키기
+            UI_CursorCanvas.renderMode = selectedCanvas.renderMode;
 
-        //     RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
-        //     RectTransform selectedCanvasRect = selectedCanvas.GetComponent<RectTransform>();
+            RectTransform cursorCanvasRect = UI_CursorCanvas.GetComponent<RectTransform>();
+            RectTransform selectedCanvasRect = selectedCanvas.GetComponent<RectTransform>();
 
-        //     // 스케일 일치
-        //     cursorCanvasRect.localScale = selectedCanvasRect.localScale;
+            // 스케일 일치
+            cursorCanvasRect.localScale = selectedCanvasRect.localScale;
 
-        //     // 바뀐 렌더모드에 따라 커서 스케일 정의
-        //     if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-        //     {
-        //         // cursorCanvasRect.localScale = Vector2.one;
-        //     }
-        //     else
-        //     {
-        //         //캔버스 z축을 선택된 캔버스에 맞추기
-        //         Vector3 canvasPos = cursorCanvasRect.position;
-        //         canvasPos.z = selectedCanvas.transform.position.z;
-        //         cursorCanvasRect.position = canvasPos;
-        //     }
-        // }
+            // 바뀐 렌더모드에 따라 커서 스케일 정의
+            if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                // cursorCanvasRect.localScale = Vector2.one;
+            }
+            else
+            {
+                //캔버스 z축을 선택된 캔버스에 맞추기
+                Vector3 canvasPos = cursorCanvasRect.position;
+                canvasPos.z = selectedCanvas.transform.position.z;
+                cursorCanvasRect.position = canvasPos;
+            }
+        }
 
         //UI커서 활성화
         UI_Cursor.gameObject.SetActive(true);
@@ -395,5 +395,6 @@ public class UICursor : MonoBehaviour
         // 커서 코루틴 초기화
         cursorAnimCoroutine = null;
     }
+
     #endregion
 }

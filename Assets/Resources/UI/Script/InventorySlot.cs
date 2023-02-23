@@ -451,8 +451,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 else
                 {
                     // UI 커서 자식으로 넣고 위치 초기화
-                    UIManager.Instance.nowHoldSlot.transform.SetParent(UICursor.Instance.UI_Cursor);
-                    UIManager.Instance.nowHoldSlot.transform.localPosition = Vector2.zero;
+                    UIManager.Instance.HoldIcon(UICursor.Instance.UI_Cursor);
                 }
 
                 // 현재 슬롯 기억하기

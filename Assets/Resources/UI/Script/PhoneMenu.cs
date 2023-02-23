@@ -231,8 +231,7 @@ public class PhoneMenu : MonoBehaviour
             return;
 
         // UI 커서 자식으로 넣고 위치 초기화
-        UIManager.Instance.nowHoldSlot.transform.SetParent(UICursor.Instance.UI_Cursor);
-        UIManager.Instance.nowHoldSlot.transform.localPosition = Vector2.zero;
+        UIManager.Instance.HoldIcon(UICursor.Instance.UI_Cursor);
 
         // //마우스에 아이콘 들고 있을때
         // if (UIManager.Instance.nowSelectIcon.enabled)
@@ -248,9 +247,7 @@ public class PhoneMenu : MonoBehaviour
         if (UIManager.Instance.nowHoldSlot.enabled)
         {
             // 홀드 중인 아이콘을 마우스 커서의 첫번째 자식으로 넣기 및 위치 초기화
-            UIManager.Instance.nowHoldSlot.transform.SetParent(UICursor.Instance.mouseCursor);
-            UIManager.Instance.nowHoldSlot.transform.SetSiblingIndex(0);
-            UIManager.Instance.nowHoldSlot.transform.localPosition = Vector2.zero;
+            UIManager.Instance.HoldIcon(UICursor.Instance.mouseCursor);
         }
     }
 
