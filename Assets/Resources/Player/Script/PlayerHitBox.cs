@@ -428,7 +428,7 @@ public class PlayerHitBox : HitBox
     public IEnumerator Dead()
     {
         // 몬스터 스폰 멈추기
-        WorldSpawner.Instance.spawnSwitch = false;
+        SystemManager.Instance.spawnSwitch = false;
 
         // 히트 딜레이 코루틴 끄기
         StopCoroutine(hitDelayCoroutine);

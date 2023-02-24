@@ -5,18 +5,19 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - targetObj: {instanceID: 0}
-  - shadow: {instanceID: 0}
   - enemyAI: {instanceID: 0}
   - enemyAtkTrigger: {instanceID: 0}
-  - spriteObj: {instanceID: 0}
   - healRange: {instanceID: 0}
   - physicsColl: {instanceID: 0}
   - rigid: {instanceID: 0}
-  - spriteCopyPrefab: {fileID: 1097691000214657039, guid: 89f678d0ab81ff149a5aa2bff8eff408,
-      type: 3}
   - buffParent: {instanceID: 0}
+  - spriteObj: {instanceID: 0}
   - hitEffect: {fileID: 1620636520166436, guid: ae8e77315cbed89469e78278295e5844,
       type: 3}
+  - shadow: {instanceID: 0}
+  - debugText: {fileID: 806890462968235679, guid: 6d988eab1ece53b43a5eefb9d40963e9,
+      type: 3}
+  - stateText: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

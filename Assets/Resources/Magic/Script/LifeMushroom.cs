@@ -102,6 +102,11 @@ public class LifeMushroom : MonoBehaviour
         // 버섯 소환
         ParticleSystem attack = LeanPool.Spawn(mushroomAttack, transform.position, Quaternion.identity, parent);
 
+        // 마법 정보 전달
+        MagicHolder attackMagicHolder = attack.GetComponent<MagicHolder>();
+        attackMagicHolder.magic = magicHolder.magic;
+        attackMagicHolder.poisonTime = magicHolder.poisonTime;
+
         // 플레이어가 쓴 마법일때
         if (magicHolder.GetTarget() == Attack.TargetType.Enemy)
             // 수동 시전일때

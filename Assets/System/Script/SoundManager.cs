@@ -294,7 +294,7 @@ public class SoundManager : MonoBehaviour
 
         // 볼륨 및 피치 초기화
         audio.volume = sound.volume * masterVolume * GetVolumeType(sound);
-        // audio.pitch = sound.pitch * globalPitch;
+        audio.pitch = sound.pitch * globalPitch;
 
         // 2D 로 초기화
         if (spatialBlend == 0)
@@ -533,7 +533,8 @@ public class SoundManager : MonoBehaviour
                 audio.clip = null;
 
                 // 오디오 오브젝트 디스폰
-                LeanPool.Despawn(audio.gameObject);
+                if (audio.gameObject.activeSelf)
+                    LeanPool.Despawn(audio.gameObject);
             }
         }
     }

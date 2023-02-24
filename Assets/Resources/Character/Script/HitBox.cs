@@ -282,9 +282,9 @@ public class HitBox : MonoBehaviour
             // 디버프 판단해서 적용
             AfterEffect(attack, isCritical, damage);
 
-            // //피격 딜레이 무적시간 시작
-            // character.hitCoroutine = HitDelay(damage);
-            // StartCoroutine(character.hitCoroutine);
+            //피격 딜레이 무적시간 시작
+            character.hitCoroutine = HitDelay(damage);
+            StartCoroutine(character.hitCoroutine);
         }
     }
 
@@ -411,7 +411,7 @@ public class HitBox : MonoBehaviour
         if (attack.poisonTime > 0)
             // 도트 데미지 실행
             character.SetBuff(Debuff.Poison.ToString(), "", true, attack.power, attack.poisonTime,
-             true, character.buffParent, SystemManager.Instance.poisonDebuffEffect);
+             true, character.transform, SystemManager.Instance.poisonDebuffEffect);
 
         // 출혈 지속시간 있으면 도트 피해
         if (attack.bleedTime > 0)
@@ -540,86 +540,6 @@ public class HitBox : MonoBehaviour
         }
     }
 
-    // public IEnumerator DotHit(Buff buff, bool isCritical)
-    // {
-    //     // 도트 지속시간을 횟수로 환산
-    //     int hitNum = (int)buff.duration;
-    //     for (int i = 0; i < hitNum; i++)
-    //         // 캐릭터 살아있을때
-    //         if (!character.isDead)
-    //         {
-    //             // 도트 데미지 입히기
-    //             Damage(buff.amount, isCritical);
-
-    //             // 도트 딜레이 대기
-    //             yield return new WaitForSeconds(1f);
-    //         }
-    // }
-
-    // public void DotHit(float tickDamage, bool isCritical, float duration, Transform buffParent, GameObject debuffEffect, Debuff debuffType)
-    // {
-    //     //이미 코루틴 실행중이면 기존 코루틴 취소
-    //     if (character.DebuffList[(int)debuffType] != null)
-    //         StopCoroutine(character.DebuffList[(int)debuffType]);
-
-    //     // 도트 피해 코루틴 설정
-    //     character.DebuffList[(int)debuffType] = DotHitCoroutine(tickDamage, isCritical, duration, debuffEffect, buffParent, debuffType);
-
-    //     StartCoroutine(character.DebuffList[(int)debuffType]);
-    // }
-
-    // public IEnumerator DotHitCoroutine(float tickDamage, bool isCritical, float duration, GameObject debuffEffect, Transform buffParent, Debuff debuffType)
-    // {
-    //     // 디버프 이펙트
-    //     Transform effect = null;
-
-    //     // 해당 디버프 아이콘이 없을때
-    //     if (!buffParent.Find(debuffEffect.name))
-    //     {
-    //         // 디버프 이펙트 붙이기
-    //         effect = LeanPool.Spawn(debuffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
-
-    //         // 이펙트 넣을 부모가 buffParent 가 아닐때
-    //         if (buffParent != character.buffParent)
-    //             // 포탈 사이즈 배율만큼 이펙트 배율 키우기
-    //             effect.transform.localScale = Vector3.one * character.portalSize;
-    //     }
-
-    //     // 남은 도트 데미지
-    //     float durationCount = duration;
-
-    //     // 도트 데미지 지속시간이 1초 이상 남았을때, 캐릭터 살아있을때
-    //     while (durationCount >= 1 && !character.isDead)
-    //     {
-    //         // 도트 데미지 입히기
-    //         Damage(tickDamage, isCritical);
-
-    //         // 남은 지속시간에서 한틱 차감
-    //         durationCount -= 1f;
-
-    //         // 한 틱동안 대기
-    //         yield return new WaitForSeconds(1f);
-    //     }
-
-    //     // 도트 지속시간을 횟수로 환산
-    //     int hitNum = (int)duration;
-    //     for (int i = 0; i < hitNum; i++)
-    //         // 캐릭터 살아있을때
-    //         if (!character.isDead)
-    //         {
-    //             // 도트 데미지 입히기
-    //             Damage(tickDamage, isCritical);
-
-    //             // 도트 딜레이 대기
-    //             yield return new WaitForSeconds(1f);
-    //         }
-
-    //     // 디버프 이펙트 없에기
-    //     effect = buffParent.Find(debuffEffect.name);
-    //     if (effect != null)
-    //         LeanPool.Despawn(effect);
-    // }
-
     public virtual IEnumerator Knockback(Attack attacker, float knockbackForce)
     {
         // 반대 방향으로 넉백 벡터
@@ -634,49 +554,6 @@ public class HitBox : MonoBehaviour
 
         yield return null;
     }
-
-    // public IEnumerator SlowDebuff(float slowAmount, float duration, Transform buffParent, GameObject debuffEffect, IEnumerator coroutine)
-    // {
-    //     // 죽었으면 초기화 없이 리턴
-    //     if (character.isDead)
-    //         yield break;
-
-    //     // 애니메이션 속도 저하
-    //     for (int i = 0; i < character.animList.Count; i++)
-    //     {
-    //         character.animList[i].speed = slowAmount;
-    //     }
-    //     // 이동 속도 저하 디버프
-    //     character.moveSpeedDebuff = slowAmount;
-
-    //     // 디버프 아이콘
-    //     Transform debuffUI = null;
-    //     // 이미 슬로우 디버프 중 아닐때
-    //     if (!buffParent.Find(debuffEffect.name))
-    //         //슬로우 디버프 아이콘 붙이기
-    //         debuffUI = LeanPool.Spawn(debuffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
-
-    //     // duration 동안 대기
-    //     yield return new WaitForSeconds(duration);
-
-    //     // 죽었으면 초기화 없이 리턴
-    //     if (character.isDead)
-    //         yield break;
-
-    //     // 애니메이션 속도 초기화
-    //     for (int i = 0; i < character.animList.Count; i++)
-    //         character.animList[i].speed = 1f;
-    //     // 이동 속도 저하 디버프 초기화
-    //     character.moveSpeedDebuff = 1f;
-
-    //     // 슬로우 아이콘 없에기
-    //     debuffUI = buffParent.Find(debuffEffect.name);
-    //     if (debuffUI != null)
-    //         LeanPool.Despawn(debuffUI);
-
-    //     // 코루틴 변수 초기화
-    //     coroutine = null;
-    // }
 
     public virtual IEnumerator FlatDebuff(float flatTime)
     {

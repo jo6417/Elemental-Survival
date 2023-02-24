@@ -452,7 +452,7 @@ public class GatePortal : MonoBehaviour
         print("boss dead");
 
         // 몬스터 스폰 멈추기
-        WorldSpawner.Instance.spawnSwitch = false;
+        SystemManager.Instance.spawnSwitch = false;
 
         // 남은 몬스터 화살표로 방향 표시해주기
         UIManager.Instance.enemyPointSwitch = true;

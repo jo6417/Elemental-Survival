@@ -23,7 +23,7 @@ public class SaveData : System.IDisposable
     #region Option
     public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
     public bool isFullscreen = false;
-    public Vector2 resolution;
+    public float[] resolution = { 1920f, 1080f };
     #endregion
 
     public SaveData()
@@ -102,7 +102,8 @@ public class SaveManager : MonoBehaviour
         // 전체화면 여부 저장
         localSaveData.isFullscreen = SystemManager.Instance.isFullscreen;
         // 해상도 저장
-        localSaveData.resolution = SystemManager.Instance.lastResolution;
+        localSaveData.resolution[0] = SystemManager.Instance.lastResolution.x;
+        localSaveData.resolution[1] = SystemManager.Instance.lastResolution.y;
 
         #endregion
 
@@ -150,7 +151,7 @@ public class SaveManager : MonoBehaviour
         localSaveData = JsonConvert.DeserializeObject<SaveData>(loadData);
 
         // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance.initFinish);
+        yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);
 
         // 오디오 옵션값 불러오기
         SoundManager.Instance.Set_MasterVolume(localSaveData.volumes[0]);
@@ -161,7 +162,8 @@ public class SaveManager : MonoBehaviour
         // 전체화면 여부 불러오기
         SystemManager.Instance.isFullscreen = localSaveData.isFullscreen;
         // 해상도 불러오기
-        SystemManager.Instance.lastResolution = localSaveData.resolution;
+        SystemManager.Instance.lastResolution.x = localSaveData.resolution[0];
+        SystemManager.Instance.lastResolution.y = localSaveData.resolution[1];
         // 전체화면 여부 적용
         SystemManager.Instance.ToggleFullScreen(SystemManager.Instance.isFullscreen);
         // Screen.fullScreen = SystemManager.Instance.isFullscreen;

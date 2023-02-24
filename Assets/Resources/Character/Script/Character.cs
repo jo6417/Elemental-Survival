@@ -147,6 +147,8 @@ public class Character : MonoBehaviour
     [Header("Debug")]
     [SerializeField] string enemyName;
     [SerializeField] string enemyType;
+    [SerializeField] GameObject debugText;
+    [SerializeField] TextMeshProUGUI stateText;
 
     protected virtual void Awake()
     {
@@ -178,6 +180,12 @@ public class Character : MonoBehaviour
 
         // 버프 아이콘 부모 없으면 본인 오브젝트
         if (buffParent == null) buffParent = transform;
+
+        // if (stateText == null) stateText = buffParent.GetComponentInChildren<TextMeshProUGUI>();
+        // 디버그 텍스트 오브젝트 생성
+        stateText = buffParent.GetComponentInChildren<TextMeshProUGUI>();
+        if (stateText == null)
+            stateText = LeanPool.Spawn(debugText, buffParent).GetComponentInChildren<TextMeshProUGUI>();
 
         yield return null;
     }
@@ -269,8 +277,7 @@ public class Character : MonoBehaviour
             {
                 case 0:
                     // 아웃라인 지우기
-                    foreach (SpriteRenderer sprite in spriteList)
-                        sprite.material.SetColor("_OutLineColor", Color.clear);
+                    spriteList[0].material.SetColor("_OutLineColor", Color.clear);
 
                     // 스케일 초기화
                     transform.localScale = Vector2.one;
@@ -282,8 +289,7 @@ public class Character : MonoBehaviour
                     powerNow = powerNow * 2f;
 
                     // 빨강 아웃라인
-                    foreach (SpriteRenderer sprite in spriteList)
-                        sprite.material.SetColor("_OutLineColor", Color.red);
+                    spriteList[0].material.SetColor("_OutLineColor", Color.red);
 
                     // 몬스터 스케일 상승
                     transform.localScale = Vector2.one * 1.5f;
@@ -297,8 +303,7 @@ public class Character : MonoBehaviour
                     cooltimeNow = cooltimeNow / 2f;
 
                     // 하늘색 아웃라인
-                    foreach (SpriteRenderer sprite in spriteList)
-                        sprite.material.SetColor("_OutLineColor", Color.cyan);
+                    spriteList[0].material.SetColor("_OutLineColor", Color.cyan);
                     break;
 
                 case 3:
@@ -313,8 +318,7 @@ public class Character : MonoBehaviour
                     healRange.GetComponent<Attack>().power = -powerNow;
 
                     // 초록 아웃라인 머터리얼
-                    foreach (SpriteRenderer sprite in spriteList)
-                        sprite.material.SetColor("_OutLineColor", Color.green);
+                    spriteList[0].material.SetColor("_OutLineColor", Color.green);
                     break;
 
                 case 4:
@@ -558,6 +562,22 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+        if (stateText != null)
+        {
+            if (SystemManager.Instance.showEnemyState)
+            {
+                // 상태 오브젝트 켜기
+                stateText.transform.parent.gameObject.SetActive(true);
+                // 각도 초기화
+                stateText.transform.rotation = Quaternion.Euler(Vector3.zero);
+                // 현재 상태 표시
+                stateText.text = nowState.ToString();
+            }
+            else
+                // 상태 오브젝트 끄기
+                stateText.transform.parent.gameObject.SetActive(false);
+        }
+
         // 공격중 아닐때 공격 쿨타임 차감
         if (nowState != CharacterState.Attack && atkCoolCount > 0)
             atkCoolCount -= Time.deltaTime;
@@ -907,7 +927,7 @@ public class Character : MonoBehaviour
     }
 
     public Buff SetBuff(string buffName, string statName, bool isMultiple, float amount, float duration,
-                     bool dotHit, Transform buffParent = null, GameObject buffEffect = null)
+                     bool dotHit, Transform _buffParent = null, GameObject buffEffect = null)
     {
         // 버프 아이콘
         Transform buffUI = null;
@@ -958,14 +978,21 @@ public class Character : MonoBehaviour
             // 버프 아이콘/이펙트
             buff.buffEffect = buffEffect;
             // 버프 아이콘/이펙트 부모
-            buff.buffParent = buffParent;
+            buff.buffParent = _buffParent;
             // 버프 지속 시간 전달
             buff.duration = duration;
 
             // 이미 버프 중 아닐때
-            if (buffEffect != null && !buffParent.Find(buffEffect.name))
+            if (buffEffect != null && !_buffParent.Find(buffEffect.name))
                 // 아이콘/이펙트 붙이기
-                buffUI = LeanPool.Spawn(buffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
+                buffUI = LeanPool.Spawn(buffEffect, _buffParent.position, Quaternion.identity, _buffParent).transform;
+
+            //  몬스터 자체에 붙는 경우
+            if (_buffParent == transform)
+                // 몬스터 자체 사이즈와 맞추기
+                buffUI.localScale = SystemManager.Instance.AntualSpriteScale(spriteList[0]) / 4f;
+            else
+                buffUI.localScale = Vector2.one;
 
             // 해당 버프 리스트에 넣기
             buffList.Add(buff);
@@ -979,13 +1006,13 @@ public class Character : MonoBehaviour
                 StopCoroutine(buff.buffCoroutine);
 
             // 도트뎀 코루틴 실행
-            buff.buffCoroutine = DotHit(buff, buffParent, buffEffect);
+            buff.buffCoroutine = DotHit(buff, _buffParent, buffEffect);
             StartCoroutine(buff.buffCoroutine);
         }
         // 일반 버프일때
         else
             // 버프 없에고 아이콘,이펙트 제거
-            StartCoroutine(StopBuff(buff, buff.duration, buffParent, buffEffect));
+            StartCoroutine(StopBuff(buff, buff.duration, _buffParent, buffEffect));
 
         return buff;
     }

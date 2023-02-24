@@ -40,7 +40,6 @@ public class Bawi_AI : EnemyAI
     public SortingGroup headPart;
     public ParticleSystem headHoverEffect; // 머리 부유 이펙트
     public ParticleManager headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
-    AudioSource moveSound;
 
     [Header("Fist")]
     public Collider2D fistCrushColl; //주먹 으깨기 콜라이더

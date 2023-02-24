@@ -55,14 +55,14 @@ public class SystemManager : MonoBehaviour
     {
         get
         {
-            // if (instance == null)
-            // {
-            //     return null;
-            //     var obj = FindObjectOfType<SystemManager>();
-            //     if (obj != null)
-            //     {
-            //         instance = obj;
-            //     }
+            if (instance == null)
+            {
+                var obj = FindObjectOfType<SystemManager>();
+                if (obj != null)
+                {
+                    instance = obj;
+                }
+            }
             //     else
             //     {
             //         var newObj = new GameObject().AddComponent<SystemManager>();
@@ -93,16 +93,23 @@ public class SystemManager : MonoBehaviour
     public List<float> gradeRate = new List<float>(); // 랜덤 등급 가중치
 
     [Header("Debug")]
-    public TextMeshProUGUI nowSelectUI; //! 선택된 UI 이름
-    public Button timeBtn; //! 시간 속도 토글 버튼
-    public Button godModBtn; //! 갓모드 토글 버튼
-    [ReadOnly] public bool godMod = false; //! 플레이어 갓모드 여부
-    //! DB 동기화 버튼들
+    public TextMeshProUGUI nowSelectUI; // 선택된 UI 이름
+    public Button timeBtn; // 시간 속도 토글 버튼
+    public Button godModBtn; // 갓모드 토글 버튼
+    [ReadOnly] public bool godMod = false; // 플레이어 갓모드 여부
+    // DB 동기화 버튼들
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
     public Button itemDBSyncBtn;
-    // IEnumerator FrameRateCoroutine = null;
     float frameRateCount = 0;
+    [SerializeField] Transform consoleMsgList; // 콘솔 메시지 담을 부모 오브젝트
+    [SerializeField] Transform consoleMsgText; // 콘솔 메시지 프리팹
+    private List<string> logMessages = new List<string>(); // 로그 메시지를 저장할 리스트
+    private bool isLogChanged = false; // 로그 메시지 변경 여부를 나타내는 플래그
+    [SerializeField] Button spawnBtn; // 몬스터 자동 스폰 버튼
+    [SerializeField] Button showStateBtn; // 몬스터 상태 디버깅 토글 버튼
+    public bool spawnSwitch; //몬스터 스폰 여부
+    public bool showEnemyState = false; // 몬스터 상태 디버깅 여부
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
@@ -115,9 +122,6 @@ public class SystemManager : MonoBehaviour
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
     public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
     public FixResolution fixResolution;
-
-    [Header("DataBase")]
-    public DBType dBType;
 
     [Header("Prefab")]
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
@@ -155,17 +159,12 @@ public class SystemManager : MonoBehaviour
         // 다른 오브젝트가 이미 있을때
         if (instance != null)
         {
-            // 파괴 후 리턴
-            Destroy(gameObject);
-            return;
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
-        // 최초 생성 됬을때
         else
         {
-            instance = this;
-
-            // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
+            Destroy(gameObject);
         }
 
         //초기화
@@ -174,7 +173,14 @@ public class SystemManager : MonoBehaviour
 
     IEnumerator AwakeInit()
     {
-        yield return null;
+        // 각각 버튼 색깔 초기화
+        ToggleSwitcher(ref spawnSwitch, spawnBtn, true);
+        ToggleSwitcher(ref showEnemyState, showStateBtn, true);
+
+        // 몬스터 자동 스폰 버튼 상태값 연결
+        spawnBtn.onClick.AddListener(() => { ToggleSwitcher(ref spawnSwitch, spawnBtn); });
+        // 몬스터 상태 보여주기 버튼 상태값 연결
+        showStateBtn.onClick.AddListener(() => { ToggleSwitcher(ref showEnemyState, showStateBtn); });
 
         //TODO 로딩 UI 띄우기
         print("로딩 시작");
@@ -215,18 +221,90 @@ public class SystemManager : MonoBehaviour
         loadDone = true;
     }
 
+    private void Start()
+    {
+        // 로그 업데이트 코루틴 실행
+        StartCoroutine(UpdateLogMessages());
+    }
+
     private void OnEnable()
     {
         StartCoroutine(Init());
+
+        // 메시지 함수 시작
+        Application.logMessageReceived += HandleLog;
     }
+
+    void OnDisable()
+    {
+        // 메시지 함수 빼기
+        Application.logMessageReceived -= HandleLog;
+    }
+
+    #region Debugging
+    void HandleLog(string logString, string stackTrace, LogType type)
+    {
+        // 로그 메시지 추가
+        logMessages.Add(logString);
+        // 로그 플래그 변경됨
+        isLogChanged = true;
+    }
+
+    private IEnumerator UpdateLogMessages()
+    {
+        while (true)
+        {
+            // 로그 메시지 변경 여부 확인
+            if (isLogChanged)
+            {
+                // 새로운 UI 오브젝트 생성하여 메시지 출력
+                foreach (string logMessage in logMessages)
+                {
+                    Transform consoleLog = LeanPool.Spawn(consoleMsgText, consoleMsgList);
+                    TextMeshProUGUI messageText = consoleLog.GetComponentInChildren<TextMeshProUGUI>();
+                    messageText.text = logMessage;
+                }
+
+                // 로그 메시지 초기화
+                logMessages.Clear();
+                isLogChanged = false;
+            }
+
+            // 잠시 대기
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public void ToggleObject()
+    {
+        // 버튼 오브젝트 찾기
+        GameObject buttonObject = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+
+        // 버튼 오브젝트의 자식 오브젝트를 찾아서 활성화/비활성화
+        Transform childTransform = buttonObject.transform.GetChild(0);
+        if (childTransform != null)
+            childTransform.gameObject.SetActive(!childTransform.gameObject.activeSelf);
+    }
+    #endregion
 
     IEnumerator Init()
     {
         // 모든 로딩 끝날때까지 대기
         yield return new WaitUntil(() => loadDone);
 
-        // // 시간 속도 초기화
-        // TimeScaleChange(1f);
+        // 켜졌을때 초록, 꺼졌을때 빨강으로 버튼 컬러 바꾸기
+        showStateBtn.image.color = showEnemyState ? Color.green : Color.red;
+    }
+
+    public void ToggleSwitcher(ref bool toggle, Selectable selectable, bool init = false)
+    {
+        // 초기화 아닐때
+        if (!init)
+            // 해당 bool값 전환
+            toggle = !toggle;
+
+        // 켜졌을때 초록, 꺼졌을때 빨강으로 버튼 컬러 바꾸기
+        selectable.image.color = toggle ? Color.green : Color.red;
     }
 
     public Color HexToRGBA(string hex, float alpha = 1)
@@ -576,23 +654,37 @@ public class SystemManager : MonoBehaviour
         SoundManager.Instance.PlaySound(soundName);
     }
 
-    public void ToggleFullScreen(bool forceChange)
+    public void ToggleFullScreen(bool _isFullscreen)
     {
-        // 전체화면 여부 값 저장
-        isFullscreen = forceChange;
-
-        // 전체화면 토글
-        Screen.fullScreen = forceChange;
-
-        // // 전체화면일때
-        // if (isFullscreen)
-        //     // 전체화면 해상도로 변경
-        //     Screen.SetResolution((int)Screen.currentResolution.width, (int)Screen.currentResolution.height, isFullscreen);
-        // else
-        //     // 저장된 창모드 해상도로 변경
-        //     Screen.SetResolution((int)lastResolution.x, (int)lastResolution.y, isFullscreen);
-
         // 해상도 및 레터박스 갱신
-        fixResolution.ChangeResolution(true);
+        fixResolution.ChangeResolution(_isFullscreen, true);
+    }
+
+    public Vector2 AntualSpriteScale(SpriteRenderer spriteRenderer)
+    {
+        // SpriteRenderer에서 Sprite 가져오기
+        Sprite sprite = spriteRenderer.sprite;
+
+        // Sprite의 텍스처 크기 가져오기
+        Texture2D texture = sprite.texture;
+        int textureWidth = texture.width;
+        int textureHeight = texture.height;
+
+        // SpriteRenderer의 Sprite가 차지하는 영역 크기 가져오기
+        Bounds spriteBounds = sprite.bounds;
+        float spriteWidth = spriteBounds.size.x;
+        float spriteHeight = spriteBounds.size.y;
+
+        // SpriteRenderer의 Transform 스케일 값 가져오기
+        Vector3 localScale = transform.localScale;
+        float scaleX = localScale.x;
+        float scaleY = localScale.y;
+
+        // 실제 크기 계산하기
+        float actualWidth = textureWidth * spriteWidth * scaleX;
+        float actualHeight = textureHeight * spriteHeight * scaleY;
+
+        // 계산된 스케일값 리턴
+        return new Vector3(actualWidth / textureWidth, actualHeight / textureHeight, 1);
     }
 }

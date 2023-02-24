@@ -271,7 +271,7 @@ public class EnemyDB : MonoBehaviour
             return null;
     }
 
-    public int RandomEnemy(int maxGrade)
+    public int RandomEnemy(int maxGrade = 0, bool isBoss = false)
     {
         //TODO 등급별로 확률 지정할것
         // 랜덤 몬스터 등급 뽑기 1~6
@@ -281,11 +281,18 @@ public class EnemyDB : MonoBehaviour
         List<int> tempList = new List<int>();
         foreach (KeyValuePair<int, EnemyInfo> info in enemyDB)
         {
-            //해당 등급이고, 일반 몬스터면 리스트에 추가
-            if (info.Value.grade == randGrade && info.Value.enemyType == EnemyType.Normal.ToString())
-            {
-                tempList.Add(info.Value.id);
-            }
+            // 등급을 지정했을때
+            if (maxGrade > 0)
+                //해당 등급 아니면 넘기기
+                if (info.Value.grade != randGrade)
+                    continue;
+
+            // 몬스터 타입이 일치할때
+            if ((!isBoss && info.Value.enemyType == EnemyType.Normal.ToString())
+            || (isBoss && info.Value.enemyType == EnemyType.Boss.ToString()))
+                // 프리팹이 있을때
+                if (GetPrefab(info.Value.id) != null)
+                    tempList.Add(info.Value.id);
         }
 
         //임시리스트에서 랜덤 인덱스로 뽑기

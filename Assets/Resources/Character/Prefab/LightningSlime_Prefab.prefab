@@ -5233,7 +5233,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3723040180652650907}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.67, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3723040182202891886}
@@ -5499,6 +5499,9 @@ MonoBehaviour:
   cooltimeNow: 0
   enemyName: 
   enemyType: 
+  debugText: {fileID: 806890462968235679, guid: 6d988eab1ece53b43a5eefb9d40963e9,
+    type: 3}
+  stateText: {fileID: 0}
 --- !u!114 &3723040182202891884
 MonoBehaviour:
   m_ObjectHideFlags: 0

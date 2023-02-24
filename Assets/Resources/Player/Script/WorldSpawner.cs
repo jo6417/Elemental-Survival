@@ -4,6 +4,7 @@ using UnityEngine;
 using Lean.Pool;
 using DG.Tweening;
 using UnityEngine.Experimental;
+using UnityEngine.UI;
 
 public class WorldSpawner : MonoBehaviour
 {
@@ -32,7 +33,6 @@ public class WorldSpawner : MonoBehaviour
     #endregion
 
     [Header("Debug")]
-    public bool spawnSwitch; //몬스터 스폰 ON/OFF
     public bool randomSpawn; //랜덤 몬스터 스폰 ON/OFF
     public bool allEliteSwitch; // 모든 적이 엘리트
     public bool spawnItem; // 아이템 스폰 여부
@@ -153,7 +153,7 @@ public class WorldSpawner : MonoBehaviour
             return;
 
         // 스폰 스위치 켜져있을때
-        if (spawnSwitch)
+        if (SystemManager.Instance.spawnSwitch)
             // 쿨타임마다 몬스터 스폰, 스폰중 아닐때
             if (enemySpawnCount <= 0 && !nowSpawning)
             {
@@ -224,10 +224,22 @@ public class WorldSpawner : MonoBehaviour
         }
     }
 
-    IEnumerator RandomSpawn(bool ForceSpawn = false)
+    public void RandomSpawn(bool isBoss = false)
+    {
+        // 랜덤 몬스터 찾기
+        EnemyInfo enemy = EnemyDB.Instance.GetEnemyByID(EnemyDB.Instance.RandomEnemy(0, isBoss));
+
+        // 몬스터 소환 위치
+        Vector3 spawnPos = PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle.normalized * Random.Range(20f, 30f);
+
+        //포탈에서 몬스터 소환
+        EnemySpawn(enemy, spawnPos);
+    }
+
+    IEnumerator RandomSpawn()
     {
         //스폰 스위치 꺼졌으면 스폰 멈추기
-        if (!spawnSwitch)
+        if (!SystemManager.Instance.spawnSwitch)
             yield break;
 
         float time = SystemManager.Instance.time_current;
@@ -300,7 +312,7 @@ public class WorldSpawner : MonoBehaviour
         NowEnemyPower += enemy.grade;
 
         // 스폰 스위치 켜졌을때
-        if (spawnSwitch)
+        if (SystemManager.Instance.spawnSwitch)
             //포탈에서 몬스터 소환
             EnemySpawn(enemy);
 
@@ -337,7 +349,6 @@ public class WorldSpawner : MonoBehaviour
                 // 화면 테두리 밖에서 스폰
                 spawnPos = BorderRandPos();
         }
-
 
         // 몬스터 프리팹 소환
         GameObject enemyObj = LeanPool.Spawn(enemyPrefab, spawnPos, Quaternion.identity, ObjectPool.Instance.enemyPool);

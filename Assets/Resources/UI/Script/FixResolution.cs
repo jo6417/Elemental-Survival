@@ -11,9 +11,9 @@ public class FixResolution : MonoBehaviour
     [SerializeField] Camera mainCamera;
     [SerializeField] Rect rect;
     [SerializeField] Vector2 screenSize; // 현재 스크린 사이즈
+    [SerializeField] Vector2 windowedScreenSize; // 창모드일때 스크린 사이즈
     [SerializeField] RectTransform[] horizon_letterBoxes = new RectTransform[2];
     [SerializeField] RectTransform[] vertical_letterBoxes = new RectTransform[2];
-    [SerializeField] TextMeshProUGUI resolutionText;
 
     private void Start()
     {
@@ -23,42 +23,68 @@ public class FixResolution : MonoBehaviour
 
     private void Update()
     {
-        // 화면 사이즈가 바뀌었을때
-        if (screenSize.x != Screen.width || screenSize.y != Screen.height)
+        // 해상도 및 화면모드 확인
+        ResolutionCheck();
+    }
+
+    void ResolutionCheck()
+    {
+        if (SystemManager.Instance == null)
+            return;
+
+        // 창모드일때, 화면 사이즈가 바뀌었을때
+        if (!Screen.fullScreen && (windowedScreenSize.x != Screen.width || windowedScreenSize.y != Screen.height))
+        {
+            // 창모드 해상도 갱신
+            windowedScreenSize = new Vector2(Screen.width, Screen.height);
+
             // 해상도 변경 및 빈공간에 레터박스 넣기
-            ChangeResolution();
+            ChangeResolution(SystemManager.Instance.isFullscreen);
+
+            return;
+        }
 
         // 전체화면 여부 바뀌었을때
         if (SystemManager.Instance.isFullscreen != Screen.fullScreen)
+        {
+            // 화면모드 갱신
+            SystemManager.Instance.isFullscreen = Screen.fullScreen;
+
             // 해상도 변경 및 빈공간에 레터박스 넣기
-            ChangeResolution(true);
+            ChangeResolution(SystemManager.Instance.isFullscreen, true);
+
+            return;
+        }
     }
 
-    public void ChangeResolution(bool changeFullscreen = false)
+    public void ChangeResolution(bool _isFullscreen, bool changeMode = false)
     {
-        // 전체화면 여부 갱신
-        SystemManager.Instance.isFullscreen = Screen.fullScreen;
-        // 해상도 갱신
-        SystemManager.Instance.lastResolution = resolution;
-
         // 현재 스크린 사이즈 불러오기
-        screenSize = new Vector2(Screen.width, Screen.height);
+        screenSize = _isFullscreen ? resolution : new Vector2(Screen.width, Screen.height);
 
-        // 창모드일때
-        if (!SystemManager.Instance.isFullscreen)
+        // 전체화면으로 전환
+        if (_isFullscreen)
         {
-            if (changeFullscreen)
-                // 마지막 창모드 해상도로 변경
-                Screen.SetResolution((int)SystemManager.Instance.lastResolution.x, (int)SystemManager.Instance.lastResolution.y, SystemManager.Instance.isFullscreen);
-            else
-                // 해상도 저장
-                SystemManager.Instance.lastResolution = screenSize;
+            // 전체화면으로 강제 변경시
+            if (changeMode)
+                // 전체화면 해상도로 변경
+                Screen.SetResolution((int)resolution.x, (int)resolution.y, _isFullscreen);
         }
+        // 창모드로 전환
         else
         {
-            if (changeFullscreen)
-                // 전체화면 해상도로 변경
-                Screen.SetResolution((int)resolution.x, (int)resolution.y, SystemManager.Instance.isFullscreen);
+            // 창모드로 강제 변경시
+            if (changeMode)
+            {
+                // 해상도 불러오기
+                windowedScreenSize = SystemManager.Instance.lastResolution;
+                // 마지막 창모드 해상도로 변경
+                Screen.SetResolution((int)windowedScreenSize.x, (int)windowedScreenSize.y, _isFullscreen);
+            }
+            // 창모드에서 사이즈 바꿀때
+            else
+                // 해상도 저장
+                SystemManager.Instance.lastResolution = windowedScreenSize;
         }
 
         float scaleheight = ((float)screenSize.x / screenSize.y) / ((float)resolution.x / resolution.y); // (가로 / 세로)
@@ -105,7 +131,6 @@ public class FixResolution : MonoBehaviour
             }
         }
 
-        if (resolutionText != null)
-            resolutionText.text = SystemManager.Instance.lastResolution + "\n" + screenSize + "\n" + SystemManager.Instance.isFullscreen + "\n" + Time.unscaledTime;
+        print(resolution + " : " + screenSize + " : " + _isFullscreen + " : " + changeMode + " : " + Time.unscaledTime);
     }
 }

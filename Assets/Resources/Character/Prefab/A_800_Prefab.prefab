@@ -10272,6 +10272,9 @@ MonoBehaviour:
   cooltimeNow: 0
   enemyName: 
   enemyType: 
+  debugText: {fileID: 806890462968235679, guid: 6d988eab1ece53b43a5eefb9d40963e9,
+    type: 3}
+  stateText: {fileID: 0}
 --- !u!114 &8165655979838027246
 MonoBehaviour:
   m_ObjectHideFlags: 0

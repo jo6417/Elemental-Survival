@@ -5329,7 +5329,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2282559697499699900
 Transform:
   m_ObjectHideFlags: 0
@@ -5450,6 +5450,9 @@ MonoBehaviour:
   cooltimeNow: 0
   enemyName: 
   enemyType: 
+  debugText: {fileID: 806890462968235679, guid: 6d988eab1ece53b43a5eefb9d40963e9,
+    type: 3}
+  stateText: {fileID: 0}
 --- !u!114 &3988004795875851619
 MonoBehaviour:
   m_ObjectHideFlags: 0

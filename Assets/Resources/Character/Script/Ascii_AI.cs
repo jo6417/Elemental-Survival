@@ -1746,7 +1746,7 @@ public class Ascii_AI : MonoBehaviour
         faceText.text = FaceReturn(Face.Watch);
 
         //몬스터 스폰 멈추기
-        WorldSpawner.Instance.spawnSwitch = false;
+        SystemManager.Instance.spawnSwitch = false;
         // 모든 몬스터 멈추기
         List<Character> enemys = ObjectPool.Instance.enemyPool.GetComponentsInChildren<Character>().ToList();
         foreach (Character character in enemys)
@@ -1842,7 +1842,7 @@ public class Ascii_AI : MonoBehaviour
                 StopCoroutine(aimCable);
 
                 //몬스터 스폰 재개
-                WorldSpawner.Instance.spawnSwitch = true;
+                SystemManager.Instance.spawnSwitch = true;
                 // 모든 몬스터 움직임 재개
                 SystemManager.Instance.globalTimeScale = 1f;
 
@@ -1880,8 +1880,8 @@ public class Ascii_AI : MonoBehaviour
         // yield return new WaitForSeconds(0.5f);
 
         //몬스터 스폰 재개
-        if (!WorldSpawner.Instance.spawnSwitch)
-            WorldSpawner.Instance.spawnSwitch = true;
+        if (!SystemManager.Instance.spawnSwitch)
+            SystemManager.Instance.spawnSwitch = true;
         // 모든 몬스터 움직임 재개
         SystemManager.Instance.globalTimeScale = 1f;
 
