@@ -16,15 +16,12 @@ public class MagicDB : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<MagicDB>();
-                if (obj != null)
+                instance = FindObjectOfType<MagicDB>();
+                if (instance == null)
                 {
-                    instance = obj;
-                }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<MagicDB>();
-                    instance = newObj;
+                    GameObject obj = new GameObject();
+                    obj.name = "MagicDB";
+                    instance = obj.AddComponent<MagicDB>();
                 }
             }
             return instance;
@@ -65,6 +62,16 @@ public class MagicDB : MonoBehaviour
 
     void Awake()
     {
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
         #region FixedValue
         // 등급 색깔 고정
         // Color[] _gradeColor = {
@@ -103,12 +110,14 @@ public class MagicDB : MonoBehaviour
         // ElementNames = name;
         #endregion
 
-        // 아이콘, 프리팹 불러오기
-        GetMagicResources();
-        // StartCoroutine(GetMagicData());
-
         //TODO 저장된 세이브 정보 불러오기
         SaveManager.Instance.LoadSet();
+    }
+
+    private void Start()
+    {
+        // 아이콘, 프리팹 불러오기
+        GetMagicResources();
     }
 
     void GetMagicResources()

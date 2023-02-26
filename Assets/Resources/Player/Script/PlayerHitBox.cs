@@ -10,7 +10,6 @@ public class PlayerHitBox : HitBox
     [Header("Refer")]
     PlayerManager playerManager;
     public IEnumerator hitDelayCoroutine;
-    Sequence damageTextSeq; //데미지 텍스트 시퀀스
     [SerializeField] GameObject hitEffect;
     [SerializeField] GameObject healEffect;
     [SerializeField] GameObject deathEffect;

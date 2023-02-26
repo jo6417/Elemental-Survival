@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class Flame : MonoBehaviour
 {
     [Header("Refer")]
+    [SerializeField] Light2D fireLight;
     [SerializeField] ParticleManager particleManager;
     [SerializeField] MagicHolder magicHolder;
     public Color fireColor;
@@ -20,8 +22,6 @@ public class Flame : MonoBehaviour
     {
         // 파티클 기본 색깔
         fireColor = new Color(1f, 80f / 255f, 30f / 255f, 1f);
-        // 파티클 기본 머터리얼
-        fireMaterial = SystemManager.Instance.HDR3_Mat;
     }
 
     private void OnEnable()
@@ -33,6 +33,9 @@ public class Flame : MonoBehaviour
     {
         // 콜라이더 끄기
         magicHolder.atkColl.enabled = false;
+
+        // 라이팅 사이즈 최소화
+        fireLight.pointLightOuterRadius = 0;
 
         //magic 불러올때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
@@ -64,6 +67,9 @@ public class Flame : MonoBehaviour
         // 화염 파티클 재생
         particleManager.particle.Play();
 
+        // 라이팅에 스케일 키우기
+        DOTween.To(x => fireLight.pointLightOuterRadius = x, fireLight.pointLightOuterRadius, 3f + transform.localScale.x * 2f, 0.5f);
+
         // 화염 시작 사운드 재생
         SoundManager.Instance.PlaySound("Flame_Start", transform.position);
         // 지속 불타는 사운드 재생
@@ -77,6 +83,9 @@ public class Flame : MonoBehaviour
 
         // 파티클 끄고 마법 디스폰
         particleManager.SmoothDespawn();
+
+        // 라이팅에 스케일 초기화
+        DOTween.To(x => fireLight.pointLightOuterRadius = x, fireLight.pointLightOuterRadius, 0f, 0.5f);
 
         // // 파티클 사라지는 시간 절반만큼 대기
         // yield return new WaitForSeconds(1f);

@@ -281,10 +281,6 @@ public class HitBox : MonoBehaviour
         {
             // 디버프 판단해서 적용
             AfterEffect(attack, isCritical, damage);
-
-            //피격 딜레이 무적시간 시작
-            character.hitCoroutine = HitDelay(damage);
-            StartCoroutine(character.hitCoroutine);
         }
     }
 
@@ -299,10 +295,6 @@ public class HitBox : MonoBehaviour
         // 피격대상이 피격 이펙트 갖고 있을때
         if (character.hitEffect != null)
             hitEffect = character.hitEffect;
-
-        // // 공격자가 타격 이펙트 갖고 있을때
-        // if (attack.atkEffect != null)
-        //     hitEffect = attack.atkEffect;
 
         // 현재 무적 상태면
         if (character.invinsible)
@@ -491,6 +483,10 @@ public class HitBox : MonoBehaviour
             if (damage >= 0)
                 // 피격 이펙트 재생
                 HitEffect(hitPos);
+
+        //피격 딜레이 무적시간 시작
+        character.hitCoroutine = HitDelay(damage);
+        StartCoroutine(character.hitCoroutine);
 
         // 피격 위치안들어오면 현재위치
         if (hitPos == default)

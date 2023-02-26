@@ -1060,12 +1060,14 @@ public class Character : MonoBehaviour
                 // 도트 데미지 입히기
                 hitBoxList[0].Damage(Mathf.Clamp(buff.amount, 1, float.PositiveInfinity), false);
 
-                // 도트 딜레이 대기
-                yield return new WaitForSeconds(1f);
+                // 마지막 아닐때만
+                if (i < hitNum)
+                    // 도트 딜레이 대기
+                    yield return new WaitForSeconds(1f);
             }
 
-        // 버프 없에고 아이콘,이펙트 제거
-        StartCoroutine(StopBuff(buff, buff.duration, buffParent, buffEffect));
+        // 즉시 버프 없에고 아이콘,이펙트 제거
+        StartCoroutine(StopBuff(buff, 0, buffParent, buffEffect));
     }
 }
 

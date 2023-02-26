@@ -8,8 +8,6 @@ public class ItemManager : MonoBehaviour
 {
 
     [Header("Refer")]
-    public ItemInfo itemInfo; // 해당 아이템 정보
-    public MagicInfo magicInfo; // 해당 아이템이 갖고 있는 마법 정보
     public SpriteRenderer sprite;
     public GameObject despawnEffect; //사라질때 이펙트
     public Collider2D coll;
@@ -24,6 +22,9 @@ public class ItemManager : MonoBehaviour
     [SerializeField, ReadOnly] public int gemTypeIndex = -1;
     [SerializeField, ReadOnly] private string itemName;
     public float autoDespawnTime = 0; //자동 디스폰 시간
+    public ItemInfo itemInfo; // 해당 아이템 정보
+    public MagicInfo magicInfo; // 해당 아이템이 갖고 있는 마법 정보
+    public DBEnums.MagicDBEnum magicEnum = (DBEnums.MagicDBEnum)10000; // 테스트용 마법 리스트
 
     private void Awake()
     {
@@ -48,7 +49,7 @@ public class ItemManager : MonoBehaviour
         coll.enabled = false;
 
         //아이템DB 로드 완료까지 대기
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance != null && ItemDB.Instance.loadDone);
 
         // item 정보 불러올때까지 대기
         // yield return new WaitUntil(() => item != null);
@@ -71,6 +72,14 @@ public class ItemManager : MonoBehaviour
             //지불 원소젬 이름을 인덱스로 반환
             gemTypeIndex = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == itemInfo.priceType);
         }
+
+        // 마법DB 로드 완료까지 대기
+        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+
+        // 마법 이름 들어왔을때
+        if ((int)magicEnum != 10000)
+            // 마법 정보 찾아 넣기
+            magicInfo = MagicDB.Instance.GetMagicByName(magicEnum.ToString());
 
         // 아이템, 마법 정보 들어올때까지 대기
         yield return new WaitUntil(() => itemInfo != null || magicInfo != null);

@@ -69,7 +69,6 @@ public class UIManager : MonoBehaviour
 
     [Header("Refer")]
     public Transform camParent; // 카메라 이동 오브젝트
-    public Camera mainCamera; // 메인 카메라
     public GameObject dmgTxtPrefab; //데미지 텍스트 UI
     public Transform gameoverScreen;
     public Transform gameLog; // 게임 플레이 기록
@@ -420,14 +419,14 @@ public class UIManager : MonoBehaviour
     float randomness = 90, bool snapping = false, bool fadeOut = true)
     {
         // 메인 카메라 위치 초기화
-        mainCamera.transform.localPosition = Vector3.back;
+        SystemManager.Instance.MainCamera.transform.localPosition = Vector3.back;
 
         // 카메라 흔들기
-        mainCamera.transform.DOShakePosition(duration, strength, vibrato, randomness, snapping, fadeOut)
+        SystemManager.Instance.MainCamera.transform.DOShakePosition(duration, strength, vibrato, randomness, snapping, fadeOut)
         .OnComplete(() =>
         {
             // 메인 카메라 위치 초기화
-            mainCamera.transform.localPosition = Vector3.back;
+            SystemManager.Instance.MainCamera.transform.localPosition = Vector3.back;
         });
     }
 
@@ -438,7 +437,7 @@ public class UIManager : MonoBehaviour
             zoomTween.Kill();
 
         // 입력된 사이즈대로 줌인/줌아웃 트윈 실행
-        zoomTween = DOTween.To(() => mainCamera.orthographicSize, x => mainCamera.orthographicSize = x, defaultCamSize + amount, zoomTime);
+        zoomTween = DOTween.To(() => SystemManager.Instance.MainCamera.orthographicSize, x => SystemManager.Instance.MainCamera.orthographicSize = x, defaultCamSize + amount, zoomTime);
     }
 
     public void CameraMove(Vector2 targetPos, float time, bool isUnscaledTime)
@@ -1065,8 +1064,10 @@ public class UIManager : MonoBehaviour
 
     public void DamageUI(DamageType damageType, float damage, bool isCritical, Vector2 hitPos, bool isPlayer = false)
     {
-        // 데미지 UI 재생
-        StartCoroutine(DamageText(damageType, damage, isCritical, hitPos));
+        // 데미지 표시 가능할때만
+        if (SystemManager.Instance.showDamage)
+            // 데미지 UI 재생
+            StartCoroutine(DamageText(damageType, damage, isCritical, hitPos));
     }
 
     IEnumerator DamageText(DamageType damageType, float damage, bool isCritical, Vector2 hitPos, bool isPlayer = false)

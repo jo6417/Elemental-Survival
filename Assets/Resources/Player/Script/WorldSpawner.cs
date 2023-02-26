@@ -14,19 +14,16 @@ public class WorldSpawner : MonoBehaviour
     {
         get
         {
-            // if (instance == null)
-            // {
-            //     var obj = FindObjectOfType<WorldSpawner>();
-            //     if (obj != null)
-            //     {
-            //         instance = obj;
-            //     }
-            //     // else
-            //     // {
-            //     //     var newObj = new GameObject().AddComponent<WorldSpawner>();
-            //     //     instance = newObj;
-            //     // }
-            // }
+            if (instance == null)
+            {
+                instance = FindObjectOfType<WorldSpawner>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = "WorldSpawner";
+                    instance = obj.AddComponent<WorldSpawner>();
+                }
+            }
             return instance;
         }
     }
@@ -80,9 +77,15 @@ public class WorldSpawner : MonoBehaviour
 
     private void Awake()
     {
-        // 다른 오브젝트가 이미 있을때
-        if (instance == null)
-            instance = this;
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
 
         // 현재 스폰 몬스터 리스트 비우기
         spawnEnemyList.Clear();
@@ -146,7 +149,7 @@ public class WorldSpawner : MonoBehaviour
     void Update()
     {
         // 초기화 안됬으면 리턴
-        if (!SystemManager.Instance.loadDone)
+        if (SystemManager.Instance == null || !SystemManager.Instance.loadDone)
             return;
         // 시간 멈췄으면 리턴
         if (Time.timeScale == 0f)

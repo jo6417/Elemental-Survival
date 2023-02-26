@@ -439,11 +439,15 @@ public class CastMagic : MonoBehaviour
         fixCoolTime = MagicDB.Instance.MagicCoolTime(activeMagic);
         // 쿨타입 입력
         activeMagic.coolCount = fixCoolTime;
+
+        // 액티브 마법일때
+        if (magic.castType == MagicDB.CastType.active.ToString())
+            // 액티브 쿨타임 차감
+            yield return StartCoroutine(CooldownCoroutine(activeMagic, fixCoolTime));
+
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => activeMagic.coolCount <= 0);
 
-        // // 액티브 쿨타임 차감
-        // yield return StartCoroutine(Cooldown(activeMagic, fixCoolTime));
 
         // // 패시브일때
         // if (magic.castType == MagicDB.CastType.passive.ToString())
@@ -506,8 +510,10 @@ public class CastMagic : MonoBehaviour
         // 쿨타입 입력
         globalMagic.coolCount = fixCoolTime;
 
-        // 쿨타임 차감
-        yield return StartCoroutine(CooldownCoroutine(globalMagic, fixCoolTime));
+        // 액티브 마법일때
+        if (magic.castType == MagicDB.CastType.active.ToString())
+            // 쿨타임 차감
+            yield return StartCoroutine(CooldownCoroutine(globalMagic, fixCoolTime));
 
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => globalMagic.coolCount <= 0);
@@ -585,11 +591,10 @@ public class CastMagic : MonoBehaviour
         StartCoroutine(CooldownCoroutine(magic, fixCoolTime));
     }
 
-    IEnumerator CooldownCoroutine(MagicInfo magic, float fixCoolTime = -1)
+    IEnumerator CooldownCoroutine(MagicInfo magic, float coolTime)
     {
-        // 고정 쿨타임 들어오면 넣기
-        float cooltime = fixCoolTime != -1 ? fixCoolTime : MagicDB.Instance.MagicCoolTime(magic);
-        magic.coolCount = cooltime;
+        // 해당 마법정보의 쿨타임 갱신
+        magic.coolCount = coolTime;
 
         // 쿨타임중이면 반복
         while (magic.coolCount > 0)

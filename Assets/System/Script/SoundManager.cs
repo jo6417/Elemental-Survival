@@ -273,6 +273,9 @@ public class SoundManager : MonoBehaviour
             DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume * masterVolume * musicVolume, bgmFadeTime)
             .SetUpdate(true);
 
+            // bgm 켜짐 상태로 전환
+            bgmPause = true;
+
             // 음악 끝날때까지 대기, 일시정지 아닐때
             yield return new WaitUntil(() => !bgmPause && !nowBGM.isPlaying);
 

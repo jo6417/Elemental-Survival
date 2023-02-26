@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using UnityEngine.Experimental.Rendering.Universal;
+using DG.Tweening;
 
 public class MapManager : MonoBehaviour
 {
@@ -36,6 +37,7 @@ public class MapManager : MonoBehaviour
 
     [Header("State")]
     int propInit = 0; // 장애물 초기화 카운터
+    [Range(0f, 1f)] public float globalBrightness = 1f;
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
@@ -478,6 +480,15 @@ public class MapManager : MonoBehaviour
         Gizmos.DrawLine(new Vector2(rightX, downY), new Vector2(rightX, upY));
         Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(rightX, downY));
         Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
+    }
+
+    public void SetBrightness(float _brightness, float duration = 0)
+    {
+        // 현재 글로벌 밝기값 수정
+        globalBrightness = _brightness;
+
+        // 글로벌 밝기 * 옵션 밝기 곱해서 해당 값으로 트윈
+        DOTween.To(x => globalLight.intensity = x, globalLight.intensity, globalBrightness * SystemManager.Instance.OptionBrightness, duration);
     }
 }
 

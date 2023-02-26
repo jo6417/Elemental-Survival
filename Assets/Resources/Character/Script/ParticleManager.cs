@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class ParticleManager : MonoBehaviour
 {
+    [Header("State")]
     public ParticleSystem particle;
     Collider2D coll;
 
-    [Header("Modify")]
+    [Header("State")]
     public bool autoDespawn = false; //자동 디스폰 여부
     [SerializeField] float despawnDelay; // 디스폰 딜레이
     public float collOverTime = 0f;

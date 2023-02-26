@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class OptionMenu : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class OptionMenu : MonoBehaviour
 
     [Header("Refer")]
     private NewInput Option_Input;
-    [SerializeField] private PauseMenu pausePanel; // 일시정지 메뉴 컴포넌트
+    [SerializeField] private CanvasGroup pauseGroup; // 일시정지 메뉴 캔버스그룹
     [SerializeField] private MainMenuBtn mainMenu; // 메인메뉴 컴포넌트
 
     [Header("Option Menu")]
@@ -33,6 +34,8 @@ public class OptionMenu : MonoBehaviour
 
     [Header("Graphic Option")]
     public TMP_Dropdown screenModeDropdown; // 화면 모드 드롭다운 메뉴
+    public Slider brightnessSlider; // 밝기 슬라이더
+    public Toggle showDamageToggle; // 데미지 표시 여부 토글 버튼
 
     private void Awake()
     {
@@ -43,6 +46,37 @@ public class OptionMenu : MonoBehaviour
         screenModeDropdown.onValueChanged.AddListener(delegate
         {
             SetScreenMode(screenModeDropdown.value);
+        });
+
+        // 밝기 슬라이더에 함수 넣기
+        brightnessSlider.onValueChanged.AddListener(delegate
+        {
+            // 밝기 설정값 변수 바꾸기
+            SystemManager.Instance.OptionBrightness = brightnessSlider.value;
+
+            // MapManager 가 있을때
+            if (MapManager.Instance != null)
+                // 글로벌 라이트 값에 적용
+                MapManager.Instance.globalLight.intensity = MapManager.Instance.globalBrightness * SystemManager.Instance.OptionBrightness;
+            // 없을때, 인게임이 아닐때
+            else
+            {
+                // 글로벌 라이트 찾기
+                Light2D globalLight = null;
+                foreach (Light2D light in FindObjectsOfType<Light2D>())
+                    if (light.lightType == Light2D.LightType.Global)
+                        globalLight = light;
+
+                // 해당 글로벌 라이트에 밝기 옵션값 적용
+                globalLight.intensity = SystemManager.Instance.OptionBrightness;
+            }
+        });
+
+        // 데미지 표시 여부 토글에 함수 넣기
+        showDamageToggle.onValueChanged.AddListener(delegate
+        {
+            // 데미지 표시 여부 변수 바꾸기
+            SystemManager.Instance.showDamage = showDamageToggle.isOn;
         });
     }
 
@@ -96,7 +130,11 @@ public class OptionMenu : MonoBehaviour
         graphicOptionPanel.SetActive(false);
         // keyBindOptionPanel.SetActive(false);
 
-        yield return null;
+        // UIManager 초기화 대기
+        yield return new WaitUntil(() => UIManager.Instance != null);
+
+        // 일시정지 메뉴에서 pauseGroup 찾기
+        if (pauseGroup == null) pauseGroup = UIManager.Instance.pausePanel.GetComponent<CanvasGroup>();
     }
 
     private void OnDestroy()
@@ -195,7 +233,7 @@ public class OptionMenu : MonoBehaviour
 
             // 일시정지 메뉴 켜기
             // UIManager.Instance.pausePanel.SetActive(true);
-            pausePanel.pauseGroup.alpha = 1f;
+            pauseGroup.alpha = 1f;
 
             // 옵션 메뉴 끄기
             UIManager.Instance.optionPanel.SetActive(false);

@@ -99,15 +99,12 @@ public class EnemyDB : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<EnemyDB>();
-                if (obj != null)
+                instance = FindObjectOfType<EnemyDB>();
+                if (instance == null)
                 {
-                    instance = obj;
-                }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<EnemyDB>();
-                    instance = newObj;
+                    GameObject obj = new GameObject();
+                    obj.name = "EnemyDB";
+                    instance = obj.AddComponent<EnemyDB>();
                 }
             }
             return instance;
@@ -124,9 +121,19 @@ public class EnemyDB : MonoBehaviour
 
     void Awake()
     {
-        //게임 시작과 함께 아이템DB 정보 로드하기
-        // StartCoroutine(GetEnemyData());
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
         // 몬스터 아이콘, 프리팹 불러오기
         GetEnemyResources();
     }

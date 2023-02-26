@@ -23,7 +23,9 @@ public class SaveData : System.IDisposable
     #region Option
     public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
     public FullScreenMode fullscreenMode = FullScreenMode.Windowed;
-    public float[] resolution = { 1920f, 1080f };
+    public float[] resolution = { 1920f, 1080f }; // 저장된 해상도
+    public bool showDamage = true; // 데미지 표시여부
+    public float optionBrightness = 0.9f; // 밝기 설정값
     #endregion
 
     public SaveData()
@@ -78,6 +80,20 @@ public class SaveManager : MonoBehaviour
     string enemyURI = "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
     string itemURI = "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
 
+    IEnumerator Saving()
+    {
+        // 저장 아이콘 켜기
+        SystemManager.Instance.saveIcon.SetActive(true);
+
+        // 최소 저장 시간 대기
+        yield return new WaitForSecondsRealtime(1f);
+        // 저장 끝날때까지 대기
+        yield return new WaitUntil(() => !nowSaving);
+
+        //저장 아이콘 끄기
+        SystemManager.Instance.saveIcon.SetActive(false);
+    }
+
     public IEnumerator Save()
     {
         // 세이브 파일이 없으면 리턴
@@ -103,6 +119,12 @@ public class SaveManager : MonoBehaviour
         // 해상도 저장
         localSaveData.resolution[0] = SystemManager.Instance.lastResolution.x;
         localSaveData.resolution[1] = SystemManager.Instance.lastResolution.y;
+
+        // 데미지 표시 여부 저장
+        localSaveData.showDamage = SystemManager.Instance.showDamage;
+
+        // 밝기 값 저장
+        localSaveData.optionBrightness = SystemManager.Instance.OptionBrightness;
 
         #endregion
 
@@ -134,20 +156,6 @@ public class SaveManager : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator Saving()
-    {
-        // 저장 아이콘 켜기
-        SystemManager.Instance.saveIcon.SetActive(true);
-
-        // 최소 저장 시간 대기
-        yield return new WaitForSecondsRealtime(1f);
-        // 저장 끝날때까지 대기
-        yield return new WaitUntil(() => !nowSaving);
-
-        //저장 아이콘 끄기
-        SystemManager.Instance.saveIcon.SetActive(false);
-    }
-
     public IEnumerator LoadData()
     {
         // 세이브 파일이 없으면 리턴
@@ -164,6 +172,12 @@ public class SaveManager : MonoBehaviour
         SystemManager.Instance.lastResolution = new Vector2(localSaveData.resolution[0], localSaveData.resolution[1]);
         // 전체화면 여부 불러오기 및 적용
         SystemManager.Instance.ChangeResolution(localSaveData.fullscreenMode, true);
+
+        // 데미지 표시 여부 로드
+        SystemManager.Instance.showDamage = localSaveData.showDamage;
+
+        // 밝기 값 저장
+        SystemManager.Instance.OptionBrightness = localSaveData.optionBrightness;
 
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);

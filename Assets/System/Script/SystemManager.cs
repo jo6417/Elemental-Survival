@@ -55,14 +55,14 @@ public class SystemManager : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                var obj = FindObjectOfType<SystemManager>();
-                if (obj != null)
-                {
-                    instance = obj;
-                }
-            }
+            // if (instance == null)
+            // {
+            //     var obj = FindObjectOfType<SystemManager>();
+            //     if (obj != null)
+            //     {
+            //         instance = obj;
+            //     }
+            // }
             //     else
             //     {
             //         var newObj = new GameObject().AddComponent<SystemManager>();
@@ -84,9 +84,22 @@ public class SystemManager : MonoBehaviour
     public float time_current; // 현재 스테이지 플레이 타임
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
-    public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
+    private float optionBrightness; //글로벌 라이트 기본값
+    public float OptionBrightness //글로벌 라이트 기본값
+    {
+        get
+        {
+            return optionBrightness;
+        }
+        set
+        {
+            // 범위 제한
+            optionBrightness = Mathf.Clamp(value, 0.1f, 1f);
+        }
+    }
     public FullScreenMode screenMode = FullScreenMode.Windowed;
     public Vector2 lastResolution = new Vector2(1920f, 1080f); // 해상도 저장
+    public bool showDamage = true; // 데미지 표시 여부
 
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
@@ -96,7 +109,6 @@ public class SystemManager : MonoBehaviour
     public TextMeshProUGUI nowSelectUI; // 선택된 UI 이름
     public Button timeBtn; // 시간 속도 토글 버튼
     public Button godModBtn; // 갓모드 토글 버튼
-    // [ReadOnly] public bool godMod = false; // 플레이어 갓모드 여부
     // DB 동기화 버튼들
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
@@ -150,12 +162,26 @@ public class SystemManager : MonoBehaviour
     public Color DeadColor; //죽을때 서서히 변할 컬러
 
     [Header("Resolution")]
-    [SerializeField] Vector2 resolution = new Vector2(1920f, 1080f);
-    [SerializeField] Camera mainCamera;
-    [SerializeField] Rect rect;
+    [SerializeField, ReadOnly] bool nowChangeResolution = false;
+    [SerializeField] Vector2 monitorResolution = new Vector2(1920f, 1080f);
+    [SerializeField] Rect cameraRect;
     [SerializeField] Vector2 screenSize; // 현재 스크린 사이즈
+    [SerializeField] Transform letterBoxCanvas;
     [SerializeField] RectTransform[] horizon_letterBoxes = new RectTransform[2];
     [SerializeField] RectTransform[] vertical_letterBoxes = new RectTransform[2];
+    private Camera mainCamera;
+    public Camera MainCamera
+    {
+        get
+        {
+            // 카메라 null이면 새로 찾기
+            if (mainCamera == null)
+                mainCamera = Camera.main;
+
+            return mainCamera;
+        }
+        set { }
+    }
 
     private void Awake()
     {
@@ -165,13 +191,11 @@ public class SystemManager : MonoBehaviour
 
         // 다른 오브젝트가 이미 있을때
         if (instance != null)
+            Destroy(gameObject);
+        else
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
         }
 
         //초기화
@@ -180,34 +204,47 @@ public class SystemManager : MonoBehaviour
 
     IEnumerator AwakeInit()
     {
+        // 카메라 rect 찾기
+        cameraRect = Camera.main.rect;
+        // 가로세로 레터박스 찾기
+        horizon_letterBoxes[0] = letterBoxCanvas.GetChild(0).GetComponent<RectTransform>();
+        horizon_letterBoxes[1] = letterBoxCanvas.GetChild(1).GetComponent<RectTransform>();
+        vertical_letterBoxes[0] = letterBoxCanvas.GetChild(2).GetComponent<RectTransform>();
+        vertical_letterBoxes[1] = letterBoxCanvas.GetChild(4).GetComponent<RectTransform>();
+
+        // 현재 모니터의 해상도 불러오기
+        monitorResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
+
+        //todo 그래픽 해상도 옵션 구현
+        // // 사용 가능한 모든 해상도를 확인
+        // foreach (Resolution resolution in Screen.resolutions)
+        // {
+        //     // 가로 세로 비율을 계산
+        //     float aspectRatio = (float)resolution.width / (float)resolution.height;
+
+        //     // 16:9 비율에 근접한 해상도만 출력
+        //     if (Mathf.Approximately(aspectRatio, 16f / 9f))
+        //     {
+        //         Debug.Log(resolution.width + " x " + resolution.height);
+        //     }
+        // }
+
         // 몬스터 자동 생성 토글
         if (spawnBtn != null)
         {
             // 버튼 색깔 초기화
-            ToggleSwitcher(ref spawnSwitch, spawnBtn, true);
+            ButtonToggle(ref spawnSwitch, spawnBtn, true);
             // 몬스터 자동 스폰 버튼 상태값 연결
-            spawnBtn.onClick.AddListener(() => { ToggleSwitcher(ref spawnSwitch, spawnBtn); });
+            spawnBtn.onClick.AddListener(() => { ButtonToggle(ref spawnSwitch, spawnBtn); });
         }
 
         // 몬스터 상태 토글
         if (showStateBtn != null)
         {
             // 버튼 색깔 초기화
-            ToggleSwitcher(ref showEnemyState, showStateBtn, true);
+            ButtonToggle(ref showEnemyState, showStateBtn, true);
             // 몬스터 상태 보여주기 버튼 상태값 연결
-            showStateBtn.onClick.AddListener(() => { ToggleSwitcher(ref showEnemyState, showStateBtn); });
-        }
-
-        // 플레이어 갓모드
-        if (godModBtn != null)
-        {
-            // 플레이어 로딩될때까지 대기
-            yield return new WaitUntil(() => PlayerManager.Instance != null);
-
-            // 버튼 색깔 초기화
-            ToggleSwitcher(ref PlayerManager.Instance.invinsible, godModBtn, true);
-            // 몬스터 자동 스폰 버튼 상태값 연결
-            godModBtn.onClick.AddListener(() => { ToggleSwitcher(ref PlayerManager.Instance.invinsible, godModBtn); });
+            showStateBtn.onClick.AddListener(() => { ButtonToggle(ref showEnemyState, showStateBtn); });
         }
 
         //TODO 로딩 UI 띄우기
@@ -241,19 +278,26 @@ public class SystemManager : MonoBehaviour
 
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance.initFinish);
-        // 플레이어 초기화 대기
-        // yield return new WaitUntil(() => PlayerManager.Instance.initFinish);
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
         loadDone = true;
+
+        // 플레이어 갓모드
+        if (godModBtn != null)
+        {
+            // 플레이어 초기화 대기
+            yield return new WaitUntil(() => PlayerManager.Instance != null);
+
+            // 버튼 색깔 초기화
+            ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn, true);
+            // 몬스터 자동 스폰 버튼 상태값 연결
+            godModBtn.onClick.AddListener(() => { ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn); });
+        }
     }
 
     private void Start()
     {
-        rect = mainCamera.rect;
-        resolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
-
         // 로그 업데이트 코루틴 실행
         StartCoroutine(UpdateLogMessages());
     }
@@ -324,7 +368,7 @@ public class SystemManager : MonoBehaviour
         yield return new WaitUntil(() => loadDone);
     }
 
-    public void ToggleSwitcher(ref bool toggle, Selectable selectable, bool init = false)
+    public void ButtonToggle(ref bool toggle, Selectable selectable, bool init = false)
     {
         // 초기화 아닐때
         if (!init)
@@ -403,7 +447,6 @@ public class SystemManager : MonoBehaviour
         // 씬 타임스케일 변경
         Time.timeScale = timeScale;
 
-        Image timeImg = timeBtn.GetComponent<Image>();
         TextMeshProUGUI timeTxt = timeBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
         // 재생중인 사운드도 끌때
@@ -413,9 +456,9 @@ public class SystemManager : MonoBehaviour
 
         // 멈추면 빨강 아니면 초록색으로 버튼에 표시
         if (timeScale > 0f)
-            timeImg.color = Color.green;
+            timeBtn.image.color = Color.green;
         else
-            timeImg.color = Color.red;
+            timeBtn.image.color = Color.red;
 
         // 시간 진행도 디버그 버튼에 표시
         timeTxt.text = "TimeSpeed = " + timeScale;
@@ -713,7 +756,8 @@ public class SystemManager : MonoBehaviour
     private void Update()
     {
         // 해상도 및 화면모드 확인
-        ResolutionCheck();
+        if (!nowChangeResolution)
+            ResolutionCheck();
     }
 
     public void ResolutionCheck()
@@ -740,12 +784,14 @@ public class SystemManager : MonoBehaviour
 
     public void ChangeResolution(FullScreenMode _fullscreenMode, bool changeMode = false)
     {
+        nowChangeResolution = true;
+
         // 화면모드 변수 갱신
         screenMode = _fullscreenMode;
 
         // 현재 스크린 사이즈 불러오기
         screenSize = _fullscreenMode == FullScreenMode.ExclusiveFullScreen || _fullscreenMode == FullScreenMode.FullScreenWindow
-        ? resolution
+        ? monitorResolution
         : new Vector2(Screen.width, Screen.height);
 
         // 창모드로 전환시
@@ -766,20 +812,20 @@ public class SystemManager : MonoBehaviour
             // 전체화면으로 강제 변경시
             if (changeMode)
                 // 전체화면 해상도로 변경
-                Screen.SetResolution((int)resolution.x, (int)resolution.y, _fullscreenMode);
+                Screen.SetResolution((int)monitorResolution.x, (int)monitorResolution.y, _fullscreenMode);
         }
 
-        float scaleheight = ((float)screenSize.x / screenSize.y) / ((float)resolution.x / resolution.y); // (가로 / 세로)
+        float scaleheight = ((float)screenSize.x / screenSize.y) / ((float)monitorResolution.x / monitorResolution.y); // (가로 / 세로)
         float scalewidth = 1f / scaleheight;
         scaleheight = Mathf.Clamp01(scaleheight);
         scalewidth = Mathf.Clamp01(scalewidth);
 
-        rect.height = scaleheight;
-        rect.y = (1f - scaleheight) / 2f;
-        rect.width = scalewidth;
-        rect.x = (1f - scalewidth) / 2f;
+        cameraRect.height = scaleheight;
+        cameraRect.y = (1f - scaleheight) / 2f;
+        cameraRect.width = scalewidth;
+        cameraRect.x = (1f - scalewidth) / 2f;
 
-        mainCamera.rect = rect;
+        MainCamera.rect = cameraRect;
 
         // 세로 레터박스 끄기
         for (int i = 0; i < vertical_letterBoxes.Length; i++)
@@ -790,7 +836,7 @@ public class SystemManager : MonoBehaviour
 
         // 위아래 레터박스 사이즈 계산
         Vector2 letterScale;
-        if (rect.x == 0)
+        if (cameraRect.x == 0)
         {
             letterScale = new Vector2(screenSize.x, (1f - scaleheight) * screenSize.y / 2f);
 
@@ -813,6 +859,8 @@ public class SystemManager : MonoBehaviour
             }
         }
 
-        print(resolution + " : " + new Vector2(Screen.width, Screen.height) + " : " + Screen.fullScreenMode.ToString() + " : " + Time.unscaledTime);
+        nowChangeResolution = false;
+
+        print(monitorResolution + " : " + new Vector2(Screen.width, Screen.height) + " : " + _fullscreenMode + " : " + Screen.fullScreenMode.ToString() + " : " + Time.unscaledTime);
     }
 }

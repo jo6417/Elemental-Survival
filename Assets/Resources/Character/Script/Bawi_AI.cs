@@ -151,12 +151,12 @@ public class Bawi_AI : EnemyAI
         yield return new WaitForSecondsRealtime(1f);
 
         //todo 카메라 흔들기
-        UIManager.Instance.mainCamera.transform.DOShakePosition(2f, 1, 10, 90, false, false)
+        SystemManager.Instance.MainCamera.transform.DOShakePosition(2f, 1, 10, 90, false, false)
         .SetEase(Ease.InSine)
         .OnComplete(() =>
         {
             // 메인 카메라 위치 초기화
-            UIManager.Instance.mainCamera.transform.localPosition = Vector3.zero;
+            SystemManager.Instance.MainCamera.transform.localPosition = Vector3.zero;
         });
 
         //todo 땅의 균열이 점점 커짐

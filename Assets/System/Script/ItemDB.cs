@@ -16,15 +16,12 @@ public class ItemDB : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<ItemDB>();
-                if (obj != null)
+                instance = FindObjectOfType<ItemDB>();
+                if (instance == null)
                 {
-                    instance = obj;
-                }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<ItemDB>();
-                    instance = newObj;
+                    GameObject obj = new GameObject();
+                    obj.name = "ItemDB";
+                    instance = obj.AddComponent<ItemDB>();
                 }
             }
             return instance;
@@ -42,6 +39,19 @@ public class ItemDB : MonoBehaviour
     public GameObject magicItemPrefab; // 마법 슬롯 아이템 프리팹
 
     void Awake()
+    {
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
     {
         // 아이콘, 프리팹 불러오기
         GetItemResources();
