@@ -85,7 +85,7 @@ public class SystemManager : MonoBehaviour
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
     public float globalLightDefault = 0.9f; //글로벌 라이트 기본값
-    public FullScreenMode screenMode = FullScreenMode.Windowed;
+    public bool isFullscreen = false;
     public Vector2 lastResolution = new Vector2(1920f, 1080f); // 해상도 저장
 
     public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
@@ -96,7 +96,7 @@ public class SystemManager : MonoBehaviour
     public TextMeshProUGUI nowSelectUI; // 선택된 UI 이름
     public Button timeBtn; // 시간 속도 토글 버튼
     public Button godModBtn; // 갓모드 토글 버튼
-    // [ReadOnly] public bool godMod = false; // 플레이어 갓모드 여부
+    [ReadOnly] public bool godMod = false; // 플레이어 갓모드 여부
     // DB 동기화 버튼들
     public Button magicDBSyncBtn;
     public Button enemyDBSyncBtn;
@@ -121,6 +121,7 @@ public class SystemManager : MonoBehaviour
     public Sprite questionMark; //물음표 스프라이트
     public GameObject targetPos_Red; // 디버그용 타겟 위치 표시
     public GameObject targetPos_Blue; // 디버그용 타겟 위치 표시
+    public FixResolution fixResolution;
 
     [Header("Prefab")]
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
@@ -149,14 +150,6 @@ public class SystemManager : MonoBehaviour
     public Color poisonColor; //독 데미지 flash 컬러
     public Color DeadColor; //죽을때 서서히 변할 컬러
 
-    [Header("Resolution")]
-    [SerializeField] Vector2 resolution = new Vector2(1920f, 1080f);
-    [SerializeField] Camera mainCamera;
-    [SerializeField] Rect rect;
-    [SerializeField] Vector2 screenSize; // 현재 스크린 사이즈
-    [SerializeField] RectTransform[] horizon_letterBoxes = new RectTransform[2];
-    [SerializeField] RectTransform[] vertical_letterBoxes = new RectTransform[2];
-
     private void Awake()
     {
         // 시스템 인풋 초기화
@@ -180,35 +173,14 @@ public class SystemManager : MonoBehaviour
 
     IEnumerator AwakeInit()
     {
-        // 몬스터 자동 생성 토글
-        if (spawnBtn != null)
-        {
-            // 버튼 색깔 초기화
-            ToggleSwitcher(ref spawnSwitch, spawnBtn, true);
-            // 몬스터 자동 스폰 버튼 상태값 연결
-            spawnBtn.onClick.AddListener(() => { ToggleSwitcher(ref spawnSwitch, spawnBtn); });
-        }
+        // 각각 버튼 색깔 초기화
+        ToggleSwitcher(ref spawnSwitch, spawnBtn, true);
+        ToggleSwitcher(ref showEnemyState, showStateBtn, true);
 
-        // 몬스터 상태 토글
-        if (showStateBtn != null)
-        {
-            // 버튼 색깔 초기화
-            ToggleSwitcher(ref showEnemyState, showStateBtn, true);
-            // 몬스터 상태 보여주기 버튼 상태값 연결
-            showStateBtn.onClick.AddListener(() => { ToggleSwitcher(ref showEnemyState, showStateBtn); });
-        }
-
-        // 플레이어 갓모드
-        if (godModBtn != null)
-        {
-            // 플레이어 로딩될때까지 대기
-            yield return new WaitUntil(() => PlayerManager.Instance != null);
-
-            // 버튼 색깔 초기화
-            ToggleSwitcher(ref PlayerManager.Instance.invinsible, godModBtn, true);
-            // 몬스터 자동 스폰 버튼 상태값 연결
-            godModBtn.onClick.AddListener(() => { ToggleSwitcher(ref PlayerManager.Instance.invinsible, godModBtn); });
-        }
+        // 몬스터 자동 스폰 버튼 상태값 연결
+        spawnBtn.onClick.AddListener(() => { ToggleSwitcher(ref spawnSwitch, spawnBtn); });
+        // 몬스터 상태 보여주기 버튼 상태값 연결
+        showStateBtn.onClick.AddListener(() => { ToggleSwitcher(ref showEnemyState, showStateBtn); });
 
         //TODO 로딩 UI 띄우기
         print("로딩 시작");
@@ -235,9 +207,9 @@ public class SystemManager : MonoBehaviour
         yield return StartCoroutine(SaveManager.Instance.DBtoEnum());
 
         // 동기화 여부 다시 검사
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Magic, magicDBSyncBtn));
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, itemDBSyncBtn));
-        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, enemyDBSyncBtn));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Magic, SystemManager.Instance.enemyDBSyncBtn));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Item, SystemManager.Instance.enemyDBSyncBtn));
+        StartCoroutine(SaveManager.Instance.DBSyncCheck(DBType.Enemy, SystemManager.Instance.enemyDBSyncBtn));
 
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance.initFinish);
@@ -251,9 +223,6 @@ public class SystemManager : MonoBehaviour
 
     private void Start()
     {
-        rect = mainCamera.rect;
-        resolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
-
         // 로그 업데이트 코루틴 실행
         StartCoroutine(UpdateLogMessages());
     }
@@ -322,6 +291,9 @@ public class SystemManager : MonoBehaviour
     {
         // 모든 로딩 끝날때까지 대기
         yield return new WaitUntil(() => loadDone);
+
+        // 켜졌을때 초록, 꺼졌을때 빨강으로 버튼 컬러 바꾸기
+        showStateBtn.image.color = showEnemyState ? Color.green : Color.red;
     }
 
     public void ToggleSwitcher(ref bool toggle, Selectable selectable, bool init = false)
@@ -421,24 +393,24 @@ public class SystemManager : MonoBehaviour
         timeTxt.text = "TimeSpeed = " + timeScale;
     }
 
-    // public void GodModeToggle()
-    // {
-    //     Image godModImg = godModBtn.GetComponent<Image>();
-    //     TextMeshProUGUI godModTxt = godModBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+    public void GodModeToggle()
+    {
+        Image godModImg = godModBtn.GetComponent<Image>();
+        TextMeshProUGUI godModTxt = godModBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
-    //     godMod = !godMod;
+        godMod = !godMod;
 
-    //     if (godMod)
-    //     {
-    //         godModImg.color = Color.green;
-    //         godModTxt.text = "GodMod On";
-    //     }
-    //     else
-    //     {
-    //         godModImg.color = Color.red;
-    //         godModTxt.text = "GodMod Off";
-    //     }
-    // }
+        if (godMod)
+        {
+            godModImg.color = Color.green;
+            godModTxt.text = "GodMod On";
+        }
+        else
+        {
+            godModImg.color = Color.red;
+            godModTxt.text = "GodMod Off";
+        }
+    }
 
     //오브젝트의 모든 자식을 파괴
     public void DestroyAllChild(Transform obj)
@@ -682,6 +654,12 @@ public class SystemManager : MonoBehaviour
         SoundManager.Instance.PlaySound(soundName);
     }
 
+    public void ToggleFullScreen(bool _isFullscreen)
+    {
+        // 해상도 및 레터박스 갱신
+        fixResolution.ChangeResolution(_isFullscreen, true);
+    }
+
     public Vector2 AntualSpriteScale(SpriteRenderer spriteRenderer)
     {
         // SpriteRenderer에서 Sprite 가져오기
@@ -708,111 +686,5 @@ public class SystemManager : MonoBehaviour
 
         // 계산된 스케일값 리턴
         return new Vector3(actualWidth / textureWidth, actualHeight / textureHeight, 1);
-    }
-
-    private void Update()
-    {
-        // 해상도 및 화면모드 확인
-        ResolutionCheck();
-    }
-
-    public void ResolutionCheck()
-    {
-        // 화면 모드 강제로 바뀌었을때
-        if (screenMode != Screen.fullScreenMode)
-        {
-            // 해상도 변경 및 빈공간에 레터박스 넣기
-            ChangeResolution(Screen.fullScreenMode, true);
-
-            return;
-        }
-
-        // 창모드일때, 화면 사이즈가 바뀌었을때
-        if (Screen.fullScreenMode == FullScreenMode.Windowed
-        && lastResolution != new Vector2(Screen.width, Screen.height))
-        {
-            // 해상도 변경 및 빈공간에 레터박스 넣기
-            ChangeResolution(screenMode);
-
-            return;
-        }
-    }
-
-    public void ChangeResolution(FullScreenMode _fullscreenMode, bool changeMode = false)
-    {
-        // 화면모드 변수 갱신
-        screenMode = _fullscreenMode;
-
-        // 현재 스크린 사이즈 불러오기
-        screenSize = _fullscreenMode == FullScreenMode.ExclusiveFullScreen || _fullscreenMode == FullScreenMode.FullScreenWindow
-        ? resolution
-        : new Vector2(Screen.width, Screen.height);
-
-        // 창모드로 전환시
-        if (_fullscreenMode == FullScreenMode.Windowed)
-        {
-            // 창모드로 강제 변경시
-            if (changeMode)
-                // 마지막 창모드 해상도로 변경
-                Screen.SetResolution((int)lastResolution.x, (int)lastResolution.y, _fullscreenMode);
-            // 창모드에서 사이즈 바꿀때
-            else
-                // 창모드 해상도를 현재 해상도로 갱신
-                lastResolution = screenSize;
-        }
-        // 전체화면으로 전환시
-        else
-        {
-            // 전체화면으로 강제 변경시
-            if (changeMode)
-                // 전체화면 해상도로 변경
-                Screen.SetResolution((int)resolution.x, (int)resolution.y, _fullscreenMode);
-        }
-
-        float scaleheight = ((float)screenSize.x / screenSize.y) / ((float)resolution.x / resolution.y); // (가로 / 세로)
-        float scalewidth = 1f / scaleheight;
-        scaleheight = Mathf.Clamp01(scaleheight);
-        scalewidth = Mathf.Clamp01(scalewidth);
-
-        rect.height = scaleheight;
-        rect.y = (1f - scaleheight) / 2f;
-        rect.width = scalewidth;
-        rect.x = (1f - scalewidth) / 2f;
-
-        mainCamera.rect = rect;
-
-        // 세로 레터박스 끄기
-        for (int i = 0; i < vertical_letterBoxes.Length; i++)
-            vertical_letterBoxes[i].gameObject.SetActive(false);
-        // 가로 레터박스 끄기
-        for (int i = 0; i < horizon_letterBoxes.Length; i++)
-            horizon_letterBoxes[i].gameObject.SetActive(false);
-
-        // 위아래 레터박스 사이즈 계산
-        Vector2 letterScale;
-        if (rect.x == 0)
-        {
-            letterScale = new Vector2(screenSize.x, (1f - scaleheight) * screenSize.y / 2f);
-
-            // 가로 레터박스 사이즈로 이미지 스케일링
-            for (int i = 0; i < horizon_letterBoxes.Length; i++)
-            {
-                horizon_letterBoxes[i].gameObject.SetActive(true);
-                horizon_letterBoxes[i].sizeDelta = letterScale;
-            }
-        }
-        else
-        {
-            letterScale = new Vector2((1f - scalewidth) * screenSize.x / 2f, screenSize.y);
-
-            // 세로 레터박스 사이즈로 이미지 스케일링
-            for (int i = 0; i < vertical_letterBoxes.Length; i++)
-            {
-                vertical_letterBoxes[i].gameObject.SetActive(true);
-                vertical_letterBoxes[i].sizeDelta = letterScale;
-            }
-        }
-
-        print(resolution + " : " + new Vector2(Screen.width, Screen.height) + " : " + Screen.fullScreenMode.ToString() + " : " + Time.unscaledTime);
     }
 }

@@ -1120,8 +1120,8 @@ public class UIManager : MonoBehaviour
 
             // 방어 했을때
             case DamageType.Block:
-                dmgTxt.color = new Color(50f / 255f, 180f / 255f, 255f / 255f);
-                dmgTxt.text = "BLOCK";
+                dmgTxt.color = new Color(30f / 255f, 100f / 255f, 200f / 255f);
+                dmgTxt.text = "Block";
                 break;
         }
 

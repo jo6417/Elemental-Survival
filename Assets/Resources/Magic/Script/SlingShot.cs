@@ -82,7 +82,7 @@ public class SlingShot : MonoBehaviour
         yield return new WaitUntil(() => shotNum == atkNum);
 
         // 쿨다운 시작
-        CastMagic.Instance.Cooldown(magicHolder.magic, magicHolder.isManualCast, coolTime);
+        CastMagic.Instance.Cooldown(magicHolder, coolTime);
 
         // 모든 투사체 디스폰 될때까지 대기
         for (int i = 0; i < shotAble.Count; i++)

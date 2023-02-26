@@ -123,7 +123,7 @@ public class LifeMushroom : MonoBehaviour
         SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0, 0.05f, atkNum, true);
 
         // 쿨다운 시작
-        CastMagic.Instance.Cooldown(magicHolder.magic, magicHolder.isManualCast, coolTime);
+        CastMagic.Instance.Cooldown(magicHolder, coolTime);
     }
 
     private void OnParticleCollision(GameObject other)
