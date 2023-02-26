@@ -29,7 +29,7 @@ public class Character : MonoBehaviour
     public bool usePortal = true; // 등장시 포탈 사용 여부
     public bool initialStart = true;
     public bool initialFinish = false;
-    public EliteClass eliteClass = EliteClass.None; // 엘리트 여부    
+    public EliteClass eliteClass = EliteClass.None; // 엘리트 여부
     public bool lookLeft = false; //기본 스프라이트가 왼쪽을 바라보는지
     public CharacterStat characterStat = new CharacterStat(); // 해당 캐릭터 스탯
 
@@ -273,9 +273,9 @@ public class Character : MonoBehaviour
         // 몬스터 정보 있을때
         if (enemy != null)
             //엘리트 종류마다 색깔 및 능력치 적용
-            switch ((int)eliteClass)
+            switch (eliteClass)
             {
-                case 0:
+                case EliteClass.None:
                     // 아웃라인 지우기
                     spriteList[0].material.SetColor("_OutLineColor", Color.clear);
 
@@ -284,7 +284,7 @@ public class Character : MonoBehaviour
 
                     break;
 
-                case 1:
+                case EliteClass.Power:
                     //공격력 상승
                     powerNow = powerNow * 2f;
 
@@ -292,11 +292,11 @@ public class Character : MonoBehaviour
                     spriteList[0].material.SetColor("_OutLineColor", Color.red);
 
                     // 몬스터 스케일 상승
-                    transform.localScale = Vector2.one * 1.5f;
+                    transform.localScale = Vector2.one * 1.3f;
 
                     break;
 
-                case 2:
+                case EliteClass.Speed:
                     //속도 상승
                     speedNow = speedNow * 2.5f;
                     // 쿨타임 빠르게
@@ -306,7 +306,7 @@ public class Character : MonoBehaviour
                     spriteList[0].material.SetColor("_OutLineColor", Color.cyan);
                     break;
 
-                case 3:
+                case EliteClass.Heal:
                     // 최대 체력 상승
                     characterStat.hpMax = characterStat.hpMax * 2f;
 
@@ -321,9 +321,9 @@ public class Character : MonoBehaviour
                     spriteList[0].material.SetColor("_OutLineColor", Color.green);
                     break;
 
-                case 4:
-                    // 일정 범위 만큼 마법 차단하는 파란색 쉴드 생성
-                    // 해당 범위내 몬스터들은 무적(맞으면 Miss) 스위치 켜기, 범위 나가면 무적 끄기
+                case (EliteClass)4:
+                    // 모든 플레이어 투사체 차단하는 넓은 범위의 파란색 쉴드 생성
+                    // 쉴드 범위 내에서 발생한 투사체는 사라지지 않음
                     // 이 엘리트 몹을 잡으면 쉴드 사라짐
                     // 콜라이더 stay 함수로 구현, 무적쉴드 충돌이면 무적 설정, 없으면 무적 해제
                     //TODO 포스쉴드 프리팹 생성

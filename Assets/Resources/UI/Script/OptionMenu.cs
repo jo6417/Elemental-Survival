@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 public class OptionMenu : MonoBehaviour
 {
@@ -31,12 +32,18 @@ public class OptionMenu : MonoBehaviour
     [SerializeField] private Selectable graphic_FirstSelect; // 그래픽 첫번째 Selectable
 
     [Header("Graphic Option")]
-    public Toggle fullscreenToggle; // 전체화면 토글
+    public TMP_Dropdown screenModeDropdown; // 화면 모드 드롭다운 메뉴
 
     private void Awake()
     {
         //입력 초기화
         StartCoroutine(InputInit());
+
+        // 화면 모드 드롭다운에 함수 넣기
+        screenModeDropdown.onValueChanged.AddListener(delegate
+        {
+            SetScreenMode(screenModeDropdown.value);
+        });
     }
 
     IEnumerator InputInit()
@@ -155,8 +162,8 @@ public class OptionMenu : MonoBehaviour
             // 마지막 선택 UI 갱신
             UICursor.Instance.UpdateLastSelect(graphic_FirstSelect);
 
-            // 전체화면 여부 갱신
-            fullscreenToggle.isOn = SystemManager.Instance.isFullscreen;
+            // 화면모드 갱신
+            screenModeDropdown.value = GetScreenMode(SystemManager.Instance.screenMode);
         }
     }
 
@@ -204,8 +211,37 @@ public class OptionMenu : MonoBehaviour
         }
     }
 
-    public void ToggleFullScreen()
+    public void SetScreenMode(int _fullscreenMode)
     {
-        SystemManager.Instance.ToggleFullScreen(fullscreenToggle.isOn);
+        switch (_fullscreenMode)
+        {
+            case 0:
+                // 화면모드 전환
+                Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+                break;
+            case 1:
+                // 화면모드 전환
+                Screen.fullScreenMode = FullScreenMode.Windowed;
+                break;
+            case 2:
+                // 화면모드 전환
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                break;
+        }
+    }
+
+    public int GetScreenMode(FullScreenMode _screenMode)
+    {
+        switch (_screenMode)
+        {
+            case FullScreenMode.ExclusiveFullScreen:
+                return 0;
+            case FullScreenMode.Windowed:
+                return 1;
+            case FullScreenMode.FullScreenWindow:
+                return 2;
+            default:
+                return 1;
+        }
     }
 }

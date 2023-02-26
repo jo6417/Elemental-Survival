@@ -501,17 +501,14 @@ public class CastMagic : MonoBehaviour
 
         // 쿨타임 체크를 위한 전역 마법 정보 불러오기
         MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
-        float fixCoolTime = -1;
-
-        fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
-
-        // // 쿨타임 차감
-        // yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
-
         // 해당 마법 쿨타임 계산
-        fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
+        float fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
         // 쿨타입 입력
         globalMagic.coolCount = fixCoolTime;
+
+        // 쿨타임 차감
+        yield return StartCoroutine(CooldownCoroutine(globalMagic, fixCoolTime));
+
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => globalMagic.coolCount <= 0);
 
@@ -576,14 +573,13 @@ public class CastMagic : MonoBehaviour
         yield return new WaitForSeconds(0.5f / attackPos.Count);
     }
 
-    public void Cooldown(MagicHolder magicHolder, float fixCoolTime = -1)
+    public void Cooldown(MagicInfo magic, bool isManualCast, float fixCoolTime = -1)
     {
         // 시전 방식에 따라 다른 마법 정보 찾기
-        MagicInfo magic = null;
-        if (magicHolder.isManualCast)
-            magic = MagicDB.Instance.GetActiveMagicByID(magicHolder.magic.id);
+        if (isManualCast)
+            magic = MagicDB.Instance.GetActiveMagicByID(magic.id);
         else
-            magic = MagicDB.Instance.GetMagicByID(magicHolder.magic.id);
+            magic = MagicDB.Instance.GetMagicByID(magic.id);
 
         // 코루틴 대리 실행
         StartCoroutine(CooldownCoroutine(magic, fixCoolTime));
@@ -595,14 +591,11 @@ public class CastMagic : MonoBehaviour
         float cooltime = fixCoolTime != -1 ? fixCoolTime : MagicDB.Instance.MagicCoolTime(magic);
         magic.coolCount = cooltime;
 
-        // 프레임 끝나는 시간
-        WaitForEndOfFrame delay = new WaitForEndOfFrame();
-
         // 쿨타임중이면 반복
         while (magic.coolCount > 0)
         {
             // yield return new WaitForSeconds(Time.deltaTime);
-            yield return delay;
+            yield return new WaitForEndOfFrame();
 
             // 전역 쿨타임 차감
             magic.coolCount -= Time.deltaTime;
