@@ -92,7 +92,7 @@ public class EggBomb : MonoBehaviour
                 StartCoroutine(AllShot());
 
                 // 글로벌 쿨다운 시작
-                CastMagic.Instance.Cooldown(magicHolder, coolTime);
+                CastMagic.Instance.Cooldown(magicHolder.magic, magicHolder.isManualCast, coolTime);
 
                 // 쿨타임 카운트 갱신
                 respawnRecord = Time.time + respawnTime;
@@ -130,7 +130,7 @@ public class EggBomb : MonoBehaviour
             float globalCooltime = respawnTime * (atkNum - eggList.Count);
 
             // 글로벌 쿨다운 시작
-            CastMagic.Instance.Cooldown(magicHolder, coolTime);
+            CastMagic.Instance.Cooldown(magicHolder.magic, magicHolder.isManualCast, coolTime);
 
             // 쿨타임 카운트 갱신
             respawnRecord = Time.time + respawnTime;

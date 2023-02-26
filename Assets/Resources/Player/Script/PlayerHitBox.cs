@@ -303,9 +303,9 @@ public class PlayerHitBox : HitBox
 
     public override void Damage(float damage, bool isCritical, Vector2 hitPos = default)
     {
-        //! 갓모드 켜져 있으면 데미지 0
-        if (SystemManager.Instance.godMod && damage > 0)
-            damage = 0;
+        // //! 갓모드 켜져 있으면 데미지 0
+        // if (SystemManager.Instance.godMod && damage > 0)
+        //     damage = 0;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
@@ -322,12 +322,17 @@ public class PlayerHitBox : HitBox
             StartCoroutine(hitDelayCoroutine);
         }
 
-        //todo 무적 상태일때, 방어
-        // if (character.invinsible)
-        //     StartCoroutine(DamageText(DamageType.Block, damage, isCritical, hitPos));
+        // 무적 상태일때, 방어
+        if (character.invinsible)
+        {
+            // 데미지 Block 
+            UIManager.Instance.DamageUI(UIManager.DamageType.Block, damage, isCritical, hitPos);
 
+            // 데미지 제로
+            damage = 0;
+        }
         // 회피 성공했을때 or 데미지가 0일때
-        if (damage == 0 || playerManager.characterStat.evade > Random.value)
+        else if (damage == 0 || playerManager.characterStat.evade > Random.value)
         {
             // 데미지 표시
             UIManager.Instance.DamageUI(UIManager.DamageType.Miss, damage, isCritical, hitPos);

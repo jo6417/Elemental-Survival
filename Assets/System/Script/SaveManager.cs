@@ -22,7 +22,7 @@ public class SaveData : System.IDisposable
 
     #region Option
     public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
-    public bool isFullscreen = false;
+    public FullScreenMode fullscreenMode = FullScreenMode.Windowed;
     public float[] resolution = { 1920f, 1080f };
     #endregion
 
@@ -80,12 +80,11 @@ public class SaveManager : MonoBehaviour
 
     public IEnumerator Save()
     {
-        //저장 시작
-        nowSaving = true;
-        //저장 중일때 저장 아이콘 띄우기
-        StartCoroutine(Saving());
+        // 세이브 파일이 없으면 리턴
+        if (!File.Exists(Application.persistentDataPath + "/save.json"))
+            yield break;
 
-        #region SaveData
+        #region GetSaveData
 
         // 해금 마법 목록 가져오기
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
@@ -100,7 +99,7 @@ public class SaveManager : MonoBehaviour
         localSaveData.volumes = volumes;
 
         // 전체화면 여부 저장
-        localSaveData.isFullscreen = SystemManager.Instance.isFullscreen;
+        localSaveData.fullscreenMode = SystemManager.Instance.screenMode;
         // 해상도 저장
         localSaveData.resolution[0] = SystemManager.Instance.lastResolution.x;
         localSaveData.resolution[1] = SystemManager.Instance.lastResolution.y;
@@ -109,11 +108,22 @@ public class SaveManager : MonoBehaviour
 
         #region Saving
 
+        // 기존의 로컬 세이브 데이터 불러와 json 문자열로 변환
+        string old_SaveData = File.ReadAllText(Application.persistentDataPath + "/save.json");
         // SaveData 형태의 데이터를 json 문자열로 변환
-        string jsonData = JsonConvert.SerializeObject(localSaveData);
+        string new_SaveData = JsonConvert.SerializeObject(localSaveData);
+
+        // 기존 세이브 데이터와 똑같으면 저장 취소
+        if (old_SaveData == new_SaveData)
+            yield break;
+
+        //저장 시작
+        nowSaving = true;
+        //저장 중일때 저장 아이콘 띄우기
+        StartCoroutine(Saving());
 
         // 해당 파일 경로에 저장
-        File.WriteAllText(Application.persistentDataPath + "/save.json", jsonData);
+        File.WriteAllText(Application.persistentDataPath + "/save.json", new_SaveData);
 
         print("저장 완료 - " + Application.persistentDataPath + "/save.json");
 
@@ -150,6 +160,11 @@ public class SaveManager : MonoBehaviour
         // 불러온 json 문자열을 SaveData 형태로 변환해서 변수에 넣기
         localSaveData = JsonConvert.DeserializeObject<SaveData>(loadData);
 
+        // 해상도 불러오기
+        SystemManager.Instance.lastResolution = new Vector2(localSaveData.resolution[0], localSaveData.resolution[1]);
+        // 전체화면 여부 불러오기 및 적용
+        SystemManager.Instance.ChangeResolution(localSaveData.fullscreenMode, true);
+
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);
 
@@ -158,15 +173,6 @@ public class SaveManager : MonoBehaviour
         SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
         SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
         SoundManager.Instance.Set_UIVolume(localSaveData.volumes[3]);
-
-        // 전체화면 여부 불러오기
-        SystemManager.Instance.isFullscreen = localSaveData.isFullscreen;
-        // 해상도 불러오기
-        SystemManager.Instance.lastResolution.x = localSaveData.resolution[0];
-        SystemManager.Instance.lastResolution.y = localSaveData.resolution[1];
-        // 전체화면 여부 적용
-        SystemManager.Instance.ToggleFullScreen(SystemManager.Instance.isFullscreen);
-        // Screen.fullScreen = SystemManager.Instance.isFullscreen;
     }
 
     public void LoadSet()
