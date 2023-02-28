@@ -122,7 +122,7 @@ public class GatePortal : MonoBehaviour
 
         // 맵 속성 따라서 필요한 젬 타입 초기화
         // gemType = Random.Range(0, 6);
-        gemType = (int)SystemManager.Instance.nowMapElement;
+        gemType = (int)SystemManager.Instance.NowMapElement;
 
         // 필요한 젬 개수 초기화
         needGem = (int)(Random.Range(minGem, maxGem) / 10f) * 10;
@@ -418,7 +418,7 @@ public class GatePortal : MonoBehaviour
                 int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
 
                 // 해당 월드 속성과 같으면
-                if (enemyElement == (int)SystemManager.Instance.nowMapElement)
+                if (enemyElement == (int)SystemManager.Instance.NowMapElement)
                     // 보스 풀에 넣기
                     bosses.Add(enemy.Value);
             }
@@ -595,12 +595,12 @@ public class GatePortal : MonoBehaviour
         yield return new WaitUntil(() => !beamParticle.activeSelf);
 
         // 현재 맵 속성 조회해서 int로 변환
-        int nowIndex = (int)SystemManager.Instance.nowMapElement;
+        int nowIndex = (int)SystemManager.Instance.NowMapElement;
         // 마지막 스테이지가 아닐때
         if (nowIndex < 5)
         {
             // 다음 맵 인덱스로 증가
-            SystemManager.Instance.nowMapElement = (MapElement)(nowIndex + 1);
+            SystemManager.Instance.NowMapElement = (MapElement)(nowIndex + 1);
 
             // 트랜지션 이후 새로운 인게임 씬 켜기
             SystemManager.Instance.StartGame();

@@ -37,7 +37,17 @@ public class MapManager : MonoBehaviour
 
     [Header("State")]
     int propInit = 0; // 장애물 초기화 카운터
-    [Range(0f, 1f)] public float globalBrightness = 1f;
+    private float globalBrightness = 1f;
+    public float GlobalBrightness
+    {
+        get { return globalBrightness; }
+        set
+        {
+            // 범위 제한
+            globalBrightness = value;
+            globalBrightness = Mathf.Clamp(globalBrightness, 0.1f, 1f);
+        }
+    }
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
@@ -255,7 +265,7 @@ public class MapManager : MonoBehaviour
                 List<Vector2> tileMapPosList = new List<Vector2>();
 
                 // 하단 레이어 타일 설치
-                tileMapPosList = nowTileGens[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileMapPosList = nowTileGens[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.NowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
                 if (nowTileGens[0].includePropTile)
@@ -265,7 +275,7 @@ public class MapManager : MonoBehaviour
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
                 // 중간 레이어 타일 설치
-                tileMapPosList = nowTileGens[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileMapPosList = nowTileGens[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.NowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
                 if (nowTileGens[1].includePropTile)
@@ -276,7 +286,7 @@ public class MapManager : MonoBehaviour
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
                 // 상단 레이어 타일 설치
-                tileMapPosList = nowTileGens[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.nowMapElement].tileBundle);
+                tileMapPosList = nowTileGens[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.NowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
                 if (nowTileGens[2].includePropTile)
@@ -323,7 +333,7 @@ public class MapManager : MonoBehaviour
         // debugTime.Start();
 
         // 맵 속성에 따라 다른 장애물 번들 선택
-        List<Prop> propBundle = propBundleList[(int)SystemManager.Instance.nowMapElement].props;
+        List<Prop> propBundle = propBundleList[(int)SystemManager.Instance.NowMapElement].props;
 
         //! 빈공간 모두 표시
         // for (int i = 0; i < emptyTileList.Count; i++)
@@ -482,13 +492,18 @@ public class MapManager : MonoBehaviour
         Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
     }
 
-    public void SetBrightness(float _brightness, float duration = 0)
+    public void SetBrightness(float _brightness = 1f, float duration = 0)
     {
         // 현재 글로벌 밝기값 수정
-        globalBrightness = _brightness;
+        GlobalBrightness = _brightness;
+
+        // 목표 밝기 값
+        float targetBrightness = GlobalBrightness * SystemManager.Instance.OptionBrightness;
+        // 값제한
+        targetBrightness = Mathf.Clamp(targetBrightness, 0.1f, 1f);
 
         // 글로벌 밝기 * 옵션 밝기 곱해서 해당 값으로 트윈
-        DOTween.To(x => globalLight.intensity = x, globalLight.intensity, globalBrightness * SystemManager.Instance.OptionBrightness, duration);
+        DOTween.To(x => globalLight.intensity = x, globalLight.intensity, targetBrightness, duration);
     }
 }
 

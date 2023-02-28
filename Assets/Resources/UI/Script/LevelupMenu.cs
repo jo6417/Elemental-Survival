@@ -154,14 +154,14 @@ public class LevelupMenu : MonoBehaviour
             backIcon.sprite = ItemDB.Instance.GetIcon(shardInfo.id);
 
             // 아이콘 찾기
-            Sprite sprite = null;
+            Sprite iconSprite = null;
             if (getItem as MagicInfo != null)
-                sprite = MagicDB.Instance.GetIcon(getItem.id);
+                iconSprite = MagicDB.Instance.GetIcon(getItem.id);
             if (getItem as ItemInfo != null)
-                sprite = ItemDB.Instance.GetIcon(getItem.id);
+                iconSprite = ItemDB.Instance.GetIcon(getItem.id);
 
             // 아이콘 넣기
-            icon.sprite = sprite;
+            icon.sprite = iconSprite;
 
             // 마법, 샤드일때
             if (randomType == (int)GetSlotType.Magic

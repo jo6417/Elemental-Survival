@@ -411,7 +411,7 @@ public class HotDog_AI : EnemyAI
         // 짖기 애니메이션 끄기
         character.animList[0].SetBool(AnimState.isBark.ToString(), false);
 
-        print(nowPhase + " -> " + nextPhase);
+        print("HotDog Phase : " + nowPhase + " -> " + nextPhase);
 
         // 무적 상태 해제
         SwitchInvinsible(false);
@@ -518,7 +518,7 @@ public class HotDog_AI : EnemyAI
         if (biteTrigger.atkTrigger)
         {
             //! 거리 확인용
-            stateText.text = "Bite : " + playerDistance;
+            // stateText.text = "Bite : " + playerDistance;
 
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
@@ -546,7 +546,7 @@ public class HotDog_AI : EnemyAI
         if (playerDistance <= attackRange && coolCount <= 0)
         {
             //! 거리 확인용
-            stateText.text = "Attack : " + playerDistance;
+            // stateText.text = "Attack : " + playerDistance;
 
             // 속도 초기화
             character.rigid.velocity = Vector3.zero;
@@ -560,7 +560,7 @@ public class HotDog_AI : EnemyAI
         else
         {
             //! 거리 확인용
-            stateText.text = "Move : " + playerDistance;
+            // stateText.text = "Move : " + playerDistance;
 
             // 공격 범위 내 위치로 이동
             Move();
@@ -701,7 +701,7 @@ public class HotDog_AI : EnemyAI
         }
 
         // 백스텝 애니메이션 대기
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
 
         // 발 먼지 이펙트 끄기
         handDust.Stop();
@@ -1234,7 +1234,7 @@ public class HotDog_AI : EnemyAI
         character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
         // 글로벌 라이트 천천히 초기화
-        MapManager.Instance.SetBrightness(SystemManager.Instance.OptionBrightness, 0.5f);
+        MapManager.Instance.SetBrightness(1f, 0.5f);
 
         // 몸에서 HDR 빛나는 오브젝트 모두 켜기
         foreach (SpriteRenderer glow in glowObj)
@@ -1366,7 +1366,7 @@ public class HotDog_AI : EnemyAI
         if (character.characterStat.hpNow <= 0)
         {
             // 글로벌 라이트 초기화
-            MapManager.Instance.SetBrightness(SystemManager.Instance.OptionBrightness, 0.5f);
+            MapManager.Instance.SetBrightness(1f, 0.2f);
 
             // 그림자 색 초기화
             shadowSprite.color = new Color(0, 0, 0, 0.5f);

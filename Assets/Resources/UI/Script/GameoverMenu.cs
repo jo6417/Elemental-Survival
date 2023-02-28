@@ -49,7 +49,7 @@ public class GameoverMenu : MonoBehaviour
         //TODO 캐릭터 넣기
         gameLog.Find("Character/Amount").GetComponent<TextMeshProUGUI>().text = "Chracter Test";
         //TODO 맵 넣기
-        gameLog.Find("Map/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.nowMapElement.ToString();
+        gameLog.Find("Map/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.NowMapElement.ToString();
         // 현재 시간 넣기
         gameLog.Find("Time/Amount").GetComponent<TextMeshProUGUI>().text = UIManager.Instance.UpdateTimer();
         // 재화 넣기
@@ -91,7 +91,7 @@ public class GameoverMenu : MonoBehaviour
     public void RetryGame()
     {
         // 맵 속성 초기화
-        SystemManager.Instance.nowMapElement = 0;
+        SystemManager.Instance.NowMapElement = 0;
 
         // 게임 다시 시작
         SystemManager.Instance.StartGame();

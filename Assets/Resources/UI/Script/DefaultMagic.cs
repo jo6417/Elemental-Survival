@@ -23,6 +23,8 @@ public class DefaultMagic : MonoBehaviour
 
     IEnumerator Init()
     {
+        // 오브젝트 켜질때까지 대기
+        yield return new WaitUntil(() => gameObject.activeSelf);
         yield return new WaitUntil(() => SystemManager.Instance != null);
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);

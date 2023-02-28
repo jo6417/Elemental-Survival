@@ -38,7 +38,7 @@ public class PhoneMenu : MonoBehaviour
 
     [Header("State")]
     public bool isOpen = false; // 현재 핸드폰 메뉴 켬 여부
-    private bool btnsInteractable = true; // 버튼 상호작용 가능 여부
+    private bool btnsInteractable = false; // 버튼 상호작용 가능 여부
     float backBtnCount; //백버튼 더블클릭 카운트
     bool isSkipped = false;// 스킵 버튼 누름 여부
     public Vector3 phonePosition; //핸드폰일때 위치 기억
@@ -1691,6 +1691,8 @@ public class PhoneMenu : MonoBehaviour
         }
 
         float moveTime = 0.8f;
+
+        print(phonePosition);
 
         // 매직폰 상태일때 위치로 변경
         CastMagic.Instance.phone.DOMove(phonePosition, moveTime)

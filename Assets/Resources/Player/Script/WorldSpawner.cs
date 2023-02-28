@@ -131,7 +131,7 @@ public class WorldSpawner : MonoBehaviour
                 int enemyElement = System.Array.FindIndex(MagicDB.Instance.ElementNames, x => x == enemy.Value.elementType);
 
                 // 현재 맵의 속성과 같은 원소속성의 일반몹이면
-                if (enemyElement == (int)SystemManager.Instance.nowMapElement && enemy.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
+                if (enemyElement == (int)SystemManager.Instance.NowMapElement && enemy.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
                 {
                     GameObject enemyObj = EnemyDB.Instance.GetPrefab(enemy.Value.id);
                     Character character = null;
@@ -514,22 +514,24 @@ public class WorldSpawner : MonoBehaviour
             if (character == null)
                 return;
 
-            //죽은 몬스터는 미적용
+            // 죽은 몬스터는 미적용
             if (character.isDead)
                 return;
 
-            //이동 대기 카운트 초기화
+            // 이동 대기 카운트 초기화
             character.oppositeCount = 0.5f;
 
-            //원래 부모 기억
-            Transform originParent = other.transform.parent;
+            // 테두리 랜덤 위치로 이동 시키기
+            other.transform.position = BorderRandPos();
 
-            //몹 스포너로 부모 지정
-            other.transform.parent = transform;
-            // 내부 포지션 역전 및 거리 추가
-            other.transform.localPosition *= -0.8f;
-            //원래 부모로 복귀
-            other.transform.parent = originParent;
+            // // 원래 부모 기억
+            // Transform originParent = other.transform.parent;
+            // //몹 스포너로 부모 지정
+            // other.transform.parent = transform;
+            // // 내부 포지션 역전 및 거리 추가
+            // other.transform.localPosition *= -0.8f;
+            // //원래 부모로 복귀
+            // other.transform.parent = originParent;
         }
     }
 

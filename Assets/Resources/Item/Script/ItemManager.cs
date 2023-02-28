@@ -78,8 +78,14 @@ public class ItemManager : MonoBehaviour
 
         // 마법 이름 들어왔을때
         if ((int)magicEnum != 10000)
+        {
             // 마법 정보 찾아 넣기
             magicInfo = MagicDB.Instance.GetMagicByName(magicEnum.ToString());
+            // 프레임 색 넣기
+            transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[magicInfo.grade];
+            // 마법 아이콘 넣기
+            transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetIcon(magicInfo.id);
+        }
 
         // 아이템, 마법 정보 들어올때까지 대기
         yield return new WaitUntil(() => itemInfo != null || magicInfo != null);

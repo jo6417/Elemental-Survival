@@ -4950,7 +4950,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 572514883
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 479f754cd052f0c4c94f8914f91b8453, type: 3}
   m_Color: {r: 0.27450982, g: 0.27450982, b: 0.27450982, a: 1}
   m_FlipX: 0
@@ -5114,7 +5114,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 572514883
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 5dd34ac761dc4674fa1407b88644f50e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -5176,16 +5176,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ccb3a946fc21b4b9bf703f552b66a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amount: 1
-  isBundle: 0
-  gemTypeIndex: -1
-  moveSpeed: 1
-  autoDespawnTime: 0
-  itemName: 
   sprite: {fileID: 0}
   despawnEffect: {fileID: 247720266629558472}
   coll: {fileID: 0}
   gadgetPrefab: {fileID: 0}
+  itemState: 0
+  isBundle: 0
+  gemTypeIndex: -1
+  itemName: 
+  autoDespawnTime: 0
+  magicEnum: 10000
 --- !u!50 &7126061559683287822
 Rigidbody2D:
   serializedVersion: 4

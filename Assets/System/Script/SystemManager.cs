@@ -84,7 +84,7 @@ public class SystemManager : MonoBehaviour
     public float time_current; // 현재 스테이지 플레이 타임
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
-    private float optionBrightness; //글로벌 라이트 기본값
+    [SerializeField] private float optionBrightness; //글로벌 라이트 기본값
     public float OptionBrightness //글로벌 라이트 기본값
     {
         get
@@ -101,7 +101,12 @@ public class SystemManager : MonoBehaviour
     public Vector2 lastResolution = new Vector2(1920f, 1080f); // 해상도 저장
     public bool showDamage = true; // 데미지 표시 여부
 
-    public MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
+#if UNITY_EDITOR
+    [SerializeField]
+#endif
+    private MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
+    public MapElement NowMapElement { get { return nowMapElement; } set { nowMapElement = value; } }
+
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public List<float> gradeRate = new List<float>(); // 랜덤 등급 가중치
 

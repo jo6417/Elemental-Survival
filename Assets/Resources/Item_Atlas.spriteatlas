@@ -74,11 +74,13 @@ SpriteAtlas:
   - {fileID: 4584922539706016304, guid: 963da8f6153c00748aae807f62406957, type: 3}
   - {fileID: 5301550545625240768, guid: 963da8f6153c00748aae807f62406957, type: 3}
   - {fileID: -6506967874269490923, guid: 963da8f6153c00748aae807f62406957, type: 3}
+  - {fileID: 21300000, guid: 8a1ee8181d9cc0d4c84b3d314dc182d3, type: 3}
   - {fileID: -3080030491550253629, guid: 24436ea820bdaf240bcdab7173a324c5, type: 3}
   - {fileID: 9113428996037979281, guid: 24436ea820bdaf240bcdab7173a324c5, type: 3}
   - {fileID: 7101988173812974224, guid: 24436ea820bdaf240bcdab7173a324c5, type: 3}
   - {fileID: -6936453207617735441, guid: 24436ea820bdaf240bcdab7173a324c5, type: 3}
   - {fileID: 21300000, guid: 15e86fd8bfa5e3249a1e01c7fe9e8a2b, type: 3}
+  - {fileID: 21300000, guid: 39bc79295a5e2984fa9816af661d2395, type: 3}
   - {fileID: 21300000, guid: 75ba6f8900d49c9428e65a8a2b649524, type: 3}
   - {fileID: 4704088574612128260, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
   - {fileID: 8009083395882017052, guid: 80e17c991c36bfd43b43f646fa07b168, type: 3}
@@ -93,6 +95,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f1ec966a398d8424497fd9ec3d859591, type: 3}
   - {fileID: 21300000, guid: 4a50919a4a68baf48b7ac037e9b36a9e, type: 3}
   - {fileID: 21300000, guid: 8d21bbea9ef384445a20348a7a119c97, type: 3}
+  - {fileID: 21300000, guid: 2f11c77bfe1bc0d42813bb781c774fc1, type: 3}
   - {fileID: 21300000, guid: a6e488cbd079c9646ac4160f95a644b6, type: 3}
   - {fileID: 21300000, guid: 2299700c3d3fabd44bb8c0e8e8e42f22, type: 3}
   - {fileID: 21300000, guid: e8e8838caaefac449a5086e015d4e1b1, type: 3}
@@ -115,7 +118,7 @@ SpriteAtlas:
   - MagicUSB6_Icon
   - SlotReplace_Icon
   - Empty_Icon
-  - Heart_Heal
+  - Heart_Icon
   - MagicUSB2_Icon
   - Box_Sheet_1
   - Box_Sheet_0
@@ -133,11 +136,13 @@ SpriteAtlas:
   - Safe_Sheet_0
   - Safe_Sheet_3
   - Safe_Sheet_2
+  - GreenMushroom_Icon
   - SlotMachine_Sheet_3
   - SlotMachine_Sheet_2
   - SlotMachine_Sheet_1
   - SlotMachine_Sheet_0
   - _ManaGem
+  - TruckButton_Icon
   - LifeSeed_Icon
   - Truck_Idle_0
   - Truck_Idle_1
@@ -152,6 +157,7 @@ SpriteAtlas:
   - SlotLevelup_Icon
   - MagicShard
   - SlotDelete_Icon
+  - SlotMachine_Icon
   - SlotMachine_Glass
   - MagicUSB4_Icon
   - FireGem_Icon

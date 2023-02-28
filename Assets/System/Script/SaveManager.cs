@@ -176,8 +176,12 @@ public class SaveManager : MonoBehaviour
         // 데미지 표시 여부 로드
         SystemManager.Instance.showDamage = localSaveData.showDamage;
 
-        // 밝기 값 저장
+        // 밝기 값 로드
         SystemManager.Instance.OptionBrightness = localSaveData.optionBrightness;
+
+        yield return new WaitUntil(() => MapManager.Instance != null);
+        // 현재 글로벌 라이트에 적용
+        MapManager.Instance.SetBrightness();
 
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);

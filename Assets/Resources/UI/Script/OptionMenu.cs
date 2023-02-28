@@ -57,7 +57,7 @@ public class OptionMenu : MonoBehaviour
             // MapManager 가 있을때
             if (MapManager.Instance != null)
                 // 글로벌 라이트 값에 적용
-                MapManager.Instance.globalLight.intensity = MapManager.Instance.globalBrightness * SystemManager.Instance.OptionBrightness;
+                MapManager.Instance.globalLight.intensity = MapManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
             // 없을때, 인게임이 아닐때
             else
             {

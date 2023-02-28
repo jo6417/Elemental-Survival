@@ -325,7 +325,7 @@ public class UICursor : MonoBehaviour
             // 바뀐 렌더모드에 따라 커서 스케일 정의
             if (UI_CursorCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
-                // cursorCanvasRect.localScale = Vector2.one;
+                cursorCanvasRect.localScale = Vector2.one;
             }
             else
             {

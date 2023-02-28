@@ -233,14 +233,14 @@ public class Loading : MonoBehaviour
             yield return new WaitUntil(() => UIManager.Instance != null);
 
             // 첫 맵일때
-            if (SystemManager.Instance.nowMapElement == 0)
+            if (SystemManager.Instance.NowMapElement == 0)
             {
                 // 기본 마법 패널 켜기
                 UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, true);
             }
-            else
-                // 기본 마법 패널 끄기
-                UIManager.Instance.defaultPanel.SetActive(false);
+            // else
+            //     // 기본 마법 패널 끄기
+            //     UIManager.Instance.defaultPanel.SetActive(false);
         }
 
         // 클릭 혹은 아무키나 누를때까지, 로딩 완료, 다음씬 초기화 완료까지 대기

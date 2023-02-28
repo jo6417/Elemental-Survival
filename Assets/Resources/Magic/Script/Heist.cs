@@ -140,7 +140,7 @@ public class Heist : MonoBehaviour
     IEnumerator GhostTransition()
     {
         //잔상 오브젝트 소환
-        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, ObjectPool.Instance.effectPool);
+        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.hitBox.transform.rotation, ObjectPool.Instance.effectPool);
 
         //잔상 리스트에 오브젝트 저장
         ghostList.Add(ghostObj);

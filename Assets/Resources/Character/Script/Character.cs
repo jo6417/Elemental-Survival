@@ -184,7 +184,7 @@ public class Character : MonoBehaviour
         // if (stateText == null) stateText = buffParent.GetComponentInChildren<TextMeshProUGUI>();
         // 디버그 텍스트 오브젝트 생성
         stateText = buffParent.GetComponentInChildren<TextMeshProUGUI>();
-        if (stateText == null)
+        if (stateText == null && debugText != null)
             stateText = LeanPool.Spawn(debugText, buffParent).GetComponentInChildren<TextMeshProUGUI>();
 
         yield return null;
@@ -984,15 +984,17 @@ public class Character : MonoBehaviour
 
             // 이미 버프 중 아닐때
             if (buffEffect != null && !_buffParent.Find(buffEffect.name))
+            {
                 // 아이콘/이펙트 붙이기
                 buffUI = LeanPool.Spawn(buffEffect, _buffParent.position, Quaternion.identity, _buffParent).transform;
 
-            //  몬스터 자체에 붙는 경우
-            if (_buffParent == transform)
-                // 몬스터 자체 사이즈와 맞추기
-                buffUI.localScale = SystemManager.Instance.AntualSpriteScale(spriteList[0]) / 4f;
-            else
-                buffUI.localScale = Vector2.one;
+                //  몬스터 자체에 붙는 경우
+                if (_buffParent == transform)
+                    // 몬스터 자체 사이즈와 맞추기
+                    buffUI.localScale = SystemManager.Instance.AntualSpriteScale(spriteList[0]) / 4f;
+                else
+                    buffUI.localScale = Vector2.one;
+            }
 
             // 해당 버프 리스트에 넣기
             buffList.Add(buff);

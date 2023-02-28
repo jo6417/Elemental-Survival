@@ -237,8 +237,11 @@ public class UIManager : MonoBehaviour
         InsideColor.a = 200f / 255f;
         timerInside.color = InsideColor;
 
+        // 에디터에서만
+#if UNITY_EDITOR
         // 기본 마법 패널 열기
-        PopupUI(defaultPanel);
+        PopupUI(defaultPanel, true);
+#endif
 
         // 인게임 바인딩 리스트 켜기
         inGameBindKeyList.SetActive(true);
@@ -346,6 +349,10 @@ public class UIManager : MonoBehaviour
 
     public void PhoneOpen(Vector3 modifyPos = default)
     {
+        // 폰메뉴 켜져있으면 리턴
+        if (PhoneMenu.Instance.isOpen)
+            return;
+
         // 시간 멈추지 않았을때
         if (Time.timeScale > 0)
         {

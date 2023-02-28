@@ -176,7 +176,7 @@ public class SlingShot : MonoBehaviour
                 // 차징 끝나면
                 if (shotAble[index] != StoneState.Charging)
                     // 회전 정지
-                    stoneSprite.DOKill();
+                    stoneSprite.transform.DOKill();
             });
 
         // duration 만큼 모으기
