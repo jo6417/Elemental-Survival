@@ -55,6 +55,8 @@ public class Kamaitach : MonoBehaviour
 
         // 플레이어 현재 위치부터 마우스 위치까지 방향 벡터
         movePos = (Vector3)PlayerManager.Instance.GetMousePos() - nowPlayerPos;
+        // z축 초기화
+        movePos.z = 0f;
         // 이동할 위치 계산, range 보다 멀리 이동하려고 하면 길이 제한
         movePos = movePos.magnitude > range ? nowPlayerPos + movePos.normalized * range : nowPlayerPos + movePos;
 
@@ -95,7 +97,7 @@ public class Kamaitach : MonoBehaviour
             Vector3 ghostRotation = (movePos - nowPlayerPos).x > 0 ? Vector3.zero : Vector3.up * -180f;
 
             // 해당 방향으로 플레이어 회전 시키기
-            PlayerManager.Instance.transform.rotation = Quaternion.Euler(ghostRotation);
+            PlayerManager.Instance.playerSprite.transform.rotation = Quaternion.Euler(ghostRotation);
 
             // 고스트 오브젝트 소환, 자동 디스폰
             StartCoroutine(MakeGhost());

@@ -49,7 +49,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 1
   burnTime: 0
   poisonTime: 0
@@ -82,8 +85,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 4806162036374247006}
   stonePrefab: {fileID: 3291601134861510656}
-  shatters: []
-  shatterSpeed: 0
 --- !u!1001 &6499341543959755201
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -91,6 +92,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 622668428461241063}
     m_Modifications:
+    - target: {fileID: 3849491329945162330, guid: 05c8fcfb38e74a2439106a838c32ee03,
+        type: 3}
+      propertyPath: autoShot
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3849491329945162330, guid: 05c8fcfb38e74a2439106a838c32ee03,
         type: 3}
       propertyPath: magicHolder

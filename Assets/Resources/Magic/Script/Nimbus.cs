@@ -11,6 +11,7 @@ public class Nimbus : MonoBehaviour
     [SerializeField] ParticleManager thunderManager; // 내리치는 번개 파티클 매니저
     [SerializeField] ParticleManager groundElectroManager; // 지면을 타고 흐르는 번개 파티클 매니저
     [SerializeField] CircleCollider2D atkColl; // 공격용 콜라이더
+    [SerializeField] GameObject deadzone; // 번개 충돌하는 데드존
 
     float range;
     float duration;
@@ -53,8 +54,11 @@ public class Nimbus : MonoBehaviour
         // 구름 좌우로 떨기
         cloud.transform.DOPunchPosition(Vector2.right * 0.5f, 0.3f, 50, 1);
 
-        // 파티클 재생
+        // 번개 내려치기
         thunderManager.particle.Play();
+
+        // 데드존 켜기
+        deadzone.SetActive(true);
 
         // 공격용 콜라이더 스케일 키우기
         DOTween.To(x => atkColl.radius = x, atkColl.radius, range, duration);
@@ -70,8 +74,8 @@ public class Nimbus : MonoBehaviour
 
         // 콜라이더 끄기
         atkColl.enabled = false;
-        // 전기 퍼지는 이펙트 끝내기
-        groundElectroManager.SmoothDisable();
+        // 데드존 끄기
+        deadzone.SetActive(false);
 
         // 그을음 파티클 끝날때까지 대기
         yield return new WaitForSeconds(2f);

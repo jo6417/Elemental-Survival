@@ -50,7 +50,7 @@ public class WindCutter : MonoBehaviour
             magicHolder.hitAction += SliceSound;
 
         // 발사
-        StartCoroutine(magicProjectile.ShotMagic());
+        // StartCoroutine(magicProjectile.ShotMagic());
     }
 
     void SliceSound()

@@ -155,7 +155,7 @@ public class AstralForm : MonoBehaviour
     IEnumerator MakeGhost()
     {
         //고스트 오브젝트 소환
-        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.transform.rotation, ObjectPool.Instance.effectPool);
+        GameObject ghostObj = LeanPool.Spawn(ghostPrefab, PlayerManager.Instance.transform.position, PlayerManager.Instance.playerSprite.transform.rotation, ObjectPool.Instance.effectPool);
 
         //스프라이트 렌더러 찾기
         SpriteRenderer ghostSprite = ghostObj.GetComponent<SpriteRenderer>();

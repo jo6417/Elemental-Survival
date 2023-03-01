@@ -9799,7 +9799,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -28289,7 +28289,7 @@ ParticleSystem:
     m_Bounce:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -28342,7 +28342,7 @@ ParticleSystem:
     m_EnergyLossOnCollision:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 1
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -28401,8 +28401,8 @@ ParticleSystem:
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
-    collisionMessages: 0
-    collidesWithDynamic: 1
+    collisionMessages: 1
+    collidesWithDynamic: 0
     interiorCollisions: 0
   TriggerModule:
     enabled: 1
@@ -28803,8 +28803,8 @@ ParticleSystem:
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
   CustomDataModule:
-    enabled: 0
-    mode0: 0
+    enabled: 1
+    mode0: 1
     vectorComponentCount0: 4
     color0:
       serializedVersion: 2
@@ -29398,7 +29398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6645797778790286384
 Transform:
   m_ObjectHideFlags: 0
@@ -29433,7 +29433,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -29468,6 +29471,7 @@ MonoBehaviour:
   thunderManager: {fileID: 1921567580486149896}
   groundElectroManager: {fileID: 5667138451736341371}
   atkColl: {fileID: 6928580540993311318}
+  deadzone: {fileID: 1230723993437865198}
 --- !u!222 &6645797778790286397
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -34563,7 +34567,7 @@ PrefabInstance:
     - target: {fileID: 3138907395025529519, guid: a36db5dd1db5820409c1c51be57271ec,
         type: 3}
       propertyPath: playOnAwake
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3138907395025529519, guid: a36db5dd1db5820409c1c51be57271ec,
         type: 3}

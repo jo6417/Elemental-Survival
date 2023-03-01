@@ -7,6 +7,7 @@ using UnityEngine;
 public class MagicProjectile : MonoBehaviour
 {
     [Header("Modify")]
+    [SerializeField] bool autoShot = true; // 자동 발사 여부
     [SerializeField] bool isFade = false; // 디스폰시 옅어지며 사라짐
     Vector3 lastPos; //오브젝트 마지막 위치
     public bool lookDir = true; //날아가는 방향 바라볼지 여부
@@ -101,8 +102,10 @@ public class MagicProjectile : MonoBehaviour
         //콜라이더 켜기
         coll.enabled = true;
 
-        //마법 날리기
-        // StartCoroutine(ShotMagic());
+        // 자동 발사일때
+        if (autoShot)
+            //마법 날리기
+            StartCoroutine(ShotMagic());
     }
 
     public IEnumerator ShotMagic()
