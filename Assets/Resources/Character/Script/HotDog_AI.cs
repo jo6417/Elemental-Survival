@@ -1234,7 +1234,7 @@ public class HotDog_AI : EnemyAI
         character.animList[0].SetBool(AnimState.isRun.ToString(), false);
 
         // 글로벌 라이트 천천히 초기화
-        MapManager.Instance.SetBrightness(1f, 0.5f);
+        SystemManager.Instance.SetBrightness(1f, 0.5f);
 
         // 몸에서 HDR 빛나는 오브젝트 모두 켜기
         foreach (SpriteRenderer glow in glowObj)
@@ -1280,7 +1280,7 @@ public class HotDog_AI : EnemyAI
         character.physicsColl.enabled = false;
 
         // 글로벌 라이트 어둡게
-        MapManager.Instance.SetBrightness(0.1f, 1f);
+        SystemManager.Instance.SetBrightness(0.1f, 1f);
 
         // 스프라이트 투명해지며 사라지기
         for (int i = 0; i < character.spriteList.Count; i++)
@@ -1366,7 +1366,7 @@ public class HotDog_AI : EnemyAI
         if (character.characterStat.hpNow <= 0)
         {
             // 글로벌 라이트 초기화
-            MapManager.Instance.SetBrightness(1f, 0.2f);
+            SystemManager.Instance.SetBrightness(1f, 0.2f);
 
             // 그림자 색 초기화
             shadowSprite.color = new Color(0, 0, 0, 0.5f);

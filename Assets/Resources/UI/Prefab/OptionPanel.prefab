@@ -1586,9 +1586,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1602,9 +1602,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1618,9 +1618,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1630,13 +1630,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3343,9 +3343,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3359,9 +3359,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3375,9 +3375,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3387,13 +3387,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3916,9 +3916,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3932,9 +3932,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3948,9 +3948,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -3960,13 +3960,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -4451,6 +4451,7 @@ GameObject:
   - component: {fileID: 3857646834243807687}
   - component: {fileID: 3857646834243807689}
   - component: {fileID: 3857646834243807686}
+  - component: {fileID: 1787868889}
   m_Layer: 5
   m_Name: OptionPanel
   m_TagString: Untagged
@@ -4547,6 +4548,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1787868889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3857646834243807685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bcb4afaab731154ca7d9b2aa74bbaee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundPool: []
 --- !u!1 &3857646834289386208
 GameObject:
   m_ObjectHideFlags: 0
@@ -5232,9 +5246,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -5248,9 +5262,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -5264,9 +5278,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -5276,13 +5290,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6039,9 +6053,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6055,9 +6069,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6071,9 +6085,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6083,13 +6097,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6246,6 +6260,7 @@ GameObject:
   - component: {fileID: 3857646834571752464}
   - component: {fileID: 3857646834571752465}
   - component: {fileID: 3857646834571752942}
+  - component: {fileID: 831557970}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -6373,6 +6388,83 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_AlphaFadeSpeed: 0.15
+--- !u!114 &831557970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3857646834571752940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 9
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: SelectButton_Big
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 15
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: SubmitButton_Big
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: SelectButton_Big
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: SubmitButton_Big
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &3857646834598901305
 GameObject:
   m_ObjectHideFlags: 0
@@ -6635,9 +6727,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6651,9 +6743,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6667,9 +6759,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6679,13 +6771,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6864,6 +6956,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a3e5577243cfa648897582338a02ad1, type: 3}
+--- !u!1 &6801669738891860029 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7777012647733170602, guid: 1a3e5577243cfa648897582338a02ad1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3857646833639049623}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6801669738891860028 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
@@ -6882,12 +6980,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &6801669738891860029 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7777012647733170602, guid: 1a3e5577243cfa648897582338a02ad1,
-    type: 3}
-  m_PrefabInstance: {fileID: 3857646833639049623}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3857646833639049627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6905,9 +6997,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6921,9 +7013,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6937,9 +7029,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6949,13 +7041,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7119,12 +7211,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a3e5577243cfa648897582338a02ad1, type: 3}
---- !u!224 &6801669738927293823 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
-    type: 3}
-  m_PrefabInstance: {fileID: 3857646833665971412}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6801669738927293816 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7777012647733170604, guid: 1a3e5577243cfa648897582338a02ad1,
@@ -7137,6 +7223,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6801669738927293823 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3857646833665971412}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6801669738927293822 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7777012647733170602, guid: 1a3e5577243cfa648897582338a02ad1,
@@ -7160,9 +7252,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7176,9 +7268,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7192,9 +7284,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7204,13 +7296,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7374,6 +7466,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1a3e5577243cfa648897582338a02ad1, type: 3}
+--- !u!1 &6801669738591277807 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7777012647733170602, guid: 1a3e5577243cfa648897582338a02ad1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3857646833867866949}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &6801669738591277806 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3857646833867866949}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6801669738591277801 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7777012647733170604, guid: 1a3e5577243cfa648897582338a02ad1,
@@ -7386,18 +7490,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &6801669738591277806 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
-    type: 3}
-  m_PrefabInstance: {fileID: 3857646833867866949}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &6801669738591277807 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7777012647733170602, guid: 1a3e5577243cfa648897582338a02ad1,
-    type: 3}
-  m_PrefabInstance: {fileID: 3857646833867866949}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3857646833867866953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7415,9 +7507,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7431,9 +7523,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7447,9 +7539,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7459,13 +7551,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7641,15 +7733,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &6801669738636250466 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
-    type: 3}
-  m_PrefabInstance: {fileID: 3857646833894104265}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6801669738636250467 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7777012647733170602, guid: 1a3e5577243cfa648897582338a02ad1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3857646833894104265}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &6801669738636250466 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7777012647733170603, guid: 1a3e5577243cfa648897582338a02ad1,
     type: 3}
   m_PrefabInstance: {fileID: 3857646833894104265}
   m_PrefabAsset: {fileID: 0}
@@ -7670,9 +7762,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7686,9 +7778,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7702,9 +7794,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -7714,13 +7806,13 @@ MonoBehaviour:
             m_StringArgument: SelectButton_Big
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: SystemManager, Assembly-CSharp
-          m_MethodName: SoundPlay
+        - m_Target: {fileID: 1787868889}
+          m_TargetAssemblyTypeName: SoundPlayer, Assembly-CSharp
+          m_MethodName: PlaySoundGlobal
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

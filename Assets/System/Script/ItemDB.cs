@@ -46,7 +46,6 @@ public class ItemDB : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         DontDestroyOnLoad(gameObject);
     }

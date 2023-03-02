@@ -17,16 +17,13 @@ public class Loading : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<Loading>();
-                if (obj != null)
+                instance = FindObjectOfType<Loading>();
+                if (instance == null)
                 {
-                    instance = obj;
+                    GameObject obj = new GameObject();
+                    obj.name = "Loading";
+                    instance = obj.AddComponent<Loading>();
                 }
-                // else
-                // {
-                //     var newObj = new GameObject().AddComponent<Loading>();
-                //     instance = newObj;
-                // }
             }
             return instance;
         }
@@ -46,14 +43,14 @@ public class Loading : MonoBehaviour
 
     private void Awake()
     {
-        // 최초 생성 됬을때
-        if (instance == null)
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            instance = this;
+            Destroy(gameObject);
+            return;
         }
-        // else
-        //     // 해당 오브젝트 파괴
-        //     Destroy(gameObject);
+        instance = this;
+        DontDestroyOnLoad(gameObject);
 
         // 로딩 인풋 활성화
         loading_Input = new NewInput();
@@ -83,6 +80,9 @@ public class Loading : MonoBehaviour
         // 씬 이동 끝낼때
         if (!isFadeout)
         {
+            // 글로벌 라이트 켜기
+            SystemManager.Instance.globalLight.gameObject.SetActive(true);
+
             // 로딩 그룹 전체 알파값 낮추기
             loadingGroup.alpha = 1f;
             DOTween.To(() => loadingGroup.alpha, x => loadingGroup.alpha = x, 0, tweenTime * 2)
@@ -119,12 +119,18 @@ public class Loading : MonoBehaviour
         cutoutMask.SetBool("isFadeout", isFadeout);
         yield return new WaitForSecondsRealtime(1.5f);
 
+        // 현재 씬 가려졌는지 여부 갱신
+        SystemManager.Instance.screenMasked = isFadeout;
+
         // 애니메이터 끄기
         cutoutMask.enabled = false;
 
         // 씬 이동 시작할때
         if (isFadeout)
         {
+            // 글로벌 라이트 끄기
+            SystemManager.Instance.globalLight.gameObject.SetActive(false);
+
             // 로딩 텍스트 초기화
             loadingText.text = "Loading...";
             // 로딩바 초기화
@@ -227,7 +233,7 @@ public class Loading : MonoBehaviour
         }
 
         // 인게임 진입시
-        if (sceneName == "InGameScene")
+        if (sceneName == SceneName.InGameScene.ToString())
         {
             // 기본 마법 패널 켜기
             yield return new WaitUntil(() => UIManager.Instance != null);

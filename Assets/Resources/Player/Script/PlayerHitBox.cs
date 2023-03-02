@@ -431,9 +431,6 @@ public class PlayerHitBox : HitBox
 
     public IEnumerator Dead()
     {
-        // 몬스터 스폰 멈추기
-        SystemManager.Instance.spawnSwitch = false;
-
         // 히트 딜레이 코루틴 끄기
         StopCoroutine(hitDelayCoroutine);
 
@@ -482,6 +479,9 @@ public class PlayerHitBox : HitBox
 
         // 플레이어에서 하얀 빛 파티클 터짐
         deathEffect.SetActive(true);
+
+        // 핸드폰 입력 막기
+        PhoneMenu.Instance.Phone_Input.Disable();
 
         // 플레이어, 핸드폰 끄기
         playerManager.playerSprite.enabled = false;

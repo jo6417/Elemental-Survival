@@ -37,17 +37,6 @@ public class MapManager : MonoBehaviour
 
     [Header("State")]
     int propInit = 0; // 장애물 초기화 카운터
-    private float globalBrightness = 1f;
-    public float GlobalBrightness
-    {
-        get { return globalBrightness; }
-        set
-        {
-            // 범위 제한
-            globalBrightness = value;
-            globalBrightness = Mathf.Clamp(globalBrightness, 0.1f, 1f);
-        }
-    }
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
@@ -64,7 +53,6 @@ public class MapManager : MonoBehaviour
     [SerializeField] Transform[] nearTilemaps = new Transform[9]; // 주변의 타일맵 리스트
 
     [Header("Refer")]
-    public Light2D globalLight;
     [SerializeField] List<PropBundle> propBundleList = new List<PropBundle>(); // 속성별 장애물 번들 리스트
     public GameObject portalGate; //다음 맵 넘어가는 포탈게이트 프리팹
     public Transform[] background = null;
@@ -112,6 +100,9 @@ public class MapManager : MonoBehaviour
 
         // 게임 시작할때까지 대기
         // yield return new WaitUntil(() => Time.timeScale == 1f);
+
+        // 씬 마스크 트랜지션 끝날때까지 대기
+        yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);
 
         // 배경음 재생
         SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
@@ -490,20 +481,6 @@ public class MapManager : MonoBehaviour
         Gizmos.DrawLine(new Vector2(rightX, downY), new Vector2(rightX, upY));
         Gizmos.DrawLine(new Vector2(leftX, downY), new Vector2(rightX, downY));
         Gizmos.DrawLine(new Vector2(leftX, upY), new Vector2(rightX, upY));
-    }
-
-    public void SetBrightness(float _brightness = 1f, float duration = 0)
-    {
-        // 현재 글로벌 밝기값 수정
-        GlobalBrightness = _brightness;
-
-        // 목표 밝기 값
-        float targetBrightness = GlobalBrightness * SystemManager.Instance.OptionBrightness;
-        // 값제한
-        targetBrightness = Mathf.Clamp(targetBrightness, 0.1f, 1f);
-
-        // 글로벌 밝기 * 옵션 밝기 곱해서 해당 값으로 트윈
-        DOTween.To(x => globalLight.intensity = x, globalLight.intensity, targetBrightness, duration);
     }
 }
 

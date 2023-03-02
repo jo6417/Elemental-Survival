@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Experimental.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class OptionMenu : MonoBehaviour
 {
@@ -54,11 +55,11 @@ public class OptionMenu : MonoBehaviour
             // 밝기 설정값 변수 바꾸기
             SystemManager.Instance.OptionBrightness = brightnessSlider.value;
 
-            // MapManager 가 있을때
-            if (MapManager.Instance != null)
+            // 인게임일때
+            if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
                 // 글로벌 라이트 값에 적용
-                MapManager.Instance.globalLight.intensity = MapManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
-            // 없을때, 인게임이 아닐때
+                SystemManager.Instance.globalLight.intensity = SystemManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
+            // 메인메뉴일때
             else
             {
                 // 글로벌 라이트 찾기
@@ -225,8 +226,8 @@ public class OptionMenu : MonoBehaviour
 
     public void BackToPause()
     {
-        // UI 매니저 있을때
-        if (UIManager.Instance)
+        // 인게임일때
+        if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
         {
             // 현재 열려있는 팝업 갱신
             UIManager.Instance.nowOpenPopup = UIManager.Instance.pausePanel;

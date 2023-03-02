@@ -24,6 +24,9 @@ public class GameoverMenu : MonoBehaviour
         // 게임오버 패널 켜기
         gameObject.SetActive(true);
 
+        // 현재 팝업 갱신
+        UIManager.Instance.nowOpenPopup = gameObject;
+
         // 모든 사운드 끄기
         SoundManager.Instance.SoundTimeScale(0, 0, false);
 

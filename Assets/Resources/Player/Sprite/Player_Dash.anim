@@ -111,7 +111,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.25
-    functionName: SoundPlayGlobal
+    functionName: PlaySoundGlobal
     data: PlayerDash
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

@@ -179,10 +179,6 @@ public class SaveManager : MonoBehaviour
         // 밝기 값 로드
         SystemManager.Instance.OptionBrightness = localSaveData.optionBrightness;
 
-        yield return new WaitUntil(() => MapManager.Instance != null);
-        // 현재 글로벌 라이트에 적용
-        MapManager.Instance.SetBrightness();
-
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);
 
@@ -191,6 +187,9 @@ public class SaveManager : MonoBehaviour
         SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
         SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
         SoundManager.Instance.Set_UIVolume(localSaveData.volumes[3]);
+
+        // 현재 글로벌 라이트에 적용
+        SystemManager.Instance.SetBrightness();
     }
 
     public void LoadSet()

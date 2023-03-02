@@ -471,7 +471,9 @@ public class UIManager : MonoBehaviour
             // 핸드폰 닫기
             PhoneMenu.Instance.BackBtn();
         // 기본 마법 패널일때
-        else if (nowOpenPopup == defaultPanel)
+        else if (nowOpenPopup == defaultPanel
+        // 게임 오버 패널일때
+        || nowOpenPopup == gameoverPanel)
             return;
         else
         {
@@ -553,7 +555,7 @@ public class UIManager : MonoBehaviour
         }
 
         // 스테이지 시작시간부터 gateSpawnTime 시간 이후일때
-        if (SystemManager.Instance.time_current - WorldSpawner.Instance.stageStartTime > WorldSpawner.Instance.gateSpawnTime)
+        if (SystemManager.Instance.time_current - WorldSpawner.Instance.stageStartTime > WorldSpawner.Instance.GateSpawnTime)
         {
             // 이제부터 포탈게이트 근처에서 몬스터 스폰
             WorldSpawner.Instance.gateSpawn = true;

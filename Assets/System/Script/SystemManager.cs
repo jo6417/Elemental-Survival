@@ -18,6 +18,7 @@ using UnityEngine.SceneManagement;
 public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
 public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
 public enum DBType { Magic, Enemy, Item };
+public enum SceneName { InGameScene, MainMenuScene };
 
 [Serializable]
 public class PhysicsLayerList
@@ -55,27 +56,23 @@ public class SystemManager : MonoBehaviour
     {
         get
         {
-            // if (instance == null)
-            // {
-            //     var obj = FindObjectOfType<SystemManager>();
-            //     if (obj != null)
-            //     {
-            //         instance = obj;
-            //     }
-            // }
-            //     else
-            //     {
-            //         var newObj = new GameObject().AddComponent<SystemManager>();
-            //         instance = newObj;
-            //     }
-            // }
-
+            if (instance == null)
+            {
+                instance = FindObjectOfType<SystemManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = "SystemManager";
+                    instance = obj.AddComponent<SystemManager>();
+                }
+            }
             return instance;
         }
     }
     #endregion
 
     [Header("State")]
+    public bool screenMasked = false; // 화면 씬 마스크로 덮힘 여부
     public bool sceneChanging = false; // 씬 변경중 여부
     public bool loadDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
@@ -109,6 +106,17 @@ public class SystemManager : MonoBehaviour
 
     public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
     public List<float> gradeRate = new List<float>(); // 랜덤 등급 가중치
+    private float globalBrightness = 1f;
+    public float GlobalBrightness
+    {
+        get { return globalBrightness; }
+        set
+        {
+            // 범위 제한
+            globalBrightness = value;
+            globalBrightness = Mathf.Clamp(globalBrightness, 0.1f, 1f);
+        }
+    }
 
     [Header("Debug")]
     public TextMeshProUGUI nowSelectUI; // 선택된 UI 이름
@@ -132,6 +140,7 @@ public class SystemManager : MonoBehaviour
     public PhysicsLayerList layerList;
 
     [Header("Refer")]
+    public Light2D globalLight; // 글로벌 라이트
     public NewInput System_Input; // 인풋 받기
     public GameObject saveIcon; //저장 아이콘
     public Sprite gateIcon; //포탈게이트 아이콘
@@ -190,18 +199,18 @@ public class SystemManager : MonoBehaviour
 
     private void Awake()
     {
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
         // 시스템 인풋 초기화
         System_Input = new NewInput();
         System_Input.Enable();
-
-        // 다른 오브젝트가 이미 있을때
-        if (instance != null)
-            Destroy(gameObject);
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
 
         //초기화
         StartCoroutine(AwakeInit());
@@ -215,7 +224,7 @@ public class SystemManager : MonoBehaviour
         horizon_letterBoxes[0] = letterBoxCanvas.GetChild(0).GetComponent<RectTransform>();
         horizon_letterBoxes[1] = letterBoxCanvas.GetChild(1).GetComponent<RectTransform>();
         vertical_letterBoxes[0] = letterBoxCanvas.GetChild(2).GetComponent<RectTransform>();
-        vertical_letterBoxes[1] = letterBoxCanvas.GetChild(4).GetComponent<RectTransform>();
+        vertical_letterBoxes[1] = letterBoxCanvas.GetChild(3).GetComponent<RectTransform>();
 
         // 현재 모니터의 해상도 불러오기
         monitorResolution = new Vector2(Screen.currentResolution.width, Screen.currentResolution.height);
@@ -233,6 +242,9 @@ public class SystemManager : MonoBehaviour
         //         Debug.Log(resolution.width + " x " + resolution.height);
         //     }
         // }
+
+        // 플레이어 무적 버튼 색깔 초기화
+        godModBtn.image.color = Color.red;
 
         // 몬스터 자동 생성 토글
         if (spawnBtn != null)
@@ -291,6 +303,8 @@ public class SystemManager : MonoBehaviour
         // 플레이어 갓모드
         if (godModBtn != null)
         {
+            // 인게임 진입 대기
+            yield return new WaitUntil(() => SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString());
             // 플레이어 초기화 대기
             yield return new WaitUntil(() => PlayerManager.Instance != null);
 
@@ -299,6 +313,11 @@ public class SystemManager : MonoBehaviour
             // 몬스터 자동 스폰 버튼 상태값 연결
             godModBtn.onClick.AddListener(() => { ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn); });
         }
+    }
+
+    public string GetSceneName()
+    {
+        return SceneManager.GetActiveScene().name;
     }
 
     private void Start()
@@ -711,12 +730,12 @@ public class SystemManager : MonoBehaviour
     public void StartGame()
     {
         // 인게임 씬 켜기
-        StartCoroutine(LoadScene("InGameScene"));
+        StartCoroutine(LoadScene(SceneName.InGameScene.ToString()));
     }
 
     public void QuitMainMenu()
     {
-        StartCoroutine(LoadScene("MainMenuScene"));
+        StartCoroutine(LoadScene(SceneName.MainMenuScene.ToString()));
     }
 
     public void GameOverPanelOpen(bool isClear)
@@ -867,5 +886,19 @@ public class SystemManager : MonoBehaviour
         nowChangeResolution = false;
 
         print(monitorResolution + " : " + new Vector2(Screen.width, Screen.height) + " : " + _fullscreenMode + " : " + Screen.fullScreenMode.ToString() + " : " + Time.unscaledTime);
+    }
+
+    public void SetBrightness(float _brightness = 1f, float duration = 0)
+    {
+        // 현재 글로벌 밝기값 수정
+        GlobalBrightness = _brightness;
+
+        // 목표 밝기 값
+        float targetBrightness = GlobalBrightness * OptionBrightness;
+        // 값제한
+        targetBrightness = Mathf.Clamp(targetBrightness, 0.1f, 1f);
+
+        // 글로벌 밝기 * 옵션 밝기 곱해서 해당 값으로 트윈
+        DOTween.To(x => globalLight.intensity = x, globalLight.intensity, targetBrightness, duration);
     }
 }

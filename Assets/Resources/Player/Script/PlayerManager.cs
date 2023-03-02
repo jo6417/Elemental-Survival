@@ -338,9 +338,9 @@ public class PlayerManager : Character
         // 스프라이트 복제
         playerCover.sprite = playerSprite.sprite;
 
-        //몬스터 스포너 따라오기
-        if (mobSpawner.activeSelf)
-            mobSpawner.transform.position = transform.position;
+        // //몬스터 스포너 따라오기
+        // if (mobSpawner.activeSelf)
+        //     mobSpawner.transform.position = transform.position;
 
         //히트 카운트 감소
         if (hitDelayCount > 0)

@@ -53,7 +53,11 @@ public class WorldSpawner : MonoBehaviour
     public bool dragSwitch = true; // 몬스터 반대편 이동 여부
     public bool gateSpawn = false; // 게이트 주변에서 몬스터 생성 여부
     public float stageStartTime = 0f; // 스테이지 시작시간
-    public float gateSpawnTime = 10f; // 스테이지 시작시 해당 시간 지나면 게이트포탈 근처에서 스폰
+#if UNITY_EDITOR
+    [SerializeField]
+#endif
+    private float gateSpawnTime = 60f; // 스테이지 시작시 해당 시간 지나면 게이트포탈 근처에서 스폰
+    public float GateSpawnTime { get { return gateSpawnTime; } set { gateSpawnTime = value; } }
 
     [Header("Pool")]
     public List<Character> spawnAbleList = new List<Character>(); // 현재 맵에서 스폰 가능한 몹 리스트
@@ -144,6 +148,8 @@ public class WorldSpawner : MonoBehaviour
                         spawnAbleList.Add(character);
                 }
             }
+
+        print("GateSpawnTime : " + WorldSpawner.Instance.GateSpawnTime);
     }
 
     void Update()

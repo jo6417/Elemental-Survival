@@ -125,6 +125,12 @@ public class Ascii_AI : MonoBehaviour
         StartCoroutine(Init());
     }
 
+    private void OnDisable()
+    {
+        // 몬스터 스폰 재개
+        SystemManager.Instance.spawnSwitch = true;
+    }
+
     IEnumerator Init()
     {
         // 휴식 상태로 초기화
