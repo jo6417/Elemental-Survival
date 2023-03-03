@@ -21,6 +21,9 @@ public class GameoverMenu : MonoBehaviour
 
     public void GameOver(bool isClear = false)
     {
+        //null 선택하기
+        UIManager.Instance.SelectObject(null);
+
         // 게임오버 패널 켜기
         gameObject.SetActive(true);
 
@@ -86,9 +89,12 @@ public class GameoverMenu : MonoBehaviour
             //레벨 넣기
             slot.Find("Level").GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
         }
+    }
 
+    public void GameoverInit()
+    {
         // retry 버튼 선택
-        retryBtn.Select();
+        UICursor.Instance.UpdateLastSelect(retryBtn);
     }
 
     public void RetryGame()

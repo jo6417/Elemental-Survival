@@ -208,6 +208,9 @@ public class OptionMenu : MonoBehaviour
 
     public void BackToOption()
     {
+        // UI 커서 끄기
+        UICursor.Instance.UICursorToggle(false);
+
         // 기존 패널 끄기
         nowOption.SetActive(false);
 
@@ -226,6 +229,9 @@ public class OptionMenu : MonoBehaviour
 
     public void BackToPause()
     {
+        // UI 커서 끄기
+        UICursor.Instance.UICursorToggle(false);
+
         // 인게임일때
         if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
         {

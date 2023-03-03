@@ -168,13 +168,13 @@ public class UIManager : MonoBehaviour
             if (UIManager.Instance)
                 MousePos(val.ReadValue<Vector2>());
         };
-        // 확인 입력
-        UI_Input.UI.Accept.performed += val =>
-        {
-            // 오브젝트 켜져있을때
-            if (UIManager.Instance)
-                Submit();
-        };
+        // // 확인 입력
+        // UI_Input.UI.Submit.performed += val =>
+        // {
+        //     // 오브젝트 켜져있을때
+        //     if (UIManager.Instance)
+        //         Submit();
+        // };
         // 취소 입력
         UI_Input.UI.Cancel.performed += val =>
         {
@@ -271,9 +271,6 @@ public class UIManager : MonoBehaviour
         // 시간 멈춰있을때만
         if (Time.timeScale == 0)
         {
-            // 마우스 커서 끄기
-            UICursor.Instance.arrowCursor.SetActive(false);
-
             //마우스 잠겨있지않을때
             if (Cursor.lockState == CursorLockMode.None)
             {
@@ -324,21 +321,16 @@ public class UIManager : MonoBehaviour
     }
 
     // 확인 입력
-    public void Submit()
-    {
-        //선택된 UI 따라다니기
-        // FollowUICursor();
-
-        // print("submit");
-
-        // 현재 선택된 버튼 누르기
-        if (EventSystem.current.currentSelectedGameObject != null)
-        {
-            Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-            if (btn != null)
-                btn.onClick.Invoke();
-        }
-    }
+    // public void Submit()
+    // {
+    //     // 현재 선택된 버튼 누르기
+    //     if (EventSystem.current.currentSelectedGameObject != null)
+    //     {
+    //         Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+    //         if (btn != null)
+    //             btn.onClick.Invoke();
+    //     }
+    // }
 
     // 취소 입력
     void Cancel()
@@ -349,6 +341,9 @@ public class UIManager : MonoBehaviour
 
     public void PhoneOpen(Vector3 modifyPos = default)
     {
+        // 게임오버 패널 켜졌을때 리턴
+        if (nowOpenPopup == gameoverPanel)
+            return;
         // 폰메뉴 켜져있으면 리턴
         if (PhoneMenu.Instance.isOpen)
             return;

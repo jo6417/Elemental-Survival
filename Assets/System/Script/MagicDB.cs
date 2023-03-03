@@ -661,7 +661,7 @@ public class MagicDB : MonoBehaviour
                 coolTime = coolTime - coolTime * (PlayerManager.Instance.characterStat.coolTime - 1);
 
         //값 제한하기
-        coolTime = Mathf.Clamp(coolTime, 0.01f, 10f);
+        coolTime = Mathf.Clamp(coolTime, 0.01f, 100f);
 
         return coolTime;
     }

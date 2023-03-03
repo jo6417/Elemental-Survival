@@ -8,7 +8,6 @@ using TMPro;
 
 public class MainMenuBtn : MonoBehaviour
 {
-    public Selectable firstBtn;
     public GameObject buttonParent;
     public GameObject mainMenuPanel;
     public GameObject characterSelectUI;
@@ -16,7 +15,23 @@ public class MainMenuBtn : MonoBehaviour
     public GameObject collectionUI;
     public GameObject optionUI;
 
+    [Header("Buttons")]
+    [SerializeField] Button play_btn;
+    [SerializeField] Button shop_btn;
+    [SerializeField] Button collection_btn;
+    [SerializeField] Button option_btn;
+    [SerializeField] Button quit_btn;
+
     private Button preSelectedObj;
+
+    private void Awake()
+    {
+        play_btn.onClick.AddListener(() => { Play(); });
+        shop_btn.onClick.AddListener(() => { Shop(); });
+        collection_btn.onClick.AddListener(() => { Collection(); });
+        option_btn.onClick.AddListener(() => { Option(); });
+        quit_btn.onClick.AddListener(() => { Quit(); });
+    }
 
     private void OnEnable()
     {
@@ -67,12 +82,6 @@ public class MainMenuBtn : MonoBehaviour
         shopUI.SetActive(!shopUI.activeSelf);
     }
 
-    public void Buy()
-    {
-        //TODO 상점 물건 구매
-        print("를 구매");
-    }
-
     public void Collection()
     {
         // 수집품 UI 띄우기
@@ -100,8 +109,8 @@ public class MainMenuBtn : MonoBehaviour
         // 메인메뉴 켜기
         mainMenuPanel.SetActive(true);
 
-        // 첫번째 버튼 기억
-        UICursor.Instance.UpdateLastSelect(firstBtn);
+        // 첫번째 버튼 선택
+        UICursor.Instance.UpdateLastSelect(play_btn);
 
         // 다른 패널 끄기
         characterSelectUI.SetActive(false);

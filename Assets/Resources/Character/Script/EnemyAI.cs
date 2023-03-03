@@ -7,6 +7,9 @@ using System.Linq;
 
 public class EnemyAI : MonoBehaviour
 {
+    [Header("State")]
+    private float velocityChange = 0.01f;
+
     [Header("Rotate")]
     [SerializeField] bool flipAble = true; // 좌우반전 허용 여부
     [SerializeField] bool tiltFlip = false; // 반대로 기울이기 여부
@@ -223,6 +226,15 @@ public class EnemyAI : MonoBehaviour
             character.transform.rotation = Quaternion.Euler(0, rightAngle, 0);
     }
 
+    void Move(Vector3 target_velocity)
+    {
+        character.rigid.velocity = target_velocity;
+        // character.rigid.velocity = Vector3.Lerp(character.rigid.velocity, target_velocity, velocityChange);
+
+        // character.rigid.AddForce(target_velocity);
+        // character.rigid.velocity = Vector3.ClampMagnitude(character.rigid.velocity, 50f);
+    }
+
     void Walk()
     {
         character.nowState = CharacterState.Walk;
@@ -244,7 +256,7 @@ public class EnemyAI : MonoBehaviour
         else
         {
             //해당 방향으로 가속
-            character.rigid.velocity = character.targetDir.normalized * character.speedNow * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+            Move(character.targetDir.normalized * character.speedNow * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
 
             // 방향따라 좌우반전
             Flip();
@@ -296,7 +308,7 @@ public class EnemyAI : MonoBehaviour
         // print(character.targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
 
         //해당 방향으로 가속
-        character.rigid.velocity = character.targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale;
+        Move(character.targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
 
         // print(character.rigid.velocity);
     }

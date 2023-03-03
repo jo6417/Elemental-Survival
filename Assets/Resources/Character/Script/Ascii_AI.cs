@@ -107,7 +107,6 @@ public class Ascii_AI : MonoBehaviour
     [SerializeField] string[] walkSounds = { "Ascii_Walk1", "Ascii_Walk2", "Ascii_Walk3" };
     int walk_lastIndex = -1;
 
-    //! 테스트
     [Header("Debug")]
     [SerializeField] TextMeshProUGUI stateText;
 
@@ -669,7 +668,6 @@ public class Ascii_AI : MonoBehaviour
         // 플레이어 방향
         Vector2 playerDir = PlayerManager.Instance.transform.position - transform.position;
 
-        // //! 
         // fallAtkDone = false;
 
         //! 거리 및 쿨타임 디버깅

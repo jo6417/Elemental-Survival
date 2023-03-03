@@ -546,7 +546,8 @@ public class HitBox : MonoBehaviour
         character.transform.DOMove((Vector2)character.transform.position + knockbackDir, 0.1f)
         .SetEase(Ease.OutBack);
 
-        // print(knockbackDir);
+        // // 해당 방향으로 캐릭터 밀기
+        // character.rigid.AddForce(knockbackDir);
 
         yield return null;
     }

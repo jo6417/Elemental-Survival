@@ -31,7 +31,7 @@ public class OpenSafeMenu : MonoBehaviour
         openBtn.interactable = true;
 
         //버튼 선택
-        openBtn.Select();
+        UICursor.Instance.UpdateLastSelect(openBtn);
 
         //상자 안에서 올라올 상품 이미지 초기화
         // prize.SetActive(false);

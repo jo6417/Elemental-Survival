@@ -14,6 +14,7 @@ using Pixeye.Unity;
 using System;
 using UnityEditor;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
 public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
@@ -72,8 +73,8 @@ public class SystemManager : MonoBehaviour
     #endregion
 
     [Header("State")]
-    public bool screenMasked = false; // 화면 씬 마스크로 덮힘 여부
     public bool sceneChanging = false; // 씬 변경중 여부
+    public bool screenMasked = false; // 화면 씬 마스크로 덮힘 여부
     public bool loadDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
@@ -210,6 +211,11 @@ public class SystemManager : MonoBehaviour
 
         // 시스템 인풋 초기화
         System_Input = new NewInput();
+        // 확인 입력
+        System_Input.UI.Submit.performed += val =>
+        {
+            Submit();
+        };
         System_Input.Enable();
 
         //초기화
@@ -312,6 +318,18 @@ public class SystemManager : MonoBehaviour
             ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn, true);
             // 몬스터 자동 스폰 버튼 상태값 연결
             godModBtn.onClick.AddListener(() => { ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn); });
+        }
+    }
+
+    // 확인 입력
+    public void Submit()
+    {
+        // 현재 선택된 버튼 누르기
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            Button btn = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+            if (btn != null)
+                btn.onClick.Invoke();
         }
     }
 
@@ -690,6 +708,9 @@ public class SystemManager : MonoBehaviour
 
     public void GameQuit()
     {
+        // UI 커서 끄기
+        UICursor.Instance.UICursorToggle(false);
+
         // dontDestroy 오브젝트 모두 파괴
         if (ObjectPool.Instance != null)
             Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴

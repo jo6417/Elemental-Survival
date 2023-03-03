@@ -320,7 +320,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Accept",
+                    "name": "Submit",
                     "type": "Button",
                     "id": "a9fcff04-fb45-48ed-ab05-3ed3c119c49f",
                     "expectedControlType": "Button",
@@ -422,7 +422,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
-                    "action": "Accept",
+                    "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -433,7 +433,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard",
-                    "action": "Accept",
+                    "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

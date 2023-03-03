@@ -126,6 +126,11 @@ public class WorldSpawner : MonoBehaviour
         // 스테이지 시작시간 기록
         stageStartTime = Time.time;
 
+#if !UNITY_EDITOR
+        // 빌드상에서는 비우기
+        spawnAbleList.Clear();
+#endif
+
         // 스폰 가능 몬스터 풀이 비었으면
         if (spawnAbleList.Count == 0)
             // 현재 맵속성으로 몬스터 풀 만들기

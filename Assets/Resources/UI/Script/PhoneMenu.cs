@@ -408,7 +408,7 @@ public class PhoneMenu : MonoBehaviour
         UIManager.Instance.tabletBindKeyList.SetActive(true);
 
         // 첫번째 슬롯 선택하기
-        invenSlots[0].slotButton.Select();
+        UICursor.Instance.UpdateLastSelect(invenSlots[0].slotButton);
 
         #endregion
     }
@@ -691,7 +691,7 @@ public class PhoneMenu : MonoBehaviour
             .SetUpdate(true);
 
             // 클릭, 확인 누르면 
-            yield return new WaitUntil(() => Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Accept.IsPressed());
+            yield return new WaitUntil(() => Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Submit.IsPressed());
         }
 
         // 양쪽 슬롯 위치 초기화
@@ -1131,7 +1131,7 @@ public class PhoneMenu : MonoBehaviour
         SoundManager.Instance.PlaySound("MergeComplete");
 
         // 확인, 클릭할때까지 대기
-        yield return new WaitUntil(() => Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Accept.IsPressed());
+        yield return new WaitUntil(() => Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Submit.IsPressed());
 
         // 팡파레 이펙트 끄기
         slotRayEffect.gameObject.SetActive(false);
@@ -1320,7 +1320,7 @@ public class PhoneMenu : MonoBehaviour
         }
 
         // 클릭,확인 누르면 스킵 켜기
-        if (Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Accept.IsPressed())
+        if (Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Submit.IsPressed())
             isSkipped = true;
 
         // 채팅패널 Lerp로 사이즈 반영해서 lerp로 늘어나기
@@ -1691,8 +1691,6 @@ public class PhoneMenu : MonoBehaviour
         }
 
         float moveTime = 0.8f;
-
-        print(phonePosition);
 
         // 매직폰 상태일때 위치로 변경
         CastMagic.Instance.phone.DOMove(phonePosition, moveTime)

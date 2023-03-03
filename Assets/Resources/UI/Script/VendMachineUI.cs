@@ -320,7 +320,7 @@ public class VendMachineUI : MonoBehaviour
     {
         // 첫번째 아이템 Select 하기
         Selectable productBtn = productsParent.GetComponentInChildren<Selectable>();
-        productBtn.Select();
+        UICursor.Instance.UpdateLastSelect(productBtn);
 
         GetComponent<Animator>().enabled = false;
     }

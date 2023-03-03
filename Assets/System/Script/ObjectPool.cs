@@ -12,17 +12,12 @@ public class ObjectPool : MonoBehaviour
         {
             if (instance == null)
             {
-                // return null;
-                var obj = FindObjectOfType<ObjectPool>();
-                if (obj != null)
+                instance = FindObjectOfType<ObjectPool>();
+                if (instance == null)
                 {
-                    instance = obj;
-                }
-                else
-                {
-                    var newObj = new GameObject().AddComponent<ObjectPool>();
-                    newObj.name = "new ObjectPool";
-                    instance = newObj;
+                    GameObject obj = new GameObject();
+                    obj.name = "ObjectPool";
+                    instance = obj.AddComponent<ObjectPool>();
                 }
             }
             return instance;
@@ -38,20 +33,17 @@ public class ObjectPool : MonoBehaviour
     public Transform enemyAtkPool;
     public Transform effectPool;
     public Transform objectPool;
-    public Transform soundPool;
+    // public Transform soundPool;
 
     private void Awake()
     {
-        // 최초 생성 됬을때
-        if (instance == null)
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            instance = this;
-
-            // 파괴되지 않게 설정
-            // DontDestroyOnLoad(gameObject);
-        }
-        else
-            // 해당 오브젝트 파괴
             Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        // DontDestroyOnLoad(gameObject);
     }
 }

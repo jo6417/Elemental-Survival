@@ -11,6 +11,13 @@ public class SteamRelease : MonoBehaviour
 
     bool initDone = false; // 초기화 완료 여부
 
+    [Header("Stat")]
+    float power;
+    float duration;
+    float speed;
+    float range;
+    float scale;
+
     private void OnEnable()
     {
         StartCoroutine(Init());
@@ -26,9 +33,14 @@ public class SteamRelease : MonoBehaviour
         // magicHolder 초기화 완료까지 대기
         yield return new WaitUntil(() => magicHolder.initDone);
 
-        float duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
-        float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
-        float range = MagicDB.Instance.MagicRange(magicHolder.magic) / 10f;
+        power = MagicDB.Instance.MagicPower(magicHolder.magic);
+        duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
+        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
+        range = MagicDB.Instance.MagicRange(magicHolder.magic) / 10f;
+        scale = MagicDB.Instance.MagicScale(magicHolder.magic);
+
+        // 데미지 갱신
+        magicHolder.power = power;
 
         // 젖음 시간 갱신 (젖은 동안 전기 데미지 증가)
         // magicHolder.wetTime = MagicDB.Instance.MagicDuration(magic);
@@ -38,14 +50,16 @@ public class SteamRelease : MonoBehaviour
         ParticleSystem.MainModule particleMain = particleManager.particle.main;
 
         // range 만큼 파티클 거리 갱신
-        particleMain.startLifetime = new ParticleSystem.MinMaxCurve(range, range + 1f);
+        // particleMain.startLifetime = new ParticleSystem.MinMaxCurve(range, range + 1f);
 
         // 파티클을 duration 만큼 반복
-        ParticleSystem.EmissionModule particleEmmision = particleManager.particle.emission;
-        particleEmmision.SetBurst(0, new ParticleSystem.Burst(0, 5, (int)duration, 0.1f));
+        // ParticleSystem.EmissionModule particleEmmision = particleManager.particle.emission;
+        // particleEmmision.SetBurst(0, new ParticleSystem.Burst(0, 10, (int)(10f * duration), 0.1f));
 
+        // 파티클 size에 scale값 반영
+        particleMain.startSize = new ParticleSystem.MinMaxCurve(scale, scale * 3f);
         // 파티클 속도에 speed값 갱신
-        particleMain.startSpeed = new ParticleSystem.MinMaxCurve(speed - 1f, speed + 1f);
+        particleMain.startSpeed = new ParticleSystem.MinMaxCurve(speed * 10f, speed * 20f);
 
         // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
         ParticleSystem.CollisionModule particleColl = particleManager.particle.collision;

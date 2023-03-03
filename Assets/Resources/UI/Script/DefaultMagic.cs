@@ -26,6 +26,10 @@ public class DefaultMagic : MonoBehaviour
         // 오브젝트 켜질때까지 대기
         yield return new WaitUntil(() => gameObject.activeSelf);
         yield return new WaitUntil(() => SystemManager.Instance != null);
+
+        // 슬롯 선택 막기
+        slots.interactable = false;
+
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
 
@@ -83,8 +87,16 @@ public class DefaultMagic : MonoBehaviour
             blockScreen.enabled = false;
         });
 
+        // UI 커서로 변경
+        UICursor.Instance.CursorChange(true);
+
+        // 씬 마스크 트랜지션 끝날때까지 대기
+        yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);
+
+        // 슬롯 선택 풀기
+        slots.interactable = true;
         // 초기 버튼 선택
-        firstSelect.Select();
+        UICursor.Instance.UpdateLastSelect(firstSelect);
     }
 
     void ClickSlot(int index)
@@ -107,7 +119,7 @@ public class DefaultMagic : MonoBehaviour
         //플레이어 입력 끄기
         PlayerManager.Instance.player_Input.Disable();
 
-        //todo UI 커서 끄기
+        // UI 커서 끄기
         UICursor.Instance.UICursorToggle(false);
 
         // 핸드폰 열기

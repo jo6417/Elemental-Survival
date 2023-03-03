@@ -52,6 +52,12 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
         // New 표시 끄기
         newSign.SetActive(false);
+
+        // 버튼 onClick 콜백 함수 넣기
+        slotButton.onClick.AddListener(() =>
+        {
+            ClickSlot(-1);
+        });
     }
 
     private void OnEnable()
@@ -200,7 +206,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         //해당 버튼 선택
-        slotButton.Select();
+        UICursor.Instance.UpdateLastSelect(slotButton);
     }
 
     public void OnSelect(BaseEventData eventData)

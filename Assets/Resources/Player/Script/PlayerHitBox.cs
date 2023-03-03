@@ -431,11 +431,16 @@ public class PlayerHitBox : HitBox
 
     public IEnumerator Dead()
     {
-        // 히트 딜레이 코루틴 끄기
-        StopCoroutine(hitDelayCoroutine);
+        // 현재 패널을 게임오버 패널로 갱신 (다른 입력 막기)
+        UIManager.Instance.nowOpenPopup = UIManager.Instance.gameoverPanel;
 
+        // 핸드폰 입력 막기
+        PhoneMenu.Instance.Phone_Input.Disable();
         // 플레이어 조작 끄기
         playerManager.player_Input.Disable();
+
+        // 히트 딜레이 코루틴 끄기
+        StopCoroutine(hitDelayCoroutine);
 
         // 플레이어 충돌 콜라이더 끄기
         playerManager.coll.enabled = false;
@@ -451,11 +456,7 @@ public class PlayerHitBox : HitBox
         // 타임스케일 멈추는 시간
         float stopTime = 3f;
 
-        // // 플레이어 머터리얼 변환
-        // playerManager.playerSprite.material = SystemManager.Instance.hitMat;
-
-        // 플레이어 하얗게 변환
-        // playerManager.playerSprite.material.color = SystemManager.Instance.hitColor;
+        // 플레이어 하얗게 변화
         playerManager.playerSprite.material.DOColor(SystemManager.Instance.DeadColor, "_Tint", stopTime / 2f)
         .SetEase(Ease.OutQuad)
         .SetUpdate(true);
@@ -464,14 +465,16 @@ public class PlayerHitBox : HitBox
         DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 0f, stopTime / 2f)
         .SetEase(Ease.OutQuad)
         .SetUpdate(true);
-        // SystemManager.Instance.TimeScaleChange(0, stopTime);
 
         // 사운드 느려지다가 정지
         SoundManager.Instance.SoundTimeScale(0, stopTime, false);
 
         yield return new WaitForSecondsRealtime(stopTime / 2f);
 
-        //todo 핸드폰 미니 폭파
+        // 핸드폰 파괴
+        // Destroy(CastMagic.Instance.transform);
+        CastMagic.Instance.gameObject.SetActive(false);
+        //todo 핸드폰 폭파 이펙트
         //todo 핸드폰 미니 폭파음
 
         // 플레이어 사망 사운드 재생
@@ -480,12 +483,8 @@ public class PlayerHitBox : HitBox
         // 플레이어에서 하얀 빛 파티클 터짐
         deathEffect.SetActive(true);
 
-        // 핸드폰 입력 막기
-        PhoneMenu.Instance.Phone_Input.Disable();
-
-        // 플레이어, 핸드폰 끄기
+        // 플레이어 끄기
         playerManager.playerSprite.enabled = false;
-        CastMagic.Instance.gameObject.SetActive(false);
 
         yield return new WaitForSecondsRealtime(1f);
 

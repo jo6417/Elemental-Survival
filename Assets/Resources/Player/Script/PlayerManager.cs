@@ -470,7 +470,8 @@ public class PlayerManager : Character
         // MagicDB 로드 완료까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
-        //! 인스펙터의 테스트 마법 획득
+#if UNITY_EDITOR
+        // 테스트 마법 획득
         for (int i = 0; i < CastMagic.Instance.testMagics.Count; i++)
         {
             string name = CastMagic.Instance.testMagics[i].ToString();
@@ -480,7 +481,7 @@ public class PlayerManager : Character
             yield return null;
         }
 
-        //! 인스펙터의 테스트 아이템 획득
+        // 테스트 아이템 획득
         for (int i = 0; i < CastMagic.Instance.testItems.Count; i++)
         {
             string name = CastMagic.Instance.testItems[i].ToString();
@@ -489,6 +490,7 @@ public class PlayerManager : Character
 
             yield return null;
         }
+#endif
 
         // 인벤토리에서 마법 찾아 자동 시전하기
         CastMagic.Instance.CastCheck();
