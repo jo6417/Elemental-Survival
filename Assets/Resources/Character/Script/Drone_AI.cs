@@ -31,6 +31,9 @@ public class Drone_AI : MonoBehaviour
 
     IEnumerator Init()
     {
+        // rigid 타입 초기화
+        character.rigid.bodyType = RigidbodyType2D.Dynamic;
+
         // // 사운드 초기화 될때까지 대기
         // yield return new WaitUntil(() => SoundManager.Instance.initFinish);
         // // 시작하면 사운드 재생
@@ -75,17 +78,27 @@ public class Drone_AI : MonoBehaviour
 
     void Attack()
     {
-        // 공격 상태로 전환
-        character.nowState = CharacterState.Attack;
-        // 공격 쿨타임 갱신
-        character.atkCoolCount = character.cooltimeNow;
+        // 공격중 아닐때 실행
+        if (character.nowState == CharacterState.Idle)
+        {
+            // 공격 상태로 전환
+            character.nowState = CharacterState.Attack;
+            // 공격 쿨타임 갱신
+            character.atkCoolCount = character.cooltimeNow;
 
-        // 공격 코루틴 실행
-        StartCoroutine(SelfExplosion());
+            // 공격 코루틴 실행
+            StartCoroutine(SelfExplosion());
+        }
     }
 
     IEnumerator SelfExplosion()
     {
+        // 움직이지 않게 rigid 타입 변경
+        character.rigid.bodyType = RigidbodyType2D.Kinematic;
+
+        // 속도 멈추기
+        DOTween.To(() => character.rigid.velocity, x => character.rigid.velocity = x, Vector2.zero, 0.5f);
+
         // 양쪽으로 각도 부르르 떨기
         body.DOPunchRotation(Vector3.forward * 20f, attackReadyTime, 30, 1);
 

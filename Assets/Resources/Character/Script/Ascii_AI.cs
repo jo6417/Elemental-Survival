@@ -749,9 +749,11 @@ public class Ascii_AI : MonoBehaviour
 
     void ChooseAttack()
     {
-        //! 패턴 스킵
+#if UNITY_EDITOR
+        // 패턴 스킵이면 리턴
         if (patten == Patten.Skip)
             return;
+#endif
 
         // 공격 상태로 전환
         character.nowState = CharacterState.Attack;
@@ -762,26 +764,26 @@ public class Ascii_AI : MonoBehaviour
         // 가능한 공격 중에서 랜덤 뽑기
         int atkType = Random.Range(0, 4);
 
-        //! 테스트를 위해 패턴 고정
-        if (patten != Patten.None)
-            atkType = (int)patten;
+#if UNITY_EDITOR
+        atkType = (int)patten;
+#endif
 
         // 결정된 공격 패턴 실행
-        switch (atkType)
+        switch ((Patten)atkType)
         {
-            case 0:
+            case Patten.FallAttack:
                 StartCoroutine(FalldownAttack());
                 break;
 
-            case 1:
+            case Patten.PunchAttack:
                 StartCoroutine(PunchAttack());
                 break;
 
-            case 2:
+            case Patten.TrafficAtk:
                 StartCoroutine(TrafficAtk());
                 break;
 
-            case 3:
+            case Patten.GroundAttack:
                 StartCoroutine(GroundAttack());
                 break;
         }

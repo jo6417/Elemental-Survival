@@ -5,6 +5,7 @@ using System.Linq;
 using DG.Tweening;
 using Lean.Pool;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class Sound
@@ -237,15 +238,31 @@ public class SoundManager : MonoBehaviour
         return soundPool;
     }
 
-    public IEnumerator BGMPlayer()
+    public void BGMPlay()
+    {
+        // BGM 코루틴 재생
+        BGMCoroutine = BGMPlayer();
+        StartCoroutine(BGMCoroutine);
+    }
+
+    private IEnumerator BGMPlayer()
     {
         // 시스템 매니저 초기화 대기
         yield return new WaitUntil(() => SystemManager.Instance.loadDone);
 
+        // 씬 마스크 트랜지션 끝날때까지 대기
+        // yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);
+
         while (gameObject)
         {
             // 랜덤 배경음 이름 뽑기
-            string soundName = "InGameBGM_" + UnityEngine.Random.Range(1, 4);
+            string soundName = "";
+            // 메인메뉴일때
+            if (SceneManager.GetActiveScene().name == SceneName.MainMenuScene.ToString())
+                soundName = "MainMenuBGM";
+            // 인게임일때
+            if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
+                soundName = "InGameBGM_" + UnityEngine.Random.Range(1, 4);
 
             // print(soundName);
 

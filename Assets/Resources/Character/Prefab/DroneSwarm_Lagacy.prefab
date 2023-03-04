@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6985902701888801071
 Transform:
   m_ObjectHideFlags: 0
@@ -52,17 +52,42 @@ MonoBehaviour:
   initialFinish: 0
   eliteClass: 0
   lookLeft: 0
-  hpNow: 0
-  hpMax: 0
+  characterStat:
+    powerSum: 0
+    hpMax: 100
+    hpNow: 100
+    Level: 1
+    moveSpeed: 1
+    atkNum: 0
+    pierce: 0
+    power: 1
+    armor: 1
+    speed: 1
+    evade: 0
+    knockbackForce: 1
+    coolTime: 1
+    duration: 1
+    range: 1
+    scale: 1
+    luck: 1
+    expGain: 1
+    getRage: 1
+    earth_atk: 1
+    fire_atk: 1
+    life_atk: 1
+    lightning_atk: 1
+    water_atk: 1
+    wind_atk: 1
+  buffList: []
   isDead: 0
   deadDelay: 1
   changeGhost: 0
   portalSize: 1
   afterEffect: 0
   invinsible: 0
-  selfExplosion: 0
   attackRange: 0
   healCount: 0
+  atkCoolCount: 0
   isGhost: 0
   nowState: 0
   moveType: 0
@@ -72,12 +97,10 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 0}
-  spriteList: []
+  searchRange: 100
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
-  spriteObj: {fileID: 0}
   healRange: {fileID: 0}
   animList: []
   physicsColl: {fileID: 0}
@@ -90,17 +113,22 @@ MonoBehaviour:
   flatCount: 0
   oppositeCount: 0
   moveSpeedDebuff: 1
-  hitEffect: {fileID: 1620636520166436, guid: ae8e77315cbed89469e78278295e5844, type: 3}
-  hitBoxList: []
+  spriteObj: {fileID: 0}
+  spriteList: []
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList: []
+  hitEffect: {fileID: 1620636520166436, guid: ae8e77315cbed89469e78278295e5844, type: 3}
+  shadow: {fileID: 0}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
   cooltimeNow: 0
   enemyName: 
   enemyType: 
+  debugText: {fileID: 0}
+  stateText: {fileID: 0}
 --- !u!114 &6985902701888801069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,7 +143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rigid: {fileID: 6985902701888801066}
   character: {fileID: 2927683367504394575}
-  enemyPrefab: {fileID: 9206296261536286531, guid: fa254335610682b4c8040dc2cb689855,
+  enemyPrefab: {fileID: 4292492320982766429, guid: ba8da099f430a624487adeb1cead6b83,
     type: 3}
   amount: 10
   duration: 60

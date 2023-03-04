@@ -31,6 +31,10 @@ public class PauseMenu : MonoBehaviour
 
     public void PauseToggle(bool pauseToggle)
     {
+        // 씬 이동중이면 리턴
+        if (SystemManager.Instance.sceneChanging || SystemManager.Instance.screenMasked)
+            return;
+
         // 브금 재개 상태 변경
         SoundManager.Instance.bgmPause = pauseToggle;
 

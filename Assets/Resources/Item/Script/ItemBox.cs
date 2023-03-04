@@ -9,7 +9,6 @@ public class ItemBox : Character
     [SerializeField] Sprite[] boxSpriteList = new Sprite[2];
     [SerializeField] SpriteRenderer boxSprite;
     [SerializeField] List<ItemInfo> dropList = new List<ItemInfo>();
-    [SerializeField] Collider2D coll;
 
     [Header("State")]
     [SerializeField] float boxHp = 5f; // 박스 체력 기본값
@@ -22,9 +21,6 @@ public class ItemBox : Character
     {
         // Character 의 Awake 코드 실행
         base.Awake();
-
-        // 콜라이더 찾기
-        coll = coll != null ? coll : GetComponent<Collider2D>();
     }
 
     protected override void OnEnable()
@@ -36,9 +32,6 @@ public class ItemBox : Character
 
     IEnumerator Init()
     {
-        // 콜라이더 끄기
-        coll.enabled = false;
-
         // 닫힌 상자 스프라이트로 초기화
         boxSprite.sprite = boxSpriteList[0];
 

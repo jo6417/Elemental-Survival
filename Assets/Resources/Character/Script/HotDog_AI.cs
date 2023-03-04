@@ -10,7 +10,7 @@ public class HotDog_AI : EnemyAI
 {
     [Header("State")]
     [SerializeField] Patten patten = Patten.None;
-    enum Patten { None, Hellfire, Meteor, Stealth };
+    enum Patten { None, Hellfire, Meteor, Stealth, Skip };
     bool initDone = false;
     AnimState animState;
     enum AnimState { isWalk, isRun, isBark, Grawl, Jump, Bite, ChargeBall, Eat, Launch, Change, BackStep };
@@ -453,7 +453,7 @@ public class HotDog_AI : EnemyAI
             shield.SmoothDisable();
     }
 
-    void Update()
+    protected override void Update()
     {
         // 이동 리셋 카운트 차감
         if (searchCoolCount > 0)
@@ -677,6 +677,12 @@ public class HotDog_AI : EnemyAI
 
     IEnumerator ChooseAttack()
     {
+#if UNITY_EDITOR
+        // 패턴 스킵이면 리턴
+        if (patten == Patten.Skip)
+            yield break;
+#endif
+
         // 현재 액션 변경
         character.nowState = CharacterState.Attack;
 
@@ -712,25 +718,26 @@ public class HotDog_AI : EnemyAI
 
         // 랜덤 패턴 결정
         int atkType = Random.Range(0, 3);
-        print("randomNum : " + atkType);
+        // print("randomNum : " + atkType);
 
-        //! 테스트를 위해 패턴 고정
-        if (patten != Patten.None)
-            atkType = (int)patten;
+#if UNITY_EDITOR
+        // 테스트를 위해 패턴 고정
+        atkType = (int)patten;
+#endif
 
-        switch (atkType)
+        switch ((Patten)atkType)
         {
-            case (int)Patten.Hellfire:
+            case Patten.Hellfire:
                 // 근거리 및 중거리 헬파이어 패턴
                 StartCoroutine(HellfireAtk());
                 coolCount = hellfireCooltime;
                 break;
-            case (int)Patten.Meteor:
+            case Patten.Meteor:
                 // 원거리 메테오 쿨타임 아닐때 meteor 패턴 코루틴
                 MeteorAtk();
                 coolCount = meteorCooltime;
                 break;
-            case (int)Patten.Stealth:
+            case Patten.Stealth:
                 // 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
                 StartCoroutine(StealthAtk());
                 coolCount = stealthCooltime;

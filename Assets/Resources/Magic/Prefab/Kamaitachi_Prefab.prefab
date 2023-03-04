@@ -52,7 +52,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -62,7 +65,7 @@ MonoBehaviour:
   shockTime: 0
   freezeTime: 0
   flatTime: 0
-  stopTime: 1
+  stopTime: 0
   stunTime: 0
   autoCoolDown: 1
   fixCoolTime: 0

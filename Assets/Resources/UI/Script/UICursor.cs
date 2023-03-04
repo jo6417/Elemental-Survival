@@ -139,9 +139,6 @@ public class UICursor : MonoBehaviour
 
     public void CursorChange(bool isUICursor = true)
     {
-        if (UIManager.Instance != null)
-            isUICursor = UIManager.Instance.UI_Input.UI.enabled;
-
         // 화살표 커서 토글
         arrowCursor.SetActive(isUICursor);
         // 조준 커서 토글
@@ -187,6 +184,10 @@ public class UICursor : MonoBehaviour
         //선택된 버튼이 바뀌었을때
         else
         {
+            //todo 마우스로 조작중일때 리턴
+            if (arrowCursor.activeSelf || aimCursor.activeSelf)
+                return;
+
             if (!isFlicking)
             {
                 //커서 애니메이션 시작

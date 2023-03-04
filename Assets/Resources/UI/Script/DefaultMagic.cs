@@ -158,7 +158,7 @@ public class DefaultMagic : MonoBehaviour
         // 핸드폰 닫기 및 게임시작
         PhoneMenu.Instance.ClosePhone();
 
-        // 패널 닫기
-        UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, false);
+        // 패널 닫기 (PopupUI 및 PopupSet 하지않음, PhoneMenu 패널 닫을때 하기때문)
+        gameObject.SetActive(false);
     }
 }

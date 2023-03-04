@@ -264,7 +264,7 @@ public class Farmer_AI : MonoBehaviour
         if (character.targetDir.magnitude <= atkRange)
         {
             // 쿨타임 됬을때, 스킵 아닐때
-            if (atkCoolCount <= 0 && patten != Patten.Skip)
+            if (atkCoolCount <= 0)
             {
                 //공격 패턴 결정하기
                 StartCoroutine(ChooseAttack());
@@ -368,33 +368,40 @@ public class Farmer_AI : MonoBehaviour
 
     IEnumerator ChooseAttack()
     {
+#if UNITY_EDITOR
+        // 패턴 스킵이면 리턴
+        if (patten == Patten.Skip)
+            yield break;
+#endif
+
         // 공격 상태로 전환
         character.nowState = CharacterState.Attack;
 
         // 가능한 공격 중에서 랜덤 뽑기
         int atkType = Random.Range(0, 3);
 
-        //! 테스트를 위해 패턴 고정
-        if (patten != Patten.None)
-            atkType = (int)patten;
+#if UNITY_EDITOR
+        // 테스트를 위해 패턴 고정
+        atkType = (int)patten;
+#endif
 
         // 걷기 멈추기
         yield return StartCoroutine(StopMove());
 
         // 결정된 공격 패턴 실행
-        switch (atkType)
+        switch ((Patten)atkType)
         {
-            case 0:
+            case Patten.PlantSeed:
                 // 씨뿌리기 패턴
                 StartCoroutine(PlantSeed());
                 break;
 
-            case 1:
+            case Patten.BioGas:
                 // 바이오 가스 패턴
                 StartCoroutine(BioGas());
                 break;
 
-            case 2:
+            case Patten.SunHeal:
                 // 자힐 패턴
                 StartCoroutine(SunHeal());
                 break;

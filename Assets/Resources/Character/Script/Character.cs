@@ -126,7 +126,6 @@ public class Character : MonoBehaviour
     public float stunCount = 0; // 스턴 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
-    public float moveSpeedDebuff = 1f; // 속도 디버프
 
     [Header("Sprite")]
     public Transform spriteObj;
@@ -211,6 +210,9 @@ public class Character : MonoBehaviour
     {
         // 초기화 완료 취소
         initialFinish = false;
+
+        // 공격 쿨타임 초기화
+        // atkCoolCount = 0;
 
         // 히트박스 전부 끄기
         for (int i = 0; i < hitBoxList.Count; i++)
@@ -353,7 +355,7 @@ public class Character : MonoBehaviour
                 List<ItemInfo> gems = ItemDB.Instance.GetItemsByType(ItemDB.ItemType.Gem);
 
                 // 가중치 확률로 원소젬 인덱스 뽑기
-                int gemIndex = SystemManager.Instance.WeightRandom(SystemManager.Instance.elementWeitght.ToList());
+                int gemIndex = SystemManager.Instance.WeightRandom(SystemManager.Instance.elementWeight.ToList());
                 if (gemIndex == -1)
                     gemIndex = 0;
 
@@ -378,11 +380,11 @@ public class Character : MonoBehaviour
 
             // 각각 아이템 개별 확률 적용
             List<float> randomRate = new List<float>();
-            randomRate.Add(40); // 원소젬 확률 가중치
-            randomRate.Add(20); // 회복 아이템 확률 가중치
-            randomRate.Add(20); // 자석 빔 확률 가중치
-            randomRate.Add(10); // 슬롯머신 확률 가중치
-            randomRate.Add(5); // 트럭 버튼 확률 가중치
+            randomRate.Add(80); // 원소젬 확률 가중치
+            randomRate.Add(10); // 회복 아이템 확률 가중치
+            randomRate.Add(10); // 자석 빔 확률 가중치
+            randomRate.Add(5); // 슬롯머신 확률 가중치
+            randomRate.Add(1); // 트럭 버튼 확률 가중치
 
             // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
             int randomItem = SystemManager.Instance.WeightRandom(randomRate);

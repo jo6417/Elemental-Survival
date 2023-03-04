@@ -16,8 +16,9 @@ using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
 public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
+public enum SortingLayerID { Default, Ground, Item, CharacterObject, Player, Magic, MagicEffect, UI };
+public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
 public enum DBType { Magic, Enemy, Item };
 public enum SceneName { InGameScene, MainMenuScene };
 
@@ -105,8 +106,8 @@ public class SystemManager : MonoBehaviour
     private MapElement nowMapElement = MapElement.Earth; // 현재 맵 원소 속성
     public MapElement NowMapElement { get { return nowMapElement; } set { nowMapElement = value; } }
 
-    public float[] elementWeitght = new float[6]; // 인벤토리의 마법 원소 가중치
-    public List<float> gradeRate = new List<float>(); // 랜덤 등급 가중치
+    public float[] elementWeight = new float[6]; // 인벤토리의 마법 원소 가중치
+    public List<float> gradeWeight = new List<float>(); // 랜덤 등급 가중치
     private float globalBrightness = 1f;
     public float GlobalBrightness
     {
@@ -311,9 +312,9 @@ public class SystemManager : MonoBehaviour
         {
             // 인게임 진입 대기
             yield return new WaitUntil(() => SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString());
+
             // 플레이어 초기화 대기
             yield return new WaitUntil(() => PlayerManager.Instance != null);
-
             // 버튼 색깔 초기화
             ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn, true);
             // 몬스터 자동 스폰 버튼 상태값 연결
@@ -457,7 +458,11 @@ public class SystemManager : MonoBehaviour
 
     public void TimeScaleToggle()
     {
-        if (Time.timeScale > 0)
+        // 시간 진행중이면 멈추기
+        bool timeStop = Time.timeScale > 0;
+
+        // timeStop 값에 따라 시간 멈추기, 재생
+        if (timeStop)
             TimeScaleChange(0f);
         else
             TimeScaleChange(1f);

@@ -4,9 +4,13 @@ using UnityEngine;
 using DG.Tweening;
 using Lean.Pool;
 using System.Linq;
+using System;
 
 public class EnemyAI : MonoBehaviour
 {
+    public event Action jumpStartAction; // 점프 시작 콜백
+    public event Action jumpEndAction; // 점프 끝 콜백
+
     [Header("State")]
     private float velocityChange = 0.01f;
 
@@ -30,9 +34,6 @@ public class EnemyAI : MonoBehaviour
     [SerializeField]
     private float jumpCooltime = 0.5f;
     public GameObject landEffect;
-
-    // [Header("Attack")]
-    // public float attackRange;
 
     private void Awake()
     {
@@ -70,7 +71,7 @@ public class EnemyAI : MonoBehaviour
             character.physicsColl.isTrigger = false;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         // 타겟위치 카운트 다되면
         if (searchCoolCount <= 0)
@@ -101,12 +102,6 @@ public class EnemyAI : MonoBehaviour
         // 목표 방향 계산
         character.targetDir = character.movePos - transform.position;
 
-        // // 타겟에서 일정거리 이상 벗어나면 쫓아가기
-        // if (character.targetDir.magnitude > WorldSpawner.Instance.maxDistance)
-        // {
-        //     character.transform.position = WorldSpawner.Instance.BorderRandPos();
-        // }
-
         // 상태 이상 있으면 리턴
         if (!character.ManageState())
             return;
@@ -116,37 +111,6 @@ public class EnemyAI : MonoBehaviour
             //행동 관리
             ManageAction();
     }
-
-    // GameObject FindTarget_Obj()
-    // {
-    //     // 리턴할 오브젝트
-    //     GameObject targetObj = null;
-
-    //     // 현재 타겟이 범위 밖에 있으면
-    //     if (character.targetDir.magnitude > character.targetFindRange)
-    //     {
-    //         // 추적할 타겟 레이어
-    //         int targetLayer = -1;
-
-    //         // 고스트일때
-    //         if (character.IsGhost)
-    //             targetLayer = SystemManager.Instance.layerList.EnemyHit_Layer;
-    //         // 고스트 아닐때
-    //         else
-    //             targetLayer = SystemManager.Instance.layerList.PlayerHit_Layer;
-
-    //         // 새로운 타겟 찾기
-    //         List<Collider2D> targetCollList = Physics2D.OverlapCircleAll(transform.position, character.targetFindRange, 1 << targetLayer).ToList();
-
-    //         // 찾은 타겟이 있으면
-    //         if (targetCollList.Count > 0)
-    //             // 타겟중에 랜덤으로 리턴
-    //             targetObj = targetCollList[Random.Range(0, targetCollList.Count)].gameObject;
-    //     }
-
-    //     // 타겟 리턴
-    //     return targetObj;
-    // }
 
     Vector3 FindTarget_Pos()
     {
@@ -158,7 +122,7 @@ public class EnemyAI : MonoBehaviour
             pos = character.TargetObj.transform.position;
 
         // 추적 위치 계산, 랜덤 위치 더해서 부정확하게 만들기
-        pos = pos + (Vector3)Random.insideUnitCircle * targetRange;
+        pos = pos + (Vector3)UnityEngine.Random.insideUnitCircle * targetRange;
 
         // 추적 위치 리턴
         return pos;
@@ -185,7 +149,6 @@ public class EnemyAI : MonoBehaviour
 
             // 스프라이트 몸체 기울이기
             character.spriteObj.localRotation = Quaternion.Lerp(character.spriteObj.localRotation, Quaternion.Euler(0, 0, angleZ), 0.1f);
-            // character.spriteObj.localRotation = Quaternion.Euler(0, 0, angleZ);
         }
 
         // 걷기, 대쉬 타입일때
@@ -229,10 +192,6 @@ public class EnemyAI : MonoBehaviour
     void Move(Vector3 target_velocity)
     {
         character.rigid.velocity = target_velocity;
-        // character.rigid.velocity = Vector3.Lerp(character.rigid.velocity, target_velocity, velocityChange);
-
-        // character.rigid.AddForce(target_velocity);
-        // character.rigid.velocity = Vector3.ClampMagnitude(character.rigid.velocity, 50f);
     }
 
     void Walk()
@@ -256,7 +215,7 @@ public class EnemyAI : MonoBehaviour
         else
         {
             //해당 방향으로 가속
-            Move(character.targetDir.normalized * character.speedNow * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
+            Move(character.targetDir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale);
 
             // 방향따라 좌우반전
             Flip();
@@ -287,6 +246,9 @@ public class EnemyAI : MonoBehaviour
 
     void JumpStart()
     {
+        if (jumpStartAction != null)
+            jumpStartAction.Invoke();
+
         // 현재 행동 점프로 전환
         character.nowState = CharacterState.Jump;
 
@@ -302,15 +264,8 @@ public class EnemyAI : MonoBehaviour
         // 방향따라 좌우반전
         Flip();
 
-        //움직일 거리, 목표 위치까지 갈수 있으면 목표 위치, 스피드보다 낮으면 캐릭터 스피드
-        float distance = character.targetDir.magnitude > character.speedNow ? character.speedNow : character.targetDir.magnitude;
-
-        // print(character.targetDir.normalized * distance * moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
-
         //해당 방향으로 가속
-        Move(character.targetDir.normalized * distance * character.moveSpeedDebuff * SystemManager.Instance.globalTimeScale);
-
-        // print(character.rigid.velocity);
+        Move(character.targetDir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale);
     }
 
     public void JumpMoveStop()
@@ -321,6 +276,9 @@ public class EnemyAI : MonoBehaviour
 
     public void JumpEnd()
     {
+        if (jumpEndAction != null)
+            jumpEndAction.Invoke();
+
         // IDLE 애니메이션 전환
         character.animList[0].SetBool("Jump", false);
 
@@ -334,6 +292,6 @@ public class EnemyAI : MonoBehaviour
 
     Vector3 PlayerNearPos(float range = 3f)
     {
-        return PlayerManager.Instance.transform.position + (Vector3)Random.insideUnitCircle.normalized * range;
+        return PlayerManager.Instance.transform.position + (Vector3)UnityEngine.Random.insideUnitCircle.normalized * range;
     }
 }

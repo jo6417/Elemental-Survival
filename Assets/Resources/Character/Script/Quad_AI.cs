@@ -12,7 +12,7 @@ public class Quad_AI : MonoBehaviour
 
     [Header("State")]
     [SerializeField]
-    Patten testPatten = Patten.None;
+    Patten patten = Patten.None;
     enum Patten { PushSide, PushCircle, SingleShot, FanSmash, None, Skip };
     bool moveFanTilt = true; // 팬 기울이기 여부
     bool fanHorizon = true; // 팬 수평유지 여부
@@ -305,9 +305,11 @@ public class Quad_AI : MonoBehaviour
 
     void ChooseAttack()
     {
-        //! 스킵이면 공격 취소
-        if (testPatten == Patten.Skip)
+#if UNITY_EDITOR
+        // 스킵이면 공격 취소
+        if (patten == Patten.Skip)
             return;
+#endif
 
         // 현재 액션 변경
         character.nowState = CharacterState.Attack;
@@ -316,38 +318,39 @@ public class Quad_AI : MonoBehaviour
         character.animList[0].enabled = false;
 
         // 랜덤 패턴 결정
-        int randomNum = Random.Range(0, 4);
+        int atkType = Random.Range(0, 4);
 
         // print("randomNum : " + randomNum);
 
-        //! 테스트를 위해 패턴 고정
-        if (testPatten != Patten.None)
-            randomNum = (int)testPatten;
+#if UNITY_EDITOR
+        // 테스트를 위해 패턴 고정
+        atkType = (int)patten;
+#endif
 
-        switch (randomNum)
+        switch ((Patten)atkType)
         {
-            case 0:
+            case Patten.PushSide:
                 // 한쪽으로 밀기 패턴
                 StartCoroutine(SidePush());
                 //쿨타임 갱신
                 atkCoolCount = pushSideCoolTime;
                 break;
 
-            case 1:
+            case Patten.PushCircle:
                 // 원형으로 밀기 패턴
                 StartCoroutine(CirclePush());
                 //쿨타임 갱신
                 atkCoolCount = pushCircleCoolTime;
                 break;
 
-            case 2:
+            case Patten.SingleShot:
                 // 단일 블레이드 발사 패턴
                 StartCoroutine(SingleShot());
                 //쿨타임 갱신
                 atkCoolCount = bladeShotCoolTime;
                 break;
 
-            case 3:
+            case Patten.FanSmash:
                 // 프로펠러 후려치기 패턴
                 StartCoroutine(FanSmash());
                 //쿨타임 갱신

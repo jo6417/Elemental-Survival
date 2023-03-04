@@ -5007,7 +5007,7 @@ MonoBehaviour:
   startTime: 0.5
   expandTime: 0.2
   pulseDelay: 0.1
-  durationTime: 1
+  durationTime: 2
 --- !u!1 &2110571523205595188
 GameObject:
   m_ObjectHideFlags: 0
@@ -5239,7 +5239,7 @@ AreaEffector2D:
     m_Bits: 128
   m_UseGlobalAngle: 0
   m_ForceAngle: 0
-  m_ForceMagnitude: 100
+  m_ForceMagnitude: 500
   m_ForceVariation: 0
   m_ForceTarget: 0
   m_Drag: 0

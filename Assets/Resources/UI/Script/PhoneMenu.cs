@@ -460,8 +460,8 @@ public class PhoneMenu : MonoBehaviour
         List<MagicInfo> mergeAbleList = new List<MagicInfo>();
 
         // 가중치 배열 초기화
-        for (int i = 0; i < SystemManager.Instance.elementWeitght.Length; i++)
-            SystemManager.Instance.elementWeitght[i] = 1;
+        for (int i = 0; i < SystemManager.Instance.elementWeight.Length; i++)
+            SystemManager.Instance.elementWeight[i] = 1;
 
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
         for (int i = 0; i < invenSlots.Count; i++)
@@ -475,7 +475,7 @@ public class PhoneMenu : MonoBehaviour
                 magicList.Add(magic);
 
                 // 해당 마법 원소의 인덱스 가중치 증가
-                SystemManager.Instance.elementWeitght[MagicDB.Instance.ElementType(magic)]++;
+                SystemManager.Instance.elementWeight[MagicDB.Instance.ElementType(magic)]++;
             }
         }
 

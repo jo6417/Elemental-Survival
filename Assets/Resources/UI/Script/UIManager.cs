@@ -305,8 +305,8 @@ public class UIManager : MonoBehaviour
             // UI 커서 끄기
             UICursor.Instance.UICursorToggle(false);
 
-            // 마우스 커서 켜기
-            UICursor.Instance.arrowCursor.SetActive(true);
+            // 화살표 커서로 변경
+            UICursor.Instance.CursorChange(true);
         }
     }
 
@@ -936,9 +936,7 @@ public class UIManager : MonoBehaviour
     {
         // 이미 다른 팝업 열려있는데 팝업 키려고하면 리턴
         if (!popup.activeSelf && nowOpenPopup != null)
-        {
             return;
-        }
 
         // 팝업 UI 토글
         popup.SetActive(!popup.activeSelf);

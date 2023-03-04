@@ -206,17 +206,17 @@ MonoBehaviour:
     sounds:
     - name: PlayerStep1
       clip: {fileID: 8300000, guid: 10529a83595daad4f9640168cd1e29e7, type: 3}
-      volume: 0.15
+      volume: 0.05
       pitch: 2
       source: {fileID: 0}
     - name: PlayerStep2
       clip: {fileID: 8300000, guid: 1e9613030573b2d4595cb9af8bd04b4e, type: 3}
-      volume: 0.15
+      volume: 0.05
       pitch: 2
       source: {fileID: 0}
     - name: PlayerStep3
       clip: {fileID: 8300000, guid: 1217211a5ffdc94478d2087df25aa585, type: 3}
-      volume: 0.15
+      volume: 0.05
       pitch: 2
       source: {fileID: 0}
     - name: PlayerDash

@@ -19806,9 +19806,9 @@ RectTransform:
   m_Father: {fileID: 8163678288867802521}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 202.505, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 202.505, y: 0}
   m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2299684069359633173
@@ -20208,8 +20208,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portalState: 4
-  minGem: 100
-  maxGem: 200
+  minGem: 50
+  maxGem: 100
   needGem: 0
   nowGem: 0
   interactDelay: 0.1

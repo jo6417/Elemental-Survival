@@ -406,7 +406,10 @@ public class GatePortal : MonoBehaviour
         ActionText("", false);
 
         //보스 리스트
-        List<EnemyInfo> bosses = new List<EnemyInfo>();
+        // List<EnemyInfo> bosses = new List<EnemyInfo>();
+
+        // 소환할 보스 정보
+        EnemyInfo bossInfo = null;
 
         //타입이 보스인 몬스터 찾기
         foreach (KeyValuePair<int, EnemyInfo> enemy in EnemyDB.Instance.enemyDB)
@@ -419,17 +422,18 @@ public class GatePortal : MonoBehaviour
 
                 // 해당 월드 속성과 같으면
                 if (enemyElement == (int)SystemManager.Instance.NowMapElement)
-                    // 보스 풀에 넣기
-                    bosses.Add(enemy.Value);
+                    // 보스 정보 넣기
+                    bossInfo = enemy.Value;
+                // 보스 풀에 넣기
+                // bosses.Add(enemy.Value);
             }
         };
 
-        // 보스풀에서 하나 랜덤 선택
-        EnemyInfo bossInfo = bosses[Random.Range(0, bosses.Count)];
-
-        //! 보스 정보 고정
-        if (fixedBoss != null)
-            bossInfo = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(fixedBoss.name.Split('_')[0]));
+        // // 보스풀에서 하나 랜덤 선택
+        // EnemyInfo bossInfo = bosses[Random.Range(0, bosses.Count)];
+        // // 보스 정보 고정
+        // if (fixedBoss != null)
+        //     bossInfo = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(fixedBoss.name.Split('_')[0]));
 
         //보스 소환 위치
         Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * Random.Range(5f, 10f);

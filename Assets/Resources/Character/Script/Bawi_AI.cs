@@ -13,7 +13,7 @@ public class Bawi_AI : EnemyAI
     [SerializeField, ReadOnly] bool startTransition = false;
     [SerializeField] Patten patten = Patten.None;
     enum Patten { FistDrop, BigStoneThrow, SmallStoneThrow, DrillDash, DrillChase, None };
-    float coolCount; //쿨타임 카운트
+    float atkCoolCount; //쿨타임 카운트
     public float fistDropCoolTime;
     public float stoneThrowCoolTime;
     public float drillDashCoolTime;
@@ -185,11 +185,14 @@ public class Bawi_AI : EnemyAI
         // 등장 트랜지션 종료
         startTransition = true;
     }
-    void Update()
+
+    protected override void Update()
     {
-        // 이동 리셋 카운트 차감
-        if (searchCoolCount > 0)
-            searchCoolCount -= Time.deltaTime;
+        base.Update();
+
+        // // 이동 리셋 카운트 차감
+        // if (searchCoolCount > 0)
+        //     searchCoolCount -= Time.deltaTime;
 
         // 몬스터 정보 없으면 리턴
         if (character.enemy == null)
@@ -234,12 +237,12 @@ public class Bawi_AI : EnemyAI
             return;
 
         // 쿨타임 차감
-        coolCount -= Time.deltaTime;
+        atkCoolCount -= Time.deltaTime;
 
-        stateText.text = "CoolCount : " + coolCount;
+        stateText.text = "CoolCount : " + atkCoolCount;
 
         // 쿨타임 됬을때, 범위 내에 있을때
-        if (coolCount <= 0 && distance <= atkRange)
+        if (atkCoolCount <= 0 && distance <= atkRange)
         {
             //! 거리 확인용
             // stateText.text = "Close : " + distance;
@@ -364,7 +367,7 @@ public class Bawi_AI : EnemyAI
             headPart.sortingOrder = 0;
 
             // 착지 사운드 재생
-            SoundManager.Instance.PlaySound("Bawi_Land", transform.position);
+            SoundManager.Instance.PlaySound("Bawi_Land");
         }
 
         //애니메이터 끄기
@@ -377,45 +380,46 @@ public class Bawi_AI : EnemyAI
         character.nowState = CharacterState.Attack;
 
         // 랜덤 패턴 결정
-        int randomNum = Random.Range(0, 5);
+        int atkType = Random.Range(0, 5);
 
         // print("randomNum : " + randomNum);
 
-        //! 테스트를 위해 패턴 고정
-        if (patten != Patten.None)
-            randomNum = (int)patten;
+#if UNITY_EDITOR
+        // 테스트를 위해 패턴 고정        
+        atkType = (int)patten;
+#endif
 
-        switch (randomNum)
+        switch ((Patten)atkType)
         {
-            case 0:
+            case Patten.FistDrop:
                 // 주먹 내려찍기 패턴
                 StartCoroutine(FistDrop());
                 //쿨타임 갱신
-                coolCount = fistDropCoolTime;
+                atkCoolCount = fistDropCoolTime;
                 break;
-            case 1:
+            case Patten.BigStoneThrow:
                 // 큰 바위 던지기 패턴
                 StartCoroutine(StoneThrow(false));
                 //쿨타임 갱신
-                coolCount = stoneThrowCoolTime;
+                atkCoolCount = stoneThrowCoolTime;
                 break;
-            case 2:
+            case Patten.SmallStoneThrow:
                 // 작은 돌 샷건 패턴
                 StartCoroutine(StoneThrow(true));
                 //쿨타임 갱신
-                coolCount = stoneThrowCoolTime;
+                atkCoolCount = stoneThrowCoolTime;
                 break;
-            case 3:
+            case Patten.DrillDash:
                 // 드릴 돌진 패턴
                 StartCoroutine(DrillDash());
                 //쿨타임 갱신
-                coolCount = drillDashCoolTime;
+                atkCoolCount = drillDashCoolTime;
                 break;
-            case 4:
+            case Patten.DrillChase:
                 // 드릴 추격 패턴
                 StartCoroutine(DrillChase());
                 //쿨타임 갱신
-                coolCount = drillChaseCoolTime;
+                atkCoolCount = drillChaseCoolTime;
                 break;
         }
     }
@@ -468,7 +472,7 @@ public class Bawi_AI : EnemyAI
             fistSprite.sprite = grabFistSprite;
 
             // 바위 집는 사운드 재생
-            SoundManager.Instance.PlaySound("Bawi_GrabStone", fistPart.transform.position);
+            SoundManager.Instance.PlaySound("Bawi_GrabStone");
         })
         // 잠시 대기
         .AppendInterval(0.5f)
@@ -524,7 +528,7 @@ public class Bawi_AI : EnemyAI
         if (isSmallStone)
         {
             // 바위 부수는 사운드 재생
-            SoundManager.Instance.PlaySound("Bawi_CrushStone", fistPart.transform.position);
+            SoundManager.Instance.PlaySound("Bawi_CrushStone");
 
             // 주먹 위치 떨림
             fistPart.transform.DOPunchPosition(Vector3.up, 0.5f, 50, 1);
@@ -584,7 +588,7 @@ public class Bawi_AI : EnemyAI
             StartCoroutine(ShotStone(isSmallStone));
 
             // 던지기 사운드 재생
-            SoundManager.Instance.PlaySound("Bawi_ThrowStone", fistPart.transform.position);
+            SoundManager.Instance.PlaySound("Bawi_ThrowStone");
         })
         .Join(
             //포물선 그리며 손 휘두르기
@@ -741,7 +745,7 @@ public class Bawi_AI : EnemyAI
         float aimRate = 0.1f;
 
         // 바위 떨리는 사운드 재생
-        AudioSource shakeSound = SoundManager.Instance.PlaySound("Bawi_Shake", transform.position);
+        AudioSource shakeSound = SoundManager.Instance.PlaySound("Bawi_Shake");
 
         // 조준 시간동안 플레이어 조준하기
         while (aimCount > 0)
@@ -787,7 +791,7 @@ public class Bawi_AI : EnemyAI
         // drillDashDust.SetActive(true);
 
         // 대쉬 사운드 재생
-        SoundManager.Instance.PlaySound("Bawi_DrillDash", transform);
+        SoundManager.Instance.PlaySound("Bawi_DrillDash");
 
         // 플레이어 방향으로 돌진
         transform.DOMove(dashPos, 1f)
@@ -845,7 +849,7 @@ public class Bawi_AI : EnemyAI
         character.nowState = CharacterState.Idle;
 
         // 파츠 호버링 사운드 재생
-        SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
+        SoundManager.Instance.PlaySound("Bawi_Hover");
     }
 
     IEnumerator WeaponCharge(Transform partObj, Vector2 atkPos, int chargeNum, float delay = 0f)
@@ -915,7 +919,7 @@ public class Bawi_AI : EnemyAI
                 LeanPool.Spawn(chargePulse, partObj.position, Quaternion.identity, partObj);
 
                 // 파워업 사운드 재생
-                SoundManager.Instance.PlaySound("Bawi_PowerUp", transform.position);
+                SoundManager.Instance.PlaySound("Bawi_PowerUp");
             })
             .Append(
                 //원래 높이로 복구
@@ -1041,7 +1045,7 @@ public class Bawi_AI : EnemyAI
             fistCrushColl.enabled = true;
 
             // 주먹 내려찍기 사운드 재생
-            SoundManager.Instance.PlaySound("Bawi_FistImpact", transform.position);
+            SoundManager.Instance.PlaySound("Bawi_FistImpact");
         });
 
         // 주먹 떨어지는데 1초, 0.5초 대기
@@ -1078,7 +1082,7 @@ public class Bawi_AI : EnemyAI
         character.nowState = CharacterState.Idle;
 
         // 파츠 호버링 사운드 재생
-        SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
+        SoundManager.Instance.PlaySound("Bawi_Hover");
     }
 
     IEnumerator DrillChase()
@@ -1107,7 +1111,7 @@ public class Bawi_AI : EnemyAI
         .SetEase(Ease.InOutQuart);
 
         // 드릴 스핀 사운드 재생
-        SoundManager.Instance.PlaySound("Bawi_DrillSpin", drillPart.transform.position);
+        SoundManager.Instance.PlaySound("Bawi_DrillSpin");
 
         // 드릴 다 들때까지 대기
         yield return new WaitForSeconds(1f);
@@ -1142,9 +1146,9 @@ public class Bawi_AI : EnemyAI
             BurrowTrail.Play();
 
             // 드릴 땅에 꽂히는 사운드 재생
-            SoundManager.Instance.PlaySound("Bawi_Drill_Impact", drillPart.transform.position);
+            SoundManager.Instance.PlaySound("Bawi_Drill_Impact");
             // 드릴 땅파기 사운드 재생
-            drillSound = SoundManager.Instance.PlaySound("Bawi_DrillDig", drillPart.transform.position);
+            drillSound = SoundManager.Instance.PlaySound("Bawi_DrillDig");
         });
 
         // 동시에 그림자 사이즈 줄여 없에기
@@ -1231,7 +1235,7 @@ public class Bawi_AI : EnemyAI
         .SetEase(Ease.OutBack);
 
         // 드릴 튀어나올때 사운드 재생
-        SoundManager.Instance.PlaySound("Bawi_Drill_Impact", drillPart.transform.position);
+        SoundManager.Instance.PlaySound("Bawi_Drill_Impact");
 
         yield return new WaitForSeconds(2f);
 
@@ -1252,6 +1256,6 @@ public class Bawi_AI : EnemyAI
         character.nowState = CharacterState.Idle;
 
         // 파츠 호버링 사운드 재생
-        SoundManager.Instance.PlaySound("Bawi_Hover", transform.position);
+        SoundManager.Instance.PlaySound("Bawi_Hover");
     }
 }

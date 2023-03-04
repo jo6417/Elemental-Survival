@@ -128,14 +128,18 @@ public class PlayerManager : Character
         // 방향키 눌렀을때
         player_Input.Player.Move.performed += val =>
         {
-            //! 사운드 테스트
-            // SoundManager.Instance.SoundPlay("Test");
-
             //현재 이동방향 입력
             inputMoveDir = val.ReadValue<Vector2>();
 
             //대쉬 중 아닐때만
             Move();
+        };
+
+        // 마우스 움직였을때
+        player_Input.Player.MousePosition.performed += val =>
+        {
+            // 에임 커서로 변경
+            UICursor.Instance.CursorChange(false);
         };
 
         // 방향키 안누를때

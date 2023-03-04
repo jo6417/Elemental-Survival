@@ -225,37 +225,36 @@ public class KingSlime_AI : MonoBehaviour
 
     void ChooseAttack()
     {
-        //! 패턴 스킵
-        if (patten == Patten.Skip)
-            return;
-
-        // print("공격 패턴 선택");
-
         // 가능한 공격 중에서 랜덤 뽑기
         int atkType = Random.Range(0, 3);
 
-        //! 테스트를 위해 패턴 고정
-        if (patten != Patten.None)
-            atkType = (int)patten;
+#if UNITY_EDITOR
+        // 패턴 스킵이면 리턴
+        if (patten == Patten.Skip)
+            return;
+
+        // 테스트를 위해 패턴 고정
+        atkType = (int)patten;
+#endif
 
         // 결정된 공격 패턴 실행
-        switch (atkType)
+        switch ((Patten)atkType)
         {
-            case 0:
+            case Patten.BabySlimeSummon:
                 // 쿨타임 초기화 
                 coolCount = babyAtkCoolTime;
                 // 공격 실행
                 StartCoroutine(BabySlimeSummon());
                 break;
 
-            case 1:
+            case Patten.PoisonShot:
                 // 쿨타임 초기화 
                 coolCount = poisonAtkCoolTime;
                 // 공격 실행
                 StartCoroutine(PoisonShot());
                 break;
 
-            case 2:
+            case Patten.IceDrill:
                 // 쿨타임 초기화 
                 coolCount = iceDrillCoolTime;
                 // 공격 실행

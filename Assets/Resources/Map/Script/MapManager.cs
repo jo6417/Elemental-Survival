@@ -98,21 +98,18 @@ public class MapManager : MonoBehaviour
         // 씬 변경 끝내기
         SystemManager.Instance.sceneChanging = false;
 
-        // 게임 시작할때까지 대기
-        // yield return new WaitUntil(() => Time.timeScale == 1f);
-
-        // 씬 마스크 트랜지션 끝날때까지 대기
-        yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);
-
-        // 배경음 재생
-        SoundManager.Instance.BGMCoroutine = SoundManager.Instance.BGMPlayer();
-        StartCoroutine(SoundManager.Instance.BGMCoroutine);
+#if UNITY_EDITOR
+        // 현재 배경음이 없거나, 재생 안되고 있으면
+        if (SoundManager.Instance.nowBGM == null || !SoundManager.Instance.nowBGM.isPlaying)
+            // 배경음 재생
+            SoundManager.Instance.BGMPlay();
+#endif
 
         // 글로벌 피치값 초기화
         SoundManager.Instance.globalPitch = 1f;
 
         // 조준용 마우스 커서로 전환
-        UICursor.Instance.CursorChange(false);
+        // UICursor.Instance.CursorChange(false);
     }
 
     void Update()

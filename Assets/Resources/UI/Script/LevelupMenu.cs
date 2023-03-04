@@ -106,7 +106,7 @@ public class LevelupMenu : MonoBehaviour
             // 얻을 아이템 종류 가중치로 뽑기
             int randomType = SystemManager.Instance.WeightRandom(typeRate);
             // 얻을 아이템 등급 가중치로 뽑기
-            int randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeRate) + 1;
+            int randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight) + 1;
 
             // 언락 마법, 샤드, 원소젬 중에서 결정
             switch (randomType)
@@ -118,7 +118,7 @@ public class LevelupMenu : MonoBehaviour
                         getItem = MagicDB.Instance.GetRandomMagic(randomGrade);
 
                         // 실패하면 등급 다시 뽑기
-                        randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeRate);
+                        randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
                     }
 
                     break;

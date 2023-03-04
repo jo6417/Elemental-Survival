@@ -65,7 +65,7 @@ public class PlayerHitBox : HitBox
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         // print("OnTriggerEnter2D : " + other.name);
 
@@ -218,93 +218,15 @@ public class PlayerHitBox : HitBox
         LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
-    // public void AfterEffect(Attack attack, bool isCritical, float damage = 0)
-    // {
-    //     //시간 정지
-    //     if (attack.stopTime > 0)
-    //     {
-    //         // 경직 카운터에 stopTime 만큼 추가
-    //         // stopCount = attacker.stopTime;
-
-    //         // 해당 위치에 고정
-    //         // enemyAI.rigid.constraints = RigidbodyConstraints2D.FreezeAll;
-    //     }
-
-    //     //넉백
-    //     if (attack.knockbackForce > 0)
-    //     {
-    //         StartCoroutine(Knockback(attack, attack.knockbackForce));
-    //     }
-
-    //     // 슬로우
-    //     if (attack.slowTime > 0)
-    //     {
-    //         //이미 슬로우 코루틴 중이면 기존 코루틴 취소
-    //         if (slowCoroutine != null)
-    //             StopCoroutine(slowCoroutine);
-
-    //         // slowCoroutine = SlowDebuff(attack.slowTime);
-    //         slowCoroutine = character.characterStat.BuffCoroutine(
-    //                Debuff.Slow.ToString(), nameof(character.characterStat.speed), true, 0.2f, attack.slowTime,
-    //                character.buffParent, SystemManager.Instance.slowDebuffUI, slowCoroutine);
-
-    //         StartCoroutine(slowCoroutine);
-    //     }
-
-    //     // 감전 디버프 && 크리티컬일때
-    //     if (attack.shockTime > 0)
-    //     {
-    //         //이미 감전 코루틴 중이면 기존 코루틴 취소
-    //         if (shockCoroutine != null)
-    //             StopCoroutine(shockCoroutine);
-
-    //         // shockCoroutine = ShockDebuff(attack.shockTime);
-    //         shockCoroutine = character.characterStat.BuffCoroutine(
-    //              Debuff.Slow.ToString(), nameof(character.characterStat.speed), true, 0.2f, attack.slowTime,
-    //              character.buffParent, SystemManager.Instance.slowDebuffUI, shockCoroutine);
-
-    //         StartCoroutine(shockCoroutine);
-    //     }
-
-    //     // flat 디버프 있을때, flat 상태 아닐때
-    //     if (attack.flatTime > 0 && !isFlat)
-    //     {
-    //         // print("player flat");
-
-    //         // 납작해지고 행동불능
-    //         StartCoroutine(FlatDebuff(attack.flatTime));
-    //     }
-
-    //     // 화상 피해 시간 있을때
-    //     if (attack.burnTime > 0)
-    //     {
-    //         // 도트 데미지 실행
-    //         DotHit(damage, isCritical, attack.burnTime, transform,
-    //         SystemManager.Instance.burnDebuffEffect, Debuff.Burn);
-    //     }
-
-    //     // 포이즌 피해 시간 있으면 도트 피해
-    //     if (attack.poisonTime > 0)
-    //     {
-    //         // 도트 데미지 실행
-    //         DotHit(damage, isCritical, attack.poisonTime, transform,
-    //         SystemManager.Instance.poisonDebuffEffect, Debuff.Poison);
-    //     }
-
-    //     // 출혈 지속시간 있으면 도트 피해
-    //     if (attack.bleedTime > 0)
-    //     {
-    //         // 도트 데미지 실행
-    //         DotHit(damage, isCritical, attack.bleedTime, buffParentObj,
-    //         SystemManager.Instance.bleedDebuffUI, Debuff.Bleed);
-    //     }
-    // }
-
     public override void Damage(float damage, bool isCritical, Vector2 hitPos = default)
     {
         // //! 갓모드 켜져 있으면 데미지 0
         // if (SystemManager.Instance.godMod && damage > 0)
         //     damage = 0;
+
+        // 피격 위치안들어오면 현재위치 넣기
+        if (hitPos == default)
+            hitPos = transform.position;
 
         //데미지 int로 바꾸기
         damage = Mathf.RoundToInt(damage);
@@ -344,8 +266,8 @@ public class PlayerHitBox : HitBox
             // 데미지 표시
             UIManager.Instance.DamageUI(UIManager.DamageType.Damaged, damage, isCritical, hitPos);
 
-            // 혈흔 파티클 생성
-            LeanPool.Spawn(playerManager.bloodPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+            // 혈흔 생성
+            DropBlood();
 
             // 데미지 사운드 재생
             SoundManager.Instance.PlaySound("Hit");
@@ -379,6 +301,31 @@ public class PlayerHitBox : HitBox
             print("Game Over");
             StartCoroutine(Dead());
         }
+    }
+
+    void DropBlood()
+    {
+        // 혈흔 파티클 생성
+        GameObject blood = LeanPool.Spawn(playerManager.bloodPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+
+        // 혈흔 레이어 캐릭터보다 앞에 나오게 초기화
+        ParticleSystemRenderer bloodParticle = blood.GetComponent<ParticleSystemRenderer>();
+        bloodParticle.sortingLayerID = SortingLayer.NameToID(SortingLayerID.Magic.ToString());
+
+        // 혈흔 커지기
+        blood.transform.localScale = Vector2.zero;
+        blood.transform.DOScale(Vector2.one, 0.5f)
+        .SetEase(Ease.OutCubic);
+
+        // 혈흔 튀기기
+        Vector2 bloodPos = (Vector2)transform.position + Random.insideUnitCircle * Random.Range(1f, 2f);
+        blood.transform.DOJump(bloodPos, 1f, 1, 0.5f)
+        .SetEase(Ease.InCirc)
+        .OnComplete(() =>
+        {
+            // 바닥 레이어로 수정
+            bloodParticle.sortingLayerID = SortingLayer.NameToID(SortingLayerID.Ground.ToString());
+        });
     }
 
     public override IEnumerator Knockback(Attack attacker, float knockbackForce)

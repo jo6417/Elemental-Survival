@@ -29,7 +29,13 @@ public class MagnetLaser : MonoBehaviour
         enemyPush.gameObject.SetActive(false);
 
         yield return new WaitUntil(() => PlayerManager.Instance != null);
-        // 플레이어 자식으로 들어가기        
+
+        // 플레이어 밑에 이미 자석 레이저 있으면 모두 디스폰
+        MagnetLaser[] oldLaser = PlayerManager.Instance.GetComponents<MagnetLaser>();
+        foreach (MagnetLaser laser in oldLaser)
+            LeanPool.Despawn(laser);
+
+        // 플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
         transform.localPosition = Vector3.zero;
 

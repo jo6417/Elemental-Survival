@@ -694,9 +694,6 @@ public class HitBox : MonoBehaviour
 
     public void DebuffRemove()
     {
-        // 이동 속도 저하 디버프 초기화
-        character.moveSpeedDebuff = 1f;
-
         // 플랫 디버프 초기화
         character.flatCount = 0f;
         //스케일 복구

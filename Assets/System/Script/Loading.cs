@@ -162,6 +162,9 @@ public class Loading : MonoBehaviour
             // 마스크 끄기
             cutoutCover.SetActive(false);
 
+            // 배경음 재생
+            SoundManager.Instance.BGMPlay();
+
             // UI매니저 있을때, 기본 마법 켜져있을때
             if (UIManager.Instance != null && UIManager.Instance.defaultPanel.activeInHierarchy)
                 yield break;
