@@ -683,9 +683,6 @@ public class HotDog_AI : EnemyAI
             yield break;
 #endif
 
-        // 현재 액션 변경
-        character.nowState = CharacterState.Attack;
-
         // 이동 애니메이션 종료
         character.animList[0].SetBool(AnimState.isWalk.ToString(), false);
         character.animList[0].SetBool(AnimState.isRun.ToString(), false);
@@ -716,13 +713,16 @@ public class HotDog_AI : EnemyAI
         // 호흡 이펙트 끄기
         breathEffect.SmoothDisable();
 
-        // 랜덤 패턴 결정
+        // 가능한 공격 중에서 랜덤 뽑기
         int atkType = Random.Range(0, 3);
-        // print("randomNum : " + atkType);
+
+        // 현재 행동 공격으로 전환
+        character.nowState = CharacterState.Attack;
 
 #if UNITY_EDITOR
         // 테스트를 위해 패턴 고정
-        atkType = (int)patten;
+        if (patten != Patten.None)
+            atkType = (int)patten;
 #endif
 
         switch ((Patten)atkType)

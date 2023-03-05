@@ -324,7 +324,8 @@ public class Quad_AI : MonoBehaviour
 
 #if UNITY_EDITOR
         // 테스트를 위해 패턴 고정
-        atkType = (int)patten;
+        if (patten != Patten.None)
+            atkType = (int)patten;
 #endif
 
         switch ((Patten)atkType)

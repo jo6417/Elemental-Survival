@@ -11,10 +11,10 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Text;
 using Pixeye.Unity;
-using System;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public enum TagNameList { Player, Enemy, Magic, Item, Object, Respawn, Obstacle };
 public enum SortingLayerID { Default, Ground, Item, CharacterObject, Player, Magic, MagicEffect, UI };
@@ -22,7 +22,7 @@ public enum MapElement { Earth, Fire, Life, Lightning, Water, Wind };
 public enum DBType { Magic, Enemy, Item };
 public enum SceneName { InGameScene, MainMenuScene };
 
-[Serializable]
+[System.Serializable]
 public class PhysicsLayerList
 {
     // 물리 충돌 레이어
@@ -135,8 +135,14 @@ public class SystemManager : MonoBehaviour
     private bool isLogChanged = false; // 로그 메시지 변경 여부를 나타내는 플래그
     [SerializeField] Button spawnBtn; // 몬스터 자동 스폰 버튼
     [SerializeField] Button showStateBtn; // 몬스터 상태 디버깅 토글 버튼
+    [SerializeField] Button allkillBtn; // 몬스터 올킬 버튼
+    [SerializeField] Transform testParent; // 테스트 오브젝트 부모
+    [SerializeField] GameObject testItemSet; // 테스트 아이템 모음 프리팹
+    [SerializeField] Button testItemBtn; // 테스트 아이템 리셋 버튼
     public bool spawnSwitch; //몬스터 스폰 여부
     public bool showEnemyState = false; // 몬스터 상태 디버깅 여부
+    [SerializeField] TMP_Dropdown bossSummon; // 보스 소환 드롭다운
+    [SerializeField] TMP_Dropdown enemySummon; // 몬스터 소환 드롭다운
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
@@ -271,6 +277,40 @@ public class SystemManager : MonoBehaviour
             showStateBtn.onClick.AddListener(() => { ButtonToggle(ref showEnemyState, showStateBtn); });
         }
 
+        // 몬스터 올킬 버튼 함수 연결
+        if (allkillBtn != null)
+            allkillBtn.onClick.AddListener(() =>
+            {
+                // 인게임씬 아니면 리턴
+                if (GetSceneName() != SceneName.InGameScene.ToString())
+                    return;
+
+                // 모든 몬스터 죽이기
+                if (WorldSpawner.Instance)
+                    StartCoroutine(WorldSpawner.Instance.AllKillEnemy());
+            });
+
+        // 테스트 아이템 세트 비활성화
+        testItemSet.SetActive(false);
+        // 테스트 아이템 리셋 버튼 함수 연결
+        if (testItemBtn != null)
+            testItemBtn.onClick.AddListener(() =>
+            {
+                if (PlayerManager.Instance)
+                {
+                    string testItemName = "Test Item Set";
+                    // 이미 있는 테스트 아이템 세트 찾기
+                    Transform testItem = testParent.Find(testItemName);
+                    // 이미 있던 아이템 세트 삭제
+                    if (testItem != null) Destroy(testItem.gameObject);
+
+                    // 테스트 아이템 스폰
+                    testItem = Instantiate(testItemSet, PlayerManager.Instance.transform.position, Quaternion.identity, testParent).transform;
+                    testItem.name = testItemName;
+                    testItem.gameObject.SetActive(true);
+                }
+            });
+
         //TODO 로딩 UI 띄우기
         print("로딩 시작");
 
@@ -288,6 +328,9 @@ public class SystemManager : MonoBehaviour
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
         // 몬스터 DB 로딩 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+
+        // 보스,몬스터 소환 버튼 초기화
+        SummonBtnInit();
 
         // 수정된 로컬 세이브데이터를 저장, 완료시까지 대기
         yield return StartCoroutine(SaveManager.Instance.Save());
@@ -320,6 +363,82 @@ public class SystemManager : MonoBehaviour
             // 몬스터 자동 스폰 버튼 상태값 연결
             godModBtn.onClick.AddListener(() => { ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn); });
         }
+    }
+
+    void SummonBtnInit()
+    {
+        // 보스 소환 목록 채우기
+        List<string> bossOptions = new List<string>();
+        foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
+            if (value.Value.enemyType == EnemyDB.EnemyType.Boss.ToString())
+            {
+                // 해당 몬스터 프리팹이 있을때
+                if (EnemyDB.Instance.GetPrefab(value.Value.id))
+                {
+                    // 보스 이름 넣기
+                    string bossName = value.Value.name;
+                    bossOptions.Add(bossName);
+                }
+            }
+        // 메뉴 목록 넣기
+        bossSummon.AddOptions(bossOptions);
+
+        // 드롭다운 열었다 닫아서 초기화 시키기
+        bossSummon.Show();
+        bossSummon.Hide();
+        // 드롭다운 메뉴 캔버스의 order in layer 바꾸기
+        Canvas canvas = bossSummon.template.GetComponent<Canvas>();
+        if (canvas != null) canvas.sortingOrder = 101;
+
+        // 보스 소환 콜백 함수 넣기
+        bossSummon.onValueChanged.AddListener(delegate { SummonEnemy(bossSummon, "Boss Summon"); });
+
+        // 몬스터 소환 목록 채우기
+        List<string> enemyOptions = new List<string>();
+        foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
+            if (value.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
+            {
+                // 해당 몬스터 프리팹이 있을때
+                if (EnemyDB.Instance.GetPrefab(value.Value.id))
+                {
+                    string enemyName = value.Value.name;
+                    enemyOptions.Add(enemyName);
+                }
+            }
+        // 메뉴 목록 넣기
+        enemySummon.AddOptions(enemyOptions);
+
+        // 드롭다운 열었다 닫아서 초기화 시키기
+        enemySummon.Show();
+        enemySummon.Hide();
+        // 드롭다운 메뉴 캔버스의 order in layer 바꾸기
+        canvas = enemySummon.template.GetComponent<Canvas>();
+        if (canvas != null) canvas.sortingOrder = 101;
+
+        // 몬스터 소환 콜백 함수 넣기
+        enemySummon.onValueChanged.AddListener(delegate { SummonEnemy(enemySummon, "Enemy Summon"); });
+    }
+
+    private void SummonEnemy(TMP_Dropdown dropdown, string labelName)
+    {
+        // 선택된 옵션의 이름을 가져오기
+        string enemyName = dropdown.options[dropdown.value].text;
+
+        // 플레이어 주변 위치
+        Vector2 spawnPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle * Random.Range(10f, 20f);
+
+        EnemyInfo enemy = EnemyDB.Instance.GetEnemyByName(enemyName);
+
+        // 해당 이름의 몬스터 소환
+        if (enemy != null)
+            WorldSpawner.Instance.EnemySpawn(enemy, spawnPos);
+
+        // 첫번째 값으로 초기화
+        dropdown.value = 0;
+
+        // 캔버스 orderinLayer 갱신
+        Transform template = dropdown.transform.Find("Template");
+        template.GetComponent<Canvas>().sortingLayerID = 101;
     }
 
     // 확인 입력

@@ -201,10 +201,15 @@ public class MagicDB : MonoBehaviour
                 yield return null;
             }
 
-            // 모든 마법 딕셔너리를 액티브 쿨타임용 딕셔너리에 복사
             foreach (MagicInfo magic in magicDB.Values)
             {
+                // 모든 마법 딕셔너리를 액티브 쿨타임용 딕셔너리에 복사
                 activeMagicDB[magic.id] = new MagicInfo(magic);
+#if UNITY_EDITOR
+                // 모든 마법을 언락 시키기
+                unlockMagics.Clear();
+                unlockMagics.Add(magic.id);
+#endif
             }
 
             //모든 마법 초기화
@@ -357,15 +362,19 @@ public class MagicDB : MonoBehaviour
             // 등급을 명시했을때
             if (targetGrade != 0)
             {
-                // 해당 등급의 마법만 넣기
+                // 해당 등급일때
                 if (grade == targetGrade)
-                    randomMagicPool.Add(unlockMagics[i]);
+                    // 프리팹이 있을때
+                    if (GetMagicPrefab(unlockMagics[i]))
+                        randomMagicPool.Add(unlockMagics[i]);
             }
             // 등급을 명시하지 않았을때
             else
             {
-                // 모든 마법 넣기
-                randomMagicPool.Add(unlockMagics[i]);
+                // 프리팹이 있을때
+                if (GetMagicPrefab(unlockMagics[i]))
+                    // 모든 마법 넣기
+                    randomMagicPool.Add(unlockMagics[i]);
             }
         }
 

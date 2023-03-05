@@ -12,7 +12,7 @@ public class Bawi_AI : EnemyAI
     [Header("State")]
     [SerializeField, ReadOnly] bool startTransition = false;
     [SerializeField] Patten patten = Patten.None;
-    enum Patten { FistDrop, BigStoneThrow, SmallStoneThrow, DrillDash, DrillChase, None };
+    enum Patten { FistDrop, BigStoneThrow, SmallStoneThrow, DrillDash, DrillChase, None, Skip };
     float atkCoolCount; //쿨타임 카운트
     public float fistDropCoolTime;
     public float stoneThrowCoolTime;
@@ -376,6 +376,12 @@ public class Bawi_AI : EnemyAI
 
     void ChooseAttack()
     {
+#if UNITY_EDITOR
+        // 스킵이면 공격 취소
+        if (patten == Patten.Skip)
+            return;
+#endif
+
         // 현재 액션 변경
         character.nowState = CharacterState.Attack;
 
@@ -385,8 +391,9 @@ public class Bawi_AI : EnemyAI
         // print("randomNum : " + randomNum);
 
 #if UNITY_EDITOR
-        // 테스트를 위해 패턴 고정        
-        atkType = (int)patten;
+        // 테스트를 위해 패턴 고정
+        if (patten != Patten.None)
+            atkType = (int)patten;
 #endif
 
         switch ((Patten)atkType)

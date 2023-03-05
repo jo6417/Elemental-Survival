@@ -24,6 +24,7 @@ public class ItemManager : MonoBehaviour
     public float autoDespawnTime = 0; //자동 디스폰 시간
     public ItemInfo itemInfo; // 해당 아이템 정보
     public MagicInfo magicInfo; // 해당 아이템이 갖고 있는 마법 정보
+    [SerializeField] bool randomMagic = false;
     public DBEnums.MagicDBEnum magicEnum = (DBEnums.MagicDBEnum)10000; // 테스트용 마법 리스트
 
     private void Awake()
@@ -77,10 +78,15 @@ public class ItemManager : MonoBehaviour
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
 
         // 마법 이름 들어왔을때
-        if ((int)magicEnum != 10000)
+        if ((int)magicEnum != 10000 || randomMagic)
         {
-            // 마법 정보 찾아 넣기
-            magicInfo = MagicDB.Instance.GetMagicByName(magicEnum.ToString());
+            if ((int)magicEnum != 10000)
+                // 마법 정보 찾아 넣기
+                magicInfo = MagicDB.Instance.GetMagicByName(magicEnum.ToString());
+            if (randomMagic)
+                // 랜덤 마법 찾아 넣기
+                magicInfo = MagicDB.Instance.GetRandomMagic();
+
             // 프레임 색 넣기
             transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[magicInfo.grade];
             // 마법 아이콘 넣기

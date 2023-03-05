@@ -18,6 +18,7 @@ public class LevelupMenu : MonoBehaviour
     [SerializeField] Transform attractor;
     private enum GetSlotType { Magic, Shard, Gaget, Heal };
     [SerializeField] List<float> typeRate = new List<float>();
+    [SerializeField, ReadOnly] List<string> cardNames = new List<string>(); // 중복 확인용 카드 이름 리스트
 
     private void OnEnable()
     {
@@ -103,43 +104,67 @@ public class LevelupMenu : MonoBehaviour
             // 뒷면 아이콘 찾기
             Image backIcon = background.transform.Find("Icon").GetComponent<Image>();
 
-            // 얻을 아이템 종류 가중치로 뽑기
-            int randomType = SystemManager.Instance.WeightRandom(typeRate);
-            // 얻을 아이템 등급 가중치로 뽑기
-            int randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight) + 1;
+            int randomType = 0;
+            int randomGrade = 0;
 
-            // 언락 마법, 샤드, 원소젬 중에서 결정
-            switch (randomType)
+            // 카드 리스트 비우고 3개로 초기화
+            cardNames.Clear();
+            for (int j = 0; j < 3; j++)
+                cardNames.Add("");
+
+            // 카드 이름 안들어오면 계속 진행
+            while (cardNames[index] == "")
             {
-                case (int)GetSlotType.Magic:
-                    while (getItem == null)
-                    {
-                        // 언락 마법 중 하나 뽑기
-                        getItem = MagicDB.Instance.GetRandomMagic(randomGrade);
+                // 얻을 아이템 종류 가중치로 뽑기
+                randomType = SystemManager.Instance.WeightRandom(typeRate);
+                // 얻을 아이템 등급 가중치로 뽑기
+                randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight) + 1;
 
-                        // 실패하면 등급 다시 뽑기
-                        randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
-                    }
+                // 언락 마법, 샤드, 원소젬 중에서 결정
+                switch ((GetSlotType)randomType)
+                {
+                    case GetSlotType.Magic:
+                        while (getItem == null)
+                        {
+                            // 언락 마법 중 하나 뽑기
+                            getItem = MagicDB.Instance.GetRandomMagic(randomGrade);
 
-                    break;
-                case (int)GetSlotType.Shard:
+                            // 실패하면 등급 다시 뽑기
+                            randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
+                        }
+                        break;
+                    case GetSlotType.Shard:
 
-                    // 1~6등급 중에 샤드 하나 뽑기
-                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, randomGrade);
+                        // 1~6등급 중에 샤드 하나 뽑기
+                        getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, randomGrade);
+                        break;
+                    case GetSlotType.Gaget:
 
-                    break;
-                case (int)GetSlotType.Gaget:
+                        // 가젯 중에 하나 뽑기
+                        getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget);
+                        break;
+                    case GetSlotType.Heal:
 
-                    // 가젯 중에 하나 뽑기
-                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget);
+                        // 회복템 중에 하나 뽑기
+                        getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal);
+                        break;
+                }
 
-                    break;
-                case (int)GetSlotType.Heal:
+                // 카드 이름 생성
+                string cardName = randomType + getItem.name;
 
-                    // 회복템 중에 하나 뽑기
-                    getItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal);
+                // 중복된 카드가 있으면
+                if (cardNames.Exists(x => x == cardName))
+                {
+                    print("중복");
 
-                    break;
+                    // 다시 뽑기
+                    continue;
+                }
+                // 중복 카드 없으면
+                else
+                    // 정해진 카드 이름 넣기
+                    cardNames[index] = cardName;
             }
 
             // print(index + " : " + randomType + " : " + randomGrade + " : " + getItem.name);

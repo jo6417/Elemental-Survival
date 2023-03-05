@@ -460,6 +460,10 @@ public class UIManager : MonoBehaviour
     //게임 일시정지,재개
     public void Resume()
     {
+        // 현재 오픈 팝업이 비정상적으로 꺼진 상태일때 null로 갱신
+        if (nowOpenPopup && !nowOpenPopup.activeSelf)
+            nowOpenPopup = null;
+
         // 핸드폰 패널 켜져있을때
         if (nowOpenPopup == phonePanel
         || nowOpenPopup == magicMachinePanel)

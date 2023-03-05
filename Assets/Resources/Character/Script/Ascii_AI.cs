@@ -765,7 +765,8 @@ public class Ascii_AI : MonoBehaviour
         int atkType = Random.Range(0, 4);
 
 #if UNITY_EDITOR
-        atkType = (int)patten;
+        if (patten != Patten.None)
+            atkType = (int)patten;
 #endif
 
         // 결정된 공격 패턴 실행

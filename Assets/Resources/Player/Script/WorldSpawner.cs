@@ -321,6 +321,7 @@ public class WorldSpawner : MonoBehaviour
 
         // 엘리트 출현 유무 (시간 및 총 전투력에 따라 엘리트 출현율 상승)
         eliteRate = timePower / 100f; // 30초마다 1%씩 출현율 상승 (3000초=50분 이상이면 100% 엘리트)
+        eliteRate = eliteRate / 2f; //todo 엘리트 너무 자주 떠서 확률 보정 테스트중
 
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;
@@ -635,5 +636,18 @@ public class WorldSpawner : MonoBehaviour
 
         //화살표 디스폰
         LeanPool.Despawn(arrowUI);
+    }
+
+    public IEnumerator AllKillEnemy()
+    {
+        // 인게임씬 아니면 리턴
+        if (SystemManager.Instance.GetSceneName() != SceneName.InGameScene.ToString())
+            yield break;
+
+        // 소환된 모든 몬스터 죽이기
+        foreach (Character character in spawnEnemyList)
+        {
+            StartCoroutine(character.hitBoxList[0].Dead(0));
+        }
     }
 }

@@ -16629,7 +16629,7 @@ MonoBehaviour:
   targetVelocity: {x: 0, y: 0, z: 0}
   minSpeed: 5
   maxSpeed: 30
-  patten: 3
+  patten: 4
   stepSounds:
   - Farmer_Step1
   - Farmer_Step2
@@ -16742,17 +16742,42 @@ MonoBehaviour:
   initialFinish: 0
   eliteClass: 0
   lookLeft: 0
-  hpNow: 0
-  hpMax: 0
+  characterStat:
+    powerSum: 0
+    hpMax: 100
+    hpNow: 100
+    Level: 1
+    moveSpeed: 1
+    atkNum: 0
+    pierce: 0
+    power: 1
+    armor: 1
+    speed: 1
+    evade: 0
+    knockbackForce: 1
+    coolTime: 1
+    duration: 1
+    range: 1
+    scale: 1
+    luck: 1
+    expGain: 1
+    getRage: 1
+    earth_atk: 1
+    fire_atk: 1
+    life_atk: 1
+    lightning_atk: 1
+    water_atk: 1
+    wind_atk: 1
+  buffList: []
   isDead: 0
   deadDelay: 1
   changeGhost: 0
   portalSize: 1
   afterEffect: 0
   invinsible: 0
-  selfExplosion: 0
   attackRange: 0
   healCount: 0
+  atkCoolCount: 0
   isGhost: 0
   nowState: 0
   moveType: 0
@@ -16762,7 +16787,22 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  shadow: {fileID: 4975958307489816598}
+  searchRange: 100
+  enemyAI: {fileID: 0}
+  enemyAtkTrigger: {fileID: 0}
+  enemyAtkList: []
+  healRange: {fileID: 0}
+  animList: []
+  physicsColl: {fileID: 0}
+  rigid: {fileID: 409025736398897761}
+  buffParent: {fileID: 1945055587}
+  particleHitCount: 0
+  hitDelayCount: 0
+  stopCount: 0
+  stunCount: 0
+  flatCount: 0
+  oppositeCount: 0
+  spriteObj: {fileID: 0}
   spriteList:
   - {fileID: 3430842209763329928}
   - {fileID: 3773376626149160770}
@@ -16780,34 +16820,20 @@ MonoBehaviour:
   - {fileID: 6249226590808714230}
   - {fileID: 7434421055684222704}
   - {fileID: 4099288530521542447}
-  spriteCopyList: []
-  enemyAI: {fileID: 0}
-  enemyAtkTrigger: {fileID: 0}
-  enemyAtkList: []
-  spriteObj: {fileID: 0}
-  healRange: {fileID: 0}
-  animList: []
-  physicsColl: {fileID: 0}
-  rigid: {fileID: 409025736398897761}
-  buffParent: {fileID: 1945055587}
-  particleHitCount: 0
-  hitDelayCount: 0
-  stopCount: 0
-  stunCount: 0
-  flatCount: 0
-  oppositeCount: 0
-  moveSpeedDebuff: 1
-  hitEffect: {fileID: 0}
-  hitBoxList: []
   originMatList: []
   originMatColorList: []
   originColorList: []
+  hitBoxList: []
+  hitEffect: {fileID: 0}
+  shadow: {fileID: 4975958307489816598}
   powerNow: 0
   speedNow: 0
   rangeNow: 0
   cooltimeNow: 0
   enemyName: 
   enemyType: 
+  debugText: {fileID: 0}
+  stateText: {fileID: 0}
 --- !u!1 &2074911450395043913
 GameObject:
   m_ObjectHideFlags: 0
@@ -52889,7 +52915,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -52943,7 +52972,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -53008,7 +53040,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -53472,7 +53507,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -53526,7 +53564,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -53580,7 +53621,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -54152,7 +54196,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -54206,7 +54253,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -54260,7 +54310,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -54724,7 +54777,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -54778,7 +54834,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -54832,7 +54891,10 @@ MonoBehaviour:
   atkColl: {fileID: 0}
   pierceCount: 0
   targetType: 2
-  fixedPower: 5
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0

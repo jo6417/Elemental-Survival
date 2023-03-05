@@ -238,7 +238,7 @@ public class EnemyDB : MonoBehaviour
 
         foreach (KeyValuePair<int, EnemyInfo> value in enemyDB)
         {
-            if (value.Value.name.Replace(" ", "") == enemyName)
+            if (value.Value.name.Replace(" ", "") == enemyName.Replace(" ", ""))
             {
                 enemy = value.Value;
                 break;

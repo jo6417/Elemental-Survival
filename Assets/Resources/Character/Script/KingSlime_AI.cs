@@ -205,9 +205,6 @@ public class KingSlime_AI : MonoBehaviour
         // 쿨타임 제로일때, 플레이어가 공격범위 이내일때
         if (coolCount <= 0 && playerDir.magnitude <= attackDistance)
         {
-            // 현재 행동 공격으로 전환
-            character.nowState = CharacterState.Attack;
-
             //공격 패턴 선택
             ChooseAttack();
 
@@ -225,16 +222,22 @@ public class KingSlime_AI : MonoBehaviour
 
     void ChooseAttack()
     {
-        // 가능한 공격 중에서 랜덤 뽑기
-        int atkType = Random.Range(0, 3);
-
 #if UNITY_EDITOR
         // 패턴 스킵이면 리턴
         if (patten == Patten.Skip)
             return;
+#endif
 
+        // 현재 행동 공격으로 전환
+        character.nowState = CharacterState.Attack;
+
+        // 가능한 공격 중에서 랜덤 뽑기
+        int atkType = Random.Range(0, 3);
+
+#if UNITY_EDITOR
         // 테스트를 위해 패턴 고정
-        atkType = (int)patten;
+        if (patten != Patten.None)
+            atkType = (int)patten;
 #endif
 
         // 결정된 공격 패턴 실행
