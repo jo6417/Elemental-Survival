@@ -7,13 +7,18 @@ using UnityEngine.UI;
 
 public class DefaultMagic : MonoBehaviour
 {
-    [SerializeField] Image panel;
     [SerializeField] CanvasGroup screen;
     [SerializeField] CanvasGroup slots;
     [SerializeField] Image blockScreen; // 화면 가림막
     [SerializeField] ParticleSystem slotParticle;
     [SerializeField] Transform attractor;
     [SerializeField] Button firstSelect; // 초기 선택된 버튼
+
+    private void Awake()
+    {
+        // 스크린 알파값 초기화
+        screen.alpha = 0f;
+    }
 
     private void OnEnable()
     {
@@ -28,7 +33,7 @@ public class DefaultMagic : MonoBehaviour
         yield return new WaitUntil(() => SystemManager.Instance != null);
 
         // 슬롯 선택 막기
-        slots.interactable = false;
+        screen.interactable = false;
 
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
@@ -47,8 +52,9 @@ public class DefaultMagic : MonoBehaviour
         // 파티클 끄기
         slotParticle.gameObject.SetActive(false);
 
-        slots.alpha = 1f;
-        panel.color = new Color32(0, 0, 0, 100);
+        // 스크린 그룹 알파값 0으로 사라지기
+        DOTween.To(() => screen.alpha, x => screen.alpha = x, 1f, 0.8f)
+        .SetUpdate(true);
 
         yield return new WaitUntil(() => MagicDB.Instance != null && MagicDB.Instance.loadDone);
 
@@ -94,7 +100,7 @@ public class DefaultMagic : MonoBehaviour
         yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);
 
         // 슬롯 선택 풀기
-        slots.interactable = true;
+        screen.interactable = true;
         // 초기 버튼 선택
         UICursor.Instance.UpdateLastSelect(firstSelect);
     }
@@ -128,11 +134,8 @@ public class DefaultMagic : MonoBehaviour
         //현재 열려있는 팝업 갱신
         UIManager.Instance.nowOpenPopup = UIManager.Instance.phonePanel;
 
-        // 슬롯들 그룹 알파값 0으로 사라지기
-        DOTween.To(() => slots.alpha, x => slots.alpha = x, 0f, 0.8f)
-        .SetUpdate(true);
-        // 패널 배경 투명하게
-        panel.DOColor(Color.clear, 0.8f)
+        // 스크린 그룹 알파값 0으로 사라지기
+        DOTween.To(() => screen.alpha, x => screen.alpha = x, 0f, 0.8f)
         .SetUpdate(true);
 
         // 선택된 슬롯 뒤에 슬롯모양 파티클 생성

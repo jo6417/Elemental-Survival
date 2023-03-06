@@ -102,7 +102,7 @@ public class SaveManager : MonoBehaviour
 
         #region GetSaveData
 
-        // 해금 마법 목록 가져오기
+        // 해금 마법 목록 저장
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
 
         // 오디오 볼륨 옵션값 모두 가져오기
@@ -168,6 +168,11 @@ public class SaveManager : MonoBehaviour
         // 불러온 json 문자열을 SaveData 형태로 변환해서 변수에 넣기
         localSaveData = JsonConvert.DeserializeObject<SaveData>(loadData);
 
+        //TODO 소지금 불러오기
+
+        // 해금 마법 목록 불러오기
+        MagicDB.Instance.unlockMagics = localSaveData.unlockMagics.ToList();
+
         // 해상도 불러오기
         SystemManager.Instance.lastResolution = new Vector2(localSaveData.resolution[0], localSaveData.resolution[1]);
         // 전체화면 여부 불러오기 및 적용
@@ -190,12 +195,6 @@ public class SaveManager : MonoBehaviour
 
         // 현재 글로벌 라이트에 적용
         SystemManager.Instance.SetBrightness();
-    }
-
-    public void LoadSet()
-    {
-        //TODO 해금 캐릭터 목록
-        //TODO 소지금 불러오기
     }
 
     public IEnumerator DBSyncCheck(DBType dbType, Button syncBtn)

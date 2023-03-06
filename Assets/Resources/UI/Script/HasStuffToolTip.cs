@@ -36,59 +36,82 @@ public class HasStuffToolTip : MonoBehaviour
     public TextMeshProUGUI stuffDescription;
     public MagicInfo magic;
     public ItemInfo item;
-    float halfCanvasWidth;
-    private RectTransform rect;
+    // float halfCanvasWidth;
     [SerializeField] CanvasGroup canvasGroup;
+
+    [SerializeField, ReadOnly] RectTransform tooltipRect;
+    [SerializeField, ReadOnly] Vector2 canvasRect;
 
     private void Awake()
     {
+        tooltipRect = GetComponent<RectTransform>();
+
         //마우스 클릭 입력
         UIManager.Instance.UI_Input.UI.Click.performed += val =>
         {
             QuitTooltip();
         };
         //마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => FollowMouse(val.ReadValue<Vector2>());
-
-        halfCanvasWidth = GetComponentInParent<CanvasScaler>().referenceResolution.x * 0.5f;
-        rect = GetComponent<RectTransform>();
+        UIManager.Instance.UI_Input.UI.MousePosition.performed += val =>
+            FollowMouse(UIManager.Instance.GetMousePos(false));
 
         //처음엔 끄기
         // gameObject.SetActive(false);
         canvasGroup.alpha = 0f;
     }
 
-    void Update()
+    void FollowMouse(Vector3 nowMousePos)
     {
-        // 마우스 커서 따라다니기
-        // FollowMouse();
-    }
-
-    void FollowMouse(Vector2 nowMousePos)
-    {
-        // 패널이 화면밖으로 안나가게 피벗 수정
-        if (rect == null)
+        //마우스 숨김 상태면 안따라감
+        if (Cursor.lockState == CursorLockMode.Locked)
             return;
 
-        if (rect.anchoredPosition.x + rect.sizeDelta.x > halfCanvasWidth)
-        {
-            rect.pivot = new Vector2(1, 0);
-        }
-        else
-        {
-            rect.pivot = new Vector2(0, 0);
-        }
+        // 툴팁 비활성화면 안따라감
+        if (!gameObject.activeSelf)
+            return;
 
-        Vector3 mousePos = nowMousePos;
-        mousePos.z = 0;
-        transform.position = mousePos;
+        // 화면 사이즈 계산
+        canvasRect = SystemManager.Instance.ActualScreenSize();
+
+        // 스크린 비율 계산
+        Vector2 canvasSize = transform.parent.GetComponent<RectTransform>().sizeDelta;
+        float screenRate = canvasSize.x / 1920f;
+        // 스크린 비율만큼 툴팁 사이즈 계산
+        transform.localScale = Vector2.one * screenRate;
+
+        // 툴팁이 화면 밖으로 나간만큼 반대로 밀기
+        #region TooltipOffset
+        // 나간만큼 오프셋 조정
+        Vector3 tooltipOffset = Vector2.zero;
+        Vector3 tooltipSize = tooltipRect.sizeDelta * screenRate;
+        // 툴팁이 화면 오른쪽 끝을 넘어가는 경우
+        if (nowMousePos.x + tooltipSize.x > canvasRect.x)
+            tooltipOffset.x = nowMousePos.x + tooltipSize.x - canvasRect.x;
+        // 툴팁이 화면 위쪽 끝을 넘어가는 경우
+        if (nowMousePos.y + tooltipSize.y > canvasRect.y)
+            tooltipOffset.y = nowMousePos.y + tooltipSize.y - canvasRect.y;
+        #endregion
+
+        // 마우스 위치에 오프셋 추가해서 툴팁 위치 산출
+        Vector3 tooltipPos = nowMousePos - tooltipOffset;
+        // 월드 위치로 변경
+        tooltipPos = Camera.main.ScreenToWorldPoint(tooltipPos);
+        // 마우스 월드 위치로 이동
+        transform.position = tooltipPos;
+
+        // print(nowMousePos + " : " + transform.parent.GetComponent<RectTransform>().sizeDelta + " : " + canvasRect + " : " + tooltipOffset);
+
+        // 로컬 z 축 0으로 초기화
+        Vector3 localPos = transform.localPosition;
+        localPos.z = 0;
+        transform.localPosition = localPos;
     }
 
     //툴팁 켜기
     public void OpenTooltip(SlotInfo slotInfo = null)
     {
         //마우스 위치로 이동 후 활성화
-        FollowMouse(UIManager.Instance.nowMousePos);
+        FollowMouse(UIManager.Instance.GetMousePos(false));
         gameObject.SetActive(true);
         canvasGroup.alpha = 0.7f;
 

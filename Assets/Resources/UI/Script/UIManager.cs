@@ -410,9 +410,12 @@ public class UIManager : MonoBehaviour
             ResumeTimer();
     }
 
-    public Vector2 GetMousePos()
+    public Vector2 GetMousePos(bool isWorldPos)
     {
-        return UI_Input.UI.MousePosition.ReadValue<Vector2>();
+        if (isWorldPos)
+            return SystemManager.Instance.MainCamera.ScreenToWorldPoint(UI_Input.UI.MousePosition.ReadValue<Vector2>());
+        else
+            return UI_Input.UI.MousePosition.ReadValue<Vector2>();
     }
 
     #region Camera

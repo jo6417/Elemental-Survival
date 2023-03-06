@@ -66,7 +66,8 @@ public class GameoverMenu : MonoBehaviour
         gameLog.Find("KilledBy/Amount").GetComponent<TextMeshProUGUI>().text = "Mob Test";
 
         // 모든 자식 오브젝트를 제거
-        SystemManager.Instance.DestroyAllChild(hasMagics);
+        for (int i = 0; i < hasMagics.childCount; i++)
+            Destroy(hasMagics.GetChild(i));
 
         // 보유한 모든 마법을 리스트로 수집
         List<MagicInfo> haveMagics = CastMagic.Instance.hasAllMagic();

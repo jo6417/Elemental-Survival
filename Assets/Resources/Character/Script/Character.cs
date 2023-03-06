@@ -294,7 +294,7 @@ public class Character : MonoBehaviour
                     spriteList[0].material.SetColor("_OutLineColor", Color.red);
 
                     // 몬스터 스케일 상승
-                    transform.localScale = Vector2.one * 1.3f;
+                    transform.localScale = Vector2.one * 1.2f;
 
                     break;
 

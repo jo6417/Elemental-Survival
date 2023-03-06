@@ -44,8 +44,9 @@ public class ProductToolTip : MonoBehaviour
     public TextMeshProUGUI productType;
     public TextMeshProUGUI productName;
     public TextMeshProUGUI productDescript;
-    RectTransform rect;
     [SerializeField] CanvasGroup canvasGroup;
+    [SerializeField, ReadOnly] RectTransform tooltipRect;
+    [SerializeField, ReadOnly] Vector2 canvasRect;
 
     [Header("Magic")]
     public MagicInfo magic;
@@ -66,24 +67,20 @@ public class ProductToolTip : MonoBehaviour
 
     private void Awake()
     {
+        tooltipRect = GetComponent<RectTransform>();
+
         //마우스 클릭 입력
         UIManager.Instance.UI_Input.UI.Click.performed += val =>
         {
             QuitTooltip();
         };
         //마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val => FollowMouse(val.ReadValue<Vector2>());
-
-        rect = GetComponent<RectTransform>();
+        UIManager.Instance.UI_Input.UI.MousePosition.performed += val =>
+            FollowMouse(UIManager.Instance.GetMousePos(false));
 
         //처음엔 끄기
         // gameObject.SetActive(false);
         canvasGroup.alpha = 0;
-    }
-
-    void Update()
-    {
-        // FollowMouse();
     }
 
     void FollowMouse(Vector3 nowMousePos)
@@ -96,12 +93,41 @@ public class ProductToolTip : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
-        if (transform.position != nowMousePos)
-        {
-            Vector3 mousePos = nowMousePos;
-            mousePos.z = 0;
-            transform.position = mousePos;
-        }
+        // 화면 사이즈 계산
+        canvasRect = SystemManager.Instance.ActualScreenSize();
+
+        // 스크린 비율 계산
+        Vector2 canvasSize = transform.parent.GetComponent<RectTransform>().sizeDelta;
+        float screenRate = canvasSize.x / 1920f;
+        // 스크린 비율만큼 툴팁 사이즈 계산
+        transform.localScale = Vector2.one * screenRate;
+
+        // 툴팁이 화면 밖으로 나간만큼 반대로 밀기
+        #region TooltipOffset
+        // 나간만큼 오프셋 조정
+        Vector3 tooltipOffset = Vector2.zero;
+        Vector3 tooltipSize = tooltipRect.sizeDelta * screenRate;
+        // 툴팁이 화면 오른쪽 끝을 넘어가는 경우
+        if (nowMousePos.x + tooltipSize.x > canvasRect.x)
+            tooltipOffset.x = nowMousePos.x + tooltipSize.x - canvasRect.x;
+        // 툴팁이 화면 위쪽 끝을 넘어가는 경우
+        if (nowMousePos.y + tooltipSize.y > canvasRect.y)
+            tooltipOffset.y = nowMousePos.y + tooltipSize.y - canvasRect.y;
+        #endregion
+
+        // 마우스 위치에 오프셋 추가해서 툴팁 위치 산출
+        Vector3 tooltipPos = nowMousePos - tooltipOffset;
+        // 월드 위치로 변경
+        tooltipPos = Camera.main.ScreenToWorldPoint(tooltipPos);
+        // 마우스 월드 위치로 이동
+        transform.position = tooltipPos;
+
+        // print(nowMousePos + " : " + transform.parent.GetComponent<RectTransform>().sizeDelta + " : " + canvasRect + " : " + tooltipOffset);
+
+        // 로컬 z 축 0으로 초기화
+        Vector3 localPos = transform.localPosition;
+        localPos.z = 0;
+        transform.localPosition = localPos;
     }
 
     //툴팁 켜기
@@ -118,32 +144,30 @@ public class ProductToolTip : MonoBehaviour
         }
         else
         {
-            Vector3 mousePos = UIManager.Instance.nowMousePos;
-            mousePos.z = 0;
-            transform.position = mousePos;
+            FollowMouse(UIManager.Instance.GetMousePos(false));
         }
 
         //툴팁 켜기
         gameObject.SetActive(true);
         canvasGroup.alpha = 0.7f;
 
-        if (!rect)
-            rect = GetComponent<RectTransform>();
+        if (!tooltipRect)
+            tooltipRect = GetComponent<RectTransform>();
 
         //툴팁 피벗 바꾸기
         switch (toolTipCorner)
         {
             case ToolTipCorner.LeftUp:
-                rect.pivot = Vector2.up;
+                tooltipRect.pivot = Vector2.up;
                 break;
             case ToolTipCorner.LeftDown:
-                rect.pivot = Vector2.zero;
+                tooltipRect.pivot = Vector2.zero;
                 break;
             case ToolTipCorner.RightUp:
-                rect.pivot = Vector2.one;
+                tooltipRect.pivot = Vector2.one;
                 break;
             case ToolTipCorner.RightDown:
-                rect.pivot = Vector2.right;
+                tooltipRect.pivot = Vector2.right;
                 break;
         }
 

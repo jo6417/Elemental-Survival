@@ -97,6 +97,7 @@ public class SystemManager : MonoBehaviour
         }
     }
     public FullScreenMode screenMode = FullScreenMode.Windowed;
+    Vector2 letterScale; // 레터박스 사이즈
     public Vector2 lastResolution = new Vector2(1920f, 1080f); // 해상도 저장
     public bool showDamage = true; // 데미지 표시 여부
 
@@ -136,7 +137,6 @@ public class SystemManager : MonoBehaviour
     [SerializeField] Button spawnBtn; // 몬스터 자동 스폰 버튼
     [SerializeField] Button showStateBtn; // 몬스터 상태 디버깅 토글 버튼
     [SerializeField] Button allkillBtn; // 몬스터 올킬 버튼
-    [SerializeField] Transform testParent; // 테스트 오브젝트 부모
     [SerializeField] GameObject testItemSet; // 테스트 아이템 모음 프리팹
     [SerializeField] Button testItemBtn; // 테스트 아이템 리셋 버튼
     public bool spawnSwitch; //몬스터 스폰 여부
@@ -185,7 +185,7 @@ public class SystemManager : MonoBehaviour
 
     [Header("Resolution")]
     [SerializeField, ReadOnly] bool nowChangeResolution = false;
-    [SerializeField] Vector2 monitorResolution = new Vector2(1920f, 1080f);
+    public Vector2 monitorResolution = new Vector2(1920f, 1080f);
     [SerializeField] Rect cameraRect;
     [SerializeField] Vector2 screenSize; // 현재 스크린 사이즈
     [SerializeField] Transform letterBoxCanvas;
@@ -300,12 +300,12 @@ public class SystemManager : MonoBehaviour
                 {
                     string testItemName = "Test Item Set";
                     // 이미 있는 테스트 아이템 세트 찾기
-                    Transform testItem = testParent.Find(testItemName);
+                    Transform testItem = ObjectPool.Instance.itemPool.Find(testItemName);
                     // 이미 있던 아이템 세트 삭제
                     if (testItem != null) Destroy(testItem.gameObject);
 
                     // 테스트 아이템 스폰
-                    testItem = Instantiate(testItemSet, PlayerManager.Instance.transform.position, Quaternion.identity, testParent).transform;
+                    testItem = Instantiate(testItemSet, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.itemPool).transform;
                     testItem.name = testItemName;
                     testItem.gameObject.SetActive(true);
                 }
@@ -630,46 +630,19 @@ public class SystemManager : MonoBehaviour
         timeTxt.text = "TimeSpeed = " + timeScale;
     }
 
-    // public void GodModeToggle()
+    // public void DestroyAllChild(Transform obj)
     // {
-    //     Image godModImg = godModBtn.GetComponent<Image>();
-    //     TextMeshProUGUI godModTxt = godModBtn.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-
-    //     godMod = !godMod;
-
-    //     if (godMod)
-    //     {
-    //         godModImg.color = Color.green;
-    //         godModTxt.text = "GodMod On";
-    //     }
-    //     else
-    //     {
-    //         godModImg.color = Color.red;
-    //         godModTxt.text = "GodMod Off";
-    //     }
+    //     //모든 자식 오브젝트 파괴
+    //     for (int i = 0; i < obj.childCount; i++)
+    //         Destroy(obj.GetChild(i));
     // }
 
-    //오브젝트의 모든 자식을 파괴
-    public void DestroyAllChild(Transform obj)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>(true);
-        //모든 자식 오브젝트 파괴
-        if (children != null)
-            for (int j = 1; j < children.Length; j++)
-                if (children[j] != transform)
-                    Destroy(children[j].gameObject);
-    }
-
-    //오브젝트의 모든 자식을 디스폰
-    public void DespawnAllChild(Transform obj)
-    {
-        Transform[] children = obj.GetComponentsInChildren<Transform>(true);
-        //모든 자식 오브젝트 디스폰
-        if (children != null)
-            for (int j = 1; j < children.Length; j++)
-                if (children[j] != transform)
-                    LeanPool.Despawn(children[j]);
-    }
+    // public void DespawnAllChild(Transform obj)
+    // {
+    //     //모든 자식 오브젝트 디스폰
+    //     for (int i = 0; i < obj.childCount; i++)
+    //         LeanPool.Despawn(obj.GetChild(i));
+    // }
 
     public SlotInfo SortInfo(SlotInfo slotInfo)
     {
@@ -951,6 +924,22 @@ public class SystemManager : MonoBehaviour
         }
     }
 
+    public Vector2 ActualScreenSize()
+    {
+        // 현재 스크린 사이즈 불러오기
+        Vector2 screenSize = screenMode == FullScreenMode.ExclusiveFullScreen || screenMode == FullScreenMode.FullScreenWindow
+           ? monitorResolution
+           : new Vector2(Screen.width, Screen.height);
+
+        // 레터박스 사이즈만큼 빼기
+        if (screenSize.x == letterScale.x)
+            screenSize -= new Vector2(0, letterScale.y);
+        else
+            screenSize -= new Vector2(letterScale.x, 0);
+
+        return screenSize;
+    }
+
     public void ChangeResolution(FullScreenMode _fullscreenMode, bool changeMode = false)
     {
         nowChangeResolution = true;
@@ -1004,7 +993,6 @@ public class SystemManager : MonoBehaviour
             horizon_letterBoxes[i].gameObject.SetActive(false);
 
         // 위아래 레터박스 사이즈 계산
-        Vector2 letterScale;
         if (cameraRect.x == 0)
         {
             letterScale = new Vector2(screenSize.x, (1f - scaleheight) * screenSize.y / 2f);

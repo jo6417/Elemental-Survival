@@ -9,13 +9,11 @@ public class LevelupMenu : MonoBehaviour
 {
     [SerializeField] Selectable firstBtn;
     [SerializeField] CanvasGroup allGroup; // 전체 캔버스 그룹
-    [SerializeField] CanvasGroup background; // 반투명 검은 배경
+    // [SerializeField] CanvasGroup background; // 반투명 검은 배경
     [SerializeField] Transform[] cards = new Transform[3]; // 카드 위치를 위한 오브젝트
     GameObject[] dustEffects = new GameObject[3]; // 카드 먼지 이펙트
     Transform[] slots = new Transform[3]; // 카드에 들어갈 정보들
     // Vector3[] cardPos = new Vector3[3]; // 카드 초기 위치
-    [SerializeField] ParticleSystem slotParticle;
-    [SerializeField] Transform attractor;
     private enum GetSlotType { Magic, Shard, Gaget, Heal };
     [SerializeField] List<float> typeRate = new List<float>();
     [SerializeField, ReadOnly] List<string> cardNames = new List<string>(); // 중복 확인용 카드 이름 리스트
@@ -29,16 +27,13 @@ public class LevelupMenu : MonoBehaviour
     IEnumerator Init()
     {
         // 배경 색 투명하게
-        background.alpha = 0f;
+        allGroup.alpha = 0f;
 
         // 전체 상호작용 풀기
         allGroup.interactable = true;
 
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f);
-
-        // 파티클 끄기
-        slotParticle.gameObject.SetActive(false);
 
         // UI 중심 위치
         Vector3 panelPos = Camera.main.transform.position; panelPos.z = -10f;
@@ -228,6 +223,10 @@ public class LevelupMenu : MonoBehaviour
             });
         }
 
+        // 전체 알파값 높이기
+        DOTween.To(() => allGroup.alpha, x => allGroup.alpha = x, 1f, 0.5f)
+        .SetUpdate(true);
+
         // 카드 왼쪽부터 순서대로 각각 코루틴으로 진행
         for (int i = 0; i < cards.Length; i++)
         {
@@ -236,12 +235,6 @@ public class LevelupMenu : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(0.2f);
         }
-
-        // 배경 보이게
-        DOTween.To(() => background.alpha, x => background.alpha = x, 1f, 0.5f)
-        .SetUpdate(true);
-
-        yield return new WaitForSecondsRealtime(0.5f);
 
         // 가운데 슬롯 선택하기
         UICursor.Instance.UpdateLastSelect(firstBtn);
@@ -309,22 +302,11 @@ public class LevelupMenu : MonoBehaviour
         // 전체 상호작용 막기
         allGroup.interactable = false;
 
-        // 배경 투명해지며 숨기기
-        DOTween.To(() => background.alpha, x => background.alpha = x, 0f, 0.2f)
-        .SetUpdate(true);
-
         // UI 커서 끄기
         UICursor.Instance.UICursorToggle(false);
 
         // 드랍위치 계산
         Vector2 dropPos = (Vector2)PlayerManager.Instance.transform.position + Random.insideUnitCircle.normalized * 2f;
-
-        // 아이템 드랍 위치로 어트랙터 옮기기
-        attractor.position = dropPos;
-
-        // 선택된 슬롯 뒤에 슬롯모양 파티클 생성
-        slotParticle.transform.position = slot.position;
-        slotParticle.gameObject.SetActive(true);
 
         for (int i = 0; i < cards.Length; i++)
         {
@@ -349,6 +331,12 @@ public class LevelupMenu : MonoBehaviour
                 .SetUpdate(true);
             }
         }
+
+
+        // 전체 투명해지기
+        DOTween.To(() => allGroup.alpha, x => allGroup.alpha = x, 0f, 0.2f)
+        .SetDelay(0.2f)
+        .SetUpdate(true);
 
         yield return new WaitForSecondsRealtime(0.5f);
 

@@ -641,6 +641,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                         mergeMagic = MagicDB.Instance.magicDB.Values.ToList().Find(
                             y => y.element_A == R_Magic.name && y.element_B == L_Magic.name);
 
+                    //! 구현되지 않아서 마법 프리팹 없을때 실패처리
+                    if (mergeMagic != null && MagicDB.Instance.GetMagicPrefab(mergeMagic.id) == null)
+                        mergeMagic = null;
+
                     // 합성 가능한 마법 없을때
                     if (mergeMagic == null)
                     {

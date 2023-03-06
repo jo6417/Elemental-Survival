@@ -43,6 +43,8 @@ public class Ghosting : MonoBehaviour
     // 몬스터 유령 생성하기
     public void SummonGhost(Character character)
     {
+        if (character == null || character.enemy == null) return;
+
         // print(MagicDB.Instance.MagicCritical(magic));
 
         // 크리티컬 확률 = 소환 확률

@@ -10049,11 +10049,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5667971186327890315, guid: 946cf1e64a11ce34483cbb317303d6c1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5667971187772711241, guid: 946cf1e64a11ce34483cbb317303d6c1,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -10068,16 +10063,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: System_Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 5667971188328656914, guid: 946cf1e64a11ce34483cbb317303d6c1,
-        type: 3}
-      propertyPath: spawnSwitch
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5667971188328656914, guid: 946cf1e64a11ce34483cbb317303d6c1,
-        type: 3}
-      propertyPath: showEnemyState
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5667971188328656917, guid: 946cf1e64a11ce34483cbb317303d6c1,
         type: 3}
@@ -12262,7 +12247,7 @@ MonoBehaviour:
   randomSpawn: 0
   allEliteSwitch: 0
   spawnItem: 0
-  modifyEnemyPower: 6
+  defaultEnemyPower: 0
   nowDifficultGrade: 0
   MaxEnemyPower: 0
   NowEnemyPower: 0

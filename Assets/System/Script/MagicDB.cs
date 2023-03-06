@@ -68,9 +68,11 @@ public class MagicDB : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // 아이콘, 프리팹 불러오기
+        GetMagicResources();
 
         #region FixedValue
         // 등급 색깔 고정
@@ -109,15 +111,6 @@ public class MagicDB : MonoBehaviour
         // string[] name = { "Earth", "Fire", "Life", "Lightning", "Water", "Wind" };
         // ElementNames = name;
         #endregion
-
-        //TODO 저장된 세이브 정보 불러오기
-        SaveManager.Instance.LoadSet();
-    }
-
-    private void Start()
-    {
-        // 아이콘, 프리팹 불러오기
-        GetMagicResources();
     }
 
     void GetMagicResources()
@@ -201,16 +194,9 @@ public class MagicDB : MonoBehaviour
                 yield return null;
             }
 
+            // 모든 마법 딕셔너리를 액티브 쿨타임용 딕셔너리에 복사
             foreach (MagicInfo magic in magicDB.Values)
-            {
-                // 모든 마법 딕셔너리를 액티브 쿨타임용 딕셔너리에 복사
                 activeMagicDB[magic.id] = new MagicInfo(magic);
-#if UNITY_EDITOR
-                // 모든 마법을 언락 시키기
-                unlockMagics.Clear();
-                unlockMagics.Add(magic.id);
-#endif
-            }
 
             //모든 마법 초기화
             InitialMagic();
@@ -249,6 +235,11 @@ public class MagicDB : MonoBehaviour
         savedUnlockMagics.Sort();
         // 해금 마법 목록 초기화
         unlockMagics = savedUnlockMagics;
+
+        //! 테스트 빌드만 모든 마법 해금
+        unlockMagics.Clear();
+        foreach (MagicInfo magic in magicDB.Values)
+            unlockMagics.Add(magic.id);
     }
     public MagicInfo GetMagicByName(string name)
     {

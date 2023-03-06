@@ -70,6 +70,8 @@ public class Heist : MonoBehaviour
 
     private void Update()
     {
+        if (magic == null) return;
+
         //대쉬 할때
         if (PlayerManager.Instance.isDash)
         {

@@ -35,7 +35,7 @@ public class WorldSpawner : MonoBehaviour
     public bool spawnItem; // 아이템 스폰 여부
 
     [Header("State")]
-    [SerializeField] int modifyEnemyPower; //! 전투력 임의 수정값
+    [SerializeField] int defaultEnemyPower; //! 전투력 임의 수정값
     public int nowDifficultGrade = 0; // 현재 난이도 등급
     [SerializeField] int MaxEnemyPower; //최대 몬스터 전투력
     public int NowEnemyPower; //현재 몬스터 전투력
@@ -262,8 +262,8 @@ public class WorldSpawner : MonoBehaviour
         // 난이도 계수 반영 (최대 1을 넘지않게 최대 6까지 나오는 등급에 0.166 곱함)
         timePower = timePower * nowDifficultGrade * 0.166f;
 
-        //몬스터 총 전투력 최대값 = 플레이어 전투력 + 누적 시간 계수
-        MaxEnemyPower = Mathf.FloorToInt(timePower) + modifyEnemyPower;
+        // 몬스터 총 전투력 최대값 = 기본 총 전투력 + 누적 시간 계수
+        MaxEnemyPower = defaultEnemyPower + Mathf.FloorToInt(timePower);
 
         //max 전투력 넘었으면 중단
         if (MaxEnemyPower <= NowEnemyPower)
@@ -335,8 +335,8 @@ public class WorldSpawner : MonoBehaviour
         float spawnCoolTime = enemy.spawnCool;
         // 쿨타임에 50% 범위 내 랜덤성 부여
         spawnCoolTime = Random.Range(spawnCoolTime * 0.5f, spawnCoolTime * 1.5f);
-        // 1~5초 사이 값으로 범위 제한
-        spawnCoolTime = Mathf.Clamp(spawnCoolTime, 1f, 10f);
+        // 범위 제한
+        spawnCoolTime = Mathf.Clamp(spawnCoolTime, 1f, 5f);
 
         // 쿨타임 갱신
         enemySpawnCount = spawnCoolTime;

@@ -104,8 +104,8 @@ public class PhoneMenu : MonoBehaviour
     public ParticleSystem rankUpEffect; // 등급 업 직전 이펙트
     public ParticleSystem getMagicEffect; // 뽑은 마법 획득 이펙트
     public GameObject particleAttractor; // getMagicEffect 파티클 빨아들이는 오브젝트
-    public ParticleSystem rankUpSuccessEffect; // 랭크업 성공 이펙트
-    public ParticleSystem rankUpFailEffect; // 랭크업 실패 이펙트
+    public ParticleSystem rankupSuccessEffect; // 랭크업 성공 이펙트
+    public ParticleSystem rankFixEffect; // 랭크 확정 이펙트
 
     private void Awake()
     {
@@ -131,7 +131,8 @@ public class PhoneMenu : MonoBehaviour
     private void Start()
     {
         // 스크롤 컨텐츠 모두 비우기
-        SystemManager.Instance.DestroyAllChild(recipeScroll.Content);
+        for (int i = 0; i < recipeScroll.Content.childCount; i++)
+            Destroy(recipeScroll.Content.GetChild(i).gameObject);
     }
 
     IEnumerator InputInit()
@@ -168,6 +169,10 @@ public class PhoneMenu : MonoBehaviour
         // 마우스 클릭
         Phone_Input.UI.Click.performed += val =>
         {
+            // 스킵 켜기
+            isSkipped = true;
+            print("SKIP");
+
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
                 StartCoroutine(PhoneMenu.Instance.CancelMoveItem());
@@ -195,6 +200,14 @@ public class PhoneMenu : MonoBehaviour
                     //백 버튼 액션 실행
                     StartCoroutine(BackBtnAction());
                 }
+        };
+
+        // 확인 입력
+        Phone_Input.UI.Submit.performed += val =>
+        {
+            // 스킵 켜기
+            isSkipped = true;
+            print("SKIP");
         };
 
         Phone_Input.Enable();
@@ -613,7 +626,7 @@ public class PhoneMenu : MonoBehaviour
             }
 
             // 해당 등급으로 랜덤 뽑기 시작
-            yield return StartCoroutine(GetGradeMagic(grade));
+            yield return StartCoroutine(GachaMagic(grade));
         }
         // 일반 합성일때
         else
@@ -806,8 +819,11 @@ public class PhoneMenu : MonoBehaviour
         InteractBtnsToggle(true);
     }
 
-    public IEnumerator GetGradeMagic(int grade)
+    public IEnumerator GachaMagic(int grade)
     {
+        // 스킵 여부 초기화
+        isSkipped = false;
+
         // 메뉴, 백 버튼 상호작용 및 키입력 막기
         InteractBtnsToggle(false);
 
@@ -820,7 +836,8 @@ public class PhoneMenu : MonoBehaviour
         randomScroll.enabled = false;
 
         // 모든 자식 비우기
-        SystemManager.Instance.DestroyAllChild(randomScroll.Content);
+        for (int i = 0; i < randomScroll.Content.childCount; i++)
+            Destroy(randomScroll.Content.GetChild(i).gameObject);
 
         // 애니메이션용 슬롯 컴포넌트 찾기
         Image animIcon = animSlot.Find("Icon").GetComponent<Image>();
@@ -829,7 +846,22 @@ public class PhoneMenu : MonoBehaviour
         Image shinyMaskImg = animSlot.Find("ShinyMask").GetComponent<Image>();
         Color maskColor = shinyMaskImg.color;
 
-        int randomGrade = grade;
+        // 현재 등급
+        int nowGrade = grade;
+        // 가중치로 상승할 최종 등급 뽑기
+        int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
+        // 목표 등급이 현재 등급보다 높을때만
+        while (nowGrade < targetGrade)
+        {
+            // 목표등급에 언락된 마법이 있나 체크
+            MagicInfo unlockMagic = MagicDB.Instance.GetRandomMagic(targetGrade);
+            // 언락된 마법이 없으면 목표 등급 한단계 낮추기
+            if (unlockMagic == null)
+                targetGrade--;
+            // 마법 있으면 해당 등급으로 진행
+            else
+                break;
+        }
 
         // 뽑기 화면 전체 투명하게
         randomScreen.alpha = 0;
@@ -837,9 +869,9 @@ public class PhoneMenu : MonoBehaviour
         randomScreen.gameObject.SetActive(true);
 
         // 애니메이션용 아이콘 색 넣기
-        animIcon.color = MagicDB.Instance.GradeColor[randomGrade];
+        animIcon.color = MagicDB.Instance.GradeColor[nowGrade];
         // 애니메이션용 프레임 색 넣기
-        animFrame.color = MagicDB.Instance.GradeColor[randomGrade];
+        animFrame.color = MagicDB.Instance.GradeColor[nowGrade];
 
         // 마스크 이미지 켜기
         shinyMask.showMaskGraphic = true;
@@ -893,33 +925,9 @@ public class PhoneMenu : MonoBehaviour
         if (!isSkipped)
             yield return new WaitForSecondsRealtime(0.5f);
 
-        // 등급 올리기 (실패할때까지)
+        // 등급 상승 여부 판단
         while (true)
         {
-            // 확률로 등급 상승 - 1등급 50%, 2등급 40%, 3등급 30%, 4등급 20%, 5등급 10%, 6등급은 계산상 무조건 실패
-            bool rankUp = Random.Range(0f, 1f) < 0.1f * (6 - randomGrade);
-
-            // 6등급 미만일때만
-            if (randomGrade < 6)
-                // 언락된 윗등급 마법이 없으면 등급 상승 실패
-                for (int i = 0; i < MagicDB.Instance.unlockMagics.Count; i++)
-                {
-                    //언락된 마법의 id
-                    int magicId = MagicDB.Instance.unlockMagics[i];
-
-                    // 바로 윗등급 마법이라면
-                    if (MagicDB.Instance.GetMagicByID(magicId).grade == randomGrade + 1)
-                        // 반복문 탈출
-                        break;
-
-                    // 마지막까지 반복문 탈출하지 못했으면
-                    if (i == MagicDB.Instance.unlockMagics.Count - 1)
-                        // 등급 상승 불가
-                        rankUp = false;
-
-                    yield return null;
-                }
-
             // 등급 업 파티클 이펙트 켜기
             rankUpEffect.Play();
 
@@ -945,32 +953,6 @@ public class PhoneMenu : MonoBehaviour
             rankUpEffect.Stop();
             yield return new WaitForSecondsRealtime(0.35f);
 
-            // 등급 상승 성공시
-            if (rankUp)
-            {
-                // 등급 업 성공 사운드 재생
-                SoundManager.Instance.PlaySound("RankUpSuccess");
-
-                // 등급 상승 성공 이펙트, 폭죽 이펙트
-                rankUpSuccessEffect.Play();
-
-                // 성공시 등급 올리고 한번 더 반복
-                randomGrade++;
-
-                // 상승한 등급으로 애니메이션용 아이콘 색 갱신
-                animIcon.color = MagicDB.Instance.GradeColor[randomGrade];
-                // 상승한 등급으로 애니메이션용 프레임 색 갱신
-                animFrame.color = MagicDB.Instance.GradeColor[randomGrade];
-            }
-            else
-            {
-                // 등급 업 실패 사운드 재생
-                SoundManager.Instance.PlaySound("RankUpFail");
-
-                // 등급 상승 실패 이펙트, 먼지 이펙트
-                rankUpFailEffect.Play();
-            }
-
             // 마스크 이미지 알파값 낮추기
             maskColor.a = 1f / 255f;
             shinyMaskImg.DOColor(maskColor, 0.5f)
@@ -981,12 +963,39 @@ public class PhoneMenu : MonoBehaviour
                 shinyMask.showMaskGraphic = false;
             });
 
-            yield return new WaitForSecondsRealtime(0.5f);
+            // 목표 등급이 현재 등급보다 높을때
+            if (nowGrade < targetGrade)
+            {
+                // 등급 업 성공 사운드 재생
+                SoundManager.Instance.PlaySound("RankUpSuccess");
 
-            // 등급 상승 실패시
-            if (!rankUp)
-                // 실패시 반복문 탈출
+                // 성공시 등급 올리고 한번 더 반복
+                nowGrade++;
+
+                // 상승한 등급으로 애니메이션용 아이콘 색 갱신
+                animIcon.color = MagicDB.Instance.GradeColor[nowGrade];
+                // 상승한 등급으로 애니메이션용 프레임 색 갱신
+                animFrame.color = MagicDB.Instance.GradeColor[nowGrade];
+
+                // 등급 상승 이펙트
+                rankupSuccessEffect.Play();
+                yield return new WaitForSecondsRealtime(0.5f);
+            }
+            else
+            {
+                // 등급 확정 사운드 재생
+                SoundManager.Instance.PlaySound("RankUpFail");
+
+                // 등급 확정 이펙트
+                rankFixEffect.Play();
+                yield return new WaitForSecondsRealtime(0.5f);
+
+                // 반복문 탈출
                 break;
+            }
+
+            // 스킵 스위치 초기화
+            isSkipped = false;
         }
 
         // 랜덤 마법 리스트
@@ -1001,8 +1010,12 @@ public class PhoneMenu : MonoBehaviour
             // 전체 마법중에 
             if (MagicDB.Instance.magicDB.TryGetValue(magicId, out MagicInfo magic))
             {
+                // 프리팹 없으면 넘기기
+                if (MagicDB.Instance.GetMagicPrefab(magicId) == null)
+                    continue;
+
                 // 선택된 마법과 등급이 같은 마법이면 
-                if (magic.grade == randomGrade)
+                if (magic.grade == nowGrade)
                 {
                     // 랜덤 풀에 넣기
                     randomList.Add(magic);
@@ -1014,7 +1027,7 @@ public class PhoneMenu : MonoBehaviour
 
         // 랜덤 풀이 하나라도 있을때
         if (randomList.Count > 0)
-            // 랜덤풀 스크롤에 필요한 최소 개수보다 부족하면 모든 마법 한번 더 넣기
+            // 랜덤 스크롤 UI에 보여줄 최소 개수보다 부족하면 모든 마법 한번 더 넣기
             while (randomList.Count < 5)
             {
                 // 풀의 마법 개수
@@ -1052,9 +1065,6 @@ public class PhoneMenu : MonoBehaviour
             yield return null;
         }
 
-        // 스킵 여부 초기화
-        isSkipped = false;
-
         // 스냅 스크롤 컴포넌트 활성화
         randomScroll.enabled = true;
         // 뽑기 스크롤 활성화
@@ -1086,14 +1096,15 @@ public class PhoneMenu : MonoBehaviour
         StartCoroutine(SpinSound());
 
         // 스크롤 일정 속도 이하거나 스킵할때까지 대기
-        yield return new WaitUntil(() => randomScroll.Velocity.magnitude <= 100f
-        || isSkipped);
+        yield return new WaitUntil(() => randomScroll.Velocity.magnitude <= 100f || isSkipped);
+
+        print(isSkipped);
 
         // 스크롤이 일정 속도 이상이면 반복
         while (randomScroll.Velocity.magnitude > 100f)
         {
             // 속도 부드럽게 낮추기
-            randomScroll.Velocity = Vector2.Lerp(randomScroll.Velocity, Vector2.zero, 0.01f);
+            randomScroll.Velocity = Vector2.Lerp(randomScroll.Velocity, Vector2.zero, Time.unscaledDeltaTime * 10f);
 
             yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
         }
@@ -1319,9 +1330,9 @@ public class PhoneMenu : MonoBehaviour
             .SetUpdate(true);
         }
 
-        // 클릭,확인 누르면 스킵 켜기
-        if (Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Submit.IsPressed())
-            isSkipped = true;
+        // // 클릭,확인 누르면 스킵 켜기
+        // if (Phone_Input.UI.Click.IsPressed() || Phone_Input.UI.Submit.IsPressed())
+        //     isSkipped = true;
 
         // 채팅패널 Lerp로 사이즈 반영해서 lerp로 늘어나기
         chatContentRect.sizeDelta = new Vector2(chatContentRect.sizeDelta.x, Mathf.Lerp(chatContentRect.sizeDelta.y, sumChatHeights, Time.unscaledDeltaTime * 5f));
@@ -1330,9 +1341,7 @@ public class PhoneMenu : MonoBehaviour
     public IEnumerator ChatAdd(string message)
     {
         // 메시지 생성
-        GameObject chat = LeanPool.Spawn(chatPrefab,
-        chatScroll.content.rect.position - new Vector2(0, -10f),
-        Quaternion.identity, chatScroll.content);
+        GameObject chat = LeanPool.Spawn(chatPrefab, chatScroll.content.rect.position - new Vector2(0, -10f), Quaternion.identity, chatScroll.content);
 
         // 캔버스 그룹 찾고 알파값 0으로 낮춰서 숨기기
         CanvasGroup canvasGroup = chat.GetComponent<CanvasGroup>();
@@ -1426,10 +1435,10 @@ public class PhoneMenu : MonoBehaviour
         // 처음에만 오브젝트 생성
         if (!recipeInit)
             // 레시피 목록에 모든 마법 표시
-            for (int i = 0; i < MagicDB.Instance.magicDB.Count; i++)
+            for (int i = 0; i < MagicDB.Instance.unlockMagics.Count; i++)
             {
                 // 마법 정보 찾기
-                MagicInfo magic = MagicDB.Instance.magicDB[i];
+                MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.unlockMagics[i]);
 
                 // 0등급이면 넘기기
                 if (magic.grade == 0)
@@ -1440,10 +1449,10 @@ public class PhoneMenu : MonoBehaviour
             }
 
         // 레시피 목록에 모든 마법 표시
-        for (int i = 0; i < recipeScroll.Content.childCount; i++)
+        for (int i = 0; i < MagicDB.Instance.unlockMagics.Count; i++)
         {
             // 마법 정보 찾기
-            MagicInfo magic = MagicDB.Instance.magicDB[i];
+            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.unlockMagics[i]);
 
             // 레시피 아이템 찾기
             Transform recipe = recipeScroll.Content.GetChild(i);
@@ -1637,6 +1646,9 @@ public class PhoneMenu : MonoBehaviour
 
     public IEnumerator PhoneExit()
     {
+        // 툴팁 끄기
+        ProductToolTip.Instance.QuitTooltip();
+
         // 인벤 슬롯 상호작용 모두 끄기
         foreach (InventorySlot invenSlot in invenSlots)
         {
@@ -1706,6 +1718,10 @@ public class PhoneMenu : MonoBehaviour
         lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 100f / 255f), moveTime / 2f)
         .SetDelay(moveTime / 2f)
         .SetUpdate(true);
+
+        // 모든 시스템 채팅 목록 지우기
+        for (int i = 0; i < chatScroll.content.transform.childCount; i++)
+            LeanPool.Despawn(chatScroll.content.transform.GetChild(i));
 
         // 핸드폰 이동하는 동안 대기
         yield return new WaitForSecondsRealtime(moveTime);

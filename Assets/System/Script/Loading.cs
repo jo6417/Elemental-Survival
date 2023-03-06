@@ -252,6 +252,9 @@ public class Loading : MonoBehaviour
             //     UIManager.Instance.defaultPanel.SetActive(false);
         }
 
+        // 해상도 변경 및 빈공간에 레터박스 넣기
+        SystemManager.Instance.ChangeResolution(SystemManager.Instance.screenMode);
+
         // 클릭 혹은 아무키나 누를때까지, 로딩 완료, 다음씬 초기화 완료까지 대기
         yield return new WaitUntil(() => (loading_Input.UI.Click.IsPressed() || loading_Input.UI.AnyKey.IsPressed())
         && loadingBar.value >= 1f && !SystemManager.Instance.sceneChanging);
