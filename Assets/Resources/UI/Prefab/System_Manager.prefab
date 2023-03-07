@@ -10972,7 +10972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -11023,6 +11023,7 @@ MonoBehaviour:
   textMesh: {fileID: 2944025449649173242}
   widthFitter: 0
   heightFitter: 1
+  padding: {x: 0, y: 0}
 --- !u!1 &7133127608673609723
 GameObject:
   m_ObjectHideFlags: 0
@@ -11532,7 +11533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -11583,6 +11584,7 @@ MonoBehaviour:
   textMesh: {fileID: 6243139112368862064}
   widthFitter: 0
   heightFitter: 1
+  padding: {x: 0, y: 0}
 --- !u!1 &8726467571864829357
 GameObject:
   m_ObjectHideFlags: 0

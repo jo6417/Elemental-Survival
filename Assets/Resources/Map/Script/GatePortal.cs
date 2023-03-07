@@ -54,6 +54,7 @@ public class GatePortal : MonoBehaviour
     [SerializeField] CanvasGroup showKeyUI; //상호작용 키 표시 UI
     Interacter interacter; //상호작용 콜백 함수 클래스
     [SerializeField] TextMeshProUGUI pressAction; // 상호작용 기능 설명 텍스트
+    [SerializeField] Image gemBackground; // 젬 텍스트 배경
     [SerializeField] CanvasGroup gemNum; //젬 개수 표시 텍스트
     [SerializeField] Image GemIcon; // 젬 아이콘
     [SerializeField] TextMeshProUGUI pressKey; // 바인딩 된 키 이름
@@ -326,16 +327,33 @@ public class GatePortal : MonoBehaviour
 
     IEnumerator InsertGem()
     {
-        float payDelay = 0.1f;
+        // float payDelay = 0.1f;
         // 계속 지불 중이면 반복
         while (portalState == PortalState.GemReceive && nowGem < needGem)
         {
-            //todo 플레이어 젬 부족시 정지
-            // if (PlayerManager.Instance.GetGem(gemType) <= 0
-            // || showKeyUI.alpha == 0)
-            // 상호작용 범위 벗어나면 정지
-            if (showKeyUI.alpha == 0)
+            // 플레이어 젬 부족시, 상호작용 범위 벗어나면
+            if (PlayerManager.Instance.GetGem(gemType) <= 0
+            || showKeyUI.alpha == 0)
             {
+                // 젬 부족 효과음 재생
+                SoundManager.Instance.PlaySound("Denied");
+
+                // 젬 부족 인디케이터 재생
+                // 기존 트윈 끄기
+                gemBackground.DOKill();
+                gemBackground.color = new Color(1, 0, 0, 0);
+                // 빨갛게 2회 점멸하기
+                gemBackground.DOColor(new Color(1, 0, 0, 0.5f), 0.2f)
+                .SetLoops(4, LoopType.Yoyo)
+                .OnKill(() =>
+                {
+                    // 투명하게 초기화
+                    gemBackground.color = new Color(1, 0, 0, 0);
+                });
+
+                // 플레이어 젬 인디케이터 재생
+                UIManager.Instance.GemIndicator(gemType, Color.red);
+
                 // 코루틴 초기화
                 payCoroutine = null;
                 break;
@@ -359,11 +377,11 @@ public class GatePortal : MonoBehaviour
             //젬 개수 UI 갱신
             UpdateGemNum();
 
-            // 페이 딜레이 감소 및 값제한
-            payDelay -= 0.01f;
-            payDelay = Mathf.Clamp(payDelay, Time.deltaTime, 1f);
+            // // 페이 딜레이 감소 및 값제한
+            // payDelay -= 0.01f;
+            // payDelay = Mathf.Clamp(payDelay, Time.deltaTime, 1f);
 
-            yield return new WaitForSeconds(payDelay);
+            yield return new WaitForSeconds(Time.deltaTime);
         }
 
         // 젬이 최대치일때
@@ -436,7 +454,7 @@ public class GatePortal : MonoBehaviour
         //     bossInfo = new EnemyInfo(EnemyDB.Instance.GetEnemyByName(fixedBoss.name.Split('_')[0]));
 
         //보스 소환 위치
-        Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * Random.Range(5f, 10f);
+        Vector2 bossPos = (Vector2)transform.position + Random.insideUnitCircle.normalized * Random.Range(10f, 15f);
 
         //보스 프리팹 찾기
         GameObject bossPrefab = EnemyDB.Instance.GetPrefab(bossInfo.id);
@@ -553,7 +571,7 @@ public class GatePortal : MonoBehaviour
         .SetUpdate(true);
 
         // 플레이어 하얗게 변화
-        PlayerManager.Instance.playerCover.DOColor(Color.white, tweenTime)
+        PlayerManager.Instance.playerSprite.material.DOColor(Color.white, "_Tint", tweenTime)
         .SetUpdate(true)
         .SetEase(Ease.InCubic);
         // 포탈 하얗게
@@ -571,6 +589,7 @@ public class GatePortal : MonoBehaviour
         PlayerManager.Instance.transform.DOScale(new Vector3(0f, 2f), 1f)
         .SetUpdate(true)
         .SetEase(Ease.InExpo);
+
         // 포탈 얇고 길쭉해짐
         portalPivot.DOScale(new Vector3(0f, 2f), 1f)
         .SetUpdate(true)

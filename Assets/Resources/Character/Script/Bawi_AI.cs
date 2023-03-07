@@ -62,7 +62,7 @@ public class Bawi_AI : EnemyAI
     public Collider2D drillGhostColl; // 고스트 드릴 콜라이더
     public Rigidbody2D drillRigid; // 그림자까지 포함한 부모
     public Transform drillPart; // 드릴 스프라이트 부모 오브젝트
-    public GameObject drillMask; // 드릴 땅속 들어가는 마스크
+    public SpriteMask drillMask; // 드릴 땅속 들어가는 마스크
     public SpriteRenderer drillSprite; // 드릴 스프라이트
     public SpriteRenderer drillGhost; // 드릴 고스트 스프라이트
     public SpriteRenderer drillShadow; // 드릴 그림자
@@ -657,37 +657,39 @@ public class Bawi_AI : EnemyAI
             // 중간에 돌 소환
             GameObject stoneObj = LeanPool.Spawn(stonePrefab, fistPart.transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
 
+            // 아웃라인 색을 바꿔주기
+            SpriteRenderer[] stoneSprites = stoneObj.GetComponentsInChildren<SpriteRenderer>(true);
+            for (int j = 0; j < stoneSprites.Length; j++)
+                stoneSprites[i].material.SetColor("_OutLineColor", new Color(1f, 0f, 0f, 1f));
+
             // 돌 스케일 설정
             stoneObj.transform.localScale = stoneScale;
 
             // 타겟 및 타겟위치 설정하기
-            MagicHolder magicHolder = stoneObj.GetComponent<MagicHolder>();
-            magicHolder.SetTarget(MagicHolder.TargetType.Player);
+            MagicHolder stoneMagicHolder = stoneObj.GetComponent<MagicHolder>();
+            stoneMagicHolder.SetTarget(MagicHolder.TargetType.Player);
 
             // 마법 정보 인스턴스 만들어 넣기
-            magicHolder.magic = new MagicInfo(MagicDB.Instance.GetMagicByName("SlingShot"));
+            stoneMagicHolder.magic = new MagicInfo(MagicDB.Instance.GetMagicByName("SlingShot"));
 
             // 마법 랜덤 유지시간 추가
-            magicHolder.AddDuration = Random.Range(0.5f, 1f) - 1f;
+            stoneMagicHolder.AddDuration = Random.Range(0.5f, 1f) - 1f;
 
             // 마법 속도 배율 넣기
-            magicHolder.MultipleSpeed = isSmallStone ? Random.Range(3f, 4f) : 2f;
+            stoneMagicHolder.MultipleSpeed = isSmallStone ? Random.Range(3f, 4f) : 2f;
 
             // 작은 돌일때
             if (isSmallStone)
                 //플레이어 주변에 던지기
-                magicHolder.targetPos = playerPos + (Vector3)Random.insideUnitCircle * 10f;
+                stoneMagicHolder.targetPos = playerPos + (Vector3)Random.insideUnitCircle * 10f;
             // 큰 돌일때
             else
                 //플레이어 정확하게 조준하고 던지기
-                magicHolder.targetPos = playerPos;
+                stoneMagicHolder.targetPos = playerPos;
 
-            // 플레이어 방향 다시 계산
-            playerDir = PlayerManager.Instance.transform.position - fistPart.transform.position;
-
-            Rigidbody2D stoneRigid = stoneObj.GetComponent<Rigidbody2D>();
-            // 돌 회전시키기
-            stoneRigid.angularVelocity = Random.value * -playerDir.x * 20f;
+            //마법 날리기
+            MagicProjectile stoneProjec = stoneObj.GetComponent<MagicProjectile>();
+            StartCoroutine(stoneProjec.ShotMagic());
 
             // 작은 돌일때
             if (isSmallStone)
@@ -725,7 +727,7 @@ public class Bawi_AI : EnemyAI
         drillChargeGathering.Play();
 
         // 드릴 머리보다 높게 들기
-        Tween upTween = drillPart.transform.DOLocalMove(drillPartLocalPos + Vector2.up * 5f, 2f)
+        Tween upTween = drillPart.transform.DOLocalMove(drillPartLocalPos - Vector2.up, 2f)
         .SetEase(Ease.InOutQuart);
 
         // 트윈 끝날때까지 대기
@@ -739,6 +741,9 @@ public class Bawi_AI : EnemyAI
         // 차지 이펙트 끄기
         // StartCoroutine(drillChargeGathering.GetComponent<ParticleManager>().SmoothDisable());
 
+        // 드릴 콜라이더 켜기
+        drillGhostColl.enabled = true;
+
         //조준 시간 갱신
         aimCount = 2f;
 
@@ -746,7 +751,7 @@ public class Bawi_AI : EnemyAI
         transform.DOShakePosition(aimCount, 0.3f, 50, 90f, false, false);
 
         // 드릴 높이 낮추기
-        drillPart.transform.DOLocalMove(new Vector3(0, 5f, 0), 0.5f);
+        drillPart.transform.DOLocalMove(drillPartLocalPos, 0.5f);
 
         // 드릴 타겟팅 지연시간
         float aimRate = 0.1f;
@@ -1124,7 +1129,7 @@ public class Bawi_AI : EnemyAI
         yield return new WaitForSeconds(1f);
 
         //드릴 마스크 켜기
-        drillMask.SetActive(true);
+        drillMask.enabled = true;
 
         //부유 이펙트 켜기
         drillHoverEffect.Play();
@@ -1249,7 +1254,7 @@ public class Bawi_AI : EnemyAI
         //공격 끝, 모두 초기화
 
         //드릴 마스크 끄기
-        drillMask.SetActive(false);
+        drillMask.enabled = false;
 
         // 드릴 위치 초기화
         drillRigid.transform.DOLocalMove(drillParentLocalPos, 1f);

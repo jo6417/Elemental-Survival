@@ -130,11 +130,11 @@ public class SystemManager : MonoBehaviour
     public Button enemyDBSyncBtn;
     public Button itemDBSyncBtn;
     float frameRateCount = 0;
+    List<LogUIInfo> logInfoList = new List<LogUIInfo>(); // 로그 정보 임시저장 리스트
     [SerializeField] Transform consoleMsgList; // 콘솔 메시지 담을 부모 오브젝트
     [SerializeField] Transform consoleMsgText; // 콘솔 메시지 프리팹
-    private List<string> logMessages = new List<string>(); // 로그 메시지를 저장할 리스트
     private bool isLogChanged = false; // 로그 메시지 변경 여부를 나타내는 플래그
-    [SerializeField] Button spawnBtn; // 몬스터 자동 스폰 버튼
+    public Button spawnBtn; // 몬스터 자동 스폰 버튼
     [SerializeField] Button showStateBtn; // 몬스터 상태 디버깅 토글 버튼
     [SerializeField] Button allkillBtn; // 몬스터 올킬 버튼
     [SerializeField] GameObject testItemSet; // 테스트 아이템 모음 프리팹
@@ -184,7 +184,7 @@ public class SystemManager : MonoBehaviour
     public Color DeadColor; //죽을때 서서히 변할 컬러
 
     [Header("Resolution")]
-    [SerializeField, ReadOnly] bool nowChangeResolution = false;
+    // [SerializeField, ReadOnly] bool nowChangeResolution = false;
     public Vector2 monitorResolution = new Vector2(1920f, 1080f);
     [SerializeField] Rect cameraRect;
     [SerializeField] Vector2 screenSize; // 현재 스크린 사이즈
@@ -478,11 +478,42 @@ public class SystemManager : MonoBehaviour
         Application.logMessageReceived -= HandleLog;
     }
 
-    #region Debugging
+    #region Log
+    // 로그 구조체
+    struct LogUIInfo
+    {
+        public string message;
+        public Color textColor;
+
+        public LogUIInfo(string message, Color textColor)
+        {
+            this.message = message;
+            this.textColor = textColor;
+        }
+    }
+
     void HandleLog(string logString, string stackTrace, LogType type)
     {
-        // 로그 메시지 추가
-        logMessages.Add(logString);
+        // 로그 타입에 따라 UI 컬러 변경
+        Color textColor = Color.white;
+        switch (type)
+        {
+            case LogType.Error:
+            case LogType.Exception:
+            case LogType.Assert:
+                textColor = Color.red;
+                break;
+            case LogType.Warning:
+                textColor = Color.yellow;
+                break;
+            default:
+                textColor = Color.white;
+                break;
+        }
+
+        // 로그 UI 생성 정보 추가
+        logInfoList.Add(new LogUIInfo(logString, textColor));
+
         // 로그 플래그 변경됨
         isLogChanged = true;
     }
@@ -495,15 +526,16 @@ public class SystemManager : MonoBehaviour
             if (isLogChanged)
             {
                 // 새로운 UI 오브젝트 생성하여 메시지 출력
-                foreach (string logMessage in logMessages)
+                foreach (LogUIInfo logUIInfo in logInfoList)
                 {
                     Transform consoleLog = LeanPool.Spawn(consoleMsgText, consoleMsgList);
                     TextMeshProUGUI messageText = consoleLog.GetComponentInChildren<TextMeshProUGUI>();
-                    messageText.text = logMessage;
+                    messageText.text = logUIInfo.message;
+                    messageText.color = logUIInfo.textColor;
                 }
 
                 // 로그 메시지 초기화
-                logMessages.Clear();
+                logInfoList.Clear();
                 isLogChanged = false;
             }
 
@@ -511,6 +543,8 @@ public class SystemManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
+    #endregion
+    #region Debugging
 
     public void ToggleObject()
     {
@@ -803,20 +837,24 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public void GameQuit()
+    public void GameQuit(string sceneName)
     {
         // UI 커서 끄기
         UICursor.Instance.UICursorToggle(false);
 
-        // dontDestroy 오브젝트 모두 파괴
-        if (ObjectPool.Instance != null)
-            Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴
-        if (UIManager.Instance != null)
-            Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
-        if (PlayerManager.Instance != null)
-            Destroy(PlayerManager.Instance.gameObject); // 플레이어 파괴
-        if (CastMagic.Instance != null)
-            Destroy(CastMagic.Instance.gameObject); // 핸드폰 파괴
+        // 메인메뉴로 씬 이동일때
+        if (sceneName == SceneName.MainMenuScene.ToString())
+        {
+            // dontDestroy 오브젝트 모두 파괴
+            if (ObjectPool.Instance != null)
+                Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴
+            if (UIManager.Instance != null)
+                Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
+            if (PlayerManager.Instance != null)
+                Destroy(PlayerManager.Instance.gameObject); // 플레이어 파괴
+            if (CastMagic.Instance != null)
+                Destroy(CastMagic.Instance.gameObject); // 핸드폰 파괴
+        }
 
         if (SoundManager.Instance.BGMCoroutine != null)
         {
@@ -839,7 +877,7 @@ public class SystemManager : MonoBehaviour
         yield return StartCoroutine(Loading.Instance.SceneMask(true));
 
         // 종료 전 초기화
-        GameQuit();
+        GameQuit(sceneName);
 
         // 매개변수로 들어온 씬 로딩 시작
         StartCoroutine(Loading.Instance.LoadScene(sceneName));
@@ -898,8 +936,8 @@ public class SystemManager : MonoBehaviour
     private void Update()
     {
         // 해상도 및 화면모드 확인
-        if (!nowChangeResolution)
-            ResolutionCheck();
+        // if (!nowChangeResolution)
+        ResolutionCheck();
     }
 
     public void ResolutionCheck()
@@ -924,25 +962,9 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public Vector2 ActualScreenSize()
-    {
-        // 현재 스크린 사이즈 불러오기
-        Vector2 screenSize = screenMode == FullScreenMode.ExclusiveFullScreen || screenMode == FullScreenMode.FullScreenWindow
-           ? monitorResolution
-           : new Vector2(Screen.width, Screen.height);
-
-        // 레터박스 사이즈만큼 빼기
-        if (screenSize.x == letterScale.x)
-            screenSize -= new Vector2(0, letterScale.y);
-        else
-            screenSize -= new Vector2(letterScale.x, 0);
-
-        return screenSize;
-    }
-
     public void ChangeResolution(FullScreenMode _fullscreenMode, bool changeMode = false)
     {
-        nowChangeResolution = true;
+        // nowChangeResolution = true;
 
         // 화면모드 변수 갱신
         screenMode = _fullscreenMode;
@@ -960,9 +982,9 @@ public class SystemManager : MonoBehaviour
                 // 마지막 창모드 해상도로 변경
                 Screen.SetResolution((int)lastResolution.x, (int)lastResolution.y, _fullscreenMode);
             // 창모드에서 사이즈 바꿀때
-            else
-                // 창모드 해상도를 현재 해상도로 갱신
-                lastResolution = screenSize;
+            // else
+            // 창모드 해상도를 현재 해상도로 갱신
+            lastResolution = screenSize;
         }
         // 전체화면으로 전환시
         else
@@ -1016,9 +1038,25 @@ public class SystemManager : MonoBehaviour
             }
         }
 
-        nowChangeResolution = false;
+        // nowChangeResolution = false;
 
         print(monitorResolution + " : " + new Vector2(Screen.width, Screen.height) + " : " + _fullscreenMode + " : " + Screen.fullScreenMode.ToString() + " : " + Time.unscaledTime);
+    }
+
+    public Vector2 ActualScreenSize()
+    {
+        // 현재 스크린 사이즈 불러오기
+        Vector2 screenSize = screenMode == FullScreenMode.ExclusiveFullScreen || screenMode == FullScreenMode.FullScreenWindow
+           ? monitorResolution
+           : new Vector2(Screen.width, Screen.height);
+
+        // 레터박스 사이즈만큼 빼기
+        if (screenSize.x == letterScale.x)
+            screenSize -= new Vector2(0, letterScale.y);
+        else
+            screenSize -= new Vector2(letterScale.x, 0);
+
+        return screenSize;
     }
 
     public void SetBrightness(float _brightness = 1f, float duration = 0)

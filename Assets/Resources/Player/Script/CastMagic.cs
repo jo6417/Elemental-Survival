@@ -15,19 +15,16 @@ public class CastMagic : MonoBehaviour
     {
         get
         {
-            // if (instance == null)
-            // {
-            //     var obj = FindObjectOfType<CastMagic>();
-            //     if (obj != null)
-            //     {
-            //         instance = obj;
-            //     }
-            //     // else
-            //     // {
-            //     //     var newObj = new GameObject().AddComponent<CastMagic>();
-            //     //     instance = newObj;
-            //     // }
-            // }
+            if (instance == null)
+            {
+                instance = FindObjectOfType<CastMagic>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = "CastMagic";
+                    instance = obj.AddComponent<CastMagic>();
+                }
+            }
             return instance;
         }
     }
@@ -54,21 +51,14 @@ public class CastMagic : MonoBehaviour
 
     private void Awake()
     {
-        // 다른 오브젝트가 이미 있을때
-        if (instance != null)
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            // 파괴 후 리턴
             Destroy(gameObject);
             return;
         }
-        // 최초 생성 됬을때
-        else
-        {
-            instance = this;
-
-            // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
-        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()

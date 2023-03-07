@@ -20,9 +20,9 @@ public class SlingShot : MonoBehaviour
     float damage; // 합쳐진 데미지
     float durationCount; // 남은 시간
     int shotNum = 0; // 발사된 개수
+    float chargeTime = 0.5f; // 기 모으는 시간
 
     [Header("Status")]
-    float duration;
     float scale;
     float coolTime;
     int atkNum;
@@ -49,7 +49,6 @@ public class SlingShot : MonoBehaviour
         //magic이 null이 아닐때까지 대기
         yield return new WaitUntil(() => magicHolder.magic != null);
         // 스탯 초기화
-        duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
         scale = MagicDB.Instance.MagicScale(magicHolder.magic);
         atkNum = MagicDB.Instance.MagicAtkNum(magicHolder.magic);
         coolTime = MagicDB.Instance.MagicCoolTime(magicHolder.magic);
@@ -106,6 +105,20 @@ public class SlingShot : MonoBehaviour
         // 투사체 리스트에 등록
         stoneList.Add(stone);
 
+        // 태그 및 레이어 물려주기
+        stone.gameObject.tag = gameObject.tag;
+        stone.gameObject.layer = gameObject.layer;
+        // MagicHolder 물려주기
+        MagicHolder stoneMagicHolder = stone.GetComponent<MagicHolder>();
+        stoneMagicHolder.magic = magicHolder.magic;
+        stoneMagicHolder.targetType = magicHolder.targetType;
+        stoneMagicHolder.targetPos = magicHolder.targetPos;
+
+        // 아웃라인 색을 바꿔주기
+        SpriteRenderer[] stoneSprites = stone.GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < stoneSprites.Length; i++)
+            stoneSprites[i].material.SetColor("_OutLineColor", new Color(1f, 0.5f, 0f, 1f));
+
         // 투사체 컴포넌트 찾기
         MagicProjectile stoneProjectile = stone.GetComponent<MagicProjectile>();
         // 바위 부모 찾기
@@ -138,18 +151,16 @@ public class SlingShot : MonoBehaviour
 
         // 모래 모으기 이펙트 시작
         dirtCharge.particle.Play();
-        // 모으기 이펙트 정지 예약
-        dirtCharge.SmoothStop(duration - 0.2f);
 
         // 바위 스케일 초기화
         scaler.localScale = Vector2.zero;
         // 스케일만큼 커지기
-        scaler.DOScale(Vector2.one * scale, duration);
+        scaler.DOScale(Vector2.one * scale, chargeTime);
 
         // 먼지 스케일 초기화
         backDust.transform.localScale = Vector2.zero;
         // 스케일만큼 커지기
-        backDust.transform.DOScale(Vector2.one * scale, duration)
+        backDust.transform.DOScale(Vector2.one * scale, chargeTime)
         .OnComplete(() =>
         {
             // 자동 시전시
@@ -179,8 +190,8 @@ public class SlingShot : MonoBehaviour
                     stoneSprite.transform.DOKill();
             });
 
-        // duration 만큼 모으기
-        yield return new WaitForSeconds(duration);
+        // 모으는 시간 대기
+        yield return new WaitForSeconds(chargeTime);
 
         // 바라보는 반대쪽으로 먼지 이펙트 뿜기 (이동할 방향 표시)
         backDust.gameObject.SetActive(true);
@@ -191,6 +202,9 @@ public class SlingShot : MonoBehaviour
         // 해당 바위 아직 살아있으면
         if (stone.gameObject.activeInHierarchy)
         {
+            // 모으기 이펙트 정지
+            dirtCharge.particle.Stop();
+
             // 발사 상태로 변경
             shotAble[index] = StoneState.Shot;
             // 발사된 개수 증가
@@ -227,7 +241,7 @@ public class SlingShot : MonoBehaviour
         PlayerManager.Instance.Move();
 
         // 가운데 지점으로 이동
-        stoneList[index].DOMove(transform.position, duration)
+        stoneList[index].DOMove(transform.position, chargeTime)
         .SetEase(Ease.Linear)
         .OnComplete(() =>
         {

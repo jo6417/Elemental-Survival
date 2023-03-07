@@ -125,7 +125,7 @@ namespace Lean.Pool
 		{
 			foreach (var instance in LeanGameObjectPool.Instances)
 			{
-				instance.DespawnAll();
+				instance.DespawnAll(false);
 			}
 
 			Links.Clear();
@@ -213,13 +213,13 @@ namespace Lean.Pool
 						// Remove the association
 						Links.Remove(clone);
 
-						pool.Detach(clone);
+						pool.Detach(clone, false);
 					}
 					else
 					{
 						if (LeanGameObjectPool.TryFindPoolByClone(clone, ref pool) == true)
 						{
-							pool.Detach(clone);
+							pool.Detach(clone, false);
 						}
 						else
 						{

@@ -5785,7 +5785,10 @@ MonoBehaviour:
   atkColl: {fileID: 2527236338356803401}
   pierceCount: 0
   targetType: 2
-  fixedPower: 0
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -5955,17 +5958,42 @@ MonoBehaviour:
   initialFinish: 0
   eliteClass: 0
   lookLeft: 0
-  hpNow: 0
-  hpMax: 0
+  characterStat:
+    powerSum: 0
+    hpMax: 100
+    hpNow: 100
+    Level: 1
+    moveSpeed: 1
+    atkNum: 0
+    pierce: 0
+    power: 1
+    armor: 1
+    speed: 1
+    evade: 0
+    knockbackForce: 1
+    coolTime: 1
+    duration: 1
+    range: 1
+    scale: 1
+    luck: 1
+    expGain: 1
+    getRage: 1
+    earth_atk: 1
+    fire_atk: 1
+    life_atk: 1
+    lightning_atk: 1
+    water_atk: 1
+    wind_atk: 1
+  buffList: []
   isDead: 0
   deadDelay: 1
   changeGhost: 0
   portalSize: 2
   afterEffect: 0
   invinsible: 0
-  selfExplosion: 0
   attackRange: 0
   healCount: 0
+  atkCoolCount: 0
   isGhost: 0
   nowState: 0
   moveType: 0
@@ -5975,6 +6003,7 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
+  searchRange: 100
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -5990,7 +6019,6 @@ MonoBehaviour:
   stunCount: 0
   flatCount: 0
   oppositeCount: 0
-  moveSpeedDebuff: 1
   spriteObj: {fileID: 1881259223782753355}
   spriteList:
   - {fileID: 1881259223782753332}
@@ -6008,6 +6036,8 @@ MonoBehaviour:
   cooltimeNow: 0
   enemyName: 
   enemyType: 
+  debugText: {fileID: 0}
+  stateText: {fileID: 0}
 --- !u!114 &8274267318279845524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6020,7 +6050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f9561d0b3c63d47a7589c861cd20ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patten: 1
+  patten: 4
   attackDistance: 15
   stateText: {fileID: 1760578303}
   nowPhase: 1

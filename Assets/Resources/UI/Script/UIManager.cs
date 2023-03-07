@@ -53,7 +53,7 @@ public class UIManager : MonoBehaviour
     public NewInput UI_Input; // UI 인풋 받기
     public Vector2 nowMousePos; // 마우스 마지막 위치 기억
 
-    [Header("PopupUI")]
+    [Header("CanvasPanel")]
     [ReadOnly] public GameObject nowOpenPopup; //현재 열려있는 팝업 UI
     public Transform popupUIparent; //팝업 UI 담는 부모 오브젝트
     RectTransform UIRect;
@@ -239,8 +239,10 @@ public class UIManager : MonoBehaviour
 
         // 에디터에서만
 #if UNITY_EDITOR
-        // 기본 마법 패널 열기
-        PopupUI(defaultPanel, true);
+        // 첫 맵일때
+        if (SystemManager.Instance.NowMapElement == 0)
+            // 기본 마법 패널 열기
+            PopupUI(defaultPanel, true);
 #endif
 
         // 인게임 바인딩 리스트 켜기
@@ -261,6 +263,16 @@ public class UIManager : MonoBehaviour
         //     bindKeyList.gameObject.SetActive(true);
         //     Canvas.ForceUpdateCanvases();
         // }
+    }
+
+    public void InitPanel()
+    {
+        // UI 매니저 밑의 Canvas 모두 찾기
+        Canvas[] canvasList = GetComponentsInChildren<Canvas>(true);
+
+        // 캔버스가 Camera 모드이면 카메라 찾아주기
+        for (int i = 0; i < canvasList.Length; i++)
+            canvasList[i].worldCamera = Camera.main;
     }
 
     // 방향키 입력되면 실행
@@ -397,6 +409,9 @@ public class UIManager : MonoBehaviour
     {
         if (camFollowTarget != null)
         {
+            if (camParent == null)
+                camParent = Camera.main.transform.parent;
+
             // 카메라 타겟 부드럽게 따라가기
             Vector3 targetPos = camFollowTarget.position;
             targetPos.z = -50f;
@@ -615,20 +630,19 @@ public class UIManager : MonoBehaviour
         playerLev.text = "Lev. " + playerManager.characterStat.Level.ToString();
     }
 
-    public IEnumerator UpdateBossHp(Character bossManager)
+    public IEnumerator UpdateBossHp(Character bossCharacter)
     {
         //보스 몬스터 정보 들어올때까지 대기
-        yield return new WaitUntil(() => bossManager.enemy != null);
+        yield return new WaitUntil(() => bossCharacter.enemy != null);
 
-        float bossHpNow = bossManager.characterStat.hpNow;
-        float bossHpMax = bossManager.characterStat.hpMax;
+        float bossHpNow = bossCharacter.characterStat.hpNow;
+        float bossHpMax = bossCharacter.characterStat.hpMax;
 
         //보스 체력 UI 활성화
         bossHp.SetActive(true);
 
         //보스 체력 게이지 갱신
-        bossHp.GetComponentInChildren<SlicedFilledImage>().fillAmount
-        = bossHpNow / bossHpMax;
+        bossHp.GetComponentInChildren<SlicedFilledImage>().fillAmount = bossHpNow / bossHpMax;
 
         //보스 체력 텍스트 갱신
         bossHp.transform.Find("HpText").GetComponent<TextMeshProUGUI>().text
@@ -636,14 +650,12 @@ public class UIManager : MonoBehaviour
 
         //보스 이름 갱신, 체력 0이하면 공백
         bossHp.transform.Find("BossName").GetComponent<TextMeshProUGUI>().text
-        = bossHpNow <= 0 ? "" : bossManager.enemy.name;
+        = bossHpNow <= 0 ? "" : bossCharacter.enemy.name;
 
-        //체력 0 이하면 체력 UI 끄기
-        if (bossHpNow <= 0)
-        {
+        //체력 0 이하일때, 죽었을때
+        if (bossHpNow <= 0 || bossCharacter.isDead)
             //보스 체력 UI 비활성화
             bossHp.SetActive(false);
-        }
     }
 
     public void UpdateHp()
@@ -970,6 +982,10 @@ public class UIManager : MonoBehaviour
         // 시간 정지 토글
         float scale = popup.activeSelf ? 0 : 1;
         SystemManager.Instance.TimeScaleChange(scale);
+
+        //모든 툴팁 끄기
+        HasStuffToolTip.Instance.QuitTooltip();
+        ProductToolTip.Instance.QuitTooltip();
 
         //팝업 off
         if (!popup.activeSelf)

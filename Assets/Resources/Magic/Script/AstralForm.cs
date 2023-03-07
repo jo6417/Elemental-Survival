@@ -89,7 +89,7 @@ public class AstralForm : MonoBehaviour
         // 모든 고스트 디스폰
         for (int i = 0; i < ghosts.Count; i++)
             // 고스트 활성화 되어있으면
-            if (ghosts[i].activeSelf)
+            if (ghosts[i] != null && ghosts[i].activeSelf)
                 // 고스트 디스폰
                 LeanPool.Despawn(ghosts[i]);
 

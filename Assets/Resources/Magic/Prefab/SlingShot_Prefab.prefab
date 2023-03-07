@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &622668428461241063
 Transform:
   m_ObjectHideFlags: 0
@@ -94,14 +94,9 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3849491329945162330, guid: 05c8fcfb38e74a2439106a838c32ee03,
         type: 3}
-      propertyPath: autoShot
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3849491329945162330, guid: 05c8fcfb38e74a2439106a838c32ee03,
-        type: 3}
       propertyPath: magicHolder
       value: 
-      objectReference: {fileID: 4806162036374247006}
+      objectReference: {fileID: 0}
     - target: {fileID: 5778638698215545233, guid: 05c8fcfb38e74a2439106a838c32ee03,
         type: 3}
       propertyPath: m_Name
@@ -111,6 +106,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8555910663650726356, guid: 05c8fcfb38e74a2439106a838c32ee03,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8555910663650726356, guid: 05c8fcfb38e74a2439106a838c32ee03,
+        type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8618853370772951489, guid: 05c8fcfb38e74a2439106a838c32ee03,
         type: 3}

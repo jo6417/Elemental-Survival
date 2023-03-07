@@ -20,16 +20,13 @@ public class PhoneMenu : MonoBehaviour
         {
             if (instance == null)
             {
-                var obj = FindObjectOfType<PhoneMenu>();
-                if (obj != null)
+                instance = FindObjectOfType<PhoneMenu>();
+                if (instance == null)
                 {
-                    instance = obj;
+                    GameObject obj = new GameObject();
+                    obj.name = "PhoneMenu";
+                    instance = obj.AddComponent<PhoneMenu>();
                 }
-                // else
-                // {
-                //     var newObj = new GameObject().AddComponent<PhoneMenu>();
-                //     instance = newObj;
-                // }
             }
             return instance;
         }
@@ -109,6 +106,15 @@ public class PhoneMenu : MonoBehaviour
 
     private void Awake()
     {
+        // // 다른 오브젝트가 이미 있을 때
+        // if (instance != null && instance != this)
+        // {
+        //     Destroy(gameObject);
+        //     return;
+        // }
+        // instance = this;
+        // DontDestroyOnLoad(gameObject);
+
         StartCoroutine(AwakeInit());
     }
 
@@ -171,7 +177,6 @@ public class PhoneMenu : MonoBehaviour
         {
             // 스킵 켜기
             isSkipped = true;
-            print("SKIP");
 
             // 핸드폰 오브젝트 있을때
             if (PhoneMenu.Instance != null)
@@ -207,7 +212,6 @@ public class PhoneMenu : MonoBehaviour
         {
             // 스킵 켜기
             isSkipped = true;
-            print("SKIP");
         };
 
         Phone_Input.Enable();
@@ -850,6 +854,7 @@ public class PhoneMenu : MonoBehaviour
         int nowGrade = grade;
         // 가중치로 상승할 최종 등급 뽑기
         int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
+
         // 목표 등급이 현재 등급보다 높을때만
         while (nowGrade < targetGrade)
         {
@@ -1098,7 +1103,7 @@ public class PhoneMenu : MonoBehaviour
         // 스크롤 일정 속도 이하거나 스킵할때까지 대기
         yield return new WaitUntil(() => randomScroll.Velocity.magnitude <= 100f || isSkipped);
 
-        print(isSkipped);
+        print("Skip : " + isSkipped);
 
         // 스크롤이 일정 속도 이상이면 반복
         while (randomScroll.Velocity.magnitude > 100f)

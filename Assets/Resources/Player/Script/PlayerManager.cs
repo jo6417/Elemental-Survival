@@ -52,7 +52,7 @@ public class PlayerManager : Character
     public PlayerHitBox hitBox;
     public GameObject mobSpawner;
     public SpriteRenderer playerSprite; // 몸체 스프라이트
-    public SpriteRenderer playerCover; // 플레이어와 같은 이미지로 덮기
+    // public SpriteRenderer playerCover; // 플레이어와 같은 이미지로 덮기
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Transform magicParent; // 해당 오브젝트 밑에 마법 붙이기
     public Light2D playerLight;
@@ -118,10 +118,10 @@ public class PlayerManager : Character
         // PlayerStat_Default = new CharacterStat(PlayerStat_Now);
 
         // 입력값 초기화
-        StartCoroutine(InputInit());
+        StartCoroutine(AwakeInit());
     }
 
-    IEnumerator InputInit()
+    IEnumerator AwakeInit()
     {
         player_Input = new NewInput();
 
@@ -239,25 +239,27 @@ public class PlayerManager : Character
         // 플레이어 입력 끄기
         player_Input.Disable();
 
-        // 플레이어 커버 하얗게
-        playerCover.color = new Color(1, 1, 1, 1);
+        // 플레이어 사이즈 줄이기
+        transform.localScale = new Vector2(0f, 2f);
 
-        // 플레이어 커버 숨기기
-        playerCover.enabled = false;
-        // 플레이어 스프라이트 숨기기
+        // 플레이어 틴트 하얗게
+        playerSprite.material.SetColor("_Tint", Color.white);
+
+        // 플레이어 관련 스프라이트 숨기기
         playerSprite.enabled = false;
-        // 그림자 스프라이트 숨기기
         shadowSprite.enabled = false;
 
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
 
         // 6종류 gem을 리스트에 넣기
-        for (int i = 0; i < testGems.Length; i++)
+        for (int i = 0; i < 6; i++)
         {
             ItemInfo gem = new ItemInfo(ItemDB.Instance.GetItemByID(i));
+            gem.amount = 0;
+#if UNITY_EDITOR
+#endif
             //! 테스트용 원소젬 개수 넣기
             gem.amount = testGems[i];
-
             hasGem[i] = gem;
         }
 
@@ -275,7 +277,16 @@ public class PlayerManager : Character
         // 1레벨 경험치 최대치 갱신
         ExpMax = characterStat.Level * characterStat.Level + 5;
 
-        // 소환 위치에 포탈 소환
+        // 플레이어 빔에서 스폰
+        StartCoroutine(SpawnPlayer());
+    }
+
+    public IEnumerator SpawnPlayer()
+    {
+        // 플레이어 위치 초기화
+        transform.position = Vector2.zero;
+
+        // 플레이어 위치에 포탈 소환
         GameObject spawner = LeanPool.Spawn(WorldSpawner.Instance.spawnerPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
         Transform beam = spawner.transform.Find("Beam");
         Transform portal = spawner.transform.Find("Portal");
@@ -284,6 +295,10 @@ public class PlayerManager : Character
         // 포탈 및 빔 사이즈 초기화
         portal.localScale = Vector2.zero;
         beam.localScale = new Vector2(0, 1);
+
+        // 플레이어 사이즈 초기화
+        transform.DOScale(Vector3.one, 0.5f)
+        .SetEase(Ease.InExpo);
 
         // 포탈 확장
         portal.DOScale(Vector2.one, 0.5f)
@@ -296,12 +311,8 @@ public class PlayerManager : Character
         yield return new WaitForSeconds(0.5f);
 
         // 플레이어 나타내기
-        playerCover.enabled = true;
         playerSprite.enabled = true;
         shadowSprite.enabled = true;
-
-        // 플레이어 입력 켜기
-        player_Input.Enable();
 
         // 빔 파티클 켜기
         beamParticle.gameObject.SetActive(true);
@@ -315,9 +326,14 @@ public class PlayerManager : Character
 
         yield return new WaitForSeconds(0.3f);
 
-        // 플레이어 커버 제거
-        playerCover.DOColor(new Color(1, 1, 1, 0), 0.5f)
+        // 틴트 투명하게
+        playerSprite.material.DOColor(new Color(1, 1, 1, 0), "_Tint", 0.5f)
         .SetEase(Ease.OutQuad);
+
+        // 플레이어 입력 켜기
+        player_Input.Enable();
+        // UI 컨트롤 켜기
+        UIManager.Instance.UI_Input.Enable();
 
         // 빔 파티클 꺼질때까지 대기
         yield return new WaitUntil(() => !beamParticle.gameObject.activeSelf);
@@ -338,9 +354,6 @@ public class PlayerManager : Character
     {
         if (Time.timeScale == 0f)
             return;
-
-        // 스프라이트 복제
-        playerCover.sprite = playerSprite.sprite;
 
         // //몬스터 스포너 따라오기
         // if (mobSpawner.activeSelf)

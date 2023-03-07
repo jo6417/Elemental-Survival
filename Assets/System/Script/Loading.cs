@@ -241,6 +241,9 @@ public class Loading : MonoBehaviour
             // 기본 마법 패널 켜기
             yield return new WaitUntil(() => UIManager.Instance != null);
 
+            // 인게임 모든 캔버스 패널 초기화
+            UIManager.Instance.InitPanel();
+
             // 첫 맵일때
             if (SystemManager.Instance.NowMapElement == 0)
             {
@@ -250,6 +253,9 @@ public class Loading : MonoBehaviour
             // else
             //     // 기본 마법 패널 끄기
             //     UIManager.Instance.defaultPanel.SetActive(false);
+
+            // 플레이어 빔에서 스폰
+            StartCoroutine(PlayerManager.Instance.SpawnPlayer());
         }
 
         // 해상도 변경 및 빈공간에 레터박스 넣기

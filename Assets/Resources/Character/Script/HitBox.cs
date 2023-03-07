@@ -517,11 +517,9 @@ public class HitBox : MonoBehaviour
         //체력 범위 제한
         character.characterStat.hpNow = Mathf.Clamp(character.characterStat.hpNow, 0, character.characterStat.hpMax);
 
-        //보스면 체력 UI 띄우기
+        //보스면 체력 갱신
         if (character.enemy != null && character.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
-        {
             StartCoroutine(UIManager.Instance.UpdateBossHp(character));
-        }
 
         // 피격시 함수 호출 (해당 캐릭터만)
         if (character.hitCallback != null)
@@ -592,6 +590,10 @@ public class HitBox : MonoBehaviour
 
     public IEnumerator Dead(float deadDelay)
     {
+        //보스면 체력 갱신
+        if (character.enemy != null && character.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
+            StartCoroutine(UIManager.Instance.UpdateBossHp(character));
+
         // if (character.enemy == null)
         //     yield break;
 

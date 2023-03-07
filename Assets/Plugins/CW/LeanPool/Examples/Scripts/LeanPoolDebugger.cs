@@ -4,7 +4,6 @@ using CW.Common;
 namespace Lean.Pool.Examples
 {
 	/// <summary>This component can be added to your prefab GameObject, and it will throw warnings if it is instantiated without the use of <b>LeanPool.Spawn</b>, or despawned without the use of <b>LeanPool.Despawn</b>.</summary>
-	[RequireComponent(typeof(Rigidbody))]
 	[HelpURL(LeanPool.HelpUrlPrefix + "LeanPoolDebugger")]
 	[AddComponentMenu(LeanPool.ComponentPathPrefix + "Pool Debugger")]
 	public class LeanPoolDebugger : MonoBehaviour
@@ -47,7 +46,7 @@ namespace Lean.Pool.Examples
 		{
 			if (cachedPool == null)
 			{
-				Debug.LogWarning("This pool this prefab was spawned using has been destroyed.\n" + name, this);
+				Debug.LogWarning("The pool this prefab was spawned using has been destroyed.\n" + name, this);
 
 				enabled = false;
 			}

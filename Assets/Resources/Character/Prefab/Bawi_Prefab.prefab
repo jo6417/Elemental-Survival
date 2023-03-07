@@ -354,7 +354,7 @@ MonoBehaviour:
   jumpCooltime: 0.5
   landEffect: {fileID: 0}
   startTransition: 0
-  patten: 0
+  patten: 5
   fistDropCoolTime: 3
   stoneThrowCoolTime: 3
   drillDashCoolTime: 4
@@ -1765,7 +1765,6 @@ MonoBehaviour:
   stunCount: 0
   flatCount: 0
   oppositeCount: 0
-  moveSpeedDebuff: 1
   spriteObj: {fileID: 0}
   spriteList:
   - {fileID: 7791055536028208770}

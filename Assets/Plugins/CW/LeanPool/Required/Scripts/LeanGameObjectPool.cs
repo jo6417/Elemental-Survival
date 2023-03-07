@@ -352,9 +352,15 @@ namespace Lean.Pool
 			return false;
 		}
 
-		/// <summary>This method will despawn all currently spawned prefabs managed by this pool.</summary>
 		[ContextMenu("Despawn All")]
 		public void DespawnAll()
+		{
+			DespawnAll(true);
+		}
+
+		/// <summary>This method will despawn all currently spawned prefabs managed by this pool.
+		/// NOTE: If this pool's prefabs were spawned using <b>LeanPool.Spawn</b>, then <b>cleanLinks</b> should be set to true.</summary>
+		public void DespawnAll(bool cleanLinks)
 		{
 			// Merge
 			MergeSpawnedClonesToList();
@@ -366,6 +372,11 @@ namespace Lean.Pool
 
 				if (clone != null)
 				{
+					if (cleanLinks == true)
+					{
+						LeanPool.Links.Remove(clone);
+					}
+
 					DespawnNow(clone);
 				}
 			}
@@ -416,15 +427,19 @@ namespace Lean.Pool
 
 		/// <summary>This allows you to remove all references to the specified clone from this pool.
 		/// A detached clone will act as a normal GameObject, requiring you to manually destroy or otherwise manage it.
-		/// NOTE: If this clone has been despawned then it will still be parented to the pool.</summary>
-		public void Detach(GameObject clone)
+		/// NOTE: If this clone has been despawned then it will still be parented to the pool.
+		/// NOTE: If this pool's prefabs were spawned using <b>LeanPool.Spawn</b>, then <b>cleanLinks</b> should be set to true.</summary>
+		public void Detach(GameObject clone, bool cleanLinks = true)
 		{
 			if (clone != null)
 			{
 				if (spawnedClonesHashSet.Remove(clone) == true || spawnedClonesList.Remove(clone) == true || despawnedClones.Remove(clone) == true)
 				{
-					// Remove the link between this clone and this pool if it hasn't already been
-					LeanPool.Links.Remove(clone);
+					if (cleanLinks == true)
+					{
+						// Remove the link between this clone and this pool if it hasn't already been
+						LeanPool.Links.Remove(clone);
+					}
 
 					// If this clone was marked for delayed despawn, remove it
 					for (var i = delays.Count - 1; i >= 0; i--)

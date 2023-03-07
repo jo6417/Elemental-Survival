@@ -121,6 +121,11 @@ public class WorldSpawner : MonoBehaviour
         // 몬스터 DB 초기화 대기
         yield return new WaitUntil(() => EnemyDB.Instance != null && EnemyDB.Instance.loadDone);
 
+        // 몬스터 스폰 켜기
+        SystemManager.Instance.spawnSwitch = true;
+        // 몬스터 스폰 버튼 색깔 초기화
+        SystemManager.Instance.ButtonToggle(ref SystemManager.Instance.spawnSwitch, SystemManager.Instance.spawnBtn, true);
+
         // 게이트 주변 스폰 끄기 (카메라 영역 바깥에서 스폰)
         gateSpawn = false;
         // 스테이지 시작시간 기록
@@ -359,7 +364,7 @@ public class WorldSpawner : MonoBehaviour
         {
             if (gateSpawn)
                 // 포탈 게이트 근처에서 스폰
-                spawnPos = (Vector2)GatePortal.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(5f, 20f);
+                spawnPos = (Vector2)GatePortal.Instance.transform.position + Random.insideUnitCircle.normalized * Random.Range(15f, 20f);
             else
                 // 화면 테두리 밖에서 스폰
                 spawnPos = BorderRandPos();

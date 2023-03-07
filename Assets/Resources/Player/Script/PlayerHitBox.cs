@@ -418,11 +418,11 @@ public class PlayerHitBox : HitBox
 
         yield return new WaitForSecondsRealtime(stopTime / 2f);
 
-        // 핸드폰 파괴
-        // Destroy(CastMagic.Instance.transform);
-        CastMagic.Instance.gameObject.SetActive(false);
+        // CastMagic.Instance.gameObject.SetActive(false);
         //todo 핸드폰 폭파 이펙트
         //todo 핸드폰 미니 폭파음
+        // 핸드폰 파괴
+        Destroy(CastMagic.Instance.gameObject);
 
         // 플레이어 사망 사운드 재생
         deadAudio.Play();

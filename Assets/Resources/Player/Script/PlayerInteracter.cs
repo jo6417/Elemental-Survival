@@ -8,6 +8,12 @@ public class PlayerInteracter : MonoBehaviour
 
     public Interacter nearInteracter = null; //현재 상호작용 가능한 오브젝트
 
+    private void OnDisable()
+    {
+        // 비활성화시 상호작용 리스트 비우기
+        interacters.Clear();
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         // 상호작용 오브젝트 충돌시

@@ -378,7 +378,7 @@ GameObject:
   - component: {fileID: 2593200602341843419}
   - component: {fileID: 6652052604708394182}
   - component: {fileID: 8555910663650726356}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: DirtTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1315,7 +1315,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 0
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1368,7 +1368,7 @@ ParticleSystem:
     rateOverDistance:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 2
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1934,7 +1934,7 @@ ParticleSystem:
     flipU: 0
     flipV: 0
   VelocityModule:
-    enabled: 1
+    enabled: 0
     x:
       serializedVersion: 2
       minMaxState: 0
@@ -5231,7 +5231,7 @@ GameObject:
   - component: {fileID: 5795910316220397948}
   - component: {fileID: 6303793564633328313}
   - component: {fileID: 1502479179679618863}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: DirtCharge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10050,6 +10050,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8618853370772951489}
+  - component: {fileID: 5239601590765596251}
   - component: {fileID: 3849491329945162330}
   - component: {fileID: 5086891747029356793}
   - component: {fileID: 5086891747029356794}
@@ -10078,6 +10079,44 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5239601590765596251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5778638698215545233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playSoundName: 
+  atkColl: {fileID: 0}
+  pierceCount: 0
+  targetType: 0
+  power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
+  knockbackForce: 1
+  burnTime: 0
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 0
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
+  stunTime: 0
+  autoCoolDown: 0
+  fixCoolTime: 0
+  isManualCast: 0
+  targetObj: {fileID: 0}
+  magicName: 
+  targetPos: {x: 0, y: 0, z: 0}
+  initDone: 0
 --- !u!114 &3849491329945162330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10090,6 +10129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def2c03f69c339d41ad09b98371d3886, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoShot: 0
   isFade: 0
   lookDir: 0
   isSpin: 0
@@ -10152,7 +10192,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7073038541285618652}
   - component: {fileID: 8932343228095471457}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: StoneSpin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10192,7 +10232,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 0049cf5d234b799449888b1274dc97a9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

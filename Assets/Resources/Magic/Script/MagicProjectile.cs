@@ -102,7 +102,7 @@ public class MagicProjectile : MonoBehaviour
         //콜라이더 켜기
         coll.enabled = true;
 
-        // 자동 발사일때
+        // 자동발사일때
         if (autoShot)
             //마법 날리기
             StartCoroutine(ShotMagic());

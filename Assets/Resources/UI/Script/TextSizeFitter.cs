@@ -10,6 +10,7 @@ public class TextSizeFitter : MonoBehaviour
     [SerializeField] TextMeshProUGUI textMesh;
     [SerializeField] bool widthFitter = false;
     [SerializeField] bool heightFitter = false;
+    [SerializeField] Vector2 padding;
     private void Awake()
     {
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
@@ -38,6 +39,6 @@ public class TextSizeFitter : MonoBehaviour
             height = textMesh.preferredHeight;
 
         // RectTransform의 크기를 조정합니다.
-        rectTransform.sizeDelta = new Vector2(width, height);
+        rectTransform.sizeDelta = new Vector2(width, height) + padding;
     }
 }

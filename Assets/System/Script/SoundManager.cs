@@ -495,7 +495,8 @@ public class SoundManager : MonoBehaviour
                 audio.clip = null;
 
                 // 해당 오디오 오브젝트 제거
-                LeanPool.Despawn(audio.gameObject);
+                if (audio.gameObject)
+                    LeanPool.Despawn(audio.gameObject);
             }
         }
     }
