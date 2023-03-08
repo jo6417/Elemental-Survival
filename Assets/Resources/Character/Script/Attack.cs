@@ -11,10 +11,9 @@ public class Attack : MonoBehaviour
     public Collider2D atkColl;
 
     [Header("State")]
-    public int pierceCount = 0; // 남은 관통 횟수
-    public enum TargetType { None, Enemy, Player, Both };
     public TargetType targetType; //마법의 목표 타겟
-    public float power = 1f; // 공격 데미지
+    public enum TargetType { None, Enemy, Player, Both };
+    public float attack_power = 1f; // 공격 데미지
 
     [Header("After Effect")]
     public string buffStatName = ""; // 버프 주는 스탯 이름

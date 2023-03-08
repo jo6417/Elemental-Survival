@@ -115,10 +115,6 @@ public class HitBox : MonoBehaviour
                 // 마법 정보 없으면 리턴
                 if (magicHolder.magic == null)
                     return;
-
-                // 다단히트 마법일때만
-                if (magicHolder.magic.multiHit)
-                    StartCoroutine(Hit(magicHolder));
             }
     }
 
@@ -160,10 +156,10 @@ public class HitBox : MonoBehaviour
             isCritical = Random.value > 0.5f ? true : false;
 
             // 고정 데미지가 있으면 아군 피격이라도 적용
-            if (enemyAtk.power > 0)
+            if (enemyAtk.attack_power > 0)
             {
                 // 데미지 갱신
-                damage = enemyAtk.power;
+                damage = enemyAtk.attack_power;
 
                 Damage(damage, false, hitPos);
             }
@@ -223,9 +219,9 @@ public class HitBox : MonoBehaviour
                     magicHolder.hitAction.Invoke();
 
                 // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
-                if (magicHolder.pierceCount > 0)
+                if (magicHolder.pierce > 0)
                     // 관통 횟수 차감
-                    magicHolder.pierceCount--;
+                    magicHolder.pierce--;
 
                 // 마법 파워 계산
                 float power = MagicDB.Instance.MagicPower(magic);
@@ -270,7 +266,7 @@ public class HitBox : MonoBehaviour
         else
         {
             // 고정 데미지 불러오기
-            damage = attack.power;
+            damage = attack.attack_power;
 
             // 데미지 입기
             Damage(damage, isCritical, hitPos);
@@ -396,19 +392,19 @@ public class HitBox : MonoBehaviour
         // 화상 피해 시간 있을때
         if (attack.burnTime > 0)
             // 도트 데미지 실행
-            character.SetBuff(Debuff.Burn.ToString(), "", true, attack.power, attack.burnTime,
+            character.SetBuff(Debuff.Burn.ToString(), "", true, attack.attack_power, attack.burnTime,
              true, character.transform, SystemManager.Instance.burnDebuffEffect);
 
         // 포이즌 피해 시간 있으면 도트 피해
         if (attack.poisonTime > 0)
             // 도트 데미지 실행
-            character.SetBuff(Debuff.Poison.ToString(), "", true, attack.power, attack.poisonTime,
+            character.SetBuff(Debuff.Poison.ToString(), "", true, attack.attack_power, attack.poisonTime,
              true, character.transform, SystemManager.Instance.poisonDebuffEffect);
 
         // 출혈 지속시간 있으면 도트 피해
         if (attack.bleedTime > 0)
             // 도트 데미지 실행
-            character.SetBuff(Debuff.Bleed.ToString(), "", true, attack.power, attack.bleedTime,
+            character.SetBuff(Debuff.Bleed.ToString(), "", true, attack.attack_power, attack.bleedTime,
              true, character.buffParent, SystemManager.Instance.bleedDebuffUI);
 
         #endregion

@@ -12,7 +12,7 @@ public class OptionMenu : MonoBehaviour
     [Header("State")]
     [ReadOnly, SerializeField] GameObject nowOption; // 현재 켜져있는 옵션 패널
     [SerializeField] Slider materVolume; // 마스터 볼륨
-    [SerializeField] Slider bgmVolume; // 배경음 볼륨
+    [SerializeField] Slider musicVolume; // 배경음 볼륨
     [SerializeField] Slider sfxVolume; // 효과음 볼륨
     [SerializeField] Slider uiVolume; // UI 볼륨
     public enum VolumeType { Master, BGM, SFX, UI };
@@ -155,7 +155,7 @@ public class OptionMenu : MonoBehaviour
                 SoundManager.Instance.Set_MasterVolume(materVolume.value);
                 break;
             case (int)VolumeType.BGM:
-                SoundManager.Instance.Set_BGMVolume(bgmVolume.value);
+                SoundManager.Instance.Set_BGMVolume(musicVolume.value);
                 break;
             case (int)VolumeType.SFX:
                 SoundManager.Instance.Set_SFXVolume(sfxVolume.value);
@@ -187,10 +187,10 @@ public class OptionMenu : MonoBehaviour
             UICursor.Instance.UpdateLastSelect(audio_FirstSelect);
 
             // 볼륨값 모두 불러와 표시
-            materVolume.value = SoundManager.Instance.masterVolume;
-            bgmVolume.value = SoundManager.Instance.musicVolume;
-            sfxVolume.value = SoundManager.Instance.sfxVolume;
-            uiVolume.value = SoundManager.Instance.uiVolume;
+            materVolume.value = PlayerPrefs.GetFloat(SaveManager.MASTER_VOLUME_KEY, 1f);
+            musicVolume.value = PlayerPrefs.GetFloat(SaveManager.MUSIC_VOLUME_KEY, 1f);
+            sfxVolume.value = PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY, 1f);
+            uiVolume.value = PlayerPrefs.GetFloat(SaveManager.UI_VOLUME_KEY, 1f);
 
             //todo 배경음 재생
         }
@@ -203,6 +203,9 @@ public class OptionMenu : MonoBehaviour
 
             // 화면모드 갱신
             screenModeDropdown.value = GetScreenMode(SystemManager.Instance.screenMode);
+
+            // 밝기 슬라이더 값 갱신
+            brightnessSlider.value = SystemManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
         }
     }
 

@@ -45,10 +45,10 @@ public class Vend_Machine : MonoBehaviour
 
         // 랜덤 뽑기 가중치 리스트
         List<float> randomWeight = new List<float>();
-        randomWeight.Add(10); // 하트 가중치
-        randomWeight.Add(0); //todo 아티팩트 가중치
-        randomWeight.Add(40); // 마법샤드 가중치
-        randomWeight.Add(40); // 마법 가중치
+        randomWeight.Add(10); // 회복 아이템
+        randomWeight.Add(5); // 가젯
+        randomWeight.Add(40); // 마법샤드
+        randomWeight.Add(40); // 마법
 
         for (int i = 0; i < 9; i++)
         {
@@ -56,19 +56,19 @@ public class Vend_Machine : MonoBehaviour
 
             switch (randomPick)
             {
-                // 하트일때
+                // 회복 아이템
                 case 0:
-                    productList.Add(ItemDB.Instance.GetItemByName("Heart"));
+                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal));
                     break;
-                // 아티팩트일때
+                // 가젯
                 case 1:
-                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Artifact));
+                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget));
                     break;
-                // 마법 샤드일때
+                // 마법 샤드
                 case 2:
                     productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard));
                     break;
-                // 마법일때
+                // 마법
                 case 3:
                     productList.Add(MagicDB.Instance.GetRandomMagic());
                     break;

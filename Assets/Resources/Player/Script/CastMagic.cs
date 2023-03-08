@@ -91,14 +91,18 @@ public class CastMagic : MonoBehaviour
         // 인벤토리에서 레벨 합산해서 리스트 만들기
         List<MagicInfo> magicList = new List<MagicInfo>();
 
-        // 액티브 슬롯의 마법 수집
+        // 퀵슬롯의 마법 수집
         MagicInfo activeMagic = null;
-        activeMagic = UIManager.Instance.activeSlot_A.slotInfo as MagicInfo;
-        if (activeMagic != null) magicList.Add(activeMagic);
-        activeMagic = UIManager.Instance.activeSlot_B.slotInfo as MagicInfo;
-        if (activeMagic != null) magicList.Add(activeMagic);
-        activeMagic = UIManager.Instance.activeSlot_C.slotInfo as MagicInfo;
-        if (activeMagic != null) magicList.Add(activeMagic);
+
+        // 퀵슬롯의 마법 전부 수집
+        InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
+        for (int i = 0; i < quickSlots.Length; i++)
+        {
+            // 퀵슬롯에서 마법 정보 가져오기
+            activeMagic = quickSlots[i].slotInfo as MagicInfo;
+            // 리스트에 넣기
+            if (activeMagic != null) magicList.Add(activeMagic);
+        }
 
         // 인벤토리에서 마법 찾기
         for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
@@ -130,7 +134,7 @@ public class CastMagic : MonoBehaviour
                 MagicInfo referMagic = new MagicInfo(magic);
 
                 // 마법 레벨 초기화
-                referMagic.magicLevel = magic.magicLevel;
+                referMagic.MagicLevel = magic.MagicLevel;
 
                 // 리턴 마법 리스트에 추가
                 returnMagics.Add(referMagic);
@@ -139,7 +143,7 @@ public class CastMagic : MonoBehaviour
             else
             {
                 // 기존 사용중이던 마법에 레벨만 더하기
-                findMagic.magicLevel += magic.magicLevel;
+                findMagic.MagicLevel += magic.MagicLevel;
             }
         }
 
@@ -154,24 +158,19 @@ public class CastMagic : MonoBehaviour
         List<MagicInfo> magicList = new List<MagicInfo>();
         slotList.Clear(); //리스트 비우기
 
-        // 액티브 슬롯의 패시브 마법도 포함
-        MagicInfo activeMagic = UIManager.Instance.activeSlot_A.slotInfo as MagicInfo;
-        if (activeMagic != null && activeMagic.castType == MagicDB.CastType.passive.ToString())
+        // 퀵슬롯 상호작용 풀기
+        UIManager.Instance.quickSlotGroup.interactable = true;
+
+        // 퀵슬롯의 패시브 마법도 전부 포함
+        InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
+        for (int i = 0; i < quickSlots.Length; i++)
         {
-            magicList.Add(UIManager.Instance.activeSlot_A.slotInfo as MagicInfo);
-            slotList.Add(UIManager.Instance.activeSlot_A);
-        }
-        activeMagic = UIManager.Instance.activeSlot_B.slotInfo as MagicInfo;
-        if (activeMagic != null && activeMagic.castType == MagicDB.CastType.passive.ToString())
-        {
-            magicList.Add(UIManager.Instance.activeSlot_B.slotInfo as MagicInfo);
-            slotList.Add(UIManager.Instance.activeSlot_B);
-        }
-        activeMagic = UIManager.Instance.activeSlot_C.slotInfo as MagicInfo;
-        if (activeMagic != null && activeMagic.castType == MagicDB.CastType.passive.ToString())
-        {
-            magicList.Add(UIManager.Instance.activeSlot_C.slotInfo as MagicInfo);
-            slotList.Add(UIManager.Instance.activeSlot_C);
+            MagicInfo quickMagic = quickSlots[i].slotInfo as MagicInfo;
+            if (quickMagic != null && quickMagic.castType == MagicDB.CastType.passive.ToString())
+            {
+                magicList.Add(quickMagic);
+                slotList.Add(quickSlots[i]);
+            }
         }
 
         // 인벤토리에서 마법 찾기
@@ -195,7 +194,7 @@ public class CastMagic : MonoBehaviour
                 MagicInfo referMagic = new MagicInfo(magic);
 
                 //마법 레벨 초기화
-                referMagic.magicLevel = magic.magicLevel;
+                referMagic.MagicLevel = magic.MagicLevel;
 
                 // 해당 슬롯 리스트에 추가
                 slotList.Add(PhoneMenu.Instance.invenSlots[i]);
@@ -206,7 +205,7 @@ public class CastMagic : MonoBehaviour
             else
             {
                 // 기존 사용중이던 마법에 레벨만 더하기
-                findMagic.magicLevel += magic.magicLevel;
+                findMagic.MagicLevel += magic.MagicLevel;
 
                 // print(findMagic.name + " : " + findMagic.magicLevel);
             }
@@ -294,10 +293,10 @@ public class CastMagic : MonoBehaviour
             }
 
             //현재 실행중인 마법 레벨이 다르면 (마법 레벨업일때)
-            if (tempMagic.magicLevel != magic.magicLevel)
+            if (tempMagic.MagicLevel != magic.MagicLevel)
             {
                 //최근 갱신된 레벨 넣어주기
-                tempMagic.magicLevel = magic.magicLevel;
+                tempMagic.MagicLevel = magic.MagicLevel;
 
                 // print($"Name : {tempMagic.name} / Level : {tempMagic.magicLevel}");
 
@@ -432,12 +431,11 @@ public class CastMagic : MonoBehaviour
 
         // 액티브 마법일때
         if (magic.castType == MagicDB.CastType.active.ToString())
-            // 액티브 쿨타임 차감
-            yield return StartCoroutine(CooldownCoroutine(activeMagic, fixCoolTime));
+            // 액티브 쿨타임 시작
+            Cooldown(activeMagic);
 
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => activeMagic.coolCount <= 0);
-
 
         // // 패시브일때
         // if (magic.castType == MagicDB.CastType.passive.ToString())
@@ -502,8 +500,8 @@ public class CastMagic : MonoBehaviour
 
         // 액티브 마법일때
         if (magic.castType == MagicDB.CastType.active.ToString())
-            // 쿨타임 차감
-            yield return StartCoroutine(CooldownCoroutine(globalMagic, fixCoolTime));
+            // 글로벌 쿨다운 시작
+            Cooldown(globalMagic);
 
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => globalMagic.coolCount <= 0);
@@ -532,11 +530,6 @@ public class CastMagic : MonoBehaviour
 
     IEnumerator Cast(bool isManual, List<Vector2> attackPos, MagicInfo magic, GameObject magicPrefab, MagicHolder magicHolder)
     {
-        // // 공격지점 개수만큼 마법 시전
-        // for (int i = 0; i < attackPos.Count; i++)
-        // {           
-        // }
-
         // 생성위치 구분
         Vector2 spawnPos = isManual ? PlayerManager.Instance.transform.position : phone.transform.position;
 
@@ -569,16 +562,20 @@ public class CastMagic : MonoBehaviour
         yield return new WaitForSeconds(0.5f / attackPos.Count);
     }
 
-    public void Cooldown(MagicInfo magic, bool isManualCast, float fixCoolTime = -1)
+    public void Cooldown(MagicInfo magic, float fixCoolTime = -1)
     {
-        // 시전 방식에 따라 다른 마법 정보 찾기
-        if (isManualCast)
-            magic = MagicDB.Instance.GetActiveMagicByID(magic.id);
-        else
-            magic = MagicDB.Instance.GetMagicByID(magic.id);
+        // 쿨타임 들어오지 않았으면
+        if (fixCoolTime == -1)
+            // 해당 마법의 쿨타임 찾기
+            fixCoolTime = MagicDB.Instance.MagicCoolTime(magic);
 
-        // 코루틴 대리 실행
-        StartCoroutine(CooldownCoroutine(magic, fixCoolTime));
+        // 실행중인 쿨다운 코루틴 멈추기
+        if (magic.cooldownCoroutine != null)
+            StopCoroutine(magic.cooldownCoroutine);
+
+        // 쿨다운 코루틴 실행
+        magic.cooldownCoroutine = CooldownCoroutine(magic, fixCoolTime);
+        StartCoroutine(magic.cooldownCoroutine);
     }
 
     IEnumerator CooldownCoroutine(MagicInfo magic, float coolTime)

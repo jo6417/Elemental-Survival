@@ -469,7 +469,7 @@ MonoBehaviour:
       source: {fileID: 0}
     - name: EarthSlime_Landing
       clip: {fileID: 8300000, guid: acb845b761537014298e7a43d8c395d4, type: 3}
-      volume: 0.1
+      volume: 0.05
       pitch: 2
       source: {fileID: 0}
     - name: EarthSlime_Attack
@@ -509,7 +509,7 @@ MonoBehaviour:
       source: {fileID: 0}
     - name: StoneGolem_Jump
       clip: {fileID: 8300000, guid: 051fef9500625c147bd9a87f06bb9095, type: 3}
-      volume: 0.1
+      volume: 0.05
       pitch: 0.1
       source: {fileID: 0}
     - name: StoneGolem_AttackReady

@@ -378,13 +378,13 @@ public class PhoneMenu : MonoBehaviour
         // 스마트폰 움직이는 트랜지션 끝날때까지 대기
         yield return new WaitForSecondsRealtime(moveTime);
 
+        // 퀵슬롯 클릭 가능하게
+        UIManager.Instance.quickSlotGroup.blocksRaycasts = true;
+        // 퀵슬롯 상호작용 풀기
+        UIManager.Instance.quickSlotGroup.interactable = true;
+
         // 버튼 상호작용 켜기
         InteractBtnsToggle(true);
-
-        // 액티브 슬롯 3개 상호작용 켜기
-        UIManager.Instance.activeSlot_A.slotButton.interactable = true;
-        UIManager.Instance.activeSlot_B.slotButton.interactable = true;
-        UIManager.Instance.activeSlot_C.slotButton.interactable = true;
 
         // 핸드폰 화면 패널 켜기
         phonePanel.SetActive(true);
@@ -408,14 +408,6 @@ public class PhoneMenu : MonoBehaviour
         {
             invenSlot.slotButton.interactable = true;
         }
-
-        // 첫번째 인벤 슬롯 선택하기
-        UICursor.Instance.UpdateLastSelect(invenSlots[0].slotButton);
-
-        // //선택된 슬롯 네비 설정
-        // Navigation nav = selectedSlot.navigation;
-        // nav.selectOnUp = stackObjSlots[3].GetComponent<Button>().FindSelectable(Vector3.up);
-        // selectedSlot.navigation = nav;
 
         // 핸드폰 알림 개수 초기화
         UIManager.Instance.PhoneNotice(0);
@@ -640,7 +632,7 @@ public class PhoneMenu : MonoBehaviour
             // 합성된 마법 프레임 색 넣기
             mergedSlot.slotFrame.color = MagicDB.Instance.GradeColor[mergedMagic.grade];
             // 합성된 마법 레벨 합산
-            mergedSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv." + mergedMagic.magicLevel.ToString();
+            mergedSlot.slotLevel.GetComponentInChildren<TextMeshProUGUI>(true).text = "Lv." + mergedMagic.MagicLevel.ToString();
             // 합성된 마법 툴팁 넣기
             mergedSlot.slotTooltip._slotInfo = mergedMagic;
 
@@ -853,7 +845,7 @@ public class PhoneMenu : MonoBehaviour
         // 현재 등급
         int nowGrade = grade;
         // 가중치로 상승할 최종 등급 뽑기
-        int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
+        int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight) + 1;
 
         // 목표 등급이 현재 등급보다 높을때만
         while (nowGrade < targetGrade)
@@ -1283,7 +1275,7 @@ public class PhoneMenu : MonoBehaviour
         MagicInfo magic = new MagicInfo(getMagic);
 
         //마법의 레벨 초기화
-        magic.magicLevel = 1;
+        magic.MagicLevel = 1;
 
         // touchedMagics에 해당 마법 id가 존재하지 않으면
         if (!MagicDB.Instance.savedMagics.Exists(x => x == magic.id))
@@ -1340,7 +1332,7 @@ public class PhoneMenu : MonoBehaviour
         //     isSkipped = true;
 
         // 채팅패널 Lerp로 사이즈 반영해서 lerp로 늘어나기
-        chatContentRect.sizeDelta = new Vector2(chatContentRect.sizeDelta.x, Mathf.Lerp(chatContentRect.sizeDelta.y, sumChatHeights, Time.unscaledDeltaTime * 5f));
+        // chatContentRect.sizeDelta = new Vector2(chatContentRect.sizeDelta.x, Mathf.Lerp(chatContentRect.sizeDelta.y, sumChatHeights, Time.unscaledDeltaTime * 5f));
     }
 
     public IEnumerator ChatAdd(string message)
@@ -1651,8 +1643,16 @@ public class PhoneMenu : MonoBehaviour
 
     public IEnumerator PhoneExit()
     {
+        // null 선택하기
+        UICursor.Instance.UpdateLastSelect(null);
+
         // 툴팁 끄기
         ProductToolTip.Instance.QuitTooltip();
+
+        // 퀵슬롯 클릭 막기
+        UIManager.Instance.quickSlotGroup.blocksRaycasts = false;
+        // 퀵슬롯 상호작용 막기
+        UIManager.Instance.quickSlotGroup.interactable = false;
 
         // 인벤 슬롯 상호작용 모두 끄기
         foreach (InventorySlot invenSlot in invenSlots)
@@ -1662,11 +1662,6 @@ public class PhoneMenu : MonoBehaviour
 
         // 버튼 상호작용 끄기
         InteractBtnsToggle(false);
-
-        // 액티브 슬롯 3개 상호작용 막기
-        UIManager.Instance.activeSlot_A.slotButton.interactable = false;
-        UIManager.Instance.activeSlot_B.slotButton.interactable = false;
-        UIManager.Instance.activeSlot_C.slotButton.interactable = false;
 
         //마우스로 아이콘 들고 있으면 복귀시키기
         if (UIManager.Instance.nowHoldSlot.enabled)

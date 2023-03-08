@@ -10244,32 +10244,11 @@ MonoBehaviour:
     magicDBJson: 
     enemyDBJson: 
     itemDBJson: 
-    volumes:
-    - 0
-    - 0
-    - 0
-    fullscreenMode: 3
-    resolution:
-    - 1920
-    - 1080
-    showDamage: 1
-    optionBrightness: 0.9
   localSaveData:
     unlockMagics: 
     magicDBJson: 
     enemyDBJson: 
     itemDBJson: 
-    volumes:
-    - 0
-    - 0
-    - 0
-    - 0
-    fullscreenMode: 3
-    resolution:
-    - 1920
-    - 1080
-    showDamage: 1
-    optionBrightness: 0.9
 --- !u!114 &5667971188328656914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10304,7 +10283,7 @@ MonoBehaviour:
   - 0
   - 0
   gradeWeight:
-  - 10
+  - 100
   - 20
   - 30
   - 25
@@ -10392,7 +10371,6 @@ MonoBehaviour:
   healColor: {r: 0.23529412, g: 1, b: 0.2352941, a: 1}
   poisonColor: {r: 0.38389742, g: 0.121395454, b: 0.6226415, a: 1}
   DeadColor: {r: 1, g: 1, b: 1, a: 1}
-  nowChangeResolution: 0
   monitorResolution: {x: 1920, y: 1080}
   cameraRect:
     serializedVersion: 2

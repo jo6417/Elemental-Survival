@@ -88,7 +88,7 @@ public class GameoverMenu : MonoBehaviour
             //아이콘 넣기
             slot.Find("Icon").GetComponent<Image>().sprite = MagicDB.Instance.GetIcon(magic.id);
             //레벨 넣기
-            slot.Find("Level").GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + magic.magicLevel.ToString();
+            slot.Find("Level").GetComponentInChildren<TextMeshProUGUI>().text = "Lv. " + magic.MagicLevel.ToString();
         }
     }
 

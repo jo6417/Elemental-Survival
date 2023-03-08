@@ -54,7 +54,7 @@ public class Magic_Machine : MonoBehaviour
             while (slotInfo == null)
             {
                 // 등급 뽑기 (가중치 반영)
-                int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
+                int targetGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight) + 1;
                 // 상품 종류 뽑기
                 int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
 

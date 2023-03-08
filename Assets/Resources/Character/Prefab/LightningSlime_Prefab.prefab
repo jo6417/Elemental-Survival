@@ -48,9 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playSoundName: 
   atkColl: {fileID: 332534821654368446}
-  pierceCount: 0
   targetType: 2
-  power: 1
+  attack_power: 1
   buffStatName: 
   buffMultiple: 1
   buffDuration: 0
@@ -5529,7 +5528,6 @@ MonoBehaviour:
   stunCount: 0
   flatCount: 0
   oppositeCount: 0
-  moveSpeedDebuff: 1
   spriteObj: {fileID: 3723040182202891886}
   spriteList:
   - {fileID: 6420595381662654825}
@@ -5572,7 +5570,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   character: {fileID: 3723040182202891887}
-  targetRange: 1
+  targetRange: 2
   searchCoolTime: 1
   searchCoolCount: 0
   jumpCoolCount: 0

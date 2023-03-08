@@ -279,7 +279,7 @@ public class GatePortal : MonoBehaviour
             // 이제부터 포탈게이트 근처에서 몬스터 스폰
             WorldSpawner.Instance.gateSpawn = true;
             // 몬스터 반대편으로 옮기기 정지
-            WorldSpawner.Instance.dragSwitch = false;
+            // WorldSpawner.Instance.dragSwitch = false;
         }
 
         // 젬 넣는 상태일때

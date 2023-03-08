@@ -145,7 +145,7 @@ public class Drone_AI : MonoBehaviour
         // 몬스터 공격 레이어로 변경
         explosion.layer = SystemManager.Instance.layerList.EnemyAttack_Layer;
         // 몬스터 공격력 넣기
-        explosion.GetComponent<Attack>().power = character.powerNow;
+        explosion.GetComponent<Attack>().attack_power = character.powerNow;
 
         // 딜레이 없이 즉시 사망
         StartCoroutine(character.hitBoxList[0].Dead(0));

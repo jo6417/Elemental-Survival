@@ -317,7 +317,7 @@ public class Character : MonoBehaviour
                     // 힐 오브젝트 크기 초기화
                     healRange.transform.localScale = Vector2.one * portalSize * 0.5f;
                     // 회복량 넣어주기
-                    healRange.GetComponent<Attack>().power = -powerNow;
+                    healRange.GetComponent<Attack>().attack_power = -powerNow;
 
                     // 초록 아웃라인 머터리얼
                     spriteList[0].material.SetColor("_OutLineColor", Color.green);
@@ -380,19 +380,25 @@ public class Character : MonoBehaviour
 
             // 각각 아이템 개별 확률 적용
             List<float> randomRate = new List<float>();
-            randomRate.Add(80); // 원소젬 확률 가중치
-            randomRate.Add(10); // 회복 아이템 확률 가중치
-            randomRate.Add(10); // 자석 빔 확률 가중치
-            randomRate.Add(5); // 슬롯머신 확률 가중치
-            randomRate.Add(1); // 트럭 버튼 확률 가중치
+            randomRate.Add(100); // 원소젬
+            randomRate.Add(5f); // 샤드
+            randomRate.Add(10f); // 회복 아이템
+            randomRate.Add(10f); // 가젯
 
             // 랜덤 아이템 뽑기 (몬스터 등급+0~2급 샤드, 체력회복템, 자석빔, 트럭 호출버튼)
             int randomItem = SystemManager.Instance.WeightRandom(randomRate);
 
             switch (randomItem)
             {
-                // 샤드일때
+                // 원소젬
                 case 0:
+                    // 랜덤 원소젬 찾기
+                    dropItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
+                    dropItem.amount = Random.Range(5, 10);
+                    break;
+
+                // 샤드
+                case 1:
                     // 랜덤 샤드 드랍 아이템에 등록
                     string itemName = "";
 
@@ -429,25 +435,15 @@ public class Character : MonoBehaviour
                     }
                     break;
 
-                // 회복템일때
-                case 1:
-                    // 회복 아이템 찾기
-                    dropItem = ItemDB.Instance.GetItemByName("Heart");
-                    break;
-
-                // 자석빔일때
+                // 회복템
                 case 2:
-                    dropItem = ItemDB.Instance.GetItemByName("Magnet");
+                    // 회복 아이템 찾기
+                    dropItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal);
                     break;
 
-                // 슬롯머신일때
+                // 가젯
                 case 3:
-                    dropItem = ItemDB.Instance.GetItemByName("SlotMachine");
-                    break;
-
-                // 트럭 버튼일때
-                case 4:
-                    dropItem = ItemDB.Instance.GetItemByName("TruckButton");
+                    dropItem = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget);
                     break;
             }
 

@@ -21,11 +21,11 @@ public class SaveData : System.IDisposable
     #endregion
 
     #region Option
-    public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
-    public FullScreenMode fullscreenMode = FullScreenMode.Windowed;
-    public float[] resolution = { 1920f, 1080f }; // 저장된 해상도
-    public bool showDamage = true; // 데미지 표시여부
-    public float optionBrightness = 0.9f; // 밝기 설정값
+    // public float[] volumes = new float[4]; // 전체볼륨, 배경음, 효과음, UI
+    // public FullScreenMode fullscreenMode = FullScreenMode.Windowed;
+    // public float[] resolution = { 1920f, 1080f }; // 저장된 해상도
+    // public bool showDamage = true; // 데미지 표시여부
+    // public float optionBrightness = 0.9f; // 밝기 설정값
     #endregion
 
     public SaveData()
@@ -70,6 +70,17 @@ public class SaveManager : MonoBehaviour
     }
     #endregion
 
+    [Header("PrefKey")]
+    public const string MASTER_VOLUME_KEY = "masterVolume";
+    public const string MUSIC_VOLUME_KEY = "musicVolume";
+    public const string SFX_VOLUME_KEY = "sfxVolume";
+    public const string UI_VOLUME_KEY = "uiVolume";
+    public const string SCREENMODE_KEY = "screenMode";
+    public const string RESOLUTION_X_KEY = "resolutionX";
+    public const string RESOLUTION_Y_KEY = "resolutionY";
+    public const string BRIGHTNESS_KEY = "brightness";
+    public const string SHOW_DAMAGE_KEY = "showDamage";
+
     [Header("State")]
     [ReadOnly] public bool nowSaving = false; //저장 중 여부
 
@@ -79,6 +90,21 @@ public class SaveManager : MonoBehaviour
     string magicURI = "https://script.googleusercontent.com/macros/echo?user_content_key=7V2ZVIq0mlz0OyEVM8ULXo0nlLHXKPuUIJxFTqfLhj4Jsbg3SVZjnSH4X9KTiksN02j7LG8xCj8EgELL1uGWpX0Tg3k2TlLvm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnD_xj3pGHBsYNBHTy1qMO9_iBmRB6zvsbPv4uu5dqbk-3wD3VcpY-YvftUimQsCyzKs3JAsCIlkQoFkByun7M-8F5ap6m-tpCA&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
     string enemyURI = "https://script.googleusercontent.com/macros/echo?user_content_key=6ZQ8sYLio20mP1B6THEMPzU6c7Ph6YYf0LUfc38pFGruRhf2CiPrtPUMnp3RV9wjWS5LUI11HGSiZodVQG0wgrSV-9f0c_yJm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnKa-POu7wcFnA3wlQMYgM526Nnu0gbFAmuRW8zSVEVAU9_HiX_KJ3qEm4imXtAtA2I-6ud_s58xOj3-tedHHV_AcI_N4bm379g&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
     string itemURI = "https://script.googleusercontent.com/macros/echo?user_content_key=SFxUnXenFob7Vylyu7Y_v1klMlQl8nsSqvMYR4EBlwac7E1YN3SXAnzmp-rU-50oixSn5ncWtdnTdVhtI4nUZ9icvz8bgj6om5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnDd5HMKPhPTDYFVpd6ZAI5lT6Z1PRDVSUH9zEgYKrhfZq5_-qo0tdzwRz-NvpaavXaVjRCMLKUCBqV1xma9LvJ-ti_cY4IfTKw&lib=MlJXL_oXznex1TzTWlp6olnqzQVRJChSp";
+
+    private void Awake()
+    {
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        // PlayerPref 설정값 모두 불러오기
+        StartCoroutine(LoadPref());
+    }
 
     IEnumerator Saving()
     {
@@ -94,39 +120,63 @@ public class SaveManager : MonoBehaviour
         SystemManager.Instance.saveIcon.SetActive(false);
     }
 
+    public void SavePref()
+    {
+        // 볼륨 옵션값 모두 저장
+        // PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, SoundManager.Instance.masterVolume);
+        // PlayerPrefs.SetFloat(MUSIC_VOLUME_KEY, SoundManager.Instance.musicVolume);
+        // PlayerPrefs.SetFloat(SFX_VOLUME_KEY, SoundManager.Instance.sfxVolume);
+        // PlayerPrefs.SetFloat(UI_VOLUME_KEY, SoundManager.Instance.uiVolume);
+
+        // 화면 모드 저장
+        PlayerPrefs.SetInt(SCREENMODE_KEY, (int)SystemManager.Instance.screenMode);
+
+        // 해상도 저장
+        PlayerPrefs.SetFloat(RESOLUTION_X_KEY, SystemManager.Instance.lastResolution.x);
+        PlayerPrefs.SetFloat(RESOLUTION_Y_KEY, SystemManager.Instance.lastResolution.y);
+
+        // 데미지 표시 여부 저장
+        PlayerPrefs.SetInt(SHOW_DAMAGE_KEY, SystemManager.Instance.showDamage ? 1 : 0);
+
+        // 밝기 값 저장
+        PlayerPrefs.SetFloat(BRIGHTNESS_KEY, SystemManager.Instance.OptionBrightness);
+    }
+
+    public IEnumerator LoadPref()
+    {
+        // 해상도 불러오기
+        SystemManager.Instance.lastResolution = new Vector2(PlayerPrefs.GetFloat(RESOLUTION_X_KEY, 1920f), PlayerPrefs.GetFloat(RESOLUTION_Y_KEY, 1080f)); ;
+        // 화면모드 불러와서 적용
+        SystemManager.Instance.ChangeResolution((FullScreenMode)PlayerPrefs.GetInt(SCREENMODE_KEY, (int)FullScreenMode.ExclusiveFullScreen), true);
+        // 데미지 표시 여부 로드
+        SystemManager.Instance.showDamage = PlayerPrefs.GetInt(SHOW_DAMAGE_KEY, 1) == 1 ? true : false;
+
+        // 밝기 값 로드
+        SystemManager.Instance.OptionBrightness = PlayerPrefs.GetFloat(BRIGHTNESS_KEY, 0.9f);
+        // 현재 글로벌 라이트에 적용
+        SystemManager.Instance.SetBrightness();
+
+        // 사운드 매니저 초기화 대기
+        yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);
+
+        // 오디오 옵션값 불러오기
+        SoundManager.Instance.Set_MasterVolume(PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 1f));
+        SoundManager.Instance.Set_BGMVolume(PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY, 1f));
+        SoundManager.Instance.Set_SFXVolume(PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f));
+        SoundManager.Instance.Set_UIVolume(PlayerPrefs.GetFloat(UI_VOLUME_KEY, 1f));
+    }
+
     public IEnumerator Save()
     {
+        // PlayerPref 설정값 모두 저장
+        SavePref();
+
         // 세이브 파일이 없으면 리턴
         if (!File.Exists(Application.persistentDataPath + "/save.json"))
             yield break;
 
-        #region GetSaveData
-
         // 해금 마법 목록 저장
         localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
-
-        // 오디오 볼륨 옵션값 모두 가져오기
-        float[] volumes = {
-            SoundManager.Instance.masterVolume,
-            SoundManager.Instance.musicVolume,
-            SoundManager.Instance.sfxVolume,
-            SoundManager.Instance.uiVolume
-        };
-        localSaveData.volumes = volumes;
-
-        // 전체화면 여부 저장
-        localSaveData.fullscreenMode = SystemManager.Instance.screenMode;
-        // 해상도 저장
-        localSaveData.resolution[0] = SystemManager.Instance.lastResolution.x;
-        localSaveData.resolution[1] = SystemManager.Instance.lastResolution.y;
-
-        // 데미지 표시 여부 저장
-        localSaveData.showDamage = SystemManager.Instance.showDamage;
-
-        // 밝기 값 저장
-        localSaveData.optionBrightness = SystemManager.Instance.OptionBrightness;
-
-        #endregion
 
         #region Saving
 
@@ -172,29 +222,6 @@ public class SaveManager : MonoBehaviour
 
         // 해금 마법 목록 불러오기
         MagicDB.Instance.unlockMagics = localSaveData.unlockMagics.ToList();
-
-        // 해상도 불러오기
-        SystemManager.Instance.lastResolution = new Vector2(localSaveData.resolution[0], localSaveData.resolution[1]);
-        // 전체화면 여부 불러오기 및 적용
-        SystemManager.Instance.ChangeResolution(localSaveData.fullscreenMode, true);
-
-        // 데미지 표시 여부 로드
-        SystemManager.Instance.showDamage = localSaveData.showDamage;
-
-        // 밝기 값 로드
-        SystemManager.Instance.OptionBrightness = localSaveData.optionBrightness;
-
-        // 사운드 매니저 초기화 대기
-        yield return new WaitUntil(() => SoundManager.Instance != null && SoundManager.Instance.initFinish);
-
-        // 오디오 옵션값 불러오기
-        SoundManager.Instance.Set_MasterVolume(localSaveData.volumes[0]);
-        SoundManager.Instance.Set_BGMVolume(localSaveData.volumes[1]);
-        SoundManager.Instance.Set_SFXVolume(localSaveData.volumes[2]);
-        SoundManager.Instance.Set_UIVolume(localSaveData.volumes[3]);
-
-        // 현재 글로벌 라이트에 적용
-        SystemManager.Instance.SetBrightness();
     }
 
     public IEnumerator DBSyncCheck(DBType dbType, Button syncBtn)

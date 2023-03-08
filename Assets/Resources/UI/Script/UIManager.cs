@@ -86,9 +86,7 @@ public class UIManager : MonoBehaviour
     Sequence iconJumpSeq;
     public bool phoneLoading; //스마트폰 로딩중 여부
     public Image nowHoldSlot; // 현재 선택중인 슬롯 아이콘
-    public InventorySlot activeSlot_A;
-    public InventorySlot activeSlot_B;
-    public InventorySlot activeSlot_C;
+    public CanvasGroup quickSlotGroup; // 퀵슬롯 캔버스 그룹
     public GameObject inGameBindKeyList; // 인게임 사용 키 리스트
     public GameObject tabletBindKeyList; // 태블릿 사용 키 리스트
     [SerializeField] Transform bindKeyList; // 현재 사용 가능한 키 안내 리스트
@@ -577,7 +575,7 @@ public class UIManager : MonoBehaviour
             // 이제부터 포탈게이트 근처에서 몬스터 스폰
             WorldSpawner.Instance.gateSpawn = true;
             // 몬스터 반대편으로 옮기기 정지
-            WorldSpawner.Instance.dragSwitch = false;
+            // WorldSpawner.Instance.dragSwitch = false;
         }
 
         return hour + minute + second;
@@ -785,7 +783,7 @@ public class UIManager : MonoBehaviour
             //마법 레벨 넣기
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.magicLevel.ToString();
+            amount.text = "Lev." + magic.MagicLevel.ToString();
         }
 
         //그리드 업데이트 명령하기
@@ -795,6 +793,13 @@ public class UIManager : MonoBehaviour
 
         // 목록 나타내기
         hasMagicGrid.GetComponent<CanvasGroup>().alpha = 1f;
+    }
+
+    public InventorySlot[] GetQuickSlots()
+    {
+        // 퀵슬롯 전부 찾아 반환
+        InventorySlot[] quickSlots = UIManager.Instance.quickSlotGroup.transform.GetComponentsInChildren<InventorySlot>();
+        return quickSlots;
     }
 
     public void AddMagicUI(MagicInfo magic)
@@ -834,7 +839,7 @@ public class UIManager : MonoBehaviour
             //마법 개수 넣기, 2개 이상부터 표시
             TextMeshProUGUI amount = magicIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.magicLevel.ToString();
+            amount.text = "Lev." + magic.MagicLevel.ToString();
         }
         // 찾으면 해당 아이콘에 레벨 텍스트 갱신
         else
@@ -842,7 +847,7 @@ public class UIManager : MonoBehaviour
             //마법 개수 넣기, 2개 이상부터 표시
             TextMeshProUGUI amount = matchIcon.GetComponentInChildren<TextMeshProUGUI>(true);
             amount.gameObject.SetActive(true);
-            amount.text = "Lev." + magic.magicLevel.ToString();
+            amount.text = "Lev." + magic.MagicLevel.ToString();
         }
 
     }

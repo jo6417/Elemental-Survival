@@ -420,7 +420,6 @@ MonoBehaviour:
   stunCount: 0
   flatCount: 0
   oppositeCount: 0
-  moveSpeedDebuff: 1
   spriteObj: {fileID: 6956078262379011496}
   spriteList:
   - {fileID: 2106653043044473815}
@@ -462,7 +461,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   character: {fileID: 5086723795068245898}
-  targetRange: 1
+  targetRange: 4
   searchCoolTime: 1
   searchCoolCount: 0
   jumpCoolCount: 0

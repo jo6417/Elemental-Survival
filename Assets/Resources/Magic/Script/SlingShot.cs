@@ -78,10 +78,10 @@ public class SlingShot : MonoBehaviour
         }
 
         // 모든 투사체 발사할때까지 대기
-        yield return new WaitUntil(() => shotNum == atkNum);
+        yield return new WaitUntil(() => shotNum >= atkNum);
 
-        // 쿨다운 시작
-        CastMagic.Instance.Cooldown(magicHolder.magic, magicHolder.isManualCast, coolTime);
+        // // 쿨다운 시작
+        // CastMagic.Instance.Cooldown(magicHolder.magic, magicHolder.isManualCast, coolTime);
 
         // 모든 투사체 디스폰 될때까지 대기
         for (int i = 0; i < shotAble.Count; i++)
@@ -132,8 +132,8 @@ public class SlingShot : MonoBehaviour
         // 콜라이더 찾기
         Collider2D coll = stone.GetComponent<Collider2D>();
 
-        // 콜라이더 끄기
-        coll.enabled = false;
+        // 콜라이더 켜기
+        coll.enabled = true;
 
         // 뒤쪽 먼지 이펙트 끄기
         backDust.gameObject.SetActive(false);
@@ -188,6 +188,18 @@ public class SlingShot : MonoBehaviour
                 if (shotAble[index] != StoneState.Charging)
                     // 회전 정지
                     stoneSprite.transform.DOKill();
+
+                // 차징 도중 몬스터 충돌해서 파괴됬을때
+                if (!coll.enabled)
+                {
+                    // 파괴 상태로 변경
+                    shotAble[index] = StoneState.Dead;
+                    // 발사 개수 증가
+                    shotNum++;
+
+                    // 모으기 이펙트 정지
+                    dirtCharge.particle.Stop();
+                }
             });
 
         // 모으는 시간 대기
@@ -200,7 +212,7 @@ public class SlingShot : MonoBehaviour
         yield return new WaitUntil(() => shotAble[index] == StoneState.Shotable);
 
         // 해당 바위 아직 살아있으면
-        if (stone.gameObject.activeInHierarchy)
+        if (coll.enabled)
         {
             // 모으기 이펙트 정지
             dirtCharge.particle.Stop();
@@ -210,14 +222,22 @@ public class SlingShot : MonoBehaviour
             // 발사된 개수 증가
             shotNum++;
 
-            // 콜라이더 켜기
-            coll.enabled = true;
-
             // 발사
             StartCoroutine(stoneProjectile.ShotMagic());
 
             // 던지기 사운드 재생
             SoundManager.Instance.PlaySound("SlingShot_Throw", transform.position);
+        }
+        // 차징 도중 몬스터 충돌해서 파괴됬을때
+        else
+        {
+            // 파괴 상태로 변경
+            shotAble[index] = StoneState.Dead;
+            // 발사 개수 증가
+            shotNum++;
+
+            // 모으기 이펙트 정지
+            dirtCharge.particle.Stop();
         }
 
         // 바위 스프라이트 꺼질때까지 대기
@@ -288,8 +308,8 @@ public class SlingShot : MonoBehaviour
         });
 
         //todo 마우스가 아닌 해당 스킬 키로 변경
-        //todo 마우스 누르지 않을때 혹은 모두 합체할때까지 대기
-        yield return new WaitUntil(() => !PlayerManager.Instance.player_Input.Player.Click.inProgress);
+        // 마우스를 떼거나, 모두 파괴 될때까지 대기
+        yield return new WaitUntil(() => !PlayerManager.Instance.player_Input.Player.Click.inProgress || shotNum >= atkNum);
 
         // 플레이어 속도 디버프 빼기
         StartCoroutine(PlayerManager.Instance.StopBuff(buff, 0));

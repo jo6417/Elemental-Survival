@@ -18,8 +18,13 @@ public class MagicInfo : SlotInfo
 {
     //수정 가능한 변수들
     [Header("Configurable")]
-    public int magicLevel = 1; //현재 마법 레벨
-    // public int amount = 0; // 해당 마법 개수 (스택 슬롯에서 사용)
+    private int magicLevel = 1; //현재 마법 레벨    
+    public int MagicLevel
+    {
+        // 레벨 최소값 1 리턴
+        get { return Mathf.Max(1, magicLevel); }
+        set { magicLevel = value; }
+    }
     public bool exist = false; //현재 소환 됬는지 여부
     public float coolCount = 0f; //현재 마법의 남은 쿨타임
 
@@ -33,9 +38,9 @@ public class MagicInfo : SlotInfo
     public string element_A; //해당 마법을 만들 재료 A
     public string element_B; //해당 마법을 만들 재료 B
     public string castType; //시전 타입
-    public bool multiHit; //다단 히트 여부
+    public IEnumerator cooldownCoroutine; // 진행중인 쿨다운 코루틴
 
-    [Header("Spec")]
+    [Header("Stat")]
     public float power = 1; //데미지
     public float speed = 1; //투사체 속도 및 쿨타임
     public float range = 1; //시전 범위
@@ -62,7 +67,7 @@ public class MagicInfo : SlotInfo
     public MagicInfo(MagicInfo magic)
     {
         this.id = magic.id;
-        this.magicLevel = magic.magicLevel;
+        this.MagicLevel = magic.MagicLevel;
         this.grade = magic.grade;
         this.name = magic.name;
         this.element_A = magic.element_A;
@@ -71,7 +76,6 @@ public class MagicInfo : SlotInfo
         this.description = magic.description;
         this.priceType = magic.priceType;
         this.price = magic.price;
-        this.multiHit = magic.multiHit;
         this.power = magic.power;
         this.speed = magic.speed;
         this.range = magic.range;
@@ -94,7 +98,7 @@ public class MagicInfo : SlotInfo
         this.coolTimePerLev = magic.coolTimePerLev;
     }
 
-    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price, bool multiHit,
+    public MagicInfo(int id, int grade, string magicName, string element_A, string element_B, string castType, string description, string priceType, int price,
     float power, float speed, float range, float scale, float duration, float critical, float criticalPower, int pierce, int atkNum, float coolTime,
     float powerPerLev, float speedPerLev, float rangePerLev, float scalePerLev, float durationPerLev, float criticalPerLev, float criticalPowerPerLev, float piercePerLev, float atkNumPerLev, float coolTimePerLev)
     {
@@ -107,7 +111,6 @@ public class MagicInfo : SlotInfo
         this.description = description;
         this.priceType = priceType;
         this.price = price;
-        this.multiHit = multiHit;
 
         this.power = power;
         this.speed = speed;

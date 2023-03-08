@@ -46,7 +46,7 @@ public class PlayerManager : Character
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("Refer")]
-    // public Transform activeParent; // 액티브 슬롯들 부모 오브젝트
+    // public Transform activeParent; // 퀵슬롯들 부모 오브젝트
     // public GameObject aimCursor; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
@@ -179,29 +179,32 @@ public class PlayerManager : Character
         // A슬롯 마법 시전
         player_Input.Player.ActiveMagic_A.performed += val =>
         {
-            // 0번째 액티브 슬롯 마법 불러오기
-            MagicInfo magic = UIManager.Instance.activeSlot_A.slotInfo as MagicInfo;
+            // 0번째 퀵슬롯 마법 불러오기
+            InventorySlot quickSlot = UIManager.Instance.quickSlotGroup.transform.GetChild(0).GetComponent<InventorySlot>();
+            MagicInfo magic = quickSlot.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_A, magic));
+            StartCoroutine(CastMagic.Instance.ManualCast(quickSlot, magic));
         };
         // B슬롯 마법 시전
         player_Input.Player.ActiveMagic_B.performed += val =>
         {
-            // 1번째 액티브 슬롯 마법 불러오기
-            MagicInfo magic = UIManager.Instance.activeSlot_B.slotInfo as MagicInfo;
+            // 1번째 퀵슬롯 마법 불러오기
+            InventorySlot quickSlot = UIManager.Instance.quickSlotGroup.transform.GetChild(1).GetComponent<InventorySlot>();
+            MagicInfo magic = quickSlot.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_B, magic));
+            StartCoroutine(CastMagic.Instance.ManualCast(quickSlot, magic));
         };
         // C슬롯 마법 시전
         player_Input.Player.ActiveMagic_C.performed += val =>
         {
-            // 2번째 액티브 슬롯 마법 불러오기
-            MagicInfo magic = UIManager.Instance.activeSlot_C.slotInfo as MagicInfo;
+            // 2번째 퀵슬롯 마법 불러오기
+            InventorySlot quickSlot = UIManager.Instance.quickSlotGroup.transform.GetChild(2).GetComponent<InventorySlot>();
+            MagicInfo magic = quickSlot.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(UIManager.Instance.activeSlot_C, magic));
+            StartCoroutine(CastMagic.Instance.ManualCast(quickSlot, magic));
         };
 
         // 초기화 완료
@@ -672,7 +675,7 @@ public class PlayerManager : Character
         // 효과음 찾기
         AudioSource levelupAudio = levelupEffect.transform.Find("LevelupAudio").GetComponent<AudioSource>();
         // 효과음 볼륨과 동기화
-        levelupAudio.volume = SoundManager.Instance.sfxVolume;
+        levelupAudio.volume = PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY, 1f);
         // 수동 켜기
         levelupAudio.Play();
 
@@ -731,7 +734,7 @@ public class PlayerManager : Character
                 continue;
 
             //총전투력에 해당 마법의 등급*레벨 더하기
-            magicPower += magic.grade * magic.magicLevel;
+            magicPower += magic.grade * magic.MagicLevel;
 
             // print(magicPower + " : " + magic.grade + " * " + magic.magicLevel);
         }

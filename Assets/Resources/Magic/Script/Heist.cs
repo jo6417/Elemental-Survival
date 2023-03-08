@@ -38,7 +38,7 @@ public class Heist : MonoBehaviour
         magic = magicHolder.magic;
 
         // 처음 마법 레벨 저장
-        magicLevel = magic.magicLevel;
+        magicLevel = magic.MagicLevel;
 
         // 레벨 갱신되면 스피드 스탯 새로 계산
         speed = MagicDB.Instance.MagicSpeed(magic, true, magicHolder.targetType);

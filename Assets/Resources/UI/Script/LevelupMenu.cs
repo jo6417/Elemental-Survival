@@ -69,6 +69,11 @@ public class LevelupMenu : MonoBehaviour
         // 해당 패널로 팝업 초기화
         UIManager.Instance.PopupSet(gameObject);
 
+        // 카드 리스트 비우고 3개로 초기화
+        cardNames.Clear();
+        for (int j = 0; j < 3; j++)
+            cardNames.Add("");
+
         // 아이템 3개 랜덤 뽑기
         for (int i = 0; i < 3; i++)
         {
@@ -102,14 +107,12 @@ public class LevelupMenu : MonoBehaviour
             int randomType = 0;
             int randomGrade = 0;
 
-            // 카드 리스트 비우고 3개로 초기화
-            cardNames.Clear();
-            for (int j = 0; j < 3; j++)
-                cardNames.Add("");
-
             // 카드 이름 안들어오면 계속 진행
             while (cardNames[index] == "")
             {
+                // 아이템 정보 초기화
+                getItem = null;
+
                 // 얻을 아이템 종류 가중치로 뽑기
                 randomType = SystemManager.Instance.WeightRandom(typeRate);
                 // 얻을 아이템 등급 가중치로 뽑기
@@ -125,7 +128,7 @@ public class LevelupMenu : MonoBehaviour
                             getItem = MagicDB.Instance.GetRandomMagic(randomGrade);
 
                             // 실패하면 등급 다시 뽑기
-                            randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight);
+                            randomGrade = SystemManager.Instance.WeightRandom(SystemManager.Instance.gradeWeight) + 1;
                         }
                         break;
                     case GetSlotType.Shard:
@@ -146,7 +149,7 @@ public class LevelupMenu : MonoBehaviour
                 }
 
                 // 카드 이름 생성
-                string cardName = randomType + getItem.name;
+                string cardName = randomType + ":" + getItem.name;
 
                 // 중복된 카드가 있으면
                 if (cardNames.Exists(x => x == cardName))

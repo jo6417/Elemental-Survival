@@ -1643,7 +1643,7 @@ public class Ascii_AI : MonoBehaviour
             attack.SetTarget(MagicHolder.TargetType.Player);
 
             // 페이즈에 따른 데미지 지정
-            attack.power = 3 * nowPhase * 2f + 1f;
+            attack.attack_power = 3 * nowPhase * 2f + 1f;
         }
 
         // 전기 방출 사운드 재생

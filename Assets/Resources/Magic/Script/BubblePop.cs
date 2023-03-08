@@ -32,16 +32,19 @@ public class BubblePop : MonoBehaviour
         // magicHolder 초기화 완료까지 대기
         yield return new WaitUntil(() => magicHolder.initDone);
 
-        // 슬로우 시간 갱신
-        // magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);
+        // 슬로우 디버프 시간 갱신
+        magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);
+
+        ParticleSystem.EmissionModule particleEmmision = particle.emission;
+        ParticleSystem.MainModule particleMain = particle.main;
 
         // 발사할 파티클 개수에 atkNum값 갱신
-        ParticleSystem.EmissionModule particleEmmision = particle.emission;
-        particleEmmision.SetBurst(0, new ParticleSystem.Burst(0, 1, MagicDB.Instance.MagicPierce(magic), 0.05f));
+        particleEmmision.SetBurst(0, new ParticleSystem.Burst(0, 1, magicHolder.atkNum, 0.05f));
 
         // 파티클 속도에 speed값 갱신
-        ParticleSystem.MainModule particleMain = particle.main;
         particleMain.startSpeed = MagicDB.Instance.MagicSpeed(magic, true);
+        // 방울 사이즈에 scale값 갱신
+        particleMain.startSize = new ParticleSystem.MinMaxCurve(1f * magicHolder.scale, 2f * magicHolder.scale);
 
         // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
         ParticleSystem.CollisionModule particleColl = particle.collision;

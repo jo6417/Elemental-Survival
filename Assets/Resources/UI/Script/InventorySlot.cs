@@ -111,7 +111,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 툴팁 끄기
             slotTooltip.enabled = false;
 
-            // 액티브 슬롯일때, 쿨타임 인디케이터 초기화
+            // 퀵슬롯일때, 쿨타임 인디케이터 초기화
             if (slotType == SlotType.Active)
             {
                 // 쿨타임 마법 정보 삭제
@@ -139,7 +139,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 등급 초기화
             grade = magic.grade;
             // 레벨 초기화
-            level = magic.magicLevel;
+            level = magic.MagicLevel;
             // 아이콘 찾기
             iconSprite = MagicDB.Instance.GetIcon(magic.id);
 
@@ -184,7 +184,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         // 툴팁 켜기
         slotTooltip.enabled = true;
 
-        // 액티브 슬롯일때
+        // 퀵슬롯일때
         if (slotType == SlotType.Active)
         {
             MagicInfo coolMagic = slotInfo as MagicInfo;
@@ -248,7 +248,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 컨트롤 누른채로 클릭했을때
             if (UIManager.Instance.UI_Input.UI.Ctrl.IsPressed())
             {
-                // 액티브 슬롯으로 변수 넣기
+                // 퀵슬롯으로 변수 넣기
                 secondInput = (int)SlotType.Merge;
 
                 // 마법 넣기
@@ -357,7 +357,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 }
             }
 
-            // 액티브 슬롯 단축키 누른채로 클릭했을때
+            // 퀵슬롯 단축키 누른채로 클릭했을때
             if (secondInput == 2)
             {
                 // 현재 슬롯이 액티브나 머지 슬롯일때
@@ -399,7 +399,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     BlinkSlot(4);
 
                     // 메시지
-                    StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 슬롯에는 마법만 장착 가능합니다."));
+                    StartCoroutine(PhoneMenu.Instance.ChatAdd("퀵슬롯에는 마법만 장착 가능합니다."));
 
                     return;
                 }
@@ -415,28 +415,32 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 //     return;
                 // }
 
-                // 비어있는 액티브 슬롯
-                InventorySlot emptyActiveSlot = null;
+                // 비어있는 퀵슬롯
+                InventorySlot emptyQuickSlot = null;
 
-                // 비어있는 액티브 슬롯 찾기
-                if (UIManager.Instance.activeSlot_A.slotInfo == null)
-                    emptyActiveSlot = UIManager.Instance.activeSlot_A;
-                else if (UIManager.Instance.activeSlot_B.slotInfo == null)
-                    emptyActiveSlot = UIManager.Instance.activeSlot_B;
-                else if (UIManager.Instance.activeSlot_C.slotInfo == null)
-                    emptyActiveSlot = UIManager.Instance.activeSlot_C;
+                // 퀵슬롯 전부 찾기
+                InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
+                // 비어있는 슬롯 찾기
+                for (int i = 0; i < quickSlots.Length; i++)
+                {
+                    if (quickSlots[i].slotInfo == null)
+                    {
+                        emptyQuickSlot = quickSlots[i];
+                        break;
+                    }
+                }
 
-                // 비어있는 액티브 슬롯이 있을때
-                if (emptyActiveSlot != null)
+                // 비어있는 퀵슬롯이 있을때
+                if (emptyQuickSlot != null)
                 {
                     // 현재 슬롯의 아이템 넣기
-                    emptyActiveSlot.slotInfo = slotInfo;
+                    emptyQuickSlot.slotInfo = slotInfo;
 
                     // 현재 슬롯 정보 삭제
                     slotInfo = null;
 
                     // 각 슬롯 UI 갱신
-                    emptyActiveSlot.Set_Slot(true);
+                    emptyQuickSlot.Set_Slot(true);
                     Set_Slot(true);
 
                     return;
@@ -482,7 +486,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             // 선택된 슬롯 정보 인스턴싱
             SlotInfo selectSlotInfo = PhoneMenu.Instance.nowHoldSlotInfo;
 
-            // 액티브 슬롯일때
+            // 퀵슬롯일때
             if (slotType == SlotType.Active)
             {
                 // 선택된 슬롯 정보를 각각 마법 및 아이템으로 형변환
@@ -625,7 +629,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     // 기존 마법 정보로 새 마법 인스턴싱
                     mergeMagic = new MagicInfo(L_Magic);
                     // 레벨 합산해서 넣기
-                    mergeMagic.magicLevel = L_Magic.magicLevel + R_Magic.magicLevel;
+                    mergeMagic.MagicLevel = L_Magic.MagicLevel + R_Magic.MagicLevel;
                     // 마법 합성 트랜지션
                     StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));
                 }
@@ -660,7 +664,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                         // 새로운 마법 정보로 인스턴싱
                         mergeMagic = new MagicInfo(mergeMagic);
                         // 레벨 합산해서 넣기
-                        mergeMagic.magicLevel = L_Magic.magicLevel + R_Magic.magicLevel;
+                        mergeMagic.MagicLevel = L_Magic.MagicLevel + R_Magic.MagicLevel;
 
                         // 마법 합성 트랜지션
                         StartCoroutine(PhoneMenu.Instance.MergeMagic(mergeMagic));

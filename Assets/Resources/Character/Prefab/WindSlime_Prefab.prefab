@@ -5490,7 +5490,6 @@ MonoBehaviour:
   stunCount: 0
   flatCount: 0
   oppositeCount: 0
-  moveSpeedDebuff: 1
   spriteObj: {fileID: 2830118072125934030}
   spriteList:
   - {fileID: 2830118072125934024}
@@ -5551,7 +5550,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   character: {fileID: 2938189514939662475}
-  targetRange: 1
+  targetRange: 3
   searchCoolTime: 0.1
   searchCoolCount: 0
   jumpCoolCount: 0
@@ -5587,7 +5586,7 @@ MonoBehaviour:
   explosionRangeFill: {fileID: 851877994333991696}
   lerpColorMin: {r: 0, g: 1, b: 1, a: 0}
   lerpColorMax: {r: 0, g: 1, b: 1, a: 1}
-  attackReadyTime: 1
+  attackReadyTime: 0.5
 --- !u!95 &4019147020180481447
 Animator:
   serializedVersion: 3

@@ -24,7 +24,7 @@ public class LightningSlime_AI : MonoBehaviour
         yield return new WaitUntil(() => character.initialFinish);
 
         // 공격 콜라이더에 공격력 반영
-        attack.power = character.powerNow;
+        attack.attack_power = character.powerNow;
 
         // 콜백에 공격 함수 넣기
         if (atkTrigger.attackAction == null)

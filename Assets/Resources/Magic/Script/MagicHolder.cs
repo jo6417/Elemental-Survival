@@ -12,7 +12,6 @@ public class MagicHolder : Attack
     public MagicInfo magic; //보유한 마법 데이터
 
     [Header("Status")]
-    public bool autoCoolDown = true; // 마법 시전 즉시 쿨타임 자동 차감 (쿨타임 수동 제어 여부)
     public float fixCoolTime = 0; // 수동 쿨타임 입력
     public bool isManualCast = false; //수동으로 시전한 마법인지 여부
     [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
@@ -32,6 +31,18 @@ public class MagicHolder : Attack
         set { multipleSpeed = value; }
     }
     public bool initDone = false; //초기화 완료 여부
+
+    [Header("Stat")]
+    public float power = 1; //데미지
+    public float speed = 1; //투사체 속도 및 쿨타임
+    public float range = 1; //시전 범위
+    public float scale = 1; //마법 스케일
+    public float duration = 1; //지속시간
+    public float critical = 1f; //크리티컬 확률
+    public float criticalPower = 1f; //크리티컬 데미지 증가율
+    public int pierce = 0; //관통 횟수 및 넉백 계수
+    public int atkNum = 0; //투사체 수
+    public float coolTime = 0; //쿨타임
 
     private void Awake()
     {
@@ -63,8 +74,17 @@ public class MagicHolder : Attack
         // magic 정보 들어올때까지 대기
         yield return new WaitUntil(() => magic != null);
 
-        //관통 횟수 초기화 
-        pierceCount = MagicDB.Instance.MagicPierce(magic);
+        // 모든 스탯 초기화
+        power = MagicDB.Instance.MagicPower(magic);
+        // speed = MagicDB.Instance.MagicSpeed(magic);
+        range = MagicDB.Instance.MagicRange(magic);
+        scale = MagicDB.Instance.MagicScale(magic);
+        duration = MagicDB.Instance.MagicDuration(magic);
+        critical = MagicDB.Instance.MagicCriticalRate(magic);
+        criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
+        pierce = MagicDB.Instance.MagicPierce(magic);
+        atkNum = MagicDB.Instance.MagicAtkNum(magic);
+        coolTime = MagicDB.Instance.MagicCoolTime(magic);
 
         //타겟 임의 지정되면 마법 정보에 반영
         if (targetType != TargetType.None)
@@ -76,10 +96,6 @@ public class MagicHolder : Attack
 
         //! 마법 이름 확인
         magicName = magic.name;
-
-        // 자동 쿨타임일때, 패시브일때
-        if (autoCoolDown && magic.castType == MagicDB.CastType.passive.ToString())
-            CastMagic.Instance.Cooldown(magic, isManualCast);
 
         // 초기화 완료
         initDone = true;

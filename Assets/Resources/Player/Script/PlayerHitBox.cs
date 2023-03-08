@@ -152,9 +152,9 @@ public class PlayerHitBox : HitBox
             }
 
             // 해당 마법이 무한관통 아니고, 관통횟수 남아있을때
-            if (magicHolder.pierceCount != -1 && magicHolder.pierceCount > 0)
+            if (magicHolder.pierce != -1 && magicHolder.pierce > 0)
                 // 관통 횟수 차감
-                magicHolder.pierceCount--;
+                magicHolder.pierce--;
 
             // 데미지 계산
             float power = MagicDB.Instance.MagicPower(magic);
@@ -188,7 +188,7 @@ public class PlayerHitBox : HitBox
         else
         {
             // 고정 데미지 불러오기
-            damage = attack.power;
+            damage = attack.attack_power;
 
             // 데미지 입기
             Damage(damage, isCritical, hitPos);
@@ -418,11 +418,11 @@ public class PlayerHitBox : HitBox
 
         yield return new WaitForSecondsRealtime(stopTime / 2f);
 
-        // CastMagic.Instance.gameObject.SetActive(false);
         //todo 핸드폰 폭파 이펙트
         //todo 핸드폰 미니 폭파음
         // 핸드폰 파괴
-        Destroy(CastMagic.Instance.gameObject);
+        CastMagic.Instance.gameObject.SetActive(false);
+        // Destroy(CastMagic.Instance.gameObject);
 
         // 플레이어 사망 사운드 재생
         deadAudio.Play();

@@ -104,8 +104,10 @@ public class MagicProjectile : MonoBehaviour
 
         // 자동발사일때
         if (autoShot)
+        {
             //마법 날리기
             StartCoroutine(ShotMagic());
+        }
     }
 
     public IEnumerator ShotMagic()
@@ -135,7 +137,8 @@ public class MagicProjectile : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         // 자동 디스폰
-        StartCoroutine(DespawnMagic());
+        if (gameObject)
+            StartCoroutine(DespawnMagic());
 
         // // 목표 위치까지 거리가 가까워지면 파괴
         // float lastDistance = -1;
@@ -186,7 +189,7 @@ public class MagicProjectile : MonoBehaviour
             // print(other.transform.parent.parent.name + " : " + magicHolder.pierceCount);
 
             //남은 관통횟수 0 일때 디스폰
-            if (magicHolder.pierceCount == 0)
+            if (magicHolder.pierce == 0)
             {
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());
@@ -206,7 +209,7 @@ public class MagicProjectile : MonoBehaviour
                 magicHolder.hitAction.Invoke();
 
             //남은 관통횟수 0 일때 디스폰
-            if (magicHolder.pierceCount == 0)
+            if (magicHolder.pierce == 0)
             {
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());

@@ -83,6 +83,17 @@ public class SystemManager : MonoBehaviour
     public float time_current; // 현재 스테이지 플레이 타임
     public float modifyTime; //! 디버깅 시간 추가
     public int killCount; //몬스터 킬 수
+    private float globalBrightness = 1f;
+    public float GlobalBrightness
+    {
+        get { return globalBrightness; }
+        set
+        {
+            // 범위 제한
+            globalBrightness = value;
+            globalBrightness = Mathf.Clamp(globalBrightness, 0.1f, 0.9f);
+        }
+    }
     [SerializeField] private float optionBrightness; //글로벌 라이트 기본값
     public float OptionBrightness //글로벌 라이트 기본값
     {
@@ -109,17 +120,6 @@ public class SystemManager : MonoBehaviour
 
     public float[] elementWeight = new float[6]; // 인벤토리의 마법 원소 가중치
     public List<float> gradeWeight = new List<float>(); // 랜덤 등급 가중치
-    private float globalBrightness = 1f;
-    public float GlobalBrightness
-    {
-        get { return globalBrightness; }
-        set
-        {
-            // 범위 제한
-            globalBrightness = value;
-            globalBrightness = Mathf.Clamp(globalBrightness, 0.1f, 1f);
-        }
-    }
 
     [Header("Debug")]
     public TextMeshProUGUI nowSelectUI; // 선택된 UI 이름
