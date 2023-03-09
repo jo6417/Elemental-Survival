@@ -11,10 +11,6 @@ public class OptionMenu : MonoBehaviour
 {
     [Header("State")]
     [ReadOnly, SerializeField] GameObject nowOption; // 현재 켜져있는 옵션 패널
-    [SerializeField] Slider materVolume; // 마스터 볼륨
-    [SerializeField] Slider musicVolume; // 배경음 볼륨
-    [SerializeField] Slider sfxVolume; // 효과음 볼륨
-    [SerializeField] Slider uiVolume; // UI 볼륨
     public enum VolumeType { Master, BGM, SFX, UI };
 
     [Header("Refer")]
@@ -27,11 +23,13 @@ public class OptionMenu : MonoBehaviour
     [SerializeField] private GameObject audioOptionPanel; // 오디오 설정 패널
     [SerializeField] private GameObject graphicOptionPanel; // 그래픽 설정 패널
     [SerializeField] private GameObject keyBindOptionPanel; // 키설정 설정 패널
+    [SerializeField] private Selectable optionSelect_FirstSelect; // 옵션 첫번째 Selectable
 
     [Header("Audio Option")]
-    [SerializeField] private Selectable optionSelect_FirstSelect; // 옵션 첫번째 Selectable
-    [SerializeField] private Selectable audio_FirstSelect; // 오디오 첫번째 Selectable
-    [SerializeField] private Selectable graphic_FirstSelect; // 그래픽 첫번째 Selectable
+    [SerializeField] Slider masterVolumeSlider; // 마스터 볼륨
+    [SerializeField] Slider musicVolumeSlider; // 배경음 볼륨
+    [SerializeField] Slider sfxVolumeSlider; // 효과음 볼륨
+    [SerializeField] Slider uiVolumeSlider; // UI 볼륨
 
     [Header("Graphic Option")]
     public TMP_Dropdown screenModeDropdown; // 화면 모드 드롭다운 메뉴
@@ -79,6 +77,15 @@ public class OptionMenu : MonoBehaviour
             // 데미지 표시 여부 변수 바꾸기
             SystemManager.Instance.showDamage = showDamageToggle.isOn;
         });
+
+        // 마스터 볼륨 슬라이더에 함수 넣기
+        masterVolumeSlider.onValueChanged.AddListener(delegate { SoundManager.Instance.Set_MasterVolume(masterVolumeSlider.value); });
+        // 음악 볼륨 슬라이더에 함수 넣기
+        musicVolumeSlider.onValueChanged.AddListener(delegate { SoundManager.Instance.Set_MusicVolume(musicVolumeSlider.value); });
+        // 효과음 볼륨 슬라이더에 함수 넣기
+        sfxVolumeSlider.onValueChanged.AddListener(delegate { SoundManager.Instance.Set_SFXVolume(sfxVolumeSlider.value); });
+        // UI 볼륨 슬라이더에 함수 넣기
+        uiVolumeSlider.onValueChanged.AddListener(delegate { SoundManager.Instance.Set_UIVolume(uiVolumeSlider.value); });
     }
 
     IEnumerator InputInit()
@@ -147,25 +154,6 @@ public class OptionMenu : MonoBehaviour
         }
     }
 
-    public void VolumeChage(int type)
-    {
-        switch (type)
-        {
-            case (int)VolumeType.Master:
-                SoundManager.Instance.Set_MasterVolume(materVolume.value);
-                break;
-            case (int)VolumeType.BGM:
-                SoundManager.Instance.Set_BGMVolume(musicVolume.value);
-                break;
-            case (int)VolumeType.SFX:
-                SoundManager.Instance.Set_SFXVolume(sfxVolume.value);
-                break;
-            case (int)VolumeType.UI:
-                SoundManager.Instance.Set_UIVolume(uiVolume.value);
-                break;
-        }
-    }
-
     public void OpenPanel(GameObject openPanel)
     {
         // UI 커서 끄기
@@ -184,13 +172,13 @@ public class OptionMenu : MonoBehaviour
         if (openPanel == audioOptionPanel)
         {
             // 마지막 선택 UI 갱신
-            UICursor.Instance.UpdateLastSelect(audio_FirstSelect);
+            UICursor.Instance.UpdateLastSelect(masterVolumeSlider);
 
             // 볼륨값 모두 불러와 표시
-            materVolume.value = PlayerPrefs.GetFloat(SaveManager.MASTER_VOLUME_KEY, 1f);
-            musicVolume.value = PlayerPrefs.GetFloat(SaveManager.MUSIC_VOLUME_KEY, 1f);
-            sfxVolume.value = PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY, 1f);
-            uiVolume.value = PlayerPrefs.GetFloat(SaveManager.UI_VOLUME_KEY, 1f);
+            masterVolumeSlider.value = PlayerPrefs.GetFloat(SaveManager.MASTER_VOLUME_KEY, 1f);
+            musicVolumeSlider.value = PlayerPrefs.GetFloat(SaveManager.MUSIC_VOLUME_KEY, 1f);
+            sfxVolumeSlider.value = PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY, 1f);
+            uiVolumeSlider.value = PlayerPrefs.GetFloat(SaveManager.UI_VOLUME_KEY, 1f);
 
             //todo 배경음 재생
         }
@@ -199,7 +187,7 @@ public class OptionMenu : MonoBehaviour
         if (openPanel == graphicOptionPanel)
         {
             // 마지막 선택 UI 갱신
-            UICursor.Instance.UpdateLastSelect(graphic_FirstSelect);
+            UICursor.Instance.UpdateLastSelect(brightnessSlider);
 
             // 화면모드 갱신
             screenModeDropdown.value = GetScreenMode(SystemManager.Instance.screenMode);

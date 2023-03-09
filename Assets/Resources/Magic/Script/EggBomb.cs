@@ -83,7 +83,7 @@ public class EggBomb : MonoBehaviour
             }
 
             // 자동 시전일때, 알 개수 꽉 찼을때
-            if (!magicHolder.isManualCast && eggList.Count >= atkNum)
+            if (!magicHolder.isQuickCast && eggList.Count >= atkNum)
             {
                 // 타겟 위치 산출
                 magicHolder.targetPos = CastMagic.Instance.MarkEnemyPos(magicHolder.magic)[0];
@@ -92,7 +92,7 @@ public class EggBomb : MonoBehaviour
                 StartCoroutine(AllShot());
 
                 // 글로벌 쿨다운 시작
-                CastMagic.Instance.Cooldown(magicHolder.magic, coolTime);
+                CastMagic.Instance.Cooldown(magicHolder.magic, true);
 
                 // 쿨타임 카운트 갱신
                 respawnRecord = Time.time + respawnTime;
@@ -103,7 +103,7 @@ public class EggBomb : MonoBehaviour
     void EggShot()
     {
         // 수동 시전일때
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
         {
             // 타겟 위치에 마우스 위치 넣기
             magicHolder.targetPos = PlayerManager.Instance.GetMousePos();
@@ -130,7 +130,7 @@ public class EggBomb : MonoBehaviour
             float globalCooltime = respawnTime * (atkNum - eggList.Count);
 
             // 글로벌 쿨다운 시작
-            CastMagic.Instance.Cooldown(magicHolder.magic, coolTime);
+            CastMagic.Instance.Cooldown(magicHolder.magic, false);
 
             // 쿨타임 카운트 갱신
             respawnRecord = Time.time + respawnTime;
@@ -146,7 +146,7 @@ public class EggBomb : MonoBehaviour
         for (int i = 0; i < eggList.Count; i++)
         {
             // 자동,수동 여부 전달
-            eggList[i].magicHolder.isManualCast = magicHolder.isManualCast;
+            eggList[i].magicHolder.isQuickCast = magicHolder.isQuickCast;
 
             // 타겟 위치 전달
             eggList[i].magicHolder.targetPos = magicHolder.targetPos;

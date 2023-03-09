@@ -6,22 +6,19 @@ using UnityEngine;
 
 public class DeathMine : MonoBehaviour
 {
-    MagicHolder magicHolder;
-    MagicInfo magic;
-    [SerializeField] GameObject bombSprite; //폭탄 이미지
+    [SerializeField] MagicHolder magicHolder;
+    [SerializeField] SpriteRenderer bombSprite; //폭탄 이미지
     [SerializeField] GameObject scorchPrefab; // 그을음 프리팹
     [SerializeField] GameObject explosionPrefab;
     [SerializeField] SpriteRenderer bombLight;
-    [SerializeField] ParticleSystem runeLaser;
+    [SerializeField] ParticleSystem timerTextParticle;
     [SerializeField] ParticleSystem landEffect;
     [SerializeField] Collider2D coll;
     [SerializeField] Transform shadow;
     [SerializeField] ParticleSystem sparkEffect; // 폭발 직전 불꽃 파티클
-
-    private void Awake()
-    {
-        magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
-    }
+    [SerializeField] SpriteRenderer rangeSprite;
+    [SerializeField] SpriteRenderer rangeFillSprite;
+    bool isExplode = false;
 
     private void OnEnable()
     {
@@ -30,8 +27,8 @@ public class DeathMine : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 불꽃 파티클 끄기
-        sparkEffect.gameObject.SetActive(false);
+        // 폭발 여부 초기화
+        isExplode = false;
 
         // 콜라이더 끄기
         coll.enabled = false;
@@ -39,19 +36,33 @@ public class DeathMine : MonoBehaviour
         // 착지 이펙트 끄기
         landEffect.gameObject.SetActive(false);
 
-        // magic 정보 들어올때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // 폭발 콜라이더 끄기
+        rangeSprite.GetComponent<Collider2D>().enabled = false;
+
+        // 폭발 범위 스케일 초기화
+        rangeSprite.transform.localScale = Vector2.zero;
+        rangeFillSprite.transform.localScale = Vector2.zero;
+        // 폭발 범위 끄기
+        rangeSprite.enabled = true;
+        rangeFillSprite.enabled = true;
+
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 라이트 색 초기화
         bombLight.color = Color.cyan;
 
-        // 룬 레이저 끄기
-        runeLaser.gameObject.SetActive(false);
+        // 타이머 파티클 색 초기화
+        ParticleSystem.MainModule timerMain = timerTextParticle.main;
+        timerMain.startColor = Color.cyan;
 
-        // 룬 레이저 색 초기화
-        ParticleSystem.ColorOverLifetimeModule particleColor = runeLaser.colorOverLifetime;
-        particleColor.enabled = false;
+        // 타이머 파티클 시간 초기화
+        timerMain.startLifetime = magicHolder.duration;
+
+        // 폭탄 스프라이트 켜기
+        bombSprite.enabled = true;
+        // 그림자 켜기
+        shadow.gameObject.SetActive(true);
 
         // targetPos 들어올때까지 대기
         yield return new WaitUntil(() => magicHolder.targetPos != null);
@@ -73,14 +84,18 @@ public class DeathMine : MonoBehaviour
 
         yield return new WaitForSeconds(1.2f);
 
-        // 룬 레이저 켜기
-        runeLaser.gameObject.SetActive(true);
-
-        // 충돌 레이어 초기화
-        gameObject.layer = SystemManager.Instance.layerList.EnemyPhysics_Layer;
+        // 타이머 파티클 켜기
+        timerTextParticle.Play();
 
         // 콜라이더 켜기
         coll.enabled = true;
+
+        // duration 동안 대기
+        yield return new WaitForSeconds(magicHolder.duration);
+
+        // 아직 안터졌으면 폭파
+        if (!isExplode)
+            Explode();
     }
 
     private void FixedUpdate()
@@ -89,18 +104,28 @@ public class DeathMine : MonoBehaviour
         shadow.rotation = Quaternion.Euler(Vector3.zero);
     }
 
-    // private void OnCollisionEnter2D(Collision2D other)
-    // {
-    //     // 플레이어가 발로 차면
-    //     if (other.gameObject.CompareTag(TagNameList.Player.ToString()))
-    //     {
-    //         // 콜라이더 끄기, 중복 충돌 방지
-    //         coll.enabled = false;
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        // 플레이어 충돌시
+        if (other.gameObject.CompareTag(TagNameList.Player.ToString()))
+        {
+            // 콜라이더 끄기, 중복 충돌 방지
+            coll.enabled = false;
 
-    //         // 폭발하기
-    //         StartCoroutine(Explosion());
-    //     }
-    // }
+            // 폭발하기
+            Explode();
+        }
+
+        // 몬스터 충돌시
+        if (other.gameObject.CompareTag(TagNameList.Enemy.ToString()))
+        {
+            // 콜라이더 끄기, 중복 충돌 방지
+            coll.enabled = false;
+
+            // 폭발하기
+            Explode();
+        }
+    }
 
     public void Explode()
     {
@@ -110,39 +135,55 @@ public class DeathMine : MonoBehaviour
 
     IEnumerator Explosion()
     {
-        // 룬 문자 파티클 깜빡이 켜기
-        ParticleSystem.ColorOverLifetimeModule particleColor = runeLaser.colorOverLifetime;
-        particleColor.enabled = true;
+        // 폭발 여부 true
+        isExplode = true;
 
-        // 라이트 색 바꾸며 깜빡이기
-        bombLight.DOColor(Color.red, 1f)
+        // 폭발 범위 스케일 초기화
+        rangeSprite.transform.DOScale(Vector2.one * magicHolder.range, 0.1f);
+        rangeFillSprite.transform.DOScale(Vector2.one, 1f);
+
+        // 타이머 파티클 빨갛게
+        ParticleSystem.MainModule timerMain = timerTextParticle.main;
+        timerMain.startColor = Color.red;
+
+        // 폭탄 라이트 빨간색으로 깜빡이기
+        bombLight.DOColor(Color.red, 0.5f)
+        .SetEase(Ease.Flash, 10f, 1)
         .SetLoops(2, LoopType.Yoyo);
 
         // 불꽃 파티클 켜기
         sparkEffect.gameObject.SetActive(true);
 
-        // 깜빡이는 2초간 대기
-        yield return new WaitForSeconds(2f);
+        // 깜빡이며 대기
+        yield return new WaitForSeconds(1f);
+
+        // 타이머 파티클 끄기
+        timerTextParticle.Stop();
+        // 폭탄 스프라이트 끄기
+        bombSprite.enabled = false;
+        // 그림자 끄기
+        shadow.gameObject.SetActive(false);
+
+        // 폭발 콜라이더 켜기
+        rangeSprite.GetComponent<Collider2D>().enabled = true;
+
+        // 폭발 범위 끄기
+        rangeSprite.enabled = false;
+        rangeFillSprite.enabled = false;
 
         // 폭발 이펙트 스폰
         GameObject explosionHit = LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
-        // 일단 비활성화
-        explosionHit.SetActive(false);
-
-        // 마법 range 만큼 감지 및 폭발 범위 적용
-        explosionHit.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic) / 2f;
-
-        //폭발에 마법 정보 넣기
-        MagicHolder effectHolder = explosionHit.GetComponent<MagicHolder>();
-        effectHolder.magic = magic;
-        effectHolder.targetType = MagicHolder.TargetType.Enemy;
-
-        // 폭발 활성화
-        explosionHit.SetActive(true);
+        // 폭발 사운드 재생
+        SoundManager.Instance.PlaySound("Explosion_Tiny", transform.position);
 
         // 그을음 남기기
         LeanPool.Spawn(scorchPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+
+        yield return new WaitForEndOfFrame();
+
+        // 폭발 콜라이더 끄기
+        rangeSprite.GetComponent<Collider2D>().enabled = false;
 
         // 지뢰 디스폰
         LeanPool.Despawn(transform);

@@ -22,7 +22,7 @@ public class AstralForm : MonoBehaviour
     List<GameObject> ghosts = new List<GameObject>(); // 고스트 오브젝트 리스트
 
     [Header("Stat")]
-    float duration;
+    // float duration;
     float speed;
 
     private void Awake()
@@ -44,7 +44,7 @@ public class AstralForm : MonoBehaviour
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
         magic = magicHolder.magic;
-        duration = MagicDB.Instance.MagicDuration(magic); // 영체화 지속시간
+        // duration = MagicDB.Instance.MagicDuration(magic); // 영체화 지속시간
         speed = MagicDB.Instance.MagicSpeed(magic, false); // 스피드만큼 시간 느려지고 플레이어 빨라짐
 
         // 플레이어 자식으로 들어가기
@@ -72,7 +72,7 @@ public class AstralForm : MonoBehaviour
         PlayerManager.Instance.playerSprite.material.DOColor(new Color(1, 0, 1, 0) * 5f, 1f);
 
         // 지속시간 - 1초 만큼 대기
-        yield return new WaitForSeconds(duration - 1f);
+        yield return new WaitForSeconds(magicHolder.duration - 1f);
 
         // 머터리얼 색깔 초기화
         PlayerManager.Instance.playerSprite.material.DOColor(Color.clear, 1f);
@@ -105,27 +105,20 @@ public class AstralForm : MonoBehaviour
 
     void ToggleAstralForm(bool isStop)
     {
-        if (isStop)
-        {
-            // 플레이어와 몬스터 레이어 물리 충돌 무시
-            Physics2D.IgnoreLayerCollision(SystemManager.Instance.layerList.PlayerPhysics_Layer, SystemManager.Instance.layerList.EnemyPhysics_Layer, true);
-            // 플레이어 히트박스와 몬스터 레이어 공격 충돌 무시
-            Physics2D.IgnoreLayerCollision(SystemManager.Instance.layerList.PlayerHit_Layer, SystemManager.Instance.layerList.EnemyAttack_Layer, true);
-        }
-        else
-        {
-            // 플레이어와 몬스터 레이어 물리 충돌 재개
-            Physics2D.IgnoreLayerCollision(SystemManager.Instance.layerList.PlayerPhysics_Layer, SystemManager.Instance.layerList.EnemyPhysics_Layer, false);
-            // 플레이어 히트박스와 몬스터 레이어 공격 충돌 재개
-            Physics2D.IgnoreLayerCollision(SystemManager.Instance.layerList.PlayerHit_Layer, SystemManager.Instance.layerList.EnemyAttack_Layer, false);
-        }
+        // 플레이어 물리 충돌 토글
+        PlayerManager.Instance.physicsColl.enabled = !isStop;
 
         // 씬 타임 스케일 토글
         float timeScale = isStop ? 1f / speed : 1f;
         SystemManager.Instance.TimeScaleChange(timeScale);
 
-        // 타임 스케일 낮춘만큼 플레이어 이동, 애니메이션 속도 올리기
-        SystemManager.Instance.playerTimeScale = isStop ? 1f * speed * speed : 1f;
+        Buff buff = null;
+        if (isStop)
+            // 플레이어 속도 상승 버프
+            buff = PlayerManager.Instance.SetBuff("AstralForm_Fast", nameof(PlayerManager.Instance.characterStat.moveSpeed), true, speed * speed, magicHolder.duration, false);
+        else
+            // 플레이어 속도 버프 제거
+            StartCoroutine(PlayerManager.Instance.StopBuff(buff, 0));
 
         //플레이어 이동속도 갱신
         PlayerManager.Instance.Move();

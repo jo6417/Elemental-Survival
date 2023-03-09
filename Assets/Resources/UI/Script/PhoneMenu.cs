@@ -1095,8 +1095,6 @@ public class PhoneMenu : MonoBehaviour
         // 스크롤 일정 속도 이하거나 스킵할때까지 대기
         yield return new WaitUntil(() => randomScroll.Velocity.magnitude <= 100f || isSkipped);
 
-        print("Skip : " + isSkipped);
-
         // 스크롤이 일정 속도 이상이면 반복
         while (randomScroll.Velocity.magnitude > 100f)
         {

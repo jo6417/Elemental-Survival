@@ -64,7 +64,7 @@ public class LifeMushroom : MonoBehaviour
         SoundManager.Instance.PlaySound("LifeMushroom_Spawn", transform.position, 0, 0.05f, atkNum, true);
 
         // 자동 시전일때
-        if (!magicHolder.isManualCast)
+        if (!magicHolder.isQuickCast)
         {
             // 플레이어 위치에 자식으로 들어가기
             transform.SetParent(PlayerManager.Instance.magicParent);

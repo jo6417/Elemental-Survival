@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Lean.Pool;
 using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
@@ -45,5 +46,8 @@ public class ObjectPool : MonoBehaviour
         }
         instance = this;
         // DontDestroyOnLoad(gameObject);
+
+        // LeanPool 기본 오브젝트 풀 정해주기
+        LeanPool.defaultObjectPool = transform;
     }
 }

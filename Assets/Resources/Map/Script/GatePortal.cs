@@ -518,14 +518,14 @@ public class GatePortal : MonoBehaviour
 
         // 트럭 버튼 드랍
         ItemInfo truckBtnInfo = new ItemInfo(ItemDB.Instance.GetItemByName("TruckButton"));
-        StartCoroutine(ItemDB.Instance.ItemDrop(truckBtnInfo, transform.position, Vector2.down * Random.Range(30f, 40f)));
+        ItemDB.Instance.ItemDrop(truckBtnInfo, transform.position, Vector2.down * Random.Range(30f, 40f));
 
         // 원소젬 순차적 드랍
         WaitForSeconds singleDropTime = new WaitForSeconds(Time.deltaTime);
         while (dropNum > 0)
         {
             // 게이트 위치에서 아래 방향으로 하나씩 드랍
-            StartCoroutine(ItemDB.Instance.ItemDrop(gemInfo, transform.position, Vector2.down * Random.Range(30f, 40f)));
+            ItemDB.Instance.ItemDrop(gemInfo, transform.position, Vector2.down * Random.Range(30f, 40f));
 
             dropNum--;
 

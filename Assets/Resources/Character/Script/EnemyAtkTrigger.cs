@@ -80,6 +80,9 @@ public class EnemyAtkTrigger : MonoBehaviour
         // 플레이어가 충돌하면
         if (other.CompareTag(TagNameList.Player.ToString()))
         {
+            // 트리거 활성화
+            atkTrigger = true;
+
             // 공격 실행
             AttackAction();
 
@@ -106,6 +109,9 @@ public class EnemyAtkTrigger : MonoBehaviour
             else
                 return;
 
+            // 트리거 활성화
+            atkTrigger = true;
+
             // 공격 실행
             AttackAction();
 
@@ -120,8 +126,6 @@ public class EnemyAtkTrigger : MonoBehaviour
         // 액션 실행
         if (attackAction != null)
             attackAction.Invoke();
-        // 트리거 활성화
-        atkTrigger = true;
     }
 
     private void OnTriggerExit2D(Collider2D other)

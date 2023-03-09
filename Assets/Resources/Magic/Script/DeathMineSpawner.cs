@@ -27,7 +27,7 @@ public class DeathMineSpawner : MonoBehaviour
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += DropMine;
 
-        // 액티브 사용시 함수를 콜백에 넣기
+        // 퀵 사용시 함수를 콜백에 넣기
         magicHolder.magicCastCallback += ExplodeMine;
 
         //플레이어 자식으로 들어가기
@@ -70,7 +70,7 @@ public class DeathMineSpawner : MonoBehaviour
         WaitForSeconds wait = new WaitForSeconds(Time.deltaTime);
 
         // 수동 시전
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
         {
             // 범위내 모든 지뢰 찾기
             foreach (Collider2D mine in mineCollList)
@@ -89,19 +89,19 @@ public class DeathMineSpawner : MonoBehaviour
                 }
             }
         }
-        // 자동 시전
-        else
-        {
-            // 필드의 모든 지뢰 터트리기
-            foreach (Collider2D mine in mineCollList)
-            {
-                if (mine.TryGetComponent(out DeathMine deathMine))
-                    // 폭파 실행
-                    deathMine.Explode();
+        // // 자동 시전
+        // else
+        // {
+        //     // 필드의 모든 지뢰 터트리기
+        //     foreach (Collider2D mine in mineCollList)
+        //     {
+        //         if (mine.TryGetComponent(out DeathMine deathMine))
+        //             // 폭파 실행
+        //             deathMine.Explode();
 
-                yield return wait;
-            }
-        }
+        //         yield return wait;
+        //     }
+        // }
     }
 
     // 지뢰 드랍하기
@@ -123,11 +123,12 @@ public class DeathMineSpawner : MonoBehaviour
             GameObject deathMine = LeanPool.Spawn(minePrefab, character.transform.position + Vector3.up * 2f, Quaternion.identity, ObjectPool.Instance.magicPool);
 
             // 매직홀더 찾기
-            MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>();
+            MagicHolder mineMagicHolder = deathMine.GetComponentInChildren<MagicHolder>(true);
 
+            // 마법 정보 넣기
+            mineMagicHolder.magic = magicHolder.magic;
             // 마법 타겟 넣기
             mineMagicHolder.SetTarget(MagicHolder.TargetType.Enemy);
-
             // 마법 타겟 위치 넣기
             mineMagicHolder.targetPos = character.transform.position;
         }

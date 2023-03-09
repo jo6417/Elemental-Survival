@@ -48,7 +48,7 @@ public class HealingSpa : MonoBehaviour
         coolTime = MagicDB.Instance.MagicCoolTime(magic);
         speed = MagicDB.Instance.MagicSpeed(magic, false);
 
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
             // 타겟 위치로 이동
             transform.position = magicHolder.targetPos;
         else

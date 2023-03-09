@@ -266,7 +266,7 @@ public class MagicDB : MonoBehaviour
             return null;
     }
 
-    public MagicInfo GetActiveMagicByID(int id)
+    public MagicInfo GetQuickMagicByID(int id)
     {
         if (activeMagicDB.TryGetValue(id, out MagicInfo value))
             return value;

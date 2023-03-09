@@ -251,7 +251,7 @@ public class SlotMachine : MonoBehaviour
         // 꽝 아닐때
         if (itemInfo != null)
             // 아이템 드롭
-            StartCoroutine(ItemDB.Instance.ItemDrop(itemInfo, dropPos));
+            ItemDB.Instance.ItemDrop(itemInfo, dropPos);
         // 꽝일때
         else
         {

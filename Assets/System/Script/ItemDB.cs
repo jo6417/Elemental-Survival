@@ -345,7 +345,12 @@ public class ItemDB : MonoBehaviour
         return prefab;
     }
 
-    public IEnumerator ItemDrop(SlotInfo slotInfo, Vector2 dropPos, Vector2 dropDir = default)
+    public void ItemDrop(SlotInfo slotInfo, Vector2 dropPos, Vector2 dropDir = default)
+    {
+        StartCoroutine(ItemDropCoroutine(slotInfo, dropPos, dropDir));
+    }
+
+    private IEnumerator ItemDropCoroutine(SlotInfo slotInfo, Vector2 dropPos, Vector2 dropDir = default)
     {
         // 인벤토리 빈칸 없으면 필드 드랍
         GameObject dropObj = null;
@@ -419,10 +424,10 @@ public class ItemDB : MonoBehaviour
         // 아이템 랜덤 속도로 회전 시키기
         itemRigid.angularVelocity = randomRotate < 2f ? 90f * randomRotate : -90f * randomRotate;
 
-        //todo 아이템 드롭 사운드 재생
+        // 아이템 드롭 사운드 재생
         SoundManager.Instance.PlaySound("ItemDrop");
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(3f);
 
         // 콜라이더 켜기
         itemColl.enabled = true;

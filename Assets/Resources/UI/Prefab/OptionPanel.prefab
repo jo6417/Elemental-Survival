@@ -4344,10 +4344,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nowOption: {fileID: 0}
-  materVolume: {fileID: 6801669739872398697}
-  musicVolume: {fileID: 6801669738591277801}
-  sfxVolume: {fileID: 6801669738927293816}
-  uiVolume: {fileID: 6801669738636250469}
   pauseGroup: {fileID: 0}
   mainMenu: {fileID: 0}
   optionSelectPanel: {fileID: 3857646833351708483}
@@ -4355,8 +4351,10 @@ MonoBehaviour:
   graphicOptionPanel: {fileID: 3857646834380836551}
   keyBindOptionPanel: {fileID: 0}
   optionSelect_FirstSelect: {fileID: 3857646834396038009}
-  audio_FirstSelect: {fileID: 6801669739872398697}
-  graphic_FirstSelect: {fileID: 6801669738891860027}
+  masterVolumeSlider: {fileID: 6801669739872398697}
+  musicVolumeSlider: {fileID: 6801669738591277801}
+  sfxVolumeSlider: {fileID: 6801669738927293816}
+  uiVolumeSlider: {fileID: 6801669738636250469}
   screenModeDropdown: {fileID: 3857646834571752942}
   brightnessSlider: {fileID: 6801669738891860027}
   showDamageToggle: {fileID: 3857646833004880693}

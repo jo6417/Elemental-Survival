@@ -311,11 +311,11 @@ public class SoundManager : MonoBehaviour
             nowBGM.time = 0;
             nowBGM.Play();
 
-            // 볼륨 0으로 초기화
-            nowBGM.volume = 0;
-            // 서서히 원래 볼륨까지 올리기
-            DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume, bgmFadeTime)
-            .SetUpdate(true);
+            // // 볼륨 0으로 초기화
+            // nowBGM.volume = 0;
+            // // 서서히 원래 볼륨까지 올리기
+            // DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume, bgmFadeTime)
+            // .SetUpdate(true);
 
             // bgm 켜짐 상태로 전환
             bgmPause = false;
@@ -346,18 +346,20 @@ public class SoundManager : MonoBehaviour
         audio.volume = sound.volume;
         audio.pitch = sound.pitch * globalPitch;
 
-        // 2D 로 초기화
-        if (spatialBlend == 0)
-            audio.spatialBlend = 0f;
-        // 3D 로 초기화
-        else
-        {
-            // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
-            audio.spatialBlend = 1f;
-            audio.rolloffMode = AudioRolloffMode.Custom;
-            audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
-            audio.maxDistance = 30f;
-        }
+        // // 2D 로 초기화
+        // if (spatialBlend == 0)
+        //     audio.spatialBlend = 0f;
+        // // 3D 로 초기화
+        // else
+        // {
+        //     // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
+        //     audio.spatialBlend = 1f;
+        //     audio.rolloffMode = AudioRolloffMode.Custom;
+        //     audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
+        //     audio.maxDistance = 30f;
+        // }
+        audio.spatialBlend = 0f;
+        audio.reverbZoneMix = 0;
 
         // 재생하고 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
@@ -668,7 +670,7 @@ public class SoundManager : MonoBehaviour
 
         // StartCoroutine(SetAll_Volume());
     }
-    public void Set_BGMVolume(float setVolume)
+    public void Set_MusicVolume(float setVolume)
     {
         // 배경음 볼륨값 저장
         PlayerPrefs.SetFloat(SaveManager.MUSIC_VOLUME_KEY, setVolume);

@@ -29,7 +29,7 @@ public class BuckShot : MonoBehaviour
 
         float rotation;
         // 수동 사격일때
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
         {
             // 마우스 방향
             Vector2 mouseDir = PlayerManager.Instance.GetMousePos() - PlayerManager.Instance.transform.position;

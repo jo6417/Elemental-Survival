@@ -456,7 +456,7 @@ public class VendMachineUI : MonoBehaviour
                     fieldDrop = true;
 
                     // 아이템 드롭
-                    StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position));
+                    ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position);
                 }
             });
         }

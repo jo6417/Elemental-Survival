@@ -81,6 +81,7 @@ SpriteAtlas:
   - {fileID: 769383347276963491, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: -4392649398402108704, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: -306817205731461640, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
+  - {fileID: 7434213538707020774, guid: dc651963dcd847349a10d9c59e472c0a, type: 3}
   - {fileID: 21300000, guid: a9bc5f63511fbfa46979731382d12fb8, type: 3}
   - {fileID: -2956701104251912436, guid: c34c339337b25c449a0d0ccbd6858f73, type: 3}
   - {fileID: 7755241913717077643, guid: c34c339337b25c449a0d0ccbd6858f73, type: 3}
@@ -275,6 +276,7 @@ SpriteAtlas:
   - RuneLine_1
   - RuneLine_2
   - RuneLine_3
+  - RuneLine_4
   - LavaToss_Icon
   - Lava_Sheet_0
   - Lava_Sheet_1

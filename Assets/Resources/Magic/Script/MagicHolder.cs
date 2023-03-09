@@ -13,7 +13,7 @@ public class MagicHolder : Attack
 
     [Header("Status")]
     public float fixCoolTime = 0; // 수동 쿨타임 입력
-    public bool isManualCast = false; //수동으로 시전한 마법인지 여부
+    public bool isQuickCast = false; //수동으로 시전한 마법인지 여부
     [ReadOnly] public GameObject targetObj = null; //목표 오브젝트
     public string magicName; //마법 이름 확인
     public Vector3 targetPos = default(Vector3); //목표 위치

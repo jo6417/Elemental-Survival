@@ -145,7 +145,7 @@ public class SlingShot : MonoBehaviour
         transform.rotation = Quaternion.Euler(magicHolder.targetPos - transform.position);
 
         // 수동 시전시
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
             // 공격 허용 판단
             StartCoroutine(AllowAttack(index, tweenStartTime));
 
@@ -164,7 +164,7 @@ public class SlingShot : MonoBehaviour
         .OnComplete(() =>
         {
             // 자동 시전시
-            if (!magicHolder.isManualCast)
+            if (!magicHolder.isQuickCast)
                 //  사격 가능
                 shotAble[index] = StoneState.Shotable;
         });
@@ -176,8 +176,8 @@ public class SlingShot : MonoBehaviour
 
         // 수동 시전시 공격 불능일때
         // 자동 시전시 그냥 회전
-        if (!magicHolder.isManualCast
-        || (magicHolder.isManualCast && shotAble[index] == StoneState.Charging))
+        if (!magicHolder.isQuickCast
+        || (magicHolder.isQuickCast && shotAble[index] == StoneState.Charging))
             // 바위 회전
             stoneSprite.transform.DOLocalRotate(rotation * 360f, spinTime, RotateMode.WorldAxisAdd)
             .SetEase(Ease.Linear)
@@ -332,7 +332,7 @@ public class SlingShot : MonoBehaviour
         WaitForEndOfFrame delay = new WaitForEndOfFrame();
 
         // 수동 시전일때, 차지 중일때
-        while (magicHolder.isManualCast && shotAble[index] == StoneState.Charging)
+        while (magicHolder.isQuickCast && shotAble[index] == StoneState.Charging)
         {
             // 타겟 위치 계속 변경
             magicHolder.targetPos = PlayerManager.Instance.GetMousePos();

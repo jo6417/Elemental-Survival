@@ -48,7 +48,7 @@ public class MetalSword : MonoBehaviour
         Vector3 targetDir = default;
 
         // 수동 공격
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
         {
             // 타겟 방향
             targetDir = magicHolder.targetPos - PlayerManager.Instance.transform.position;

@@ -32,7 +32,7 @@ public class Drone_AI : MonoBehaviour
     IEnumerator Init()
     {
         // rigid 타입 초기화
-        character.rigid.bodyType = RigidbodyType2D.Dynamic;
+        // character.rigid.bodyType = RigidbodyType2D.Dynamic;
 
         // // 사운드 초기화 될때까지 대기
         // yield return new WaitUntil(() => SoundManager.Instance.initFinish);
@@ -94,7 +94,7 @@ public class Drone_AI : MonoBehaviour
     IEnumerator SelfExplosion()
     {
         // 움직이지 않게 rigid 타입 변경
-        character.rigid.bodyType = RigidbodyType2D.Kinematic;
+        // character.rigid.bodyType = RigidbodyType2D.Kinematic;
 
         // 속도 멈추기
         DOTween.To(() => character.rigid.velocity, x => character.rigid.velocity = x, Vector2.zero, 0.5f);

@@ -16,7 +16,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     public SlotInfo slotInfo = null;
     [SerializeField] bool allowInit = true;
     public SlotType slotType;
-    public enum SlotType { inventory, Merge, Active };
+    public enum SlotType { inventory, Merge, Quick };
     public System.Action setAction; // 해당 슬롯을 갱신 했을때 액션
 
     [Header("Refer")]
@@ -112,7 +112,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             slotTooltip.enabled = false;
 
             // 퀵슬롯일때, 쿨타임 인디케이터 초기화
-            if (slotType == SlotType.Active)
+            if (slotType == SlotType.Quick)
             {
                 // 쿨타임 마법 정보 삭제
                 coolTimeIndicator.magic = null;
@@ -185,12 +185,12 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
         slotTooltip.enabled = true;
 
         // 퀵슬롯일때
-        if (slotType == SlotType.Active)
+        if (slotType == SlotType.Quick)
         {
             MagicInfo coolMagic = slotInfo as MagicInfo;
 
             // 쿨타임 보여줄 마법 정보 넣기
-            coolTimeIndicator.magic = MagicDB.Instance.GetActiveMagicByID(coolMagic.id);
+            coolTimeIndicator.magic = MagicDB.Instance.GetQuickMagicByID(coolMagic.id);
         }
 
         // 슬롯 갱신 이펙트
@@ -206,7 +206,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         //해당 버튼 선택
-        UICursor.Instance.UpdateLastSelect(slotButton);
+        slotButton.Select();
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -239,7 +239,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (UIManager.Instance.UI_Input.UI.Shift.IsPressed())
             {
                 // 머지 슬롯으로 변수 넣기
-                secondInput = (int)SlotType.Active;
+                secondInput = (int)SlotType.Quick;
 
                 // 마법 넣기
                 ClickSlot(secondInput);
@@ -297,7 +297,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     return;
 
                 // 현재 슬롯이 액티브나 머지 슬롯일때
-                if (slotType == SlotType.Active
+                if (slotType == SlotType.Quick
                 || slotType == SlotType.Merge)
                 {
                     //비어있는 인벤 슬롯 찾기
@@ -361,7 +361,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             if (secondInput == 2)
             {
                 // 현재 슬롯이 액티브나 머지 슬롯일때
-                if (slotType == SlotType.Active
+                if (slotType == SlotType.Quick
                 || slotType == SlotType.Merge)
                 {
                     //비어있는 인벤 슬롯 찾기
@@ -487,7 +487,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
             SlotInfo selectSlotInfo = PhoneMenu.Instance.nowHoldSlotInfo;
 
             // 퀵슬롯일때
-            if (slotType == SlotType.Active)
+            if (slotType == SlotType.Quick)
             {
                 // 선택된 슬롯 정보를 각각 마법 및 아이템으로 형변환
                 MagicInfo magic = selectSlotInfo as MagicInfo;

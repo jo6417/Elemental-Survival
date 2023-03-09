@@ -256,6 +256,13 @@ public class SystemManager : MonoBehaviour
         //     }
         // }
 
+        // DB 동기화 버튼 비활성화
+        magicDBSyncBtn.interactable = false;
+        enemyDBSyncBtn.interactable = false;
+        itemDBSyncBtn.interactable = false;
+
+        // 플레이어 무적 버튼 상호작용 비활성화
+        godModBtn.interactable = false;
         // 플레이어 무적 버튼 색깔 초기화
         godModBtn.image.color = Color.red;
 
@@ -324,10 +331,16 @@ public class SystemManager : MonoBehaviour
 
         // 마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        // 마법 DB 동기화 버튼 활성화
+        magicDBSyncBtn.interactable = true;
         // 아이템 DB 로딩 대기
         yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        // 아이템 DB 동기화 버튼 활성화
+        itemDBSyncBtn.interactable = true;
         // 몬스터 DB 로딩 대기
         yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+        // 몬스터 DB 동기화 버튼 활성화
+        enemyDBSyncBtn.interactable = true;
 
         // 보스,몬스터 소환 버튼 초기화
         SummonBtnInit();
@@ -362,6 +375,9 @@ public class SystemManager : MonoBehaviour
             ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn, true);
             // 몬스터 자동 스폰 버튼 상태값 연결
             godModBtn.onClick.AddListener(() => { ButtonToggle(ref PlayerManager.Instance.invinsible, godModBtn); });
+
+            // 갓모드 버튼 상호작용 활성화
+            godModBtn.interactable = true;
         }
     }
 

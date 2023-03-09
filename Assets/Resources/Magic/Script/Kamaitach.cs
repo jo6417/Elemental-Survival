@@ -73,7 +73,7 @@ public class Kamaitach : MonoBehaviour
         transform.localScale = new Vector3(distance, distance / 3f, 1);
 
         // 수동 시전 했을때
-        if (magicHolder.isManualCast)
+        if (magicHolder.isQuickCast)
         {
             // 시간 멈추기
             SystemManager.Instance.TimeScaleChange(0.1f);
@@ -87,7 +87,7 @@ public class Kamaitach : MonoBehaviour
             PlayerManager.Instance.playerSprite.sprite = dashSprite;
 
             // 시전여부 초기화
-            magicHolder.isManualCast = false;
+            magicHolder.isQuickCast = false;
 
             // 타겟 위치로 플레이어 이동 시키기
             PlayerManager.Instance.transform.DOMove(movePos, 0.2f)

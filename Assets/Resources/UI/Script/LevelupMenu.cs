@@ -154,8 +154,6 @@ public class LevelupMenu : MonoBehaviour
                 // 중복된 카드가 있으면
                 if (cardNames.Exists(x => x == cardName))
                 {
-                    print("중복");
-
                     // 다시 뽑기
                     continue;
                 }
@@ -345,7 +343,7 @@ public class LevelupMenu : MonoBehaviour
 
         // 드랍 위치 해당 아이템 드랍
         // print("drop : " + slotInfo.name);
-        StartCoroutine(ItemDB.Instance.ItemDrop(slotInfo, dropPos));
+        ItemDB.Instance.ItemDrop(slotInfo, dropPos);
 
         // 패널 닫고 시간정지 해제
         UIManager.Instance.PopupUI(UIManager.Instance.levelupPanel, false);

@@ -161,7 +161,7 @@ public class SaveManager : MonoBehaviour
 
         // 오디오 옵션값 불러오기
         SoundManager.Instance.Set_MasterVolume(PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 1f));
-        SoundManager.Instance.Set_BGMVolume(PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY, 1f));
+        SoundManager.Instance.Set_MusicVolume(PlayerPrefs.GetFloat(MUSIC_VOLUME_KEY, 1f));
         SoundManager.Instance.Set_SFXVolume(PlayerPrefs.GetFloat(SFX_VOLUME_KEY, 1f));
         SoundManager.Instance.Set_UIVolume(PlayerPrefs.GetFloat(UI_VOLUME_KEY, 1f));
     }

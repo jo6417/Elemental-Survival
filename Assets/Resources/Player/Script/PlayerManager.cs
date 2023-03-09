@@ -17,19 +17,16 @@ public class PlayerManager : Character
     {
         get
         {
-            // if (instance == null)
-            // {
-            //     var obj = FindObjectOfType<PlayerManager>();
-            //     if (obj != null)
-            //     {
-            //         instance = obj;
-            //     }
-            //     // else
-            //     // {
-            //     //     var newObj = new GameObject().AddComponent<PlayerManager>();
-            //     //     instance = newObj;
-            //     // }
-            // }
+            if (instance == null)
+            {
+                instance = FindObjectOfType<PlayerManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = "PlayerManager";
+                    instance = obj.AddComponent<PlayerManager>();
+                }
+            }
             return instance;
         }
     }
@@ -88,24 +85,14 @@ public class PlayerManager : Character
 
     protected override void Awake()
     {
-        // Character 의 Awake 코드 실행
-        // base.Awake();
-
-        // 다른 오브젝트가 이미 있을때
-        if (instance != null)
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            // 파괴 후 리턴
             Destroy(gameObject);
             return;
         }
-        // 최초 생성 됬을때
-        else
-        {
-            instance = this;
-
-            // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
-        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
 
         // 위치 초기화
         transform.position = Vector3.zero;
@@ -184,7 +171,7 @@ public class PlayerManager : Character
             MagicInfo magic = quickSlot.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(quickSlot, magic));
+            StartCoroutine(CastMagic.Instance.QuickCast(quickSlot, magic));
         };
         // B슬롯 마법 시전
         player_Input.Player.ActiveMagic_B.performed += val =>
@@ -194,7 +181,7 @@ public class PlayerManager : Character
             MagicInfo magic = quickSlot.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(quickSlot, magic));
+            StartCoroutine(CastMagic.Instance.QuickCast(quickSlot, magic));
         };
         // C슬롯 마법 시전
         player_Input.Player.ActiveMagic_C.performed += val =>
@@ -204,7 +191,7 @@ public class PlayerManager : Character
             MagicInfo magic = quickSlot.slotInfo as MagicInfo;
 
             // 수동 마법 시전
-            StartCoroutine(CastMagic.Instance.ManualCast(quickSlot, magic));
+            StartCoroutine(CastMagic.Instance.QuickCast(quickSlot, magic));
         };
 
         // 초기화 완료
@@ -259,11 +246,11 @@ public class PlayerManager : Character
         {
             ItemInfo gem = new ItemInfo(ItemDB.Instance.GetItemByID(i));
             gem.amount = 0;
-#if UNITY_EDITOR
-#endif
+            // #if UNITY_EDITOR
             //! 테스트용 원소젬 개수 넣기
             gem.amount = testGems[i];
             hasGem[i] = gem;
+            // #endif
         }
 
         // 플레이어 버프 업데이트

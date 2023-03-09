@@ -51,7 +51,7 @@ public class Flame : MonoBehaviour
 
         // 플레이어가 쓴 마법일때
         if (magicHolder.GetTarget() == Attack.TargetType.Enemy)
-            if (magicHolder.isManualCast)
+            if (magicHolder.isQuickCast)
                 // 타겟 위치로 이동
                 transform.position = magicHolder.targetPos;
             else

@@ -91,17 +91,14 @@ public class CastMagic : MonoBehaviour
         // 인벤토리에서 레벨 합산해서 리스트 만들기
         List<MagicInfo> magicList = new List<MagicInfo>();
 
-        // 퀵슬롯의 마법 수집
-        MagicInfo activeMagic = null;
-
         // 퀵슬롯의 마법 전부 수집
         InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
         for (int i = 0; i < quickSlots.Length; i++)
         {
             // 퀵슬롯에서 마법 정보 가져오기
-            activeMagic = quickSlots[i].slotInfo as MagicInfo;
+            MagicInfo quickMagic = quickSlots[i].slotInfo as MagicInfo;
             // 리스트에 넣기
-            if (activeMagic != null) magicList.Add(activeMagic);
+            if (quickMagic != null) magicList.Add(quickMagic);
         }
 
         // 인벤토리에서 마법 찾기
@@ -247,11 +244,11 @@ public class CastMagic : MonoBehaviour
                         // 해당 슬롯이 인벤토리 슬롯일때
                         if (PhoneMenu.Instance.invenSlots.Exists(x => x == slotList[i]))
                             // 마법 사용 자동으로 설정
-                            passiveObj.GetComponent<MagicHolder>().isManualCast = false;
+                            passiveObj.GetComponent<MagicHolder>().isQuickCast = false;
                         // 해당 슬롯이 액티브  슬롯일때
                         else
                             // 마법 사용 수동으로 설정
-                            passiveObj.GetComponent<MagicHolder>().isManualCast = true;
+                            passiveObj.GetComponent<MagicHolder>().isQuickCast = true;
                     }
                 }
 
@@ -284,11 +281,11 @@ public class CastMagic : MonoBehaviour
                     // 해당 슬롯이 인벤토리 슬롯일때
                     if (PhoneMenu.Instance.invenSlots.Exists(x => x == slotList[i]))
                         // 마법 사용 자동으로 설정
-                        passiveObj.GetComponent<MagicHolder>().isManualCast = false;
+                        passiveObj.GetComponent<MagicHolder>().isQuickCast = false;
                     // 해당 슬롯이 액티브  슬롯일때
                     else
                         // 마법 사용 수동으로 설정
-                        passiveObj.GetComponent<MagicHolder>().isManualCast = true;
+                        passiveObj.GetComponent<MagicHolder>().isQuickCast = true;
                 }
             }
 
@@ -352,10 +349,10 @@ public class CastMagic : MonoBehaviour
         StartCoroutine(UIManager.Instance.UpdateMagics(magicList));
     }
 
-    public IEnumerator ManualCast(InventorySlot invenSlot, MagicInfo magic)
+    public IEnumerator QuickCast(InventorySlot invenSlot, MagicInfo magic)
     {
         // 마법 정보가 없거나 쿨타임 중이면 실패 인디케이터 실행
-        if (magic == null || MagicDB.Instance.GetActiveMagicByID(magic.id).coolCount > 0)
+        if (magic == null || MagicDB.Instance.GetQuickMagicByID(magic.id).coolCount > 0)
         {
             // 스프라이트 2회 켜기
             invenSlot.BlinkSlot(4);
@@ -383,7 +380,7 @@ public class CastMagic : MonoBehaviour
             if (magicObj != null)
             {
                 // 수동 실행
-                magicHolder.isManualCast = true;
+                magicHolder.isQuickCast = true;
 
                 // 해당 마법의 콜백 실행
                 if (magicHolder.magicCastCallback != null)
@@ -408,44 +405,12 @@ public class CastMagic : MonoBehaviour
         }
 
         // 해당 마법의 액티브 쿨타임 갱신
-        MagicInfo activeMagic = MagicDB.Instance.GetActiveMagicByID(magic.id);
-        float fixCoolTime = -1;
-
-        // // 쿨타임 수동 제어일때
-        // if (!magicHolder.autoCoolDown)
-        // {
-        //     // 쿨타임 스위치 끄기
-        //     magicHolder.fixCoolTime = -1;
-        //     // 쿨타임 스위치 켜질때까지 대기
-        //     yield return new WaitUntil(() => magicHolder.fixCoolTime != -1);
-
-        //     fixCoolTime = magicHolder.fixCoolTime;
-        // }
-        // // 쿨타임 자동 제어일때
-        // else
-
-        // 해당 마법 쿨타임 계산
-        fixCoolTime = MagicDB.Instance.MagicCoolTime(activeMagic);
-        // 쿨타입 입력
-        activeMagic.coolCount = fixCoolTime;
-
-        // 액티브 마법일때
-        if (magic.castType == MagicDB.CastType.active.ToString())
-            // 액티브 쿨타임 시작
-            Cooldown(activeMagic);
+        MagicInfo quickMagic = MagicDB.Instance.GetQuickMagicByID(magic.id);
+        // 퀵 쿨타임 시작
+        Cooldown(quickMagic, false);
 
         // 쿨타임 0 이하가 될때까지 대기
-        yield return new WaitUntil(() => activeMagic.coolCount <= 0);
-
-        // // 패시브일때
-        // if (magic.castType == MagicDB.CastType.passive.ToString())
-        // {
-        //     // 쿨타임 체크를 위한 전역 마법 정보 불러오기
-        //     MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
-
-        //     // 글로벌 쿨타임 차감
-        //     yield return StartCoroutine(Cooldown(globalMagic, fixCoolTime));
-        // }
+        yield return new WaitUntil(() => quickMagic.coolCount <= 0);
     }
 
     public IEnumerator AutoCast(MagicInfo magic)
@@ -455,27 +420,8 @@ public class CastMagic : MonoBehaviour
 
         MagicHolder magicHolder = null;
 
-        // 패시브일때
-        if (magic.castType == MagicDB.CastType.passive.ToString())
-        {
-            // // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-            // GameObject magicObj = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == magic.id);
-
-            // magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
-
-            // // 패시브 오브젝트에서 magicHolder 찾기
-            // if (magicHolder != null)
-            // {
-            //     // 자동 실행
-            //     magicHolder.isManualCast = false;
-
-            //     // 해당 마법의 콜백 실행
-            //     if (magicHolder.magicCastCallback != null)
-            //         magicHolder.magicCastCallback();
-            // }
-        }
         // 액티브일때
-        else
+        if (magic.castType == MagicDB.CastType.active.ToString())
         {
             //마법 프리팹 찾기
             GameObject magicPrefab = MagicDB.Instance.GetMagicPrefab(magic.id);
@@ -493,15 +439,8 @@ public class CastMagic : MonoBehaviour
 
         // 쿨타임 체크를 위한 전역 마법 정보 불러오기
         MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
-        // 해당 마법 쿨타임 계산
-        float fixCoolTime = MagicDB.Instance.MagicCoolTime(globalMagic);
-        // 쿨타입 입력
-        globalMagic.coolCount = fixCoolTime;
-
-        // 액티브 마법일때
-        if (magic.castType == MagicDB.CastType.active.ToString())
-            // 글로벌 쿨다운 시작
-            Cooldown(globalMagic);
+        // 글로벌 쿨다운 시작
+        Cooldown(globalMagic, true);
 
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => globalMagic.coolCount <= 0);
@@ -543,7 +482,7 @@ public class CastMagic : MonoBehaviour
         magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
 
         // 수동 시전 여부 넣기
-        magicHolder.isManualCast = isManual;
+        magicHolder.isQuickCast = isManual;
 
         //타겟 정보 넣기
         magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
@@ -562,26 +501,24 @@ public class CastMagic : MonoBehaviour
         yield return new WaitForSeconds(0.5f / attackPos.Count);
     }
 
-    public void Cooldown(MagicInfo magic, float fixCoolTime = -1)
+    public void Cooldown(MagicInfo magic, bool isAuto)
     {
-        // 쿨타임 들어오지 않았으면
-        if (fixCoolTime == -1)
-            // 해당 마법의 쿨타임 찾기
-            fixCoolTime = MagicDB.Instance.MagicCoolTime(magic);
-
         // 실행중인 쿨다운 코루틴 멈추기
         if (magic.cooldownCoroutine != null)
             StopCoroutine(magic.cooldownCoroutine);
 
         // 쿨다운 코루틴 실행
-        magic.cooldownCoroutine = CooldownCoroutine(magic, fixCoolTime);
+        magic.cooldownCoroutine = CooldownCoroutine(magic, isAuto);
         StartCoroutine(magic.cooldownCoroutine);
     }
 
-    IEnumerator CooldownCoroutine(MagicInfo magic, float coolTime)
+    IEnumerator CooldownCoroutine(MagicInfo magic, bool isAuto)
     {
+        // 자동, 퀵슬롯 여부에 따라 마법정보 참조
+        magic = isAuto ? MagicDB.Instance.GetMagicByID(magic.id) : MagicDB.Instance.GetQuickMagicByID(magic.id);
+
         // 해당 마법정보의 쿨타임 갱신
-        magic.coolCount = coolTime;
+        magic.coolCount = MagicDB.Instance.MagicCoolTime(magic);
 
         // 쿨타임중이면 반복
         while (magic.coolCount > 0)
