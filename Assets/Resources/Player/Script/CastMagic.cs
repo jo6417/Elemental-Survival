@@ -30,10 +30,11 @@ public class CastMagic : MonoBehaviour
     }
     #endregion
 
-    public List<GameObject> passiveObjs = new List<GameObject>(); // passive 소환형 마법 오브젝트 리스트
-    public List<MagicInfo> nowCastMagics = new List<MagicInfo>(); //현재 사용중인 마법
-    public List<DBEnums.MagicDBEnum> testMagics = new List<DBEnums.MagicDBEnum>(); // 테스트용 마법 리스트
-    public List<DBEnums.ItemDBEnum> testItems = new List<DBEnums.ItemDBEnum>(); // 테스트용 아이템 리스트
+    public List<GameObject> invenPassiveObjList = new List<GameObject>(); // 인벤토리의 passive 소환형 마법 오브젝트 리스트
+    public List<GameObject> quickPassiveObjList = new List<GameObject>(); // 퀵슬롯의 passive 소환형 마법 오브젝트 리스트
+    public List<MagicInfo> used_MagicList = new List<MagicInfo>(); //현재 사용중인 마법
+    public List<DBEnums.MagicDBEnum> testMagicList = new List<DBEnums.MagicDBEnum>(); // 테스트용 마법 리스트
+    public List<DBEnums.ItemDBEnum> testItemList = new List<DBEnums.ItemDBEnum>(); // 테스트용 아이템 리스트
     [SerializeField] bool noMagic; // 마법 없이 테스트
     [SerializeField] bool noItem; // 아이템 없이 테스트
 
@@ -151,47 +152,61 @@ public class CastMagic : MonoBehaviour
     public void CastCheck()
     {
         // 인벤토리에서 레벨 합산해서 리스트 만들기
-        List<InventorySlot> slotList = new List<InventorySlot>();
         List<MagicInfo> magicList = new List<MagicInfo>();
+        List<InventorySlot> slotList = new List<InventorySlot>();
         slotList.Clear(); //리스트 비우기
 
-        // 퀵슬롯 상호작용 풀기
-        UIManager.Instance.quickSlotGroup.interactable = true;
-
-        // 퀵슬롯의 패시브 마법도 전부 포함
+        // 퀵슬롯의 패시브 마법 합산
         InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
         for (int i = 0; i < quickSlots.Length; i++)
         {
+            // 퀵슬롯 마법 캐싱
             MagicInfo quickMagic = quickSlots[i].slotInfo as MagicInfo;
-            if (quickMagic != null && quickMagic.castType == MagicDB.CastType.passive.ToString())
+
+            // 마법이 null이면 넘기기
+            if (quickMagic == null)
+                continue;
+
+            // 기존의 합산 리스트에서 마법 찾기
+            MagicInfo findMagic = magicList.Find(x => x.id == quickMagic.id);
+
+            // ID가 같은 마법이 없으면 (처음 들어가는 마법이면)
+            if (findMagic == null)
             {
-                magicList.Add(quickMagic);
-                slotList.Add(quickSlots[i]);
+                if (quickMagic != null && quickMagic.castType == MagicDB.CastType.passive.ToString())
+                {
+                    magicList.Add(new MagicInfo(quickMagic));
+                    slotList.Add(quickSlots[i]);
+                }
+            }
+            else
+            {
+                // 기존 사용중이던 마법에 레벨만 더하기
+                findMagic.MagicLevel += quickMagic.MagicLevel;
             }
         }
 
-        // 인벤토리에서 마법 찾기
+        // 인벤토리 마법 합산
         for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
         {
             // 마법 정보 불러오기
-            MagicInfo magic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
+            MagicInfo invenMagic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
 
             //마법이 null이면 넘기기
-            if (magic == null)
+            if (invenMagic == null)
                 continue;
             // print(magic.magicName + " : " + magic.magicLevel);
 
             // 기존의 합산 리스트에서 마법 찾기
-            MagicInfo findMagic = magicList.Find(x => x.id == magic.id);
+            MagicInfo findMagic = magicList.Find(x => x.id == invenMagic.id);
 
             // ID가 같은 마법이 없으면 (처음 들어가는 마법이면)
             if (findMagic == null)
             {
                 // 해당 마법으로 새 인스턴스 생성
-                MagicInfo referMagic = new MagicInfo(magic);
-
+                MagicInfo referMagic = new MagicInfo(invenMagic);
                 //마법 레벨 초기화
-                referMagic.MagicLevel = magic.MagicLevel;
+                referMagic.MagicLevel = invenMagic.MagicLevel;
 
                 // 해당 슬롯 리스트에 추가
                 slotList.Add(PhoneMenu.Instance.invenSlots[i]);
@@ -202,28 +217,28 @@ public class CastMagic : MonoBehaviour
             else
             {
                 // 기존 사용중이던 마법에 레벨만 더하기
-                findMagic.MagicLevel += magic.MagicLevel;
+                findMagic.MagicLevel += invenMagic.MagicLevel;
 
                 // print(findMagic.name + " : " + findMagic.magicLevel);
             }
         }
 
-        // castList에 있는데 nowCastMagics에 없는 마법 캐스팅하기
+        // 기존 마법은 레벨 갱신, 새로운 마법은 시전하기
         for (int i = 0; i < magicList.Count; i++)
         {
-            MagicInfo magic = magicList[i];
+            MagicInfo newMagic = new MagicInfo(magicList[i]);
             MagicInfo tempMagic = null;
 
-            //ID 같은 마법 찾기
-            tempMagic = nowCastMagics.Find(x => x.id == magic.id);
+            // 이미 시전중인 마법에서 ID 같은 마법 찾기
+            tempMagic = used_MagicList.Find(x => x.id == newMagic.id);
 
             // 마법이 현재 실행 마법 리스트에 없으면, 신규 마법이면
             if (tempMagic == null)
             {
                 // 패시브 마법일때
-                if (magic.castType == MagicDB.CastType.passive.ToString())
+                if (newMagic.castType == MagicDB.CastType.passive.ToString())
                 {
-                    MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
+                    MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(newMagic.id);
                     //이미 소환되지 않았을때
                     if (!globalMagic.exist)
                     {
@@ -231,13 +246,11 @@ public class CastMagic : MonoBehaviour
                         globalMagic.exist = true;
 
                         //패시브 마법 시전
-                        PassiveCast(magic);
+                        PassiveCast(newMagic);
                     }
 
                     // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-                    GameObject passiveObj = passiveObjs.Find(
-                        x => x.GetComponent<MagicHolder>().magic.id
-                        == magic.id);
+                    GameObject passiveObj = invenPassiveObjList.Find(x => x.GetComponent<MagicHolder>().magic.id == newMagic.id);
 
                     if (passiveObj != null)
                     {
@@ -253,17 +266,17 @@ public class CastMagic : MonoBehaviour
                 }
 
                 // 해당 마법이 쿨타임 중일때 넘기기 (이미 반복 코루틴 실행중이므로)
-                if (MagicDB.Instance.GetMagicByID(magic.id).coolCount > 0)
+                if (MagicDB.Instance.GetMagicByID(newMagic.id).coolCount > 0)
                     continue;
 
                 // 액티브 마법일때
-                if (magic.castType == MagicDB.CastType.active.ToString())
+                if (newMagic.castType == MagicDB.CastType.active.ToString())
                 {
                     //nowCastMagics에 해당 마법 추가
-                    nowCastMagics.Add(magic);
+                    used_MagicList.Add(newMagic);
 
                     // 액티브 마법 시전
-                    StartCoroutine(AutoCast(magic));
+                    StartCoroutine(AutoCast(newMagic));
                 }
 
                 continue;
@@ -272,9 +285,7 @@ public class CastMagic : MonoBehaviour
             else
             {
                 // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-                GameObject passiveObj = passiveObjs.Find(
-                    x => x.GetComponent<MagicHolder>().magic.id
-                    == magic.id);
+                GameObject passiveObj = invenPassiveObjList.Find(x => x.GetComponent<MagicHolder>().magic.id == newMagic.id);
 
                 if (passiveObj != null)
                 {
@@ -290,10 +301,10 @@ public class CastMagic : MonoBehaviour
             }
 
             //현재 실행중인 마법 레벨이 다르면 (마법 레벨업일때)
-            if (tempMagic.MagicLevel != magic.MagicLevel)
+            if (tempMagic.MagicLevel != newMagic.MagicLevel)
             {
                 //최근 갱신된 레벨 넣어주기
-                tempMagic.MagicLevel = magic.MagicLevel;
+                tempMagic.MagicLevel = newMagic.MagicLevel;
 
                 // print($"Name : {tempMagic.name} / Level : {tempMagic.magicLevel}");
 
@@ -301,7 +312,7 @@ public class CastMagic : MonoBehaviour
                 if (tempMagic.castType == MagicDB.CastType.passive.ToString())
                 {
                     // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-                    GameObject passiveObj = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>().magic.id == tempMagic.id);
+                    GameObject passiveObj = invenPassiveObjList.Find(x => x.GetComponentInChildren<MagicHolder>().magic.id == tempMagic.id);
 
                     // 패시브 오브젝트 껐다켜서 초기화
                     passiveObj.SetActive(false);
@@ -311,10 +322,10 @@ public class CastMagic : MonoBehaviour
         }
 
         // castList에 없는데 nowCastMagics에 있는(이미 시전중인) 마법 찾아서 중단시키기
-        for (int i = 0; i < nowCastMagics.Count; i++)
+        for (int i = 0; i < used_MagicList.Count; i++)
         {
             //ID 같은 마법 찾기
-            InventorySlot tempSlot = slotList.Find(x => x.slotInfo.id == nowCastMagics[i].id);
+            InventorySlot tempSlot = slotList.Find(x => x.slotInfo.id == used_MagicList[i].id);
             SlotInfo tempMagic = null;
             if (tempSlot != null)
                 tempMagic = tempSlot.slotInfo;
@@ -323,25 +334,25 @@ public class CastMagic : MonoBehaviour
             if (tempMagic as MagicInfo == null)
             {
                 // 패시브 마법이면 컴포넌트 찾아서 디스폰
-                if (nowCastMagics[i].castType == MagicDB.CastType.passive.ToString())
+                if (used_MagicList[i].castType == MagicDB.CastType.passive.ToString())
                 {
                     // print(nowCastMagics[i].name);
 
                     // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-                    GameObject passiveMagic = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == nowCastMagics[i].id);
+                    GameObject passiveObj = invenPassiveObjList.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == used_MagicList[i].id);
 
                     // 찾은 오브젝트 디스폰
-                    LeanPool.Despawn(passiveMagic);
+                    LeanPool.Despawn(passiveObj);
 
                     // 패시브 리스트에서 제거
-                    passiveObjs.Remove(passiveMagic);
+                    invenPassiveObjList.Remove(passiveObj);
 
                     // 현재 소환여부 초기화
-                    MagicDB.Instance.GetMagicByID(nowCastMagics[i].id).exist = false;
+                    MagicDB.Instance.GetMagicByID(used_MagicList[i].id).exist = false;
                 }
 
                 // 패시브 마법을 nowCastMagics에서 제거, Active 마법은 자동 중단됨
-                nowCastMagics.Remove(nowCastMagics[i]);
+                used_MagicList.Remove(used_MagicList[i]);
             }
         }
 
@@ -372,12 +383,12 @@ public class CastMagic : MonoBehaviour
         if (magic.castType == MagicDB.CastType.passive.ToString())
         {
             // passiveMagics에서 해당 패시브 마법 오브젝트 찾기
-            GameObject magicObj = passiveObjs.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == magic.id);
+            GameObject passiveObj = invenPassiveObjList.Find(x => x.GetComponentInChildren<MagicHolder>(true).magic.id == magic.id);
 
-            magicHolder = magicObj.GetComponentInChildren<MagicHolder>(true);
+            magicHolder = passiveObj.GetComponentInChildren<MagicHolder>(true);
 
             // 패시브 오브젝트에서 magicHolder 찾기
-            if (magicObj != null)
+            if (passiveObj != null)
             {
                 // 수동 실행
                 magicHolder.isQuickCast = true;
@@ -463,7 +474,7 @@ public class CastMagic : MonoBehaviour
         else
         {
             // 더이상 재실행 하지않고, 현재 사용중 목록에서 제거
-            nowCastMagics.Remove(magic);
+            used_MagicList.Remove(magic);
         }
     }
 
@@ -555,10 +566,10 @@ public class CastMagic : MonoBehaviour
         magicHolder.SetTarget(MagicHolder.TargetType.Enemy);
 
         //passive 마법 오브젝트 리스트에 넣기
-        passiveObjs.Add(magicObj);
+        invenPassiveObjList.Add(magicObj);
 
         //nowCastMagics에 해당 마법 추가
-        nowCastMagics.Add(magic);
+        used_MagicList.Add(magic);
     }
 
     public List<Vector2> MarkEnemyPos(MagicInfo magic, Vector2 targetPos = default)

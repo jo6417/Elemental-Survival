@@ -7,11 +7,9 @@ using UnityEngine;
 public class LifeMushroomSpawner : MonoBehaviour
 {
     MagicHolder magicHolder;
-    MagicInfo magic;
     public GameObject lifeMushroom; // 회복 버섯
     public GameObject poisonSmokeEffect; //독 연기 이펙트
     public GameObject mushroomIcon; // 버섯독 디버프 아이콘
-    float duration;
 
     ParticleSystem particle;
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
@@ -29,14 +27,11 @@ public class LifeMushroomSpawner : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-
-        // 지속시간 계산
-        duration = MagicDB.Instance.MagicDuration(magic);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 독 도트뎀 지속시간에 반영
-        magicHolder.poisonTime = duration;
+        magicHolder.poisonTime = magicHolder.duration;
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += DropLifeSeed;
@@ -73,7 +68,7 @@ public class LifeMushroomSpawner : MonoBehaviour
                 if (other.TryGetComponent(out HitBox enemyHitBox))
                 {
                     // 도트 데미지 실행
-                    enemyHitBox.character.SetBuff("LifeMushroom_Poison", "", true, 1, duration,
+                    enemyHitBox.character.SetBuff("LifeMushroom_Poison", "", true, 1, magicHolder.duration,
                       true, enemyHitBox.character.buffParent, mushroomIcon);
                 }
             }
@@ -90,10 +85,10 @@ public class LifeMushroomSpawner : MonoBehaviour
             return;
 
         // 크리티컬 확률 = 드랍 확률
-        bool isDrop = MagicDB.Instance.MagicCritical(magic);
+        bool isDrop = Random.value <= Mathf.Clamp(magicHolder.criticalRate, 0f, 1f);
 
         //크리티컬 데미지 = 회복량
-        int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
+        int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magicHolder.magic));
         healAmount = (int)Mathf.Clamp(healAmount, 1f, healAmount); //최소 회복량 1f 보장
 
         // HealSeed 마법 크리티컬 확률에 따라 드랍
@@ -119,7 +114,7 @@ public class LifeMushroomSpawner : MonoBehaviour
             itemRigid.angularVelocity = Random.value < 0.5f ? 360f : -360f;
 
             // 점점 썩어서 사라지기
-            mushroomSprite.DOColor(Color.clear, duration)
+            mushroomSprite.DOColor(Color.clear, magicHolder.duration)
             .SetEase(Ease.InExpo)
             .OnComplete(() =>
             {

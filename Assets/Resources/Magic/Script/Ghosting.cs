@@ -7,7 +7,6 @@ using DG.Tweening;
 public class Ghosting : MonoBehaviour
 {
     MagicHolder magicHolder;
-    MagicInfo magic;
     [SerializeField] Transform wifiEffect; // 와이파이 모양 버프 이펙트
 
     private void Awake()
@@ -17,8 +16,8 @@ public class Ghosting : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += SummonGhost;
@@ -48,10 +47,10 @@ public class Ghosting : MonoBehaviour
         // print(MagicDB.Instance.MagicCritical(magic));
 
         // 크리티컬 확률 = 소환 확률
-        bool isDrop = MagicDB.Instance.MagicCritical(magic);
+        bool isDrop = MagicDB.Instance.MagicCritical(magicHolder.magic);
 
         //크리티컬 데미지 = 소환 몬스터 체력 추가
-        int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
+        int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magicHolder.magic));
 
         // 이미 유령 아닐때, 보스 아닐때
         if (!character.IsGhost && character.enemy.enemyType != EnemyDB.EnemyType.Boss.ToString())

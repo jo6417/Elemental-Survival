@@ -143,6 +143,10 @@ public class UICursor : MonoBehaviour
         arrowCursor.SetActive(isUICursor);
         // 조준 커서 토글
         aimCursor.SetActive(!isUICursor);
+
+        // 전투중에는 선택 비우기
+        if (aimCursor.activeSelf)
+            UpdateLastSelect(null);
     }
 
     #endregion
@@ -184,7 +188,7 @@ public class UICursor : MonoBehaviour
         //선택된 버튼이 바뀌었을때
         else
         {
-            //todo 마우스로 조작중일때 리턴
+            // 마우스로 조작중일때 리턴
             if (arrowCursor.activeSelf || aimCursor.activeSelf)
                 return;
 

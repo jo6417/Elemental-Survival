@@ -7,7 +7,6 @@ using DG.Tweening;
 public class Heist : MonoBehaviour
 {
     [Header("Refer")]
-    private MagicInfo magic;
     public MagicHolder magicHolder;
     public SpriteRenderer ringSprite; // 헤이스트 자체 링모양 스프라이트
     public GameObject electroTrail;
@@ -15,7 +14,7 @@ public class Heist : MonoBehaviour
     public GameObject dustPrefab; // 증발 먼지 이펙트 프리팹
     public List<GameObject> ghostList = new List<GameObject>(); // 소환된 잔상 리스트
 
-    int magicLevel = 0;
+    [Header("Stat")]
     float speed = 0;
     public Color ghostStartColor;
     Color ghostEndColor;
@@ -34,14 +33,11 @@ public class Heist : MonoBehaviour
     // 마법 레벨업 할때 새로 초기화 하기
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-
-        // 처음 마법 레벨 저장
-        magicLevel = magic.MagicLevel;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 레벨 갱신되면 스피드 스탯 새로 계산
-        speed = MagicDB.Instance.MagicSpeed(magic, true, magicHolder.targetType);
+        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true, magicHolder.targetType);
 
         // 플레이어 이동속도 버프하기
         PlayerManager.Instance.characterStat.moveSpeed = PlayerManager.Instance.characterStat.moveSpeed * speed;
@@ -70,7 +66,7 @@ public class Heist : MonoBehaviour
 
     private void Update()
     {
-        if (magic == null) return;
+        if (!magicHolder.initDone) return;
 
         //대쉬 할때
         if (PlayerManager.Instance.isDash)
@@ -188,15 +184,15 @@ public class Heist : MonoBehaviour
         GameObject magicObj = LeanPool.Spawn(electroTrail, playerPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 오브젝트 사이즈에 범위 반영
-        magicObj.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magic);
+        magicObj.transform.localScale = Vector3.one * MagicDB.Instance.MagicRange(magicHolder.magic);
 
         MagicHolder _magicHolder = magicObj.GetComponent<MagicHolder>();
 
         //마법 정보 넣기
-        _magicHolder.magic = magic;
+        _magicHolder.magic = magicHolder.magic;
 
         // 감전 시간 반영하기
-        _magicHolder.shockTime = MagicDB.Instance.MagicDuration(magic);
+        _magicHolder.shockTime = MagicDB.Instance.MagicDuration(magicHolder.magic);
 
         //마법 타겟 지정
         _magicHolder.SetTarget(MagicHolder.TargetType.Enemy);

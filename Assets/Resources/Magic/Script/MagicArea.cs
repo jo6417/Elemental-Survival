@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class MagicArea : MonoBehaviour
 {
-    private MagicInfo magic;
+    [SerializeField] MagicHolder magicHolder;
     public SpriteRenderer sprite;
     // public Vector2 originScale; //원래 사이즈
     public float frontDistance = 2f; //오브젝트를 얼마나 앞에서 생성할지
@@ -29,18 +29,11 @@ public class MagicArea : MonoBehaviour
         //색깔 초기화
         sprite.color = Color.white;
 
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => TryGetComponent(out MagicHolder holder));
-        magic = GetComponent<MagicHolder>().magic;
-
-        // 마법 지속시간
-        float duration = MagicDB.Instance.MagicDuration(magic);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 마법 날아가는 속도
-        float speed = MagicDB.Instance.MagicSpeed(magic, true);
-
-        // 마법 범위
-        float range = MagicDB.Instance.MagicRange(magic);
+        float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
 
         // 떨어지는 시간
         float fallingTime = 1;
@@ -62,7 +55,7 @@ public class MagicArea : MonoBehaviour
             transform.localScale = Vector2.zero;
 
             //range 적용된 크기까지 커지기
-            transform.DOScale(Vector2.one * range, fallingTime)
+            transform.DOScale(Vector2.one * magicHolder.range, fallingTime)
             .SetEase(Ease.OutBack);
 
             // 플레이어 방향으로 날리기
@@ -71,11 +64,11 @@ public class MagicArea : MonoBehaviour
             .OnComplete(() =>
             {
                 //점점 투명해지기
-                sprite.DOColor(Color.clear, duration)
+                sprite.DOColor(Color.clear, magicHolder.duration)
                     .SetEase(Ease.InExpo);
 
                 //떨어진 시점부터 마법 자동 디스폰
-                StartCoroutine(DespawnMagic(duration));
+                StartCoroutine(DespawnMagic(magicHolder.duration));
             });
         }
         else
@@ -84,11 +77,11 @@ public class MagicArea : MonoBehaviour
             // transform.localScale = originScale * range;
 
             //점점 투명해지기
-            sprite.DOColor(Color.clear, duration)
+            sprite.DOColor(Color.clear, magicHolder.duration)
                 .SetEase(Ease.InExpo);
 
             //떨어진 시점부터 마법 자동 디스폰
-            StartCoroutine(DespawnMagic(duration));
+            StartCoroutine(DespawnMagic(magicHolder.duration));
         }
 
     }

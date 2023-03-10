@@ -18,9 +18,7 @@ public class Egg : MonoBehaviour
     [SerializeField] ParticleManager trailEffect;
 
     [Header("State")]
-    float range;
     float speed;
-    float duration;
 
     private void OnEnable()
     {
@@ -29,12 +27,9 @@ public class Egg : MonoBehaviour
 
     IEnumerator Init()
     {
-        // 마법 스탯 초기화
-        yield return new WaitUntil(() => magicHolder.magic != null);
-
-        range = MagicDB.Instance.MagicRange(magicHolder.magic);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
-        duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
 
         // 파티클 트레일 끄기
         trailEffect.gameObject.SetActive(false);
@@ -47,7 +42,7 @@ public class Egg : MonoBehaviour
         shadow.enabled = true;
     }
 
-    public IEnumerator SingleShot(int index)
+    public IEnumerator SingleShot(int index, Vector2 targetPos)
     {
         // 달걀 따라오기 그만
         keepDistanceMove.enabled = false;
@@ -62,12 +57,9 @@ public class Egg : MonoBehaviour
         // 달걀 색 변경
         eggSprite.color = shotColor;
 
-        // 타겟 위치
-        Vector2 targetPos = magicHolder.targetPos;
-
-        // range만큼 오차 추가
-        if (index > 0)
-            targetPos += Random.insideUnitCircle.normalized * range / 5f;
+        // // range만큼 오차 추가
+        // if (index > 0)
+        //     targetPos += Random.insideUnitCircle.normalized * magicHolder.range / 5f;
 
         // 타겟 위치로 달걀 이동
         transform.DOMove(targetPos, speed)
@@ -83,6 +75,9 @@ public class Egg : MonoBehaviour
 
         // 폭발 프리팹 생성
         LeanPool.Spawn(explosionPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.magicPool);
+
+        // 폭발 사운드 재생
+        SoundManager.Instance.PlaySound("Explosion_Tiny", transform.position);
 
         // 콜라이더 켜기
         coll.enabled = true;

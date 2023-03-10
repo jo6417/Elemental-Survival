@@ -6,7 +6,6 @@ using Lean.Pool;
 public class BuckShot : MonoBehaviour
 {
     MagicHolder magicHolder;
-    MagicInfo magic;
     ParticleSystem particle;
     public float particleSpeed;
 
@@ -22,10 +21,8 @@ public class BuckShot : MonoBehaviour
 
     IEnumerator Init()
     {
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => TryGetComponent(out MagicHolder holder));
-        magicHolder = GetComponent<MagicHolder>();
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         float rotation;
         // 수동 사격일때
@@ -52,7 +49,7 @@ public class BuckShot : MonoBehaviour
 
         // 파티클 시스템에 속도 적용하기
         ParticleSystem.MainModule particleMain = particle.main;
-        particleMain.simulationSpeed = MagicDB.Instance.MagicSpeed(magic, true);
+        particleMain.simulationSpeed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
 
         // 멈추면 디스폰
         yield return new WaitUntil(() => particle.isStopped);

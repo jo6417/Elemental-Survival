@@ -11,7 +11,6 @@ public class LaserBeam : MonoBehaviour
     [Header("Refer")]
     public MagicHolder magicHolder;
     public MagicHolder subMagicHolder;
-    MagicInfo magic;
     public Transform startObj;
     public Collider2D effectColl; //폭발 콜라이더
     public LineRenderer laserLine; //레이저 이펙트
@@ -26,7 +25,6 @@ public class LaserBeam : MonoBehaviour
     [SerializeField] Color aimColor;
     [SerializeField] Color laserColor;
     float aimTime = 1f; // 조준 소요 시간
-    float range;
     Vector3 shotPos; // 착탄 지점
 
     private void Awake()
@@ -54,15 +52,11 @@ public class LaserBeam : MonoBehaviour
         // 폭발 이펙트 끄기
         explosion.SetActive(false);
 
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-
-        // 스탯 초기화
-        range = MagicDB.Instance.MagicRange(magic);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 폭발 이펙트도 마법 정보 및 타겟 넣기        
-        subMagicHolder.magic = magic;
+        subMagicHolder.magic = magicHolder.magic;
         subMagicHolder.targetType = magicHolder.targetType;
 
         // 목표위치 들어올때까지 대기
@@ -110,7 +104,7 @@ public class LaserBeam : MonoBehaviour
         explosion.transform.position = magicHolder.targetPos;
 
         // 이펙트 콜라이더 크기에 range 반영
-        explosion.transform.localScale = Vector2.one * 0.2f * MagicDB.Instance.MagicRange(magic);
+        explosion.transform.localScale = Vector2.one * 0.2f * MagicDB.Instance.MagicRange(magicHolder.magic);
 
         // 레이저 조준선 굵기로 초기화
         laserLine.startWidth = 0.1f;
@@ -255,7 +249,6 @@ public class LaserBeam : MonoBehaviour
         //마법 데이터 비우기
         magicHolder.magic = null;
         subMagicHolder.magic = null;
-        magic = null;
 
         //레이저 오브젝트 디스폰
         LeanPool.Despawn(transform);

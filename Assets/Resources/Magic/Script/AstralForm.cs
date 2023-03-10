@@ -8,7 +8,6 @@ using Lean.Pool;
 public class AstralForm : MonoBehaviour
 {
     public MagicHolder magicHolder;
-    public MagicInfo magic;
     public Canvas fogCanvas;
     public GameObject ghostPrefab; // 잔상 효과 프리팹
 
@@ -42,10 +41,10 @@ public class AstralForm : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-        // duration = MagicDB.Instance.MagicDuration(magic); // 영체화 지속시간
-        speed = MagicDB.Instance.MagicSpeed(magic, false); // 스피드만큼 시간 느려지고 플레이어 빨라짐
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
+
+        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false); // 스피드만큼 시간 느려지고 플레이어 빨라짐
 
         // 플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform, false);

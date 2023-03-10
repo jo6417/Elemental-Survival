@@ -130,19 +130,20 @@ public class OptionMenu : MonoBehaviour
         // 옵션 버튼 패널 열기
         optionSelectPanel.SetActive(true);
 
-        // 마지막 선택 UI 갱신
-        UICursor.Instance.UpdateLastSelect(optionSelect_FirstSelect);
-
         // 나머지 옵션 패널 모두 닫기
         audioOptionPanel.SetActive(false);
         graphicOptionPanel.SetActive(false);
         // keyBindOptionPanel.SetActive(false);
 
         // UIManager 초기화 대기
-        yield return new WaitUntil(() => UIManager.Instance != null);
+        yield return new WaitUntil(() => UIManager.Instance);
 
         // 일시정지 메뉴에서 pauseGroup 찾기
         if (pauseGroup == null) pauseGroup = UIManager.Instance.pausePanel.GetComponent<CanvasGroup>();
+
+        yield return new WaitUntil(() => UICursor.Instance);
+        // 마지막 선택 UI 갱신
+        UICursor.Instance.UpdateLastSelect(optionSelect_FirstSelect);
     }
 
     private void OnDestroy()
@@ -187,7 +188,7 @@ public class OptionMenu : MonoBehaviour
         if (openPanel == graphicOptionPanel)
         {
             // 마지막 선택 UI 갱신
-            UICursor.Instance.UpdateLastSelect(brightnessSlider);
+            UICursor.Instance.UpdateLastSelect(screenModeDropdown);
 
             // 화면모드 갱신
             screenModeDropdown.value = GetScreenMode(SystemManager.Instance.screenMode);
@@ -226,12 +227,11 @@ public class OptionMenu : MonoBehaviour
         // 인게임일때
         if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
         {
-            // 현재 열려있는 팝업 갱신
-            UIManager.Instance.nowOpenPopup = UIManager.Instance.pausePanel;
-
             // 일시정지 메뉴 켜기
-            // UIManager.Instance.pausePanel.SetActive(true);
-            pauseGroup.alpha = 1f;
+            UIManager.Instance.pausePanel.SetActive(true);
+
+            // 일시정지 메뉴 초기화
+            UIManager.Instance.PauseToggle(true);
 
             // 옵션 메뉴 끄기
             UIManager.Instance.optionPanel.SetActive(false);

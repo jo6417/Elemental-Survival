@@ -9,7 +9,6 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class BabyArrow : MonoBehaviour
 {
     public MagicHolder magicHolder;
-    public MagicInfo magic;
 
     public enum State { Idle, Attack, Ready };
     public State state = State.Idle; //화살의 상태
@@ -31,7 +30,6 @@ public class BabyArrow : MonoBehaviour
     [Header("State")]
     [SerializeField] float coolCount; // 쿨타임 카운트
     [SerializeField] float speed;
-    [SerializeField] float coolTime;
     [SerializeField, ReadOnly] float aimTime = -1f;
 
     private void Awake()
@@ -53,11 +51,9 @@ public class BabyArrow : MonoBehaviour
     IEnumerator Init()
     {
         // magic 정보 들어올때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        yield return new WaitUntil(() => magicHolder.initDone);
 
-        speed = MagicDB.Instance.MagicSpeed(magic, true);
-        coolTime = MagicDB.Instance.MagicCoolTime(magic);
+        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
 
         //플레이어 주변을 도는 마커
         spinObj = LeanPool.Spawn(atkMark, transform.position, Quaternion.identity);
@@ -70,12 +66,12 @@ public class BabyArrow : MonoBehaviour
         tailLight.intensity = 0;
 
         // 쿨타임 갱신
-        coolCount = coolTime;
+        coolCount = magicHolder.coolTime;
     }
 
     void Update()
     {
-        if (magic == null)
+        if (!magicHolder.initDone)
             return;
 
         // 준비 상태일때
@@ -147,7 +143,7 @@ public class BabyArrow : MonoBehaviour
                 if (targetList.Count == 0)
                 {
                     // 쿨타임 갱신
-                    coolCount = coolTime;
+                    coolCount = magicHolder.coolTime;
 
                     // light 밝기 낮추기
                     DOTween.To(() => tailLight.intensity, x => tailLight.intensity = x, 0f, aimTime);
@@ -184,7 +180,7 @@ public class BabyArrow : MonoBehaviour
     void SetTargets()
     {
         // 범위내 모든 적 리스트 뽑기
-        targetList = CastMagic.Instance.MarkEnemies(magic);
+        targetList = CastMagic.Instance.MarkEnemies(magicHolder.magic);
 
         // 리스트에 등록된 타겟이 있는데, null이거나, 비활성화 됬거나, 고스트일때
         while (targetList.Count > 0 && (targetList[0] == null || !targetList[0].gameObject.activeSelf || targetList[0].IsGhost))
@@ -260,7 +256,7 @@ public class BabyArrow : MonoBehaviour
 
     void SpinPosition()
     {
-        float followSpeed = MagicDB.Instance.MagicSpeed(magic, true);
+        float followSpeed = speed;
 
         // 중심점 벡터 slowFollowPlayer 가 플레이어 천천히 따라가기
         slowFollowPlayer = Vector3.Lerp(slowFollowPlayer, PlayerManager.Instance.transform.position, Time.deltaTime * followSpeed);
@@ -269,8 +265,8 @@ public class BabyArrow : MonoBehaviour
         spinObj.transform.position = slowFollowPlayer + spinOffset;
 
         // 중심점 기준 공전위치로 이동
-        float speed = Time.deltaTime * 10f * MagicDB.Instance.MagicSpeed(magic, true);
-        spinObj.transform.RotateAround(slowFollowPlayer, Vector3.back, speed);
+        float rotateSpeed = Time.deltaTime * 10f * speed;
+        spinObj.transform.RotateAround(slowFollowPlayer, Vector3.back, rotateSpeed);
 
         // 중심점 벡터 기준으로 오프셋 재설정
         spinOffset = spinObj.transform.position - slowFollowPlayer;

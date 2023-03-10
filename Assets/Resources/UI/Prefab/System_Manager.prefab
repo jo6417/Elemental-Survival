@@ -10306,8 +10306,8 @@ MonoBehaviour:
   testItemBtn: {fileID: 1049615045608241556}
   spawnSwitch: 1
   showEnemyState: 1
-  bossSummon: {fileID: 5395691837511134176}
   enemySummon: {fileID: 7684419610588887274}
+  bossSummon: {fileID: 5395691837511134176}
   layerList:
     PlayerPhysics_Mask:
       serializedVersion: 2

@@ -7,7 +7,6 @@ using UnityEngine;
 public class LavaWalk : MonoBehaviour
 {
     MagicHolder magicHolder;
-    private MagicInfo magic;
 
     public GameObject footprint; //발자국 오브젝트
     public Transform parentPool; // 오브젝트풀
@@ -17,7 +16,6 @@ public class LavaWalk : MonoBehaviour
 
     SpriteRenderer footSprite;
     float distance;
-    float range;
 
     private void Awake()
     {
@@ -33,22 +31,18 @@ public class LavaWalk : MonoBehaviour
     // 마법 레벨업 할때 새로 초기화 하기
     IEnumerator Init()
     {
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         //플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
         transform.localPosition = Vector3.zero;
 
-        // 마법 범위
-        range = MagicDB.Instance.MagicRange(magic);
-
         //스프라이트 사이즈 얻기위해 렌더러 참조
         footSprite = footprint.GetComponent<SpriteRenderer>();
 
         //프리팹 스케일 미리 설정해놓기
-        footprint.GetComponent<Transform>().localScale = Vector2.one * range;
+        footprint.GetComponent<Transform>().localScale = Vector2.one * magicHolder.range;
 
         //마지막 발자국 위치 초기화
         lastFootPos = PlayerManager.Instance.transform.position;
@@ -56,8 +50,7 @@ public class LavaWalk : MonoBehaviour
 
     private void Update()
     {
-        if (magic == null)
-            return;
+        if (magicHolder.initDone) return;
 
         //일정 거리마다 발자국 생성
         if (Vector2.Distance(lastFootPos, PlayerManager.Instance.transform.position) > distance)
@@ -92,7 +85,7 @@ public class LavaWalk : MonoBehaviour
         MagicHolder _magicHolder = magicObj.GetComponent<MagicHolder>();
 
         //마법 정보 넣기
-        _magicHolder.magic = magic;
+        _magicHolder.magic = magicHolder.magic;
 
         //마법 타겟 지정
         _magicHolder.SetTarget(magicHolder.targetType);

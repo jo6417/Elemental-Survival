@@ -141,8 +141,8 @@ public class SystemManager : MonoBehaviour
     [SerializeField] Button testItemBtn; // 테스트 아이템 리셋 버튼
     public bool spawnSwitch; //몬스터 스폰 여부
     public bool showEnemyState = false; // 몬스터 상태 디버깅 여부
-    [SerializeField] TMP_Dropdown bossSummon; // 보스 소환 드롭다운
     [SerializeField] TMP_Dropdown enemySummon; // 몬스터 소환 드롭다운
+    [SerializeField] TMP_Dropdown bossSummon; // 보스 소환 드롭다운
 
     [Header("Tag&Layer")]
     public PhysicsLayerList layerList;
@@ -343,7 +343,8 @@ public class SystemManager : MonoBehaviour
         enemyDBSyncBtn.interactable = true;
 
         // 보스,몬스터 소환 버튼 초기화
-        SummonBtnInit();
+        SummonBtnInit(enemySummon, EnemyDB.EnemyType.Normal);
+        SummonBtnInit(bossSummon, EnemyDB.EnemyType.Boss);
 
         // 수정된 로컬 세이브데이터를 저장, 완료시까지 대기
         yield return StartCoroutine(SaveManager.Instance.Save());
@@ -381,61 +382,62 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    void SummonBtnInit()
+    void SummonBtnInit(TMP_Dropdown dropdown, EnemyDB.EnemyType enemyType)
     {
-        // 보스 소환 목록 채우기
-        List<string> bossOptions = new List<string>();
-        foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
-            if (value.Value.enemyType == EnemyDB.EnemyType.Boss.ToString())
-            {
-                // 해당 몬스터 프리팹이 있을때
-                if (EnemyDB.Instance.GetPrefab(value.Value.id))
-                {
-                    // 보스 이름 넣기
-                    string bossName = value.Value.name;
-                    bossOptions.Add(bossName);
-                }
-            }
-        // 메뉴 목록 넣기
-        bossSummon.AddOptions(bossOptions);
-
-        // 드롭다운 열었다 닫아서 초기화 시키기
-        bossSummon.Show();
-        bossSummon.Hide();
-        // 드롭다운 메뉴 캔버스의 order in layer 바꾸기
-        Canvas canvas = bossSummon.template.GetComponent<Canvas>();
-        if (canvas != null) canvas.sortingOrder = 101;
-
-        // 보스 소환 콜백 함수 넣기
-        bossSummon.onValueChanged.AddListener(delegate { SummonEnemy(bossSummon, "Boss Summon"); });
-
         // 몬스터 소환 목록 채우기
-        List<string> enemyOptions = new List<string>();
+        List<string> options = new List<string>();
         foreach (KeyValuePair<int, EnemyInfo> value in EnemyDB.Instance.enemyDB)
-            if (value.Value.enemyType == EnemyDB.EnemyType.Normal.ToString())
+            if (value.Value.enemyType == enemyType.ToString())
             {
                 // 해당 몬스터 프리팹이 있을때
                 if (EnemyDB.Instance.GetPrefab(value.Value.id))
                 {
                     string enemyName = value.Value.name;
-                    enemyOptions.Add(enemyName);
+                    options.Add(enemyName);
                 }
             }
         // 메뉴 목록 넣기
-        enemySummon.AddOptions(enemyOptions);
+        dropdown.AddOptions(options);
 
         // 드롭다운 열었다 닫아서 초기화 시키기
-        enemySummon.Show();
-        enemySummon.Hide();
+        dropdown.Show();
+        dropdown.Hide();
         // 드롭다운 메뉴 캔버스의 order in layer 바꾸기
-        canvas = enemySummon.template.GetComponent<Canvas>();
+        Canvas canvas = dropdown.template.GetComponent<Canvas>();
         if (canvas != null) canvas.sortingOrder = 101;
 
         // 몬스터 소환 콜백 함수 넣기
-        enemySummon.onValueChanged.AddListener(delegate { SummonEnemy(enemySummon, "Enemy Summon"); });
+        dropdown.onValueChanged.AddListener(delegate
+        {
+            print("onValueChanged");
+            SummonEnemy(dropdown);
+        });
+
+        // // 버튼을 클릭했을때 이벤트 작성
+        // EventTrigger.Entry selectEntry = new EventTrigger.Entry(); //이벤트 트리거에 넣을 엔트리 생성            
+        // selectEntry.eventID = EventTriggerType.PointerClick; //Select 했을때로 지정
+        // selectEntry.callback.AddListener(delegate
+        // {
+        //     // lastSelected 비우기
+        //     UICursor.Instance.UpdateLastSelect(null);
+
+        //     // 모든 메뉴 버튼 네비게이션 끄기
+        //     Toggle[] buttons = dropdown.GetComponentsInChildren<Toggle>();
+        //     for (int i = 0; i < buttons.Length; i++)
+        //     {
+        //         Navigation nav = buttons[i].navigation;
+        //         nav.mode = Navigation.Mode.None;
+        //         buttons[i].navigation = nav;
+        //     }
+        // });
+        // //Select 했을때 넣을 함수 넣기
+        // dropdown.GetComponent<EventTrigger>().triggers.Add(selectEntry);
+
+        // 드롭다운 선택 초기화
+        UICursor.Instance.UpdateLastSelect(null);
     }
 
-    private void SummonEnemy(TMP_Dropdown dropdown, string labelName)
+    private void SummonEnemy(TMP_Dropdown dropdown)
     {
         // 선택된 옵션의 이름을 가져오기
         string enemyName = dropdown.options[dropdown.value].text;

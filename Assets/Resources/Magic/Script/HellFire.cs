@@ -6,7 +6,6 @@ using UnityEngine;
 public class HellFire : MonoBehaviour
 {
     MagicHolder magicHolder;
-    MagicInfo magic;
     public ParticleManager fireEffect;
     public ParticleSystem explosionEffect;
     public Animator anim;
@@ -27,9 +26,8 @@ public class HellFire : MonoBehaviour
         // 애니메이션 멈추기
         anim.speed = 0f;
 
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 레이어에 따라 해골 색 바꾸기
         if (magicHolder.gameObject.layer == SystemManager.Instance.layerList.EnemyAttack_Layer)

@@ -8,7 +8,6 @@ public class MagicFalling : MonoBehaviour
 {
     [Header("Refer")]
     SpriteRenderer sprite;
-    private MagicInfo magic;
     public MagicHolder magicHolder;
     public string magicName;
     public Collider2D coll;
@@ -48,10 +47,8 @@ public class MagicFalling : MonoBehaviour
 
     private void OnEnable()
     {
-        //초기화 하기
+        //초기화
         StartCoroutine(Init());
-
-        StartCoroutine(FallingMagicObj());
     }
 
     IEnumerator Init()
@@ -79,29 +76,11 @@ public class MagicFalling : MonoBehaviour
         //시작할때 콜라이더 끄기
         ColliderTrigger(false);
 
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-
-        //프리팹 이름으로 아이템 정보 찾아 넣기
-        if (magic == null)
-        {
-            magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
-            magicName = magic.name;
-        }
-
-        //magic 못찾으면 코루틴 종료
-        if (magic == null)
-            yield break;
-    }
-
-    IEnumerator FallingMagicObj()
-    {
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magic != null);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
-        float magicSpeed = MagicDB.Instance.MagicSpeed(magic, false);
+        float magicSpeed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
 
         // 마법 오브젝트 점점 커지면서 나타내기
         if (isExpand)

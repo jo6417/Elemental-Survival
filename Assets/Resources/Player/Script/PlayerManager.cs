@@ -479,9 +479,9 @@ public class PlayerManager : Character
 
 #if UNITY_EDITOR
         // 테스트 마법 획득
-        for (int i = 0; i < CastMagic.Instance.testMagics.Count; i++)
+        for (int i = 0; i < CastMagic.Instance.testMagicList.Count; i++)
         {
-            string name = CastMagic.Instance.testMagics[i].ToString();
+            string name = CastMagic.Instance.testMagicList[i].ToString();
             MagicInfo magic = MagicDB.Instance.GetMagicByName(name);
             PhoneMenu.Instance.GetMagic(magic);
 
@@ -489,9 +489,9 @@ public class PlayerManager : Character
         }
 
         // 테스트 아이템 획득
-        for (int i = 0; i < CastMagic.Instance.testItems.Count; i++)
+        for (int i = 0; i < CastMagic.Instance.testItemList.Count; i++)
         {
-            string name = CastMagic.Instance.testItems[i].ToString();
+            string name = CastMagic.Instance.testItemList[i].ToString();
             ItemInfo item = ItemDB.Instance.GetItemByName(name);
             PhoneMenu.Instance.GetItem(item);
 

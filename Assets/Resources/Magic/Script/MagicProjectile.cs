@@ -15,8 +15,7 @@ public class MagicProjectile : MonoBehaviour
     public float spreadForce = 0f; // 파편 날아가는 강도 (0이면 비활성화)
 
     [Header("Refer")]
-    public MagicInfo magic;
-    [SerializeField] MagicHolder magicHolder;
+    [SerializeField] MagicHolder MagicHolder;
     public ParticleManager particleManager;
     public GameObject[] shatters; //파편들
     public GameObject hitEffect; //타겟에 적중했을때 이펙트
@@ -27,12 +26,12 @@ public class MagicProjectile : MonoBehaviour
 
     [Header("Status")]
     float speed = 0;
-    float duration = 0;
+    float customDuration = 0;
     Vector2 velocity;
 
     private void Awake()
     {
-        magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
+        MagicHolder = MagicHolder == null ? GetComponent<MagicHolder>() : MagicHolder;
         rigid = rigid == null ? GetComponent<Rigidbody2D>() : rigid;
         coll = coll == null ? GetComponent<Collider2D>() : coll;
         sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
@@ -55,7 +54,7 @@ public class MagicProjectile : MonoBehaviour
     private void OnDisable()
     {
         //타겟 위치 초기화
-        magicHolder.targetPos = Vector2.zero;
+        MagicHolder.targetPos = Vector2.zero;
     }
 
     IEnumerator Init()
@@ -67,18 +66,17 @@ public class MagicProjectile : MonoBehaviour
         //콜라이더 끄기
         coll.enabled = false;
 
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => MagicHolder.initDone);
 
         // 마법 스피드 계산 + 추가 스피드 곱하기
-        speed = MagicDB.Instance.MagicSpeed(magic, true) * magicHolder.MultipleSpeed;
+        speed = MagicDB.Instance.MagicSpeed(MagicHolder.magic, true) * MagicHolder.MultipleSpeed;
 
         // 마법 지속시간 계산 + 추가 지속시간
-        duration = MagicDB.Instance.MagicDuration(magic) + magicHolder.AddDuration;
+        customDuration = MagicHolder.duration + MagicHolder.AddDuration;
 
         // 타겟 위치 바라보기
-        Vector3 returnDir = (magicHolder.targetPos - transform.position).normalized;
+        Vector3 returnDir = (MagicHolder.targetPos - transform.position).normalized;
         float rotation = Mathf.Atan2(returnDir.y, returnDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
 
@@ -112,10 +110,11 @@ public class MagicProjectile : MonoBehaviour
 
     public IEnumerator ShotMagic()
     {
-        yield return new WaitUntil(() => magic != null);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => MagicHolder.initDone);
 
         // 목표 위치 캐싱
-        Vector2 targetPos = magicHolder.targetPos;
+        Vector2 targetPos = MagicHolder.targetPos;
 
         // 벡터값이 입력되지 않았으면 랜덤 방향 설정
         if (targetPos == Vector2.zero)
@@ -134,7 +133,7 @@ public class MagicProjectile : MonoBehaviour
             rigid.angularVelocity = dir.x > 0 ? -speed * 30f : speed * 30f;
 
         // duration 만큼 날아간후에
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(customDuration);
 
         // 자동 디스폰
         if (gameObject)
@@ -166,17 +165,15 @@ public class MagicProjectile : MonoBehaviour
 
     private void Update()
     {
-        if (lookDir)
-        {
-            if (magic != null && magic.speed != 0)
+        if (MagicHolder.initDone)
+            if (lookDir && speed != 0)
                 LookDirAngle();
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         //적에게 충돌
-        if (magicHolder.targetType == MagicHolder.TargetType.Enemy
+        if (MagicHolder.targetType == MagicHolder.TargetType.Enemy
         && other.CompareTag(TagNameList.Enemy.ToString()))
         {
             // 히트박스 없으면 리턴
@@ -189,7 +186,7 @@ public class MagicProjectile : MonoBehaviour
             // print(other.transform.parent.parent.name + " : " + magicHolder.pierceCount);
 
             //남은 관통횟수 0 일때 디스폰
-            if (magicHolder.pierce == 0)
+            if (MagicHolder.pierce == 0)
             {
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());
@@ -200,16 +197,16 @@ public class MagicProjectile : MonoBehaviour
         }
 
         // 플레이어에게 충돌, 대쉬중이면 무시
-        if (magicHolder.targetType == MagicHolder.TargetType.Player && other.CompareTag(TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
+        if (MagicHolder.targetType == MagicHolder.TargetType.Player && other.CompareTag(TagNameList.Player.ToString()) && !PlayerManager.Instance.isDash)
         {
             // print(gameObject.name + " : " + magicHolder.pierceCount);
 
             // 히트 콜백 있으면 실행
-            if (magicHolder.hitAction != null)
-                magicHolder.hitAction.Invoke();
+            if (MagicHolder.hitAction != null)
+                MagicHolder.hitAction.Invoke();
 
             //남은 관통횟수 0 일때 디스폰
-            if (magicHolder.pierce == 0)
+            if (MagicHolder.pierce == 0)
             {
                 if (gameObject.activeSelf)
                     StartCoroutine(DespawnMagic());
@@ -253,8 +250,8 @@ public class MagicProjectile : MonoBehaviour
             sprite.enabled = false;
 
         // 디스폰 콜백 함수 있으면 실행
-        if (magicHolder.despawnAction != null)
-            magicHolder.despawnAction.Invoke();
+        if (MagicHolder.despawnAction != null)
+            MagicHolder.despawnAction.Invoke();
 
         //파괴 이펙트 있으면 남기기
         if (hitEffect)
@@ -262,9 +259,9 @@ public class MagicProjectile : MonoBehaviour
             GameObject effect = LeanPool.Spawn(hitEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             //마법 정보 넘겨주기
-            if (effect.TryGetComponent(out MagicHolder magicholder))
+            if (effect.TryGetComponent(out MagicHolder magicHolder))
             {
-                magicholder.magic = magic;
+                magicHolder.magic = MagicHolder.magic;
             }
         }
 
@@ -309,8 +306,8 @@ public class MagicProjectile : MonoBehaviour
         }
 
         // 마법 추가 스탯 초기화
-        magicHolder.AddDuration = 0f;
-        magicHolder.MultipleSpeed = 1f;
+        MagicHolder.AddDuration = 0f;
+        MagicHolder.MultipleSpeed = 1f;
 
         if (sprite != null)
             // 오브젝트 투명하게

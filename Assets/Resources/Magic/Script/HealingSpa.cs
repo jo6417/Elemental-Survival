@@ -8,7 +8,6 @@ public class HealingSpa : MonoBehaviour
 {
     [Header("State")]
     [SerializeField] MagicHolder magicHolder;
-    MagicInfo magic;
     [SerializeField, ReadOnly] bool inPlayer = false; // 연못안에 플레이어 들어있는지 여부
 
     [Header("Refer")]
@@ -18,10 +17,7 @@ public class HealingSpa : MonoBehaviour
     public GameObject dustEffect; // 디스폰 이펙트
 
     [Header("Magic Stat")]
-    float range;
-    float duration;
     int healPower = -1;
-    float coolTime;
     float speed;
 
     private void OnEnable()
@@ -38,15 +34,11 @@ public class HealingSpa : MonoBehaviour
         // 연못 이미지 숨기기
         pondSprite.enabled = false;
 
-        //마법 정보 불러올때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
-        range = MagicDB.Instance.MagicRange(magic);
-        duration = MagicDB.Instance.MagicDuration(magic);
-        healPower = Mathf.RoundToInt(MagicDB.Instance.MagicPower(magic)); //회복할 양, int로 반올림해서 사용
-        coolTime = MagicDB.Instance.MagicCoolTime(magic);
-        speed = MagicDB.Instance.MagicSpeed(magic, false);
+        healPower = Mathf.RoundToInt(magicHolder.power); //회복할 양, int로 반올림해서 사용
+        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
 
         if (magicHolder.isQuickCast)
             // 타겟 위치로 이동
@@ -62,7 +54,7 @@ public class HealingSpa : MonoBehaviour
         pondSprite.enabled = true;
 
         //제로 사이즈에서 크기 키우기
-        transform.DOScale(range, 0.5f)
+        transform.DOScale(magicHolder.range, 0.5f)
         .SetEase(Ease.OutBack);
 
         // 플레이어 및 몬스터 피직스와 충돌하게 충돌 레이어 초기화
@@ -72,7 +64,7 @@ public class HealingSpa : MonoBehaviour
         coll.enabled = true;
 
         // 지속시간 동안 대기
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(magicHolder.duration);
 
         // 제로 사이즈로 줄이기
         transform.DOScale(0, 0.5f)

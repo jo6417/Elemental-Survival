@@ -46,7 +46,8 @@ public class DeathMineSpawner : MonoBehaviour
     private void OnDisable()
     {
         // 해당 마법 장착 해제되면 델리게이트에서 함수 빼기
-        SystemManager.Instance.globalEnemyDeadCallback -= DropMine;
+        if (SystemManager.Instance)
+            SystemManager.Instance.globalEnemyDeadCallback -= DropMine;
     }
 
     // 지뢰 폭파

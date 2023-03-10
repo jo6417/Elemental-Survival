@@ -244,7 +244,7 @@ public class PlayerHitBox : HitBox
         }
 
         // 무적 상태일때, 방어
-        if (character.invinsible)
+        if (character.invinsible && damage > 0)
         {
             // 데미지 Block 
             UIManager.Instance.DamageUI(UIManager.DamageType.Block, damage, isCritical, hitPos);

@@ -235,13 +235,13 @@ public class UIManager : MonoBehaviour
         InsideColor.a = 200f / 255f;
         timerInside.color = InsideColor;
 
-        // 에디터에서만
-#if UNITY_EDITOR
-        // 첫 맵일때
-        if (SystemManager.Instance.NowMapElement == 0)
-            // 기본 마법 패널 열기
-            PopupUI(defaultPanel, true);
-#endif
+        //         // 에디터에서만
+        // #if UNITY_EDITOR
+        //         // 첫 맵일때
+        //         if (SystemManager.Instance.NowMapElement == 0)
+        //             // 기본 마법 패널 열기
+        //             PopupUI(defaultPanel, true);
+        // #endif
 
         // 인게임 바인딩 리스트 켜기
         inGameBindKeyList.SetActive(true);
@@ -505,6 +505,31 @@ public class UIManager : MonoBehaviour
                     PopupUI(nowOpenPopup, false);
             }
         }
+    }
+
+    public void PauseToggle(bool pauseToggle)
+    {
+        // 씬 이동중이면 리턴
+        if (SystemManager.Instance.sceneChanging || SystemManager.Instance.screenMasked)
+            return;
+
+        // 브금 재개 상태 변경
+        SoundManager.Instance.bgmPause = pauseToggle;
+
+        if (pauseToggle)
+        {
+            // 배경음 정지
+            SoundManager.Instance.nowBGM.Pause();
+
+            // 현재 팝업을 일시정지 패널로 갱신
+            nowOpenPopup = pausePanel;
+        }
+        else
+            // 배경음 재개
+            SoundManager.Instance.nowBGM.Play();
+
+        // 마우스 커서 전환
+        UICursor.Instance.CursorChange(pauseToggle);
     }
 
     public void InitialStat()
@@ -1022,6 +1047,11 @@ public class UIManager : MonoBehaviour
             //현재 열려있는 팝업 갱신
             nowOpenPopup = popup;
         }
+
+        // 일시정지 메뉴일때
+        if (popup == pausePanel)
+            // 일시정지 메뉴 초기화
+            PauseToggle(pausePanel.activeSelf);
 
         // 마우스 커서 전환
         UICursor.Instance.CursorChange(popup.activeSelf);

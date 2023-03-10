@@ -8,7 +8,6 @@ public class SuperSerum : MonoBehaviour
 {
     [Header("Refer")]
     MagicHolder magicHolder;
-    MagicInfo magic;
     public ParticleSystem getEffect; // 플레이어가 획득했을때 이펙트
     Rigidbody2D rigid;
 
@@ -41,12 +40,11 @@ public class SuperSerum : MonoBehaviour
         // 사이즈 초기화
         transform.localScale = Vector2.zero;
 
-        // magic 정보 들어올때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         //크리티컬 데미지 = 최대체력 증가량
-        hpAddAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magic));
+        hpAddAmount = Mathf.RoundToInt(magicHolder.criticalPower);
         //최소 증가량 1f 보장
         hpAddAmount = (int)Mathf.Clamp(hpAddAmount, 1f, hpAddAmount);
 

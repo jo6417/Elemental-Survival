@@ -6,7 +6,6 @@ public class ParticleTrigger : MonoBehaviour
 {
     [Header("Refer")]
     public MagicHolder magicHolder;
-    public MagicInfo magic;
     ParticleSystem particle;
     List<ParticleCollisionEvent> collisionEvents = new List<ParticleCollisionEvent>(); //충돌한 파티클의 이벤트 정보들
     List<ParticleSystem.Particle> insideList = new List<ParticleSystem.Particle>(); // 콜라이더에 닿은 파티클 목록
@@ -33,8 +32,7 @@ public class ParticleTrigger : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
         ParticleSystem.CollisionModule particleColl = particle.collision;

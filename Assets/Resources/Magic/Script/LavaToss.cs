@@ -8,11 +8,7 @@ public class LavaToss : MonoBehaviour
 {
     public Transform lavaPool; //적에게 타격입힐 용암 장판
     public MagicHolder magicHolder;
-    MagicInfo magic;
     public int lavaNum = 10; //용암 방울 개수
-
-    float range;
-    float duration;
 
     private void OnEnable()
     {
@@ -23,19 +19,14 @@ public class LavaToss : MonoBehaviour
     {
         lavaPool.localScale = Vector2.zero;
 
-        //magic 불러올때까지 대기
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        magic = magicHolder.magic;
-        Vector2 targetPos = magicHolder.targetPos;
-
-        range = MagicDB.Instance.MagicRange(magic) / 5f;
-        duration = MagicDB.Instance.MagicDuration(magic);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // magicHolder에서 targetPos 받아와서 해당 위치로 이동
-        transform.parent.position = targetPos;
+        transform.parent.position = magicHolder.targetPos;
 
         // duration 만큼 시간 지나면 줄어들어 사라지기
-        lavaPool.DOScale(Vector2.zero, duration)
+        lavaPool.DOScale(Vector2.zero, magicHolder.duration)
         .SetDelay(2f)
         .OnComplete(() =>
         {
@@ -46,11 +37,10 @@ public class LavaToss : MonoBehaviour
 
     private void OnParticleCollision(GameObject other)
     {
-        if (range == 0)
-            return;
+        if (!magicHolder.initDone) return;
 
         // 용암 방울 파티클 닿을때마다 장판 커짐
-        lavaPool.localScale += 1f / lavaNum * range * new Vector3(0.5f, 0.25f, 0f);
+        lavaPool.localScale += 1f / lavaNum * magicHolder.range * new Vector3(0.5f, 0.25f, 0f);
     }
 
     IEnumerator AutoDespawn(float delay = 0)

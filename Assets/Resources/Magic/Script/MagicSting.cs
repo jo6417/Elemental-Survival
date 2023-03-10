@@ -7,7 +7,6 @@ using Lean.Pool;
 public class MagicSting : MonoBehaviour
 {
     [Header("Refer")]
-    private MagicInfo magic;
     MagicHolder magicHolder;
     public string magicName;
     public Collider2D col;
@@ -25,50 +24,25 @@ public class MagicSting : MonoBehaviour
         // 오브젝트 기본 사이즈 저장
         originScale = transform.localScale;
 
-        //초기화 하기
-        StartCoroutine(Init());
+        //시작할때 콜라이더 끄기
+        ColliderTrigger(false);
     }
 
     private void OnEnable()
     {
-        StartCoroutine(StingMagicObj());
+        StartCoroutine(Init());
     }
 
     IEnumerator Init()
     {
-        //시작할때 콜라이더 끄기
-        ColliderTrigger(false);
-
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => GetComponentInChildren<MagicHolder>() != null);
-        magicHolder = GetComponentInChildren<MagicHolder>();
-        magic = magicHolder.magic;
-
-        //프리팹 이름으로 아이템 정보 찾아 넣기
-        if (magic == null)
-        {
-            magic = MagicDB.Instance.GetMagicByName(transform.name.Split('_')[0]);
-            magicName = magic.name;
-        }
-
-        //magic 못찾으면 코루틴 종료
-        if (magic == null)
-            yield break;
-    }
-
-    IEnumerator StingMagicObj()
-    {
         //초기화
         StartCoroutine(Init());
 
-        //magic이 null이 아닐때까지 대기
-        yield return new WaitUntil(() => magic != null);
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder.initDone);
 
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
-        float speed = MagicDB.Instance.MagicSpeed(magic, false);
-
-        //범위 계산
-        float range = MagicDB.Instance.MagicRange(magic);
+        float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
 
         //목표 위치 가져오기
         Vector2 targetPos = magicHolder.targetPos;
@@ -80,10 +54,10 @@ public class MagicSting : MonoBehaviour
         Vector2 endDir = targetPos - (Vector2)PlayerManager.Instance.transform.position;
 
         //시작점 = 플레이어 위치로부터 목표 방향 20% 위치
-        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + endDir.normalized * range * 0.2f;
+        Vector2 startPos = (Vector2)PlayerManager.Instance.transform.position + endDir.normalized * magicHolder.range * 0.2f;
 
         //목적지 = 플레이어 위치 + (목표 방향 * 범위)
-        Vector2 endPos = (Vector2)PlayerManager.Instance.transform.position + endDir.normalized * range;
+        Vector2 endPos = (Vector2)PlayerManager.Instance.transform.position + endDir.normalized * magicHolder.range;
 
         //방향 각도 구하기
         float endRotation = Mathf.Atan2(endDir.y, endDir.x) * Mathf.Rad2Deg;
@@ -129,9 +103,6 @@ public class MagicSting : MonoBehaviour
         )
         .AppendCallback(() =>
         {
-            // 마법 오브젝트 속도
-            float duration = MagicDB.Instance.MagicDuration(magic);
-
             // 오브젝트 자동 디스폰하기
             StartCoroutine(AutoDespawn());
         });

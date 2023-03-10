@@ -247,12 +247,11 @@ public class Loading : MonoBehaviour
             // 첫 맵일때
             if (SystemManager.Instance.NowMapElement == 0)
             {
+#if !UNITY_EDITOR
                 // 기본 마법 패널 켜기
                 UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, true);
+#endif
             }
-            // else
-            //     // 기본 마법 패널 끄기
-            //     UIManager.Instance.defaultPanel.SetActive(false);
 
             // 플레이어 빔에서 스폰
             StartCoroutine(PlayerManager.Instance.SpawnPlayer());

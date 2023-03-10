@@ -38,7 +38,7 @@ public class MagicHolder : Attack
     public float range = 1; //시전 범위
     public float scale = 1; //마법 스케일
     public float duration = 1; //지속시간
-    public float critical = 1f; //크리티컬 확률
+    public float criticalRate = 1f; //크리티컬 확률
     public float criticalPower = 1f; //크리티컬 데미지 증가율
     public int pierce = 0; //관통 횟수 및 넉백 계수
     public int atkNum = 0; //투사체 수
@@ -80,7 +80,7 @@ public class MagicHolder : Attack
         range = MagicDB.Instance.MagicRange(magic);
         scale = MagicDB.Instance.MagicScale(magic);
         duration = MagicDB.Instance.MagicDuration(magic);
-        critical = MagicDB.Instance.MagicCriticalRate(magic);
+        criticalRate = MagicDB.Instance.MagicCriticalRate(magic);
         criticalPower = MagicDB.Instance.MagicCriticalPower(magic);
         pierce = MagicDB.Instance.MagicPierce(magic);
         atkNum = MagicDB.Instance.MagicAtkNum(magic);
