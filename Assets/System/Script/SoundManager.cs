@@ -219,23 +219,6 @@ public class SoundManager : MonoBehaviour
         return bundleType;
     }
 
-    // float GetVolumeType(Sound findSound)
-    // {
-    //     // 리턴될 타입의 볼륨 계수
-    //     float typeVolume = 0;
-
-    //     // UI, 음악, 효과음 중에 볼륨 계수 구분하기
-    //     if (GetSoundType(findSound) == "UI_Sounds")
-    //         typeVolume = PlayerPrefs.GetFloat(SaveManager.UI_VOLUME_KEY, 1f);
-    //     else if (GetSoundType(findSound) == "Music_Sounds")
-    //         typeVolume = PlayerPrefs.GetFloat(SaveManager.MUSIC_VOLUME_KEY, 1f);
-    //     else
-    //         typeVolume = PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY, 1f);
-
-    //     // 해당 타입의 볼륨 리턴
-    //     return typeVolume;
-    // }
-
     Transform GetSoundPool(Sound findSound)
     {
         // 리턴될 타입의 사운드풀
@@ -311,11 +294,11 @@ public class SoundManager : MonoBehaviour
             nowBGM.time = 0;
             nowBGM.Play();
 
-            // // 볼륨 0으로 초기화
-            // nowBGM.volume = 0;
-            // // 서서히 원래 볼륨까지 올리기
-            // DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume, bgmFadeTime)
-            // .SetUpdate(true);
+            // 볼륨 0으로 초기화
+            nowBGM.volume = 0;
+            // 서서히 원래 볼륨까지 올리기
+            DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, sound.volume, bgmFadeTime)
+            .SetUpdate(true);
 
             // bgm 켜짐 상태로 전환
             bgmPause = false;
@@ -346,20 +329,18 @@ public class SoundManager : MonoBehaviour
         audio.volume = sound.volume;
         audio.pitch = sound.pitch * globalPitch;
 
-        // // 2D 로 초기화
-        // if (spatialBlend == 0)
-        //     audio.spatialBlend = 0f;
-        // // 3D 로 초기화
-        // else
-        // {
-        //     // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
-        //     audio.spatialBlend = 1f;
-        //     audio.rolloffMode = AudioRolloffMode.Custom;
-        //     audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
-        //     audio.maxDistance = 30f;
-        // }
-        audio.spatialBlend = 0f;
-        audio.reverbZoneMix = 0;
+        // 2D 로 초기화
+        if (spatialBlend == 0)
+            audio.spatialBlend = 0f;
+        // 3D 로 초기화
+        else
+        {
+            // 위치값이 들어왔으므로 3D 오디오 소스로 초기화
+            audio.spatialBlend = 1f;
+            audio.rolloffMode = AudioRolloffMode.Custom;
+            audio.SetCustomCurve(AudioSourceCurveType.CustomRolloff, curve_3D);
+            audio.maxDistance = 30f;
+        }
 
         // 재생하고 끝나면 디스폰
         StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
@@ -641,20 +622,6 @@ public class SoundManager : MonoBehaviour
             DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
             .SetUpdate(!scaledTime);
         }
-
-        // // UI 사운드풀 하위 오디오들의 피치값 조정
-        // for (int i = 0; i < soundPool_UI.childCount; i++)
-        // {
-        //     // 자식중에 오디오 찾기
-        //     AudioSource audio = soundPool_UI.GetChild(i).GetComponent<AudioSource>();
-
-        //     // 오브젝트 이름으로 사운드 찾기
-        //     Sound sound = all_Sounds.Find(x => x.name == audio.name);
-
-        //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
-        //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-        //     .SetUpdate(!scaledTime);
-        // }
     }
 
     public void Set_MasterVolume(float setVolume)
@@ -662,11 +629,8 @@ public class SoundManager : MonoBehaviour
         // 마스터 볼륨값 저장
         PlayerPrefs.SetFloat(SaveManager.MASTER_VOLUME_KEY, setVolume);
 
-        // 볼륨값이 0이면 로그 계산이 안되기 때문에 -80으로 초기화
-        setVolume = setVolume == 0 ? -80 : Mathf.Log10(setVolume) * 20;
-
         // 믹서에 볼륨값 갱신
-        audiomixer.SetFloat(masterMixerGroup.name + "Volume", setVolume);
+        audiomixer.SetFloat(masterMixerGroup.name + "Volume", Mathf.Log10(setVolume) * 20);
 
         // StartCoroutine(SetAll_Volume());
     }
@@ -675,22 +639,16 @@ public class SoundManager : MonoBehaviour
         // 배경음 볼륨값 저장
         PlayerPrefs.SetFloat(SaveManager.MUSIC_VOLUME_KEY, setVolume);
 
-        // 볼륨값이 0이면 로그 계산이 안되기 때문에 -80으로 초기화
-        setVolume = setVolume == 0 ? -80 : Mathf.Log10(setVolume) * 20;
-
         // 믹서에 볼륨값 갱신
-        audiomixer.SetFloat(musicMixerGroup.name + "Volume", setVolume);
+        audiomixer.SetFloat(musicMixerGroup.name + "Volume", Mathf.Log10(setVolume) * 20);
     }
     public void Set_SFXVolume(float setVolume)
     {
         // 효과음 볼륨값 저장
         PlayerPrefs.SetFloat(SaveManager.SFX_VOLUME_KEY, setVolume);
 
-        // 볼륨값이 0이면 로그 계산이 안되기 때문에 -80으로 초기화
-        setVolume = setVolume == 0 ? -80 : Mathf.Log10(setVolume) * 20;
-
         // 믹서에 볼륨값 갱신
-        audiomixer.SetFloat(sfxMixerGroup.name + "Volume", setVolume);
+        audiomixer.SetFloat(sfxMixerGroup.name + "Volume", Mathf.Log10(setVolume) * 20);
     }
 
     public void Set_UIVolume(float setVolume)
@@ -698,63 +656,9 @@ public class SoundManager : MonoBehaviour
         // UI 볼륨값 저장
         PlayerPrefs.SetFloat(SaveManager.UI_VOLUME_KEY, setVolume);
 
-        // 볼륨값이 0이면 로그 계산이 안되기 때문에 -80으로 초기화
-        setVolume = setVolume == 0 ? -80 : Mathf.Log10(setVolume) * 20;
-
         // 믹서에 볼륨값 갱신
-        audiomixer.SetFloat(uiMixerGroup.name + "Volume", setVolume);
+        audiomixer.SetFloat(uiMixerGroup.name + "Volume", Mathf.Log10(setVolume) * 20);
     }
-
-    // IEnumerator SetAll_Volume()
-    // {
-    //     // 사운드 매니저 초기화 대기
-    //     yield return new WaitUntil(() => initFinish);
-    //     // 오브젝트풀 없으면 리턴
-    //     if (ObjectPool.Instance == null)
-    //         yield break;
-    //     // 사운드풀 불러올때까지 대기
-    //     // yield return new WaitUntil(() => soundPool_Global != null);
-
-    //     // 모든 사운드의 디폴트 volume 값에 타임스케일 곱하기
-    //     foreach (Sound sound in all_Sounds)
-    //         if (sound.source != null)
-    //             sound.source.volume = sound.volume * masterVolume * GetVolumeType(sound);
-
-    //     // 오브젝트에 붙인 사운드들 volume 값 조정
-    //     foreach (AudioSource audio in attach_Sounds)
-    //         if (audio != null)
-    //         {
-    //             // 오브젝트 이름으로 사운드 찾기
-    //             Sound sound = all_Sounds.Find(x => x.name == audio.name);
-
-    //             audio.volume = sound.volume * masterVolume * GetVolumeType(sound);
-    //         }
-
-    //     // 모든 자식 오디오소스 오브젝트의 volume에 타임스케일 곱하기
-    //     for (int i = 0; i < soundPool_SFX.childCount; i++)
-    //     {
-    //         // 자식중에 오디오 찾기
-    //         AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
-
-    //         // 오브젝트 이름으로 사운드 찾기
-    //         Sound sound = all_Sounds.Find(x => x.name == audio.name);
-
-    //         // 해당 오디오 소스의 volume값을 원본 volume값 * 타임스케일 넣기
-    //         audio.volume = sound.volume * masterVolume * sfxVolume;
-    //     }
-    //     // 모든 자식 오디오소스 오브젝트의 volume에 타임스케일 곱하기
-    //     for (int i = 0; i < soundPool_UI.childCount; i++)
-    //     {
-    //         // 자식중에 오디오 찾기
-    //         AudioSource audio = soundPool_UI.GetChild(i).GetComponent<AudioSource>();
-
-    //         // 오브젝트 이름으로 사운드 찾기
-    //         Sound sound = all_Sounds.Find(x => x.name == audio.name);
-
-    //         // 해당 오디오 소스의 volume값을 원본 volume값 * 타임스케일 넣기
-    //         audio.volume = sound.volume * masterVolume * sfxVolume;
-    //     }
-    // }
 
     public int PlaySoundPool(List<string> soundPool, Vector2 playPos = default, int lastPlayed_Index = -1)
     {

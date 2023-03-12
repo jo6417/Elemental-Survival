@@ -47,9 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playSoundName: 
   atkColl: {fileID: 2771087719256695769}
-  pierceCount: 0
   targetType: 0
-  power: 0
+  attack_power: 1
   buffStatName: 
   buffMultiple: 1
   buffDuration: 0
@@ -129,6 +128,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3190824626787221340}
   - component: {fileID: 3190824626787221341}
+  - component: {fileID: 6672859835527348827}
   m_Layer: 0
   m_Name: EarthSlime_Sprite
   m_TagString: Enemy
@@ -204,6 +204,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!210 &6672859835527348827
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3190824626787221343}
+  m_Enabled: 1
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1 &3190824627126303493
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,7 +230,6 @@ GameObject:
   - component: {fileID: 3190824627126303490}
   - component: {fileID: 8756922079018869723}
   - component: {fileID: 3190824627126303489}
-  - component: {fileID: 3139931797490529104}
   - component: {fileID: 1514501708625806924}
   m_Layer: 7
   m_Name: EarthSlime_Prefab
@@ -445,17 +455,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!210 &3139931797490529104
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3190824627126303493}
-  m_Enabled: 1
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 0
 --- !u!23 &1514501708625806924
 MeshRenderer:
   m_ObjectHideFlags: 0

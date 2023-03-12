@@ -30,7 +30,7 @@ public class MagicHolder : Attack
         get { return Mathf.Clamp(multipleSpeed, 1f, 100f); }
         set { multipleSpeed = value; }
     }
-    public bool initDone = false; //초기화 완료 여부
+    [ReadOnly] public bool initDone = false; //초기화 완료 여부
 
     [Header("Stat")]
     public float power = 1; //데미지

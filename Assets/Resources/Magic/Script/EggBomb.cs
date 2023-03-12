@@ -135,7 +135,7 @@ public class EggBomb : MonoBehaviour
         EggShot();
 
         // 글로벌 쿨다운 시작
-        CastMagic.Instance.Cooldown(magicHolder.magic, true);
+        CastMagic.Instance.Cooldown(magicHolder.magic, false);
     }
 
     void QuickEggShot()
@@ -146,7 +146,7 @@ public class EggBomb : MonoBehaviour
         EggShot();
 
         // 퀵슬롯 쿨다운 시작
-        CastMagic.Instance.Cooldown(magicHolder.magic, false);
+        CastMagic.Instance.Cooldown(magicHolder.magic, true);
     }
 
     void EggShot()

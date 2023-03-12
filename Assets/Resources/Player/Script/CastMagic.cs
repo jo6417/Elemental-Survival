@@ -20,9 +20,9 @@ public class CastMagic : MonoBehaviour
                 instance = FindObjectOfType<CastMagic>();
                 if (instance == null)
                 {
-                    GameObject obj = new GameObject();
-                    obj.name = "CastMagic";
-                    instance = obj.AddComponent<CastMagic>();
+                    // GameObject obj = new GameObject();
+                    // obj.name = "CastMagic";
+                    // instance = obj.AddComponent<CastMagic>();
                 }
             }
             return instance;
@@ -418,7 +418,7 @@ public class CastMagic : MonoBehaviour
         // 해당 마법의 액티브 쿨타임 갱신
         MagicInfo quickMagic = MagicDB.Instance.GetQuickMagicByID(magic.id);
         // 퀵 쿨타임 시작
-        Cooldown(quickMagic, false);
+        Cooldown(quickMagic, true);
 
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => quickMagic.coolCount <= 0);
@@ -451,7 +451,7 @@ public class CastMagic : MonoBehaviour
         // 쿨타임 체크를 위한 전역 마법 정보 불러오기
         MagicInfo globalMagic = MagicDB.Instance.GetMagicByID(magic.id);
         // 글로벌 쿨다운 시작
-        Cooldown(globalMagic, true);
+        Cooldown(globalMagic, false);
 
         // 쿨타임 0 이하가 될때까지 대기
         yield return new WaitUntil(() => globalMagic.coolCount <= 0);
@@ -512,21 +512,21 @@ public class CastMagic : MonoBehaviour
         yield return new WaitForSeconds(0.5f / attackPos.Count);
     }
 
-    public void Cooldown(MagicInfo magic, bool isAuto)
+    public void Cooldown(MagicInfo magic, bool isQuick)
     {
         // 실행중인 쿨다운 코루틴 멈추기
         if (magic.cooldownCoroutine != null)
             StopCoroutine(magic.cooldownCoroutine);
 
         // 쿨다운 코루틴 실행
-        magic.cooldownCoroutine = CooldownCoroutine(magic, isAuto);
+        magic.cooldownCoroutine = CooldownCoroutine(magic, isQuick);
         StartCoroutine(magic.cooldownCoroutine);
     }
 
-    IEnumerator CooldownCoroutine(MagicInfo magic, bool isAuto)
+    IEnumerator CooldownCoroutine(MagicInfo magic, bool isQuick)
     {
         // 자동, 퀵슬롯 여부에 따라 마법정보 참조
-        magic = isAuto ? MagicDB.Instance.GetMagicByID(magic.id) : MagicDB.Instance.GetQuickMagicByID(magic.id);
+        magic = isQuick ? MagicDB.Instance.GetQuickMagicByID(magic.id) : MagicDB.Instance.GetMagicByID(magic.id);
 
         // 해당 마법정보의 쿨타임 갱신
         magic.coolCount = MagicDB.Instance.MagicCoolTime(magic);
@@ -613,14 +613,14 @@ public class CastMagic : MonoBehaviour
             }
         }
 
-        // 투사체 개수만큼 반복
+        // 공격 횟수만큼 반복
         for (int i = 0; i < atkNum; i++)
         {
             Vector2 pos = targetPos;
 
-            // 2번째 투사체부터
+            // 2번째 공격부터
             if (i > 1)
-                // 마법 월드 사이즈에 비례해서 위치 퍼뜨리기
+                // 마법의 사이즈에 비례해서 위치 오차 확장
                 pos = targetPos + Random.insideUnitCircle.normalized * magicPrefab.transform.lossyScale.x * 3f;
 
             // 적 위치 변수에 담기
@@ -631,44 +631,46 @@ public class CastMagic : MonoBehaviour
         return enemyPosList;
     }
 
-    public List<Character> MarkEnemies(MagicInfo magic)
+    public List<Character> MarkEnemies(MagicInfo magic, Vector2 targetPos = default)
     {
         // 마법 범위 계산
         float range = MagicDB.Instance.MagicRange(magic);
-        // 투사체 개수 계산
+        // 공격 횟수 계산
         int atkNum = MagicDB.Instance.MagicAtkNum(magic);
 
-        //리턴할 적 오브젝트 리스트
-        List<Character> enemyObjs = new List<Character>();
+        // 공격 횟수만큼의 몬스터 배열
+        List<Character> markEnemyList = new List<Character>();
 
-        // 마우스를 중심으로 범위 안의 모든 적 콜라이더 리스트에 담기
+        // targetPos 위치 중심으로 범위 안의 모든 적 콜라이더 리스트에 담기
         List<Collider2D> enemyCollList = new List<Collider2D>();
         enemyCollList.Clear();
-        enemyCollList = Physics2D.OverlapCircleAll(PlayerManager.Instance.transform.position, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
+        enemyCollList = Physics2D.OverlapCircleAll(targetPos, range, 1 << SystemManager.Instance.layerList.EnemyHit_Layer).ToList();
 
-        // 찾은 적과 투사체 개수 중 많은 쪽만큼 반복
-        int findNum = Mathf.Max(enemyCollList.Count, atkNum);
-        for (int i = 0; i < findNum; i++)
+        // 찾은 콜라이더 개수만큼 반복
+        for (int i = 0; i < enemyCollList.Count; i++)
         {
             // 투사체 개수만큼 채워지면 반복문 끝내기
-            if (enemyObjs.Count >= atkNum)
+            if (markEnemyList.Count >= atkNum)
                 break;
 
             Character character = null;
             Collider2D targetColl = null;
 
+            // 콜라이더가 남아있을때
             if (enemyCollList.Count > 0)
             {
                 // 리스트 내에서 랜덤으로 선택
                 targetColl = enemyCollList[Random.Range(0, enemyCollList.Count)];
+
                 // 적 히트박스 찾기
                 HitBox targetHitBox = targetColl.GetComponent<HitBox>();
+
                 if (targetHitBox != null)
-                    // 적 매니저 찾기
+                    // 캐릭터 찾기
                     character = targetHitBox.character;
 
                 // 이미 들어있는 오브젝트일때
-                if (enemyObjs.Exists(x => x == character)
+                if (markEnemyList.Exists(x => x == character)
                 // 해당 몬스터가 유령일때
                 || (character && character.IsGhost))
                 {
@@ -681,7 +683,7 @@ public class CastMagic : MonoBehaviour
             }
 
             // 적 오브젝트 변수에 담기
-            enemyObjs.Add(character);
+            markEnemyList.Add(character);
 
             // 임시 리스트에서 지우기
             if (targetColl != null)
@@ -689,6 +691,6 @@ public class CastMagic : MonoBehaviour
         }
 
         //적의 위치 리스트 리턴
-        return enemyObjs;
+        return markEnemyList;
     }
 }

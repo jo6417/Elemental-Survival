@@ -131,7 +131,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2549747205611681531}
   - component: {fileID: 2151065847139411695}
-  - component: {fileID: 7946120940358626118}
   - component: {fileID: 9015841515065183018}
   - component: {fileID: 9040733898903256431}
   m_Layer: 7
@@ -172,17 +171,6 @@ MonoBehaviour:
   character: {fileID: 4959071736242128182}
   atkTrigger: {fileID: 3793035154778761762}
   smashColl: {fileID: 7798079106442996327}
---- !u!210 &7946120940358626118
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2130887605680326351}
-  m_Enabled: 1
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 0
 --- !u!95 &9015841515065183018
 Animator:
   serializedVersion: 3
@@ -713,6 +701,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6879378120547341611}
   - component: {fileID: 3842212087741206078}
+  - component: {fileID: 4404886691472986247}
   m_Layer: 0
   m_Name: StoneGolem_Sprite
   m_TagString: Enemy
@@ -789,6 +778,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+--- !u!210 &4404886691472986247
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7049077697001511077}
+  m_Enabled: 0
+  m_SortingLayerID: -1861760285
+  m_SortingLayer: 3
+  m_SortingOrder: 0
 --- !u!1001 &3471334331823361440
 PrefabInstance:
   m_ObjectHideFlags: 0

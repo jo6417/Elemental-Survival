@@ -315,7 +315,6 @@ GameObject:
   - component: {fileID: 5485836661786715578}
   - component: {fileID: 5485836661786715579}
   - component: {fileID: 5485836661786715589}
-  - component: {fileID: 7548133561265819307}
   - component: {fileID: 5287773598131940493}
   m_Layer: 7
   m_Name: WaterSlime_Prefab
@@ -540,17 +539,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!210 &7548133561265819307
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5485836661786715591}
-  m_Enabled: 1
-  m_SortingLayerID: -1861760285
-  m_SortingLayer: 3
-  m_SortingOrder: 0
 --- !u!23 &5287773598131940493
 MeshRenderer:
   m_ObjectHideFlags: 0

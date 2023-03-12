@@ -107,6 +107,7 @@ SpriteAtlas:
   - {fileID: 5785227754938472376, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 5211855851985303759, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
   - {fileID: 22442593591287992, guid: 55d747c459883bf498bb4aaa3e834163, type: 3}
+  - {fileID: 21300000, guid: 47bd2025b7669c74b871f61c5aaca061, type: 3}
   - {fileID: 21300000, guid: 5ddbb22550d1d8e45af45dbc3a6fddf9, type: 3}
   - {fileID: 21300000, guid: 6041c625775d0e340b10b4cf437c04b9, type: 3}
   - {fileID: 21300000, guid: d957ef95027369f4f89c54229e4ed58b, type: 3}
@@ -302,6 +303,7 @@ SpriteAtlas:
   - StompDust_Sheet_2
   - StompDust_Sheet_1
   - StompDust_Sheet_0
+  - Xmarker
   - LaserBeam_Icon
   - SlotMove_Icon
   - SteamRelease_Icon
