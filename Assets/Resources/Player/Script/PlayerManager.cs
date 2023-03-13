@@ -22,9 +22,9 @@ public class PlayerManager : Character
                 instance = FindObjectOfType<PlayerManager>();
                 if (instance == null)
                 {
-                    GameObject obj = new GameObject();
-                    obj.name = "PlayerManager";
-                    instance = obj.AddComponent<PlayerManager>();
+                    // GameObject obj = new GameObject();
+                    // obj.name = "PlayerManager";
+                    // instance = obj.AddComponent<PlayerManager>();
                 }
             }
             return instance;
@@ -239,7 +239,7 @@ public class PlayerManager : Character
         playerSprite.enabled = false;
         shadowSprite.enabled = false;
 
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance.initDone);
 
         // 6종류 gem을 리스트에 넣기
         for (int i = 0; i < 6; i++)
@@ -475,7 +475,7 @@ public class PlayerManager : Character
     IEnumerator CastDefaultMagics()
     {
         // MagicDB 로드 완료까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
 #if UNITY_EDITOR
         // 테스트 마법 획득

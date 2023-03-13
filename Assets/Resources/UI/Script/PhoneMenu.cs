@@ -286,7 +286,7 @@ public class PhoneMenu : MonoBehaviour
     IEnumerator Init()
     {
         //마법 DB 로딩 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 인벤토리 세팅
         Set_Inventory();
@@ -337,7 +337,7 @@ public class PhoneMenu : MonoBehaviour
         StartCoroutine(Init());
 
         //마법 DB 로딩 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 핸드폰 토글 사운드 재생
         SoundManager.Instance.PlaySound("PhoneToggle");
@@ -440,6 +440,98 @@ public class PhoneMenu : MonoBehaviour
 
         // 합성 가능 여부 체크
         MergeNumCheck();
+    }
+
+    void Set_Recipe()
+    {
+        // 레시피 스크롤 컴포넌트 끄기
+        recipeScroll.enabled = false;
+
+        // 처음에만 오브젝트 생성
+        if (!recipeInit)
+            // 레시피 목록에 모든 마법 표시
+            for (int i = 0; i < MagicDB.Instance.magicDB.Count; i++)
+            {
+                // 마법 정보 찾기
+                MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.magicDB[i].id);
+
+                // 0등급이면 넘기기
+                if (magic.grade == 0)
+                    continue;
+
+                // 레시피 프리팹 생성
+                LeanPool.Spawn(recipePrefab, recipeScroll.Content.transform);
+            }
+
+        // 레시피 목록에 모든 마법 표시
+        for (int i = 0; i < MagicDB.Instance.magicDB.Count; i++)
+        {
+            // 마법 정보 찾기
+            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.magicDB[i].id);
+
+            // 레시피 아이템 찾기
+            Transform recipe = recipeScroll.Content.GetChild(i);
+
+            // 해당 마법 언락 여부 판단
+            bool unlocked = MagicDB.Instance.unlockMagicList.Exists(x => x == magic.id);
+
+            // 재료들 정보 찾기
+            MagicInfo elementA = MagicDB.Instance.GetMagicByName(magic.element_A);
+            MagicInfo elementB = MagicDB.Instance.GetMagicByName(magic.element_B);
+
+            // 메인 아이콘 및 프레임 찾기
+            Image main_Icon = recipe.transform.Find("MagicSlot/Icon").GetComponent<Image>();
+            Image main_Frame = recipe.transform.Find("MagicSlot/Frame").GetComponent<Image>();
+            // 재료 아이콘 A,B 및 프레임 찾기
+            Image elementA_Icon = recipe.transform.Find("Element_A/Icon").GetComponent<Image>();
+            Image elementA_Frame = recipe.transform.Find("Element_A/Frame").GetComponent<Image>();
+            Image elementB_Icon = recipe.transform.Find("Element_B/Icon").GetComponent<Image>();
+            Image elementB_Frame = recipe.transform.Find("Element_B/Frame").GetComponent<Image>();
+
+            // 메인 아이콘 컬러 초기화
+            main_Icon.color = unlocked ? Color.white : Color.black;
+
+            // 메인 아이콘 표시
+            main_Icon.sprite = MagicDB.Instance.GetIcon(magic.id);
+            // 재료 아이콘 해금됬으면 표시, 아니면 물음표
+            elementA_Icon.sprite = unlocked && elementA != null ? MagicDB.Instance.GetIcon(elementA.id) : SystemManager.Instance.questionMark;
+            elementB_Icon.sprite = unlocked && elementB != null ? MagicDB.Instance.GetIcon(elementB.id) : SystemManager.Instance.questionMark;
+
+            // 메인 아이콘 프레임 색 넣기
+            main_Frame.color = MagicDB.Instance.GradeColor[magic.grade];
+            // 재료 아이콘 해금됬으면 프레임 색 넣기
+            elementA_Frame.color = unlocked && elementA != null ? MagicDB.Instance.GradeColor[elementA.grade] : Color.white;
+            elementB_Frame.color = unlocked && elementB != null ? MagicDB.Instance.GradeColor[elementB.grade] : Color.white;
+
+            // 메인 아이콘에 툴팁 넣기
+            if (unlocked)
+            {
+                ToolTipTrigger main_tooltip = main_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
+                ToolTipTrigger elementA_tooltip = elementA_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
+                ToolTipTrigger elementB_tooltip = elementB_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
+
+                main_tooltip._slotInfo = magic;
+                main_tooltip.enabled = true;
+
+                if (elementA != null && elementB != null)
+                {
+                    elementA_tooltip._slotInfo = elementA;
+                    elementA_tooltip.enabled = true;
+                    elementB_tooltip._slotInfo = elementB;
+                    elementB_tooltip.enabled = true;
+                }
+            }
+        }
+
+        // 레시피 스크롤 컴포넌트 켜기
+        recipeScroll.enabled = true;
+
+        // 레시피 스크롤 위치 초기화
+        recipeScroll.Content.localPosition = Vector2.zero;
+        recipeScroll.GoToPanel(0);
+
+        // 레시피 초기화 완료
+        recipeInit = true;
     }
 
     public void MergeNumCheck()
@@ -638,13 +730,13 @@ public class PhoneMenu : MonoBehaviour
 
             bool isNew = false;
             // 언락된 마법중에 없으면
-            if (!MagicDB.Instance.unlockMagics.Exists(x => x == mergedMagic.id))
+            if (!MagicDB.Instance.unlockMagicList.Exists(x => x == mergedMagic.id))
             {
                 // 새로운 마법 표시
                 isNew = true;
 
                 // 언락 리스트에 추가
-                MagicDB.Instance.unlockMagics.Add(mergedMagic.id);
+                MagicDB.Instance.unlockMagicList.Add(mergedMagic.id);
                 // 저장
                 StartCoroutine(SaveManager.Instance.Save());
             }
@@ -998,11 +1090,14 @@ public class PhoneMenu : MonoBehaviour
         // 랜덤 마법 리스트
         List<MagicInfo> randomList = new List<MagicInfo>();
 
-        // 해당 등급의 언락된 마법 리스트 불러오기
-        for (int i = 0; i < MagicDB.Instance.unlockMagics.Count; i++)
+        // 사용 가능한 마법 리스트
+        List<int> ableMagicList = MagicDB.Instance.AbleMagicList;
+
+        // 해당 등급의 사용가능한 마법 리스트 불러오기
+        for (int i = 0; i < ableMagicList.Count; i++)
         {
-            //언락된 마법의 id
-            int magicId = MagicDB.Instance.unlockMagics[i];
+            // id 캐싱
+            int magicId = ableMagicList[i];
 
             // 전체 마법중에 
             if (MagicDB.Instance.magicDB.TryGetValue(magicId, out MagicInfo magic))
@@ -1275,13 +1370,6 @@ public class PhoneMenu : MonoBehaviour
         //마법의 레벨 초기화
         magic.MagicLevel = 1;
 
-        // touchedMagics에 해당 마법 id가 존재하지 않으면
-        if (!MagicDB.Instance.savedMagics.Exists(x => x == magic.id))
-        {
-            // 보유했던 마법 리스트에 추가
-            MagicDB.Instance.savedMagics.Add(magic.id);
-        }
-
         // 획득 인덱스 지정 안했을때
         if (getIndex == -1)
             // 인벤토리 빈칸 찾기
@@ -1420,98 +1508,6 @@ public class PhoneMenu : MonoBehaviour
             UIManager.Instance.nowHoldSlot.transform.localPosition = originPos;
         })
         .SetUpdate(true);
-    }
-
-    void Set_Recipe()
-    {
-        // 레시피 스크롤 컴포넌트 끄기
-        recipeScroll.enabled = false;
-
-        // 처음에만 오브젝트 생성
-        if (!recipeInit)
-            // 레시피 목록에 모든 마법 표시
-            for (int i = 0; i < MagicDB.Instance.unlockMagics.Count; i++)
-            {
-                // 마법 정보 찾기
-                MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.unlockMagics[i]);
-
-                // 0등급이면 넘기기
-                if (magic.grade == 0)
-                    continue;
-
-                // 레시피 프리팹 생성
-                LeanPool.Spawn(recipePrefab, recipeScroll.Content.transform);
-            }
-
-        // 레시피 목록에 모든 마법 표시
-        for (int i = 0; i < MagicDB.Instance.unlockMagics.Count; i++)
-        {
-            // 마법 정보 찾기
-            MagicInfo magic = MagicDB.Instance.GetMagicByID(MagicDB.Instance.unlockMagics[i]);
-
-            // 레시피 아이템 찾기
-            Transform recipe = recipeScroll.Content.GetChild(i);
-
-            // 해당 마법 언락 여부 판단
-            bool unlocked = MagicDB.Instance.unlockMagics.Exists(x => x == magic.id);
-
-            // 재료들 정보 찾기
-            MagicInfo elementA = MagicDB.Instance.GetMagicByName(magic.element_A);
-            MagicInfo elementB = MagicDB.Instance.GetMagicByName(magic.element_B);
-
-            // 메인 아이콘 및 프레임 찾기
-            Image main_Icon = recipe.transform.Find("MagicSlot/Icon").GetComponent<Image>();
-            Image main_Frame = recipe.transform.Find("MagicSlot/Frame").GetComponent<Image>();
-            // 재료 아이콘 A,B 및 프레임 찾기
-            Image elementA_Icon = recipe.transform.Find("Element_A/Icon").GetComponent<Image>();
-            Image elementA_Frame = recipe.transform.Find("Element_A/Frame").GetComponent<Image>();
-            Image elementB_Icon = recipe.transform.Find("Element_B/Icon").GetComponent<Image>();
-            Image elementB_Frame = recipe.transform.Find("Element_B/Frame").GetComponent<Image>();
-
-            // 메인 아이콘 컬러 초기화
-            main_Icon.color = unlocked ? Color.white : Color.black;
-
-            // 메인 아이콘 표시
-            main_Icon.sprite = MagicDB.Instance.GetIcon(magic.id);
-            // 재료 아이콘 해금됬으면 표시, 아니면 물음표
-            elementA_Icon.sprite = unlocked && elementA != null ? MagicDB.Instance.GetIcon(elementA.id) : SystemManager.Instance.questionMark;
-            elementB_Icon.sprite = unlocked && elementB != null ? MagicDB.Instance.GetIcon(elementB.id) : SystemManager.Instance.questionMark;
-
-            // 메인 아이콘 프레임 색 넣기
-            main_Frame.color = MagicDB.Instance.GradeColor[magic.grade];
-            // 재료 아이콘 해금됬으면 프레임 색 넣기
-            elementA_Frame.color = unlocked && elementA != null ? MagicDB.Instance.GradeColor[elementA.grade] : Color.white;
-            elementB_Frame.color = unlocked && elementB != null ? MagicDB.Instance.GradeColor[elementB.grade] : Color.white;
-
-            // 메인 아이콘에 툴팁 넣기
-            if (unlocked)
-            {
-                ToolTipTrigger main_tooltip = main_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
-                ToolTipTrigger elementA_tooltip = elementA_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
-                ToolTipTrigger elementB_tooltip = elementB_Icon.transform.parent.GetComponentInChildren<ToolTipTrigger>(true);
-
-                main_tooltip._slotInfo = magic;
-                main_tooltip.enabled = true;
-
-                if (elementA != null && elementB != null)
-                {
-                    elementA_tooltip._slotInfo = elementA;
-                    elementA_tooltip.enabled = true;
-                    elementB_tooltip._slotInfo = elementB;
-                    elementB_tooltip.enabled = true;
-                }
-            }
-        }
-
-        // 레시피 스크롤 컴포넌트 켜기
-        recipeScroll.enabled = true;
-
-        // 레시피 스크롤 위치 초기화
-        recipeScroll.Content.localPosition = Vector2.zero;
-        recipeScroll.GoToPanel(0);
-
-        // 레시피 초기화 완료
-        recipeInit = true;
     }
 
     public void InteractBtnsToggle(bool toggle)

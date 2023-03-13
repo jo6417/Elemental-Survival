@@ -161,7 +161,7 @@ public class Quad_AI : MonoBehaviour
         }
 
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 비행 사운드 켜기
         flySound = SoundManager.Instance.PlaySound("Quad_Fly", transform, 0, 0, -1, true);
@@ -431,7 +431,7 @@ public class Quad_AI : MonoBehaviour
         // 벽 콜라이더 끄기
         wallColl.enabled = false;
         // 바닥 색깔 초기화
-        wallGround.DOColor(SystemManager.Instance.HexToRGBA("00FFFF", 30f / 255f), 0.5f);
+        wallGround.DOColor(CustomMethod.HexToRGBA("00FFFF", 30f / 255f), 0.5f);
         // 바닥 사이즈 키우기
         wallGround.transform.localScale = Vector3.zero;
         wallGround.transform.DOScale(new Vector2(50, 30), 0.5f);
@@ -759,7 +759,7 @@ public class Quad_AI : MonoBehaviour
         });
 
         // 바닥 색깔 초기화
-        wallGround.DOColor(SystemManager.Instance.HexToRGBA("00FFFF", 150f / 255f), 0.5f);
+        wallGround.DOColor(CustomMethod.HexToRGBA("00FFFF", 150f / 255f), 0.5f);
 
         // 원형 바닥 사이즈 초기화
         wallCircle.transform.localScale = Vector3.zero;

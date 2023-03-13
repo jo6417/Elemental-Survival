@@ -64,7 +64,7 @@ public class LevelupMenu : MonoBehaviour
             slots[i] = cards[i].Find("CardFront/Button");
         }
 
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 해당 패널로 팝업 초기화
         UIManager.Instance.PopupSet(gameObject);

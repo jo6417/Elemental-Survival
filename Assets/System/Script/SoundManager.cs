@@ -145,7 +145,7 @@ public class SoundManager : MonoBehaviour
         initFinish = true;
 
         // 시스템 매니저 초기화 대기
-        yield return new WaitUntil(() => SystemManager.Instance.loadDone);
+        yield return new WaitUntil(() => SystemManager.Instance.initDone);
 
         // BGM에 아웃풋 연결
         nowBGM.outputAudioMixerGroup = musicMixerGroup;
@@ -258,7 +258,7 @@ public class SoundManager : MonoBehaviour
     private IEnumerator BGMPlayer()
     {
         // 시스템 매니저 초기화 대기
-        yield return new WaitUntil(() => SystemManager.Instance.loadDone);
+        yield return new WaitUntil(() => SystemManager.Instance.initDone);
 
         // 씬 마스크 트랜지션 끝날때까지 대기
         // yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);

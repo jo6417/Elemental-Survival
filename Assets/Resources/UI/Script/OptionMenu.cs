@@ -53,22 +53,8 @@ public class OptionMenu : MonoBehaviour
             // 밝기 설정값 변수 바꾸기
             SystemManager.Instance.OptionBrightness = brightnessSlider.value;
 
-            // 인게임일때
-            if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
-                // 글로벌 라이트 값에 적용
-                SystemManager.Instance.globalLight.intensity = SystemManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
-            // 메인메뉴일때
-            else
-            {
-                // 글로벌 라이트 찾기
-                Light2D globalLight = null;
-                foreach (Light2D light in FindObjectsOfType<Light2D>())
-                    if (light.lightType == Light2D.LightType.Global)
-                        globalLight = light;
-
-                // 해당 글로벌 라이트에 밝기 옵션값 적용
-                globalLight.intensity = SystemManager.Instance.OptionBrightness;
-            }
+            // 해당 글로벌 라이트에 밝기 옵션값 적용
+            SystemManager.Instance.GlobalLight.intensity = SystemManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
         });
 
         // 데미지 표시 여부 토글에 함수 넣기
@@ -194,7 +180,7 @@ public class OptionMenu : MonoBehaviour
             screenModeDropdown.value = GetScreenMode(SystemManager.Instance.screenMode);
 
             // 밝기 슬라이더 값 갱신
-            brightnessSlider.value = SystemManager.Instance.GlobalBrightness * SystemManager.Instance.OptionBrightness;
+            brightnessSlider.value = SystemManager.Instance.OptionBrightness;
         }
     }
 

@@ -56,7 +56,7 @@ public class DefaultMagic : MonoBehaviour
         DOTween.To(() => screen.alpha, x => screen.alpha = x, 1f, 0.8f)
         .SetUpdate(true);
 
-        yield return new WaitUntil(() => MagicDB.Instance != null && MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance != null && MagicDB.Instance.initDone);
 
         // 해당 패널로 팝업 초기화
         UIManager.Instance.PopupSet(gameObject);

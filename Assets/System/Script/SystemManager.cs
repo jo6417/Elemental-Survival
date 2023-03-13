@@ -76,7 +76,7 @@ public class SystemManager : MonoBehaviour
     [Header("State")]
     public bool sceneChanging = false; // 씬 변경중 여부
     public bool screenMasked = false; // 화면 씬 마스크로 덮힘 여부
-    public bool loadDone = false; // 초기 로딩 완료 여부
+    public bool initDone = false; // 초기 로딩 완료 여부
     public float playerTimeScale = 1f; //플레이어만 사용하는 타임스케일
     public float globalTimeScale = 1f; //전역으로 사용하는 타임스케일
     public float time_start; //시작 시간
@@ -148,7 +148,31 @@ public class SystemManager : MonoBehaviour
     public PhysicsLayerList layerList;
 
     [Header("Refer")]
-    public Light2D globalLight; // 글로벌 라이트
+    [SerializeField] private Light2D globalLight; // 글로벌 라이트
+    public Light2D GlobalLight
+    {
+        get
+        {
+            // 글로벌 라이트가 없으면 찾기
+            if (globalLight == null)
+            {
+                // 글로벌 라이트 찾기
+                Light2D globalLight = null;
+                foreach (Light2D light in FindObjectsOfType<Light2D>())
+                    if (light.lightType == Light2D.LightType.Global)
+                    {
+                        globalLight = light;
+                        break;
+                    }
+            }
+
+            return globalLight;
+        }
+        set
+        {
+            globalLight = value;
+        }
+    }
     public NewInput System_Input; // 인풋 받기
     public GameObject saveIcon; //저장 아이콘
     public Sprite gateIcon; //포탈게이트 아이콘
@@ -330,15 +354,15 @@ public class SystemManager : MonoBehaviour
         EnemyDB.Instance.EnemyDBSynchronize(false);
 
         // 마법 DB 로딩 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
         // 마법 DB 동기화 버튼 활성화
         magicDBSyncBtn.interactable = true;
         // 아이템 DB 로딩 대기
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance.initDone);
         // 아이템 DB 동기화 버튼 활성화
         itemDBSyncBtn.interactable = true;
         // 몬스터 DB 로딩 대기
-        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+        yield return new WaitUntil(() => EnemyDB.Instance.initDone);
         // 몬스터 DB 동기화 버튼 활성화
         enemyDBSyncBtn.interactable = true;
 
@@ -362,7 +386,7 @@ public class SystemManager : MonoBehaviour
 
         //TODO 로딩 UI 끄기
         print("로딩 완료");
-        loadDone = true;
+        initDone = true;
 
         // 플레이어 갓모드
         if (godModBtn != null)
@@ -579,7 +603,7 @@ public class SystemManager : MonoBehaviour
     IEnumerator Init()
     {
         // 모든 로딩 끝날때까지 대기
-        yield return new WaitUntil(() => loadDone);
+        yield return new WaitUntil(() => initDone);
     }
 
     public void ButtonToggle(ref bool toggle, Selectable selectable, bool init = false)
@@ -591,40 +615,6 @@ public class SystemManager : MonoBehaviour
 
         // 켜졌을때 초록, 꺼졌을때 빨강으로 버튼 컬러 바꾸기
         selectable.image.color = toggle ? Color.green : Color.red;
-    }
-
-    public Color HexToRGBA(string hex, float alpha = 1)
-    {
-        Color color;
-        ColorUtility.TryParseHtmlString("#" + hex, out color);
-
-        if (alpha != 1)
-        {
-            color.a = alpha;
-        }
-
-        return color;
-    }
-
-    public float GetVector2Dir(Vector2 to, Vector2 from)
-    {
-        // 타겟 방향
-        Vector2 targetDir = to - from;
-
-        // 플레이어 방향 2D 각도
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-
-        // 각도를 리턴
-        return angle;
-    }
-
-    public float GetVector2Dir(Vector2 targetDir)
-    {
-        // 플레이어 방향 2D 각도
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-
-        // 각도를 리턴
-        return angle;
     }
 
     public void TimeScaleToggle()
@@ -680,50 +670,6 @@ public class SystemManager : MonoBehaviour
 
         // 시간 진행도 디버그 버튼에 표시
         timeTxt.text = "TimeSpeed = " + timeScale;
-    }
-
-    // public void DestroyAllChild(Transform obj)
-    // {
-    //     //모든 자식 오브젝트 파괴
-    //     for (int i = 0; i < obj.childCount; i++)
-    //         Destroy(obj.GetChild(i));
-    // }
-
-    // public void DespawnAllChild(Transform obj)
-    // {
-    //     //모든 자식 오브젝트 디스폰
-    //     for (int i = 0; i < obj.childCount; i++)
-    //         LeanPool.Despawn(obj.GetChild(i));
-    // }
-
-    public SlotInfo SortInfo(SlotInfo slotInfo)
-    {
-        // 각각 마법 및 아이템으로 형변환
-        MagicInfo magic = slotInfo as MagicInfo;
-        ItemInfo item = slotInfo as ItemInfo;
-
-        // null 이 아닌 정보를 반환
-        if (magic != null)
-            return magic;
-        else if (item != null)
-            return item;
-        else
-            return null;
-    }
-
-    public bool IsMagic(SlotInfo slotInfo)
-    {
-        // 각각 마법 및 아이템으로 형변환
-        MagicInfo magic = slotInfo as MagicInfo;
-        ItemInfo item = slotInfo as ItemInfo;
-
-        // null 이 아닌 정보를 반환
-        if (magic != null)
-            return true;
-        else if (item != null)
-            return false;
-        else
-            return false;
     }
 
     public int WeightRandom(List<float> rateList)
@@ -788,27 +734,6 @@ public class SystemManager : MonoBehaviour
         }
 
         return returnIndexes;
-    }
-
-    public class LerpToPosition : MonoBehaviour
-    {
-        public Vector3 positionToMoveTo;
-        void Start()
-        {
-            StartCoroutine(LerpPosition(positionToMoveTo, 5));
-        }
-        IEnumerator LerpPosition(Vector3 targetPosition, float duration)
-        {
-            float time = 0;
-            Vector3 startPosition = transform.position;
-            while (time < duration)
-            {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, time / duration);
-                time += Time.deltaTime;
-                yield return null;
-            }
-            transform.position = targetPosition;
-        }
     }
 
     public void ToggleInput(bool UI_enable)
@@ -939,7 +864,7 @@ public class SystemManager : MonoBehaviour
         float spriteHeight = spriteBounds.size.y;
 
         // SpriteRenderer의 Transform 스케일 값 가져오기
-        Vector3 localScale = transform.localScale;
+        Vector3 localScale = spriteRenderer.transform.localScale;
         float scaleX = localScale.x;
         float scaleY = localScale.y;
 
@@ -1087,7 +1012,16 @@ public class SystemManager : MonoBehaviour
         // 값제한
         targetBrightness = Mathf.Clamp(targetBrightness, 0.1f, 1f);
 
+        // 해당 밝기로 변경
+        StartCoroutine(ChangeBrightness(targetBrightness, duration));
+    }
+
+    private IEnumerator ChangeBrightness(float targetBrightness, float duration)
+    {
+        // 글로벌 라이트 찾을때까지 대기
+        yield return new WaitUntil(() => GlobalLight != null);
+
         // 글로벌 밝기 * 옵션 밝기 곱해서 해당 값으로 트윈
-        DOTween.To(x => globalLight.intensity = x, globalLight.intensity, targetBrightness, duration);
+        DOTween.To(x => GlobalLight.intensity = x, GlobalLight.intensity, targetBrightness, duration);
     }
 }

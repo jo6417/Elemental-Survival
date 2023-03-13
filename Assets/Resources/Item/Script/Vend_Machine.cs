@@ -28,7 +28,7 @@ public class Vend_Machine : MonoBehaviour
         showKey.SetActive(false);
 
         // 마법,아이템 DB 모두 로딩 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone && ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone && ItemDB.Instance.initDone);
 
         // 상호작용 트리거 함수 콜백에 연결 시키기
         if (interacter.interactTriggerCallback == null)

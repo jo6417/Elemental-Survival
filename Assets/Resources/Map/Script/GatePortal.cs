@@ -154,7 +154,7 @@ public class GatePortal : MonoBehaviour
         // 원소젬 받기 상태로 초기화
         portalState = PortalState.Idle;
 
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 젬 타입 UI 색깔 갱신
         GemIcon.color = MagicDB.Instance.GetElementColor(gemType);

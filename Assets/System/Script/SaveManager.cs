@@ -14,7 +14,8 @@ using System.Text;
 public class SaveData : System.IDisposable
 {
     #region DB        
-    public int[] unlockMagics; //해금된 마법 리스트
+    public int[] unlockMagicList; // 해금된 마법 리스트
+    public int[] banMagicList; // 해금 마법 중에서 사용 마법 리스트
     public string magicDBJson; //마법 DB json
     public string enemyDBJson; //몬스터 DB json
     public string itemDBJson; //아이템 DB json
@@ -70,7 +71,7 @@ public class SaveManager : MonoBehaviour
     }
     #endregion
 
-    [Header("PrefKey")]
+    [Header("SaveKey")]
     public const string MASTER_VOLUME_KEY = "masterVolume";
     public const string MUSIC_VOLUME_KEY = "musicVolume";
     public const string SFX_VOLUME_KEY = "sfxVolume";
@@ -171,17 +172,25 @@ public class SaveManager : MonoBehaviour
         // PlayerPref 설정값 모두 저장
         SavePref();
 
-        // 세이브 파일이 없으면 리턴
-        if (!File.Exists(Application.persistentDataPath + "/save.json"))
-            yield break;
+        string SAVE_PATH = Application.persistentDataPath + "/save.json";
+        string old_SaveData = "";
+
+        // 세이브 파일이 없으면
+        if (!File.Exists(SAVE_PATH))
+            // 새 파일 생성
+            File.Create(SAVE_PATH).Dispose();
+        // 파일 있으면
+        else
+            // 기존의 로컬 세이브 데이터 불러와 json 문자열로 변환
+            old_SaveData = File.ReadAllText(SAVE_PATH);
 
         // 해금 마법 목록 저장
-        localSaveData.unlockMagics = MagicDB.Instance.unlockMagics.ToArray();
+        localSaveData.unlockMagicList = MagicDB.Instance.unlockMagicList.ToArray();
+        // 사용 마법 목록 저장
+        localSaveData.banMagicList = MagicDB.Instance.banMagicList.ToArray();
 
         #region Saving
 
-        // 기존의 로컬 세이브 데이터 불러와 json 문자열로 변환
-        string old_SaveData = File.ReadAllText(Application.persistentDataPath + "/save.json");
         // SaveData 형태의 데이터를 json 문자열로 변환
         string new_SaveData = JsonConvert.SerializeObject(localSaveData);
 
@@ -195,9 +204,9 @@ public class SaveManager : MonoBehaviour
         StartCoroutine(Saving());
 
         // 해당 파일 경로에 저장
-        File.WriteAllText(Application.persistentDataPath + "/save.json", new_SaveData);
+        File.WriteAllText(SAVE_PATH, new_SaveData);
 
-        print("저장 완료 - " + Application.persistentDataPath + "/save.json");
+        print("저장 완료 - " + SAVE_PATH);
 
         nowSaving = false; //저장 끝
 
@@ -221,7 +230,9 @@ public class SaveManager : MonoBehaviour
         //TODO 소지금 불러오기
 
         // 해금 마법 목록 불러오기
-        MagicDB.Instance.unlockMagics = localSaveData.unlockMagics.ToList();
+        MagicDB.Instance.unlockMagicList = new List<int>(localSaveData.unlockMagicList.ToList());
+        // 사용중 마법 목록 불러오기
+        MagicDB.Instance.banMagicList = new List<int>(localSaveData.banMagicList.ToList());
     }
 
     public IEnumerator DBSyncCheck(DBType dbType, Button syncBtn)

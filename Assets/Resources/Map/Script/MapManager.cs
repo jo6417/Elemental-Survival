@@ -114,7 +114,7 @@ public class MapManager : MonoBehaviour
 
     void Update()
     {
-        if (!SystemManager.Instance.loadDone
+        if (!SystemManager.Instance.initDone
         || PlayerManager.Instance == null)
             return;
 
@@ -414,7 +414,7 @@ public class MapManager : MonoBehaviour
                     TransformControl.Shuffle shuffle = transformControl.ShuffleTransform();
 
                     // 뒤집었을때
-                    if (shuffle == TransformControl.Shuffle.MirrorX)
+                    if (shuffle == TransformControl.Shuffle.FlipX)
                         // 뒤집기 컴포넌트가 장애물 본인이면 (피벗이 왼쪽 구석에 있으므로)
                         if (transformControl.transform == propObj.transform)
                             // 오른쪽으로 X 좌표 절반만큼 이동

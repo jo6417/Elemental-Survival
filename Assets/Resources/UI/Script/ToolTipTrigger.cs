@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,9 @@ using UnityEngine.EventSystems;
 
 public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 {
+    public Action onMouseEnter;
+    public Action onMouseClick;
+
     public enum ToolTipType { ProductTip, HasStuffTip };
     public ToolTipType toolTipType;
     private SlotInfo slotInfo;
@@ -55,6 +59,10 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             HasStuffToolTip.Instance.OpenTooltip(_slotInfo);
         }
+
+        // 콜백 함수 실행
+        if (onMouseEnter != null)
+            onMouseEnter();
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -67,6 +75,10 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerDown(PointerEventData eventData)
     {
         QuitTooltip();
+
+        // 콜백 함수 실행
+        if (onMouseClick != null)
+            onMouseClick();
     }
 
     void QuitTooltip()

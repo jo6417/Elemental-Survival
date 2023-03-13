@@ -50,7 +50,7 @@ public class ItemManager : MonoBehaviour
         coll.enabled = false;
 
         //아이템DB 로드 완료까지 대기
-        yield return new WaitUntil(() => ItemDB.Instance != null && ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance != null && ItemDB.Instance.initDone);
 
         // item 정보 불러올때까지 대기
         // yield return new WaitUntil(() => item != null);
@@ -75,7 +75,7 @@ public class ItemManager : MonoBehaviour
         }
 
         // 마법DB 로드 완료까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 마법 이름 들어왔을때
         if ((int)magicEnum != 10000 || randomMagic)

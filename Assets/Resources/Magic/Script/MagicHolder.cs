@@ -65,7 +65,7 @@ public class MagicHolder : Attack
         // if (atkColl != null)
         //     atkColl.enabled = false;
 
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         //프리팹 이름으로 마법 정보 찾아 넣기
         if (magic == null)

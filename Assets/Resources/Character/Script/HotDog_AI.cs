@@ -157,7 +157,7 @@ public class HotDog_AI : EnemyAI
         character.nowState = CharacterState.Idle;
 
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 플레임 마법 데이터 찾기
         if (flameMagic == null)

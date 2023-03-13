@@ -120,7 +120,7 @@ public class MagicMachineUI : MonoBehaviour
         // 슬롯 가림막 가리기
         slotCover.color = Color.black;
 
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone && MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance.initDone && MagicDB.Instance.initDone);
 
         // 매직 머신에 있는 모든 슬롯 불러오기
         List<InventorySlot> slots = slotParent.GetComponentsInChildren<InventorySlot>().ToList();

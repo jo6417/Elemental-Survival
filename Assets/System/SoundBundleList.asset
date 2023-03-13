@@ -222,6 +222,12 @@ MonoBehaviour:
       pitch: 1
       mixerGroup: {fileID: 0}
       source: {fileID: 0}
+    - name: SlotLock
+      clip: {fileID: 8300000, guid: adfc29db53a561346a09920457bc8300, type: 3}
+      volume: 1
+      pitch: 1
+      mixerGroup: {fileID: 0}
+      source: {fileID: 0}
   - name: Music_Sounds
     sounds:
     - name: InGameBGM_1

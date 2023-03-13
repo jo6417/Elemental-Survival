@@ -75,7 +75,7 @@ public class LaserBeam : MonoBehaviour
             //조준선 색깔 초기화
             aimColor = Color.red;
             //레이저 색깔 초기화
-            laserColor = SystemManager.Instance.HexToRGBA("2DFFFF");
+            laserColor = CustomMethod.HexToRGBA("2DFFFF");
         }
         // 몬스터가 쓸때
         else if (magicHolder.GetTarget() == MagicHolder.TargetType.Player)
@@ -85,7 +85,7 @@ public class LaserBeam : MonoBehaviour
             //조준선 색깔 변경
             aimColor = Color.red;
             //레이저 색깔 변경
-            laserColor = SystemManager.Instance.HexToRGBA("FF1919");
+            laserColor = CustomMethod.HexToRGBA("FF1919");
         }
 
         //레이저 발사

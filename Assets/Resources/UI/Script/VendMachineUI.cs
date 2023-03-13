@@ -100,7 +100,7 @@ public class VendMachineUI : MonoBehaviour
 
     IEnumerator SetProducts()
     {
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         //상품 모두 지우기
         // SystemManager.Instance.DestroyAllChild(productsParent);

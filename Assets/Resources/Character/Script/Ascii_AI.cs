@@ -216,7 +216,7 @@ public class Ascii_AI : MonoBehaviour
         laserRange.enabled = false;
 
         // MagicDB 로드 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
         // 레이저 마법 데이터 찾기
         if (laserMagic == null)
@@ -1210,7 +1210,7 @@ public class Ascii_AI : MonoBehaviour
             aimCount -= Time.deltaTime;
 
             // 플러그에서 플레이어 방향
-            Quaternion rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, plugControler.transform.position) - 90f);
+            Quaternion rotation = Quaternion.Euler(0, 0, CustomMethod.GetVector2Dir(PlayerManager.Instance.transform.position, plugControler.transform.position) - 90f);
 
             // 플러그가 플레이어 방향 조준
             plugHead.rotation = rotation;
@@ -1634,7 +1634,7 @@ public class Ascii_AI : MonoBehaviour
             // summonDir 방향으로 발사
             atkObj.GetComponent<Rigidbody2D>().velocity = summonDir * 20f;
             // summonDir 방향으로 회전
-            atkObj.transform.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(summonDir) - 90f);
+            atkObj.transform.rotation = Quaternion.Euler(0, 0, CustomMethod.GetVector2Dir(summonDir) - 90f);
 
             // 공격 컴포넌트 찾기
             Attack attack = atkObj.GetComponent<Attack>();
@@ -1901,8 +1901,8 @@ public class Ascii_AI : MonoBehaviour
         while (true)
         {
             // 양쪽 케이블이 플레이어 조준
-            L_PlugHead.transform.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, L_PlugHead.transform.position) - 90f);
-            R_PlugHead.transform.rotation = Quaternion.Euler(0, 0, SystemManager.Instance.GetVector2Dir(PlayerManager.Instance.transform.position, R_PlugHead.transform.position) - 90f);
+            L_PlugHead.transform.rotation = Quaternion.Euler(0, 0, CustomMethod.GetVector2Dir(PlayerManager.Instance.transform.position, L_PlugHead.transform.position) - 90f);
+            R_PlugHead.transform.rotation = Quaternion.Euler(0, 0, CustomMethod.GetVector2Dir(PlayerManager.Instance.transform.position, R_PlugHead.transform.position) - 90f);
 
             yield return new WaitForSeconds(Time.deltaTime);
         }

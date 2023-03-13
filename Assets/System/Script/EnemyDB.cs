@@ -112,7 +112,7 @@ public class EnemyDB : MonoBehaviour
     }
     #endregion
 
-    [ReadOnly] public bool loadDone = false; //로드 완료 여부
+    [ReadOnly] public bool initDone = false; //로드 완료 여부
     public enum EnemyType { Normal, Boss };
 
     public Dictionary<int, EnemyInfo> enemyDB = new Dictionary<int, EnemyInfo>(); //몬스터 정보 DB
@@ -218,7 +218,7 @@ public class EnemyDB : MonoBehaviour
 
         }
 
-        loadDone = true;
+        initDone = true;
         print("EnemyDB Loaded!");
 
         yield return null;

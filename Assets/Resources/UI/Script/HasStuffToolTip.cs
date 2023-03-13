@@ -14,17 +14,12 @@ public class HasStuffToolTip : MonoBehaviour
         {
             if (instance == null)
             {
-                //비활성화된 오브젝트도 포함
-                var obj = FindObjectOfType<HasStuffToolTip>(true);
-                if (obj != null)
+                instance = FindObjectOfType<HasStuffToolTip>();
+                if (instance == null)
                 {
-                    instance = obj;
-                }
-                else
-                {
-                    print("new obj");
-                    var newObj = new GameObject().AddComponent<HasStuffToolTip>();
-                    instance = newObj;
+                    // GameObject obj = new GameObject();
+                    // obj.name = "HasStuffToolTip";
+                    // instance = obj.AddComponent<HasStuffToolTip>();
                 }
             }
             return instance;
@@ -41,33 +36,54 @@ public class HasStuffToolTip : MonoBehaviour
 
     [SerializeField, ReadOnly] RectTransform tooltipRect;
     [SerializeField, ReadOnly] Vector2 canvasRect;
+    public NewInput Tooltip_Input; // 툴팁 인풋 받기
 
     private void Awake()
     {
-        tooltipRect = GetComponent<RectTransform>();
-
-        //마우스 클릭 입력
-        UIManager.Instance.UI_Input.UI.Click.performed += val =>
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            QuitTooltip();
-        };
-        //마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val =>
-            FollowMouse(UIManager.Instance.GetMousePos(false));
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        tooltipRect = GetComponent<RectTransform>();
 
         //처음엔 끄기
         // gameObject.SetActive(false);
         canvasGroup.alpha = 0f;
     }
 
+    private void OnEnable()
+    {
+        Tooltip_Input = new NewInput();
+
+        //마우스 클릭 입력
+        Tooltip_Input.UI.Click.performed += val =>
+        {
+            QuitTooltip();
+        };
+        //마우스 위치 입력
+        Tooltip_Input.UI.MousePosition.performed += val =>
+        {
+            if (canvasGroup.alpha > 0f)
+                FollowMouse(Tooltip_Input.UI.MousePosition.ReadValue<Vector2>());
+        };
+
+        Tooltip_Input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        Tooltip_Input.Disable();
+    }
+
     void FollowMouse(Vector3 nowMousePos)
     {
         //마우스 숨김 상태면 안따라감
         if (Cursor.lockState == CursorLockMode.Locked)
-            return;
-
-        // 툴팁 비활성화면 안따라감
-        if (!gameObject.activeSelf)
             return;
 
         // 화면 사이즈 계산
@@ -110,8 +126,11 @@ public class HasStuffToolTip : MonoBehaviour
     //툴팁 켜기
     public void OpenTooltip(SlotInfo slotInfo = null)
     {
+        // 마우스 위치 받기
+        Vector2 mousePos = Tooltip_Input.UI.MousePosition.ReadValue<Vector2>();
+
         //마우스 위치로 이동 후 활성화
-        FollowMouse(UIManager.Instance.GetMousePos(false));
+        FollowMouse(mousePos);
         gameObject.SetActive(true);
         canvasGroup.alpha = 0.7f;
 

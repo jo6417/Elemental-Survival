@@ -228,7 +228,7 @@ public class Character : MonoBehaviour
             rigid.velocity = Vector3.zero;
 
         //EnemyDB 로드 될때까지 대기
-        yield return new WaitUntil(() => EnemyDB.Instance.loadDone);
+        yield return new WaitUntil(() => EnemyDB.Instance.initDone);
 
         if (enemy == null)
             FindEnemyInfo();
@@ -338,7 +338,7 @@ public class Character : MonoBehaviour
             hitEffect = WorldSpawner.Instance.hitEffect;
 
         //ItemDB 로드 될때까지 대기
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance.initDone);
 
         //보유 아이템 초기화
         nowHasItem.Clear();
@@ -989,7 +989,7 @@ public class Character : MonoBehaviour
                 //  몬스터 자체에 붙는 경우
                 if (_buffParent == transform)
                     // 몬스터 자체 사이즈와 맞추기
-                    buffUI.localScale = SystemManager.Instance.AntualSpriteScale(spriteList[0]) / 4f;
+                    buffUI.localScale = CustomMethod.AntualSpriteScale(spriteList[0]) / 4f;
                 else
                     buffUI.localScale = Vector2.one;
             }

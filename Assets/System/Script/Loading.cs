@@ -80,9 +80,6 @@ public class Loading : MonoBehaviour
         // 씬 이동 끝낼때
         if (!isFadeout)
         {
-            // 글로벌 라이트 켜기
-            SystemManager.Instance.globalLight.gameObject.SetActive(true);
-
             // 로딩 그룹 전체 알파값 낮추기
             loadingGroup.alpha = 1f;
             DOTween.To(() => loadingGroup.alpha, x => loadingGroup.alpha = x, 0, tweenTime * 2)
@@ -128,9 +125,6 @@ public class Loading : MonoBehaviour
         // 씬 이동 시작할때
         if (isFadeout)
         {
-            // 글로벌 라이트 끄기
-            SystemManager.Instance.globalLight.gameObject.SetActive(false);
-
             // 로딩 텍스트 초기화
             loadingText.text = "Loading...";
             // 로딩바 초기화
@@ -179,6 +173,11 @@ public class Loading : MonoBehaviour
         //! 시간 측정
         Stopwatch debugTime = new Stopwatch();
         debugTime.Start();
+
+        // 이전 씬 언로드
+        AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+        // 이전 씬 언로드가 끝날 때까지 기다림
+        yield return unloadOperation;
 
         // 이름으로 씬 불러오기
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
@@ -274,6 +273,25 @@ public class Loading : MonoBehaviour
         debugTime.Stop();
         print($"Loading Duration : {debugTime.ElapsedMilliseconds / 1000f}s");
     }
+
+    void InitScene(bool startScene)
+    {
+        // 씬 시작일때 초기화
+        if (startScene)
+        {
+            // 글로벌 라이트 켜기
+            if (SystemManager.Instance.GlobalLight)
+                SystemManager.Instance.GlobalLight.gameObject.SetActive(true);
+        }
+        // 씬 끝날때 초기화
+        else
+        {
+            // 글로벌 라이트 켜기
+            if (SystemManager.Instance.GlobalLight)
+                SystemManager.Instance.GlobalLight.gameObject.SetActive(false);
+        }
+    }
+
     IEnumerator LoadText()
     {
         string text = "Now Laoding";

@@ -29,17 +29,35 @@ public class MagicDB : MonoBehaviour
     }
     #endregion
 
-    [ReadOnly] public bool loadDone = false; //로드 완료 여부
+    [ReadOnly] public bool initDone = false; //로드 완료 여부
     public enum CastType { active, passive };
 
-    public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
-    public Dictionary<int, MagicInfo> activeMagicDB = new Dictionary<int, MagicInfo>(); //마법 정보 DB
+    public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); // 마법 정보 DB
+    public Dictionary<int, MagicInfo> quickMagicDB = new Dictionary<int, MagicInfo>(); // 마법 정보 DB (퀵슬롯 쿨타임용)
     // public List<Sprite> magicIcon = null; //마법 아이콘 리스트
     public Dictionary<string, Sprite> magicIcon = new Dictionary<string, Sprite>();
     public Dictionary<string, GameObject> magicPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
 
-    public List<int> unlockMagics = new List<int>(); //합성 성공한 마법 리스트들, 로컬 세이브 데이터
-    public List<int> savedMagics = new List<int>(); //이번 게임에서 한번이라도 소지했던 마법들
+    public List<int> unlockMagicList = new List<int>(); // 해금된 마법 리스트
+    public List<int> banMagicList = new List<int>(); // 사용 가능한 마법 리스트
+    public List<int> AbleMagicList
+    {
+        get
+        {
+            List<int> ableMagicList = new List<int>();
+            // 해금 리스트에서 밴 리스트를 뺀것을 리턴
+            ableMagicList = unlockMagicList.Except(banMagicList).ToList();
+            // 정렬
+            ableMagicList.Sort();
+
+            return ableMagicList;
+        }
+
+        // set
+        // {
+        //     unlockMagicList = value;
+        // }
+    }
 
     [SerializeField, ReadOnly] Color[] gradeColor = new Color[7]; //마법 등급 색깔
     public Color[] GradeColor
@@ -77,34 +95,34 @@ public class MagicDB : MonoBehaviour
         #region FixedValue
         // 등급 색깔 고정
         // Color[] _gradeColor = {
-        //     SystemManager.Instance.HexToRGBA("FFFFFF"),
-        //     SystemManager.Instance.HexToRGBA("4FF84C"),
-        //     SystemManager.Instance.HexToRGBA("3EC1FF"),
-        //     SystemManager.Instance.HexToRGBA("CD45FF"),
-        //     SystemManager.Instance.HexToRGBA("FF3310"),
-        //     SystemManager.Instance.HexToRGBA("FF8C00"),
-        //     SystemManager.Instance.HexToRGBA("FFFF00")};
+        //     CustomMethod.HexToRGBA("FFFFFF"),
+        //     CustomMethod.HexToRGBA("4FF84C"),
+        //     CustomMethod.HexToRGBA("3EC1FF"),
+        //     CustomMethod.HexToRGBA("CD45FF"),
+        //     CustomMethod.HexToRGBA("FF3310"),
+        //     CustomMethod.HexToRGBA("FF8C00"),
+        //     CustomMethod.HexToRGBA("FFFF00")};
         // gradeColor = _gradeColor;
 
         // // 등급 HDR 색깔 고정
         // Color[] _gradeHDRColor = {
-        //     SystemManager.Instance.HexToRGBA("FFFFFF"),
-        //     SystemManager.Instance.HexToRGBA("1EFF1E"),
-        //     SystemManager.Instance.HexToRGBA("1E1EFF"),
-        //     SystemManager.Instance.HexToRGBA("FF1EFF"),
-        //     SystemManager.Instance.HexToRGBA("FF1E1E"),
-        //     SystemManager.Instance.HexToRGBA("FF801E"),
-        //     SystemManager.Instance.HexToRGBA("FFFF1E")};
+        //     CustomMethod.HexToRGBA("FFFFFF"),
+        //     CustomMethod.HexToRGBA("1EFF1E"),
+        //     CustomMethod.HexToRGBA("1E1EFF"),
+        //     CustomMethod.HexToRGBA("FF1EFF"),
+        //     CustomMethod.HexToRGBA("FF1E1E"),
+        //     CustomMethod.HexToRGBA("FF801E"),
+        //     CustomMethod.HexToRGBA("FFFF1E")};
         // gradeHDRColor = _gradeHDRColor;
 
         // // 원소젬 색깔 고정
         // Color[] _elementColor = {
-        //     SystemManager.Instance.HexToRGBA("C88C5E"),
-        //     SystemManager.Instance.HexToRGBA("FF5B5B"),
-        //     SystemManager.Instance.HexToRGBA("5BFF64"),
-        //     SystemManager.Instance.HexToRGBA("FFF45B"),
-        //     SystemManager.Instance.HexToRGBA("739CFF"),
-        //     SystemManager.Instance.HexToRGBA("5BFEFF")};
+        //     CustomMethod.HexToRGBA("C88C5E"),
+        //     CustomMethod.HexToRGBA("FF5B5B"),
+        //     CustomMethod.HexToRGBA("5BFF64"),
+        //     CustomMethod.HexToRGBA("FFF45B"),
+        //     CustomMethod.HexToRGBA("739CFF"),
+        //     CustomMethod.HexToRGBA("5BFEFF")};
         // elementColors = _elementColor;
 
         // // 원소 이름
@@ -196,7 +214,7 @@ public class MagicDB : MonoBehaviour
 
             // 모든 마법 딕셔너리를 액티브 쿨타임용 딕셔너리에 복사
             foreach (MagicInfo magic in magicDB.Values)
-                activeMagicDB[magic.id] = new MagicInfo(magic);
+                quickMagicDB[magic.id] = new MagicInfo(magic);
 
             //모든 마법 초기화
             InitialMagic();
@@ -205,16 +223,16 @@ public class MagicDB : MonoBehaviour
         // 로컬 세이브에서 언락된 마법들 불러오기
         LoadUnlockMagics();
 
-        this.loadDone = true;
+        this.initDone = true;
         print("MagicDB Loaded!");
     }
 
     public void LoadUnlockMagics()
     {
-        List<int> savedUnlockMagics = new List<int>();
+        List<int> _savedUnlockMagicList = new List<int>();
 
         // 세이브 데이터에서 언락된 마법 받아오기
-        savedUnlockMagics = SaveManager.Instance.localSaveData.unlockMagics.ToList();
+        _savedUnlockMagicList = SaveManager.Instance.localSaveData.unlockMagicList.ToList();
 
         // 기본적으로 1등급 마법은 언락시키기
         for (int i = 0; i < magicDB.Count; i++)
@@ -222,25 +240,22 @@ public class MagicDB : MonoBehaviour
             MagicInfo magic = magicDB[i];
 
             // 1등급 마법이고, 세이브 데이터에 해당 마법이 없을때
-            if (magic.grade == 1 && !savedUnlockMagics.Exists(x => x == magic.id))
-            {
-                // print(magic.id + " : " + magic.magicName + " : " + magic.grade);
-
+            if (magic.grade == 1 && !_savedUnlockMagicList.Exists(x => x == magic.id))
                 // 해당 마법 넣어주기
-                savedUnlockMagics.Add(magic.id);
-            }
+                _savedUnlockMagicList.Add(magic.id);
         }
 
         // 정렬
-        savedUnlockMagics.Sort();
+        _savedUnlockMagicList.Sort();
         // 해금 마법 목록 초기화
-        unlockMagics = savedUnlockMagics;
+        unlockMagicList = _savedUnlockMagicList;
 
-        //! 테스트 빌드만 모든 마법 해금
-        unlockMagics.Clear();
+        //! 테스트 빌드는 모든 마법 해금
+        unlockMagicList.Clear();
         foreach (MagicInfo magic in magicDB.Values)
-            unlockMagics.Add(magic.id);
+            unlockMagicList.Add(magic.id);
     }
+
     public MagicInfo GetMagicByName(string name)
     {
         MagicInfo magic = null;
@@ -268,7 +283,7 @@ public class MagicDB : MonoBehaviour
 
     public MagicInfo GetQuickMagicByID(int id)
     {
-        if (activeMagicDB.TryGetValue(id, out MagicInfo value))
+        if (quickMagicDB.TryGetValue(id, out MagicInfo value))
             return value;
         else
             return null;
@@ -341,10 +356,11 @@ public class MagicDB : MonoBehaviour
         // 언락된 모든 마법 인덱스를 넣을 리스트
         List<int> randomMagicPool = new List<int>();
 
-        // 언락된 마법 중 해당 등급 모두 넣기
-        for (int i = 0; i < unlockMagics.Count; i++)
+        // 사용가능 마법 중 해당 등급 모두 넣기
+        for (int i = 0; i < AbleMagicList.Count; i++)
         {
-            int grade = GetMagicByID(unlockMagics[i]).grade;
+            int magicID = AbleMagicList[i];
+            int grade = GetMagicByID(magicID).grade;
 
             // 0등급이면 넘기기
             if (grade == 0)
@@ -356,16 +372,16 @@ public class MagicDB : MonoBehaviour
                 // 해당 등급일때
                 if (grade == targetGrade)
                     // 프리팹이 있을때
-                    if (GetMagicPrefab(unlockMagics[i]))
-                        randomMagicPool.Add(unlockMagics[i]);
+                    if (GetMagicPrefab(magicID))
+                        randomMagicPool.Add(magicID);
             }
             // 등급을 명시하지 않았을때
             else
             {
                 // 프리팹이 있을때
-                if (GetMagicPrefab(unlockMagics[i]))
+                if (GetMagicPrefab(magicID))
                     // 모든 마법 넣기
-                    randomMagicPool.Add(unlockMagics[i]);
+                    randomMagicPool.Add(magicID);
             }
         }
 
@@ -382,43 +398,6 @@ public class MagicDB : MonoBehaviour
             // 마법 ID로 마법정보 불러와서 리턴
             return GetMagicByID(randomMagicPool[index]);
         }
-    }
-
-    //랜덤 마법 리스트 뽑기
-    public int[] RandomMagicList(int amount)
-    {
-        //모든 마법 인덱스를 넣을 리스트
-        List<int> magicIndex = new List<int>();
-
-        //언락된 마법 인덱스 모두 넣기
-        for (int i = 0; i < unlockMagics.Count; i++)
-        {
-            magicIndex.Add(unlockMagics[i]);
-        }
-
-        //뽑을 인덱스 최대 개수
-        int numMax = unlockMagics.Count < amount ? unlockMagics.Count : amount;
-
-        //랜덤 인덱스를 넣을 배열
-        int[] randomNum = new int[numMax];
-
-        for (int i = 0; i < numMax; i++)
-        {
-            //TODO 등급마다 확률 다르게
-            //인덱스 리스트에서 랜덤한 난수 생성
-            int j = Random.Range(0, magicIndex.Count);
-            int index = magicIndex[j];
-            // print(magicIndex.Count + " : " + index);
-
-            //랜덤 인덱스 숫자 넣기
-            randomNum[i] = index;
-
-            //이미 선택된 인덱스 제거
-            magicIndex.RemoveAt(j);
-        }
-
-        //인덱스 리스트 리턴
-        return randomNum;
     }
 
     public int ElementType(SlotInfo slotInfo)

@@ -85,7 +85,7 @@ public class SlotMachine : MonoBehaviour
         leverAnim.enabled = false;
 
         // 마법,아이템 DB 모두 로딩 될때까지 대기
-        yield return new WaitUntil(() => ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => ItemDB.Instance.initDone);
 
         // 가격 타입 랜덤 초기화
         priceType = Random.Range(0, 6);

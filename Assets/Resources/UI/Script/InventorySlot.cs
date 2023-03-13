@@ -649,6 +649,10 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     if (mergeMagic != null && MagicDB.Instance.GetMagicPrefab(mergeMagic.id) == null)
                         mergeMagic = null;
 
+                    //todo 밴 당한 마법일때 실패 처리
+                    if (mergeMagic != null && MagicDB.Instance.banMagicList.Exists(x => x == mergeMagic.id))
+                        mergeMagic = null;
+
                     // 합성 가능한 마법 없을때
                     if (mergeMagic == null)
                     {

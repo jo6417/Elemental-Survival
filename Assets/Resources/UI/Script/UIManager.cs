@@ -405,11 +405,9 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (camFollowTarget != null)
+        // 카메라 및 타겟이 모두 존재할때
+        if (camFollowTarget != null && camParent != null)
         {
-            if (camParent == null)
-                camParent = Camera.main.transform.parent;
-
             // 카메라 타겟 부드럽게 따라가기
             Vector3 targetPos = camFollowTarget.position;
             targetPos.z = -50f;

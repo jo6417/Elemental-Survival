@@ -884,7 +884,7 @@
 //                 recipeBtn.GetComponentInChildren<TextMeshProUGUI>().text = recipePanel.gameObject.activeSelf ? "Back" : "Recipe";
 //                 //레시피 켤때는 빨간색, 레시피 끌때는 초록색으로 전환
 //                 recipeBtn.GetComponent<Image>().color = recipePanel.gameObject.activeSelf ?
-//                 SystemManager.Instance.HexToRGBA("F06464") : SystemManager.Instance.HexToRGBA("3742CC");
+//                 CustomMethod.HexToRGBA("F06464") : CustomMethod.HexToRGBA("3742CC");
 //             }
 //         })
 //         .SetEase(ease)

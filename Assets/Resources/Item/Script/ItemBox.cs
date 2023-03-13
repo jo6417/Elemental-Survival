@@ -39,7 +39,7 @@ public class ItemBox : Character
         boxSprite.material.SetColor("_OutLineColor", Color.white);
 
         // 마법,아이템 DB 모두 로딩 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone && ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone && ItemDB.Instance.initDone);
 
         // 각각 아이템 개별 확률 적용
         randomRate.Add(40); // 원소젬 확률 가중치

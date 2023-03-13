@@ -43,7 +43,7 @@ public class WorldSpawner : MonoBehaviour
     [SerializeField] float itemboxSpawnCount; //아이템 박스 스폰 쿨타임 카운트
     [SerializeField] float lockerSpawnCount; //아이템 금고 스폰 쿨타임 카운트
     [SerializeField, ReadOnly] bool nowSpawning; //스폰중일때
-    [SerializeField] Transform targetObj;
+    // [SerializeField] Transform targetObj;
     public float maxDistance = 80f; // 타겟과 몬스터 사이 최대 거리
     [SerializeField] float eliteRate; // 엘리트 계수
     public int[] outGemNum = new int[6]; //카메라 밖으로 나간 원소젬 개수
@@ -87,7 +87,6 @@ public class WorldSpawner : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -100,10 +99,10 @@ public class WorldSpawner : MonoBehaviour
         // eliteWeight.Add(20); // Speed 엘리트 가중치
         // eliteWeight.Add(10); // Heal 엘리트 가중치
 
-        // 플레이어 있으면
-        if (PlayerManager.Instance != null)
-            // 플레이어를 타겟으로 지정
-            targetObj = PlayerManager.Instance.transform;
+        // // 인게임씬 아니면
+        // if (SystemManager.Instance.GetSceneName() != SceneName.InGameScene.ToString())
+        //     // 플레이어를 타겟으로 지정
+        //     targetObj = PlayerManager.Instance.transform;
     }
 
     void Start()
@@ -119,7 +118,7 @@ public class WorldSpawner : MonoBehaviour
     IEnumerator Init()
     {
         // 몬스터 DB 초기화 대기
-        yield return new WaitUntil(() => EnemyDB.Instance != null && EnemyDB.Instance.loadDone);
+        yield return new WaitUntil(() => EnemyDB.Instance != null && EnemyDB.Instance.initDone);
 
         // 몬스터 스폰 켜기
         SystemManager.Instance.spawnSwitch = true;
@@ -132,8 +131,9 @@ public class WorldSpawner : MonoBehaviour
         stageStartTime = Time.time;
 
 #if !UNITY_EDITOR
-        // 빌드상에서는 비우기
-        spawnAbleList.Clear();
+        // 빌드상에서, 인게임일때 비우기
+        if (SystemManager.Instance.GetSceneName() == SceneName.InGameScene.ToString())
+            spawnAbleList.Clear();
 #endif
 
         // 스폰 가능 몬스터 풀이 비었으면
@@ -165,7 +165,7 @@ public class WorldSpawner : MonoBehaviour
     void Update()
     {
         // 초기화 안됬으면 리턴
-        if (SystemManager.Instance == null || !SystemManager.Instance.loadDone)
+        if (SystemManager.Instance == null || !SystemManager.Instance.initDone)
             return;
         // 시간 멈췄으면 리턴
         if (Time.timeScale == 0f)
@@ -621,7 +621,7 @@ public class WorldSpawner : MonoBehaviour
                     arrowUI.transform.position = Camera.main.ViewportToWorldPoint(arrowPos);
 
                     // 몬스터 방향 가리키기
-                    Vector2 dir = enemyObj.transform.position - targetObj.position;
+                    Vector2 dir = enemyObj.transform.position - PlayerManager.Instance.transform.position;
                     float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                     arrowUI.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                 }

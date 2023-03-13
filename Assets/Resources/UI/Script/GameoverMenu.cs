@@ -37,7 +37,7 @@ public class GameoverMenu : MonoBehaviour
         if (isClear)
         {
             title.text = "CLEAR";
-            background.color = SystemManager.Instance.HexToRGBA("00903E");
+            background.color = CustomMethod.HexToRGBA("00903E");
 
             // 팡파레 이펙트 켜기
             layEffect.SetActive(true);
@@ -46,7 +46,7 @@ public class GameoverMenu : MonoBehaviour
         else
         {
             title.text = "GAME OVER";
-            background.color = SystemManager.Instance.HexToRGBA("006090");
+            background.color = CustomMethod.HexToRGBA("006090");
 
             // 팡파레 이펙트 끄기
             layEffect.SetActive(false);

@@ -17,17 +17,12 @@ public class ProductToolTip : MonoBehaviour
         {
             if (instance == null)
             {
-                //비활성화된 오브젝트도 포함
-                var obj = FindObjectOfType<ProductToolTip>(true);
-                if (obj != null)
+                instance = FindObjectOfType<ProductToolTip>();
+                if (instance == null)
                 {
-                    instance = obj;
-                }
-                else
-                {
-                    print("new obj");
-                    var newObj = new GameObject().AddComponent<ProductToolTip>();
-                    instance = newObj;
+                    // GameObject obj = new GameObject();
+                    // obj.name = "ProductToolTip";
+                    // instance = obj.AddComponent<ProductToolTip>();
                 }
             }
             return instance;
@@ -47,6 +42,7 @@ public class ProductToolTip : MonoBehaviour
     [SerializeField] CanvasGroup canvasGroup;
     [SerializeField, ReadOnly] RectTransform tooltipRect;
     [SerializeField, ReadOnly] Vector2 canvasRect;
+    public NewInput Tooltip_Input; // 툴팁 인풋 받기
 
     [Header("Magic")]
     public MagicInfo magic;
@@ -67,20 +63,44 @@ public class ProductToolTip : MonoBehaviour
 
     private void Awake()
     {
-        tooltipRect = GetComponent<RectTransform>();
-
-        //마우스 클릭 입력
-        UIManager.Instance.UI_Input.UI.Click.performed += val =>
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            QuitTooltip();
-        };
-        //마우스 위치 입력
-        UIManager.Instance.UI_Input.UI.MousePosition.performed += val =>
-            FollowMouse(UIManager.Instance.GetMousePos(false));
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        tooltipRect = GetComponent<RectTransform>();
 
         //처음엔 끄기
         // gameObject.SetActive(false);
         canvasGroup.alpha = 0;
+    }
+
+    private void OnEnable()
+    {
+        Tooltip_Input = new NewInput();
+
+        //마우스 클릭 입력
+        Tooltip_Input.UI.Click.performed += val =>
+        {
+            QuitTooltip();
+        };
+        //마우스 위치 입력
+        Tooltip_Input.UI.MousePosition.performed += val =>
+        {
+            if (canvasGroup.alpha > 0f)
+                FollowMouse(Tooltip_Input.UI.MousePosition.ReadValue<Vector2>());
+        };
+
+        Tooltip_Input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        Tooltip_Input.Disable();
     }
 
     void FollowMouse(Vector3 nowMousePos)
@@ -133,9 +153,12 @@ public class ProductToolTip : MonoBehaviour
     //툴팁 켜기
     public void OpenTooltip(
         SlotInfo slotInfo = null,
-        ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown,
+        // ToolTipCorner toolTipCorner = ToolTipCorner.LeftDown,
         Vector2 position = default(Vector2))
     {
+        // 마우스 위치 받기
+        Vector2 mousePos = Tooltip_Input.UI.MousePosition.ReadValue<Vector2>();
+
         //툴팁 고정 위치 들어왔으면 이동
         if (position != default(Vector2))
         {
@@ -144,7 +167,7 @@ public class ProductToolTip : MonoBehaviour
         }
         else
         {
-            FollowMouse(UIManager.Instance.GetMousePos(false));
+            FollowMouse(mousePos);
         }
 
         //툴팁 켜기
@@ -154,22 +177,22 @@ public class ProductToolTip : MonoBehaviour
         if (!tooltipRect)
             tooltipRect = GetComponent<RectTransform>();
 
-        //툴팁 피벗 바꾸기
-        switch (toolTipCorner)
-        {
-            case ToolTipCorner.LeftUp:
-                tooltipRect.pivot = Vector2.up;
-                break;
-            case ToolTipCorner.LeftDown:
-                tooltipRect.pivot = Vector2.zero;
-                break;
-            case ToolTipCorner.RightUp:
-                tooltipRect.pivot = Vector2.one;
-                break;
-            case ToolTipCorner.RightDown:
-                tooltipRect.pivot = Vector2.right;
-                break;
-        }
+        // //툴팁 피벗 바꾸기
+        // switch (toolTipCorner)
+        // {
+        //     case ToolTipCorner.LeftUp:
+        //         tooltipRect.pivot = Vector2.up;
+        //         break;
+        //     case ToolTipCorner.LeftDown:
+        //         tooltipRect.pivot = Vector2.zero;
+        //         break;
+        //     case ToolTipCorner.RightUp:
+        //         tooltipRect.pivot = Vector2.one;
+        //         break;
+        //     case ToolTipCorner.RightDown:
+        //         tooltipRect.pivot = Vector2.right;
+        //         break;
+        // }
 
         //마법 or 아이템 정보 넣기
         magic = slotInfo as MagicInfo;
@@ -207,6 +230,13 @@ public class ProductToolTip : MonoBehaviour
             return false;
         }
 
+        //해당 마법 언락 여부
+        bool isUnlock = MagicDB.Instance.unlockMagicList.Exists(x => x == magic.id);
+
+        // 개발중이라 프리팹이 없으면 미해금 처리
+        if (MagicDB.Instance.GetMagicPrefab(magic.id) == null)
+            isUnlock = false;
+
         // GradeFrame.gameObject.SetActive(true);
         // 프레임 색깔에 등급 표시
         GradeFrame.color = MagicDB.Instance.GradeColor[magic.grade];
@@ -214,27 +244,14 @@ public class ProductToolTip : MonoBehaviour
         // 마법 타입 표시
         productType.text = magic.castType;
         // 마법 타입에 따라 색 바꾸기
-        // switch (magic.castType)
-        // {
-        //     case MagicDB.MagicType.passive.ToString():
-        //         productType.color = Color.cyan;
-        //         break;
-
-        //     case MagicDB.MagicType.active.ToString():
-        //         productType.color = Color.red;
-        //         break;
-
-        //     case MagicDB.MagicType.ultimate.ToString():
-        //         productType.color = Color.magenta;
-        //         break;
-        // }
+        if (magic.castType == MagicDB.CastType.passive.ToString())
+            productType.color = Color.cyan;
+        else if (magic.castType == MagicDB.CastType.active.ToString())
+            productType.color = Color.red;
 
         //마법 이름, 설명 넣기
         productName.text = magic.name;
         productDescript.text = magic.description;
-
-        //해당 마법 언락 여부
-        bool isUnlock = MagicDB.Instance.unlockMagics.Exists(x => x == magic.id);
 
         //마법 재료 찾기
         MagicInfo magicA = MagicDB.Instance.GetMagicByName(magic.element_A);

@@ -29,7 +29,7 @@ public class ItemDB : MonoBehaviour
     }
     #endregion
 
-    [ReadOnly] public bool loadDone = false; //로드 완료 여부
+    [ReadOnly] public bool initDone = false; //로드 완료 여부
     public enum ItemType { Gem, Heal, Shard, Artifact, Gadget, Magic }; // 아이템 타입 정의
 
     public Dictionary<int, ItemInfo> itemDB = new Dictionary<int, ItemInfo>(); //아이템 정보 DB
@@ -127,7 +127,7 @@ public class ItemDB : MonoBehaviour
         //모든 아이템 초기화
         // InitialItems();
 
-        loadDone = true;
+        initDone = true;
         print("ItemDB Loaded!");
 
         yield return null;

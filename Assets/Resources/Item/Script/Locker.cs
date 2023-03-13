@@ -52,7 +52,7 @@ public class Locker : MonoBehaviour
         boxSprite.sprite = boxSpriteList[0];
 
         // 마법,아이템 DB 모두 로딩 될때까지 대기
-        yield return new WaitUntil(() => MagicDB.Instance.loadDone && ItemDB.Instance.loadDone);
+        yield return new WaitUntil(() => MagicDB.Instance.initDone && ItemDB.Instance.initDone);
 
         // null 이 아닌 상품이 뽑힐때까지 반복
         while (slotInfo == null)

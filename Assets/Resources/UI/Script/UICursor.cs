@@ -250,17 +250,17 @@ public class UICursor : MonoBehaviour
             // UI 커서 투명하게
             Image cursorImage = UI_Cursor.GetComponent<Image>();
             cursorImage.DOKill();
-            cursorImage.DOColor(SystemManager.Instance.HexToRGBA("59AFFF", 0), 0.3f)
+            cursorImage.DOColor(CustomMethod.HexToRGBA("59AFFF", 0), 0.3f)
             .SetUpdate(true)
             .OnStart(() =>
             {
                 // 원본 색깔로 시작
-                cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF");
+                cursorImage.color = CustomMethod.HexToRGBA("59AFFF");
             })
             .OnKill(() =>
             {
                 // 같은색 알파값 제로
-                cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF", 0);
+                cursorImage.color = CustomMethod.HexToRGBA("59AFFF", 0);
             });
 
             //UI커서 크기 및 위치 초기화
@@ -339,17 +339,17 @@ public class UICursor : MonoBehaviour
         // UI 커서 색깔 초기화
         Image cursorImage = UI_Cursor.GetComponent<Image>();
         cursorImage.DOKill();
-        cursorImage.DOColor(SystemManager.Instance.HexToRGBA("59AFFF"), flickTime)
+        cursorImage.DOColor(CustomMethod.HexToRGBA("59AFFF"), flickTime)
         .SetUpdate(true)
         .OnStart(() =>
         {
             // 원래 색 알파값 제로
-            cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF", 0);
+            cursorImage.color = CustomMethod.HexToRGBA("59AFFF", 0);
         })
         .OnKill(() =>
         {
             // 원래 색
-            cursorImage.color = SystemManager.Instance.HexToRGBA("59AFFF");
+            cursorImage.color = CustomMethod.HexToRGBA("59AFFF");
         });
 
         // 이동 시간 대기
