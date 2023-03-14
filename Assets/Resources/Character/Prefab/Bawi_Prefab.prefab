@@ -354,17 +354,21 @@ MonoBehaviour:
   jumpCooltime: 0.5
   landEffect: {fileID: 0}
   startTransition: 0
-  patten: 5
+  patten: 4
+  atkCoolCount: 0
   fistDropCoolTime: 3
   stoneThrowCoolTime: 3
   drillDashCoolTime: 4
   drillChaseCoolTime: 4
-  atkRange: 10
+  atkRange: 25
   fistParentLocalPos: {x: 5, y: 0}
   drillParentLocalPos: {x: -5, y: 0}
   fistPartLocalPos: {x: 0, y: 4.5}
-  drillPartLocalPos: {x: 0, y: 5}
+  drillPartLocalPos: {x: 0, y: -1}
+  playerDir: {x: 0, y: 0, z: 0}
+  isFloating: 1
   aimCount: 1
+  drillChaseSpeed: 15
   stateText: {fileID: 7791055536502964002}
   bigLandDust: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
     type: 3}
@@ -394,7 +398,7 @@ MonoBehaviour:
     type: 3}
   grabFistSprite: {fileID: -8164322943603081415, guid: 303afedbdbb77c54d850c89e8a4288f0,
     type: 3}
-  stonePrefab: {fileID: 7165548444836565407, guid: 5ff7a64704f88184db992b3fbc22ba24,
+  stonePrefab: {fileID: 5778638698215545233, guid: 05c8fcfb38e74a2439106a838c32ee03,
     type: 3}
   fistDashDust: {fileID: 3244117645442630169}
   fistChargeGathering: {fileID: 8099075409256231235}
@@ -402,7 +406,7 @@ MonoBehaviour:
   drillGhostColl: {fileID: 7791055535698618154}
   drillRigid: {fileID: 1699050711}
   drillPart: {fileID: 7791055536669447856}
-  drillMask: {fileID: 6155168377678462954}
+  drillMask: {fileID: 7791055535646609240}
   drillSprite: {fileID: 7791055535709983854}
   drillGhost: {fileID: 7791055535698618153}
   drillShadow: {fileID: 7866617750532810960}
@@ -658,9 +662,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playSoundName: 
   atkColl: {fileID: 0}
-  pierceCount: 0
   targetType: 0
-  power: 0
+  attack_power: 1
   buffStatName: 
   buffMultiple: 1
   buffDuration: 0
@@ -1113,9 +1116,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playSoundName: 
   atkColl: {fileID: 0}
-  pierceCount: 0
   targetType: 0
-  power: 0
+  attack_power: 1
   buffStatName: 
   buffMultiple: 1
   buffDuration: 0
@@ -1325,7 +1327,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7791055535908981355
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2114,14 +2116,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7791055536669447871}
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_Children:
   - {fileID: 7791055535709983840}
   m_Father: {fileID: 1197806586744938549}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!210 &1447828006
 SortingGroup:
   m_ObjectHideFlags: 0

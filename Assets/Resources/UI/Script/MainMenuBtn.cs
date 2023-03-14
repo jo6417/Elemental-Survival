@@ -25,6 +25,7 @@ public class MainMenuBtn : MonoBehaviour
     enum ClickMode { BanMode, LockMode }; // 마법 밴 토글모드 및 해금 토글모드
     [SerializeField, ReadOnly] ClickMode clickMode;
     [SerializeField, ReadOnly] List<int> temp_banMagicList = new List<int>();
+    [SerializeField] GameObject modeTooltip; // 모드 전환 툴팁
 
     [Header("Buttons")]
     [SerializeField] Button play_btn;
@@ -86,8 +87,8 @@ public class MainMenuBtn : MonoBehaviour
         // 버튼 Select 해제
         UICursor.Instance.UpdateLastSelect(null);
 
-        // 메인메뉴 배경음 정지
-        SoundManager.Instance.nowBGM.Stop();
+        // 스테이지 변수 첫맵으로 초기화
+        SystemManager.Instance.NowMapElement = MapElement.Earth;
 
         // 로딩하고 인게임 씬 띄우기
         SystemManager.Instance.StartGame();
@@ -266,8 +267,10 @@ public class MainMenuBtn : MonoBehaviour
 
                 // 밴 여부 다시 받아오기
                 isDisable = temp_banMagicList.Exists(x => x == magic.id);
-                // 해금 여부 다시 가져오기
-                isUnlock = MagicDB.Instance.unlockMagicList.Exists(x => x == magic.id);
+                // 프리팹이 있으면
+                if (MagicDB.Instance.GetMagicPrefab(magic.id) != null)
+                    // 해금 여부 다시 가져오기
+                    isUnlock = MagicDB.Instance.unlockMagicList.Exists(x => x == magic.id);
 
                 // 현재 밴모드일때
                 if (clickMode == ClickMode.BanMode)
@@ -275,6 +278,9 @@ public class MainMenuBtn : MonoBehaviour
                     // 해금된 마법만 가능
                     if (isUnlock)
                     {
+                        // // 밴 전환
+                        // isDisable = !isDisable;
+
                         // 현재 밴이면
                         if (isDisable)
                             // 입력된 마법 ID를 밴 리스트에서 제거
@@ -290,13 +296,17 @@ public class MainMenuBtn : MonoBehaviour
 
                         // 밴 마법이면 자물쇠 표시
                         banCover.SetActive(!isDisable);
+
+                        // 슬롯 빛나는 효과 재생
+                        shinyMask.SetActive(false);
+                        shinyMask.SetActive(true);
                     }
                 }
                 // // 미해금 마법 클릭 이벤트
                 // 현재 해금 모드일때
                 else
                 {
-                    // 해금 여부 갱신
+                    // 해금 전환
                     isUnlock = !isUnlock;
 
                     // 마법 잠그기
@@ -304,6 +314,8 @@ public class MainMenuBtn : MonoBehaviour
                     {
                         // 입력된 마법 ID를 해금 리스트에서 제거
                         MagicDB.Instance.unlockMagicList.Remove(magic.id);
+                        // 입력된 마법 ID를 밴 리스트에서 제거
+                        temp_banMagicList.Remove(magic.id);
 
                         // 밴 표시 없에기
                         banCover.SetActive(false);
@@ -323,11 +335,11 @@ public class MainMenuBtn : MonoBehaviour
                     blackCover.SetActive(!isUnlock);
                     // 아이콘 프레임 색 넣기
                     frameImage.color = isUnlock ? frameColor : Color.white;
-                }
 
-                // 슬롯 빛나는 효과 재생
-                shinyMask.SetActive(false);
-                shinyMask.SetActive(true);
+                    // 슬롯 빛나는 효과 재생
+                    shinyMask.SetActive(false);
+                    shinyMask.SetActive(true);
+                }
             };
         }
 
@@ -356,14 +368,18 @@ public class MainMenuBtn : MonoBehaviour
         temp_banMagicList.Clear();
     }
 
-    public void ToggleClickAction()
+    public void ModeOnClick()
     {
-        //todo 슬롯 클릭할때 액션을 해금,밴 중에 선택하도록 토글
+        // 슬롯 클릭할때 액션을 해금,밴 중에 선택하도록 토글
         clickMode = clickMode == ClickMode.BanMode ? ClickMode.LockMode : ClickMode.BanMode;
 
-        //todo 버튼 색 바꾸기
+        // 버튼 색 바꾸기
         clickModeButton.targetGraphic.color = clickMode == ClickMode.BanMode ? Color.red : Color.green;
-        //todo 버튼 텍스트 바꾸기
-        clickModeButton.GetComponentInChildren<TextMeshProUGUI>().text = clickMode == ClickMode.BanMode ? "Ban Mode" : "Lock Mode";
+        // 버튼 텍스트 바꾸기
+        clickModeButton.transform.Find("Mode").GetComponent<TextMeshProUGUI>().text = clickMode == ClickMode.BanMode ? "Ban Mode" : "Lock Mode";
+        // 툴팁 텍스트 바꾸기
+        clickModeButton.transform.Find("Tooltip/Text").GetComponent<TextMeshProUGUI>().text = clickMode == ClickMode.BanMode
+        ? "슬롯 클릭시\n<color=red><size=35>BAN</color></size> 전환"
+        : "슬롯 클릭시\n<color=green><size=35>LOCK</color></size> 전환";
     }
 }

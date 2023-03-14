@@ -8,7 +8,7 @@ using TMPro;
 using System.Linq;
 using System.Text;
 
-public enum CharacterState { Idle, Rest, Walk, Jump, Attack, Dead } // 캐릭터 상태 종류
+public enum CharacterState { Idle, Rest, Move, Jump, Attack, Dead } // 캐릭터 상태 종류
 public enum EliteClass { None, Power, Speed, Heal }; // 엘리트 몬스터 종류
 public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze }; // 공격에 들어갈 디버프 종류
 

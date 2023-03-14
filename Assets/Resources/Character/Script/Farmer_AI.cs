@@ -413,7 +413,7 @@ public class Farmer_AI : MonoBehaviour
 
     void Move()
     {
-        character.nowState = CharacterState.Walk;
+        character.nowState = CharacterState.Move;
 
         // 플레이어까지 거리
         float distance = Vector3.Distance(character.movePos, bodyTransform.position);

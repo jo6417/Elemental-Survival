@@ -12,7 +12,7 @@ public class Truck : MonoBehaviour
     [SerializeField] int duration = 10; // 트럭 판매 시간
     [SerializeField, ReadOnly] float timeCount; // 현재 남은 시간
     Sound engineSound;
-    AudioSource engineAudio; // 재생중인 엔진소리
+    [SerializeField] AudioSource engineAudio; // 재생중인 엔진소리
 
     [Header("Refer")]
     [SerializeField] Collider2D stopColl; // 정차시 물리 콜라이더
@@ -83,13 +83,15 @@ public class Truck : MonoBehaviour
         // 전조등 켜기
         center_Light.color = new Color(1, 1, 100f / 255f, 50f / 255f);
 
+        yield return new WaitUntil(() => SoundManager.Instance && SoundManager.Instance.initFinish);
+
         // 주행 소리 켜기
         SoundManager.Instance.PlaySound("Truck_Boost", transform);
         // 엔진 소리 켜기
         engineSound = SoundManager.Instance.GetSound("Truck_Engine");
         engineAudio = SoundManager.Instance.PlaySound("Truck_Engine", transform, 0.5f, 0, -1, true);
 
-        yield return new WaitUntil(() => WorldSpawner.Instance != null);
+        yield return new WaitUntil(() => WorldSpawner.Instance);
 
         // 플레이어가 오른쪽 보고있을때
         if (PlayerManager.Instance.lastDir.x > 0)

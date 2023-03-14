@@ -100,7 +100,8 @@ public class ProductToolTip : MonoBehaviour
 
     private void OnDisable()
     {
-        Tooltip_Input.Disable();
+        if (Tooltip_Input != null)
+            Tooltip_Input.Disable();
     }
 
     void FollowMouse(Vector3 nowMousePos)

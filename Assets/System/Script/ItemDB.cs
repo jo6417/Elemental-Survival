@@ -430,6 +430,7 @@ public class ItemDB : MonoBehaviour
         yield return new WaitForSeconds(3f);
 
         // 콜라이더 켜기
-        itemColl.enabled = true;
+        if (itemColl)
+            itemColl.enabled = true;
     }
 }

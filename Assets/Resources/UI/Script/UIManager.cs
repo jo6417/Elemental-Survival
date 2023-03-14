@@ -20,17 +20,13 @@ public class UIManager : MonoBehaviour
         {
             if (instance == null)
             {
-                return null;
-                // var obj = FindObjectOfType<UIManager>();
-                // if (obj != null)
-                // {
-                //     instance = obj;
-                // }
-                // else
-                // {
-                //     var newObj = new GameObject().AddComponent<UIManager>();
-                //     instance = newObj;
-                // }
+                instance = FindObjectOfType<UIManager>();
+                if (instance == null)
+                {
+                    // GameObject obj = new GameObject();
+                    // obj.name = "UIManager";
+                    // instance = obj.AddComponent<UIManager>();
+                }
             }
             return instance;
         }
@@ -93,7 +89,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] Transform bindKeyPrefab; // 현재 사용 가능한 키 액션 프리팹
 
     [Header("PlayerUI")]
-    [SerializeField] PlayerManager playerManager;
     public CanvasGroup dodgeBar;
     public SlicedFilledImage playerHp;
     public TextMeshProUGUI playerHpText;
@@ -113,21 +108,14 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        // 다른 오브젝트가 이미 있을때
-        if (instance != null)
+        // 다른 오브젝트가 이미 있을 때
+        if (instance != null && instance != this)
         {
-            // 파괴 후 리턴
             Destroy(gameObject);
             return;
         }
-        // 최초 생성 됬을때
-        else
-        {
-            instance = this;
-
-            // 파괴되지 않게 설정
-            DontDestroyOnLoad(gameObject);
-        }
+        instance = this;
+        // DontDestroyOnLoad(gameObject);
 
         //입력 초기화
         StartCoroutine(InputInit());
@@ -223,7 +211,7 @@ public class UIManager : MonoBehaviour
     {
         yield return null;
 
-        camFollowTarget = playerManager.transform;
+        camFollowTarget = PlayerManager.Instance.transform;
 
         // 난이도 등급 변수 초기화
         WorldSpawner.Instance.nowDifficultGrade = 1;
@@ -512,7 +500,7 @@ public class UIManager : MonoBehaviour
             return;
 
         // 브금 재개 상태 변경
-        SoundManager.Instance.bgmPause = pauseToggle;
+        SoundManager.Instance.isPauseBGM = pauseToggle;
 
         if (pauseToggle)
         {
@@ -645,10 +633,10 @@ public class UIManager : MonoBehaviour
     public void UpdateExp()
     {
         // 경험치 바 갱신
-        playerExp.fillAmount = playerManager.ExpNow / playerManager.ExpMax;
+        playerExp.fillAmount = PlayerManager.Instance.ExpNow / PlayerManager.Instance.ExpMax;
 
         // 레벨 갱신
-        playerLev.text = "Lev. " + playerManager.characterStat.Level.ToString();
+        playerLev.text = "Lev. " + PlayerManager.Instance.characterStat.Level.ToString();
     }
 
     public IEnumerator UpdateBossHp(Character bossCharacter)
@@ -681,14 +669,14 @@ public class UIManager : MonoBehaviour
 
     public void UpdateHp()
     {
-        playerHp.fillAmount = playerManager.characterStat.hpNow / playerManager.characterStat.hpMax;
-        playerHpText.text = (int)playerManager.characterStat.hpNow + " / " + (int)playerManager.characterStat.hpMax;
+        playerHp.fillAmount = PlayerManager.Instance.characterStat.hpNow / PlayerManager.Instance.characterStat.hpMax;
+        playerHpText.text = (int)PlayerManager.Instance.characterStat.hpNow + " / " + (int)PlayerManager.Instance.characterStat.hpMax;
     }
 
     public void UpdateGem(int gemTypeIndex)
     {
         // 해당 타입의 젬 UI 업데이트
-        gemAmountUIs[gemTypeIndex].text = playerManager.hasGem[gemTypeIndex].amount.ToString();
+        gemAmountUIs[gemTypeIndex].text = PlayerManager.Instance.hasGem[gemTypeIndex].amount.ToString();
     }
 
     public void UpdateGem()
@@ -696,7 +684,7 @@ public class UIManager : MonoBehaviour
         // 모든 젬 UI 업데이트
         for (int i = 0; i < 6; i++)
         {
-            gemAmountUIs[i].text = playerManager.hasGem[i].amount.ToString();
+            gemAmountUIs[i].text = PlayerManager.Instance.hasGem[i].amount.ToString();
         }
     }
 
@@ -732,7 +720,7 @@ public class UIManager : MonoBehaviour
                 LeanPool.Despawn(children[j].gameObject);
             }
 
-        foreach (var item in playerManager.hasGem)
+        foreach (var item in PlayerManager.Instance.hasGem)
         {
             // print(item.itemName + " x" + item.hasNum);
 
@@ -885,25 +873,25 @@ public class UIManager : MonoBehaviour
         // 스탯 입력값
         List<float> statAmount = new List<float>();
 
-        stats[0].text = playerManager.characterStat.hpMax.ToString();
-        stats[1].text = Mathf.Round(playerManager.characterStat.power * 100).ToString() + " %";
-        stats[2].text = Mathf.Round(playerManager.characterStat.armor * 100).ToString() + " %";
-        stats[3].text = Mathf.Round(playerManager.characterStat.moveSpeed * 100).ToString() + " %";
-        stats[4].text = Mathf.Round(playerManager.characterStat.atkNum * 100).ToString() + " %";
-        stats[5].text = Mathf.Round(playerManager.characterStat.speed * 100).ToString() + " %";
-        stats[6].text = Mathf.Round(playerManager.characterStat.coolTime * 100).ToString() + " %";
-        stats[7].text = Mathf.Round(playerManager.characterStat.duration * 100).ToString() + " %";
-        stats[8].text = Mathf.Round(playerManager.characterStat.range * 100).ToString() + " %";
-        stats[9].text = Mathf.Round(playerManager.characterStat.luck * 100).ToString() + " %";
-        stats[10].text = Mathf.Round(playerManager.characterStat.expGain * 100).ToString() + " %";
-        stats[11].text = Mathf.Round(playerManager.characterStat.getRage * 100).ToString() + " %";
+        stats[0].text = PlayerManager.Instance.characterStat.hpMax.ToString();
+        stats[1].text = Mathf.Round(PlayerManager.Instance.characterStat.power * 100).ToString() + " %";
+        stats[2].text = Mathf.Round(PlayerManager.Instance.characterStat.armor * 100).ToString() + " %";
+        stats[3].text = Mathf.Round(PlayerManager.Instance.characterStat.moveSpeed * 100).ToString() + " %";
+        stats[4].text = Mathf.Round(PlayerManager.Instance.characterStat.atkNum * 100).ToString() + " %";
+        stats[5].text = Mathf.Round(PlayerManager.Instance.characterStat.speed * 100).ToString() + " %";
+        stats[6].text = Mathf.Round(PlayerManager.Instance.characterStat.coolTime * 100).ToString() + " %";
+        stats[7].text = Mathf.Round(PlayerManager.Instance.characterStat.duration * 100).ToString() + " %";
+        stats[8].text = Mathf.Round(PlayerManager.Instance.characterStat.range * 100).ToString() + " %";
+        stats[9].text = Mathf.Round(PlayerManager.Instance.characterStat.luck * 100).ToString() + " %";
+        stats[10].text = Mathf.Round(PlayerManager.Instance.characterStat.expGain * 100).ToString() + " %";
+        stats[11].text = Mathf.Round(PlayerManager.Instance.characterStat.getRage * 100).ToString() + " %";
 
-        stats[12].text = Mathf.Round(playerManager.characterStat.earth_atk * 100).ToString() + " %";
-        stats[13].text = Mathf.Round(playerManager.characterStat.fire_atk * 100).ToString() + " %";
-        stats[14].text = Mathf.Round(playerManager.characterStat.life_atk * 100).ToString() + " %";
-        stats[15].text = Mathf.Round(playerManager.characterStat.lightning_atk * 100).ToString() + " %";
-        stats[16].text = Mathf.Round(playerManager.characterStat.water_atk * 100).ToString() + " %";
-        stats[17].text = Mathf.Round(playerManager.characterStat.wind_atk * 100).ToString() + " %";
+        stats[12].text = Mathf.Round(PlayerManager.Instance.characterStat.earth_atk * 100).ToString() + " %";
+        stats[13].text = Mathf.Round(PlayerManager.Instance.characterStat.fire_atk * 100).ToString() + " %";
+        stats[14].text = Mathf.Round(PlayerManager.Instance.characterStat.life_atk * 100).ToString() + " %";
+        stats[15].text = Mathf.Round(PlayerManager.Instance.characterStat.lightning_atk * 100).ToString() + " %";
+        stats[16].text = Mathf.Round(PlayerManager.Instance.characterStat.water_atk * 100).ToString() + " %";
+        stats[17].text = Mathf.Round(PlayerManager.Instance.characterStat.wind_atk * 100).ToString() + " %";
     }
 
     public void PhoneNotice(int fixNum = -1)
@@ -1025,7 +1013,7 @@ public class UIManager : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(null);
 
             //플레이어 입력 켜기
-            playerManager.player_Input.Enable();
+            PlayerManager.Instance.player_Input.Enable();
 
             //현재 열려있는 팝업 비우기
             nowOpenPopup = null;
@@ -1104,7 +1092,7 @@ public class UIManager : MonoBehaviour
                 arrowUI.transform.DOMove(Camera.main.ViewportToWorldPoint(arrowPos), followDelay);
 
                 // 오브젝트 방향 가리키기
-                Vector2 dir = targetRenderer.transform.position - playerManager.transform.position;
+                Vector2 dir = targetRenderer.transform.position - PlayerManager.Instance.transform.position;
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 225f;
                 arrow.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             }

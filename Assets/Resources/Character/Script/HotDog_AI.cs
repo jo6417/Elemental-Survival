@@ -569,7 +569,7 @@ public class HotDog_AI : EnemyAI
 
     void Move()
     {
-        character.nowState = CharacterState.Walk;
+        character.nowState = CharacterState.Move;
 
         // 호흡 이펙트 꺼져있으면
         if (!breathEffect.gameObject.activeSelf)
@@ -1317,7 +1317,7 @@ public class HotDog_AI : EnemyAI
     #region FootDust
     void HandDustPlay()
     {
-        if (character.nowState == CharacterState.Walk)
+        if (character.nowState == CharacterState.Move)
             handDust.Play();
     }
 
@@ -1328,7 +1328,7 @@ public class HotDog_AI : EnemyAI
 
     void FootDustPlay()
     {
-        if (character.nowState == CharacterState.Walk)
+        if (character.nowState == CharacterState.Move)
             footDust.Play();
     }
 

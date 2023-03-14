@@ -13,64 +13,65 @@ public class Bawi_AI : EnemyAI
     [SerializeField, ReadOnly] bool startTransition = false;
     [SerializeField] Patten patten = Patten.None;
     enum Patten { FistDrop, BigStoneThrow, SmallStoneThrow, DrillDash, DrillChase, None, Skip };
-    float atkCoolCount; //쿨타임 카운트
-    public float fistDropCoolTime;
-    public float stoneThrowCoolTime;
-    public float drillDashCoolTime;
-    public float drillChaseCoolTime;
-    public float atkRange = 20f; // 공격 범위
-    public Vector2 fistParentLocalPos = new Vector2(5, 0); // fistParent 초기 위치
-    public Vector2 drillParentLocalPos = new Vector2(-5, 0); // drillParent 초기 위치
-    public Vector2 fistPartLocalPos = new Vector2(0, 5); // fistPart의 초기 위치
-    public Vector2 drillPartLocalPos = new Vector2(0, 5); // drillPart 초기 위치
-    Vector3 playerDir;
-    bool isFloating = true; //부유 상태 여부
-    public float aimCount = 1f; //드릴 조준 시간
+    [SerializeField] float atkCoolCount; //쿨타임 카운트
+    [SerializeField] float fistDropCoolTime;
+    [SerializeField] float stoneThrowCoolTime;
+    [SerializeField] float drillDashCoolTime;
+    [SerializeField] float drillChaseCoolTime;
+    [SerializeField] float atkRange = 20f; // 공격 범위
+    [SerializeField] Vector2 fistParentLocalPos = new Vector2(5, 0); // fistParent 초기 위치
+    [SerializeField] Vector2 drillParentLocalPos = new Vector2(-5, 0); // drillParent 초기 위치
+    [SerializeField] Vector2 fistPartLocalPos = new Vector2(0, 5); // fistPart의 초기 위치
+    [SerializeField] Vector2 drillPartLocalPos = new Vector2(0, -1); // drillPart 초기 위치
+    [SerializeField, ReadOnly] Vector3 playerDir;
+    [SerializeField, ReadOnly] bool isFloating = true; //부유 상태 여부
+    [SerializeField] float aimCount = 1f; //드릴 조준 시간
+    [SerializeField] float drillChaseSpeed = 500f; // 드릴 추적 속도
 
     [Header("Refer")]
-    public TextMeshProUGUI stateText; //! 테스트 현재 상태
-    public GameObject bigLandDust; //착지할때 헤드 먼지 파티클
-    public GameObject smallLandDust; //착지할때 손 먼지 파티클
-    public ParticleSystem chargePulse; // 차지 펄스 이펙트
-    public ParticleSystem digDirtParticle; // 땅파기 파티클
-    public ParticleSystem BurrowTrail; // 흙무더기 흔적 파티클
-    public ParticleSystem DirtExplosion; // 흙 솟아나오며 터지는 파티클
+    [SerializeField] TextMeshProUGUI stateText; //! 테스트 현재 상태
+    [SerializeField] GameObject bigLandDust; //착지할때 헤드 먼지 파티클
+    [SerializeField] GameObject smallLandDust; //착지할때 손 먼지 파티클
+    [SerializeField] ParticleSystem chargePulse; // 차지 펄스 이펙트
+    [SerializeField] ParticleSystem digDirtParticle; // 땅파기 파티클
+    [SerializeField] ParticleSystem BurrowTrail; // 흙무더기 흔적 파티클
+    [SerializeField] ParticleSystem DirtExplosion; // 흙 솟아나오며 터지는 파티클
 
     [Header("Head")]
-    public SortingGroup headPart;
-    public ParticleSystem headHoverEffect; // 머리 부유 이펙트
-    public ParticleManager headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    [SerializeField] SortingGroup headPart;
+    [SerializeField] ParticleSystem headHoverEffect; // 머리 부유 이펙트
+    [SerializeField] ParticleManager headDashDust; // 돌진시 땅에 남기는 먼지 이펙트
 
     [Header("Fist")]
-    public Collider2D fistCrushColl; //주먹 으깨기 콜라이더
-    public Transform fistParent; // 그림자까지 포함한 부모 오브젝트
-    public Transform fistPart; // 주먹 스프라이트 부모 오브젝트
-    public SpriteRenderer fistSprite; // 주먹 스프라이트
-    public SpriteRenderer fistGhost; // 주먹 고스트 스프라이트
-    public ParticleSystem fistHoverEffect; // 주먹 부유 파티클
-    public GameObject fistGrabDust; //돌 부술때 먼지 파티클
-    public GameObject fistLandDust; //주먹 내리찍을때 먼지 파티클
-    public Sprite emptyFistSprite;
-    public Sprite openFistSprite;
-    public Sprite grabFistSprite;
-    public GameObject stonePrefab; // 공격시 던질 돌 프리팹
-    public ParticleManager fistDashDust; // 돌진시 땅에 남기는 먼지 이펙트
-    public ParticleSystem fistChargeGathering; // 주먹 차지 기모으는 이펙트
-    public ParticleSystem DirtExplosionCircle; // 원형 흙 튀기기
+    [SerializeField] Collider2D fistCrushColl; //주먹 으깨기 콜라이더
+    [SerializeField] Transform fistParent; // 그림자까지 포함한 부모 오브젝트
+    [SerializeField] Transform fistPart; // 주먹 스프라이트 부모 오브젝트
+    [SerializeField] SpriteRenderer fistSprite; // 주먹 스프라이트
+    [SerializeField] SpriteRenderer fistGhost; // 주먹 고스트 스프라이트
+    [SerializeField] ParticleSystem fistHoverEffect; // 주먹 부유 파티클
+    [SerializeField] GameObject fistGrabDust; //돌 부술때 먼지 파티클
+    [SerializeField] GameObject fistLandDust; //주먹 내리찍을때 먼지 파티클
+    [SerializeField] Sprite emptyFistSprite;
+    [SerializeField] Sprite openFistSprite;
+    [SerializeField] Sprite grabFistSprite;
+    [SerializeField] GameObject stonePrefab; // 공격시 던질 돌 프리팹
+    [SerializeField] ParticleManager fistDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    [SerializeField] ParticleSystem fistChargeGathering; // 주먹 차지 기모으는 이펙트
+    [SerializeField] ParticleSystem DirtExplosionCircle; // 원형 흙 튀기기
 
     [Header("Drill")]
-    public Collider2D drillGhostColl; // 고스트 드릴 콜라이더
-    public Rigidbody2D drillRigid; // 그림자까지 포함한 부모
-    public Transform drillPart; // 드릴 스프라이트 부모 오브젝트
-    public SpriteMask drillMask; // 드릴 땅속 들어가는 마스크
-    public SpriteRenderer drillSprite; // 드릴 스프라이트
-    public SpriteRenderer drillGhost; // 드릴 고스트 스프라이트
-    public SpriteRenderer drillShadow; // 드릴 그림자
-    public ParticleSystem drillHoverEffect; // 드릴 부유 파티클
-    public Animator mainDrillAnim; // 메인 드릴 회전 애니메이터
-    public Animator ghostDrillAnim; // 고스트 드릴 회전 애니메이터
-    public ParticleSystem drillChargeGathering; // 드릴차지 기모으는 이펙트
-    public ParticleManager drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
+    [SerializeField] Collider2D drillGhostColl; // 고스트 드릴 콜라이더
+    [SerializeField] Rigidbody2D drillRigid; // 그림자까지 포함한 부모
+    [SerializeField] Transform drillPart; // 드릴 스프라이트 부모 오브젝트
+    [SerializeField] SpriteMask drillMask; // 드릴 땅속 들어가는 마스크
+    [SerializeField] SpriteRenderer drillSprite; // 드릴 스프라이트
+    [SerializeField] SpriteRenderer drillGhost; // 드릴 고스트 스프라이트
+    [SerializeField] SpriteRenderer drillShadow; // 드릴 그림자
+    [SerializeField] ParticleSystem drillHoverEffect; // 드릴 부유 파티클
+    [SerializeField] Animator mainDrillAnim; // 메인 드릴 회전 애니메이터
+    [SerializeField] Animator ghostDrillAnim; // 고스트 드릴 회전 애니메이터
+    [SerializeField] ParticleSystem drillChargeGathering; // 드릴차지 기모으는 이펙트
+    [SerializeField] ParticleManager drillDashDust; // 돌진시 땅에 남기는 먼지 이펙트
     AudioSource drillSpin; // 드릴 스핀 사운드
 
     private void Awake()
@@ -265,12 +266,12 @@ public class Bawi_AI : EnemyAI
         }
 
         // 플레이어 따라가기
-        Walk();
+        Move();
     }
 
-    void Walk()
+    void Move()
     {
-        character.nowState = CharacterState.Walk;
+        character.nowState = CharacterState.Move;
 
         // if (moveSound == null)
         //     //todo 이동 사운드 반복 재생
@@ -1013,8 +1014,8 @@ public class Bawi_AI : EnemyAI
         // 플레이어 위치 부드럽게 따라가기
         while (aimCount > 0)
         {
-            // 플레이어 위치 계산
-            Vector3 playerPos = PlayerManager.Instance.transform.position;
+            // 플레이어 위치 계산, 오차 추가
+            Vector3 playerPos = PlayerManager.Instance.transform.position + Random.insideUnitSphere * 3f;
             // 이동할 위치 계산
             Vector2 movePos = Vector2.Lerp(fistParent.position, playerPos, Time.deltaTime * 5f);
 
@@ -1116,10 +1117,10 @@ public class Bawi_AI : EnemyAI
         drillHoverEffect.Stop();
 
         // 드릴이 아래를 보게 회전
-        drillPart.DORotate(new Vector3(0, 0, -90f), 1f);
+        drillPart.DOLocalRotate(new Vector3(0, 0, 90f), 1f);
 
         // 드릴 머리보다 높게 들기
-        drillPart.transform.DOLocalMove(drillPartLocalPos + Vector2.up * 5f, 1f)
+        drillPart.DOLocalMove(Vector2.down * 2f, 1f)
         .SetEase(Ease.InOutQuart);
 
         // 드릴 스핀 사운드 재생
@@ -1140,7 +1141,7 @@ public class Bawi_AI : EnemyAI
         AudioSource drillSound = null;
 
         // 드릴 내려서 땅에 박기
-        drillPart.transform.DOLocalMove(Vector2.up * 1f, 0.5f)
+        drillPart.DOLocalMove(Vector2.down * 0.3f, 0.5f)
         .SetEase(Ease.InBack)
         .OnComplete(() =>
         {
@@ -1170,7 +1171,7 @@ public class Bawi_AI : EnemyAI
         yield return new WaitForSeconds(0.5f);
 
         // 드릴 내려서 땅속으로 천천히 내리기
-        drillPart.transform.DOLocalMove(Vector2.down * 2f, 1f)
+        drillPart.DOLocalMove(Vector2.up * 0.5f, 1f)
         .SetEase(Ease.OutQuad)
         .OnComplete(() =>
         {
@@ -1184,15 +1185,13 @@ public class Bawi_AI : EnemyAI
         yield return new WaitForSeconds(2f);
 
         // 드릴 회전 초기화
-        drillPart.rotation = Quaternion.Euler(Vector3.forward * 90f);
+        drillPart.localRotation = Quaternion.Euler(Vector3.forward * -90f);
 
         // 드릴 콜라이더 끄기
         drillGhostColl.enabled = false;
 
         // 조준시간 입력
         aimCount = 10f;
-        // 조준 딜레이 입력
-        float aimRate = 0.1f;
 
         // 드릴 추적 사운드 반복 재생
         drillSound = SoundManager.Instance.PlaySound("Bawi_DrillChasing", drillSprite.transform, 1f, 0, -1, true);
@@ -1210,16 +1209,13 @@ public class Bawi_AI : EnemyAI
             // 드릴에서 플레이어까지 방향
             playerDir = playerPos - drillRigid.transform.position;
 
-            // 플레이어 이동속도 계산
-            float playerSpeed = PlayerManager.Instance.characterStat.moveSpeed * PlayerManager.Instance.GetBuffedStat(nameof(PlayerManager.Instance.characterStat.moveSpeed));
-
-            // 플레이어 방향으로 드릴 이동, 플레이어 걷기 속도보다 살짝 빠르게
-            drillRigid.velocity = playerDir.normalized * playerSpeed * 1.7f;
+            // 플레이어 방향으로 드릴 이동
+            drillRigid.velocity = playerDir.normalized * drillChaseSpeed;
 
             // 시간 차감 후 대기
             stateText.text = "Targeting : " + aimCount;
-            aimCount -= aimRate;
-            yield return new WaitForSeconds(aimRate);
+            aimCount -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
         }
 
         if (drillSound != null)
@@ -1239,7 +1235,7 @@ public class Bawi_AI : EnemyAI
         LeanPool.Spawn(DirtExplosion, drillRigid.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         // 드릴 솟아 나오기
-        drillPart.transform.DOLocalMove(drillPartLocalPos + Vector2.up * 5f, 1f)
+        drillPart.DOLocalMove(Vector2.down * 2f, 1f)
         .SetEase(Ease.OutBack);
 
         // 동시에 그림자 사이즈 초기화

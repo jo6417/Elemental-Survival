@@ -362,7 +362,7 @@ public class Quad_AI : MonoBehaviour
 
     void Walk()
     {
-        character.nowState = CharacterState.Walk;
+        character.nowState = CharacterState.Move;
 
         //애니메이터 켜기
         character.animList[0].enabled = true;

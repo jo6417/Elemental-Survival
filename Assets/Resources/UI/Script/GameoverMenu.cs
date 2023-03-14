@@ -67,7 +67,7 @@ public class GameoverMenu : MonoBehaviour
 
         // 모든 자식 오브젝트를 제거
         for (int i = 0; i < hasMagics.childCount; i++)
-            Destroy(hasMagics.GetChild(i));
+            Destroy(hasMagics.GetChild(i).gameObject);
 
         // 보유한 모든 마법을 리스트로 수집
         List<MagicInfo> haveMagics = CastMagic.Instance.hasAllMagic();

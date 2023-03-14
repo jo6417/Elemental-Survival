@@ -69,7 +69,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] float bgmFadeTime = 1f; // 배경음 페이드인, 페이드아웃 시간
     public Sound nowBGM_Sound; // 현재 재생중인 배경음 정보
     public AudioSource nowBGM; // 현재 재생중인 배경음
-    public bool bgmPause = false; // 배경음 일시정지
+    public bool isPauseBGM = false; // 배경음 일시정지
     public IEnumerator BGMCoroutine; // 배경음 코루틴
 
     [Header("Refer")]
@@ -78,7 +78,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AudioMixerGroup musicMixerGroup;
     [SerializeField] AudioMixerGroup sfxMixerGroup;
     [SerializeField] AudioMixerGroup uiMixerGroup;
-    [SerializeField] string startBGM;
+    // [SerializeField] string startBGM;
     [SerializeField] GameObject emptyAudio;
     // public Transform soundPool_Global;
     public Transform soundPool_Music;
@@ -150,21 +150,23 @@ public class SoundManager : MonoBehaviour
         // BGM에 아웃풋 연결
         nowBGM.outputAudioMixerGroup = musicMixerGroup;
 
-        // 시작 bgm 있으면 재생
-        if (startBGM != "")
-        {
-            // 해당 이름으로 배경음 찾기
-            Sound sound = all_Sounds.Find(x => x.name == startBGM);
+        // // 시작 bgm 있으면 재생
+        // if (startBGM != "")
+        // {
+        //     // 해당 이름으로 배경음 찾기
+        //     Sound sound = all_Sounds.Find(x => x.name == startBGM);
 
-            // 배경음 사운드 정보 갱신
-            nowBGM_Sound = sound;
+        //     // 배경음 사운드 정보 갱신
+        //     nowBGM_Sound = sound;
 
-            // 오디오 초기화
-            nowBGM.clip = sound.clip;
-            nowBGM.volume = sound.volume;
-            nowBGM.pitch = sound.pitch * globalPitch;
-            nowBGM.Play();
-        }
+        //     // 오디오 초기화
+        //     nowBGM.clip = sound.clip;
+        //     nowBGM.volume = sound.volume;
+        //     nowBGM.pitch = sound.pitch * globalPitch;
+        //     nowBGM.Play();
+        // }
+        // BGM 재생
+        PlayBGM();
     }
 
     void AudioMake(SoundBundle soundBundle)
@@ -248,13 +250,6 @@ public class SoundManager : MonoBehaviour
         return soundPool;
     }
 
-    public void BGMPlay()
-    {
-        // BGM 코루틴 재생
-        BGMCoroutine = BGMPlayer();
-        StartCoroutine(BGMCoroutine);
-    }
-
     private IEnumerator BGMPlayer()
     {
         // 시스템 매니저 초기화 대기
@@ -301,14 +296,45 @@ public class SoundManager : MonoBehaviour
             .SetUpdate(true);
 
             // bgm 켜짐 상태로 전환
-            bgmPause = false;
+            isPauseBGM = false;
 
             // 음악 끝날때까지 대기, 일시정지 아닐때
-            yield return new WaitUntil(() => !bgmPause && !nowBGM.isPlaying);
+            yield return new WaitUntil(() => !isPauseBGM && !nowBGM.isPlaying);
 
             // 오디오 정지
             nowBGM.Stop();
         }
+    }
+
+    public void PlayBGM()
+    {
+        if (BGMCoroutine != null)
+        {
+            // 배경음 코루틴 끄기
+            StopCoroutine(BGMCoroutine);
+            // 배경음 정지
+            nowBGM.Pause();
+        }
+
+        // BGM 코루틴 재생
+        BGMCoroutine = BGMPlayer();
+        StartCoroutine(BGMCoroutine);
+    }
+
+    public void PauseBGM()
+    {
+        if (BGMCoroutine != null)
+            // 배경음 코루틴 끄기
+            StopCoroutine(BGMCoroutine);
+
+        // 서서히 볼륨 낮추기
+        DOTween.To(() => nowBGM.volume, x => nowBGM.volume = x, 0, bgmFadeTime)
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            // 배경음 정지
+            nowBGM.Pause();
+        });
     }
 
     AudioSource InitAudio(GameObject audioObj, Sound sound, float spatialBlend, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
@@ -319,7 +345,7 @@ public class SoundManager : MonoBehaviour
         // 받은 Sound 데이터를 스폰된 오브젝트에 복사
         AudioSource audio = audioObj.GetComponent<AudioSource>();
 
-        //todo 오디오 아웃풋에 믹서그룹 연결
+        // 오디오 아웃풋에 믹서그룹 연결
         audio.outputAudioMixerGroup = sound.mixerGroup;
 
         // 오디오 클립 넣기
@@ -647,10 +673,14 @@ public class SoundManager : MonoBehaviour
         // 효과음 볼륨값 저장
         PlayerPrefs.SetFloat(SaveManager.SFX_VOLUME_KEY, setVolume);
 
-        // 믹서에 볼륨값 갱신
-        audiomixer.SetFloat(sfxMixerGroup.name + "Volume", Mathf.Log10(setVolume) * 20);
-    }
+        float volume = Mathf.Log10(setVolume) * 20;
+        // 메인화면이면 볼륨 0으로 적용
+        if (SystemManager.Instance.GetSceneName() != SceneName.InGameScene.ToString())
+            volume = -80f;
 
+        // 믹서에 볼륨값 갱신
+        audiomixer.SetFloat(sfxMixerGroup.name + "Volume", volume);
+    }
     public void Set_UIVolume(float setVolume)
     {
         // UI 볼륨값 저장

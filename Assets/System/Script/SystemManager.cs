@@ -148,7 +148,7 @@ public class SystemManager : MonoBehaviour
     public PhysicsLayerList layerList;
 
     [Header("Refer")]
-    [SerializeField] private Light2D globalLight; // 글로벌 라이트
+    [SerializeField, ReadOnly] private Light2D globalLight = null; // 글로벌 라이트
     public Light2D GlobalLight
     {
         get
@@ -157,7 +157,6 @@ public class SystemManager : MonoBehaviour
             if (globalLight == null)
             {
                 // 글로벌 라이트 찾기
-                Light2D globalLight = null;
                 foreach (Light2D light in FindObjectsOfType<Light2D>())
                     if (light.lightType == Light2D.LightType.Global)
                     {
@@ -780,33 +779,33 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    public void GameQuit(string sceneName)
-    {
-        // UI 커서 끄기
-        UICursor.Instance.UICursorToggle(false);
+    // public void GameQuit(string sceneName)
+    // {
+    //     // UI 커서 끄기
+    //     UICursor.Instance.UICursorToggle(false);
 
-        // 메인메뉴로 씬 이동일때
-        if (sceneName == SceneName.MainMenuScene.ToString())
-        {
-            // dontDestroy 오브젝트 모두 파괴
-            if (ObjectPool.Instance != null)
-                Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴
-            if (UIManager.Instance != null)
-                Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
-            if (PlayerManager.Instance != null)
-                Destroy(PlayerManager.Instance.gameObject); // 플레이어 파괴
-            if (CastMagic.Instance != null)
-                Destroy(CastMagic.Instance.gameObject); // 핸드폰 파괴
-        }
+    //     // 메인메뉴로 씬 이동일때
+    //     if (sceneName == SceneName.MainMenuScene.ToString())
+    //     {
+    //         // dontDestroy 오브젝트 모두 파괴
+    //         if (ObjectPool.Instance != null)
+    //             Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴
+    //         if (UIManager.Instance != null)
+    //             Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
+    //         if (PlayerManager.Instance != null)
+    //             Destroy(PlayerManager.Instance.gameObject); // 플레이어 파괴
+    //         if (CastMagic.Instance != null)
+    //             Destroy(CastMagic.Instance.gameObject); // 핸드폰 파괴
+    //     }
 
-        if (SoundManager.Instance.BGMCoroutine != null)
-        {
-            // 배경음 코루틴 끄기
-            StopCoroutine(SoundManager.Instance.BGMCoroutine);
-            // 배경음 정지
-            SoundManager.Instance.nowBGM.Pause();
-        }
-    }
+    //     if (SoundManager.Instance.BGMCoroutine != null)
+    //     {
+    //         // 배경음 코루틴 끄기
+    //         StopCoroutine(SoundManager.Instance.BGMCoroutine);
+    //         // 배경음 정지
+    //         SoundManager.Instance.nowBGM.Pause();
+    //     }
+    // }
 
     IEnumerator LoadScene(string sceneName)
     {
@@ -820,7 +819,7 @@ public class SystemManager : MonoBehaviour
         yield return StartCoroutine(Loading.Instance.SceneMask(true));
 
         // 종료 전 초기화
-        GameQuit(sceneName);
+        // GameQuit(sceneName);
 
         // 매개변수로 들어온 씬 로딩 시작
         StartCoroutine(Loading.Instance.LoadScene(sceneName));

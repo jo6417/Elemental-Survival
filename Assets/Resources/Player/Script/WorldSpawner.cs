@@ -530,9 +530,11 @@ public class WorldSpawner : MonoBehaviour
             // 매니저가 없으면 몬스터 본체가 아니므로 리턴
             if (character == null)
                 return;
-
-            // 죽은 몬스터는 미적용
+            // 죽은 몬스터는 제외
             if (character.isDead)
+                return;
+            // 보스도 제외
+            if (character.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
                 return;
 
             // 이동 대기 카운트 초기화

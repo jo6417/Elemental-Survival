@@ -381,7 +381,7 @@ public class GatePortal : MonoBehaviour
             // payDelay -= 0.01f;
             // payDelay = Mathf.Clamp(payDelay, Time.deltaTime, 1f);
 
-            yield return new WaitForSeconds(Time.deltaTime);
+            yield return new WaitForEndOfFrame();
         }
 
         // 젬이 최대치일때

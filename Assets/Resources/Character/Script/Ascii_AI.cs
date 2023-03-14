@@ -697,7 +697,7 @@ public class Ascii_AI : MonoBehaviour
     void Move()
     {
         // 걷기 상태로 전환
-        character.nowState = CharacterState.Walk;
+        character.nowState = CharacterState.Move;
 
         //걸을때 표정
         faceText.text = FaceReturn(Face.Idle);

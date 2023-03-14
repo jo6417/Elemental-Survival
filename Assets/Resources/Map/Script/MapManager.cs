@@ -99,10 +99,10 @@ public class MapManager : MonoBehaviour
         SystemManager.Instance.sceneChanging = false;
 
 #if UNITY_EDITOR
-        // 현재 배경음이 없거나, 재생 안되고 있으면
-        if (SoundManager.Instance.nowBGM == null || !SoundManager.Instance.nowBGM.isPlaying)
-            // 배경음 재생
-            SoundManager.Instance.BGMPlay();
+        // // 현재 배경음이 없으면
+        // if (SoundManager.Instance.nowBGM == null)
+        //     // 배경음 재생
+        //     SoundManager.Instance.InitBGM();
 #endif
 
         // 글로벌 피치값 초기화

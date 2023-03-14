@@ -47,7 +47,6 @@ public class PlayerManager : Character
     // public GameObject aimCursor; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
-    public GameObject mobSpawner;
     public SpriteRenderer playerSprite; // 몸체 스프라이트
     // public SpriteRenderer playerCover; // 플레이어와 같은 이미지로 덮기
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
@@ -273,6 +272,8 @@ public class PlayerManager : Character
 
     public IEnumerator SpawnPlayer()
     {
+        gameObject.SetActive(true);
+
         // 플레이어 위치 초기화
         transform.position = Vector2.zero;
 

@@ -196,7 +196,7 @@ public class EnemyAI : MonoBehaviour
 
     void Walk()
     {
-        character.nowState = CharacterState.Walk;
+        character.nowState = CharacterState.Move;
 
         // 애니메이터 켜기
         if (character.animList.Count > 0)
