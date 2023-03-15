@@ -21,7 +21,7 @@ public class SlotMachine : MonoBehaviour
     [SerializeField] List<SimpleScrollSnap> slotScrolls = new List<SimpleScrollSnap>();
     [SerializeField] Transform gemLED;
     [SerializeField] Image blackScreen;
-    [SerializeField] Transform itemDropper;
+    public Transform itemDropper;
     [SerializeField] GameObject explosionEffect; // 폭파 이펙트
     [SerializeField] GameObject smokeEffect; // 파괴시 연기 이펙트
     [SerializeField] ParticleSystem failDustEffect; // 꽝일때 연기 이펙트
@@ -112,6 +112,12 @@ public class SlotMachine : MonoBehaviour
 
         // 캔버스 켜기
         uiCanvas.gameObject.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        // 아이템 드롭 오브젝트 초기화
+        itemDropper = null;
     }
 
     public void InteractTrigger(bool isClose)

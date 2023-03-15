@@ -31,7 +31,7 @@ public class SteamRelease : MonoBehaviour
         yield return new WaitUntil(() => magicHolder.magic != null);
 
         // magicHolder 초기화 완료까지 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         power = MagicDB.Instance.MagicPower(magicHolder.magic);
         duration = MagicDB.Instance.MagicDuration(magicHolder.magic);

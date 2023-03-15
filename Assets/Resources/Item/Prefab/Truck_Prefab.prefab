@@ -15185,6 +15185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 10
   timeCount: 0
+  engineAudio: {fileID: 0}
   stopColl: {fileID: 1359786981987588359}
   attackColl: {fileID: 1359786982314616118}
   truckSpriteList:
@@ -36548,7 +36549,7 @@ PrefabInstance:
     - target: {fileID: 7404565909850944093, guid: 3a1eb97323ed60648b6ea419bac46dc2,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 30
+      value: 63.76
       objectReference: {fileID: 0}
     - target: {fileID: 7404565909850944093, guid: 3a1eb97323ed60648b6ea419bac46dc2,
         type: 3}
@@ -36588,7 +36589,7 @@ PrefabInstance:
     - target: {fileID: 7540914702948588993, guid: 3a1eb97323ed60648b6ea419bac46dc2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20
+      value: -35.005
       objectReference: {fileID: 0}
     - target: {fileID: 7652314307768651344, guid: 3a1eb97323ed60648b6ea419bac46dc2,
         type: 3}

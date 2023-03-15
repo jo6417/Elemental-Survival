@@ -32,7 +32,7 @@ public class ParticleTrigger : MonoBehaviour
 
     IEnumerator Init()
     {
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 타겟에 따라 파티클 충돌 대상 레이어 바꾸기
         ParticleSystem.CollisionModule particleColl = particle.collision;

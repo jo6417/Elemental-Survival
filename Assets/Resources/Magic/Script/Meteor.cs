@@ -13,7 +13,7 @@ public class Meteor : MonoBehaviour
     public SpriteRenderer rockSprite; //운석 스프라이트
     public ParticleSystem fireTrail;
     // public ParticleSystem mainParticle;
-    public MagicHolder MagicHolder;
+    public MagicHolder magicHolder;
     public GameObject explosionPrefab; // 폭발 파티클
     public GameObject dirtPrefab; // 흙 튀는 파티클
     public GameObject scorchPrefab; // 그을음 프리팹
@@ -41,9 +41,9 @@ public class Meteor : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => MagicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
-        speed = MagicDB.Instance.MagicSpeed(MagicHolder.magic, false);
+        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
 
         // 콜라이더 끄기
         coll.enabled = false;
@@ -51,7 +51,7 @@ public class Meteor : MonoBehaviour
         // 메테오 크기 초기화
         transform.localScale = Vector2.zero;
         // 메테오 크기 키우기
-        transform.DOScale(Vector2.one * MagicHolder.scale, 0.5f)
+        transform.DOScale(Vector2.one * magicHolder.scale, 0.5f)
         .SetEase(Ease.OutExpo);
 
         //마법 떨어뜨리기
@@ -61,18 +61,18 @@ public class Meteor : MonoBehaviour
     IEnumerator FallMagic()
     {
         //시작 위치
-        Vector2 startPos = startOffset + (Vector2)MagicHolder.targetPos;
+        Vector2 startPos = startOffset + (Vector2)magicHolder.targetPos;
 
         //떨어질 자리에 인디케이터 표시
-        GameObject indicator = LeanPool.Spawn(indicatorPrefab, MagicHolder.targetPos, Quaternion.Euler(Vector3.left * 60f), ObjectPool.Instance.effectPool);
+        GameObject indicator = LeanPool.Spawn(indicatorPrefab, magicHolder.targetPos, Quaternion.Euler(Vector3.left * 60f), ObjectPool.Instance.effectPool);
 
         // 인디케이터 바닥 색깔 초기화
         SpriteRenderer shadowSprite = indicator.GetComponentInChildren<SpriteRenderer>();
-        if (MagicHolder.targetType == MagicHolder.TargetType.Player)
+        if (magicHolder.targetType == MagicHolder.TargetType.Player)
             // 플레이어가 타겟이면 빨간색
             shadowSprite.color = new Color(1, 0, 0, 100f / 255f);
 
-        if (MagicHolder.targetType == MagicHolder.TargetType.Enemy)
+        if (magicHolder.targetType == MagicHolder.TargetType.Enemy)
             // 몬스터가 타겟이면 검은색
             shadowSprite.color = new Color(0, 0, 0, 100f / 255f);
 
@@ -80,7 +80,7 @@ public class Meteor : MonoBehaviour
         indicator.transform.localScale = Vector3.zero;
 
         // 끝나는 위치, 타겟 위치 + 반지름만큼 위에
-        Vector2 endPos = (Vector2)MagicHolder.targetPos + new Vector2(0, coll.radius);
+        Vector2 endPos = (Vector2)magicHolder.targetPos + new Vector2(0, coll.radius);
 
         //시작 위치로 올려보내기
         transform.position = startPos;
@@ -100,7 +100,7 @@ public class Meteor : MonoBehaviour
         yield return new WaitUntil(() => (Vector2)transform.position == startPos);
 
         // 마법 스케일 만큼 인디케이터 사이즈 키우기
-        indicator.transform.DOScale(Vector2.one * MagicHolder.scale * 2f, speed)
+        indicator.transform.DOScale(Vector2.one * magicHolder.scale * 2f, speed)
         .SetEase(Ease.OutQuart);
 
         //목표 위치로 떨어뜨리기
@@ -121,24 +121,24 @@ public class Meteor : MonoBehaviour
         LeanPool.Despawn(indicator);
 
         // 폭발 이펙트 오브젝트 생성
-        GameObject explosionEffect = LeanPool.Spawn(explosionPrefab, MagicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
+        GameObject explosionEffect = LeanPool.Spawn(explosionPrefab, magicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         if (explosionEffect.TryGetComponent(out MagicHolder explosionHolder))
         {
             // 폭발 이펙트에 마법 정보 입력
-            explosionHolder.magic = MagicHolder.magic;
+            explosionHolder.magic = magicHolder.magic;
 
             // 폭발 이펙트에 타겟 정보 입력
-            explosionHolder.SetTarget(MagicHolder.GetTarget());
+            explosionHolder.SetTarget(magicHolder.GetTarget());
         }
 
         // 흙 튀는 파티클 생성
-        LeanPool.Spawn(dirtPrefab, MagicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
+        LeanPool.Spawn(dirtPrefab, magicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         //TODO 일정 레벨 이상이면 용암 장판 남기기?
 
         // 그을음 남기기
-        LeanPool.Spawn(scorchPrefab, MagicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
+        LeanPool.Spawn(scorchPrefab, magicHolder.targetPos, Quaternion.identity, ObjectPool.Instance.effectPool);
 
         //스프라이트 끄기
         rockSprite.enabled = false;

@@ -94,8 +94,8 @@ public class UICursor : MonoBehaviour
         {
             // UI 커서 끄기
             UICursorToggle(false);
-            //null 선택하기
-            EventSystem.current.SetSelectedGameObject(null);
+            // //null 선택하기
+            // EventSystem.current.SetSelectedGameObject(null);
 
             // 상황에 따른 마우스 커서 켜기
             CursorChange();
@@ -217,7 +217,7 @@ public class UICursor : MonoBehaviour
             if (EventSystem.current.currentSelectedGameObject == null)
                 SystemManager.Instance.nowSelectUI.text = "Last Select : null";
             else
-                SystemManager.Instance.nowSelectUI.text = "Last Select : " + EventSystem.current.currentSelectedGameObject.name;
+                SystemManager.Instance.nowSelectUI.text = "Last Select : " + lastSelected.name;
     }
 
     public void UpdateLastSelect(Selectable selectable)
@@ -228,7 +228,7 @@ public class UICursor : MonoBehaviour
         // 버튼 선택 기본값
         lastSelected = selectable;
 
-        //null 선택하기
+        // 마지막 선택자 저장만 해놓고, 현재 선택자는 null로 수정
         EventSystem.current.SetSelectedGameObject(null);
 
         // UI 커서 끄기
@@ -372,6 +372,8 @@ public class UICursor : MonoBehaviour
 
         if (lastSelected != null)
         {
+            lastSelected.targetGraphic.DOKill();
+
             // 기존 색깔
             Color originColor = lastSelected.targetGraphic.color;
             // 깜빡일 색깔

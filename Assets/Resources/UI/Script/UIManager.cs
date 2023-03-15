@@ -704,7 +704,8 @@ public class UIManager : MonoBehaviour
 
         // 2회 점멸하기
         indicator.DOColor(originColor, 0.2f)
-        .SetLoops(4, LoopType.Yoyo);
+        .SetLoops(4, LoopType.Yoyo)
+        .SetUpdate(true);
     }
 
     public void UpdateItems()

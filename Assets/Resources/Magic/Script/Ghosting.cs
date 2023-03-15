@@ -17,7 +17,7 @@ public class Ghosting : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += SummonGhost;

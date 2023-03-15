@@ -285,18 +285,28 @@ public class Truck : MonoBehaviour
             // 자판기 각도 초기화
             shop.rotation = Quaternion.Euler(Vector3.zero);
 
-            // 정해진 자판기만 켜기
+            // 정해진 상점 켜기
             for (int j = 0; j < shop.childCount; j++)
             {
                 GameObject targetShop = shop.GetChild(j).gameObject;
 
-                // 랜덤으로 뽑은 자판기 종류와 같다면
+                // 슬롯머신일때
+                if (targetShop.TryGetComponent(out SlotMachine slotMachine))
+                    // 아이템 드롭퍼 넣기
+                    slotMachine.itemDropper = center_Light.transform;
+
+                // 일반 자판기일때
+                if (targetShop.TryGetComponent(out Vend_Machine vend_Machine))
+                    // 아이템 드롭퍼 넣기
+                    vend_Machine.itemDropper = center_Light.transform;
+
+                // 모든 상점 끄기
+                targetShop.SetActive(false);
+
+                // 랜덤으로 뽑은 상점 종류와 같다면
                 if (randomShops[i] == j)
-                    // 해당 오브젝트 켜기
+                    // 해당 상점 켜기
                     targetShop.SetActive(true);
-                else
-                    // 해당 오브젝트 끄기
-                    targetShop.SetActive(false);
             }
         }
 

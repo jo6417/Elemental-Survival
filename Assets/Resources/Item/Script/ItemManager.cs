@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Lean.Pool;
 using DG.Tweening;
+using System.Linq;
 
 public class ItemManager : MonoBehaviour
 {
@@ -237,40 +238,101 @@ public class ItemManager : MonoBehaviour
         // 스폰 콜라이더 밖으로 나갔을때
         if (other.CompareTag("Respawn"))
         {
-            // 원소젬이고, 합쳐지지 않았을때
-            if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString() && !isBundle)
+            //todo 원소젬일때
+            if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString())
             {
-                // 같은 타입 원소젬 개수가 본인포함 10개 이상일때
-                if (WorldSpawner.Instance.outGemNum[gemTypeIndex] >= 9)
+                // 아이템 합치기
+                SumItem();
+            }
+
+            // // 원소젬이고, 합쳐지지 않았을때
+            // if (itemInfo != null && itemInfo.itemType == ItemDB.ItemType.Gem.ToString() && !isBundle)
+            // {
+            //     // 같은 타입 원소젬 개수가 본인포함 10개 이상일때
+            //     if (WorldSpawner.Instance.outGemNum[gemTypeIndex] >= 9)
+            //     {
+            //         print(itemInfo.name + " : " + WorldSpawner.Instance.outGemNum[gemTypeIndex]);
+
+            //         // 해당 원소젬 사이즈 키우고
+            //         // transform.localScale = Vector2.one * 2;
+            //         // 개수 늘리기
+            //         itemInfo.amount = 5;
+            //         isBundle = true;
+
+            //         //해당 타입 원소젬 개수 초기화
+            //         WorldSpawner.Instance.outGemNum[gemTypeIndex] = 0;
+
+            //         // 이름 같은 원소젬 찾아서 다 디스폰 시키기
+            //         List<GameObject> despawnList = WorldSpawner.Instance.outGem.FindAll(x => x.name == transform.name);
+            //         print(despawnList.Count);
+            //         foreach (var gem in despawnList)
+            //         {
+            //             WorldSpawner.Instance.outGem.Remove(gem);
+            //             LeanPool.Despawn(gem);
+            //         }
+            //     }
+            //     else
+            //     {
+            //         //해당 타입 원소젬 개수 +1
+            //         WorldSpawner.Instance.outGemNum[gemTypeIndex]++;
+            //         //카메라 밖으로 나간 원소젬 리스트에 넣기
+            //         WorldSpawner.Instance.outGem.Add(gameObject);
+            //     }
+            // }
+        }
+    }
+
+    void SumItem()
+    {
+        // 합산 아이템 리스트
+        List<ItemManager> itemManagerList = new List<ItemManager>();
+        // 합산 아이템 개수 초기화
+        int sumAmount = itemInfo.amount;
+
+        //todo 일정 범위 안의 아이템 모두 찾기
+        List<Collider2D> itemCollList = Physics2D.OverlapCircleAll(transform.position, 5f, 1 << SystemManager.Instance.layerList.Item_Layer).ToList();
+        for (int i = 0; i < itemCollList.Count; i++)
+        {
+            // 아이템 매니저 있을때
+            if (itemCollList[i].TryGetComponent(out ItemManager itemManager))
+            {
+                // 같은 속성의 원소젬, amount를 합쳐도 10개 이하인 원소젬 찾기
+                if (itemManager.itemInfo.id == itemInfo.id && itemManager.itemInfo.amount + sumAmount <= 10)
                 {
-                    print(itemInfo.name + " : " + WorldSpawner.Instance.outGemNum[gemTypeIndex]);
+                    // 원소젬 개수 합치기
+                    sumAmount += itemManager.itemInfo.amount;
 
-                    // 해당 원소젬 사이즈 키우고
-                    // transform.localScale = Vector2.one * 2;
-                    // 개수 늘리기
-                    itemInfo.amount = 5;
-                    isBundle = true;
-
-                    //해당 타입 원소젬 개수 초기화
-                    WorldSpawner.Instance.outGemNum[gemTypeIndex] = 0;
-
-                    // 이름 같은 원소젬 찾아서 다 디스폰 시키기
-                    List<GameObject> despawnList = WorldSpawner.Instance.outGem.FindAll(x => x.name == transform.name);
-                    print(despawnList.Count);
-                    foreach (var gem in despawnList)
-                    {
-                        WorldSpawner.Instance.outGem.Remove(gem);
-                        LeanPool.Despawn(gem);
-                    }
-                }
-                else
-                {
-                    //해당 타입 원소젬 개수 +1
-                    WorldSpawner.Instance.outGemNum[gemTypeIndex]++;
-                    //카메라 밖으로 나간 원소젬 리스트에 넣기
-                    WorldSpawner.Instance.outGem.Add(gameObject);
+                    // 합친 아이템 매니저는 리스트에 기록
+                    itemManagerList.Add(itemManager);
                 }
             }
+
+            // 합산 개수가 10개 도달했으면 반복문 끝내기
+            if (sumAmount == 10)
+                break;
+        }
+
+        // 합친 개수가 10개일때
+        if (sumAmount == 10)
+        {
+            // 합산된 아이템 드랍 위치
+            Vector2 sumDropPos = default;
+
+            // 합산된 아이템들의 중심점 위치 계산
+            for (int i = 0; i < itemManagerList.Count; i++)
+            {
+                sumDropPos += (Vector2)itemManagerList[i].transform.position;
+
+                // 합산된 아이템 디스폰
+                LeanPool.Despawn(itemManagerList[i]);
+            }
+            sumDropPos /= itemManagerList.Count;
+
+            //todo 현재 원소젬의 개수를 합산 개수로 변경
+            itemInfo.amount = sumAmount;
+
+            // 개수만큼 스케일 초기화
+            transform.localScale = Vector2.one * (1 + (itemInfo.amount - 1) * 0.1f);
         }
     }
 

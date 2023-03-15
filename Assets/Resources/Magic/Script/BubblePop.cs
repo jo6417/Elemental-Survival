@@ -30,7 +30,7 @@ public class BubblePop : MonoBehaviour
         MagicInfo magic = magicHolder.magic;
 
         // magicHolder 초기화 완료까지 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 슬로우 디버프 시간 갱신
         magicHolder.slowTime = MagicDB.Instance.MagicDuration(magic);

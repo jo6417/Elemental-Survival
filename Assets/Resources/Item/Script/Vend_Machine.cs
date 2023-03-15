@@ -8,10 +8,11 @@ public class Vend_Machine : MonoBehaviour
     [SerializeField] Canvas uiCanvas; // 가격, 상호작용키 안내 UI 캔버스
     [SerializeField] Interacter interacter;
     [SerializeField] GameObject showKey; //상호작용 키 표시 UI
-    [SerializeField] private Transform itemDropper; //상품 토출구 오브젝트
+    public Transform itemDropper; //상품 토출구 오브젝트
 
 
     List<SlotInfo> productList = new List<SlotInfo>(); // 판매 상품 리스트
+    float[] discountList = new float[9]; // 각 상품들의 할인율 배열
     bool[] soldOutList = new bool[9]; // 상품 품절 여부
 
     private void OnEnable()
@@ -54,29 +55,61 @@ public class Vend_Machine : MonoBehaviour
         {
             int randomPick = SystemManager.Instance.WeightRandom(randomWeight);
 
+            SlotInfo slot = null;
+
             switch (randomPick)
             {
                 // 회복 아이템
                 case 0:
-                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal));
+                    slot = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Heal);
                     break;
                 // 가젯
                 case 1:
-                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget));
+                    slot = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gadget);
                     break;
                 // 마법 샤드
                 case 2:
-                    productList.Add(ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard));
+                    slot = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard);
                     break;
                 // 마법
                 case 3:
-                    productList.Add(MagicDB.Instance.GetRandomMagic());
+                    slot = MagicDB.Instance.GetRandomMagic();
                     break;
             }
+
+            // 아이템, 마법 중에 null이 아닌 정보 리스트에 넣기
+            ItemInfo item = slot as ItemInfo;
+            MagicInfo magic = slot as MagicInfo;
+            if (item != null)
+                productList.Add(new ItemInfo(item));
+            else if (magic != null)
+                productList.Add(new MagicInfo(magic));
+
+            //todo 가격 확정하기
+            // 원래 가격
+            float originPrice = slot.price;
+            // 할인율
+            float discountRate = 0;
+
+            // 확률에 따라 할인 적용
+            if (Random.value < 0.7f)
+                // 최소 가격 이상일때만 할인 적용
+                if (originPrice > 10)
+                    // 0% ~ 50% 사이의 할인율을 랜덤하게 계산하고, 5% 단위로 반올림하여 할인율 계산
+                    discountRate = Mathf.Round(Random.Range(0f, 0.5f) / 0.05f) * 0.05f;
+
+            // 배열에 가격 저장
+            discountList[i] = discountRate;
 
             // 판매중 여부 초기화
             soldOutList[i] = false;
         }
+    }
+
+    private void OnDisable()
+    {
+        // 아이템 드롭 오브젝트 초기화
+        itemDropper = null;
     }
 
     public void InteractTrigger(bool isClose)
@@ -111,11 +144,14 @@ public class Vend_Machine : MonoBehaviour
         if (!isPress)
             return;
 
-        // 드롭퍼 오브젝트 넣어주기
-        VendMachineUI.Instance.itemDropper = itemDropper;
+        // 드롭퍼 오브젝트 넣어주기, 없으면 해당 자판기 넣기
+        VendMachineUI.Instance.itemDropper = itemDropper != null ? itemDropper : transform;
 
         // 상품 목록 전달
         VendMachineUI.Instance.productList = productList;
+        // 할인율 목록 전달
+        VendMachineUI.Instance.discountList = discountList;
+        // 품절 목록 전달
         VendMachineUI.Instance.soldOutList = soldOutList;
 
         // 자판기 UI 끄기

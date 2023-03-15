@@ -9,12 +9,11 @@ public class LavaWalk : MonoBehaviour
     MagicHolder magicHolder;
 
     public GameObject footprint; //발자국 오브젝트
-    public Transform parentPool; // 오브젝트풀
     private Vector2 lastFootPos; //마지막 발자국 위치
     // private float cooltimeCounter;
     private bool isRightFoot; //좌, 우 어느 발인지 여부
 
-    SpriteRenderer footSprite;
+    [SerializeField] SpriteRenderer footSprite;
     float distance;
 
     private void Awake()
@@ -32,7 +31,7 @@ public class LavaWalk : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         //플레이어 자식으로 들어가기
         transform.SetParent(PlayerManager.Instance.transform);
@@ -50,7 +49,7 @@ public class LavaWalk : MonoBehaviour
 
     private void Update()
     {
-        if (magicHolder.initDone) return;
+        if (!magicHolder.initDone) return;
 
         //일정 거리마다 발자국 생성
         if (Vector2.Distance(lastFootPos, PlayerManager.Instance.transform.position) > distance)
@@ -80,7 +79,7 @@ public class LavaWalk : MonoBehaviour
         playerDir.z = isRightFoot ? rotation : -rotation;
 
         //마법 오브젝트 생성
-        GameObject magicObj = LeanPool.Spawn(footprint, playerPos, Quaternion.Euler(playerDir), parentPool);
+        GameObject magicObj = LeanPool.Spawn(footprint, playerPos, Quaternion.Euler(playerDir), ObjectPool.Instance.magicPool);
 
         MagicHolder _magicHolder = magicObj.GetComponent<MagicHolder>();
 

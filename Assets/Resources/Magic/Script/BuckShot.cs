@@ -22,7 +22,7 @@ public class BuckShot : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         float rotation;
         // 수동 사격일때

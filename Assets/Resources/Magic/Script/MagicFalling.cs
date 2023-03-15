@@ -77,7 +77,7 @@ public class MagicFalling : MonoBehaviour
         ColliderTrigger(false);
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
         float magicSpeed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);

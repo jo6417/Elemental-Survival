@@ -50,7 +50,7 @@ public class Test_BabyArrow : MonoBehaviour
     IEnumerator Init()
     {
         // magic 정보 들어올때까지 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
 

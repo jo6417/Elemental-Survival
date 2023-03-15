@@ -20216,6 +20216,7 @@ MonoBehaviour:
   farDistance: 150
   bossCharacter: {fileID: 0}
   fixedBoss: {fileID: 0}
+  coll: {fileID: 2299684069804847026}
   showKeyUI: {fileID: 5833238108223010694}
   pressAction: {fileID: 2299684069359633172}
   gemBackground: {fileID: 9078548988880053223}

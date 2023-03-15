@@ -31,7 +31,7 @@ public class EggBomb : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         print(magicHolder.coolTime + ":" + magicHolder.atkNum);
 

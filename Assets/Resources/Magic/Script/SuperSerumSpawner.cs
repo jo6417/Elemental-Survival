@@ -5,18 +5,18 @@ using UnityEngine;
 
 public class SuperSerumSpawner : MonoBehaviour
 {
-    MagicHolder MagicHolder;
+    MagicHolder magicHolder;
     public GameObject serumOrbPrefab; //슈퍼 세럼 알갱이 프리팹
 
     private void Awake()
     {
-        MagicHolder = GetComponent<MagicHolder>();
+        magicHolder = GetComponent<MagicHolder>();
     }
 
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => MagicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += DropSerumOrb;
@@ -43,7 +43,7 @@ public class SuperSerumSpawner : MonoBehaviour
         // print(MagicDB.Instance.MagicCritical(magic));
 
         // 크리티컬 확률 = 드랍 확률
-        bool isDrop = MagicDB.Instance.MagicCritical(MagicHolder.magic);
+        bool isDrop = MagicDB.Instance.MagicCritical(magicHolder.magic);
 
         if (isDrop)
         {
@@ -54,7 +54,7 @@ public class SuperSerumSpawner : MonoBehaviour
             MagicHolder orbMagicHolder = serumOrb.GetComponentInChildren<MagicHolder>();
 
             // 마법 정보 전달
-            orbMagicHolder.magic = MagicHolder.magic;
+            orbMagicHolder.magic = magicHolder.magic;
         }
     }
 }

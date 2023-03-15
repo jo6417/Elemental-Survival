@@ -35,7 +35,7 @@ public class TimeStop : MonoBehaviour
         effectColl.enabled = false;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 정지 지속시간 넣기
         magicHolder.stopTime = magicHolder.duration;

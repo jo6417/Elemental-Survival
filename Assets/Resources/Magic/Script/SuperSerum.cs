@@ -41,7 +41,7 @@ public class SuperSerum : MonoBehaviour
         transform.localScale = Vector2.zero;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         //크리티컬 데미지 = 최대체력 증가량
         hpAddAmount = Mathf.RoundToInt(magicHolder.criticalPower);

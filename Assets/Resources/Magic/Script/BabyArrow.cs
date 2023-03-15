@@ -68,7 +68,7 @@ public class BabyArrow : MonoBehaviour
         init = false;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
 
         // 쿨타임 체크용 글로벌 마법 정보 찾기

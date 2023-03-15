@@ -20,7 +20,7 @@ public class LavaToss : MonoBehaviour
         lavaPool.localScale = Vector2.zero;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // magicHolder에서 targetPos 받아와서 해당 위치로 이동
         transform.parent.position = magicHolder.targetPos;

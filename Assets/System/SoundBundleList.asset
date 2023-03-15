@@ -19,7 +19,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 17d084a37f121d94681bce7bba452e45, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: SlotSpin_Short
       clip: {fileID: 8300000, guid: d1f254f6b2058f044a8e177cb5ab83b1, type: 3}
@@ -117,7 +118,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 73ac8cdeff05afa4ca86720409a25bf8, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: GameoverFall
       clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
@@ -178,7 +180,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 958408b32ccf3714ea02821877b0870c, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Vend_Pay
       clip: {fileID: 8300000, guid: a3336dac740f24646b3cfe8734596089, type: 3}
@@ -190,37 +193,50 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: d61993954e0a96745a1cd1f6e7b85415, type: 3}
       volume: 3
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Vend_Product_Get
       clip: {fileID: 8300000, guid: 3c575f329958cbe4f8d861e7730da952, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Vend_Product_Land_0
       clip: {fileID: 8300000, guid: 098a9ed40bb8b1241a63b7037de802fe, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Vend_Product_Land_1
       clip: {fileID: 8300000, guid: 098a9ed40bb8b1241a63b7037de802fe, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Vend_Product_Land_2
       clip: {fileID: 8300000, guid: 098a9ed40bb8b1241a63b7037de802fe, type: 3}
       volume: 0.2
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
+      source: {fileID: 0}
+    - name: Vend_Exit
+      clip: {fileID: 8300000, guid: adfc29db53a561346a09920457bc8300, type: 3}
+      volume: 1
+      pitch: 1
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: MagicMachine_Popup
       clip: {fileID: 8300000, guid: 556af312efbe7994e9135d3cf5b76e43, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: SlotLock
       clip: {fileID: 8300000, guid: adfc29db53a561346a09920457bc8300, type: 3}
@@ -360,13 +376,15 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 637cf0ee6c1dca647a060a8940155245, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: SlingShot_Throw
       clip: {fileID: 8300000, guid: 7a80489f19d848a45aa93f98548f0ec4, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: SlingShot_Destroy
       clip: {fileID: 8300000, guid: 9036195a1bbe361428b1292a92f2d570, type: 3}
@@ -392,13 +410,15 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 21e8264c14c947c409efd695fe4c75f1, type: 3}
       volume: 0.1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: WindCutter_Slice
       clip: {fileID: 8300000, guid: 90268d3a1211dc040951fbe3691547ac, type: 3}
       volume: 0.2
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: HealingSpa
       clip: {fileID: 8300000, guid: 4772eea214dcd9746bcaeb204ee102ea, type: 3}
@@ -422,13 +442,15 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 2251354f158a1584c873c877d8014832, type: 3}
       volume: 0.2
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: HellFire_Pop
       clip: {fileID: 8300000, guid: 0005c78bc21ab8c4b938c6717f1c79a1, type: 3}
       volume: 0.3
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: TimeStop
       clip: {fileID: 8300000, guid: 246ff91137bdcb2429ac4526f7498b36, type: 3}
@@ -476,7 +498,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 736734dcf94583740872e81c5a2b7c16, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: MagnetBeam
       clip: {fileID: 8300000, guid: 66fd6408d1cf66b4fbb225d41cc4b443, type: 3}

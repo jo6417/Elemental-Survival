@@ -10013,8 +10013,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initDone: 0
-  unlockMagics: 
-  savedMagics: 
+  unlockMagicList: 
+  banMagicList: 
   gradeColor:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.30980393, g: 0.972549, b: 0.29803923, a: 1}
@@ -10089,12 +10089,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nowSaving: 0
   webSaveData:
-    unlockMagics: 
+    unlockMagicList: 
+    banMagicList: 
     magicDBJson: 
     enemyDBJson: 
     itemDBJson: 
   localSaveData:
-    unlockMagics: 
+    unlockMagicList: 
+    banMagicList: 
     magicDBJson: 
     enemyDBJson: 
     itemDBJson: 
@@ -10230,11 +10232,11 @@ MonoBehaviour:
   screenSize: {x: 0, y: 0}
   letterBoxCanvas: {fileID: 1436433704}
   horizon_letterBoxes:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 646227838}
+  - {fileID: 1280213569}
   vertical_letterBoxes:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 800756052}
+  - {fileID: 1013347012}
 --- !u!114 &2072565522699156450
 MonoBehaviour:
   m_ObjectHideFlags: 0

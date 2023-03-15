@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 2055992786528513726}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -47,23 +47,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coll: {fileID: 0}
+  playSoundName: 
+  atkColl: {fileID: 0}
+  targetType: 0
+  attack_power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
+  knockbackForce: 0
+  burnTime: 2
+  poisonTime: 0
+  bleedTime: 0
+  slowTime: 2
+  wetTime: 0
+  shockTime: 0
+  freezeTime: 0
+  flatTime: 0
+  stopTime: 0
+  stunTime: 0
+  fixCoolTime: 0
+  isQuickCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 10, y: 10, z: 0}
-  targetType: 0
   initDone: 0
-  pierceCount: 0
-  fixedPower: 0
-  knockbackForce: 0
-  isStop: 0
-  poisonTime: 0
-  slowTime: 2
-  burnTime: 2
-  wetTime: 0
-  bleedTime: 0
-  shockTime: 0
-  freezeTime: 0
+  power: 1
+  speed: 1
+  range: 1
+  scale: 1
+  duration: 1
+  criticalRate: 1
+  criticalPower: 1
+  pierce: 0
+  atkNum: 0
+  coolTime: 0
 --- !u!114 &4791284321581158099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,6 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351a8a3e8a3090f4ca0322f0eaea6db1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  magicHolder: {fileID: 0}
   sprite: {fileID: 2565760932959180150}
   frontDistance: 2
   ease: 0

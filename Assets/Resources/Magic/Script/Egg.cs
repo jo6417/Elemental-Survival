@@ -28,7 +28,7 @@ public class Egg : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
 
         // 파티클 트레일 끄기

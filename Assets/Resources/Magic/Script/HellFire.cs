@@ -27,7 +27,7 @@ public class HellFire : MonoBehaviour
         anim.speed = 0f;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 레이어에 따라 해골 색 바꾸기
         if (magicHolder.gameObject.layer == SystemManager.Instance.layerList.EnemyAttack_Layer)

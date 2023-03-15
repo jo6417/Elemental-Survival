@@ -16,6 +16,7 @@ public class MagicArea : MonoBehaviour
     private void Awake()
     {
         // originScale = transform.localScale;
+        if (!magicHolder) magicHolder = GetComponent<MagicHolder>();
     }
 
     private void OnEnable()
@@ -30,7 +31,7 @@ public class MagicArea : MonoBehaviour
         sprite.color = Color.white;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 마법 날아가는 속도
         float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);

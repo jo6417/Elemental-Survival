@@ -51,6 +51,7 @@ public class GatePortal : MonoBehaviour
     IEnumerator closeMoveCoroutine; // 플레이어와 거리 멀면 재이동 코루틴
 
     [Header("Refer")]
+    [SerializeField] Collider2D coll;
     [SerializeField] CanvasGroup showKeyUI; //상호작용 키 표시 UI
     Interacter interacter; //상호작용 콜백 함수 클래스
     [SerializeField] TextMeshProUGUI pressAction; // 상호작용 기능 설명 텍스트
@@ -491,6 +492,11 @@ public class GatePortal : MonoBehaviour
 
         // 클리어 상태로 전환
         portalState = PortalState.Clear;
+        ActionText("Enter Portal");
+
+        // 콜라이더 재시작
+        coll.enabled = false;
+        coll.enabled = true;
 
         // 포탈 준비 파티클 끄기
         gatherParticle.SmoothDisable();
@@ -511,8 +517,6 @@ public class GatePortal : MonoBehaviour
 
     IEnumerator ClearReward()
     {
-        // 드랍 시킬 원소젬 뽑기
-        ItemInfo gemInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
         // 게이트에 투입된 원소젬 개수에 환불 계수 곱하기
         int dropNum = Mathf.RoundToInt(Random.Range(needGem * (1 - refundRate), needGem * (1 + refundRate)));
 
@@ -524,6 +528,10 @@ public class GatePortal : MonoBehaviour
         WaitForSeconds singleDropTime = new WaitForSeconds(Time.deltaTime);
         while (dropNum > 0)
         {
+            // 드랍 시킬 원소젬 뽑기
+            ItemInfo gemInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Gem);
+            gemInfo.amount = 1;
+
             // 게이트 위치에서 아래 방향으로 하나씩 드랍
             ItemDB.Instance.ItemDrop(gemInfo, transform.position, Vector2.down * Random.Range(30f, 40f));
 
@@ -531,9 +539,6 @@ public class GatePortal : MonoBehaviour
 
             yield return singleDropTime;
         }
-
-        // 클리어 트리거 켜기
-        portalState = PortalState.Clear;
     }
 
     IEnumerator ClearTeleport()

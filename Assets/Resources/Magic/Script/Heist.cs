@@ -34,7 +34,7 @@ public class Heist : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 레벨 갱신되면 스피드 스탯 새로 계산
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true, magicHolder.targetType);

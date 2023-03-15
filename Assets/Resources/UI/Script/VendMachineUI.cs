@@ -37,7 +37,8 @@ public class VendMachineUI : MonoBehaviour
     [Header("State")]
     Sequence outputSeq;
     public List<SlotInfo> productList = null; // 판매 상품 정보 리스트
-    public bool[] soldOutList = null; // 상품 판매 여부
+    public float[] discountList = new float[9]; // 각 상품들의 할인율 배열
+    public bool[] soldOutList = new bool[9]; // 상품 판매 여부 배열
     [SerializeField, ReadOnly] bool fieldDrop; // 아이템 필드드랍 할지 여부
 
     [Header("Refer")]
@@ -56,14 +57,26 @@ public class VendMachineUI : MonoBehaviour
     private void Awake()
     {
         input = new NewInput();
-        // 취소 입력
-        input.UI.Cancel.performed += val =>
+        // // 취소 입력
+        // input.UI.Cancel.performed += val =>
+        // {
+        //     // 종료버튼 상호작용 켜져있으면
+        //     if (exitBtn.interactable)
+        //         // 자판기 종료
+        //         StartCoroutine(ExitTransition());
+        // };
+
+        // 닫기 버튼 입력
+        input.UI.PhoneMenu.performed += val =>
         {
-            // 종료버튼 상호작용 켜져있으면
-            if (exitBtn.interactable)
-                // 자판기 종료
-                StartCoroutine(ExitTransition());
+            // 자판기 패널 켜져있을때
+            if (gameObject.activeSelf)
+                // 종료버튼 상호작용 켜져있으면
+                if (exitBtn.interactable)
+                    // 자판기 종료
+                    StartCoroutine(ExitTransition());
         };
+
         input.Enable();
     }
 
@@ -113,11 +126,11 @@ public class VendMachineUI : MonoBehaviour
             Transform productObj = productsParent.GetChild(i);
 
             // 아이콘 버튼 찾기
-            Button iconBtn = productObj.Find("Button").GetComponent<Button>();
+            Button productButton = productObj.GetComponent<Button>();
             // 가격 버튼
-            Button priceBtn = productObj.Find("Price").GetComponent<Button>();
+            Transform priceButton = productObj.Find("Price");
             // 품절 표시 빨간줄
-            Transform soldOutSlash = priceBtn.transform.Find("Slash");
+            Transform soldOutSlash = priceButton.transform.Find("Slash");
             soldOutSlash.gameObject.SetActive(false);
             // 아이템,마법 각각 프레임
             Image frame = productObj.Find("Frame").GetComponent<Image>();
@@ -141,7 +154,18 @@ public class VendMachineUI : MonoBehaviour
             MagicInfo magic = slotInfo as MagicInfo;
 
             // 가격 타입 인덱스, 정보 없으면 랜덤으로 부여
-            int priceType = slotInfo.priceType != "None" ? MagicDB.Instance.ElementType(slotInfo) : Random.Range(0, 6);
+            int priceType = 0;
+            if (productList[i].priceType != "None")
+                // 가격 타입 있으면 해당 타입
+                priceType = MagicDB.Instance.ElementType(slotInfo);
+            else
+            {
+                // 정해진 타입 없으면 랜덤 타입 원소젬
+                priceType = Random.Range(0, 6);
+
+                // 해당 가격 타입을 아이템 타입에 저장
+                productList[i].priceType = MagicDB.Instance.ElementNames[priceType];
+            }
 
             // 마법일때 정보 넣기
             if (magic != null)
@@ -167,7 +191,7 @@ public class VendMachineUI : MonoBehaviour
             frame.color = gradeColor;
 
             // 기존 가격에서 랜덤 할인된 가격
-            price = SetPrice(productObj, slotInfo, priceType);
+            price = SetPrice(index, productObj, priceType);
 
             // 신규 여부 표시
             if (!isNew)
@@ -186,25 +210,29 @@ public class VendMachineUI : MonoBehaviour
             //스프라이트 못찾으면 임시로 물음표 넣기
             Icon.GetComponent<Image>().sprite = productSprite != null ? productSprite : SystemManager.Instance.questionMark;
 
+            //todo 자판기 초기화 후에도 제대로 작동 되는지 검사할것
             // 버튼 마우스 Enter시 이벤트 작성
-            EventTrigger.Entry selectEntry = new EventTrigger.Entry(); //이벤트 트리거에 넣을 엔트리 생성            
+            EventTrigger.Entry selectEntry = new EventTrigger.Entry(); //이벤트 트리거에 넣을 엔트리 생성
             selectEntry.eventID = EventTriggerType.PointerEnter; //Select 했을때로 지정
-            selectEntry.callback.AddListener((data) => { ProductSelect(priceType, price); }); //Select 했을때 넣을 함수 넣기
+            selectEntry.callback.AddListener((data) => { ProductSelect(priceType, GetPrice(index)); }); //Select 했을때 넣을 함수 넣기
 
             // 아이콘 버튼 선택 했을때
-            iconBtn.GetComponent<EventTrigger>().triggers.Add(selectEntry);
+            productButton.GetComponent<EventTrigger>().triggers.Add(selectEntry);
             // 가격 버튼 선택 했을때
-            priceBtn.GetComponent<EventTrigger>().triggers.Add(selectEntry);
+            priceButton.GetComponent<EventTrigger>().triggers.Add(selectEntry);
 
-            // 아이콘 버튼 클릭 했을때
-            iconBtn.onClick.AddListener(delegate
+            // 아이콘 버튼 클릭 이벤트 비우기
+            productButton.onClick.RemoveAllListeners();
+            // 아이콘 버튼 클릭 이벤트 넣기
+            productButton.onClick.AddListener(delegate
             {
                 // 상품 획득 시도하기
-                StartCoroutine(GetProduct(productObj, priceType, index));
+                StartCoroutine(GetProduct(index, productObj, priceType, index));
+                print(slotInfo.name + " : " + priceType + " : " + slotInfo.price);
             });
 
             // 툴팁에 상품 정보 넣기
-            ToolTipTrigger tooltip = iconBtn.GetComponent<ToolTipTrigger>();
+            ToolTipTrigger tooltip = productButton.GetComponent<ToolTipTrigger>();
             tooltip.toolTipType = ToolTipTrigger.ToolTipType.ProductTip;
             if (magic != null)
                 tooltip._slotInfo = magic;
@@ -215,10 +243,16 @@ public class VendMachineUI : MonoBehaviour
             if (soldOutList[i])
             {
                 // 해당 상품 비활성화
-                iconBtn.interactable = false; // 아이콘 버튼 상호작용 비활성화
-                priceBtn.interactable = false; // 가격 버튼 상호작용 비활성화
+                productButton.interactable = false; // 아이콘 버튼 상호작용 비활성화
                 newTxt.gameObject.SetActive(false); //신규 표시 없에기
                 soldOutSlash.gameObject.SetActive(true); //가격 표시 사선 표시
+            }
+            else
+            {
+                // 해당 상품 활성화
+                productButton.interactable = true; // 아이콘 버튼 상호작용 비활성화
+                newTxt.gameObject.SetActive(true); //신규 표시 없에기
+                soldOutSlash.gameObject.SetActive(false); //가격 표시 사선 표시
             }
         }
     }
@@ -234,24 +268,34 @@ public class VendMachineUI : MonoBehaviour
             SlotInfo slotInfo = productList[i];
             // 가격 타입
             int priceType = MagicDB.Instance.ElementType(slotInfo);
-            // 가격
-            int price = slotInfo.price;
 
-            // 구매 가능하면 초록, 아니면 빨강
-            amount.color = PlayerManager.Instance.hasGem[priceType].amount >= price ? Color.green : Color.red;
+            // 가격 텍스트 기본 색은 빨강
+            Color amountColor = Color.red;
+            // 구매 가능한 경우 초록색으로 변경
+            if (PlayerManager.Instance.hasGem[priceType].amount >= GetPrice(i) && !soldOutList[i])
+                amountColor = Color.green;
+
+            // 가격 텍스트 색 넣기
+            amount.color = amountColor;
         }
     }
 
-    int SetPrice(Transform product, SlotInfo slotInfo, int priceType)
+    int SetPrice(int index, Transform product, int priceType)
     {
         // 화폐에 따라 색 바꾸기
         Color color = MagicDB.Instance.GetElementColor(priceType);
         Image gem = product.Find("Price/Gem").GetComponent<Image>();
         gem.color = color;
 
-        // 고정된 가격에서 +- 범위내 랜덤 조정해서 가격 넣기, 10 단위로 반올림
-        float originPrice = slotInfo.price;
-        float price = Mathf.Round(originPrice * Random.Range(0.51f, 1.5f) / 10f) * 10f;
+        // 원래 가격
+        float originPrice = productList[index].price;
+        // 할인율 불러오기
+        float discountRate = discountList[index];
+        // 상품의 최종 가격
+        float price = originPrice;
+
+        // 할인율 계산된 가격
+        price = Mathf.Round(originPrice * (1f - discountRate) / 10f) * 10f;
 
         //아이템 가격 텍스트
         TextMeshProUGUI priceTxt = product.Find("Price/Amount").GetComponent<TextMeshProUGUI>();
@@ -264,7 +308,7 @@ public class VendMachineUI : MonoBehaviour
         Transform discountRaise = discount.Find("Raise");
         Transform discountAmount = discount.Find("Amount");
 
-        //가격 같을때
+        // 가격이 그대로일때
         if (price == originPrice)
         {
             //할인 스티커 비활성화
@@ -280,7 +324,7 @@ public class VendMachineUI : MonoBehaviour
             Image raiseImg = discountRaise.GetComponent<Image>();
 
             //할인율 텍스트
-            TextMeshProUGUI amountTxt = discountAmount.GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI discountText = discountAmount.GetComponent<TextMeshProUGUI>();
 
             //할인일때
             if (price < originPrice)
@@ -292,7 +336,7 @@ public class VendMachineUI : MonoBehaviour
                 raiseImg.color = Color.blue;
 
                 //가격 텍스트 파란색
-                amountTxt.color = Color.blue;
+                discountText.color = Color.blue;
             }
             else
             {
@@ -303,14 +347,22 @@ public class VendMachineUI : MonoBehaviour
                 raiseImg.color = Color.red;
 
                 //가격 텍스트 빨간색
-                amountTxt.color = Color.red;
+                discountText.color = Color.red;
             }
 
             //할인율 반영
-            string amount = (Mathf.RoundToInt((price / originPrice) * 100f) - 100f).ToString() + "%";
-            amountTxt.text = amount;
+            string amount = (-discountRate * 100f).ToString() + "%";
+            discountText.text = amount;
             // print(price + " / " + originPrice + " = " + amount);
         }
+
+        return (int)price;
+    }
+
+    int GetPrice(int index)
+    {
+        // 할인율 계산된 가격
+        float price = Mathf.Round(productList[index].price * (1f - discountList[index]) / 10f) * 10f;
 
         return (int)price;
     }
@@ -325,7 +377,7 @@ public class VendMachineUI : MonoBehaviour
         GetComponent<Animator>().enabled = false;
     }
 
-    //상품 선택했을때
+    // 상품 선택했을때
     public void ProductSelect(int priceType, int priceAmount)
     {
         // 해당 상품의 화폐과 같은 원소젬 개수 보여주기
@@ -334,49 +386,39 @@ public class VendMachineUI : MonoBehaviour
     }
 
     //상품 획득
-    IEnumerator GetProduct(Transform productObj, int priceType, int productIndex)
+    IEnumerator GetProduct(int index, Transform productObj, int priceType, int productIndex)
     {
+        yield return null;
+
         // 상품 정보 캐싱
         SlotInfo slotInfo = productList[productIndex];
 
         Image frame = productObj.Find("Frame").GetComponent<Image>();
         // 아이콘 버튼
-        Button iconBtn = productObj.Find("Button").GetComponent<Button>();
+        Button iconBtn = productObj.GetComponent<Button>();
         // 가격 버튼
-        Button priceBtn = productObj.Find("Price").GetComponent<Button>();
+        Transform priceBtn = productObj.Find("Price");
         // 품절 표시
         Transform soldOutSlash = productObj.Find("Price/Slash");
         // 신규 표시
         Transform newTxt = productObj.Find("New");
+        // 깜빡이기 인디케이터
+        Image indicator = productObj.Find("Indicator").GetComponent<Image>();
 
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
         // 충분한 화폐가 있을때
-        if (PlayerManager.Instance.hasGem[priceType].amount >= slotInfo.price)
+        if (PlayerManager.Instance.hasGem[priceType].amount >= GetPrice(index))
         {
             // 해당 상품 품절 처리
             soldOutList[productIndex] = true;
-
-            // 가격 지불하기
-            PlayerManager.Instance.PayGem(priceType, slotInfo.price);
-
-            // 돈 나가는 소리 재생
-            // SoundManager.Instance.PlaySound("Vend_Pay", 0, 0, 1, false);
-            // yield return new WaitForSecondsRealtime(0.1f);
-
-            // 자판기 상품 투하 소리 재생
-            SoundManager.Instance.PlaySound("Vend_Purchase", 0, 0, 1, false);
-            yield return new WaitForSecondsRealtime(0.2f);
-
-            // 모든 상품 가격 색깔 업데이트하여 구매가능 여부 표시
-            UpdatePrice();
 
             // 현재 툴팁 끄기
             ProductToolTip.Instance.QuitTooltip();
 
             // 해당 상품 비활성화
             iconBtn.interactable = false; // 아이콘 버튼 상호작용 비활성화
-            priceBtn.interactable = false; // 가격 버튼 상호작용 비활성화
+            // priceBtn.interactable = false; // 가격 버튼 상호작용 비활성화
             newTxt.gameObject.SetActive(false); //신규 표시 없에기
             soldOutSlash.gameObject.SetActive(true); //가격 표시 사선 표시
 
@@ -386,6 +428,19 @@ public class VendMachineUI : MonoBehaviour
             // 상품 오브젝트 켜기
             outputObj.SetActive(true);
 
+            // 가격 지불하기
+            PlayerManager.Instance.PayGem(priceType, GetPrice(index));
+
+            // 돈 나가는 소리 재생
+            // SoundManager.Instance.PlaySound("Vend_Pay", 0, 0, 1, false);
+            // yield return new WaitForSecondsRealtime(0.1f);
+
+            // 자판기 상품 투하 소리 재생
+            SoundManager.Instance.PlaySound("Vend_Purchase", 0, 0, 1, false);
+
+            // 모든 상품 가격 색깔 업데이트하여 구매가능 여부 표시
+            UpdatePrice();
+
             //아이콘 스프라이트 교체
             Image outputIcon = outputObj.transform.Find("Icon").GetComponent<Image>();
             outputIcon.sprite = productObj.transform.Find("Icon").GetComponent<Image>().sprite;
@@ -394,8 +449,11 @@ public class VendMachineUI : MonoBehaviour
             Image outputFrame = outputObj.transform.Find("Frame").GetComponent<Image>();
             outputFrame.color = productObj.transform.Find("Frame").GetComponent<Image>().color;
 
-            // 기존 시퀀스 끄기
-            outputSeq.Kill();
+            // yield return new WaitForSecondsRealtime(0.2f);
+
+            // 기존 시퀀스 있으면 완료시키기
+            if (outputSeq != null)
+                outputSeq.Kill();
             // 자판기 이미지 원래 위치 저장
             Vector3 vendOriginPos = vendMachineObj.position;
 
@@ -441,32 +499,29 @@ public class VendMachineUI : MonoBehaviour
             {
                 // 상품 오브젝트 끄기
                 outputObj.SetActive(false);
-
-                // 인벤토리 빈칸 인덱스
-                int emptyIndex = PhoneMenu.Instance.GetEmptySlot();
-
-                // 빈칸이 있을때
-                if (emptyIndex != -1)
-                    // 플레이어 상품 획득
-                    PhoneMenu.Instance.GetProduct(slotInfo, emptyIndex);
-                // 빈칸 없을때
-                else
-                {
-                    // 필드드랍 1개 이상 있으면 켜기
-                    fieldDrop = true;
-
-                    // 아이템 드롭
-                    ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position);
-                }
             });
+
+            // 필드드랍 1개 이상 있으면 켜기
+            fieldDrop = true;
+
+            // 아이템 드롭
+            ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position);
         }
         //구매 불가능
         else
         {
-            Color originColor = iconBtn.GetComponent<Image>().color;
+            // 인디케이터 깜빡이기
+            indicator.DOKill();
+            indicator.color = Color.clear; //색깔 초기화
 
-            // 상품 깜빡이기
-            FlickerObj(iconBtn.gameObject, originColor);
+            // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
+            indicator.DOColor(new Color(1, 0, 0, 100f / 255f), 0.1f)
+            .SetLoops(4, LoopType.Yoyo)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                indicator.color = Color.clear; //색깔 초기화
+            });
 
             //부족한 젬 타입 숫자 UI 깜빡이기
             UIManager.Instance.GemIndicator(priceType, Color.red);
@@ -481,13 +536,15 @@ public class VendMachineUI : MonoBehaviour
         {
             img.DOKill();
 
+            img.color = originColor; //색깔 초기화
+
             // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
             img.DOColor(new Color(1, 0, 0, 0.5f), 0.1f)
             .SetLoops(4, LoopType.Yoyo)
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                img.color = originColor; //색깔 초기화하고 끝
+                img.color = originColor; //색깔 초기화
             });
         }
         else if (obj.TryGetComponent(out Text txt))
@@ -500,7 +557,7 @@ public class VendMachineUI : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                txt.color = originColor; //색깔 초기화하고 끝
+                txt.color = originColor; //색깔 초기화
             });
         }
     }
@@ -522,7 +579,9 @@ public class VendMachineUI : MonoBehaviour
         if (fieldDrop)
         {
             // 트럭 전조등 이펙트 켜기
-            itemDropper.GetComponent<ParticleSystem>().Play();
+            ParticleSystem truckParticle = itemDropper.GetComponent<ParticleSystem>();
+            if (truckParticle)
+                truckParticle.Play();
         }
 
         // 드롭퍼 변수 초기화

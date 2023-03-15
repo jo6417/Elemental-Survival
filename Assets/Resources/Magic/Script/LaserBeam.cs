@@ -53,7 +53,7 @@ public class LaserBeam : MonoBehaviour
         explosion.SetActive(false);
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 폭발 이펙트도 마법 정보 및 타겟 넣기        
         subMagicHolder.magic = magicHolder.magic;

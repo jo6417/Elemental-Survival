@@ -35,11 +35,8 @@ public class MagicSting : MonoBehaviour
 
     IEnumerator Init()
     {
-        //초기화
-        StartCoroutine(Init());
-
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 마법 오브젝트 속도, 숫자가 작을수록 빠름
         float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);

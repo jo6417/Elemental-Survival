@@ -35,7 +35,7 @@ public class HealingSpa : MonoBehaviour
         pondSprite.enabled = false;
 
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         healPower = Mathf.RoundToInt(magicHolder.power); //회복할 양, int로 반올림해서 사용
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);

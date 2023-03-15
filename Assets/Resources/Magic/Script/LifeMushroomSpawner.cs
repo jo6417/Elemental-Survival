@@ -28,7 +28,7 @@ public class LifeMushroomSpawner : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         // 독 도트뎀 지속시간에 반영
         magicHolder.poisonTime = magicHolder.duration;

@@ -42,7 +42,7 @@ public class AstralForm : MonoBehaviour
     IEnumerator Init()
     {
         // magicHolder 초기화 대기
-        yield return new WaitUntil(() => magicHolder.initDone);
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
         speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false); // 스피드만큼 시간 느려지고 플레이어 빨라짐
 
