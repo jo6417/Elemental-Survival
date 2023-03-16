@@ -57,7 +57,6 @@ public class LifeMushroom : MonoBehaviour
         particleEmission.SetBurst(0, burst);
 
         // 파티클 공격 실행
-        print("Play");
         mushroomAttack.Play();
 
         // 효과음 재생

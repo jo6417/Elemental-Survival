@@ -87,8 +87,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AnimationCurve curve_3D; // 3D 볼륨 커브
 
     [Header("Sounds")]
-    private List<AudioSource> attach_Sounds = new List<AudioSource>(); // 오브젝트에 붙인 사운드
-    private List<Sound> all_Sounds = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
+    [SerializeField, ReadOnly] public List<AudioSource> Playing_SoundList = new List<AudioSource>(); // 재생중인 사운드 리스트
+    private List<Sound> Origin_SoundList = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
     [SerializeField] List<SoundBundle> soundBundleList = new List<SoundBundle>();
     [SerializeField] SoundBundleList soundBundleDB; // 사운드 리스트 DB
 
@@ -138,7 +138,7 @@ public class SoundManager : MonoBehaviour
         }
 
         // 모든 사운드 추가 될때까지 대기
-        yield return new WaitUntil(() => all_Sounds.Count == soundsNum);
+        yield return new WaitUntil(() => Origin_SoundList.Count == soundsNum);
 
         // 초기화 완료
         print("Sound Loaded!");
@@ -179,7 +179,7 @@ public class SoundManager : MonoBehaviour
         foreach (Sound sound in soundBundle.sounds)
         {
             // 사운드 리스트에 종합
-            all_Sounds.Add(sound);
+            Origin_SoundList.Add(sound);
 
             // 사운드 안넣었으면 넘기기
             if (sound.clip == null)
@@ -272,7 +272,7 @@ public class SoundManager : MonoBehaviour
             // print(soundName);
 
             // 사운드 찾기
-            Sound sound = all_Sounds.Find(x => x.name == soundName);
+            Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
             // 배경음 사운드 정보 갱신
             nowBGM_Sound = sound;
@@ -376,7 +376,7 @@ public class SoundManager : MonoBehaviour
 
     public Sound GetSound(string soundName)
     {
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
         return sound;
     }
 
@@ -384,7 +384,7 @@ public class SoundManager : MonoBehaviour
     public AudioSource PlaySound(string soundName, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         // 없으면 리턴
         if (sound == null || sound.source == null)
@@ -406,7 +406,7 @@ public class SoundManager : MonoBehaviour
     public AudioSource PlaySound(string soundName, Vector3 position, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = false)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         if (sound == null || sound.source == null)
         {
@@ -427,7 +427,7 @@ public class SoundManager : MonoBehaviour
     public AudioSource PlaySound(string soundName, Transform attachor, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = false)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         if (sound == null || sound.source == null)
             return null;
@@ -454,14 +454,14 @@ public class SoundManager : MonoBehaviour
         // 오디오 초기화 후 플레이
         AudioSource audio = InitAudio(audioObj, sound, 1, fadeIn, delay, loopNum, scaledTime);
 
-        // 재생중인 오디오를 기억
-        attach_Sounds.Add(audio);
-
         return audio;
     }
 
     IEnumerator Play(Sound sound, AudioSource audio, bool autoDespawn, float fadeinTime, float delay, int loopNum, bool scaledTime)
     {
+        // 재생중인 오디오를 리스트에 저장
+        Playing_SoundList.Add(audio);
+
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => initFinish);
 
@@ -528,7 +528,7 @@ public class SoundManager : MonoBehaviour
             if (audio != null)
             {
                 // 오디오 리스트에서삭제
-                attach_Sounds.Remove(audio);
+                Playing_SoundList.Remove(audio);
 
                 // 오디오 클립 비우기
                 audio.clip = null;
@@ -618,36 +618,36 @@ public class SoundManager : MonoBehaviour
         // DOTween.To(() => globalPitch, x => globalPitch = x, scale, fadeTime)
         // .SetUpdate(unscaledTime);
 
-        // 월드에서 재생중인 오디오들의 피치값 조정
-        foreach (Sound sound in all_Sounds)
+        // 글로벌 재생중인 원본 오디오들의 피치값 조정
+        foreach (Sound sound in Origin_SoundList)
             if (sound.source != null)
                 DOTween.To(() => sound.source.pitch, x => sound.source.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
                 .SetUpdate(!scaledTime);
 
-        // 오브젝트에 붙인 오디오들의 피치값 조정
-        foreach (AudioSource audio in attach_Sounds)
+        // 월드에서 재생중인 오디오들의 피치값 조정
+        foreach (AudioSource audio in Playing_SoundList)
             if (audio != null)
             {
-                // 오브젝트 이름으로 사운드 찾기
-                Sound sound = all_Sounds.Find(x => x.name == audio.name);
+                // 오브젝트 이름으로 원본 사운드 찾기
+                Sound sound = Origin_SoundList.Find(x => x.name == audio.name);
 
                 DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
                 .SetUpdate(!scaledTime);
             }
 
-        // 효과음 사운드풀 하위 오디오들의 피치값 조정
-        for (int i = 0; i < soundPool_SFX.childCount; i++)
-        {
-            // 자식중에 오디오 찾기
-            AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
+        // // 효과음 사운드풀 하위 오디오들의 피치값 조정
+        // for (int i = 0; i < soundPool_SFX.childCount; i++)
+        // {
+        //     // 자식중에 오디오 찾기
+        //     AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
 
-            // 오브젝트 이름으로 사운드 찾기
-            Sound sound = all_Sounds.Find(x => x.name == audio.name);
+        //     // 오브젝트 이름으로 사운드 찾기
+        //     Sound sound = Origin_SoundList.Find(x => x.name == audio.name);
 
-            // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
-            DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-            .SetUpdate(!scaledTime);
-        }
+        //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
+        //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
+        //     .SetUpdate(!scaledTime);
+        // }
     }
 
     public void Set_MasterVolume(float setVolume)
@@ -717,7 +717,7 @@ public class SoundManager : MonoBehaviour
     public float GetVolume(string soundName)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         if (sound == null || sound.source == null)
             print("Sound Not Found");
@@ -728,7 +728,7 @@ public class SoundManager : MonoBehaviour
     public float GetVolume(string soundName, Transform attachor = null)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         if (sound == null || sound.source == null)
             print("Sound Not Found");
@@ -756,7 +756,7 @@ public class SoundManager : MonoBehaviour
     public void VolumeChange(string soundName, float volumeMultiple, float changeTime = 0)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         if (sound == null || sound.source == null)
             print("Sound Not Found");
@@ -775,7 +775,7 @@ public class SoundManager : MonoBehaviour
     public void VolumeChange(string soundName, Transform attachor, float volumeMultiple, float changeTime = 0)
     {
         // 해당 이름으로 사운드 찾기
-        Sound sound = all_Sounds.Find(x => x.name == soundName);
+        Sound sound = Origin_SoundList.Find(x => x.name == soundName);
 
         if (sound == null || sound.source == null)
             print("Sound Not Found");
@@ -801,5 +801,26 @@ public class SoundManager : MonoBehaviour
                 return;
             }
         }
+    }
+
+    public void DestoryAllSound()
+    {
+        // 플레이중인 모든 오디오 정지
+        foreach (AudioSource audio in Playing_SoundList)
+        {
+            // 오디오 살아있으면
+            if (audio != null)
+            {
+                // 오디오 클립 비우기
+                audio.clip = null;
+
+                // 해당 오디오 오브젝트 제거
+                if (audio.gameObject)
+                    LeanPool.Despawn(audio.gameObject);
+            }
+        }
+
+        // 재생 리스트 비우기
+        Playing_SoundList.Clear();
     }
 }

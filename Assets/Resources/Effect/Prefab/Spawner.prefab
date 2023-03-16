@@ -94,13 +94,14 @@ GameObject:
   m_Component:
   - component: {fileID: 8644468059375039879}
   - component: {fileID: 7337857697649625312}
+  - component: {fileID: 7289757661109782785}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8644468059375039879
 Transform:
   m_ObjectHideFlags: 0
@@ -129,6 +130,23 @@ SortingGroup:
   m_SortingLayerID: -1861760285
   m_SortingLayer: 3
   m_SortingOrder: 0
+--- !u!114 &7289757661109782785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317055855790755743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 6064099036544457077}
+  autoDespawn: 1
+  despawnDelay: 0
+  collOverTime: 0
+  modify_startLife: 0
 --- !u!1 &5118361040175509754
 GameObject:
   m_ObjectHideFlags: 0

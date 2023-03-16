@@ -301,52 +301,6 @@ public class HitBox : MonoBehaviour
         LeanPool.Spawn(hitEffect, hitPos, Quaternion.identity, ObjectPool.Instance.effectPool);
     }
 
-    // public IEnumerator StatBuff(string statName, bool isMultiple, float power, float duration,
-    // Transform buffParent, GameObject debuffEffect, IEnumerator coroutine)
-    // {
-    //     //todo 스탯이름으로 해당 스탯 값 불러오기
-    //     var statField = PlayerManager.Instance.PlayerStat_Now.GetType().GetField(statName);
-    //     var stat = statField.GetValue(PlayerManager.Instance.PlayerStat_Now);
-
-    //     //todo 스탯이름 없으면 에러
-    //     if (statField == null || stat == null)
-    //     {
-    //         print(statName + " : 는 존재하지 않는 스탯 이름");
-    //         yield break;
-    //     }
-
-    //     // Buff buff = AddBuff(statName, isMultiple, power);
-    //     // 버프 인스턴스 생성
-    //     Buff buff = new Buff();
-    //     // 스탯 이름 전달
-    //     buff.statName = statName;
-    //     // 연산 종류 전달
-    //     buff.isMultiple = isMultiple;
-    //     // 버프량 전달
-    //     buff.amount = power;
-    //     // 해당 버프 리스트에 넣기
-    //     buffList.Add(buff);
-
-    //     // 디버프 아이콘
-    //     Transform debuffUI = null;
-    //     // 이미 슬로우 디버프 중 아닐때
-    //     if (!buffParent.Find(debuffEffect.name))
-    //         //슬로우 디버프 아이콘 붙이기
-    //         debuffUI = LeanPool.Spawn(debuffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
-
-    //     // 일정 시간 대기
-    //     yield return new WaitForSeconds(duration);
-
-    //     // 해당 리스트에서 버프 없에기
-    //     // RemoveBuff(buff);
-    //     buffList.Remove(buff);
-
-    //     // 슬로우 아이콘 없에기
-    //     debuffUI = buffParent.Find(debuffEffect.name);
-    //     if (debuffUI != null)
-    //         LeanPool.Despawn(debuffUI);
-    // }
-
     public void AfterEffect(Attack attack, bool isCritical, float damage = 0)
     {
         // 보스가 아닌 몬스터일때, 몬스터 아닐때(플레이어, 사물)
@@ -368,6 +322,12 @@ public class HitBox : MonoBehaviour
                 // 버프 적용
                 character.SetBuff(Debuff.Slow.ToString(), nameof(character.characterStat.moveSpeed), true, 0.5f, attack.slowTime,
                    false, character.buffParent, SystemManager.Instance.slowDebuffUI);
+
+            // 냉동 디버프, 크리티컬 성공일때
+            if (attack.freezeTime > 0)
+                // 버프 적용
+                character.SetBuff(Debuff.Freeze.ToString(), nameof(character.characterStat.moveSpeed), true, 0.7f, attack.freezeTime,
+                   false, character.buffParent, SystemManager.Instance.freezeDebuffUI);
 
             // 스턴
             if (attack.stunTime > 0)
@@ -670,7 +630,7 @@ public class HitBox : MonoBehaviour
         }
 
         // 모든 디버프 해제
-        DebuffRemove();
+        character.DebuffRemove();
 
         // 먼지 이펙트 생성
         GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
@@ -688,17 +648,5 @@ public class HitBox : MonoBehaviour
 
         // 캐릭터 비활성화
         LeanPool.Despawn(character.gameObject);
-    }
-
-    public void DebuffRemove()
-    {
-        // 플랫 디버프 초기화
-        character.flatCount = 0f;
-        //스케일 복구
-        character.transform.localScale = Vector2.one;
-
-        // 모든 버프 해제
-        for (int i = 0; i < character.buffList.Count; i++)
-            StartCoroutine(character.StopBuff(character.buffList[i], character.buffList[i].duration));
     }
 }

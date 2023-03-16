@@ -106,7 +106,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: de0261198f2e00b49a679efc4f964f7c, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: MergeParticleStart
       clip: {fileID: 8300000, guid: 23dfc34dc0158fd4aa469f588e8ec596, type: 3}
@@ -356,7 +357,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 4144807ac08bfd545908311f792082de, type: 3}
       volume: 0.03
       pitch: 1.5
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Flame_Start
       clip: {fileID: 8300000, guid: 10d09986ff8cbae48a1f69d4eacb5671, type: 3}
@@ -420,9 +422,9 @@ MonoBehaviour:
       mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
         type: 2}
       source: {fileID: 0}
-    - name: HealingSpa
+    - name: HealingSpa_Spawn
       clip: {fileID: 8300000, guid: 4772eea214dcd9746bcaeb204ee102ea, type: 3}
-      volume: 0.5
+      volume: 0.2
       pitch: 1
       mixerGroup: {fileID: 0}
       source: {fileID: 0}

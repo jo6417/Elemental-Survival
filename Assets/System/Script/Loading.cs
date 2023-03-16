@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DG.Tweening;
+using Lean.Pool;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -285,12 +286,19 @@ public class Loading : MonoBehaviour
         // 마스크로 가릴때
         if (isOpenScene)
         {
+            // 배경음 정지
             SoundManager.Instance.PauseBGM();
+            // 모든 효과음 중지 및 삭제
+            SoundManager.Instance.DestoryAllSound();
 
-            // 플레이어 비활성화
-            PlayerManager.Instance.gameObject.SetActive(false);
-            // 플레이어 활성화
-            PlayerManager.Instance.gameObject.SetActive(true);
+            // 플레이어 있으면
+            if (PlayerManager.Instance)
+            {
+                // 플레이어 비활성화
+                PlayerManager.Instance.gameObject.SetActive(false);
+                // 플레이어 활성화
+                PlayerManager.Instance.gameObject.SetActive(true);
+            }
         }
         // 마스크 끝날때
         else
@@ -321,6 +329,9 @@ public class Loading : MonoBehaviour
             // dontDestroy 오브젝트 모두 파괴
             if (ObjectPool.Instance != null)
                 Destroy(ObjectPool.Instance.gameObject); // 오브젝트 풀 파괴
+
+            LeanPool.DespawnAll();
+
             if (UIManager.Instance != null)
                 Destroy(UIManager.Instance.gameObject); // UI 매니저 파괴
             if (PlayerManager.Instance != null)

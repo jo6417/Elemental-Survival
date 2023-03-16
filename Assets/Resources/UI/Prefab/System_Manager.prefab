@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15860157, g: 0.254717, b: 0.08810963, a: 1}
+  m_Color: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15860157, g: 0.254717, b: 0.08810963, a: 1}
+  m_Color: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15860157, g: 0.254717, b: 0.08810963, a: 1}
+  m_Color: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -424,7 +424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15860157, g: 0.254717, b: 0.08810963, a: 1}
+  m_Color: {r: 0.11764706, g: 0.11764706, b: 0.11764706, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10196,6 +10196,8 @@ MonoBehaviour:
   targetPos_Blue: {fileID: 4171339516480167943, guid: ffd2d9e64890f5f49a1b343991fe46e3,
     type: 3}
   slowDebuffUI: {fileID: 2701371189386851496, guid: 5a5a99f7468d89b4cb32d796a9ef0134,
+    type: 3}
+  freezeDebuffUI: {fileID: 4548429831179006367, guid: c546601a43ef4e9409d9ebfacaa51ba3,
     type: 3}
   bleedDebuffUI: {fileID: 2452559323877256001, guid: f6e0e6dada9315b4fb4491fd5c2f978f,
     type: 3}

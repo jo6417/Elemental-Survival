@@ -14,14 +14,6 @@ public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze 
 
 public class Character : MonoBehaviour
 {
-    [Header("CallBack")]
-    public InitCallback initCallback; // 캐릭터 생성시 실행될 콜백
-    public delegate void InitCallback();
-    public HitCallback hitCallback; // 캐릭터 피격시 실행될 콜백
-    public delegate void HitCallback();
-    public DeadCallback deadCallback; // 캐릭터 사망시 실행될 콜백
-    public delegate void DeadCallback(Character character);
-
     [Header("Init")]
     public EnemyInfo enemy;
     public List<int> defaultHasItem = new List<int>(); //가진 아이템 기본값
@@ -99,6 +91,14 @@ public class Character : MonoBehaviour
         }
     }
 
+    [Header("CallBack")]
+    public InitCallback initCallback; // 캐릭터 생성시 실행될 콜백
+    public delegate void InitCallback();
+    public HitCallback hitCallback; // 캐릭터 피격시 실행될 콜백
+    public delegate void HitCallback();
+    public DeadCallback deadCallback; // 캐릭터 사망시 실행될 콜백
+    public delegate void DeadCallback(Character character);
+
     [Header("Move")]
     public float targetResetTime = 0.5f; //타겟 재설정 시간
     public float targetResetCount = 0; //타겟 재설정 시간 카운트
@@ -123,7 +123,6 @@ public class Character : MonoBehaviour
     public float particleHitCount = 0; // 파티클 피격 카운트
     public float hitDelayCount = 0; // 피격 딜레이 카운트
     public float stopCount = 0; // 시간 정지 카운트
-    public float stunCount = 0; // 스턴 카운트
     public float flatCount = 0; // 납작 디버프 카운트
     public float oppositeCount = 0; // 스포너 반대편 이동 카운트
 
@@ -213,6 +212,9 @@ public class Character : MonoBehaviour
 
         // 공격 쿨타임 초기화
         // atkCoolCount = 0;
+
+        // 모든 디버프 초기화
+        DebuffRemove();
 
         // 히트박스 전부 끄기
         for (int i = 0; i < hitBoxList.Count; i++)
@@ -558,6 +560,21 @@ public class Character : MonoBehaviour
         initialFinish = true;
     }
 
+    public void DebuffRemove()
+    {
+        // 납작해진 스케일 초기화
+        transform.localScale = Vector2.one;
+        // 플랫 시간 초기화
+        flatCount = 0f;
+
+        // 정지 시간 초기화
+        stopCount = 0f;
+
+        // 모든 버프 해제
+        for (int i = 0; i < buffList.Count; i++)
+            StartCoroutine(StopBuff(buffList[i], 0));
+    }
+
     private void Update()
     {
         if (stateText != null)
@@ -725,6 +742,9 @@ public class Character : MonoBehaviour
             return false;
         }
 
+        // 버프 적용된 이동속도 스탯 계산
+        float speedStat = GetBuffedStat(nameof(characterStat.moveSpeed));
+
         // 멈춤 디버프일때
         if (stopCount > 0)
         {
@@ -732,23 +752,16 @@ public class Character : MonoBehaviour
             if (rigid != null)
                 rigid.velocity = Vector2.zero; //이동 초기화
 
-            // rigid.constraints = RigidbodyConstraints2D.FreezeAll;
             // 애니메이션 멈추기
             if (animList.Count > 0)
-            {
                 foreach (Animator anim in animList)
-                {
                     anim.speed = 0f;
-                }
-            }
 
-            // // 히트 딜레이중 아닐때
-            // if (hitDelayCount <= 0)
-            //     //시간 멈춤 머터리얼 및 색으로 바꾸기
-            //     for (int i = 0; i < spriteList.Count; i++)
-            //     {
-            //         spriteList[i].material.SetColor("_Tint", SystemManager.Instance.hitColor);
-            //     }
+            // 히트 딜레이중 아닐때
+            if (hitDelayCount <= 0)
+                //시간 멈춤 머터리얼 및 색으로 바꾸기
+                for (int i = 0; i < spriteList.Count; i++)
+                    spriteList[i].material.SetColor("_Tint", SystemManager.Instance.stopColor);
 
             // 행동불능이므로 false 리턴
             return false;
@@ -768,22 +781,9 @@ public class Character : MonoBehaviour
         if (hitDelayCount > 0)
             return false;
 
-        // // 감전 디버프일때
-        // if (DebuffList[(int)Debuff.Shock] != null
-        // // 스턴 디버프일때
-        // || DebuffList[(int)Debuff.Stun] != null
-        // )
-        //     // 행동불능이므로 false 리턴
-        //     return false;
-
         // 애니메이션 속도 초기화
-        if (animList.Count > 0)
-        {
-            foreach (Animator anim in animList)
-            {
-                anim.speed = 1f * speedNow / EnemyDB.Instance.GetEnemyByID(enemy.id).speed;
-            }
-        }
+        foreach (Animator anim in animList)
+            anim.speed = speedStat;
 
         // 상태 이상 없음
         afterEffect = true;
@@ -928,7 +928,7 @@ public class Character : MonoBehaviour
                      bool dotHit, Transform _buffParent = null, GameObject buffEffect = null)
     {
         // 버프 아이콘
-        Transform buffUI = null;
+        GameObject buffUI = null;
 
         // 스탯 이름이 있을때
         if (statName != "")
@@ -973,9 +973,7 @@ public class Character : MonoBehaviour
             buff.isMultiple = isMultiple;
             // 버프 코루틴 전달
             // buff.buffCoroutine = coroutine;
-            // 버프 아이콘/이펙트
-            buff.buffEffect = buffEffect;
-            // 버프 아이콘/이펙트 부모
+            // 버프 아이콘/이펙트 부모 저장
             buff.buffParent = _buffParent;
             // 버프 지속 시간 전달
             buff.duration = duration;
@@ -984,14 +982,22 @@ public class Character : MonoBehaviour
             if (buffEffect != null && !_buffParent.Find(buffEffect.name))
             {
                 // 아이콘/이펙트 붙이기
-                buffUI = LeanPool.Spawn(buffEffect, _buffParent.position, Quaternion.identity, _buffParent).transform;
+                buffUI = LeanPool.Spawn(buffEffect, _buffParent.position, Quaternion.identity, _buffParent);
+
+                // 버프 아이콘/이펙트 저장
+                buff.buffEffect = buffUI;
 
                 //  몬스터 자체에 붙는 경우
                 if (_buffParent == transform)
+                {
+                    Vector3 scale = CustomMethod.AntualSpriteScale(spriteList[0]) / 4f;
+                    scale.z = 1f;
+
                     // 몬스터 자체 사이즈와 맞추기
-                    buffUI.localScale = CustomMethod.AntualSpriteScale(spriteList[0]) / 4f;
+                    buffUI.transform.localScale = scale;
+                }
                 else
-                    buffUI.localScale = Vector2.one;
+                    buffUI.transform.localScale = Vector2.one;
             }
 
             // 해당 버프 리스트에 넣기
@@ -1012,44 +1018,37 @@ public class Character : MonoBehaviour
         // 일반 버프일때
         else
             // 버프 없에고 아이콘,이펙트 제거
-            StartCoroutine(StopBuff(buff, buff.duration, _buffParent, buffEffect));
+            StartCoroutine(StopBuff(buff, buff.duration));
 
         return buff;
     }
 
-    public IEnumerator StopBuff(Buff buff, float duration, Transform buffParent = null, GameObject buffEffect = null)
+    public IEnumerator StopBuff(Buff buff, float delay)
     {
-        // -1이면 자동 버프제거 중단
-        if (duration == -1)
-            yield break;
+        // 딜레이만큼 대기
+        if (delay > 0)
+            yield return new WaitForSeconds(delay);
 
-        Transform buffUI = null;
+        // 아이콘/이펙트 디스폰
+        if (buff.buffEffect != null)
+            LeanPool.Despawn(buff.buffEffect);
 
-        // 수정된 duration 동안 대기
-        yield return new WaitForSeconds(duration);
-
-        // 이름으로 버프 찾기
-        Buff findBuff = buffList.Find(x => x.buffName == buff.buffName);
-        // 버프 찾았으면
-        if (findBuff != null)
-            // 해당 리스트에서 버프 없에기
-            buffList.Remove(findBuff);
-
-        // 아이콘/이펙트 찾기
-        if (buffEffect != null && buffUI == null)
-            buffUI = buffParent.Find(buffEffect.name);
-        // 아이콘/이펙트 없에기
-        if (buffUI != null)
-            LeanPool.Despawn(buffUI);
+        // 해당 리스트에서 버프 없에기
+        if (buff != null)
+            buffList.Remove(buff);
     }
 
-    public IEnumerator DotHit(Buff buff, Transform buffParent = null, GameObject buffEffect = null)
+    public IEnumerator DotHit(Buff buff, Transform buffParent = null, GameObject buffEffectPrefab = null)
     {
-        Transform buffUI = null;
+        GameObject buff_Effect = null;
         // 이미 버프 중 아닐때
-        if (buffEffect != null && !buffParent.Find(buffEffect.name))
+        if (buffEffectPrefab != null && !buffParent.Find(buffEffectPrefab.name))
             // 아이콘/이펙트 붙이기
-            buffUI = LeanPool.Spawn(buffEffect, buffParent.position, Quaternion.identity, buffParent).transform;
+            buff_Effect = LeanPool.Spawn(buffEffectPrefab, buffParent.position, Quaternion.identity, buffParent);
+
+        // 버프에 정보 저장
+        buff.buffParent = buffParent;
+        buff.buffEffect = buff_Effect;
 
         // 도트 지속시간을 횟수로 환산
         int hitNum = (int)buff.duration;
@@ -1067,7 +1066,7 @@ public class Character : MonoBehaviour
             }
 
         // 즉시 버프 없에고 아이콘,이펙트 제거
-        StartCoroutine(StopBuff(buff, 0, buffParent, buffEffect));
+        StartCoroutine(StopBuff(buff, 0));
     }
 }
 
@@ -1077,7 +1076,7 @@ public class CharacterStat
     public int powerSum; // 캐릭터 총 전투력
     public float hpMax = 100; // 최대 체력
     public float hpNow = 100; // 체력
-    public float Level = 1; //레벨
+    public int Level = 1; //레벨
     public float moveSpeed = 1; //이동속도
     public int atkNum = 0; // 공격 횟수
     public int pierce = 0; // 관통 횟수

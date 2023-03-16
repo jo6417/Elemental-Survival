@@ -6,19 +6,12 @@ using DG.Tweening;
 
 public class HealingSpa : MonoBehaviour
 {
-    [Header("State")]
-    [SerializeField] MagicHolder magicHolder;
-    [SerializeField, ReadOnly] bool inPlayer = false; // 연못안에 플레이어 들어있는지 여부
-
     [Header("Refer")]
+    [SerializeField] MagicHolder magicHolder;
     [SerializeField] Collider2D coll;
     [SerializeField] SpriteRenderer pondSprite; // 연못 스프라이트
     public GameObject pulsePrefab; // 캐릭터 밑에 펄스 이펙트
     public GameObject dustEffect; // 디스폰 이펙트
-
-    [Header("Magic Stat")]
-    int healPower = -1;
-    float speed;
 
     private void OnEnable()
     {
@@ -37,9 +30,6 @@ public class HealingSpa : MonoBehaviour
         // magicHolder 초기화 대기
         yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
-        healPower = Mathf.RoundToInt(magicHolder.power); //회복할 양, int로 반올림해서 사용
-        speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
-
         if (magicHolder.isQuickCast)
             // 타겟 위치로 이동
             transform.position = magicHolder.targetPos;
@@ -52,6 +42,8 @@ public class HealingSpa : MonoBehaviour
 
         // 연못 이미지 나타내기
         pondSprite.enabled = true;
+
+        SoundManager.Instance.PlaySound("HealingSpa_Spawn", transform);
 
         //제로 사이즈에서 크기 키우기
         transform.DOScale(magicHolder.range, 0.5f)
@@ -79,47 +71,43 @@ public class HealingSpa : MonoBehaviour
         });
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // 플레이어 들어옴
-        if (other.TryGetComponent(out PlayerManager playerManager))
-            inPlayer = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        // 플레이어 나감
-        if (other.TryGetComponent(out PlayerManager playerManager))
-            inPlayer = false;
-    }
-
     private void OnTriggerStay2D(Collider2D other)
     {
         // 적이 닿으면
-        if (other.CompareTag(TagNameList.Enemy.ToString()) && other.TryGetComponent(out Character character))
+        if (other.CompareTag(TagNameList.Enemy.ToString()))
         {
-            // 해당 몬스터 히트 쿨타임 끝났을때
-            if (character.hitDelayCount <= 0)
+            if (other.TryGetComponent(out Character character))
             {
-                // 죽은 적이면 취소
-                if (character.isDead)
+                // 해당 몬스터 히트 쿨타임 끝났을때
+                if (character.hitDelayCount <= 0)
+                {
+                    // 죽은 적이면 취소
+                    if (character.isDead)
+                        return;
+
+                    // // 닿은 적에게 데미지 주기
+                    // StartCoroutine(character.hitBoxList[0].Hit(magicHolder));
+
+                    // 충돌한 캐릭터 발밑에 물결 일으키기
+                    LeanPool.Spawn(pulsePrefab, other.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+                }
+            }
+        }
+
+        // 플레이어가 닿으면
+        if (other.CompareTag(TagNameList.Player.ToString()))
+        {
+            if (other.TryGetComponent(out Character character))
+            {
+                // 피격 딜레이 중이면 리턴
+                if (character.hitDelayCount > 0)
                     return;
 
-                // 닿은 적에게 데미지 주기
-                StartCoroutine(character.hitBoxList[0].Hit(magicHolder));
+                // 플레이어 체력 회복
+                character.hitBoxList[0].Damage(-magicHolder.power, false);
 
-                // 충돌한 캐릭터 발밑에 물결 일으키기
-                LeanPool.Spawn(pulsePrefab, other.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
-
-                // 연못 안에 플레이어 있으면
-                if (inPlayer)
-                {
-                    // 플레이어 체력 회복
-                    PlayerManager.Instance.hitBox.Damage(-healPower, false);
-
-                    // 플레이어 발밑에 물결 일으키기
-                    LeanPool.Spawn(pulsePrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
-                }
+                // 플레이어 발밑에 물결 일으키기
+                LeanPool.Spawn(pulsePrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
             }
         }
     }

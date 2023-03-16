@@ -116,8 +116,11 @@ public class AstralForm : MonoBehaviour
             // 플레이어 속도 상승 버프
             buff = PlayerManager.Instance.SetBuff("AstralForm_Fast", nameof(PlayerManager.Instance.characterStat.moveSpeed), true, speed * speed, magicHolder.duration, false);
         else
-            // 플레이어 속도 버프 제거
-            StartCoroutine(PlayerManager.Instance.StopBuff(buff, 0));
+        {
+            if (buff != null)
+                // 플레이어 속도 버프 제거
+                StartCoroutine(PlayerManager.Instance.StopBuff(buff, 0));
+        }
 
         //플레이어 이동속도 갱신
         PlayerManager.Instance.Move();

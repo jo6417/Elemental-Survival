@@ -63,9 +63,9 @@ public class SystemManager : MonoBehaviour
                 instance = FindObjectOfType<SystemManager>();
                 if (instance == null)
                 {
-                    GameObject obj = new GameObject();
-                    obj.name = "SystemManager";
-                    instance = obj.AddComponent<SystemManager>();
+                    // GameObject obj = new GameObject();
+                    // obj.name = "SystemManager";
+                    // instance = obj.AddComponent<SystemManager>();
                 }
             }
             return instance;
@@ -181,6 +181,7 @@ public class SystemManager : MonoBehaviour
 
     [Header("Prefab")]
     public GameObject slowDebuffUI; // 캐릭터 머리위에 붙는 슬로우 디버프 아이콘
+    public GameObject freezeDebuffUI; // 캐릭터 머리위에 붙는 냉동 디버프 아이콘
     public GameObject bleedDebuffUI; // 캐릭터 머리위에 붙는 출혈 디버프 아이콘
     public GameObject stunDebuffEffect; // 캐릭터 머리위에 붙는 스턴 디버프 이펙트
     public GameObject burnDebuffEffect; // 캐릭터 몸에 붙는 화상 디버프 이펙트

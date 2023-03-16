@@ -39,7 +39,7 @@ Material:
     m_Floats: []
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _OutLineColor: {r: 0, g: 0.7058824, b: 0.7490196, a: 0}
+    - _OutLineColor: {r: 1, g: 1, b: 1, a: 0}
     - _TexColor: {r: 1, g: 1, b: 1, a: 1}
     - _Tint: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []

@@ -6,20 +6,12 @@ using UnityEngine;
 
 public class Nimbus : MonoBehaviour
 {
-    MagicHolder magicHolder;
-    [SerializeField] ParticleSystem cloud;
+    [SerializeField] MagicHolder magicHolder;
+    [SerializeField] ParticleSystem cloud; // 구름 파티클
     [SerializeField] ParticleManager thunderManager; // 내리치는 번개 파티클 매니저
     [SerializeField] ParticleManager groundElectroManager; // 지면을 타고 흐르는 번개 파티클 매니저
     [SerializeField] CircleCollider2D atkColl; // 공격용 콜라이더
     [SerializeField] GameObject deadzone; // 번개 충돌하는 데드존
-
-    float range;
-    float duration;
-
-    private void Awake()
-    {
-        magicHolder = magicHolder == null ? GetComponent<MagicHolder>() : magicHolder;
-    }
 
     private void OnEnable()
     {
@@ -28,13 +20,14 @@ public class Nimbus : MonoBehaviour
 
     IEnumerator Init()
     {
+        // magicHolder 초기화 대기
+        yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
+
+        // 감전 시간 갱신
+        magicHolder.shockTime = 1 + magicHolder.duration;
+
         // 공격용 콜라이더 끄기
         atkColl.enabled = false;
-
-        yield return new WaitUntil(() => magicHolder.magic != null);
-        // 스탯 불러오기
-        range = MagicDB.Instance.MagicRange(magicHolder.magic);
-        duration = MagicDB.Instance.MagicDuration(magicHolder.magic);
 
         // 타겟 위치로 이동
         transform.position = magicHolder.targetPos;
@@ -45,6 +38,9 @@ public class Nimbus : MonoBehaviour
 
     IEnumerator StartAtk()
     {
+        // 구름 파티클 켜기
+        cloud.gameObject.SetActive(true);
+
         // 콜라이더 끄기
         atkColl.enabled = false;
 
@@ -60,17 +56,20 @@ public class Nimbus : MonoBehaviour
         // 데드존 켜기
         deadzone.SetActive(true);
 
-        // 공격용 콜라이더 스케일 키우기
-        DOTween.To(x => atkColl.radius = x, atkColl.radius, range, duration);
-
         // 번개 치는 시간 대기
         yield return new WaitForSeconds(0.4f);
+
+        // 공격용 콜라이더 스케일 키우기
+        DOTween.To(x => atkColl.radius = x, atkColl.radius, magicHolder.range, 0.2f);
 
         // 지면 번개 파티클 재생
         groundElectroManager.particle.Play();
 
         // 공격용 콜라이더를 duration 동안 반복 점멸
         yield return StartCoroutine(FlickerColl());
+
+        // 지면 번개 파티클 정지
+        groundElectroManager.SmoothStop();
 
         // 콜라이더 끄기
         atkColl.enabled = false;
@@ -80,6 +79,9 @@ public class Nimbus : MonoBehaviour
         // 그을음 파티클 끝날때까지 대기
         yield return new WaitForSeconds(2f);
 
+        // 구름 파티클 끄기
+        cloud.gameObject.SetActive(false);
+
         // 디스폰
         StartCoroutine(AutoDespawn());
     }
@@ -87,7 +89,7 @@ public class Nimbus : MonoBehaviour
     IEnumerator FlickerColl()
     {
         // 깜빡일 시간 받기
-        float flickCount = duration;
+        float flickCount = magicHolder.duration;
         while (flickCount > 0)
         {
             // 콜라이더 토글

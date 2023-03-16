@@ -50,7 +50,6 @@ public class PlayerInteracter : MonoBehaviour
         if (interacters.Count == 0)
         {
             nearInteracter = null;
-
             return;
         }
 
@@ -58,8 +57,15 @@ public class PlayerInteracter : MonoBehaviour
         float nearDistance = float.PositiveInfinity;
 
         // 가장 가까운 상호작용 가능한 오브젝트 찾기
-        for (int i = 0; i < interacters.Count; i++)
+        for (int i = interacters.Count - 1; i >= 0; i--)
         {
+            // 반복문 거꾸로 검사해서 null 항목 제거
+            if (interacters[i] == null)
+            {
+                interacters.RemoveAt(i);
+                continue; // 다음 요소로 이동
+            }
+
             //오브젝트와의 거리 산출
             float distance = Vector2.Distance(interacters[i].transform.position, transform.position);
 

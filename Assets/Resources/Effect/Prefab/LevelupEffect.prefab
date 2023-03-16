@@ -87807,7 +87807,7 @@ GameObject:
   - component: {fileID: 6650276379754545566}
   - component: {fileID: 3033650644740633906}
   m_Layer: 0
-  m_Name: LevelupAudio
+  m_Name: Player_Levelup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87939,7 +87939,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1754454283734634590
 Transform:
   m_ObjectHideFlags: 0

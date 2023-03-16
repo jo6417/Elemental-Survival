@@ -183,7 +183,7 @@ public class ItemManager : MonoBehaviour
     void PlayerCollision()
     {
         // 이중 충돌 방지
-        coll.isTrigger = true;
+        // coll.isTrigger = true;
 
         // 인벤토리에 들어가는 아이템일때 (마법이거나 샤드 아이템)
         if (magicInfo != null
@@ -289,12 +289,12 @@ public class ItemManager : MonoBehaviour
         // 합산 아이템 개수 초기화
         int sumAmount = itemInfo.amount;
 
-        //todo 일정 범위 안의 아이템 모두 찾기
+        // 일정 범위 안의 아이템 모두 찾기
         List<Collider2D> itemCollList = Physics2D.OverlapCircleAll(transform.position, 5f, 1 << SystemManager.Instance.layerList.Item_Layer).ToList();
         for (int i = 0; i < itemCollList.Count; i++)
         {
-            // 아이템 매니저 있을때
-            if (itemCollList[i].TryGetComponent(out ItemManager itemManager))
+            // 아이템 매니저, 아이템 정보 있을때
+            if (itemCollList[i].TryGetComponent(out ItemManager itemManager) && itemManager.itemInfo != null)
             {
                 // 같은 속성의 원소젬, amount를 합쳐도 10개 이하인 원소젬 찾기
                 if (itemManager.itemInfo.id == itemInfo.id && itemManager.itemInfo.amount + sumAmount <= 10)

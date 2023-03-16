@@ -136,7 +136,7 @@ public class MagicProjectile : MonoBehaviour
         yield return new WaitForSeconds(customDuration);
 
         // 자동 디스폰
-        if (gameObject)
+        if (gameObject && gameObject.activeSelf)
             StartCoroutine(DespawnMagic());
 
         // // 목표 위치까지 거리가 가까워지면 파괴

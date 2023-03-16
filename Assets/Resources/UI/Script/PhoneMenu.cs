@@ -1319,6 +1319,14 @@ public class PhoneMenu : MonoBehaviour
             }
         }
 
+        //todo 인벤토리에 빈칸 없으면 플레이어 아이템 마그넷 끄기
+        if (emptyIndex == -1)
+            PlayerManager.Instance.itemMagnet.SetActive(false);
+        else
+        {
+            PlayerManager.Instance.itemMagnet.SetActive(true);
+        }
+
         // 빈칸 인덱스 리턴
         return emptyIndex;
     }

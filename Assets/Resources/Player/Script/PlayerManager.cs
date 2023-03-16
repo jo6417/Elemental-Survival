@@ -43,8 +43,6 @@ public class PlayerManager : Character
     public PlayerInteracter playerInteracter; //플레이어 상호작용 컴포넌트
 
     [Header("Refer")]
-    // public Transform activeParent; // 퀵슬롯들 부모 오브젝트
-    // public GameObject aimCursor; //! 테스트용 마커
     public GameObject bloodPrefab; //플레이어 혈흔 파티클
     public PlayerHitBox hitBox;
     public SpriteRenderer playerSprite; // 몸체 스프라이트
@@ -57,12 +55,18 @@ public class PlayerManager : Character
     public Animator anim;
     public Transform knockbackColl; // 레벨업 시 넉백 콜라이더
     public GameObject lvUpEffectPrefab; // 레벨업 이펙트
+    public GameObject itemMagnet; // 아이템 끌어들이는 마그넷
 
-    [Header("Stat")] //플레이어 스탯
-    // public CharacterStat characterStat; // 현재 스탯
-    // private CharacterStat PlayerStat_Default; // 초기 스탯
-    public float ExpMax = 5; // 경험치 최대치
+    [Header("Stat")]
     public float ExpNow = 0; // 현재 경험치
+    // 경험치 최대치
+    public float ExpMax
+    {
+        get
+        {
+            return GetMaxExperience(characterStat.Level);
+        }
+    }
 
     [Header("State")]
     public bool initFinish = false;
@@ -264,7 +268,7 @@ public class PlayerManager : Character
         UIManager.Instance.InitialStat();
 
         // 1레벨 경험치 최대치 갱신
-        ExpMax = characterStat.Level * characterStat.Level + 5;
+        // ExpMax = characterStat.Level * characterStat.Level + 5;
 
         // 플레이어 빔에서 스폰
         StartCoroutine(SpawnPlayer());
@@ -281,7 +285,7 @@ public class PlayerManager : Character
         GameObject spawner = LeanPool.Spawn(WorldSpawner.Instance.spawnerPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
         Transform beam = spawner.transform.Find("Beam");
         Transform portal = spawner.transform.Find("Portal");
-        ParticleSystem beamParticle = spawner.transform.Find("BeamParticle").GetComponent<ParticleSystem>();
+        Transform beamParticle = spawner.transform.Find("BeamParticle");
 
         // 포탈 및 빔 사이즈 초기화
         portal.localScale = Vector2.zero;
@@ -306,7 +310,8 @@ public class PlayerManager : Character
         shadowSprite.enabled = true;
 
         // 빔 파티클 켜기
-        beamParticle.gameObject.SetActive(true);
+        if (beamParticle)
+            beamParticle.gameObject.SetActive(true);
 
         // 빔 축소
         beam.DOScale(new Vector2(0, 1), 0.3f)
@@ -325,11 +330,6 @@ public class PlayerManager : Character
         player_Input.Enable();
         // UI 컨트롤 켜기
         UIManager.Instance.UI_Input.Enable();
-
-        // 빔 파티클 꺼질때까지 대기
-        yield return new WaitUntil(() => !beamParticle.gameObject.activeSelf);
-        // 빔 디스폰
-        LeanPool.Despawn(spawner);
     }
 
     private void OnDestroy()
@@ -573,6 +573,41 @@ public class PlayerManager : Character
         // BuffUpdate();
     }
 
+    int levelRange_1 = 20;
+    int levelRange_2 = 40;
+
+    private int GetMaxExperience(int level)
+    {
+        int maxExperience = 0;
+
+        if (level < 1)
+            // 유효하지 않은 레벨 입력 시 0 반환
+            maxExperience = 0;
+        else if (level < levelRange_1)
+            // 1~19레벨 구간
+            maxExperience = 5 + (level - 1) * 10;
+        else if (level < levelRange_2)
+        {
+            // 20~39레벨 구간
+            maxExperience = GetMaxExperience(levelRange_1 - 1) + (level - 20) * 13;
+
+            if (level > levelRange_1)
+                // 20레벨 이상일때 경험치 600 추가
+                maxExperience += 600;
+        }
+        else
+        {
+            // 40~99레벨 구간
+            maxExperience = GetMaxExperience(levelRange_2 - 1) + (level - 40) * 16;
+
+            if (level > levelRange_2)
+                // 40레벨 이상일때 경험치 2400 추가
+                maxExperience += 2400;
+        }
+
+        return maxExperience;
+    }
+
     IEnumerator GetExp()
     {
         // 획득 대기 원소젬이 리스트에 남아있으면 반복
@@ -590,6 +625,8 @@ public class PlayerManager : Character
             {
                 // 경험치 1씩 증가
                 ExpNow += 1;
+
+                print("level : " + characterStat.Level + " / maxExperience : " + ExpMax);
 
                 //경험치 다 찼을때 레벨업
                 if (ExpNow == ExpMax)
@@ -649,7 +686,7 @@ public class PlayerManager : Character
         ExpNow = 0;
 
         //경험치 최대치 갱신
-        ExpMax = characterStat.Level * characterStat.Level + 5;
+        // ExpMax = characterStat.Level * characterStat.Level + 5;
         //! 테스트용 맥스 경험치
         // ExpMax = 3;
 
@@ -661,11 +698,14 @@ public class PlayerManager : Character
         GameObject levelupEffect = LeanPool.Spawn(lvUpEffectPrefab, transform.position, Quaternion.identity, transform);
 
         // 효과음 찾기
-        AudioSource levelupAudio = levelupEffect.transform.Find("LevelupAudio").GetComponent<AudioSource>();
+        AudioSource levelupAudio = levelupEffect.transform.Find("Player_Levelup").GetComponent<AudioSource>();
         // 효과음 볼륨과 동기화
         levelupAudio.volume = PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY, 1f);
         // 수동 켜기
         levelupAudio.Play();
+
+        // 재생중인 리스트에 직접 저장
+        SoundManager.Instance.Playing_SoundList.Add(levelupAudio);
 
         // 레벨업 효과음 재생
         // SoundManager.Instance.PlaySound("Player_Levelup", 0, 0, 1, false);
@@ -761,7 +801,7 @@ public class PlayerManager : Character
                 break;
         }
 
-        SoundManager.Instance.PlaySound(soundName);
+        SoundManager.Instance.PlaySound(soundName, transform.position);
     }
 
     public void PlaySound(string name)

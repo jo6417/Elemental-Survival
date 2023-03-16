@@ -191,7 +191,11 @@ public class EnemyAI : MonoBehaviour
 
     void Move(Vector3 target_velocity)
     {
-        character.rigid.velocity = target_velocity;
+        // 버프 적용된 이동속도 스탯 계산
+        float speedStat = character.GetBuffedStat(nameof(character.characterStat.moveSpeed));
+
+        // 이동속도 스탯 반영해서 이동
+        character.rigid.velocity = target_velocity * speedStat;
     }
 
     void Walk()

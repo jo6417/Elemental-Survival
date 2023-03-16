@@ -78,8 +78,8 @@ public class TimeStop : MonoBehaviour
         //회전 초기화
         transform.rotation = Quaternion.Euler(Vector3.zero);
 
-        //마법 성공시
-        if (isSuccess)
+        // 크리티컬 확률로 마법 성공 여부 판단
+        if (magicHolder.criticalRate <= Random.value)
         {
             //부모 초기화
             transform.parent = null;
@@ -125,12 +125,17 @@ public class TimeStop : MonoBehaviour
 
         // 서서히 사라지기
         sprite.DOColor(Color.clear, 0.5f)
-        .SetEase(Ease.InCirc);
+        .SetEase(Ease.InCirc)
+        .OnComplete(() =>
+        {
+            // 마법 디스폰
+            LeanPool.Despawn(gameObject);
+        });
 
-        // 쿨타임 만큼 대기
-        yield return new WaitForSeconds(magicHolder.coolTime);
+        // // 쿨타임 만큼 대기
+        // yield return new WaitForSeconds(magicHolder.coolTime);
 
-        // 시간정지 영역 다시 전개
-        StartCoroutine(ExpandMagic());
+        // // 시간정지 영역 다시 전개
+        // StartCoroutine(ExpandMagic());
     }
 }
