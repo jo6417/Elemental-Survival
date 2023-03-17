@@ -105,7 +105,7 @@ public class GatePortal : MonoBehaviour
         bossCharacter = null;
 
         // 빔 및 이펙트 꺼서 초기화
-        beam.transform.localScale = new Vector2(0, 10f);
+        beam.transform.localScale = new Vector2(0, 1f);
         beamParticle.SetActive(false);
 
         // 포탈 이펙트 초기화
@@ -166,6 +166,9 @@ public class GatePortal : MonoBehaviour
         // 플레이어와 멀어지면 위치 재이동
         closeMoveCoroutine = MoveClose();
         StartCoroutine(closeMoveCoroutine);
+
+        // 콜라이더 상호작용 켜기
+        coll.enabled = true;
     }
 
     IEnumerator VisibleAction()
@@ -544,7 +547,14 @@ public class GatePortal : MonoBehaviour
     IEnumerator ClearTeleport()
     {
         yield return null;
-        //todo 텔레포트 사운드 재생
+
+        // 콜라이더 꺼서 상호작용 중지
+        coll.enabled = false;
+
+        // 퀵슬롯의 모든 마법 백업
+        PlayerManager.Instance.SaveLoadQuickMagic(true);
+
+        // 텔레포트 사운드 재생
         SoundManager.Instance.PlaySound("Gate_Teleport", transform.position);
 
         // 상호작용 키 끄기

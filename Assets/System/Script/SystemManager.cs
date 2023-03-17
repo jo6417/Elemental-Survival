@@ -51,6 +51,8 @@ public class SystemManager : MonoBehaviour
 {
     public delegate void EnemyDeadCallback(Character character);
     public EnemyDeadCallback globalEnemyDeadCallback;
+    public delegate void EnemyInitCallback(Character character);
+    public EnemyInitCallback globalEnemyInitCallback;
 
     #region Singleton
     private static SystemManager instance;

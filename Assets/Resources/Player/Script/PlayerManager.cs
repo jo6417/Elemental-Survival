@@ -50,8 +50,6 @@ public class PlayerManager : Character
     public SpriteRenderer shadowSprite; // 그림자 스프라이트
     public Transform magicParent; // 해당 오브젝트 밑에 마법 붙이기
     public Light2D playerLight;
-    // public Rigidbody2D rigid;
-    public Collider2D coll;
     public Animator anim;
     public Transform knockbackColl; // 레벨업 시 넉백 콜라이더
     public GameObject lvUpEffectPrefab; // 레벨업 이펙트
@@ -70,6 +68,7 @@ public class PlayerManager : Character
 
     [Header("State")]
     public bool initFinish = false;
+    public bool isSpawning = false; // 스폰 중 여부
     // public float hpNow;
     // public float hpMax;
     // public enum Debuff { Burn, Poison, Bleed, Slow, Shock, Stun, Stop, Flat, Freeze };
@@ -272,11 +271,44 @@ public class PlayerManager : Character
 
         // 플레이어 빔에서 스폰
         StartCoroutine(SpawnPlayer());
+
+        yield return new WaitUntil(() => PhoneMenu.Instance);
+
+        // 퀵슬롯의 모든 마법 불러오기
+        SaveLoadQuickMagic(false);
+    }
+
+    public void SaveLoadQuickMagic(bool isSave)
+    {
+        // 퀵슬롯 마법 저장
+        if (isSave)
+        {
+            // 퀵슬롯의 마법 전부 수집
+            InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
+            for (int i = 0; i < PhoneMenu.Instance.quickSlotMagicList.Length; i++)
+                // 슬롯에 있던 정보 백업
+                PhoneMenu.Instance.quickSlotMagicList[i] = quickSlots[i].slotInfo;
+        }
+        // 저장된 마법 불러와 퀵슬롯에 넣기
+        else
+        {
+            // 퀵슬롯의 마법 전부 수집
+            InventorySlot[] quickSlots = UIManager.Instance.GetQuickSlots();
+            for (int i = 0; i < PhoneMenu.Instance.quickSlotMagicList.Length; i++)
+            {
+                // 슬롯 정보에 마법 넣기
+                quickSlots[i].slotInfo = PhoneMenu.Instance.quickSlotMagicList[i];
+
+                // 슬롯 초기화
+                quickSlots[i].Set_Slot();
+            }
+        }
     }
 
     public IEnumerator SpawnPlayer()
     {
-        gameObject.SetActive(true);
+        // 스폰 시작
+        isSpawning = true;
 
         // 플레이어 위치 초기화
         transform.position = Vector2.zero;
@@ -305,6 +337,9 @@ public class PlayerManager : Character
 
         yield return new WaitForSeconds(0.5f);
 
+        // 스폰 빔 사운드 재생
+        SoundManager.Instance.PlaySound("Spawn_Beam");
+
         // 플레이어 나타내기
         playerSprite.enabled = true;
         shadowSprite.enabled = true;
@@ -330,6 +365,11 @@ public class PlayerManager : Character
         player_Input.Enable();
         // UI 컨트롤 켜기
         UIManager.Instance.UI_Input.Enable();
+
+        yield return new WaitForSeconds(0.5f);
+
+        // 스폰 끝
+        isSpawning = false;
     }
 
     private void OnDestroy()
@@ -468,6 +508,10 @@ public class PlayerManager : Character
 
     public void InteractSubmit(bool isPress = true)
     {
+        // 시간 멈췄으면 리턴
+        if (Time.timeScale == 0)
+            return;
+
         // 가장 가까운 상호작용 오브젝트와 상호작용 실행
         if (playerInteracter.nearInteracter != null && playerInteracter.nearInteracter.interactSubmitCallback != null)
             playerInteracter.nearInteracter.interactSubmitCallback(isPress);
@@ -626,11 +670,7 @@ public class PlayerManager : Character
                 // 경험치 1씩 증가
                 ExpNow += 1;
 
-                print("level : " + characterStat.Level + " / maxExperience : " + ExpMax);
-
-                //경험치 다 찼을때 레벨업
-                if (ExpNow == ExpMax)
-                    yield return StartCoroutine(Levelup());
+                // print("level : " + characterStat.Level + " / maxExperience : " + ExpMax);
 
                 // 잔여량 차감
                 expGem.amount--;
@@ -646,6 +686,10 @@ public class PlayerManager : Character
                 UIManager.Instance.UpdateGem(gemTypeIndex);
                 // 경험치, 레벨 UI 갱신
                 UIManager.Instance.UpdateExp();
+
+                //경험치 다 찼을때 레벨업
+                if (ExpNow == ExpMax)
+                    yield return StartCoroutine(Levelup());
             }
 
             // yield return null;
@@ -674,16 +718,17 @@ public class PlayerManager : Character
 
     IEnumerator Levelup()
     {
+        //레벨업
+        characterStat.Level++;
+        //경험치 초기화
+        ExpNow = 0;
+        // 경험치, 레벨 UI 갱신
+        UIManager.Instance.UpdateExp();
+
         // 시간 멈추기
         SystemManager.Instance.TimeScaleChange(0f, false);
 
-        yield return StartCoroutine(SoundManager.Instance.ChangeAll_Pitch(0, 0, false));
-
-        //레벨업
-        characterStat.Level++;
-
-        //경험치 초기화
-        ExpNow = 0;
+        StartCoroutine(SoundManager.Instance.ChangeAll_Pitch(0, 0, false));
 
         //경험치 최대치 갱신
         // ExpMax = characterStat.Level * characterStat.Level + 5;
@@ -705,7 +750,7 @@ public class PlayerManager : Character
         levelupAudio.Play();
 
         // 재생중인 리스트에 직접 저장
-        SoundManager.Instance.Playing_SoundList.Add(levelupAudio);
+        // SoundManager.Instance.Playing_SoundList.Add(levelupAudio);
 
         // 레벨업 효과음 재생
         // SoundManager.Instance.PlaySound("Player_Levelup", 0, 0, 1, false);
@@ -715,12 +760,7 @@ public class PlayerManager : Character
         // 넉백 범위 확장
         knockbackColl.DOScale(Vector2.one, 0.5f)
         .SetUpdate(true)
-        .SetEase(Ease.OutBack)
-        .OnComplete(() =>
-        {
-            // 다시 제로 사이즈로 초기화
-            knockbackColl.localScale = Vector2.zero;
-        });
+        .SetEase(Ease.OutBack);
 
         // 이펙트 딜레이 대기
         yield return new WaitForSecondsRealtime(0.5f);
@@ -730,6 +770,10 @@ public class PlayerManager : Character
 
         // 시간 흐를때까지 대기
         yield return new WaitUntil(() => Time.timeScale > 0);
+
+        // 넉백 범위 줄이기
+        knockbackColl.DOScale(Vector2.zero, 0.5f)
+        .SetEase(Ease.InBack);
     }
 
     public int GetGem(int gemIndex)
@@ -752,7 +796,7 @@ public class PlayerManager : Character
         //플레이어의 총 전투력
         int magicPower = 0;
 
-        foreach (InventorySlot invenSlot in PhoneMenu.Instance.invenSlots)
+        foreach (InventorySlot invenSlot in PhoneMenu.Instance.invenSlotList)
         {
             // 마법 찾기
             MagicInfo magic = invenSlot.slotInfo as MagicInfo;
@@ -807,5 +851,11 @@ public class PlayerManager : Character
     public void PlaySound(string name)
     {
         SoundManager.Instance.PlaySound(name);
+    }
+
+    public void ToggleCollider(bool isOn)
+    {
+        // 물리 충돌 콜라이더 끄기
+        physicsColl.enabled = isOn;
     }
 }

@@ -118,10 +118,7 @@ public class UIManager : MonoBehaviour
         // DontDestroyOnLoad(gameObject);
 
         //입력 초기화
-        StartCoroutine(InputInit());
-
-        // 시작할때 머지 캔버스 켜놓기
-        phonePanel.SetActive(true);
+        StartCoroutine(AwakeInit());
 
         // 새 아이템 개수 알림 갱신
         PhoneNotice(0);
@@ -133,7 +130,7 @@ public class UIManager : MonoBehaviour
         nowHoldSlot.material = holdMat;
     }
 
-    IEnumerator InputInit()
+    IEnumerator AwakeInit()
     {
         UI_Input = new NewInput();
 
@@ -190,6 +187,9 @@ public class UIManager : MonoBehaviour
 
         // UI 인풋 활성화
         UI_Input.Enable();
+
+        // 핸드폰 패널 참조시키기
+        phonePanel = PhoneMenu.Instance.phonePanel;
     }
 
     private void OnEnable()

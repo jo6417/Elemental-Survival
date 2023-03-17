@@ -67,7 +67,8 @@ public class PhoneMenu : MonoBehaviour
     public Image invenBackground; // 인벤토리 뒷배경 이미지
     int mergeAbleNum; // 현재 합성 가능한 마법 개수
     public Transform invenParent; // 인벤토리 슬롯들 부모 오브젝트
-    public List<InventorySlot> invenSlots = new List<InventorySlot>(); //각각 슬롯 오브젝트
+    public List<InventorySlot> invenSlotList = new List<InventorySlot>(); // 인벤토리 슬롯 오브젝트
+    public SlotInfo[] quickSlotMagicList = new SlotInfo[3]; // 백업용 퀵슬롯 오브젝트
     public InventorySlot nowSelectSlot; // 현재 커서 올라간 슬롯
     public InventorySlot nowHoldSlot; // 현재 선택중인 슬롯
     public SlotInfo nowHoldSlotInfo; // 현재 선택중인 슬롯 정보    
@@ -128,7 +129,7 @@ public class PhoneMenu : MonoBehaviour
         {
             InventorySlot invenSlot = invenParent.GetChild(i).GetComponent<InventorySlot>();
 
-            invenSlots.Add(invenSlot);
+            invenSlotList.Add(invenSlot);
         }
 
         yield return new WaitUntil(() => UIManager.Instance != null);
@@ -404,7 +405,7 @@ public class PhoneMenu : MonoBehaviour
         #region Interact_On
 
         // 인벤 슬롯 모두 켜기
-        foreach (InventorySlot invenSlot in invenSlots)
+        foreach (InventorySlot invenSlot in invenSlotList)
         {
             invenSlot.slotButton.interactable = true;
         }
@@ -417,7 +418,7 @@ public class PhoneMenu : MonoBehaviour
         UIManager.Instance.tabletBindKeyList.SetActive(true);
 
         // 첫번째 슬롯 선택하기
-        UICursor.Instance.UpdateLastSelect(invenSlots[0].slotButton);
+        UICursor.Instance.UpdateLastSelect(invenSlotList[0].slotButton);
 
         #endregion
     }
@@ -432,10 +433,10 @@ public class PhoneMenu : MonoBehaviour
     void Set_Inventory()
     {
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
-        for (int i = 0; i < invenSlots.Count; i++)
+        for (int i = 0; i < invenSlotList.Count; i++)
         {
             // 각 슬롯 세팅
-            invenSlots[i].Set_Slot();
+            invenSlotList[i].Set_Slot();
         }
 
         // 합성 가능 여부 체크
@@ -565,10 +566,10 @@ public class PhoneMenu : MonoBehaviour
             SystemManager.Instance.elementWeight[i] = 1;
 
         // 머지 리스트에 있는 마법들 머지 보드에 나타내기
-        for (int i = 0; i < invenSlots.Count; i++)
+        for (int i = 0; i < invenSlotList.Count; i++)
         {
             // 각 슬롯 정보 마법 정보로 변환
-            MagicInfo magic = invenSlots[i].slotInfo as MagicInfo;
+            MagicInfo magic = invenSlotList[i].slotInfo as MagicInfo;
 
             // 해당 슬롯의 정보가 마법 정보일때
             if (magic != null)
@@ -1242,7 +1243,7 @@ public class PhoneMenu : MonoBehaviour
         getSlot.SetActive(false);
 
         // 빈칸 위치에 Attractor 오브젝트 옮기기
-        particleAttractor.transform.position = invenSlots[GetEmptySlot()].transform.position;
+        particleAttractor.transform.position = invenSlotList[GetEmptySlot()].transform.position;
 
         // 마법 획득 이펙트 켜기
         getMagicEffect.gameObject.SetActive(true);
@@ -1307,10 +1308,10 @@ public class PhoneMenu : MonoBehaviour
         int emptyIndex = -1;
 
         // 빈칸 찾기
-        for (int i = 0; i < invenSlots.Count; i++)
+        for (int i = 0; i < invenSlotList.Count; i++)
         {
             // 빈칸 찾으면
-            if (invenSlots[i].slotInfo == null)
+            if (invenSlotList[i].slotInfo == null)
             {
                 // 빈칸 인덱스 기록
                 emptyIndex = i;
@@ -1355,15 +1356,15 @@ public class PhoneMenu : MonoBehaviour
         if (getIndex != -1)
         {
             // 빈 슬롯에 해당 아이템 넣기
-            invenSlots[getIndex].slotInfo = getItem;
+            invenSlotList[getIndex].slotInfo = getItem;
 
             // New 표시 켜기
-            invenSlots[getIndex].newSign.SetActive(true);
+            invenSlotList[getIndex].newSign.SetActive(true);
 
             // 핸드폰 열려있으면
             if (gameObject.activeSelf)
                 // 해당 칸 UI 갱신
-                invenSlots[getIndex].Set_Slot(true);
+                invenSlotList[getIndex].Set_Slot(true);
 
             // 핸드폰 알림 개수 추가
             UIManager.Instance.PhoneNotice();
@@ -1387,15 +1388,15 @@ public class PhoneMenu : MonoBehaviour
         if (getIndex != -1)
         {
             // 해당 빈 슬롯에 마법 넣기
-            invenSlots[getIndex].slotInfo = getMagic;
+            invenSlotList[getIndex].slotInfo = getMagic;
 
             // New 표시 켜기
-            invenSlots[getIndex].newSign.SetActive(true);
+            invenSlotList[getIndex].newSign.SetActive(true);
 
             // 핸드폰 열려있으면
             if (gameObject.activeSelf)
                 // 해당 칸 UI 갱신
-                invenSlots[getIndex].Set_Slot(true);
+                invenSlotList[getIndex].Set_Slot(true);
 
             // 핸드폰 알림 개수 추가
             UIManager.Instance.PhoneNotice();
@@ -1628,12 +1629,12 @@ public class PhoneMenu : MonoBehaviour
         int emptyIndex = GetEmptySlot();
 
         // 빈칸에 마법 넣기
-        invenSlots[emptyIndex].slotInfo = slot.slotInfo;
+        invenSlotList[emptyIndex].slotInfo = slot.slotInfo;
         // Merge 슬롯의 정보 삭제
         slot.slotInfo = null;
 
         // 인벤 슬롯 정보 갱신
-        invenSlots[emptyIndex].Set_Slot(true);
+        invenSlotList[emptyIndex].Set_Slot(true);
         // Merge 슬롯 정보 갱신
         slot.Set_Slot(true);
     }
@@ -1657,7 +1658,7 @@ public class PhoneMenu : MonoBehaviour
         UIManager.Instance.quickSlotGroup.interactable = false;
 
         // 인벤 슬롯 상호작용 모두 끄기
-        foreach (InventorySlot invenSlot in invenSlots)
+        foreach (InventorySlot invenSlot in invenSlotList)
         {
             invenSlot.slotButton.interactable = false;
         }
@@ -1699,9 +1700,9 @@ public class PhoneMenu : MonoBehaviour
         UIManager.Instance.PhoneNotice(0);
 
         // 인벤토리 new 표시 모두 끄기
-        for (int i = 0; i < invenSlots.Count; i++)
+        for (int i = 0; i < invenSlotList.Count; i++)
         {
-            invenSlots[i].newSign.SetActive(false);
+            invenSlotList[i].newSign.SetActive(false);
         }
 
         float moveTime = 0.8f;

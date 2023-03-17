@@ -103,10 +103,10 @@ public class CastMagic : MonoBehaviour
         }
 
         // 인벤토리에서 마법 찾기
-        for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
+        for (int i = 0; i < PhoneMenu.Instance.invenSlotList.Count; i++)
         {
             // 마법 정보 불러오기
-            MagicInfo magic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
+            MagicInfo magic = PhoneMenu.Instance.invenSlotList[i].slotInfo as MagicInfo;
 
             // 마법이 있으면
             if (magic != null)
@@ -187,10 +187,10 @@ public class CastMagic : MonoBehaviour
         }
 
         // 인벤토리 마법 합산
-        for (int i = 0; i < PhoneMenu.Instance.invenSlots.Count; i++)
+        for (int i = 0; i < PhoneMenu.Instance.invenSlotList.Count; i++)
         {
             // 마법 정보 불러오기
-            MagicInfo invenMagic = PhoneMenu.Instance.invenSlots[i].slotInfo as MagicInfo;
+            MagicInfo invenMagic = PhoneMenu.Instance.invenSlotList[i].slotInfo as MagicInfo;
 
             //마법이 null이면 넘기기
             if (invenMagic == null)
@@ -209,7 +209,7 @@ public class CastMagic : MonoBehaviour
                 referMagic.MagicLevel = invenMagic.MagicLevel;
 
                 // 해당 슬롯 리스트에 추가
-                slotList.Add(PhoneMenu.Instance.invenSlots[i]);
+                slotList.Add(PhoneMenu.Instance.invenSlotList[i]);
                 // 해당 마법 리스트에 추가
                 magicList.Add(referMagic);
             }
@@ -255,7 +255,7 @@ public class CastMagic : MonoBehaviour
                     if (passiveObj != null)
                     {
                         // 해당 슬롯이 인벤토리 슬롯일때
-                        if (PhoneMenu.Instance.invenSlots.Exists(x => x == slotList[i]))
+                        if (PhoneMenu.Instance.invenSlotList.Exists(x => x == slotList[i]))
                             // 마법 사용 자동으로 설정
                             passiveObj.GetComponent<MagicHolder>().isQuickCast = false;
                         // 해당 슬롯이 액티브  슬롯일때
@@ -290,7 +290,7 @@ public class CastMagic : MonoBehaviour
                 if (passiveObj != null)
                 {
                     // 해당 슬롯이 인벤토리 슬롯일때
-                    if (PhoneMenu.Instance.invenSlots.Exists(x => x == slotList[i]))
+                    if (PhoneMenu.Instance.invenSlotList.Exists(x => x == slotList[i]))
                         // 마법 사용 자동으로 설정
                         passiveObj.GetComponent<MagicHolder>().isQuickCast = false;
                     // 해당 슬롯이 액티브  슬롯일때
@@ -356,8 +356,9 @@ public class CastMagic : MonoBehaviour
             }
         }
 
-        // 인게임 화면 하단에 사용중인 마법 아이콘 리스트 갱신
-        StartCoroutine(UIManager.Instance.UpdateMagics(magicList));
+        if (UIManager.Instance)
+            // 인게임 화면 하단에 사용중인 마법 아이콘 리스트 갱신
+            StartCoroutine(UIManager.Instance.UpdateMagics(magicList));
     }
 
     public IEnumerator QuickCast(InventorySlot invenSlot, MagicInfo magic)
@@ -458,7 +459,7 @@ public class CastMagic : MonoBehaviour
 
         int slotIndex = -1;
         // 인벤토리에서 해당 마법이 있는 인덱스 찾기
-        slotIndex = PhoneMenu.Instance.invenSlots.FindIndex(x => x != null &&
+        slotIndex = PhoneMenu.Instance.invenSlotList.FindIndex(x => x != null &&
         // 마법인지 검사
         x.slotInfo as MagicInfo != null &&
         // 해당 마법과 같은 id를 가진 마법 있는지 검사

@@ -87,8 +87,9 @@ public class SoundManager : MonoBehaviour
     [SerializeField] AnimationCurve curve_3D; // 3D 볼륨 커브
 
     [Header("Sounds")]
-    [SerializeField, ReadOnly] public List<AudioSource> Playing_SoundList = new List<AudioSource>(); // 재생중인 사운드 리스트
     private List<Sound> Origin_SoundList = new List<Sound>(); // 미리 준비된 사운드 소스 (같은 사운드 동시 재생 불가)
+    [SerializeField, ReadOnly] public List<AudioSource> Playing_SFXList = new List<AudioSource>(); // 재생중인 효과음 리스트
+    [SerializeField, ReadOnly] public List<AudioSource> Playing_UIList = new List<AudioSource>(); // 재생중인 UI 효과음 리스트
     [SerializeField] List<SoundBundle> soundBundleList = new List<SoundBundle>();
     [SerializeField] SoundBundleList soundBundleDB; // 사운드 리스트 DB
 
@@ -250,6 +251,16 @@ public class SoundManager : MonoBehaviour
         return soundPool;
     }
 
+    void SaveSoundList(Transform soundPool, AudioSource audio)
+    {
+        // 재생중인 오디오를 UI 리스트에 저장
+        if (soundPool == soundPool_UI)
+            Playing_UIList.Add(audio);
+        // 재생중인 오디오를 SFX 리스트에 저장
+        else if (soundPool == soundPool_SFX)
+            Playing_SFXList.Add(audio);
+    }
+
     private IEnumerator BGMPlayer()
     {
         // 시스템 매니저 초기화 대기
@@ -337,7 +348,7 @@ public class SoundManager : MonoBehaviour
         });
     }
 
-    AudioSource InitAudio(GameObject audioObj, Sound sound, float spatialBlend, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
+    AudioSource InitAudio(GameObject audioObj, Transform soundPool, Sound sound, float spatialBlend, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
     {
         // 오브젝트 이름을 사운드 이름으로 동기화
         audioObj.name = sound.name;
@@ -369,7 +380,7 @@ public class SoundManager : MonoBehaviour
         }
 
         // 재생하고 끝나면 디스폰
-        StartCoroutine(Play(sound, audio, true, fadeIn, delay, loopNum, scaledTime));
+        StartCoroutine(Play(sound, soundPool, audio, true, fadeIn, delay, loopNum, scaledTime));
 
         return audio;
     }
@@ -393,11 +404,14 @@ public class SoundManager : MonoBehaviour
             return null;
         }
 
+        // 사운드풀 오브젝트 참조
+        Transform soundPool = GetSoundPool(sound);
+
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, Vector2.zero, Quaternion.identity, GetSoundPool(sound));
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, Vector2.zero, Quaternion.identity, soundPool);
 
         // 오디오 초기화 후 플레이
-        AudioSource audio = InitAudio(audioObj, sound, 0, fadeIn, delay, loopNum, scaledTime);
+        AudioSource audio = InitAudio(audioObj, soundPool, sound, 0, fadeIn, delay, loopNum, scaledTime);
 
         return audio;
     }
@@ -414,11 +428,14 @@ public class SoundManager : MonoBehaviour
             return null;
         }
 
+        // 사운드풀 오브젝트 참조
+        Transform soundPool = GetSoundPool(sound);
+
         // 빈 오디오소스 프리팹을 자식으로 스폰
-        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, GetSoundPool(sound));
+        GameObject audioObj = LeanPool.Spawn(emptyAudio, position, Quaternion.identity, soundPool);
 
         // 오디오 초기화 후 플레이
-        AudioSource audio = InitAudio(audioObj, sound, 1, fadeIn, delay, loopNum, scaledTime);
+        AudioSource audio = InitAudio(audioObj, soundPool, sound, 1, fadeIn, delay, loopNum, scaledTime);
 
         return audio;
     }
@@ -432,6 +449,9 @@ public class SoundManager : MonoBehaviour
         if (sound == null || sound.source == null)
             return null;
 
+        // 사운드풀 오브젝트 참조
+        Transform soundPool = GetSoundPool(sound);
+
         // attachor에 붙은 모든 오디오 소스 찾기
         List<AudioSource> audioList = attachor.GetComponentsInChildren<AudioSource>().ToList();
         foreach (AudioSource audioSource in audioList)
@@ -442,7 +462,7 @@ public class SoundManager : MonoBehaviour
             && audioSource.pitch == sound.pitch * globalPitch)
             {
                 // 재생하고 끝나면 디스폰
-                StartCoroutine(Play(sound, audioSource, true, fadeIn, delay, loopNum, scaledTime));
+                StartCoroutine(Play(sound, soundPool, audioSource, true, fadeIn, delay, loopNum, scaledTime));
 
                 return audioSource;
             }
@@ -452,15 +472,15 @@ public class SoundManager : MonoBehaviour
         GameObject audioObj = LeanPool.Spawn(emptyAudio, attachor.position, Quaternion.identity, attachor);
 
         // 오디오 초기화 후 플레이
-        AudioSource audio = InitAudio(audioObj, sound, 1, fadeIn, delay, loopNum, scaledTime);
+        AudioSource audio = InitAudio(audioObj, soundPool, sound, 1, fadeIn, delay, loopNum, scaledTime);
 
         return audio;
     }
 
-    IEnumerator Play(Sound sound, AudioSource audio, bool autoDespawn, float fadeinTime, float delay, int loopNum, bool scaledTime)
+    IEnumerator Play(Sound sound, Transform soundPool, AudioSource audio, bool autoDespawn, float fadeinTime, float delay, int loopNum, bool scaledTime)
     {
         // 재생중인 오디오를 리스트에 저장
-        Playing_SoundList.Add(audio);
+        SaveSoundList(soundPool, audio);
 
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => initFinish);
@@ -527,15 +547,15 @@ public class SoundManager : MonoBehaviour
             // 오디오 살아있으면
             if (audio != null)
             {
-                // 오디오 리스트에서삭제
-                Playing_SoundList.Remove(audio);
-
                 // 오디오 클립 비우기
                 audio.clip = null;
 
                 // 해당 오디오 오브젝트 제거
                 if (audio.gameObject)
                     LeanPool.Despawn(audio.gameObject);
+
+                // 오디오 리스트에서삭제
+                Playing_SFXList.Remove(audio);
             }
         }
     }
@@ -620,12 +640,17 @@ public class SoundManager : MonoBehaviour
 
         // 글로벌 재생중인 원본 오디오들의 피치값 조정
         foreach (Sound sound in Origin_SoundList)
+        {
             if (sound.source != null)
                 DOTween.To(() => sound.source.pitch, x => sound.source.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
                 .SetUpdate(!scaledTime);
+        }
 
-        // 월드에서 재생중인 오디오들의 피치값 조정
-        foreach (AudioSource audio in Playing_SoundList)
+        // 효과음들의 피치값 조정
+        for (int i = 0; i < Playing_SFXList.Count; i++)
+        {
+            AudioSource audio = Playing_SFXList[i];
+
             if (audio != null)
             {
                 // 오브젝트 이름으로 원본 사운드 찾기
@@ -634,6 +659,7 @@ public class SoundManager : MonoBehaviour
                 DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
                 .SetUpdate(!scaledTime);
             }
+        }
 
         // // 효과음 사운드풀 하위 오디오들의 피치값 조정
         // for (int i = 0; i < soundPool_SFX.childCount; i++)
@@ -806,7 +832,7 @@ public class SoundManager : MonoBehaviour
     public void DestoryAllSound()
     {
         // 플레이중인 모든 오디오 정지
-        foreach (AudioSource audio in Playing_SoundList)
+        foreach (AudioSource audio in Playing_SFXList)
         {
             // 오디오 살아있으면
             if (audio != null)
@@ -821,6 +847,6 @@ public class SoundManager : MonoBehaviour
         }
 
         // 재생 리스트 비우기
-        Playing_SoundList.Clear();
+        Playing_SFXList.Clear();
     }
 }

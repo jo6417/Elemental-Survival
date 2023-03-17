@@ -461,10 +461,10 @@ public class MagicMachineUI : MonoBehaviour
             if (emptyInvenIndex != -1)
             {
                 // 해당 인벤토리에 상품 정보만 넣기
-                PhoneMenu.Instance.invenSlots[emptyInvenIndex].slotInfo = slotInfo;
+                PhoneMenu.Instance.invenSlotList[emptyInvenIndex].slotInfo = slotInfo;
 
                 // 빈칸 위치에 Attractor 오브젝트 옮기기
-                getMagicEffect.transform.Find("ParticleAttractor").transform.position = PhoneMenu.Instance.invenSlots[emptyInvenIndex].transform.position;
+                getMagicEffect.transform.Find("ParticleAttractor").transform.position = PhoneMenu.Instance.invenSlotList[emptyInvenIndex].transform.position;
 
                 // 획득 상품 파티클 재생
                 getMagicEffect.gameObject.SetActive(false);
@@ -478,7 +478,7 @@ public class MagicMachineUI : MonoBehaviour
                 yield return new WaitForSecondsRealtime(0.6f);
 
                 // 획득한 인벤토리 이미지 갱신
-                PhoneMenu.Instance.invenSlots[emptyInvenIndex].Set_Slot(true);
+                PhoneMenu.Instance.invenSlotList[emptyInvenIndex].Set_Slot(true);
             }
             // 인벤토리 빈칸 없을때
             else

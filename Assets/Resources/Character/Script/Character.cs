@@ -554,6 +554,10 @@ public class Character : MonoBehaviour
         for (int i = 0; i < hitBoxList.Count; i++)
             hitBoxList[i].gameObject.SetActive(true);
 
+        // 모든 몬스터 초기화 함수 호출
+        if (SystemManager.Instance.globalEnemyInitCallback != null)
+            SystemManager.Instance.globalEnemyInitCallback(this);
+
         // 초기화 완료되면 초기화 스위치 끄기
         initialStart = false;
         // 초기화 완료
@@ -925,7 +929,7 @@ public class Character : MonoBehaviour
     }
 
     public Buff SetBuff(string buffName, string statName, bool isMultiple, float amount, float duration,
-                     bool dotHit, Transform _buffParent = null, GameObject buffEffect = null)
+                     bool dotHit, Transform _buffParent = null, GameObject buffPrefab = null)
     {
         // 버프 아이콘
         GameObject buffUI = null;
@@ -979,10 +983,10 @@ public class Character : MonoBehaviour
             buff.duration = duration;
 
             // 이미 버프 중 아닐때
-            if (buffEffect != null && !_buffParent.Find(buffEffect.name))
+            if (buffPrefab != null && !_buffParent.Find(buffPrefab.name))
             {
                 // 아이콘/이펙트 붙이기
-                buffUI = LeanPool.Spawn(buffEffect, _buffParent.position, Quaternion.identity, _buffParent);
+                buffUI = LeanPool.Spawn(buffPrefab, _buffParent.position, Quaternion.identity, _buffParent);
 
                 // 버프 아이콘/이펙트 저장
                 buff.buffEffect = buffUI;
@@ -1012,7 +1016,7 @@ public class Character : MonoBehaviour
                 StopCoroutine(buff.buffCoroutine);
 
             // 도트뎀 코루틴 실행
-            buff.buffCoroutine = DotHit(buff, _buffParent, buffEffect);
+            buff.buffCoroutine = DotHit(buff, _buffParent, buffPrefab);
             StartCoroutine(buff.buffCoroutine);
         }
         // 일반 버프일때
@@ -1040,16 +1044,6 @@ public class Character : MonoBehaviour
 
     public IEnumerator DotHit(Buff buff, Transform buffParent = null, GameObject buffEffectPrefab = null)
     {
-        GameObject buff_Effect = null;
-        // 이미 버프 중 아닐때
-        if (buffEffectPrefab != null && !buffParent.Find(buffEffectPrefab.name))
-            // 아이콘/이펙트 붙이기
-            buff_Effect = LeanPool.Spawn(buffEffectPrefab, buffParent.position, Quaternion.identity, buffParent);
-
-        // 버프에 정보 저장
-        buff.buffParent = buffParent;
-        buff.buffEffect = buff_Effect;
-
         // 도트 지속시간을 횟수로 환산
         int hitNum = (int)buff.duration;
         for (int i = 0; i < hitNum; i++)

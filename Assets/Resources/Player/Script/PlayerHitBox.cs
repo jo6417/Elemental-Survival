@@ -390,7 +390,7 @@ public class PlayerHitBox : HitBox
         StopCoroutine(hitDelayCoroutine);
 
         // 플레이어 충돌 콜라이더 끄기
-        playerManager.coll.enabled = false;
+        character.physicsColl.enabled = false;
         // 플레이어 히트 콜라이더 끄기
         Collider2D[] hitColls = GetComponents<Collider2D>();
         for (int i = 0; i < hitColls.Length; i++)

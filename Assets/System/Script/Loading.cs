@@ -161,7 +161,7 @@ public class Loading : MonoBehaviour
             }
 
             // 플레이어 빔에서 스폰
-            StartCoroutine(PlayerManager.Instance.SpawnPlayer());
+            // StartCoroutine(PlayerManager.Instance.SpawnPlayer());
         }
 
         // 해상도 변경 및 빈공간에 레터박스 넣기
@@ -221,6 +221,8 @@ public class Loading : MonoBehaviour
 
             // 시간 멈추기
             SystemManager.Instance.TimeScaleChange(0f);
+
+            yield return null;
         }
 
         // 마스크 켜기
@@ -278,6 +280,8 @@ public class Loading : MonoBehaviour
 
             // 시간 속도 초기화
             SystemManager.Instance.TimeScaleChange(1f);
+
+            yield return null;
         }
     }
 
@@ -290,15 +294,6 @@ public class Loading : MonoBehaviour
             SoundManager.Instance.PauseBGM();
             // 모든 효과음 중지 및 삭제
             SoundManager.Instance.DestoryAllSound();
-
-            // 플레이어 있으면
-            if (PlayerManager.Instance)
-            {
-                // 플레이어 비활성화
-                PlayerManager.Instance.gameObject.SetActive(false);
-                // 플레이어 활성화
-                PlayerManager.Instance.gameObject.SetActive(true);
-            }
         }
         // 마스크 끝날때
         else
@@ -306,14 +301,27 @@ public class Loading : MonoBehaviour
             // UI 커서 끄기
             UICursor.Instance.UICursorToggle(false);
 
+            // 저장된 SFX 볼륨으로 초기화
+            SoundManager.Instance.Set_SFXVolume(PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY));
+
             // 인게임 씬일때
             if (SystemManager.Instance.GetSceneName() == SceneName.InGameScene.ToString())
             {
-                // 저장된 SFX 볼륨으로 초기화
-                SoundManager.Instance.Set_SFXVolume(PlayerPrefs.GetFloat(SaveManager.SFX_VOLUME_KEY));
+                // 플레이어 있으면
+                if (PlayerManager.Instance)
+                {
+                    // 스폰중이 아닐때
+                    if (!PlayerManager.Instance.isSpawning)
+                    {
+                        // 플레이어 비활성화
+                        PlayerManager.Instance.gameObject.SetActive(false);
+                        // 플레이어 활성화
+                        PlayerManager.Instance.gameObject.SetActive(true);
+                    }
 
-                // 플레이어 활성화
-                PlayerManager.Instance.gameObject.SetActive(true);
+                    // 핸드폰 위치 초기화
+                    CastMagic.Instance.transform.position = Vector3.zero;
+                }
             }
 
             // 배경음 초기화

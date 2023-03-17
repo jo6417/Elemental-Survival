@@ -149,7 +149,7 @@ public class DefaultMagic : MonoBehaviour
         PhoneMenu.Instance.InteractBtnsToggle(false);
 
         // 빈칸으로 파티클 attractor 옮기기
-        attractor.position = PhoneMenu.Instance.invenSlots[PhoneMenu.Instance.GetEmptySlot()].transform.position;
+        attractor.position = PhoneMenu.Instance.invenSlotList[PhoneMenu.Instance.GetEmptySlot()].transform.position;
 
         yield return new WaitForSecondsRealtime(1f);
 

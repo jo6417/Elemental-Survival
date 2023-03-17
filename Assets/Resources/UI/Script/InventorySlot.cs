@@ -307,13 +307,13 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     if (emptyIndex != -1)
                     {
                         // 현재 슬롯의 아이템 넣기
-                        PhoneMenu.Instance.invenSlots[emptyIndex].slotInfo = slotInfo;
+                        PhoneMenu.Instance.invenSlotList[emptyIndex].slotInfo = slotInfo;
 
                         // 현재 슬롯 정보 삭제
                         slotInfo = null;
 
                         // 각 슬롯 UI 갱신
-                        PhoneMenu.Instance.invenSlots[emptyIndex].Set_Slot(true);
+                        PhoneMenu.Instance.invenSlotList[emptyIndex].Set_Slot(true);
                         Set_Slot(true);
 
                         return;
@@ -371,13 +371,13 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     if (emptyIndex != -1)
                     {
                         // 현재 슬롯의 아이템 넣기
-                        PhoneMenu.Instance.invenSlots[emptyIndex].slotInfo = slotInfo;
+                        PhoneMenu.Instance.invenSlotList[emptyIndex].slotInfo = slotInfo;
 
                         // 현재 슬롯 정보 삭제
                         slotInfo = null;
 
                         // 각 슬롯 UI 갱신
-                        PhoneMenu.Instance.invenSlots[emptyIndex].Set_Slot(true);
+                        PhoneMenu.Instance.invenSlotList[emptyIndex].Set_Slot(true);
                         Set_Slot(true);
 
                         return;

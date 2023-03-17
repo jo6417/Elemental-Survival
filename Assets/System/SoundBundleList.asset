@@ -126,19 +126,22 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: GameoverLanding
       clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: GameoverLanding_Small
       clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
       volume: 0.7
       pitch: 1.2
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: GameoverFlick
       clip: {fileID: 8300000, guid: 5ff823f546b52574a931e1d9b44290a6, type: 3}
@@ -150,11 +153,12 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 99a93292b609a7948b294b37b214c7a9, type: 3}
       volume: 1
       pitch: 2
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Gate_InsertGem
       clip: {fileID: 8300000, guid: 7c182946528a08745a6fce149fe4c628, type: 3}
-      volume: 1
+      volume: 0.2
       pitch: 1.5
       mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
         type: 2}
@@ -163,19 +167,22 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: f60d396623a89e444a07f510b883355e, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Gate_Open
       clip: {fileID: 8300000, guid: b4ba490fb9588f94285c6a03d227d6d3, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Gate_Teleport
       clip: {fileID: 8300000, guid: eec3bf121b316d64ca1c8aac7573a2f4, type: 3}
-      volume: 1
+      volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: 8396658151355128826, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Vend_Fall
       clip: {fileID: 8300000, guid: 958408b32ccf3714ea02821877b0870c, type: 3}
@@ -513,7 +520,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 3db78b71e7e9bd4409f8b78d7134009a, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Truck_Engine
       clip: {fileID: 8300000, guid: 2cf4615e5c1b4284084e259d5888892f, type: 3}
@@ -537,7 +545,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 3e8adfb2c662fd14f925ba42f360c661, type: 3}
       volume: 0.5
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Truck_Open
       clip: {fileID: 8300000, guid: e465b1a81107397419ebdc3e5cb6b34c, type: 3}
@@ -561,7 +570,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 3e2ed08f642f513429c478feff4e77d5, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Truck_Impact_2
       clip: {fileID: 8300000, guid: eb3627cdec29b714fab7c2c1578d79a8, type: 3}
@@ -573,7 +583,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 33d09e841dde19e4c929a2d202a74d4d, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Truck_Light
       clip: {fileID: 8300000, guid: 0d1f8b0cfca1e1b4f98124ab7d5b6b49, type: 3}
@@ -633,13 +644,15 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 8109725fdd0eb3244b87d0a935bd25f3, type: 3}
       volume: 0.05
       pitch: 3
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: A_800_Attack
       clip: {fileID: 8300000, guid: 557a575e1ecef9a42ab17c93ff4c7792, type: 3}
       volume: 0.3
       pitch: 3
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: WaterSlime_Jump
       clip: {fileID: 8300000, guid: 0e20aeb63ca000e44b93ce7fc2f6d57f, type: 3}
@@ -774,6 +787,13 @@ MonoBehaviour:
       pitch: 2
       mixerGroup: {fileID: 0}
       source: {fileID: 0}
+    - name: Spawn_Beam
+      clip: {fileID: 8300000, guid: eeebb003eaa0077499841a10ebfca85c, type: 3}
+      volume: 0.05
+      pitch: 1
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
+      source: {fileID: 0}
   - name: Bawi_Boss_Sounds
     sounds:
     - name: Bawi_Moving
@@ -792,7 +812,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 75b6ec97150e5bc4f9994c5159291a24, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Bawi_GrabStone
       clip: {fileID: 8300000, guid: 2251354f158a1584c873c877d8014832, type: 3}
@@ -956,13 +977,15 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 8840257eac9df6a41a4d4aaac99d3d9b, type: 3}
       volume: 0.8
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: HotDog_Bark2
       clip: {fileID: 8300000, guid: 1f190d958ca58ee46b7a1dcc62f88b9d, type: 3}
       volume: 0.8
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: HotDog_Jump
       clip: {fileID: 8300000, guid: 958408b32ccf3714ea02821877b0870c, type: 3}
@@ -1312,19 +1335,22 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 22a5e74a5bb9f3040badf2354c4ba1f8, type: 3}
       volume: 0.1
       pitch: 2
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Farmer_Step2
       clip: {fileID: 8300000, guid: ed6e5c09607f1c840b1aeb856a3967a7, type: 3}
       volume: 0.1
       pitch: 2
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Farmer_Step3
       clip: {fileID: 8300000, guid: 8937c371cc4c7a6409b47aad8638400a, type: 3}
       volume: 0.1
       pitch: 2
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Farmer_Leg_Stab
       clip: {fileID: 8300000, guid: ed9afd92732f2ea48958dca617286ad1, type: 3}
@@ -1354,7 +1380,8 @@ MonoBehaviour:
       clip: {fileID: 8300000, guid: 1016fb9ecf6c18c42a122c4f8f800213, type: 3}
       volume: 1
       pitch: 1
-      mixerGroup: {fileID: 0}
+      mixerGroup: {fileID: -5032945221902495863, guid: 05900282da33cd84fa937b8400a55be9,
+        type: 2}
       source: {fileID: 0}
     - name: Farmer_Seed_Launch
       clip: {fileID: 8300000, guid: e4443c95109dd8b438a853b6ac982fea, type: 3}

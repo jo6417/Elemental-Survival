@@ -55,7 +55,7 @@ public class MainMenuBtn : MonoBehaviour
         yield return new WaitUntil(() => SystemManager.Instance != null);
 
         // 시간 속도 초기화
-        SystemManager.Instance.TimeScaleChange(1f);
+        // SystemManager.Instance.TimeScaleChange(1f);
 
         // ui 커서 초기화까지 대기
         yield return new WaitUntil(() => UICursor.Instance != null);

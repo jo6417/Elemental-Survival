@@ -407,6 +407,9 @@ public class WorldSpawner : MonoBehaviour
         // 확장 대기
         yield return new WaitForSeconds(0.5f * spawnTime);
 
+        // 스폰 빔 사운드 재생
+        SoundManager.Instance.PlaySound("Spawn_Beam", portal.position);
+
         #region Enemy Init
 
         // 몬스터 리스트에 넣어서 기억하기

@@ -19,6 +19,9 @@ public class Ghosting : MonoBehaviour
         // magicHolder 초기화 대기
         yield return new WaitUntil(() => magicHolder && magicHolder.initDone);
 
+        // 적이 태어날때 함수를 호출하도록 델리게이트에 넣기
+        SystemManager.Instance.globalEnemyInitCallback += GhostEffect;
+
         // 적이 죽을때 함수를 호출하도록 델리게이트에 넣기
         SystemManager.Instance.globalEnemyDeadCallback += SummonGhost;
 
@@ -36,7 +39,10 @@ public class Ghosting : MonoBehaviour
     {
         // 해당 마법 장착 해제되면 델리게이트에서 함수 빼기
         if (SystemManager.Instance != null)
+        {
+            SystemManager.Instance.globalEnemyInitCallback -= GhostEffect;
             SystemManager.Instance.globalEnemyDeadCallback -= SummonGhost;
+        }
     }
 
     // 몬스터 유령 생성하기
@@ -47,7 +53,11 @@ public class Ghosting : MonoBehaviour
         // print(MagicDB.Instance.MagicCritical(magic));
 
         // 크리티컬 확률 = 소환 확률
-        bool isDrop = MagicDB.Instance.MagicCritical(magicHolder.magic);
+        float summonRate = MagicDB.Instance.MagicCriticalRate(magicHolder.magic);
+
+        // 크리티컬 아니면 실패, 리턴
+        if (Random.value > summonRate)
+            return;
 
         //크리티컬 데미지 = 소환 몬스터 체력 추가
         int healAmount = Mathf.RoundToInt(MagicDB.Instance.MagicCriticalPower(magicHolder.magic));
@@ -61,7 +71,7 @@ public class Ghosting : MonoBehaviour
             // 몬스터 프리팹 소환 및 비활성화
             GameObject ghostObj = LeanPool.Spawn(ghostPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.enemyPool);
 
-            // 몬스터 매니저 찾기
+            // 고스트 매니저 찾기
             Character ghostCharacter = ghostObj.GetComponent<Character>();
 
             // 해당 유령은 고스트로 바꾸기 예약
@@ -94,8 +104,10 @@ public class Ghosting : MonoBehaviour
             //     });
             // }
 
-            //todo 버프 이펙트 붙이기
-            LeanPool.Spawn(wifiEffect, ghostCharacter.buffParent.position, Quaternion.identity, ghostCharacter.buffParent);
+            // // 버프 이펙트 소환
+            // GameObject buffEffect = LeanPool.Spawn(wifiEffect, ghostCharacter.buffParent.position, Quaternion.identity, ghostCharacter.buffParent).gameObject;
+            // // 버프 이펙트 붙이기
+            // ghostCharacter.SetBuff("Ghosting", "", true, 1, magicHolder.duration, false, ghostCharacter.buffParent, buffEffect);
         }
         // 이미 유령일때
         else
@@ -104,6 +116,27 @@ public class Ghosting : MonoBehaviour
             wifiEffect = character.buffParent.Find(wifiEffect.name);
             if (wifiEffect != null)
                 LeanPool.Despawn(wifiEffect);
+        }
+    }
+
+    void GhostEffect(Character character)
+    {
+        // 유령일때
+        if (character.isGhost)
+        {
+            // 버프 이펙트 소환
+            GameObject buffEffect = LeanPool.Spawn(wifiEffect, character.buffParent.position, Quaternion.identity, character.buffParent).gameObject;
+
+            // 버프 이펙트 붙이기
+            character.SetBuff("Ghosting", "", true, 1, magicHolder.duration, false, character.buffParent, buffEffect);
+        }
+        // 유령 아닐때
+        else
+        {
+            // // 버프 이펙트 없에기
+            // wifiEffect = character.buffParent.Find(wifiEffect.name);
+            // if (wifiEffect != null)
+            //     LeanPool.Despawn(wifiEffect);
         }
     }
 }
