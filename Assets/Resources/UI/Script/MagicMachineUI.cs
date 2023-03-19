@@ -244,6 +244,9 @@ public class MagicMachineUI : MonoBehaviour
         // 슬롯이 비었을때
         if (paySlot.slotInfo == null)
         {
+            // 거부 사운드 재생
+            SoundManager.Instance.PlaySound("Denied");
+
             // 버튼 색 초기화
             foreach (Button btn in spinBtns)
             {

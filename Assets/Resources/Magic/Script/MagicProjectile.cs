@@ -331,7 +331,7 @@ public class MagicProjectile : MonoBehaviour
         }
 
         // 오브젝트 디스폰하기
-        if (gameObject.activeSelf)
+        if (gameObject)
             LeanPool.Despawn(transform);
     }
 }

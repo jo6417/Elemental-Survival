@@ -60,8 +60,10 @@ public class GameoverMenu : MonoBehaviour
         gameLog.Find("Time/Amount").GetComponent<TextMeshProUGUI>().text = UIManager.Instance.UpdateTimer();
         // 재화 넣기
         gameLog.Find("Money/Amount").GetComponent<TextMeshProUGUI>().text = "Gem Test";
-        // 킬 수 넣기
+        // 킬 카운트 넣기
         gameLog.Find("KillCount/Amount").GetComponent<TextMeshProUGUI>().text = SystemManager.Instance.killCount.ToString();
+        // 킬 카운트 초기화
+        SystemManager.Instance.killCount = 0;
         //TODO 사망원인 넣기
         gameLog.Find("KilledBy/Amount").GetComponent<TextMeshProUGUI>().text = "Mob Test";
 

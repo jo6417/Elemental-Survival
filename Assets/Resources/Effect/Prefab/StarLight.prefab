@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particle: {fileID: 198437972640931972}
   autoDespawn: 0
+  despawnDelay: 0
   collOverTime: 0
   modify_startLife: 0
 --- !u!198 &198437972640931972
@@ -57,7 +58,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1612221337289516}
   serializedVersion: 7
-  lengthInSec: 5
+  lengthInSec: 0.5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 1

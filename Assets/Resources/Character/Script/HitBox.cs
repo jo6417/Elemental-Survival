@@ -88,9 +88,7 @@ public class HitBox : MonoBehaviour
 
         // 공격 오브젝트와 충돌 했을때
         if (other.TryGetComponent(out Attack attack))
-        {
             StartCoroutine(Hit(attack));
-        }
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -109,13 +107,7 @@ public class HitBox : MonoBehaviour
 
         // 공격 오브젝트와 충돌 했을때
         if (other.TryGetComponent(out Attack attack))
-            // 마법 공격 오브젝트와 충돌 했을때
-            if (other.TryGetComponent(out MagicHolder magicHolder))
-            {
-                // 마법 정보 없으면 리턴
-                if (magicHolder.magic == null)
-                    return;
-            }
+            StartCoroutine(Hit(attack));
     }
 
     public virtual IEnumerator Hit(Attack attack)
@@ -149,8 +141,9 @@ public class HitBox : MonoBehaviour
             if (atkCharacter == this)
                 yield break;
 
-            // 공격자를 타겟으로 변경
-            character.TargetObj = atkCharacter.gameObject;
+            // 공격자를 타겟으로 변경 확률
+            if (Random.value < 0.5f)
+                character.TargetObj = atkCharacter.gameObject;
 
             // 크리티컬 성공 여부 계산
             isCritical = Random.value > 0.5f ? true : false;
@@ -486,7 +479,7 @@ public class HitBox : MonoBehaviour
         {
             // print("Dead Pos : " + transform.position);
             //죽음 시작
-            StartCoroutine(Dead(character.deadDelay));
+            StartCoroutine(character.Dead());
         }
     }
 
@@ -542,111 +535,5 @@ public class HitBox : MonoBehaviour
                 // 틴트색 초기화
                 character.spriteList[i].material.SetColor("_Tint", new Color(1, 1, 1, 0));
         }
-    }
-
-    public IEnumerator Dead(float deadDelay)
-    {
-        //보스면 체력 갱신
-        if (character.enemy != null && character.enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
-            StartCoroutine(UIManager.Instance.UpdateBossHp(character));
-
-        // if (character.enemy == null)
-        //     yield break;
-
-        // 죽음 여부 초기화
-        character.isDead = true;
-
-        // 경직 시간 추가
-        // hitCount += 1f;
-
-        // 캐릭터 정보가 있을때
-        if (character.enemy != null)
-        {
-            //이동 초기화
-            character.rigid.velocity = Vector2.zero;
-
-            // 물리 콜라이더 끄기
-            if (character.physicsColl != null)
-                character.physicsColl.enabled = false;
-        }
-
-        // 피격 콜라이더 모두 끄기
-        foreach (Collider2D hitColl in hitColls)
-        {
-            hitColl.enabled = false;
-        }
-
-        // 초기화 완료 취소
-        character.initialFinish = false;
-
-        // 애니메이션 멈추기
-        for (int i = 0; i < character.animList.Count; i++)
-        {
-            character.animList[i].speed = 0f;
-        }
-
-        // 힐 범위 오브젝트가 있을때 디스폰
-        if (character.healRange != null)
-            LeanPool.Despawn(character.healRange.gameObject);
-
-        // 트윈 멈추기
-        transform.DOPause();
-
-        foreach (SpriteRenderer sprite in character.spriteList)
-        {
-            // 빨간색으로 변경
-            sprite.material.SetColor("_Tint", SystemManager.Instance.hitColor);
-
-            // 색깔 점점 흰색으로
-            sprite.material.DOColor(SystemManager.Instance.DeadColor, "_Tint", deadDelay)
-            .SetEase(Ease.OutQuad);
-        }
-
-        // 죽음 딜레이 대기
-        yield return new WaitForSeconds(deadDelay);
-
-        // 고스트가 아닐때
-        if (!character.IsGhost)
-        {
-            // 캐릭터 정보가 있을때
-            if (character.enemy != null)
-            {
-                //캐릭터 총 전투력 빼기
-                WorldSpawner.Instance.NowEnemyPower -= character.enemy.grade;
-
-                //캐릭터 킬 카운트 올리기
-                SystemManager.Instance.killCount++;
-                UIManager.Instance.UpdateKillCount();
-
-                //혈흔 이펙트 생성
-                GameObject blood = LeanPool.Spawn(WorldSpawner.Instance.bloodPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
-            }
-
-            //아이템 드랍
-            character.DropItem();
-
-            // 캐릭터 리스트에서 캐릭터 본인 빼기
-            WorldSpawner.Instance.EnemyDespawn(character);
-        }
-
-        // 모든 디버프 해제
-        character.DebuffRemove();
-
-        // 먼지 이펙트 생성
-        GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, character.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
-        // dust.tag = "Enemy";
-
-        // 죽을때 콜백 호출
-        if (character.deadCallback != null)
-            character.deadCallback(character);
-
-        // 트윈 및 시퀀스 끝내기
-        character.transform.DOKill();
-
-        // 공격 타겟 플레이어로 초기화
-        character.TargetObj = PlayerManager.Instance.gameObject;
-
-        // 캐릭터 비활성화
-        LeanPool.Despawn(character.gameObject);
     }
 }

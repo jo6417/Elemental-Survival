@@ -13,8 +13,8 @@ public class ItemManager : MonoBehaviour
     public GameObject despawnEffect; //사라질때 이펙트
     public Collider2D coll;
     private Rigidbody2D rigid;
-    private Vector3 velocity;
     [SerializeField] GameObject gadgetPrefab;
+    [SerializeField] TrailRenderer tail; // 원소젬 꼬리
 
     [Header("State")]
     [SerializeField] ItemState itemState = 0;
@@ -26,6 +26,7 @@ public class ItemManager : MonoBehaviour
     public ItemInfo itemInfo; // 해당 아이템 정보
     public MagicInfo magicInfo; // 해당 아이템이 갖고 있는 마법 정보
     [SerializeField] bool randomMagic = false;
+    [SerializeField] bool testMagic = false;
     public DBEnums.MagicDBEnum magicEnum = (DBEnums.MagicDBEnum)10000; // 테스트용 마법 리스트
 
     private void Awake()
@@ -33,7 +34,7 @@ public class ItemManager : MonoBehaviour
         sprite = sprite == null ? GetComponent<SpriteRenderer>() : sprite;
         rigid = GetComponent<Rigidbody2D>();
         coll = GetComponent<Collider2D>();
-        velocity = rigid.velocity;
+        if (tail == null) tail = GetComponentInChildren<TrailRenderer>();
 
         //아이템 정보 없을때 충돌 끄기
         coll.enabled = false;
@@ -78,21 +79,15 @@ public class ItemManager : MonoBehaviour
         // 마법DB 로드 완료까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
-        // 마법 이름 들어왔을때
-        if ((int)magicEnum != 10000 || randomMagic)
-        {
-            if ((int)magicEnum != 10000)
-                // 마법 정보 찾아 넣기
-                magicInfo = MagicDB.Instance.GetMagicByName(magicEnum.ToString());
-            if (randomMagic)
-                // 랜덤 마법 찾아 넣기
-                magicInfo = MagicDB.Instance.GetRandomMagic();
+#if UNITY_EDITOR
+        if (testMagic && (int)magicEnum != 10000)
+            // 마법 정보 찾아 넣기
+            magicInfo = MagicDB.Instance.GetMagicByName(magicEnum.ToString());
+#endif
 
-            // 프레임 색 넣기
-            transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[magicInfo.grade];
-            // 마법 아이콘 넣기
-            transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetIcon(magicInfo.id);
-        }
+        if (randomMagic)
+            // 랜덤 마법 찾아 넣기
+            magicInfo = MagicDB.Instance.GetRandomMagic();
 
         // 아이템, 마법 정보 들어올때까지 대기
         yield return new WaitUntil(() => itemInfo != null || magicInfo != null);
@@ -106,7 +101,14 @@ public class ItemManager : MonoBehaviour
         }
 
         if (magicInfo != null)
+        {
             itemName = magicInfo.name;
+
+            // 프레임 색 넣기
+            transform.Find("Frame").GetComponent<SpriteRenderer>().color = MagicDB.Instance.GradeColor[magicInfo.grade];
+            // 마법 아이콘 넣기
+            transform.Find("Icon").GetComponent<SpriteRenderer>().sprite = MagicDB.Instance.GetIcon(magicInfo.id);
+        }
 
         //아이템 번들 여부 초기화
         isBundle = false;
@@ -140,16 +142,16 @@ public class ItemManager : MonoBehaviour
                     PlayerCollision();
             }
 
-            // 리스폰 콜라이더 안에 들어왔을때
-            if (other.gameObject.CompareTag("Respawn") && !isBundle)
-            {
-                //해당 타입 원소젬 개수 -1
-                if (WorldSpawner.Instance.outGemNum[gemTypeIndex] > 0)
-                    WorldSpawner.Instance.outGemNum[gemTypeIndex]--;
+            // // 리스폰 콜라이더 안에 들어왔을때
+            // if (other.gameObject.CompareTag("Respawn") && !isBundle)
+            // {
+            //     //해당 타입 원소젬 개수 -1
+            //     if (WorldSpawner.Instance.outGemNum[gemTypeIndex] > 0)
+            //         WorldSpawner.Instance.outGemNum[gemTypeIndex]--;
 
-                //원소젬 리스트에서 빼기
-                WorldSpawner.Instance.outGem.Remove(gameObject);
-            }
+            //     //원소젬 리스트에서 빼기
+            //     WorldSpawner.Instance.outGem.Remove(gameObject);
+            // }
         }
 
         // 플레이어와 충돌 했을때
@@ -462,8 +464,8 @@ public class ItemManager : MonoBehaviour
         if (despawnEffect)
             LeanPool.Spawn(despawnEffect, transform.position, transform.rotation, ObjectPool.Instance.effectPool);
 
-        //아이템 비활성화
-        LeanPool.Despawn(transform);
+        // 아이템 디스폰
+        Despawn();
     }
 
     void AutoDespawn()
@@ -481,11 +483,21 @@ public class ItemManager : MonoBehaviour
                 LeanPool.Spawn(despawnEffect, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
 
             // 아이템 디스폰
-            LeanPool.Despawn(transform);
+            Despawn();
         })
         .OnKill(() =>
         {
             sprite.color = Color.white;
         });
+    }
+
+    void Despawn()
+    {
+        // 원소젬이면 꼬리 trail 초기화
+        if (tail != null)
+            tail.Clear();
+
+        // 아이템 디스폰
+        LeanPool.Despawn(transform);
     }
 }

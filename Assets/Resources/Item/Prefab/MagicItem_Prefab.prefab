@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3962021260382484878}
   - component: {fileID: 6198228376336076720}
   - component: {fileID: 7335071663260970936}
+  - component: {fileID: 2631237015728498032}
   m_Layer: 0
   m_Name: DespawnEffect
   m_TagString: Untagged
@@ -4880,6 +4881,23 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &2631237015728498032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247720266629558472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 6198228376336076720}
+  autoDespawn: 1
+  despawnDelay: 0
+  collOverTime: 0
+  modify_startLife: 0
 --- !u!1 &2291093259043419714
 GameObject:
   m_ObjectHideFlags: 0
@@ -5180,12 +5198,14 @@ MonoBehaviour:
   despawnEffect: {fileID: 247720266629558472}
   coll: {fileID: 0}
   gadgetPrefab: {fileID: 0}
+  tail: {fileID: 0}
   itemState: 0
   isBundle: 0
   gemTypeIndex: -1
   itemName: 
   autoDespawnTime: 0
-  magicEnum: 10000
+  randomMagic: 0
+  magicEnum: 9
 --- !u!50 &7126061559683287822
 Rigidbody2D:
   serializedVersion: 4

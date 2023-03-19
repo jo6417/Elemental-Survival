@@ -142,7 +142,7 @@ public class GatePortal : MonoBehaviour
         showKeyUI.alpha = 0;
 
         //포탈 이펙트 오브젝트 비활성화
-        // portalAnim.gameObject.SetActive(false);
+        portalAnim.gameObject.SetActive(false);
 
         // 상호작용 트리거 함수 콜백에 연결 시키기
         if (interacter.interactTriggerCallback == null)
@@ -277,13 +277,15 @@ public class GatePortal : MonoBehaviour
         // 첫번째 젬 넣을때
         if (portalState == PortalState.Idle)
         {
+            //포탈 이펙트 오브젝트 활성화
+            if (!portalAnim.gameObject.activeSelf)
+                portalAnim.gameObject.SetActive(true);
+
             // 젬 받기 이후 상태로 전환
             portalState = PortalState.GemReceive;
 
             // 이제부터 포탈게이트 근처에서 몬스터 스폰
             WorldSpawner.Instance.gateSpawn = true;
-            // 몬스터 반대편으로 옮기기 정지
-            // WorldSpawner.Instance.dragSwitch = false;
         }
 
         // 젬 넣는 상태일때
@@ -479,6 +481,8 @@ public class GatePortal : MonoBehaviour
 
         // 몬스터 스폰 멈추기
         SystemManager.Instance.spawnSwitch = false;
+        // 몬스터 반대편으로 옮기기 정지
+        WorldSpawner.Instance.dragSwitch = false;
 
         // 남은 몬스터 화살표로 방향 표시해주기
         UIManager.Instance.enemyPointSwitch = true;

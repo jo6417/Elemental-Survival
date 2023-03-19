@@ -40,10 +40,6 @@ public class MetalSword : MonoBehaviour
     {
         yield return new WaitUntil(() => magicHolder.magic != null);
 
-        // 스탯 초기화
-        float speed = MagicDB.Instance.MagicSpeed(magicHolder.magic, false);
-        float range = MagicDB.Instance.MagicRange(magicHolder.magic);
-
         // 타겟 방향
         Vector3 targetDir = default;
 
@@ -74,7 +70,7 @@ public class MetalSword : MonoBehaviour
         Vector3 endDir = Vector3.forward * (targetAngle - 90f);
 
         // range 만큼 스케일 키우기
-        transform.localScale = Vector2.one * range;
+        transform.localScale = Vector2.one * magicHolder.range;
 
         // 각도 초기화
         transform.localRotation = Quaternion.Euler(startDir);
@@ -96,10 +92,11 @@ public class MetalSword : MonoBehaviour
         coll.enabled = true;
 
         // 일정 각도 회전
-        transform.DOLocalRotate(Vector3.forward * -180f, speed, RotateMode.LocalAxisAdd);
+        transform.DOLocalRotate(Vector3.forward * -180f * magicHolder.duration, magicHolder.duration * 0.5f, RotateMode.LocalAxisAdd)
+        .SetEase(Ease.InOutBack);
 
-        // 트레일 사라질때까지 대기
-        yield return new WaitForSeconds(speed);
+        // 회전 시간 대기
+        yield return new WaitForSeconds(magicHolder.duration * 0.5f);
 
         // 콜라이더 끄기
         coll.enabled = false;

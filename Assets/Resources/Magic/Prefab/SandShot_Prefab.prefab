@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5045955788949558053}
   - component: {fileID: 8080189903375732099}
   - component: {fileID: 2148817190802143037}
+  - component: {fileID: 5908564170240161615}
   - component: {fileID: 8948261749035731773}
   - component: {fileID: 8715780860474303115}
   m_Layer: 10
@@ -19,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5045955788949558053
 Transform:
   m_ObjectHideFlags: 0
@@ -46,8 +47,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pierceCount: 0
-  fixedPower: 0
+  playSoundName: 
+  atkColl: {fileID: 0}
+  targetType: 0
+  attack_power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -58,13 +64,23 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
-  coll: {fileID: 0}
+  stunTime: 0
+  fixCoolTime: 0
+  isQuickCast: 0
   targetObj: {fileID: 0}
-  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 0
   initDone: 0
+  power: 1
+  speed: 1
+  range: 1
+  scale: 1
+  duration: 1
+  criticalRate: 1
+  criticalPower: 1
+  pierce: 0
+  atkNum: 0
+  coolTime: 0
 --- !u!114 &2148817190802143037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,6 +94,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particleSpeed: 0
+--- !u!114 &5908564170240161615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2732740067546379331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93444fd458adc5748bb3b77748c2e09d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 8948261749035731773}
+  autoDespawn: 1
+  despawnDelay: 0
+  collOverTime: 0
+  modify_startLife: 0
 --- !u!198 &8948261749035731773
 ParticleSystem:
   m_ObjectHideFlags: 0

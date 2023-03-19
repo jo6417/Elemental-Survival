@@ -28,7 +28,7 @@ public class Character : MonoBehaviour
     [Header("State")]
     public List<Buff> buffList = new List<Buff>(); // 버프 리스트
     public bool isDead; //죽음 코루틴 진행중 여부
-    public float deadDelay = 1f; // 죽는 트랜지션 진행 시간
+    public float deadWhiteDelay = 1f; // 죽는 트랜지션 진행 시간
     public bool changeGhost = false;
     public float portalSize = 1f; //포탈 사이즈 지정값
     public bool afterEffect = false; // 상태이상 여부
@@ -37,7 +37,7 @@ public class Character : MonoBehaviour
     public float healCount; // Heal 엘리트몹 아군 힐 카운트
     public float atkCoolCount = 0; // 공격 쿨타임 잔여시간
 
-    public bool isGhost = false; // 마법으로 소환된 고스트 몬스터인지 여부
+    private bool isGhost = false; // 마법으로 소환된 고스트 몬스터인지 여부
     public bool IsGhost
     {
         get
@@ -105,7 +105,7 @@ public class Character : MonoBehaviour
     public Vector3 movePos; // 이동하려는 위치
     public Vector3 targetPos; // 추적한 타겟 위치
     public Vector3 targetDir; // 타겟 방향
-    public float searchRange = 100f; // 타겟 추적 범위
+    float searchRange = 30f; // 타겟 추적 범위
 
     [Header("Refer")]
     public EnemyAI enemyAI;
@@ -214,7 +214,7 @@ public class Character : MonoBehaviour
         // atkCoolCount = 0;
 
         // 모든 디버프 초기화
-        DebuffRemove();
+        // DebuffRemove();
 
         // 히트박스 전부 끄기
         for (int i = 0; i < hitBoxList.Count; i++)
@@ -266,14 +266,6 @@ public class Character : MonoBehaviour
             cooltimeNow = enemy.cooltime;
         }
 
-        // 스프라이트 머터리얼 고정
-        foreach (SpriteRenderer sprite in spriteList)
-        {
-            // 캐릭터 머터리얼로 바꾸기
-            // if (sprite.material != SystemManager.Instance.characterMat)
-            //     sprite.material = SystemManager.Instance.characterMat;
-        }
-
         // 몬스터 정보 있을때
         if (enemy != null)
             //엘리트 종류마다 색깔 및 능력치 적용
@@ -312,7 +304,7 @@ public class Character : MonoBehaviour
 
                 case EliteClass.Heal:
                     // 최대 체력 상승
-                    characterStat.hpMax = characterStat.hpMax * 2f;
+                    characterStat.hpMax = characterStat.hpMax * 1.5f;
 
                     //힐 오브젝트 소환
                     healRange = LeanPool.Spawn(WorldSpawner.Instance.healRange, transform.position, Quaternion.identity, transform).GetComponent<CircleCollider2D>();
@@ -575,8 +567,13 @@ public class Character : MonoBehaviour
         stopCount = 0f;
 
         // 모든 버프 해제
-        for (int i = 0; i < buffList.Count; i++)
-            StartCoroutine(StopBuff(buffList[i], 0));
+        for (int i = buffList.Count - 1; i >= 0; i--)
+        {
+            // 버프 캐싱
+            Buff buff = buffList[i];
+
+            StartCoroutine(StopBuff(buff, 0));
+        }
     }
 
     private void Update()
@@ -1021,8 +1018,12 @@ public class Character : MonoBehaviour
         }
         // 일반 버프일때
         else
-            // 버프 없에고 아이콘,이펙트 제거
-            StartCoroutine(StopBuff(buff, buff.duration));
+        {
+            // 제한시간이 있을때
+            if (buff.duration > 0)
+                // 버프 없에고 아이콘,이펙트 제거
+                StartCoroutine(StopBuff(buff, buff.duration));
+        }
 
         return buff;
     }
@@ -1061,6 +1062,133 @@ public class Character : MonoBehaviour
 
         // 즉시 버프 없에고 아이콘,이펙트 제거
         StartCoroutine(StopBuff(buff, 0));
+    }
+
+    public IEnumerator Dead(float delay = -1)
+    {
+        //보스면 체력 갱신
+        if (enemy != null && enemy.enemyType == EnemyDB.EnemyType.Boss.ToString())
+            StartCoroutine(UIManager.Instance.UpdateBossHp(this));
+
+        // if (enemy == null)
+        //     yield break;
+
+        // 죽음 여부 초기화
+        isDead = true;
+
+        // 경직 시간 추가
+        // hitCount += 1f;
+
+        // 캐릭터 정보가 있을때
+        if (enemy != null)
+        {
+            //이동 초기화
+            rigid.velocity = Vector2.zero;
+
+            // 물리 콜라이더 끄기
+            if (physicsColl != null)
+                physicsColl.enabled = false;
+        }
+
+        foreach (HitBox hitBox in hitBoxList)
+        {
+            // 피격 콜라이더 모두 끄기
+            foreach (Collider2D hitColl in hitBox.hitColls)
+            {
+                hitColl.enabled = false;
+            }
+        }
+
+        // 초기화 완료 취소
+        initialFinish = false;
+
+        // 애니메이션 멈추기
+        for (int i = 0; i < animList.Count; i++)
+        {
+            animList[i].speed = 0f;
+        }
+
+        // 힐 범위 오브젝트가 있을때 디스폰
+        if (healRange != null)
+            LeanPool.Despawn(healRange.gameObject);
+
+        // 트윈 멈추기
+        transform.DOPause();
+
+        // 하얗게 변하면서 죽는 시간
+        float deadDelay = delay == -1 ? deadWhiteDelay : delay;
+
+        foreach (SpriteRenderer sprite in spriteList)
+        {
+            // 빨간색으로 변경
+            sprite.material.SetColor("_Tint", SystemManager.Instance.hitColor);
+
+            // 색깔 점점 흰색으로
+            sprite.material.DOColor(SystemManager.Instance.DeadColor, "_Tint", deadDelay)
+            .SetEase(Ease.OutQuad);
+        }
+
+        // 죽음 딜레이 대기
+        yield return new WaitForSeconds(deadDelay);
+
+        // 고스트가 아닐때
+        if (!IsGhost)
+        {
+            // 캐릭터 정보가 있을때
+            if (enemy != null)
+            {
+                //캐릭터 총 전투력 빼기
+                WorldSpawner.Instance.NowEnemyPower -= enemy.grade;
+
+                //캐릭터 킬 카운트 올리기
+                SystemManager.Instance.killCount++;
+                UIManager.Instance.UpdateKillCount();
+
+                //혈흔 이펙트 생성
+                GameObject blood = LeanPool.Spawn(WorldSpawner.Instance.bloodPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+            }
+
+            //아이템 드랍
+            DropItem();
+
+            // 캐릭터 리스트에서 캐릭터 본인 빼기
+            WorldSpawner.Instance.EnemyDespawn(this);
+        }
+
+        // 몬스터 죽을때 함수 호출 (모든 몬스터 공통), ex) 체력 씨앗 드랍, 몬스터 아군 고스트 소환, 시체 폭발 등
+        if (SystemManager.Instance.globalEnemyDeadCallback != null)
+            SystemManager.Instance.globalEnemyDeadCallback(this);
+
+        // 모든 디버프 해제
+        DebuffRemove();
+
+        // 먼지 이펙트 생성
+        GameObject dust = LeanPool.Spawn(WorldSpawner.Instance.dustPrefab, transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+        // dust.tag = "Enemy";
+
+        // 죽을때 콜백 호출
+        if (deadCallback != null)
+            deadCallback(this);
+
+        // 트윈 및 시퀀스 끝내기
+        transform.DOKill();
+
+        // 공격 타겟 플레이어로 초기화
+        TargetObj = PlayerManager.Instance.gameObject;
+
+        // 캐릭터 비활성화
+        LeanPool.Despawn(gameObject);
+    }
+
+    public IEnumerator AutoKill(float duration)
+    {
+        // duration 동안 대기
+        yield return new WaitForSeconds(duration);
+
+        // 아직 살아있을때
+        if (!isDead)
+            // 죽음 함수 실행
+            StartCoroutine(Dead());
     }
 }
 

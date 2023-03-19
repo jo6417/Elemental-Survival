@@ -102,7 +102,7 @@ public class EnemyAtkTrigger : MonoBehaviour
                     return;
 
                 // 고스트 여부가 서로 같을때 리턴
-                if (character.isGhost == hitBox.character.IsGhost)
+                if (character.IsGhost == hitBox.character.IsGhost)
                     return;
             }
             // 콜라이더가 히트박스를 갖고 있지 않을때 리턴

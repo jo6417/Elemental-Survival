@@ -57,7 +57,7 @@ public class Locker : MonoBehaviour
         // null 이 아닌 상품이 뽑힐때까지 반복
         while (slotInfo == null)
         {
-            // 아티팩트 구현하면 0,3까지 랜덤
+            //todo 아티팩트 구현하면 0,3까지 랜덤
             // 상품 종류 아이템,마법,아티팩트 중 랜덤
             randomType = Random.Range(0, 2);
             randomType = 0;
@@ -77,10 +77,10 @@ public class Locker : MonoBehaviour
                 case 1:
                     slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Shard, randomGrade);
                     break;
-                // 아티팩트일때
-                case 2:
-                    slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Artifact, randomGrade);
-                    break;
+                    // // 아티팩트일때
+                    // case 2:
+                    //     slotInfo = ItemDB.Instance.GetRandomItem(ItemDB.ItemType.Artifact, randomGrade);
+                    //     break;
             }
 
             yield return null;

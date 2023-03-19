@@ -55,7 +55,6 @@ public class UIManager : MonoBehaviour
     RectTransform UIRect;
     public GameObject phonePanel;
     public GameObject defaultPanel;
-    public GameObject chestPanel;
     public GameObject vendMachinePanel;
     public GameObject magicMachinePanel;
     public GameObject levelupPanel;
@@ -471,10 +470,11 @@ public class UIManager : MonoBehaviour
         || nowOpenPopup == magicMachinePanel)
             // 핸드폰 닫기
             PhoneMenu.Instance.BackBtn();
-        // 기본 마법 패널일때
+        // 기본마법, 게임오버, 레벨업 패널일때
         else if (nowOpenPopup == defaultPanel
-        // 게임 오버 패널일때
-        || nowOpenPopup == gameoverPanel)
+        || nowOpenPopup == gameoverPanel
+        || nowOpenPopup == levelupPanel)
+            // 입력 무시
             return;
         else
         {

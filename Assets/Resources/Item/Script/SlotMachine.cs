@@ -174,6 +174,9 @@ public class SlotMachine : MonoBehaviour
         // 재화가 가격보다 적을때
         else
         {
+            // 거부 사운드 재생
+            SoundManager.Instance.PlaySound("Denied");
+
             // 중복 트윈 방지
             priceUI.transform.DOKill();
             // 가격 좌우로 흔들기

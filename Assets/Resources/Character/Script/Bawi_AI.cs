@@ -26,7 +26,7 @@ public class Bawi_AI : EnemyAI
     [SerializeField, ReadOnly] Vector3 playerDir;
     [SerializeField, ReadOnly] bool isFloating = true; //부유 상태 여부
     [SerializeField] float aimCount = 1f; //드릴 조준 시간
-    [SerializeField] float drillChaseSpeed = 500f; // 드릴 추적 속도
+    [SerializeField] float drillChaseSpeed = 15f; // 드릴 추적 속도
 
     [Header("Refer")]
     [SerializeField] TextMeshProUGUI stateText; //! 테스트 현재 상태
@@ -295,8 +295,10 @@ public class Bawi_AI : EnemyAI
         fistPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
         drillPart.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
-        //해당 방향으로 가속
-        character.rigid.velocity = character.targetDir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale;
+        // 거리가 1 이상일때
+        if (character.targetDir.magnitude > 1f)
+            //해당 방향으로 가속
+            character.rigid.velocity = character.targetDir.normalized * character.speedNow * SystemManager.Instance.globalTimeScale;
 
         character.nowState = CharacterState.Idle;
     }
@@ -1110,6 +1112,9 @@ public class Bawi_AI : EnemyAI
         // 드릴 스핀 애니메이션 재생
         mainDrillAnim.SetBool("Spin", true);
 
+        // 드릴 콜라이더 켜기
+        drillGhostColl.enabled = true;
+
         //착지 할때까지 대기
         yield return new WaitUntil(() => !isFloating);
 
@@ -1170,6 +1175,9 @@ public class Bawi_AI : EnemyAI
 
         yield return new WaitForSeconds(0.5f);
 
+        // 드릴 콜라이더 끄기
+        drillGhostColl.enabled = false;
+
         // 드릴 내려서 땅속으로 천천히 내리기
         drillPart.DOLocalMove(Vector2.up * 0.5f, 1f)
         .SetEase(Ease.OutQuad)
@@ -1186,9 +1194,6 @@ public class Bawi_AI : EnemyAI
 
         // 드릴 회전 초기화
         drillPart.localRotation = Quaternion.Euler(Vector3.forward * -90f);
-
-        // 드릴 콜라이더 끄기
-        drillGhostColl.enabled = false;
 
         // 조준시간 입력
         aimCount = 10f;
@@ -1210,12 +1215,12 @@ public class Bawi_AI : EnemyAI
             playerDir = playerPos - drillRigid.transform.position;
 
             // 플레이어 방향으로 드릴 이동
-            drillRigid.velocity = playerDir.normalized * drillChaseSpeed;
+            drillRigid.velocity = Vector2.Lerp(drillRigid.velocity.normalized, playerDir.normalized, Time.deltaTime * 10f) * drillChaseSpeed;
 
             // 시간 차감 후 대기
             stateText.text = "Targeting : " + aimCount;
             aimCount -= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(Time.deltaTime);
         }
 
         if (drillSound != null)
@@ -1247,7 +1252,8 @@ public class Bawi_AI : EnemyAI
 
         yield return new WaitForSeconds(2f);
 
-        //공격 끝, 모두 초기화
+        // 드릴 콜라이더 끄기
+        drillGhostColl.enabled = false;
 
         //드릴 마스크 끄기
         drillMask.enabled = false;

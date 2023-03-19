@@ -368,7 +368,7 @@ MonoBehaviour:
   playerDir: {x: 0, y: 0, z: 0}
   isFloating: 1
   aimCount: 1
-  drillChaseSpeed: 15
+  drillChaseSpeed: 10
   stateText: {fileID: 7791055536502964002}
   bigLandDust: {fileID: 3222180882172883121, guid: 9df7b9bf07ecb074cba578488e4606ca,
     type: 3}
@@ -625,6 +625,7 @@ GameObject:
   - component: {fileID: 7791055535698618152}
   - component: {fileID: 7791055535698618154}
   - component: {fileID: 7791055535698618156}
+  - component: {fileID: 2110388721}
   m_Layer: 11
   m_Name: DrillGhost
   m_TagString: Enemy
@@ -679,7 +680,7 @@ MonoBehaviour:
   stopTime: 0
   stunTime: 0
   activeAngleOffset: 0
-  defaultCollOn: 1
+  defaultCollOn: 0
   cooltime: 0
   coolCount: 0
   character: {fileID: 5245483263214611728}
@@ -841,6 +842,27 @@ SpriteMask:
   m_BackSortingOrder: -1
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
+--- !u!50 &2110388721
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7791055535698618326}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &7791055535709983853
 GameObject:
   m_ObjectHideFlags: 0
@@ -1133,7 +1155,7 @@ MonoBehaviour:
   stopTime: 0
   stunTime: 0
   activeAngleOffset: 0
-  defaultCollOn: 1
+  defaultCollOn: 0
   cooltime: 0
   coolCount: 0
   character: {fileID: 5245483263214611728}
@@ -1732,7 +1754,7 @@ MonoBehaviour:
     wind_atk: 1
   buffList: []
   isDead: 0
-  deadDelay: 1
+  deadWhiteDelay: 1
   changeGhost: 0
   portalSize: 3
   afterEffect: 0
@@ -1740,7 +1762,6 @@ MonoBehaviour:
   attackRange: 0
   healCount: 0
   atkCoolCount: 0
-  isGhost: 0
   nowState: 0
   moveType: 3
   targetObj: {fileID: 0}
@@ -1749,7 +1770,6 @@ MonoBehaviour:
   movePos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   targetDir: {x: 0, y: 0, z: 0}
-  searchRange: 100
   enemyAI: {fileID: 0}
   enemyAtkTrigger: {fileID: 0}
   enemyAtkList: []
@@ -1764,7 +1784,6 @@ MonoBehaviour:
   particleHitCount: 0
   hitDelayCount: 0
   stopCount: 0
-  stunCount: 0
   flatCount: 0
   oppositeCount: 0
   spriteObj: {fileID: 0}
@@ -2444,15 +2463,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 857e027e861f7f241bc702a0ea89ef2a, type: 3}
---- !u!4 &2400592284629605727 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3222180882172883116, guid: 857e027e861f7f241bc702a0ea89ef2a,
-    type: 3}
-  m_PrefabInstance: {fileID: 1002017407824047603}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2400592284629605698 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3222180882172883121, guid: 857e027e861f7f241bc702a0ea89ef2a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1002017407824047603}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2400592284629605727 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3222180882172883116, guid: 857e027e861f7f241bc702a0ea89ef2a,
     type: 3}
   m_PrefabInstance: {fileID: 1002017407824047603}
   m_PrefabAsset: {fileID: 0}
@@ -3270,15 +3289,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a79cc6974d60c8a4daf7aa8643b898c5, type: 3}
---- !u!4 &1063010391120404151 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7124679125589785262, guid: a79cc6974d60c8a4daf7aa8643b898c5,
-    type: 3}
-  m_PrefabInstance: {fileID: 7791055535992513561}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &1063010391120404137 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 7124679125589785264, guid: a79cc6974d60c8a4daf7aa8643b898c5,
+    type: 3}
+  m_PrefabInstance: {fileID: 7791055535992513561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1063010391120404151 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7124679125589785262, guid: a79cc6974d60c8a4daf7aa8643b898c5,
     type: 3}
   m_PrefabInstance: {fileID: 7791055535992513561}
   m_PrefabAsset: {fileID: 0}

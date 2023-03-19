@@ -228,7 +228,6 @@ public class VendMachineUI : MonoBehaviour
             {
                 // 상품 획득 시도하기
                 StartCoroutine(GetProduct(index, productObj, priceType, index));
-                print(slotInfo.name + " : " + priceType + " : " + slotInfo.price);
             });
 
             // 툴팁에 상품 정보 넣기
@@ -243,14 +242,14 @@ public class VendMachineUI : MonoBehaviour
             if (soldOutList[i])
             {
                 // 해당 상품 비활성화
-                productButton.interactable = false; // 아이콘 버튼 상호작용 비활성화
+                // productButton.interactable = false; // 아이콘 버튼 상호작용 비활성화
                 newTxt.gameObject.SetActive(false); //신규 표시 없에기
                 soldOutSlash.gameObject.SetActive(true); //가격 표시 사선 표시
             }
             else
             {
                 // 해당 상품 활성화
-                productButton.interactable = true; // 아이콘 버튼 상호작용 비활성화
+                // productButton.interactable = true; // 아이콘 버튼 상호작용 비활성화
                 newTxt.gameObject.SetActive(true); //신규 표시 없에기
                 soldOutSlash.gameObject.SetActive(false); //가격 표시 사선 표시
             }
@@ -300,8 +299,14 @@ public class VendMachineUI : MonoBehaviour
         //아이템 가격 텍스트
         TextMeshProUGUI priceTxt = product.Find("Price/Amount").GetComponent<TextMeshProUGUI>();
         priceTxt.text = price.ToString();
-        // 구매 가능하면 초록, 아니면 빨강
-        priceTxt.color = PlayerManager.Instance.hasGem[priceType].amount >= price ? Color.green : Color.red;
+
+        // 가격 텍스트 기본 색은 빨강
+        Color amountColor = Color.red;
+        // 구매 가능한 경우 초록색으로 변경
+        if (PlayerManager.Instance.hasGem[priceType].amount >= GetPrice(index) && !soldOutList[index])
+            amountColor = Color.green;
+        // 가격 텍스트 색 넣기
+        priceTxt.color = amountColor;
 
         // 할인 표시 오브젝트 찾기
         Transform discount = product.Find("Discount");
@@ -407,8 +412,8 @@ public class VendMachineUI : MonoBehaviour
 
         // print(product.name + PlayerManager.Instance.GemAmount(gemTypeIndex) +" : "+ price);
 
-        // 충분한 화폐가 있을때
-        if (PlayerManager.Instance.hasGem[priceType].amount >= GetPrice(index))
+        // 품절 아닐때, 충분한 화폐가 있을때
+        if (!soldOutList[productIndex] && PlayerManager.Instance.hasGem[priceType].amount >= GetPrice(index))
         {
             // 해당 상품 품절 처리
             soldOutList[productIndex] = true;
@@ -416,9 +421,7 @@ public class VendMachineUI : MonoBehaviour
             // 현재 툴팁 끄기
             ProductToolTip.Instance.QuitTooltip();
 
-            // 해당 상품 비활성화
-            iconBtn.interactable = false; // 아이콘 버튼 상호작용 비활성화
-            // priceBtn.interactable = false; // 가격 버튼 상호작용 비활성화
+            // iconBtn.interactable = false; // 아이콘 버튼 상호작용 비활성화
             newTxt.gameObject.SetActive(false); //신규 표시 없에기
             soldOutSlash.gameObject.SetActive(true); //가격 표시 사선 표시
 
@@ -507,59 +510,32 @@ public class VendMachineUI : MonoBehaviour
             // 아이템 드롭
             ItemDB.Instance.ItemDrop(slotInfo, itemDropper.position);
         }
-        //구매 불가능
+        // 구매 불가능
         else
         {
-            // 인디케이터 깜빡이기
-            indicator.DOKill();
-            indicator.color = Color.clear; //색깔 초기화
-
-            // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
-            indicator.DOColor(new Color(1, 0, 0, 100f / 255f), 0.1f)
-            .SetLoops(4, LoopType.Yoyo)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                indicator.color = Color.clear; //색깔 초기화
-            });
+            FlickerObj(indicator, Color.clear);
 
             //부족한 젬 타입 숫자 UI 깜빡이기
             UIManager.Instance.GemIndicator(priceType, Color.red);
-            // FlickerObj(UIManager.Instance.gemAmountUIs[gemTypeIndex].gameObject, Color.white);
         }
     }
 
-    void FlickerObj(GameObject obj, Color originColor)
+    void FlickerObj(Image image, Color originColor)
     {
-        // 재화 부족할때 인디케이터 표시
-        if (obj.TryGetComponent(out Image img))
+        // 거부 사운드 재생
+        SoundManager.Instance.PlaySound("Denied");
+
+        image.DOKill();
+        image.color = originColor; //색깔 초기화
+
+        // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
+        image.DOColor(new Color(1, 0, 0, 0.5f), 0.1f)
+        .SetLoops(4, LoopType.Yoyo)
+        .SetUpdate(true)
+        .OnComplete(() =>
         {
-            img.DOKill();
-
-            img.color = originColor; //색깔 초기화
-
-            // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
-            img.DOColor(new Color(1, 0, 0, 0.5f), 0.1f)
-            .SetLoops(4, LoopType.Yoyo)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                img.color = originColor; //색깔 초기화
-            });
-        }
-        else if (obj.TryGetComponent(out Text txt))
-        {
-            txt.DOKill();
-
-            // 해당 슬롯 빨갛게 blinkNum 만큼 깜빡이기
-            txt.DOColor(new Color(1, 0, 0, 0.5f), 0.1f)
-            .SetLoops(4, LoopType.Yoyo)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                txt.color = originColor; //색깔 초기화
-            });
-        }
+            image.color = originColor; //색깔 초기화
+        });
     }
 
     public void Exit()

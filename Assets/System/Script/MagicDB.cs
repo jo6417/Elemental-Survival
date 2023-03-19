@@ -295,9 +295,11 @@ public class MagicDB : MonoBehaviour
         string magicName = GetMagicByID(id).name.Replace(" ", "") + "_Icon";
 
         if (magicIcon.TryGetValue(magicName, out Sprite icon))
+            // 아이콘을 리턴
             return icon;
         else
-            return null;
+            // 물음표 마크를 리턴
+            return SystemManager.Instance.questionMark;
     }
 
     public GameObject GetMagicPrefab(int id)

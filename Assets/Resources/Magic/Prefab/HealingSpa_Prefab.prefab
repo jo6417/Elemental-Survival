@@ -9636,13 +9636,14 @@ GameObject:
   - component: {fileID: 9210057795328001450}
   - component: {fileID: 9210057795328001461}
   - component: {fileID: 9210057795328001448}
-  m_Layer: 7
+  - component: {fileID: 8517844030583982314}
+  m_Layer: 12
   m_Name: HealingSpa_Prefab
   m_TagString: Magic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9210057795328001451
 Transform:
   m_ObjectHideFlags: 0
@@ -9671,8 +9672,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bb683965b8fa4046b2d284ecf1f3447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pierceCount: 0
-  fixedPower: 0
+  playSoundName: 
+  atkColl: {fileID: 0}
+  targetType: 0
+  attack_power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -9683,13 +9689,23 @@ MonoBehaviour:
   freezeTime: 0
   flatTime: 0
   stopTime: 0
-  coll: {fileID: 0}
+  stunTime: 0
+  fixCoolTime: 0
+  isQuickCast: 0
   targetObj: {fileID: 0}
-  isManualCast: 0
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
-  targetType: 0
   initDone: 0
+  power: 1
+  speed: 1
+  range: 1
+  scale: 1
+  duration: 1
+  criticalRate: 1
+  criticalPower: 1
+  pierce: 0
+  atkNum: 0
+  coolTime: 0
 --- !u!114 &9210057795328001449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9703,13 +9719,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicHolder: {fileID: 9210057795328001454}
-  inPlayer: 0
   coll: {fileID: 9210057795328001448}
   pondSprite: {fileID: 9210057795328001450}
   pulsePrefab: {fileID: 7539487434049666061, guid: 99e6eb844b1bb8c4fbd38cdc4fe917b5,
     type: 3}
   dustEffect: {fileID: 1994870664517383061, guid: 9f2d6315a7af63841baea7c567eff226,
     type: 3}
+  healCoolCount: 0
+  healCoolTime: 1
 --- !u!212 &9210057795328001450
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9797,3 +9814,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 11
+--- !u!50 &8517844030583982314
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9210057795328001460}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 0
+  m_Constraints: 0

@@ -5,13 +5,13 @@ using Lean.Pool;
 
 public class BuckShot : MonoBehaviour
 {
-    MagicHolder magicHolder;
-    ParticleSystem particle;
-    public float particleSpeed;
+    [SerializeField] MagicHolder magicHolder;
+    [SerializeField] ParticleSystem particle;
 
     private void Awake()
     {
-        particle = GetComponent<ParticleSystem>();
+        if (!magicHolder) magicHolder = GetComponent<MagicHolder>();
+        if (!particle) particle = GetComponent<ParticleSystem>();
     }
 
     private void OnEnable()
@@ -44,15 +44,15 @@ public class BuckShot : MonoBehaviour
         //해당 각도로 회전
         transform.rotation = Quaternion.Euler(Vector3.forward * rotation);
 
-        //파티클 발사
-        particle.Play();
-
         // 파티클 시스템에 속도 적용하기
         ParticleSystem.MainModule particleMain = particle.main;
         particleMain.simulationSpeed = MagicDB.Instance.MagicSpeed(magicHolder.magic, true);
 
-        // 멈추면 디스폰
-        yield return new WaitUntil(() => particle.isStopped);
-        LeanPool.Despawn(transform);
+        //파티클 발사
+        particle.Play();
+
+        // // 멈추면 디스폰
+        // yield return new WaitUntil(() => particle.isStopped);
+        // LeanPool.Despawn(transform);
     }
 }

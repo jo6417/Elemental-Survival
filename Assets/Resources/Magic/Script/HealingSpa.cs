@@ -12,6 +12,8 @@ public class HealingSpa : MonoBehaviour
     [SerializeField] SpriteRenderer pondSprite; // 연못 스프라이트
     public GameObject pulsePrefab; // 캐릭터 밑에 펄스 이펙트
     public GameObject dustEffect; // 디스폰 이펙트
+    [SerializeField] float healCoolCount;
+    [SerializeField] float healCoolTime = 1f;
 
     private void OnEnable()
     {
@@ -71,6 +73,12 @@ public class HealingSpa : MonoBehaviour
         });
     }
 
+    private void Update()
+    {
+        // 힐링 쿨타임 차감
+        healCoolCount -= Time.deltaTime;
+    }
+
     private void OnTriggerStay2D(Collider2D other)
     {
         // 적이 닿으면
@@ -85,8 +93,8 @@ public class HealingSpa : MonoBehaviour
                     if (character.isDead)
                         return;
 
-                    // // 닿은 적에게 데미지 주기
-                    // StartCoroutine(character.hitBoxList[0].Hit(magicHolder));
+                    // 닿은 적에게 데미지 주기
+                    StartCoroutine(character.hitBoxList[0].Hit(magicHolder));
 
                     // 충돌한 캐릭터 발밑에 물결 일으키기
                     LeanPool.Spawn(pulsePrefab, other.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
@@ -97,17 +105,20 @@ public class HealingSpa : MonoBehaviour
         // 플레이어가 닿으면
         if (other.CompareTag(TagNameList.Player.ToString()))
         {
+            // 힐링 쿨타임중에는 리턴
+            if (healCoolCount > 0)
+                return;
+
             if (other.TryGetComponent(out Character character))
             {
-                // 피격 딜레이 중이면 리턴
-                if (character.hitDelayCount > 0)
-                    return;
-
                 // 플레이어 체력 회복
                 character.hitBoxList[0].Damage(-magicHolder.power, false);
 
                 // 플레이어 발밑에 물결 일으키기
                 LeanPool.Spawn(pulsePrefab, PlayerManager.Instance.transform.position, Quaternion.identity, ObjectPool.Instance.effectPool);
+
+                // 힐링 쿨타임 초기화
+                healCoolCount = healCoolTime;
             }
         }
     }

@@ -49,9 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playSoundName: 
   atkColl: {fileID: 0}
-  pierceCount: 0
   targetType: 1
-  power: 0
+  attack_power: 1
   buffStatName: 
   buffMultiple: 1
   buffDuration: 0
@@ -66,13 +65,22 @@ MonoBehaviour:
   flatTime: 0
   stopTime: 0
   stunTime: 0
-  autoCoolDown: 1
   fixCoolTime: 0
-  isManualCast: 0
+  isQuickCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   initDone: 0
+  power: 0
+  speed: 1
+  range: 1
+  scale: 1
+  duration: 1
+  criticalRate: 1
+  criticalPower: 1
+  pierce: 0
+  atkNum: 0
+  coolTime: 0
 --- !u!114 &5580125707279251350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particle: {fileID: 1590357766058599580}
-  autoDespawn: 0
+  autoDespawn: 1
   despawnDelay: 0
   collOverTime: 0
   modify_startLife: 0
