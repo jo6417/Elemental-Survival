@@ -121,6 +121,19 @@ public class TileMapGenerator : MonoBehaviour
         return banTileList;
     }
 
+    public void ClearMap(bool complete = true)
+    {
+        if (tileReset)
+            // 모든 타일 삭제
+            tileMap.ClearAllTiles();
+
+        // 기존 예약된 설치 위치 초기화
+        if (complete)
+        {
+            tileSetPos = null;
+        }
+    }
+
     public void InitPos()
     {
         for (int x = 0; x < tilemapSize.x; x++)
@@ -234,17 +247,4 @@ public class TileMapGenerator : MonoBehaviour
 
     //     count++;
     // }
-
-    public void ClearMap(bool complete = true)
-    {
-        if (tileReset)
-            // 모든 타일 삭제
-            tileMap.ClearAllTiles();
-
-        // 기존 예약된 설치 위치 초기화
-        if (complete)
-        {
-            tileSetPos = null;
-        }
-    }
 }

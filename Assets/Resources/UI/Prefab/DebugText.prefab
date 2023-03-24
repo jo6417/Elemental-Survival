@@ -197,6 +197,11 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1601854989703713613, guid: a539fdb1d46bf154e922f03e12f7fdc7,
+        type: 3}
+      propertyPath: m_enableWordWrapping
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2148200675443839788, guid: a539fdb1d46bf154e922f03e12f7fdc7,
         type: 3}
       propertyPath: m_Pivot.x
@@ -311,6 +316,11 @@ PrefabInstance:
         type: 3}
       propertyPath: widthFitter
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3239708446981073899, guid: a539fdb1d46bf154e922f03e12f7fdc7,
+        type: 3}
+      propertyPath: heightFitter
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3355398002180098350, guid: a539fdb1d46bf154e922f03e12f7fdc7,
         type: 3}

@@ -11,12 +11,14 @@ using System.Linq;
 
 public class MainMenuBtn : MonoBehaviour
 {
+    [Header("Refer")]
     public GameObject buttonParent;
     public GameObject mainMenuPanel;
     public GameObject characterSelectUI;
     public GameObject shopUI;
     public CanvasGroup collectionUI;
     public GameObject optionUI;
+    public GameObject stageSelectPanel; // 스테이지 선택 패널
 
     [Header("Collection")]
     [SerializeField] Transform collectionContent;
@@ -38,7 +40,7 @@ public class MainMenuBtn : MonoBehaviour
 
     private void Awake()
     {
-        play_btn.onClick.AddListener(() => { Play(); });
+        // play_btn.onClick.AddListener(() => { StageSelect(); });
         shop_btn.onClick.AddListener(() => { Shop(); });
         collection_btn.onClick.AddListener(() => { Collection(); });
         option_btn.onClick.AddListener(() => { Option(); });
@@ -82,13 +84,22 @@ public class MainMenuBtn : MonoBehaviour
         characterSelectUI.SetActive(!characterSelectUI.activeSelf);
     }
 
-    public void Play()
+    public void StageSelect(bool isOn)
     {
+        // 스테이지 선택 팝업 띄우기
+        stageSelectPanel.SetActive(isOn);
+    }
+
+    public void StagePlay(int stageIndex)
+    {
+        // 게임 시작 변수 넣기
+        SystemManager.Instance.isNewGame = true;
+
         // 버튼 Select 해제
         UICursor.Instance.UpdateLastSelect(null);
 
         // 스테이지 변수 첫맵으로 초기화
-        SystemManager.Instance.NowMapElement = MapElement.Earth;
+        SystemManager.Instance.NowMapElement = (MapElement)stageIndex;
 
         // 로딩하고 인게임 씬 띄우기
         SystemManager.Instance.StartGame();

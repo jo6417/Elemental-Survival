@@ -100,7 +100,6 @@ SpriteAtlas:
   - {fileID: -1391193988281709189, guid: c3331fb4f4eecc940b73c1ca54b0f6c3, type: 3}
   - {fileID: 2138333159471825285, guid: 080699164a6f69d4b87d85b7f7fbe962, type: 3}
   - {fileID: 942430909456833581, guid: 080699164a6f69d4b87d85b7f7fbe962, type: 3}
-  - {fileID: 21300000, guid: 70ff87d6b8777dc4eb1a44b7d5a983a2, type: 3}
   - {fileID: 3750784847094722566, guid: 1bd03409f18b17548b7865270782a157, type: 3}
   - {fileID: -3650205917465264942, guid: 1bd03409f18b17548b7865270782a157, type: 3}
   - {fileID: 1568976944791875497, guid: f21f6899f32cf0043a17121bf47ed244, type: 3}
@@ -405,7 +404,6 @@ SpriteAtlas:
   - Gate_0
   - Bush-Sheet_0
   - Bush-Sheet_1
-  - TileGenTest
   - Tile_Water-Sheet_0
   - Tile_Water-Sheet_1
   - Earth_19

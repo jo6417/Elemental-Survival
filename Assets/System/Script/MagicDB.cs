@@ -35,8 +35,8 @@ public class MagicDB : MonoBehaviour
     public Dictionary<int, MagicInfo> magicDB = new Dictionary<int, MagicInfo>(); // 마법 정보 DB
     public Dictionary<int, MagicInfo> quickMagicDB = new Dictionary<int, MagicInfo>(); // 마법 정보 DB (퀵슬롯 쿨타임용)
     // public List<Sprite> magicIcon = null; //마법 아이콘 리스트
-    public Dictionary<string, Sprite> magicIcon = new Dictionary<string, Sprite>();
-    public Dictionary<string, GameObject> magicPrefab = new Dictionary<string, GameObject>(); //마법 프리팹 리스트
+    public Dictionary<string, Sprite> magicIcons = new Dictionary<string, Sprite>();
+    public Dictionary<string, GameObject> magicPrefabs = new Dictionary<string, GameObject>();
 
     public List<int> unlockMagicList = new List<int>(); // 해금된 마법 리스트
     public List<int> banMagicList = new List<int>(); // 사용 가능한 마법 리스트
@@ -137,14 +137,14 @@ public class MagicDB : MonoBehaviour
         Sprite[] _magicIcon = Resources.LoadAll<Sprite>("Magic/Icon");
         foreach (var icon in _magicIcon)
         {
-            magicIcon[icon.name] = icon;
+            magicIcons[icon.name] = icon;
         }
 
         //마법 프리팹 전부 가져오기
         GameObject[] _magicPrefab = Resources.LoadAll<GameObject>("Magic/Prefab");
         foreach (var prefab in _magicPrefab)
         {
-            magicPrefab[prefab.name] = prefab;
+            magicPrefabs[prefab.name] = prefab;
         }
     }
 
@@ -294,7 +294,7 @@ public class MagicDB : MonoBehaviour
         //아이콘의 이름
         string magicName = GetMagicByID(id).name.Replace(" ", "") + "_Icon";
 
-        if (magicIcon.TryGetValue(magicName, out Sprite icon))
+        if (magicIcons.TryGetValue(magicName, out Sprite icon))
             // 아이콘을 리턴
             return icon;
         else
@@ -307,7 +307,7 @@ public class MagicDB : MonoBehaviour
         //프리팹의 이름
         string magicName = GetMagicByID(id).name.Replace(" ", "") + "_Prefab";
 
-        if (magicPrefab.TryGetValue(magicName, out GameObject prefab))
+        if (magicPrefabs.TryGetValue(magicName, out GameObject prefab))
             return prefab;
         else
             return null;
@@ -579,12 +579,6 @@ public class MagicDB : MonoBehaviour
     {
         // 마법 공격 횟수 및 레벨당 증가량 계산
         int atkNum = magic.atkNum + Mathf.FloorToInt(magic.atkNumPerLev * (magic.MagicLevel - 1));
-
-        // 플레이어가 쓰는 마법일때
-        // if (target == MagicHolder.Target.Enemy)
-        // if (PlayerManager.Instance != null)
-        //     // 플레이어 투사체 개수 추가 계산
-        //     atkNum += PlayerManager.Instance.PlayerStat_Now.atkNumNum;
 
         //최소값 1 제한
         atkNum = Mathf.Clamp(atkNum, 1, atkNum);

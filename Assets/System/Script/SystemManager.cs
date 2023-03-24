@@ -76,6 +76,7 @@ public class SystemManager : MonoBehaviour
     #endregion
 
     [Header("State")]
+    public bool isNewGame = true; // 게임 시작할때 true에서 false로 변화
     public bool sceneChanging = false; // 씬 변경중 여부
     public bool screenMasked = false; // 화면 씬 마스크로 덮힘 여부
     public bool initDone = false; // 초기 로딩 완료 여부

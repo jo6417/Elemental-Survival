@@ -113,15 +113,12 @@ public class ItemBox : Character
         // coll.enabled = true;
     }
 
-    // private void OnTriggerExit2D(Collider2D other)
-    // {
-    //     // 스폰 콜라이더 밖으로 나갔을때
-    //     if (other.CompareTag("Respawn"))
-    //     {
-    //         // 스폰 테두리 랜덤 위치로 이동
-    //         transform.position = WorldSpawner.Instance.BorderRandPos();
-    //     }
-    // }
+    private void Update()
+    {
+        //히트 카운트 감소
+        if (hitDelayCount > 0)
+            hitDelayCount -= Time.deltaTime;
+    }
 
     void RemoveList()
     {

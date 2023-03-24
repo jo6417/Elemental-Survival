@@ -151,12 +151,14 @@ public class Loading : MonoBehaviour
             // 인게임 모든 캔버스 패널 초기화
             UIManager.Instance.InitPanel();
 
-            // 첫 맵일때
-            if (SystemManager.Instance.NowMapElement == 0)
+            // 게임 처음 시작시
+            if (SystemManager.Instance.isNewGame)
             {
 #if !UNITY_EDITOR
                 // 기본 마법 패널 켜기
                 UIManager.Instance.PopupUI(UIManager.Instance.defaultPanel, true);
+                // 게임 시작 변수 끄기
+                SystemManager.Instance.isNewGame = false;
 #endif
             }
 

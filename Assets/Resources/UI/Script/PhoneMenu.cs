@@ -284,8 +284,20 @@ public class PhoneMenu : MonoBehaviour
         }
     }
 
+    void ChatReset()
+    {
+        // 모든 채팅 목록 지우기
+        for (int i = chatScroll.content.transform.childCount - 1; i >= 0; i--)
+            LeanPool.Despawn(chatScroll.content.transform.GetChild(i));
+        // 채팅 사이즈 0으로 초기화
+        chatScroll.content.sizeDelta = new Vector2(chatScroll.content.sizeDelta.x, 0);
+    }
+
     IEnumerator Init()
     {
+        // 채팅 리셋
+        ChatReset();
+
         //마법 DB 로딩 대기
         yield return new WaitUntil(() => MagicDB.Instance.initDone);
 
@@ -1444,16 +1456,11 @@ public class PhoneMenu : MonoBehaviour
         chat.GetComponentInChildren<TextMeshProUGUI>().text = message;
 
         // 1프레임 대기
-        yield return new WaitForSecondsRealtime(Time.unscaledDeltaTime);
-
-        // 컴포넌트 껐다켜서 레이아웃 정렬하기
-        VerticalLayoutGroup layoutGroup = chatScroll.content.GetComponent<VerticalLayoutGroup>();
-        layoutGroup.enabled = false;
-        layoutGroup.enabled = true;
+        yield return new WaitForEndOfFrame();
 
         float sumHeights = 0;
 
-        // 메시지들의 총합 높이 갱신
+        // 메시지들의 높이 총합 합산
         for (int i = 0; i < chatScroll.content.childCount; i++)
         {
             RectTransform rect = chatScroll.content.GetChild(i).GetComponent<RectTransform>();
@@ -1462,11 +1469,12 @@ public class PhoneMenu : MonoBehaviour
             sumHeights += 10;
             // 높이 합산
             sumHeights += rect.sizeDelta.y;
-
-            // print(i + " : " + rect.sizeDelta.y);
         }
 
-        sumChatHeights = sumHeights;
+        // 채팅 콘텐츠의 사이즈 늘리기
+        chatContentRect.DOSizeDelta(new Vector2(chatContentRect.sizeDelta.x, sumHeights), 0.3f)
+        .SetUpdate(true)
+        .SetEase(Ease.OutQuint);
 
         // 알파값 높여서 표시
         canvasGroup.alpha = 1;
@@ -1721,10 +1729,6 @@ public class PhoneMenu : MonoBehaviour
         lightScreen.DOColor(new Color(30f / 255f, 1f, 1f, 100f / 255f), moveTime / 2f)
         .SetDelay(moveTime / 2f)
         .SetUpdate(true);
-
-        // 모든 시스템 채팅 목록 지우기
-        for (int i = 0; i < chatScroll.content.transform.childCount; i++)
-            LeanPool.Despawn(chatScroll.content.transform.GetChild(i));
 
         // 핸드폰 이동하는 동안 대기
         yield return new WaitForSecondsRealtime(moveTime);

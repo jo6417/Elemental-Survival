@@ -36,7 +36,7 @@ public class MapManager : MonoBehaviour
     #endregion
 
     [Header("State")]
-    int propInit = 0; // 장애물 초기화 카운터
+    int nowTilemapNum = 0; // 현재 생성된 타일맵 개수
     public float portalRange = 100f; //포탈게이트 생성될 범위
     [SerializeField] float playerDistance = 5f; // 플레이어 이내 설치 금지 거리
     [SerializeField] int maxPropAttempt = 10; // 사물 생성 시도 최대 횟수
@@ -76,14 +76,6 @@ public class MapManager : MonoBehaviour
         upY = tilemapSize.y / 2f;
         downY = -tilemapSize.y / 2f;
 
-        // print(rightX + " : " + leftX + " : " + upY + " : " + downY);
-
-        // // 타일셋 프리팹 소환하고 변수 기억하기
-        // GameObject tileSet = LeanPool.Spawn(tileSetPrefab, Vector2.zero, Quaternion.identity, transform);
-        // TileMapGenerator[] tileGens = tileSet.GetComponentsInChildren<TileMapGenerator>();
-        // for (int i = 0; i < tileGens.Length; i++)
-        //     lastTileGens[i] = tileGens[i];
-
         // 플레이어 초기화 대기
         yield return new WaitUntil(() => PlayerManager.Instance);
         //다음맵으로 넘어가는 포탈게이트 생성하기
@@ -93,23 +85,13 @@ public class MapManager : MonoBehaviour
         GenerateMap();
 
         // 초기맵 모든 장애물 설치 될때까지 대기
-        yield return new WaitUntil(() => propInit >= 9);
+        yield return new WaitUntil(() => nowTilemapNum >= 9);
 
         // 씬 변경 끝내기
         SystemManager.Instance.sceneChanging = false;
 
-#if UNITY_EDITOR
-        // // 현재 배경음이 없으면
-        // if (SoundManager.Instance.nowBGM == null)
-        //     // 배경음 재생
-        //     SoundManager.Instance.InitBGM();
-#endif
-
         // 글로벌 피치값 초기화
         SoundManager.Instance.globalPitch = 1f;
-
-        // 조준용 마우스 커서로 전환
-        // UICursor.Instance.CursorChange(false);
     }
 
     void Update()
@@ -168,7 +150,7 @@ public class MapManager : MonoBehaviour
         // 초기 설치 위치
         Vector2 defaultPos = setPos - new Vector2(tilemapSize.x, tilemapSize.y) / 2f;
 
-        // 현재 사용중인 타일맵 생성기
+        // 현재 사용중인 타일맵 생성기 레이어 (Bottom, Middle, Deco)
         TileMapGenerator[] nowTileGens = new TileMapGenerator[3];
 
         // 새로운 주변 타일맵들
@@ -242,17 +224,11 @@ public class MapManager : MonoBehaviour
 
                 // 장애물이 들어갈 수 있는 빈 타일 리스트
                 List<Vector2> emptyTileList = new List<Vector2>();
-                // // 타일 전체 사이즈만큼 빈 타일의 좌표 리스트 만들기
-                // for (int _x = 0; _x < tilemapSize.x / 2f; _x++)
-                //     for (int _y = 0; _y < tilemapSize.y / 2f; _y++)
-                //     {
-                //         emptyTileList.Add(new Vector2(_x, _y) * 2);
-                //     }
 
                 // 각 타일맵마다 설치된 타일 리스트
                 List<Vector2> tileMapPosList = new List<Vector2>();
 
-                // 하단 레이어 타일 설치
+                // Bottom 레이어 타일 설치
                 tileMapPosList = nowTileGens[0].GenTile(genSize, nowMapPos, tileBundle_Bottom[(int)SystemManager.Instance.NowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
@@ -262,7 +238,7 @@ public class MapManager : MonoBehaviour
                 if (nowTileGens[0].excludePropTile)
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
-                // 중간 레이어 타일 설치
+                // Middle 레이어 타일 설치
                 tileMapPosList = nowTileGens[1].GenTile(genSize, nowMapPos, tileBundle_Middle[(int)SystemManager.Instance.NowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
@@ -273,7 +249,7 @@ public class MapManager : MonoBehaviour
                 if (nowTileGens[1].excludePropTile)
                     emptyTileList = EvadeTile(emptyTileList, tileMapPosList, genPos);
 
-                // 상단 레이어 타일 설치
+                // Deco 레이어 타일 설치
                 tileMapPosList = nowTileGens[2].GenTile(genSize, nowMapPos, tileBundle_Deco[(int)SystemManager.Instance.NowMapElement].tileBundle);
 
                 // 빈 타일에 설치된 좌표 넣기
@@ -433,8 +409,8 @@ public class MapManager : MonoBehaviour
         // debugTime.Stop();
         // print($"{new Vector2(groundPos.x / tilemapSize.x, groundPos.y / tilemapSize.y)} : {debugTime.ElapsedMilliseconds / 1000f}s");
 
-        // 장애물 초기화 카운트 증가
-        propInit++;
+        // 완성된 타일맵 카운트 증가
+        nowTilemapNum++;
     }
 
     Vector2 TileCheck(List<Vector2> emptyTileList, Vector2 propSize, Vector2 randomPos)

@@ -266,9 +266,6 @@ public class SoundManager : MonoBehaviour
         // 시스템 매니저 초기화 대기
         yield return new WaitUntil(() => SystemManager.Instance.initDone);
 
-        // 씬 마스크 트랜지션 끝날때까지 대기
-        // yield return new WaitUntil(() => !SystemManager.Instance.screenMasked);
-
         while (gameObject)
         {
             // 랜덤 배경음 이름 뽑기
@@ -279,8 +276,6 @@ public class SoundManager : MonoBehaviour
             // 인게임일때
             if (SceneManager.GetActiveScene().name == SceneName.InGameScene.ToString())
                 soundName = "InGameBGM_" + UnityEngine.Random.Range(1, 4);
-
-            // print(soundName);
 
             // 사운드 찾기
             Sound sound = Origin_SoundList.Find(x => x.name == soundName);
@@ -309,7 +304,7 @@ public class SoundManager : MonoBehaviour
             // bgm 켜짐 상태로 전환
             isPauseBGM = false;
 
-            // 음악 끝날때까지 대기, 일시정지 아닐때
+            // 음악 끝날때까지 대기, 임의로 일시정지 하지 않았을때
             yield return new WaitUntil(() => !isPauseBGM && !nowBGM.isPlaying);
 
             // 오디오 정지
@@ -348,6 +343,7 @@ public class SoundManager : MonoBehaviour
         });
     }
 
+    // 원하는 특성별로 오디오 소스 초기화
     AudioSource InitAudio(GameObject audioObj, Transform soundPool, Sound sound, float spatialBlend, float fadeIn = 0, float delay = 0, int loopNum = 1, bool scaledTime = true)
     {
         // 오브젝트 이름을 사운드 이름으로 동기화
@@ -624,19 +620,14 @@ public class SoundManager : MonoBehaviour
         StartCoroutine(ChangeAll_Pitch(scale, fadeTime, scaledTime));
     }
 
+    // 재생중인 오디오들의 피치값 조정
     public IEnumerator ChangeAll_Pitch(float scale, float fadeTime, bool scaledTime)
     {
         // 사운드 매니저 초기화 대기
         yield return new WaitUntil(() => initFinish);
-        // 오브젝트풀 없으면 리턴
-        if (ObjectPool.Instance == null)
-            yield break;
-        // 사운드풀 불러올때까지 대기
-        // yield return new WaitUntil(() => soundPool_Global != null);
-
-        // 글로벌 피치값 수정
-        // DOTween.To(() => globalPitch, x => globalPitch = x, scale, fadeTime)
-        // .SetUpdate(unscaledTime);
+        // // 오브젝트풀 없으면 리턴
+        // if (ObjectPool.Instance == null)
+        //     yield break;
 
         // 글로벌 재생중인 원본 오디오들의 피치값 조정
         foreach (Sound sound in Origin_SoundList)
@@ -660,20 +651,6 @@ public class SoundManager : MonoBehaviour
                 .SetUpdate(!scaledTime);
             }
         }
-
-        // // 효과음 사운드풀 하위 오디오들의 피치값 조정
-        // for (int i = 0; i < soundPool_SFX.childCount; i++)
-        // {
-        //     // 자식중에 오디오 찾기
-        //     AudioSource audio = soundPool_SFX.GetChild(i).GetComponent<AudioSource>();
-
-        //     // 오브젝트 이름으로 사운드 찾기
-        //     Sound sound = Origin_SoundList.Find(x => x.name == audio.name);
-
-        //     // 해당 오디오 소스의 피치값을 원본 피치값 * 타임스케일 넣기
-        //     DOTween.To(() => audio.pitch, x => audio.pitch = x, sound.pitch * scale * globalPitch, fadeTime)
-        //     .SetUpdate(!scaledTime);
-        // }
     }
 
     public void Set_MasterVolume(float setVolume)
@@ -683,8 +660,6 @@ public class SoundManager : MonoBehaviour
 
         // 믹서에 볼륨값 갱신
         audiomixer.SetFloat(masterMixerGroup.name + "Volume", Mathf.Log10(setVolume) * 20);
-
-        // StartCoroutine(SetAll_Volume());
     }
     public void Set_MusicVolume(float setVolume)
     {
@@ -707,6 +682,7 @@ public class SoundManager : MonoBehaviour
         // 믹서에 볼륨값 갱신
         audiomixer.SetFloat(sfxMixerGroup.name + "Volume", volume);
     }
+
     public void Set_UIVolume(float setVolume)
     {
         // UI 볼륨값 저장

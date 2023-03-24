@@ -10,7 +10,10 @@ public class TextSizeFitter : MonoBehaviour
     [SerializeField] TextMeshProUGUI textMesh;
     [SerializeField] bool widthFitter = false;
     [SerializeField] bool heightFitter = false;
-    [SerializeField] Vector2 padding;
+    [SerializeField] Vector2 padding; // 여백    
+    [SerializeField] Vector2 maxSize; // 최대 사이즈
+    [SerializeField] Vector2 minSize; // 최소 사이즈
+
     private void Awake()
     {
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
@@ -34,9 +37,11 @@ public class TextSizeFitter : MonoBehaviour
 
         // 텍스트의 너비와 높이를 계산
         if (widthFitter)
-            width = textMesh.preferredWidth;
+            // 사이즈 최소,최대 범위 적용
+            width = Mathf.Clamp(textMesh.preferredWidth, minSize.x, maxSize.x == 0 ? float.PositiveInfinity : maxSize.x);
         if (heightFitter)
-            height = textMesh.preferredHeight;
+            // 사이즈 최소,최대 범위 적용
+            height = Mathf.Clamp(textMesh.preferredHeight, minSize.y, maxSize.y == 0 ? float.PositiveInfinity : maxSize.y);
 
         // RectTransform의 크기를 조정합니다.
         rectTransform.sizeDelta = new Vector2(width, height) + padding;

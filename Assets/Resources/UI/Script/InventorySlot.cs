@@ -502,6 +502,9 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     // 현재 슬롯 빨갛게 인디케이터 점등
                     BlinkSlot(4);
 
+                    // 메시지
+                    StartCoroutine(PhoneMenu.Instance.ChatAdd("퀵슬롯에는 마법만 장착 가능합니다."));
+
                     // 리턴
                     return;
                 }

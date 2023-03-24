@@ -198,6 +198,10 @@ public class WorldSpawner : MonoBehaviour
             else
                 enemySpawnCount -= Time.deltaTime;
 
+#if !UNITY_EDITOR
+        // 빌드일때는 무조건 아이템 박스 생성
+        spawnItem = true;
+#endif
         // 아이템 스폰일때
         if (spawnItem)
         {
@@ -491,8 +495,12 @@ public class WorldSpawner : MonoBehaviour
             boxPos = BorderRandPos();
             loopNum++;
 
-            for (int i = 0; i < itemBoxList.Count; i++)
+            for (int i = itemBoxList.Count - 1; i >= 0; i--)
             {
+                // null 이면 제거
+                if (itemBoxList[i] == null)
+                    itemBoxList.RemoveAt(i);
+
                 // 기존 박스와 거리 계산
                 float distance = Vector2.Distance(itemBoxList[i].transform.position, boxPos);
 
