@@ -50,11 +50,15 @@ public class Kamaitach : MonoBehaviour
 
     IEnumerator StartAttack()
     {
-        // 원래 플레이어 위치기록
+        // 플레이어 위치 참조
         nowPlayerPos = PlayerManager.Instance.transform.position;
 
-        // 플레이어 현재 위치부터 마우스 위치까지 방향 벡터
-        movePos = (Vector3)PlayerManager.Instance.GetMousePos() - nowPlayerPos;
+        // 수동,자동 여부에 따라 타겟 위치 초기화
+        Vector3 targetPos = magicHolder.isQuickCast ? PlayerManager.Instance.GetMousePos() : magicHolder.targetPos;
+
+        // 플레이어 현재 위치부터 타겟 위치까지 방향 벡터
+        movePos = targetPos - nowPlayerPos;
+
         // z축 초기화
         movePos.z = 0f;
         // 이동할 위치 계산, range 보다 멀리 이동하려고 하면 길이 제한

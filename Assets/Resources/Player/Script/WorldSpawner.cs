@@ -328,9 +328,9 @@ public class WorldSpawner : MonoBehaviour
             enemyId = enemy.id;
         }
 
-        // 엘리트 출현 유무 (시간 및 총 전투력에 따라 엘리트 출현율 상승)
+        // 엘리트 출현 유무 (시간에 따라 엘리트 출현율 상승)
         eliteRate = timePower / 100f; // 30초마다 1%씩 출현율 상승 (3000초=50분 이상이면 100% 엘리트)
-        eliteRate = eliteRate / 2f; //todo 엘리트 너무 자주 떠서 확률 보정 테스트중
+        eliteRate = eliteRate / 2f; //todo 엘리트 확률 보정
 
         //몬스터 총 전투력 올리기
         NowEnemyPower += enemy.grade;
@@ -349,8 +349,6 @@ public class WorldSpawner : MonoBehaviour
 
         // 쿨타임 갱신
         enemySpawnCount = spawnCoolTime;
-
-        // print(enemy.enemyName + " : 스폰");
 
         // 스폰 끝
         nowSpawning = false;

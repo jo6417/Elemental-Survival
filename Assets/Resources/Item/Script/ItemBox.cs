@@ -32,14 +32,19 @@ public class ItemBox : Character
 
     IEnumerator Init()
     {
+        // 히트 콜라이더 모두 끄기
+        foreach (Collider2D hitColl in hitBoxList[0].hitColls)
+            hitColl.enabled = false;
+
         // 닫힌 상자 스프라이트로 초기화
         boxSprite.sprite = boxSpriteList[0];
-
         // 외곽선 색 초기화
         boxSprite.material.SetColor("_OutLineColor", Color.white);
 
         // 마법,아이템 DB 모두 로딩 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.initDone && ItemDB.Instance.initDone);
+        // 캐릭터 초기화 대기
+        yield return new WaitUntil(() => initialFinish);
 
         // 각각 아이템 개별 확률 적용
         randomRate.Add(40); // 원소젬 확률 가중치
@@ -47,6 +52,9 @@ public class ItemBox : Character
         randomRate.Add(20); // 자석 빔 확률 가중치
         randomRate.Add(10); // 슬롯머신 확률 가중치
         randomRate.Add(5); // 트럭 버튼 확률 가중치
+
+        // 슬롯 정보 초기화
+        slotInfo = null;
 
         // null 이 아닌 상품이 뽑힐때까지 반복
         while (slotInfo == null)
@@ -86,31 +94,30 @@ public class ItemBox : Character
         // 해당 상품 이름 확인
         productName = slotInfo.name;
 
-        // 드랍 아이템 확정 될때까지 대기
-        yield return new WaitUntil(() => slotInfo != null);
-
         // 박스 체력 초기화
         characterStat.hpMax = boxHp;
         characterStat.hpNow = characterStat.hpMax;
 
-        // 드랍 아이템 넣기
+        // 드랍 아이템 초기화
         nowHasItem.Clear();
         // 드랍 개수 1개로 초기화
         slotInfo.amount = 1;
+        // 드랍 아이템 넣기
         nowHasItem.Add(slotInfo);
 
         // 생성된 박스를 리스트에 포함
         WorldSpawner.Instance.itemBoxList.Add(gameObject);
 
         // 죽을때 리스트에서 삭제 콜백 넣기
-        hitCallback += RemoveList;
+        deadCallback += RemoveList;
 
         // 캐릭터 초기화 완료
         initialStart = true;
         initialFinish = true;
 
-        // 콜라이더 켜기
-        // coll.enabled = true;
+        // 히트 콜라이더 모두 켜기
+        foreach (Collider2D hitColl in hitBoxList[0].hitColls)
+            hitColl.enabled = true;
     }
 
     private void Update()
@@ -120,16 +127,12 @@ public class ItemBox : Character
             hitDelayCount -= Time.deltaTime;
     }
 
-    void RemoveList()
+    void RemoveList(Character character)
     {
-        // 죽을때
-        if (characterStat.hpNow <= 0)
-        {
-            // 스폰 리스트에서 해당 아이템 삭제
-            WorldSpawner.Instance.itemBoxList.Remove(gameObject);
+        // 스폰 리스트에서 해당 박스 삭제
+        WorldSpawner.Instance.itemBoxList.Remove(gameObject);
 
-            // 상자 오픈 사운드 재생
-            SoundManager.Instance.PlaySound("BoxOpen", transform.position, 0, 0.8f);
-        }
+        // 상자 오픈 사운드 재생
+        SoundManager.Instance.PlaySound("BoxOpen", transform.position, 0);
     }
 }

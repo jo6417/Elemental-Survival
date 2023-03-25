@@ -68,7 +68,7 @@ public class PhoneMenu : MonoBehaviour
     int mergeAbleNum; // 현재 합성 가능한 마법 개수
     public Transform invenParent; // 인벤토리 슬롯들 부모 오브젝트
     public List<InventorySlot> invenSlotList = new List<InventorySlot>(); // 인벤토리 슬롯 오브젝트
-    public SlotInfo[] quickSlotMagicList = new SlotInfo[3]; // 백업용 퀵슬롯 오브젝트
+    public SlotInfo[] quickSlotMagicList = new SlotInfo[3]; // 백업용 퀵슬롯 마법 정보
     public InventorySlot nowSelectSlot; // 현재 커서 올라간 슬롯
     public InventorySlot nowHoldSlot; // 현재 선택중인 슬롯
     public SlotInfo nowHoldSlotInfo; // 현재 선택중인 슬롯 정보    
@@ -977,15 +977,6 @@ public class PhoneMenu : MonoBehaviour
 
         // 마스크 이미지 켜기
         shinyMask.showMaskGraphic = true;
-        // 마스크 이미지 알파값 초기화
-        maskColor.a = 1f / 255f;
-        shinyMaskImg.color = maskColor;
-        maskColor.a = 1f;
-        // 마스크 이미지 알파값 올리기
-        shinyMaskImg.color = maskColor;
-        // shinyMaskImg.DOColor(maskColor, 0.5f)
-        // .SetEase(Ease.InCirc)
-        // .SetUpdate(true);
 
         // 스킵 스위치 꺼져있을때
         if (!isSkipped)
@@ -1119,7 +1110,7 @@ public class PhoneMenu : MonoBehaviour
                 if (MagicDB.Instance.GetMagicPrefab(magicId) == null)
                     continue;
 
-                // 선택된 마법과 등급이 같은 마법이면 
+                // 선택된 마법과 등급이 같은 마법이면
                 if (magic.grade == nowGrade)
                 {
                     // 랜덤 풀에 넣기

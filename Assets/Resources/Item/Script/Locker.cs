@@ -54,13 +54,15 @@ public class Locker : MonoBehaviour
         // 마법,아이템 DB 모두 로딩 될때까지 대기
         yield return new WaitUntil(() => MagicDB.Instance.initDone && ItemDB.Instance.initDone);
 
+        // 슬롯 정보 비우기
+        slotInfo = null;
+
         // null 이 아닌 상품이 뽑힐때까지 반복
         while (slotInfo == null)
         {
             //todo 아티팩트 구현하면 0,3까지 랜덤
             // 상품 종류 아이템,마법,아티팩트 중 랜덤
             randomType = Random.Range(0, 2);
-            randomType = 0;
 
             // 등급별 랜덤으로 전환하기
             // 랜덤 등급 뽑기 
@@ -88,8 +90,6 @@ public class Locker : MonoBehaviour
 
         // 해당 상품 이름 확인
         productName = slotInfo.name;
-
-        yield return new WaitUntil(() => slotInfo != null);
 
         // 가격 타입 갱신
         priceType = MagicDB.Instance.ElementType(slotInfo);
@@ -156,7 +156,7 @@ public class Locker : MonoBehaviour
             return;
 
         // 재화가 충분할때
-        if (PlayerManager.Instance.hasGem[priceType].amount > price)
+        if (PlayerManager.Instance.hasGem[priceType].amount >= price)
         {
             // 금고 오픈사운드 재생
             SoundManager.Instance.PlaySound("LockerOpen");

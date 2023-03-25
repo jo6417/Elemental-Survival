@@ -484,10 +484,6 @@ public class HotDog_AI : EnemyAI
 
     void ManageAction()
     {
-        // Idle 아니면 리턴
-        // if (character.nowAction != Character.Action.Idle)
-        //     return;
-
         // 시간 멈추면 리턴
         if (SystemManager.Instance.globalTimeScale == 0f)
             return;
@@ -535,9 +531,6 @@ public class HotDog_AI : EnemyAI
 
             // 물기 패턴 실행
             Bite();
-
-            // 쿨타임 갱신
-            // coolCount = biteCooltime;
 
             return;
         }
@@ -695,13 +688,9 @@ public class HotDog_AI : EnemyAI
 
         // 플레이어 방향 쳐다보기
         if (playerDir.x > 0)
-        {
             transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
         else
-        {
             transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
 
         // 백스텝 애니메이션 대기
         yield return new WaitForSeconds(1.5f);
@@ -728,17 +717,17 @@ public class HotDog_AI : EnemyAI
         switch ((Patten)atkType)
         {
             case Patten.Hellfire:
-                // 근거리 및 중거리 헬파이어 패턴
+                // 헬파이어 패턴 실행
                 StartCoroutine(HellfireAtk());
                 coolCount = hellfireCooltime;
                 break;
             case Patten.Meteor:
-                // 원거리 메테오 쿨타임 아닐때 meteor 패턴 코루틴
+                // 메테오 패턴 실행
                 MeteorAtk();
                 coolCount = meteorCooltime;
                 break;
             case Patten.Stealth:
-                // 원거리 스텔스 쿨타임 아닐때 stealthAtk 패턴 코루틴
+                // 스텔스 패턴 실행
                 StartCoroutine(StealthAtk());
                 coolCount = stealthCooltime;
                 break;

@@ -404,17 +404,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     return;
                 }
 
-                // if (magicInfo.castType != MagicDB.CastType.active.ToString())
-                // {
-                //     // 현재 슬롯 빨갛게 인디케이터 점등
-                //     BlinkSlot(4);
-
-                //     // 메시지
-                //     StartCoroutine(PhoneMenu.Instance.ChatAdd("액티브 마법만 장착 가능합니다."));
-
-                //     return;
-                // }
-
                 // 비어있는 퀵슬롯
                 InventorySlot emptyQuickSlot = null;
 
@@ -471,13 +460,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 
                 // 해당 슬롯 아이템 삭제
                 slotInfo = null;
-
-                // // 키 입력 막기 변수 토글
-                // PhoneMenu.Instance.InteractBtnsToggle(false);
-                // // 메뉴 버튼 상호작용 토글
-                // PhoneMenu.Instance.recipeBtn.interactable = false;
-                // // 백 버튼 상호작용 토글
-                // PhoneMenu.Instance.backBtn.interactable = false;
             }
         }
         // 아이템 들고 click 했을때
@@ -548,13 +530,6 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                 // 합성 가능 여부 체크하기
                 MergeCheck();
             }
-
-            // // 키 입력 막기 변수 토글
-            // PhoneMenu.Instance.InteractBtnsToggle(true);
-            // // 메뉴 버튼 상호작용 토글
-            // PhoneMenu.Instance.recipeBtn.interactable = true;
-            // // 백 버튼 상호작용 토글
-            // PhoneMenu.Instance.backBtn.interactable = true;
         }
 
         // 현재 슬롯 UI 갱신
@@ -652,7 +627,7 @@ IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
                     if (mergeMagic != null && MagicDB.Instance.GetMagicPrefab(mergeMagic.id) == null)
                         mergeMagic = null;
 
-                    //todo 밴 당한 마법일때 실패 처리
+                    // 밴 당한 마법일때 실패 처리
                     if (mergeMagic != null && MagicDB.Instance.banMagicList.Exists(x => x == mergeMagic.id))
                         mergeMagic = null;
 

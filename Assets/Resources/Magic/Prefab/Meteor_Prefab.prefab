@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3659908719226869021
 Transform:
   m_ObjectHideFlags: 0
@@ -50,9 +50,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playSoundName: 
   atkColl: {fileID: 0}
-  pierceCount: 0
   targetType: 0
-  fixedPower: 0
+  attack_power: 1
+  buffStatName: 
+  buffMultiple: 1
+  buffDuration: 0
   knockbackForce: 0
   burnTime: 0
   poisonTime: 0
@@ -64,13 +66,22 @@ MonoBehaviour:
   flatTime: 0
   stopTime: 0
   stunTime: 0
-  autoCoolDown: 1
   fixCoolTime: 0
-  isManualCast: 0
+  isQuickCast: 0
   targetObj: {fileID: 0}
   magicName: 
   targetPos: {x: 0, y: 0, z: 0}
   initDone: 0
+  power: 1
+  speed: 1
+  range: 1
+  scale: 1
+  duration: 1
+  criticalRate: 1
+  criticalPower: 1
+  pierce: 0
+  atkNum: 0
+  coolTime: 0
 --- !u!114 &2924200299590226628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,7 +99,7 @@ MonoBehaviour:
   rockSprite: {fileID: 5350171974902983272}
   fireTrail: {fileID: 6720872240345002128}
   magicHolder: {fileID: 2712818590590919898}
-  explosionPrefab: {fileID: 6825291212296317604, guid: 30a992fc1ef57704e975faf30fc63149,
+  explosionPrefab: {fileID: 6580393212209439595, guid: 3e405c6283f9c884fa1057f6daa18bd8,
     type: 3}
   dirtPrefab: {fileID: 444469309744675838, guid: d9de1b6b57ddf424f9164127d9476914,
     type: 3}
@@ -5971,7 +5982,7 @@ ParticleSystem:
     m_BurstCount: 0
     m_Bursts: []
   SizeModule:
-    enabled: 0
+    enabled: 1
     curve:
       serializedVersion: 2
       minMaxState: 1
@@ -5982,22 +5993,22 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0
-          outSlope: 1
-          tangentMode: 0
-          weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
-        - serializedVersion: 3
-          time: 1
           value: 1
-          inSlope: 1
+          inSlope: 0
           outSlope: 0
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.33333334
-          outWeight: 0.33333334
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 0
+          inSlope: -2
+          outSlope: -2
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
@@ -6320,7 +6331,7 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 54356
+        atime1: 41827
         atime2: 65535
         atime3: 0
         atime4: 0

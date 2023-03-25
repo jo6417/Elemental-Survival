@@ -85,7 +85,6 @@ public class Vend_Machine : MonoBehaviour
             else if (magic != null)
                 productList.Add(new MagicInfo(magic));
 
-            //todo 가격 확정하기
             // 원래 가격
             float originPrice = slot.price;
             // 할인율
